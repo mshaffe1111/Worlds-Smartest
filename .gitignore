@@ -5,3 +5,7 @@ dist/
 .vscode/
 android/
 ios/
+godot/.godot/
+assets/renders/*.log
+assets/blender/*.blend1
+

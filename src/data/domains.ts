@@ -182,4 +182,32 @@ export const PERKS: Record<PerkId, PerkMeta> = {
     effectDescription: 'Overclock charges 30% faster and reaches +125% peak bonus.',
     source: 'Stamped in the Geneva Vetting Chamber',
   },
+  COOP_CROSSCHECK: {
+    id: 'COOP_CROSSCHECK',
+    name: 'Co-Op Cross-Check',
+    tagline: 'Nadia\'s Acoustic Signal',
+    effectDescription: 'Allied Nadia flashes a free Tier-2 lateral clue once per match without dropping multiplier.',
+    source: 'Sacrificed a Shield to save Nadia in Rio de Janeiro',
+  },
+  PEOPLES_LENS: {
+    id: 'PEOPLES_LENS',
+    name: 'People\'s Sightline',
+    tagline: 'Whistleblower Crowd Pulse',
+    effectDescription: 'Live global broadcast heatmap softly highlights consensus answers across Prism facets.',
+    source: 'Broadcast the Meridian Zero Dossier from Cairo',
+  },
+  COUNCIL_OVERRIDE: {
+    id: 'COUNCIL_OVERRIDE',
+    name: 'Council Override',
+    tagline: 'Insider Executive Clearance',
+    effectDescription: '+20% Sovereign multiplier on High-Power, History, and Law synthesis rounds.',
+    source: 'Pocketed the Meridian Zero Dossier to infiltrate the Council',
+  },
+  BLUFF_ECHO: {
+    id: 'BLUFF_ECHO',
+    name: 'Bluff Echo',
+    tagline: 'Reykjavik Mind-Game',
+    effectDescription: 'Flick-Canceling an Overclock baits rivals into premature locks and grants +1.5s recovery.',
+    source: 'Outplayed the Conclave in Reykjavik',
+  },
 };

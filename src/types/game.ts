@@ -42,19 +42,42 @@ export type Archetype3D =
   | 'GAUNTLET_SHATTER'
   | 'HERO_ARTIFACT_SYNTHESIS';
 
-export type VenueId = 'CH' | 'GB' | 'JP' | 'LEDGER' | 'STUDIO';
+export type VenueId = 'CH' | 'GB' | 'JP' | 'BR' | 'EG' | 'IS' | 'SG' | 'GLOBAL' | 'LEDGER' | 'STUDIO';
 
-export type CharacterId = 'vance' | 'nadia' | 'soren' | 'teo' | 'lindqvist' | 'none';
+export type CharacterId = 'vance' | 'nadia' | 'soren' | 'teo' | 'lindqvist' | 'tariq' | 'none';
 
 export type CharacterMood = 'NEUTRAL' | 'IMPRESSED' | 'TENSE' | 'SMIRK' | 'RATTLED' | 'TELL';
 
 export type RivalPrismStatus = 'HIDDEN' | 'THINKING' | 'PEELING' | 'OVERCLOCKING' | 'LOCKED';
 
-export type HeroRelicId = 'meridian_astrolabe' | 'armillary_orrery' | 'origami_prism';
+export type HeroRelicId =
+  | 'meridian_astrolabe'
+  | 'armillary_orrery'
+  | 'origami_prism'
+  | 'emerald_sphere'
+  | 'cipher_box'
+  | 'cryo_relay'
+  | 'council_seal'
+  | 'master_ledger';
+
+export type PrismSkinId =
+  | 'OBSIDIAN_BRASS'
+  | 'KYOTO_KINTSUGI'
+  | 'DAMASCUS_TITANIUM'
+  | 'EMERALD_SOVEREIGN'
+  | 'BLACK_SALON_CRIMSON';
+
+export type FactionId = 'SOVEREIGN' | 'HORIZON' | 'AGORA';
+
+export type EndingId =
+  | 'SOVEREIGN_ARBITER'
+  | 'OPEN_COMMONS'
+  | 'KINGMAKER'
+  | 'ARCHITECT_SUCCESSION';
 
 export type LightingState = 'BROADCAST' | 'FRACTURE' | 'INTIMATE' | 'ARCHIVE';
 
-export type GameModeId = 'CAMPAIGN' | 'DAILY' | 'BRIEFING' | 'ENDLESS';
+export type GameModeId = 'CAMPAIGN' | 'DAILY' | 'BRIEFING' | 'ENDLESS' | 'TRIALS';
 
 export type PersonaId = 'MAVERICK' | 'DIPLOMAT' | 'ANALYST' | 'PRODIGY';
 
@@ -66,7 +89,11 @@ export type PerkId =
   | 'HORIZON_LENS'
   | 'ANALOG_STATIC_MASTER'
   | 'DIPLOMAT_COMPOSURE'
-  | 'MAVERICK_GAMBIT';
+  | 'MAVERICK_GAMBIT'
+  | 'COOP_CROSSCHECK'
+  | 'PEOPLES_LENS'
+  | 'COUNCIL_OVERRIDE'
+  | 'BLUFF_ECHO';
 
 export interface PerkMeta {
   id: PerkId;
@@ -225,9 +252,17 @@ export interface StoryStateSnapshot {
   unlockedPerks: PerkId[];
   activePerks: PerkId[];
   unlockedRelics: HeroRelicId[];
+  unlockedSkins?: PrismSkinId[];
+  activeSkin?: PrismSkinId;
   completedCampaignNodes: string[];
-  currentAct: 0 | 1 | 2;
+  currentAct: 0 | 1 | 2 | 3 | 4;
   firstFlightChoice: 'GB' | 'JP' | null;
+  act3Branch?: 'WHISTLEBLOWER' | 'INSIDER' | null;
+  betrayer?: 'nadia' | 'teo' | 'soren' | null;
+  achievedEndings?: EndingId[];
+  pledgedFaction?: FactionId | null;
+  trialsWins?: number;
+  salonTrophies?: number;
   blackSalonUnlocked: boolean;
   bookmarks: IntelFlashBookmark[];
   dailyCompletedDate: string | null;
@@ -261,15 +296,36 @@ export interface DialogueDisplay {
   beatProgress?: string;
 }
 
+export type GlobeCountryCode = 'CH' | 'GB' | 'JP' | 'BR' | 'EG' | 'IS' | 'SG' | 'GLOBAL';
+
 export interface CampaignNodeMeta {
   id: string;
-  country: 'CH' | 'GB' | 'JP' | 'BR' | 'EG' | 'IS' | 'SG';
+  country: GlobeCountryCode;
   city: string;
   venueName: string;
   subtitle: string;
   status: 'LOCKED' | 'AVAILABLE' | 'COMPLETED' | 'COMING_SOON';
   factionLabel: string;
   isBlackSalon?: boolean;
+}
+
+export interface GhostOpponentProfile {
+  id: string;
+  handle: string;
+  countryCode: string;
+  faction: FactionId;
+  elo: number;
+  portraitId: Exclude<CharacterId, 'none'>;
+  styleTag: string;
+}
+
+export interface TrialsHubState {
+  pledgedFaction: FactionId | null;
+  factionStandings: Record<FactionId, number>;
+  ghostContenders: GhostOpponentProfile[];
+  salonRound: 0 | 1 | 2 | 3; // 0 = not started, 1 = QF, 2 = SF, 3 = Final
+  salonModifier: string;
+  salonEliminated: boolean;
 }
 
 // ----------------------------------------------------------------------------
@@ -365,7 +421,8 @@ export type GameScreen =
   | 'ENDLESS_AIRLOCK'
   | 'MATCH_SUMMARY'
   | 'BRIEFING_PICKER'
-  | 'PASSPORT_OBSERVATORY';
+  | 'PASSPORT_OBSERVATORY'
+  | 'TRIALS_HUB';
 
 export interface GameUIState {
   screen: GameScreen;
@@ -382,12 +439,14 @@ export interface GameUIState {
   story: StoryStateSnapshot;
   dialogue: DialogueDisplay | null;
   campaignNodes: CampaignNodeMeta[];
-  selectedGlobeCountry: 'CH' | 'GB' | 'JP' | 'BR' | 'EG' | 'IS' | 'SG';
+  selectedGlobeCountry: GlobeCountryCode;
   rival: RivalUIState | null;
   activeQuestion: ActiveQuestionState | null;
   lastResolution: QuestionResolution | null;
   endlessCheckpoint: EndlessCheckpointState | null;
   matchSummary: MatchSummaryState | null;
+  trialsHub?: TrialsHubState | null;
+  endingAwarded?: EndingId | null;
   observatoryRelic: HeroRelicId;
   audioMuted: boolean;
   hapticsEnabled: boolean;
@@ -399,14 +458,19 @@ export interface GameActions {
   goToTitle: () => void;
   startOrContinueCampaign: () => void;
   openWorldGlobe: () => void;
-  selectGlobeCountry: (country: 'CH' | 'GB' | 'JP' | 'BR' | 'EG' | 'IS' | 'SG') => void;
+  selectGlobeCountry: (country: GlobeCountryCode) => void;
   launchCampaignNode: (nodeId: string) => void;
   startDailyFeed: () => void;
   openBriefingRoom: () => void;
-  startBriefingRun: (domain: DomainId | 'MIX') => void;
+  startBriefingRun: (domain: DomainId | 'MIX', archetypeFilter?: Archetype3D) => void;
   startEndlessDescent: () => void;
+  openTrialsHub?: () => void;
+  pledgeFaction?: (faction: FactionId) => void;
+  startGhostDuel?: (ghostId: string) => void;
+  startBlackSalonBracket?: () => void;
   openPassportObservatory: () => void;
   selectObservatoryRelic: (relicId: HeroRelicId) => void;
+  selectPrismSkin?: (skinId: PrismSkinId) => void;
   togglePerk: (perkId: PerkId) => void;
   resetCampaignProgress: () => void;
 
@@ -518,11 +582,12 @@ export interface ISceneManager {
   playRevealAnimation(result: { correct: boolean; backfired: boolean; correctIndex?: number; streak?: number }): void;
   setChronoProgress(ratio: number): void;
   inspectHeroRelic(relicId: HeroRelicId): void;
+  setPrismSkin?(skinId: PrismSkinId): void;
   rotateRelicBy(dx: number, dy: number): void;
   rotateGlobeBy(dx: number, dy: number): void;
-  focusGlobeCountry(country: 'CH' | 'GB' | 'JP' | 'BR' | 'EG' | 'IS' | 'SG'): void;
+  focusGlobeCountry(country: GlobeCountryCode): void;
   onFacetChanged?: (index: number) => void;
-  onGlobePinClicked?: (country: 'CH' | 'GB' | 'JP' | 'BR' | 'EG' | 'IS' | 'SG') => void;
+  onGlobePinClicked?: (country: GlobeCountryCode) => void;
   onCodexChanged?: (alignedIndices: number[]) => void;
 }
 

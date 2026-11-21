@@ -97,3 +97,27 @@ button {
   font-family: inherit;
   cursor: pointer;
 }
+
+/* Sleek Sovereign Modernism dark-gold custom scrollbars (no chunky bright Windows bars) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212, 168, 83, 0.36) rgba(7, 10, 16, 0.25);
+}
+
+*::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+*::-webkit-scrollbar-track {
+  background: rgba(7, 10, 16, 0.25);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(212, 168, 83, 0.36);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(247, 223, 156, 0.62);
+}

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="42%" r="65%">
+      <stop offset="0%" stop-color="#182236"/>
+      <stop offset="65%" stop-color="#0A0E17"/>
+      <stop offset="100%" stop-color="#05070C"/>
+    </radialGradient>
+    <linearGradient id="brass" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F7DF9C"/>
+      <stop offset="48%" stop-color="#D4A853"/>
+      <stop offset="100%" stop-color="#8C6828"/>
+    </linearGradient>
+    <radialGradient id="core" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFF5D4"/>
+      <stop offset="55%" stop-color="#E8C474"/>
+      <stop offset="100%" stop-color="#D4A853" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <circle cx="256" cy="256" r="196" fill="none" stroke="url(#brass)" stroke-width="6" stroke-opacity="0.7"/>
+  <circle cx="256" cy="256" r="168" fill="none" stroke="#48B8F0" stroke-width="2" stroke-dasharray="10 14" stroke-opacity="0.65"/>
+  <polygon points="256,64 384,186 352,368 256,448 160,368 128,186" fill="#0D1422" stroke="url(#brass)" stroke-width="10" stroke-linejoin="round"/>
+  <polygon points="256,112 340,204 316,336 256,396 196,336 172,204" fill="#141E33" stroke="#F7DF9C" stroke-width="4" stroke-opacity="0.85"/>
+  <circle cx="256" cy="256" r="76" fill="url(#core)"/>
+  <polygon points="256,162 292,256 256,350 220,256" fill="#FFF7DF"/>
+  <line x1="256" y1="44" x2="256" y2="96" stroke="url(#brass)" stroke-width="8" stroke-linecap="round"/>
+  <line x1="256" y1="416" x2="256" y2="468" stroke="url(#brass)" stroke-width="8" stroke-linecap="round"/>
+  <line x1="64" y1="256" x2="112" y2="256" stroke="url(#brass)" stroke-width="6" stroke-linecap="round"/>
+  <line x1="400" y1="256" x2="448" y2="256" stroke="url(#brass)" stroke-width="6" stroke-linecap="round"/>
+</svg>
