@@ -1,0 +1,99 @@
+/* ============================================================================
+ * WORLD'S SMARTEST — Base Sovereign Modernism Design Tokens & Reset
+ * ============================================================================ */
+
+:root {
+  --bg-obsidian: #070a10;
+  --bg-slate: #0f1522;
+  --bg-card: rgba(11, 16, 27, 0.84);
+  --bg-card-strong: rgba(8, 12, 20, 0.94);
+
+  --gold-bright: #f7df9c;
+  --gold-primary: #d4a853;
+  --gold-dim: #8b6a2c;
+  --gold-glow: rgba(212, 168, 83, 0.32);
+
+  --cyan-telemetry: #4fd1e8;
+  --cyan-glow: rgba(79, 209, 232, 0.28);
+
+  --crimson-fracture: #e64553;
+  --crimson-glow: rgba(230, 69, 83, 0.35);
+
+  --emerald-correct: #3dd68c;
+
+  --text-primary: #f4f6fa;
+  --text-secondary: #a8b3c7;
+  --text-muted: #6f7c94;
+
+  --border-subtle: rgba(212, 168, 83, 0.22);
+  --border-bright: rgba(247, 223, 156, 0.55);
+
+  --font-display: 'Cinzel', 'Georgia', serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Consolas', monospace;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 35%, #121a2b 0%, #06080d 72%, #030407 100%);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  overscroll-behavior: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#app {
+  position: relative;
+  width: 100vw;
+  height: 100dvh;
+  max-width: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#canvas-root {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  z-index: 1;
+}
+
+#canvas-root canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#ui-root {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 520px;
+  height: 100%;
+  pointer-events: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
