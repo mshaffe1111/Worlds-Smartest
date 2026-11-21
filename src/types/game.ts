@@ -525,3 +525,39 @@ export interface ISceneManager {
   onGlobePinClicked?: (country: 'CH' | 'GB' | 'JP' | 'BR' | 'EG' | 'IS' | 'SG') => void;
   onCodexChanged?: (alignedIndices: number[]) => void;
 }
+
+export interface EvaluateOptions {
+  streakBefore?: number;
+  cleanHandsPerk?: boolean;
+  maverickGambitPerk?: boolean;
+  timeTotalSec?: number;
+}
+
+export interface ITriviaEngine {
+  selectMatchQuestions(spec: MatchQuerySpec): QuestionRecord[];
+  evaluateAnswer(
+    question: QuestionRecord,
+    submission: AnswerSubmission,
+    options?: EvaluateOptions
+  ): QuestionResolution;
+  recordResult(
+    question: QuestionRecord,
+    resolution: QuestionResolution,
+    submission: AnswerSubmission
+  ): void;
+  getDailySeedAndDate(): { dateStr: string; seed: number };
+  generateDailyShareGrid(
+    dateStr: string,
+    resolutions: QuestionResolution[],
+    totalScore: number,
+    percentile: number
+  ): string;
+  estimateDailyPercentile(totalScore: number): number;
+  getGlobalElo(): number;
+  getDomainRatings(): number[]; // 12 items (600..2400)
+  getWeakestDomain(): DomainId;
+  getTotalQuestionCount(): number;
+  getSeenCount(): number;
+  resetHistory(): void;
+}
+
