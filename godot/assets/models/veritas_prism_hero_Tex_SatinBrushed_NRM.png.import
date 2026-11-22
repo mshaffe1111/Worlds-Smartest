@@ -2,13 +2,10 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cx3ix3p8a4h8x"
+uid="uid://bfqtbkl1vxaxg"
 path="res://.godot/imported/veritas_prism_hero_Tex_SatinBrushed_NRM.png-db5c9f33c03ac2398ac7e145642facd8.ctex"
 metadata={
 "vram_texture": false
-}
-generator_parameters={
-"md5": "8de969bf32c8f536655b75bf88440abd"
 }
 
 [deps]
@@ -18,9 +15,9 @@ dest_files=["res://.godot/imported/veritas_prism_hero_Tex_SatinBrushed_NRM.png-d
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
-compress/lossy_quality=0.7
+compress/lossy_quality=0.8
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
@@ -39,5 +36,5 @@ process/premult_alpha=false
 process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
-process/size_limit=0
+process/size_limit=1024
 detect_3d/compress_to=1

@@ -1,6 +1,26 @@
-import type { IHapticsEngine, PeelTier } from '../types/game';
+// ============================================================================
+// WORLD'S SMARTEST — Machined-Luxury Horological Haptics Engine
+// Supports Capacitor Native CoreHaptics / Android VibrationEffect + Web Vibrate
+// ============================================================================
 
-const STORAGE_KEY = 'ws_haptics_enabled';
+export type HapticPeelTier = 1 | 2 | 3;
+
+export interface IHapticsEngine {
+  setEnabled(enabled: boolean): void;
+  isEnabled(): boolean;
+  spinTick(): void;
+  sightlineSnap(): void;
+  peel(tier: HapticPeelTier): void;
+  overclockPulse(progress: number): void;
+  lockThunk(): void;
+  correctBloom(): void;
+  wrongThud(backfired: boolean): void;
+  passportStamp(): void;
+  shatterPlate(): void;
+  uiTap(): void;
+}
+
+const STORAGE_KEY = 'ws_haptics_enabled_v2';
 
 interface CapacitorHapticsPlugin {
   impact?: (options: { style: 'HEAVY' | 'MEDIUM' | 'LIGHT' }) => Promise<void> | void;
@@ -34,6 +54,7 @@ export class HapticsEngine implements IHapticsEngine {
   private lastSpinTickMs = 0;
   private lastOverclockPulseMs = 0;
   private lastUiTapMs = 0;
+  private lastLockThunkMs = 0;
   private scheduledTimers: Set<ReturnType<typeof setTimeout>> = new Set();
 
   constructor() {
@@ -48,7 +69,7 @@ export class HapticsEngine implements IHapticsEngine {
         if (stored === 'true') return true;
       }
     } catch {
-      // Ignore storage access errors in restricted/private contexts
+      // Ignore storage errors in private contexts
     }
     return true;
   }
@@ -59,7 +80,7 @@ export class HapticsEngine implements IHapticsEngine {
         window.localStorage.setItem(STORAGE_KEY, value ? 'true' : 'false');
       }
     } catch {
-      // Ignore storage write errors
+      // Ignore write errors
     }
   }
 
@@ -67,8 +88,7 @@ export class HapticsEngine implements IHapticsEngine {
     try {
       if (typeof window === 'undefined') return null;
       const cap = (window as unknown as CapacitorWindow).Capacitor;
-      const plugin = cap?.Plugins?.Haptics;
-      return plugin ?? null;
+      return cap?.Plugins?.Haptics ?? null;
     } catch {
       return null;
     }
@@ -94,7 +114,7 @@ export class HapticsEngine implements IHapticsEngine {
   private invokeSafe(maybePromise: Promise<void> | void | undefined): void {
     if (maybePromise && typeof (maybePromise as Promise<void>).catch === 'function') {
       (maybePromise as Promise<void>).catch(() => {
-        // Silently swallow native bridge rejections
+        // Ignore bridge errors
       });
     }
   }
@@ -105,7 +125,7 @@ export class HapticsEngine implements IHapticsEngine {
         navigator.vibrate(pattern);
       }
     } catch {
-      // Ignore unsupported or blocked vibration calls
+      // Ignore blocked vibration calls
     }
   }
 
@@ -123,10 +143,11 @@ export class HapticsEngine implements IHapticsEngine {
     return this.enabled;
   }
 
+  /** 8ms watch-escapement micro-click on Prism facet rotation */
   public spinTick(): void {
     if (!this.enabled) return;
     const t = nowMs();
-    if (t - this.lastSpinTickMs < 36) return;
+    if (t - this.lastSpinTickMs < 32) return;
     this.lastSpinTickMs = t;
 
     const cap = this.getCapacitorHaptics();
@@ -144,43 +165,37 @@ export class HapticsEngine implements IHapticsEngine {
         return;
       }
     }
-
     this.vibrateWeb(8);
   }
 
+  /** Magnetic glass-on-brass clack when a facet aligns into the Gold Sightline Beam */
   public sightlineSnap(): void {
     if (!this.enabled) return;
 
     const cap = this.getCapacitorHaptics();
-    if (cap && cap.impact) {
+    if (cap?.impact) {
       this.invokeSafe(cap.impact({ style: 'LIGHT' }));
-      this.scheduleStep(28, () => {
+      this.scheduleStep(26, () => {
         this.invokeSafe(cap.impact?.({ style: 'MEDIUM' }));
       });
       return;
     }
-
-    this.vibrateWeb([10, 18, 12]);
+    this.vibrateWeb([10, 16, 12]);
   }
 
-  public peel(tier: PeelTier): void {
+  /** Pneumatic Brass Crown pull & iris shutter bloom */
+  public peel(tier: HapticPeelTier): void {
     if (!this.enabled) return;
 
     const cap = this.getCapacitorHaptics();
-    if (cap && cap.impact) {
+    if (cap?.impact) {
       if (tier === 3) {
         this.invokeSafe(cap.impact({ style: 'MEDIUM' }));
-        this.scheduleStep(36, () => {
-          this.invokeSafe(cap.impact?.({ style: 'HEAVY' }));
-        });
-        this.scheduleStep(84, () => {
-          this.invokeSafe(cap.impact?.({ style: 'LIGHT' }));
-        });
+        this.scheduleStep(36, () => this.invokeSafe(cap.impact?.({ style: 'HEAVY' })));
+        this.scheduleStep(82, () => this.invokeSafe(cap.impact?.({ style: 'LIGHT' })));
       } else if (tier === 2) {
         this.invokeSafe(cap.impact({ style: 'MEDIUM' }));
-        this.scheduleStep(40, () => {
-          this.invokeSafe(cap.impact?.({ style: 'MEDIUM' }));
-        });
+        this.scheduleStep(40, () => this.invokeSafe(cap.impact?.({ style: 'MEDIUM' })));
       } else {
         this.invokeSafe(cap.impact({ style: 'LIGHT' }));
       }
@@ -190,23 +205,22 @@ export class HapticsEngine implements IHapticsEngine {
     if (tier === 3) {
       this.vibrateWeb([18, 18, 34, 14, 10]);
     } else if (tier === 2) {
-      this.vibrateWeb([15, 25, 20]);
+      this.vibrateWeb([15, 24, 20]);
     } else {
       this.vibrateWeb(10);
     }
   }
 
+  /** Rising turbine/heartbeat ramp (0.2 -> 0.9) during Hold-to-Overclock */
   public overclockPulse(progress: number): void {
     if (!this.enabled) return;
     const p = clamp01(progress);
     const t = nowMs();
-    // Accelerating heartbeat cadence: ~95ms at start down to ~52ms at full charge
-    const minIntervalMs = 95 - p * 43;
+    const minIntervalMs = 94 - p * 44;
     if (t - this.lastOverclockPulseMs < minIntervalMs) return;
     this.lastOverclockPulseMs = t;
 
-    const duration = Math.round(10 + p * 16); // Rising 10ms -> 26ms
-
+    const duration = Math.round(10 + p * 16);
     const cap = this.getCapacitorHaptics();
     if (cap) {
       if (cap.impact) {
@@ -219,12 +233,15 @@ export class HapticsEngine implements IHapticsEngine {
         return;
       }
     }
-
     this.vibrateWeb(duration);
   }
 
+  /** Heavy vault-bolt PRIMITIVE_THUD when Overclock firing pin slams home */
   public lockThunk(): void {
     if (!this.enabled) return;
+    const t = nowMs();
+    if (t - this.lastLockThunkMs < 75) return;
+    this.lastLockThunkMs = t;
 
     const cap = this.getCapacitorHaptics();
     if (cap) {
@@ -237,10 +254,10 @@ export class HapticsEngine implements IHapticsEngine {
         return;
       }
     }
-
     this.vibrateWeb(45);
   }
 
+  /** Gold Resonance bloom on solved Prism */
   public correctBloom(): void {
     if (!this.enabled) return;
 
@@ -248,26 +265,20 @@ export class HapticsEngine implements IHapticsEngine {
     if (cap) {
       if (cap.notification) {
         this.invokeSafe(cap.notification({ type: 'SUCCESS' }));
-        this.scheduleStep(75, () => {
-          this.invokeSafe(cap.impact?.({ style: 'MEDIUM' }));
-        });
+        this.scheduleStep(75, () => this.invokeSafe(cap.impact?.({ style: 'MEDIUM' })));
         return;
       }
       if (cap.impact) {
         this.invokeSafe(cap.impact({ style: 'LIGHT' }));
-        this.scheduleStep(46, () => {
-          this.invokeSafe(cap.impact?.({ style: 'MEDIUM' }));
-        });
-        this.scheduleStep(96, () => {
-          this.invokeSafe(cap.impact?.({ style: 'HEAVY' }));
-        });
+        this.scheduleStep(46, () => this.invokeSafe(cap.impact?.({ style: 'MEDIUM' })));
+        this.scheduleStep(96, () => this.invokeSafe(cap.impact?.({ style: 'HEAVY' })));
         return;
       }
     }
-
     this.vibrateWeb([18, 28, 22, 28, 36]);
   }
 
+  /** Restrained crimson fracture thud on wrong answer or Overclock Backfire */
   public wrongThud(backfired: boolean): void {
     if (!this.enabled) return;
 
@@ -276,27 +287,44 @@ export class HapticsEngine implements IHapticsEngine {
       if (cap.notification) {
         this.invokeSafe(cap.notification({ type: backfired ? 'ERROR' : 'WARNING' }));
         if (backfired && cap.impact) {
-          this.scheduleStep(65, () => {
-            this.invokeSafe(cap.impact?.({ style: 'HEAVY' }));
-          });
+          this.scheduleStep(65, () => this.invokeSafe(cap.impact?.({ style: 'HEAVY' })));
         }
         return;
       }
       if (cap.impact) {
         this.invokeSafe(cap.impact({ style: 'HEAVY' }));
         if (backfired) {
-          this.scheduleStep(60, () => {
-            this.invokeSafe(cap.impact?.({ style: 'HEAVY' }));
-          });
-          this.scheduleStep(140, () => {
-            this.invokeSafe(cap.impact?.({ style: 'MEDIUM' }));
-          });
+          this.scheduleStep(60, () => this.invokeSafe(cap.impact?.({ style: 'HEAVY' })));
+          this.scheduleStep(140, () => this.invokeSafe(cap.impact?.({ style: 'MEDIUM' })));
         }
         return;
       }
     }
+    this.vibrateWeb(backfired ? [35, 25, 70, 20, 40] : [50]);
+  }
 
-    this.vibrateWeb(backfired ? [35, 25, 70, 20, 40] : [55]);
+  /** Heavy diplomatic seal emboss when Julian Vance stamps your Meridian Passport */
+  public passportStamp(): void {
+    if (!this.enabled) return;
+    const cap = this.getCapacitorHaptics();
+    if (cap?.impact) {
+      this.invokeSafe(cap.impact({ style: 'HEAVY' }));
+      this.scheduleStep(55, () => this.invokeSafe(cap.impact?.({ style: 'MEDIUM' })));
+      return;
+    }
+    this.vibrateWeb([48, 24, 24]);
+  }
+
+  /** Crisp glass fracture burst for Gauntlet Shatter & Tier-3 false facet elimination */
+  public shatterPlate(): void {
+    if (!this.enabled) return;
+    const cap = this.getCapacitorHaptics();
+    if (cap?.impact) {
+      this.invokeSafe(cap.impact({ style: 'MEDIUM' }));
+      this.scheduleStep(30, () => this.invokeSafe(cap.impact?.({ style: 'LIGHT' })));
+      return;
+    }
+    this.vibrateWeb([16, 14, 12]);
   }
 
   public uiTap(): void {
@@ -316,7 +344,6 @@ export class HapticsEngine implements IHapticsEngine {
         return;
       }
     }
-
     this.vibrateWeb(6);
   }
 }

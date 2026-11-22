@@ -1,5 +1,8 @@
 node_modules/
 dist/
+dist-godot-web/
+__pycache__/
+*.pyc
 .DS_Store
 *.local
 .vscode/

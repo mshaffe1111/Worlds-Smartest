@@ -1,19 +1,165 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0d1320"/>
-      <stop offset="100%" stop-color="#05070b"/>
+    <!-- Deep Midnight-Obsidian & Royal Sapphire Radial Vignette -->
+    <radialGradient id="bgVignette" cx="50%" cy="49%" r="66%">
+      <stop offset="0%" stop-color="#1A498A"/>
+      <stop offset="28%" stop-color="#102C5C"/>
+      <stop offset="58%" stop-color="#09152E"/>
+      <stop offset="84%" stop-color="#060B18"/>
+      <stop offset="100%" stop-color="#050811"/>
+    </radialGradient>
+
+    <!-- Luminous Cyan & Champagne-Gold Core Aura -->
+    <radialGradient id="coreAura" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFF4C2" stop-opacity="0.95"/>
+      <stop offset="26%" stop-color="#FFD468" stop-opacity="0.58"/>
+      <stop offset="56%" stop-color="#38DFFF" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#102C5C" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Pedestal Warm Levitation Glow -->
+    <radialGradient id="baseAura" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFD46B" stop-opacity="0.45"/>
+      <stop offset="55%" stop-color="#3B7BD5" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#050811" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- 24K Horological Satin Gold -->
+    <linearGradient id="gold24" x1="12%" y1="6%" x2="88%" y2="94%">
+      <stop offset="0%" stop-color="#FFF2C2"/>
+      <stop offset="28%" stop-color="#F4CB6C"/>
+      <stop offset="58%" stop-color="#C8933A"/>
+      <stop offset="82%" stop-color="#F6D57E"/>
+      <stop offset="100%" stop-color="#8A5E1E"/>
     </linearGradient>
-    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#f7df9c"/>
-      <stop offset="50%" stop-color="#d4a853"/>
-      <stop offset="100%" stop-color="#8b6523"/>
+
+    <!-- 18K Rose-Gold Equatorial Tourbillon Ring -->
+    <linearGradient id="roseGold" x1="0%" y1="20%" x2="100%" y2="80%">
+      <stop offset="0%" stop-color="#FFD7B5"/>
+      <stop offset="45%" stop-color="#E5A270"/>
+      <stop offset="80%" stop-color="#B06C3E"/>
+      <stop offset="100%" stop-color="#F5C398"/>
     </linearGradient>
+
+    <!-- Smoked-Sapphire Curved Watch-Crystal Facet -->
+    <linearGradient id="sapphireGlass" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6EB8FF" stop-opacity="0.55"/>
+      <stop offset="45%" stop-color="#2862B5" stop-opacity="0.42"/>
+      <stop offset="100%" stop-color="#0D234A" stop-opacity="0.65"/>
+    </linearGradient>
+
+    <!-- Obsidian-Sapphire Pedestal Base -->
+    <linearGradient id="obsidianBase" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#223557"/>
+      <stop offset="48%" stop-color="#0C1424"/>
+      <stop offset="100%" stop-color="#050811"/>
+    </linearGradient>
+
+    <!-- Faceted Diamond Heart Core -->
+    <linearGradient id="diamondCore" x1="25%" y1="10%" x2="75%" y2="90%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="32%" stop-color="#FFE79A"/>
+      <stop offset="68%" stop-color="#FFC64B"/>
+      <stop offset="100%" stop-color="#4EE6FF"/>
+    </linearGradient>
+
+    <!-- Sapphire & Ruby Jewel Bearings -->
+    <radialGradient id="sapphireJewel" cx="35%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#A6E6FF"/>
+      <stop offset="45%" stop-color="#2478FF"/>
+      <stop offset="100%" stop-color="#0A2875"/>
+    </radialGradient>
+    <radialGradient id="rubyJewel" cx="35%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#FFA8BC"/>
+      <stop offset="45%" stop-color="#EE2250"/>
+      <stop offset="100%" stop-color="#780722"/>
+    </radialGradient>
+
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
   </defs>
-  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
-  <circle cx="256" cy="256" r="184" fill="none" stroke="url(#gold)" stroke-width="6" opacity="0.45"/>
-  <polygon points="256,74 398,176 344,358 168,358 114,176" fill="none" stroke="url(#gold)" stroke-width="14" stroke-linejoin="round"/>
-  <polygon points="256,126 350,256 256,386 162,256" fill="url(#gold)" opacity="0.22"/>
-  <polygon points="256,126 350,256 256,386 162,256" fill="none" stroke="#f7df9c" stroke-width="8" stroke-linejoin="round"/>
-  <circle cx="256" cy="256" r="22" fill="#f7df9c"/>
+
+  <!-- Full-bleed Rounded-Squircle Obsidian-Sapphire Jewel Backdrop -->
+  <rect width="512" height="512" rx="112" fill="url(#bgVignette)"/>
+  <rect x="7" y="7" width="498" height="498" rx="106" fill="none" stroke="url(#gold24)" stroke-width="2.5" opacity="0.34"/>
+
+  <!-- Soft Volumetric Core & Base Auras -->
+  <circle cx="256" cy="252" r="146" fill="url(#coreAura)"/>
+  <ellipse cx="256" cy="422" rx="126" ry="34" fill="url(#baseAura)"/>
+
+  <!-- Nero Marquina Obsidian & Gold Pedestal -->
+  <g id="pedestal">
+    <ellipse cx="256" cy="418" rx="108" ry="26" fill="url(#obsidianBase)" stroke="url(#gold24)" stroke-width="6"/>
+    <ellipse cx="256" cy="408" rx="84" ry="18" fill="#0B1832" stroke="url(#gold24)" stroke-width="4"/>
+    <ellipse cx="256" cy="405" rx="50" ry="10" fill="#183D78" stroke="#FFD670" stroke-width="2.5" opacity="0.9"/>
+    <!-- Left & Right Horological S-Scroll Cradle Arms -->
+    <path d="M150 406 C116 392, 114 352, 144 342 C158 338, 166 348, 160 356" fill="none" stroke="url(#gold24)" stroke-width="7.5" stroke-linecap="round"/>
+    <path d="M362 406 C396 392, 398 352, 368 342 C354 338, 346 348, 352 356" fill="none" stroke="url(#gold24)" stroke-width="7.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- Outer 24K Gold Meridian Gimbal Ring -->
+  <circle cx="256" cy="242" r="168" fill="none" stroke="url(#gold24)" stroke-width="11"/>
+  <circle cx="256" cy="242" r="159" fill="none" stroke="#FFF1BE" stroke-width="1.5" opacity="0.45"/>
+
+  <!-- Rear Rose-Gold Tourbillon Arc -->
+  <path d="M104 282 C138 206, 352 152, 412 204" fill="none" stroke="url(#roseGold)" stroke-width="8.5" stroke-linecap="round" opacity="0.72"/>
+
+  <!-- Fluted 24K Watchmaker Top Pull-Crown & Finial -->
+  <g id="brassCrown">
+    <polygon points="256,56 268,74 244,74" fill="url(#gold24)"/>
+    <path d="M206 94 C214 78, 298 78, 306 94 L298 110 C286 118, 226 118, 214 110 Z" fill="url(#gold24)" stroke="#FFF2C2" stroke-width="2"/>
+    <rect x="242" y="114" width="28" height="44" rx="8" fill="url(#gold24)"/>
+    <line x1="226" y1="86" x2="226" y2="108" stroke="#7A5216" stroke-width="2.5" opacity="0.6"/>
+    <line x1="241" y1="84" x2="241" y2="110" stroke="#7A5216" stroke-width="2.5" opacity="0.6"/>
+    <line x1="256" y1="83" x2="256" y2="111" stroke="#7A5216" stroke-width="2.5" opacity="0.6"/>
+    <line x1="271" y1="84" x2="271" y2="110" stroke="#7A5216" stroke-width="2.5" opacity="0.6"/>
+    <line x1="286" y1="86" x2="286" y2="108" stroke="#7A5216" stroke-width="2.5" opacity="0.6"/>
+    <circle cx="256" cy="98" r="6" fill="url(#rubyJewel)"/>
+  </g>
+
+  <!-- Inner Horological Wire Cage & Iris Petals -->
+  <circle cx="256" cy="248" r="78" fill="none" stroke="url(#gold24)" stroke-width="4" opacity="0.75"/>
+  <ellipse cx="256" cy="248" rx="44" ry="78" fill="none" stroke="url(#gold24)" stroke-width="3.5" opacity="0.7"/>
+  <ellipse cx="256" cy="248" rx="78" ry="26" fill="none" stroke="#5ED8FF" stroke-width="2.5" opacity="0.5"/>
+
+  <!-- Luminous Faceted Cyan & 24K Gold Prismatic Diamond Heart -->
+  <g id="hologramCore" filter="url(#softGlow)">
+    <polygon points="256,184 304,248 256,312 208,248" fill="url(#diamondCore)" stroke="#FFF9DF" stroke-width="3" stroke-linejoin="round"/>
+    <polygon points="256,184 282,248 256,312 230,248" fill="#FFF7D6" opacity="0.72"/>
+    <line x1="208" y1="248" x2="304" y2="248" stroke="#72F0FF" stroke-width="2.5" opacity="0.85"/>
+    <circle cx="256" cy="248" r="14" fill="#FFFFFF" opacity="0.92"/>
+  </g>
+
+  <!-- Left & Right Smoked-Sapphire Curved Crystal Answer Facets + 24K Jeweler's Claws -->
+  <g id="leftFacet">
+    <path d="M116 206 C140 194, 190 198, 212 214 L212 294 C188 308, 138 304, 116 286 Z"
+          fill="url(#sapphireGlass)" stroke="#72C6FF" stroke-width="2.5"/>
+    <path d="M116 206 L116 286 M212 214 L212 294" stroke="url(#gold24)" stroke-width="7" stroke-linecap="round"/>
+    <path d="M126 218 L194 224 M126 274 L194 280" stroke="#9EE4FF" stroke-width="1.8" opacity="0.55"/>
+    <circle cx="212" cy="254" r="5" fill="url(#sapphireJewel)"/>
+  </g>
+
+  <g id="rightFacet">
+    <path d="M396 206 C372 194, 322 198, 300 214 L300 294 C324 308, 374 304, 396 286 Z"
+          fill="url(#sapphireGlass)" stroke="#72C6FF" stroke-width="2.5"/>
+    <path d="M396 206 L396 286 M300 214 L300 294" stroke="url(#gold24)" stroke-width="7" stroke-linecap="round"/>
+    <path d="M386 218 L318 224 M386 274 L318 280" stroke="#9EE4FF" stroke-width="1.8" opacity="0.55"/>
+    <circle cx="300" cy="254" r="5" fill="url(#rubyJewel)"/>
+  </g>
+
+  <!-- Front Sweeping 18K Rose-Gold Diagonal Tourbillon Ring -->
+  <path d="M98 280 C160 338, 368 282, 414 202" fill="none" stroke="url(#roseGold)" stroke-width="9.5" stroke-linecap="round"/>
+  <path d="M108 284 C170 332, 362 280, 408 206" fill="none" stroke="#FFE9D4" stroke-width="2" stroke-linecap="round" opacity="0.65"/>
+
+  <!-- Horological Cardinal Ruby & Sapphire Jewel Bearings on Outer Meridian -->
+  <circle cx="88" cy="242" r="8.5" fill="url(#sapphireJewel)" stroke="url(#gold24)" stroke-width="2.5"/>
+  <circle cx="424" cy="242" r="8.5" fill="url(#sapphireJewel)" stroke="url(#gold24)" stroke-width="2.5"/>
+  <circle cx="144" cy="342" r="6.5" fill="url(#rubyJewel)" stroke="url(#gold24)" stroke-width="2"/>
+  <circle cx="368" cy="342" r="6.5" fill="url(#rubyJewel)" stroke="url(#gold24)" stroke-width="2"/>
+  <circle cx="256" cy="404" r="7" fill="url(#sapphireJewel)" stroke="url(#gold24)" stroke-width="2"/>
 </svg>

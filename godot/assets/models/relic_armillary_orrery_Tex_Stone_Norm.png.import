@@ -2,13 +2,10 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c0n4bnmfx6o75"
+uid="uid://ceb4wnkf33o0v"
 path="res://.godot/imported/relic_armillary_orrery_Tex_Stone_Norm.png-3d6982b748541249cf0bb3278231b0b2.ctex"
 metadata={
 "vram_texture": false
-}
-generator_parameters={
-"md5": "ef2e0d18474b2151ef5876b1e89c2f1d"
 }
 
 [deps]
@@ -18,9 +15,9 @@ dest_files=["res://.godot/imported/relic_armillary_orrery_Tex_Stone_Norm.png-3d6
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
-compress/lossy_quality=0.7
+compress/lossy_quality=0.8
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
@@ -39,5 +36,5 @@ process/premult_alpha=false
 process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
-process/size_limit=0
+process/size_limit=1024
 detect_3d/compress_to=1

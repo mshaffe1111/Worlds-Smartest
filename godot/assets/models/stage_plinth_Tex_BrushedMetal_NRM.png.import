@@ -2,13 +2,10 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://da2qig5abnv4m"
+uid="uid://gwckorhpoda1"
 path="res://.godot/imported/stage_plinth_Tex_BrushedMetal_NRM.png-5d5129af90ed194a6748b22528740bde.ctex"
 metadata={
 "vram_texture": false
-}
-generator_parameters={
-"md5": "ed2112fc871b84b51995feebbcb1db4b"
 }
 
 [deps]
@@ -18,9 +15,9 @@ dest_files=["res://.godot/imported/stage_plinth_Tex_BrushedMetal_NRM.png-5d5129a
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
-compress/lossy_quality=0.7
+compress/lossy_quality=0.8
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
@@ -39,5 +36,5 @@ process/premult_alpha=false
 process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
-process/size_limit=0
+process/size_limit=1024
 detect_3d/compress_to=1

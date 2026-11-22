@@ -1,0 +1,1302 @@
+// ============================================================================
+// WORLD'S SMARTEST — 3D Intel Observatory (`PITCH_BIBLE.md` §5.2 & §7.1)
+// Interactive Luxury Trophy Study & Epistemic "Aha!" Archive:
+//  1. Full 360° 3D Inspection (`Stage3DDirector.showHeroRelic(relicId)`) for all
+//     8 Tier-3 Country Boss Relics + the 24K Championship Crown Trophy
+//  2. Deep Historical/Horological Provenance + Interactive UV Blacklight
+//     Conspiracy Inscription Decoder (Trial Zero & Trojan Horse lore)
+//  3. Bookmarked "Intel Flash" Vault: Instant Search, 12-Domain Medallion Filter,
+//     Bookmark Management, and Interactive 4-Choice / Shutter-Flip Self-Quiz!
+// ============================================================================
+
+import type { Stage3DDirector, HeroRelicKey } from '../stage3d';
+import {
+  RELIC_CATALOG,
+  SOVEREIGN_DOMAINS,
+  getSovereignDomainMeta,
+  type DomainId,
+  type HeroRelicId,
+  type IntelBookmark,
+  type InkBlackboard,
+  type PassportSystem,
+} from '../narrative';
+import type { StudioAudioEngine } from '../audio/StudioAudioEngine';
+import type { HapticsEngine } from '../audio/HapticsEngine';
+import {
+  attachMetaEscapeHandler,
+  bindVaultJumperEvents,
+  ensureMetaStylesInjected,
+  escapeMetaHtml,
+  formatMetaYear,
+  renderVaultJumperHtml,
+  sanitizeMetaCopy,
+  type MetaSuiteSectionId,
+} from './DiplomaticPassportBook';
+
+export type ObservatoryTabId = 'RELICS_3D' | 'INTEL_FLASHES' | 'SELF_QUIZ';
+
+export type ShowcaseArtifactId = 'championship_trophy' | HeroRelicId;
+
+export interface ObservatoryArtifactDossier {
+  id: ShowcaseArtifactId;
+  title: string;
+  cityLabel: string;
+  venueLabel: string;
+  countryCode: string;
+  domainId: DomainId;
+  metallurgySpec: string;
+  historicalProvenance: string;
+  conspiracyNote: string;
+  uvHiddenInscription: string;
+  unlockHowTo: string;
+}
+
+export interface IntelObservatoryDependencies {
+  passport: PassportSystem;
+  stage3d?: Stage3DDirector;
+  blackboard?: InkBlackboard;
+  audio?: StudioAudioEngine;
+  haptics?: HapticsEngine;
+}
+
+export interface IntelObservatoryCallbacks {
+  onInspectRelic?: (artifactId: ShowcaseArtifactId) => void;
+  onUvScan?: (artifactId: ShowcaseArtifactId) => void;
+  onLatchesOpened?: (artifactId: ShowcaseArtifactId) => void;
+  onNavigateSection?: (section: MetaSuiteSectionId) => void;
+  onBack?: () => void;
+  canGoBack?: boolean;
+  onClose?: () => void;
+}
+
+export interface IntelObservatoryOpenOptions extends IntelObservatoryCallbacks {
+  initialTab?: ObservatoryTabId;
+  initialArtifactId?: ShowcaseArtifactId;
+}
+
+interface FlashCardItem extends IntelBookmark {
+  isSeedExemplar?: boolean;
+}
+
+interface Wave2HotspotSpec {
+  id: string;
+  label: string;
+  orbitDeg: [number, number];
+  note: string;
+}
+
+interface Wave2LatchSpec {
+  step: number;
+  latchName: string;
+  nodeHint: string;
+  engraving: string;
+  deductionHint: string;
+  glyphUrl: string;
+  unlockVoiceUrl?: string;
+}
+
+interface Wave2RelicProvenanceEntry {
+  relicId: HeroRelicId;
+  name: string;
+  archiveCode: string;
+  artisanAttribution: string;
+  yearCrafted: number;
+  metallurgySpec: string;
+  signatureGlyphUrl: string;
+  provenanceEssay: string;
+  conspiracySignificance: string;
+  uvHiddenInscription: string;
+  inspectionHotspots: Wave2HotspotSpec[];
+  latches: Wave2LatchSpec[];
+}
+
+let cachedWave2RelicMap: Partial<Record<HeroRelicId, Wave2RelicProvenanceEntry>> | null = null;
+let wave2FetchPromise: Promise<Partial<Record<HeroRelicId, Wave2RelicProvenanceEntry>>> | null = null;
+
+function fetchWave2RelicProvenance(): Promise<Partial<Record<HeroRelicId, Wave2RelicProvenanceEntry>>> {
+  if (cachedWave2RelicMap) return Promise.resolve(cachedWave2RelicMap);
+  if (wave2FetchPromise) return wave2FetchPromise;
+
+  wave2FetchPromise = (async () => {
+    try {
+      if (typeof fetch !== 'function') return {};
+      const resp = await fetch('./data/narrative_wave2.json');
+      if (!resp.ok) return {};
+      const ct = resp.headers.get('content-type') ?? '';
+      if (ct.includes('text/html')) return {};
+      const json = (await resp.json()) as {
+        tier3_relic_provenance?: Partial<Record<HeroRelicId, Wave2RelicProvenanceEntry>>;
+      };
+      cachedWave2RelicMap = json.tier3_relic_provenance ?? {};
+      return cachedWave2RelicMap;
+    } catch {
+      return {};
+    }
+  })();
+
+  return wave2FetchPromise;
+}
+
+export const OBSERVATORY_ARTIFACT_DOSSIERS: readonly ObservatoryArtifactDossier[] = [
+  {
+    id: 'championship_trophy',
+    title: 'First Citizen Arbiter Crown Trophy',
+    cityLabel: 'Apex Citadel',
+    venueLabel: 'World Council Grand Dais',
+    countryCode: 'WORLD',
+    domainId: 0,
+    metallurgySpec: '24K Recycled Central-Bank Bullion · Suspended Sapphire Star Core',
+    historicalProvenance:
+      'Commissioned under the Geneva Charter of Human Stewardship to crown humanity’s First Citizen Arbiter before two billion live viewers.',
+    conspiracyNote:
+      'Its counter-rotating astrolabe rings physically house the analog optical key required to authorize—or veto—The Ledger’s global crisis protocols.',
+    uvHiddenInscription:
+      'UV MICRO-ETCHING: "NO SINGLE SUPERPOWER SHALL HOLD THE PEN ALONE — GENEVA ART. I"',
+    unlockHowTo: 'Showcase Preview Active · Full Arbiter Seal awarded upon completing The Apex Forum.',
+  },
+  {
+    id: 'meridian_astrolabe',
+    title: RELIC_CATALOG.meridian_astrolabe.name,
+    cityLabel: RELIC_CATALOG.meridian_astrolabe.cityLabel,
+    venueLabel: RELIC_CATALOG.meridian_astrolabe.venueLabel,
+    countryCode: 'CH',
+    domainId: 1,
+    metallurgySpec: 'Vallée de Joux Brushed Brass · Anti-Reflective Sapphire Vernier',
+    historicalProvenance:
+      'Milled by fifth-generation Geneva chronometer makers for Chief Adjudicator Julian Vance’s private Vetting Chamber table.',
+    conspiracyNote:
+      'Vance uses its tolerance cone during Q4 not merely to score estimation accuracy, but to fingerprint risk-calibrated minds matching Trial Zero.',
+    uvHiddenInscription: RELIC_CATALOG.meridian_astrolabe.hiddenInscription,
+    unlockHowTo: 'Clear the 4-Question Geneva Vetting Prologue.',
+  },
+  {
+    id: 'armillary_orrery',
+    title: RELIC_CATALOG.armillary_orrery.name,
+    cityLabel: RELIC_CATALOG.armillary_orrery.cityLabel,
+    venueLabel: RELIC_CATALOG.armillary_orrery.venueLabel,
+    countryCode: 'GB',
+    domainId: 0,
+    metallurgySpec: 'Aged Admiralty Bronze · 18K Sovereign Gold Declination Rings',
+    historicalProvenance:
+      'Modeled after 18th-century Greenwich celestial spheres and mounted beneath the glass rotunda of the Sovereign Bloc’s London headquarters.',
+    conspiracyNote:
+      'When rotated to 23.4° obliquity, a concealed spring latch exposes initials scratched during the erased 2019 pilot tournament.',
+    uvHiddenInscription: RELIC_CATALOG.armillary_orrery.hiddenInscription,
+    unlockHowTo: 'Defeat the London Stage 1 Boss Showdown in The Sovereign Rotunda.',
+  },
+  {
+    id: 'origami_prism',
+    title: RELIC_CATALOG.origami_prism.name,
+    cityLabel: RELIC_CATALOG.origami_prism.cityLabel,
+    venueLabel: RELIC_CATALOG.origami_prism.venueLabel,
+    countryCode: 'JP',
+    domainId: 6,
+    metallurgySpec: 'Smoked Synthetic Quartz · Vapor-Deposited Titanium Hinges',
+    historicalProvenance:
+      'Engineered by Director Kenji Takahashi’s Horizon Collective seventy floors above Tokyo Station to celebrate high-velocity deduction.',
+    conspiracyNote:
+      'Internal waveguides double as a passive laser interferometer—encoding geodesic survey coordinates pointing directly beneath the Giza plateau.',
+    uvHiddenInscription: RELIC_CATALOG.origami_prism.hiddenInscription,
+    unlockHowTo: 'Clear the Tokyo Stage 2 Boss Showdown in the Shinkansen Sky Pavilion.',
+  },
+  {
+    id: 'emerald_sphere',
+    title: RELIC_CATALOG.emerald_sphere.name,
+    cityLabel: RELIC_CATALOG.emerald_sphere.cityLabel,
+    venueLabel: RELIC_CATALOG.emerald_sphere.venueLabel,
+    countryCode: 'BR',
+    domainId: 7,
+    metallurgySpec: 'Beryl-Quartz Acoustic Resonator · Spun Botanical Brass Ribs',
+    historicalProvenance:
+      'Suspended beneath Rio de Janeiro’s Botanical Glass Canopy, resonating at 432 Hz whenever a Challenger locks an unassisted Cold Instinct.',
+    conspiracyNote:
+      'Acoustic engineer Nadia Al-Mansoor recognized the sphere’s Helmholtz chamber immediately—it was tuned using her vanished brother Tariq’s equations.',
+    uvHiddenInscription: RELIC_CATALOG.emerald_sphere.hiddenInscription,
+    unlockHowTo: 'Clear the Rio de Janeiro Stage 3 Boss Showdown.',
+  },
+  {
+    id: 'cipher_box',
+    title: RELIC_CATALOG.cipher_box.name,
+    cityLabel: RELIC_CATALOG.cipher_box.cityLabel,
+    venueLabel: RELIC_CATALOG.cipher_box.venueLabel,
+    countryCode: 'EG',
+    domainId: 10,
+    metallurgySpec: 'Tura Limestone Core · Counter-Rotating Pharaonic Electrum Tumblers',
+    historicalProvenance:
+      'Recovered from the subterranean Meridian Zero vault beneath Cairo’s Solar Acoustic Hall during the staged broadcast blackout.',
+    conspiracyNote:
+      'Contains the unredacted 2019 Trial Zero psychometric ledger—proving your 99.4% cognitive match with erased first champion Tariq Al-Mansoor.',
+    uvHiddenInscription: RELIC_CATALOG.cipher_box.hiddenInscription,
+    unlockHowTo: 'Decrypt Cairo’s Stage 4 Meridian Zero Boss Showdown.',
+  },
+  {
+    id: 'cryo_relay',
+    title: RELIC_CATALOG.cryo_relay.name,
+    cityLabel: RELIC_CATALOG.cryo_relay.cityLabel,
+    venueLabel: RELIC_CATALOG.cryo_relay.venueLabel,
+    countryCode: 'IS',
+    domainId: 11,
+    metallurgySpec: 'Columnar Icelandic Basalt · Superconducting Niobium-Gold Coil',
+    historicalProvenance:
+      'Cooled by sub-glacial meltwater inside Reykjavik’s Geothermal Basalt Caldera to sustain zero-latency global truth verification.',
+    conspiracyNote:
+      'Proves Julian Vance never eliminated Tariq—he faked Tariq’s erasure and spent five years co-engineering The Meridian as a public Trojan Horse trap.',
+    uvHiddenInscription: RELIC_CATALOG.cryo_relay.hiddenInscription,
+    unlockHowTo: 'Complete Reykjavik’s Stage 5 Caldera Showdown.',
+  },
+  {
+    id: 'council_seal',
+    title: RELIC_CATALOG.council_seal.name,
+    cityLabel: RELIC_CATALOG.council_seal.cityLabel,
+    venueLabel: RELIC_CATALOG.council_seal.venueLabel,
+    countryCode: 'SG',
+    domainId: 8,
+    metallurgySpec: '950 Platinum Charter Disc · Fractured Crimson Corundum Core',
+    historicalProvenance:
+      'The ceremonial Article IX Emergency Seal held above The Ledger’s primary data monoliths on Singapore’s Diplomatic Sky-Bridge.',
+    conspiracyNote:
+      'Split cleanly down its treaty seam during the inner-circle betrayal crisis—exposing the proxy signature behind Rio’s pod sabotage.',
+    uvHiddenInscription: RELIC_CATALOG.council_seal.hiddenInscription,
+    unlockHowTo: 'Survive Singapore’s Stage 6 Sky-Bridge Showdown.',
+  },
+  {
+    id: 'master_ledger',
+    title: RELIC_CATALOG.master_ledger.name,
+    cityLabel: RELIC_CATALOG.master_ledger.cityLabel,
+    venueLabel: RELIC_CATALOG.master_ledger.venueLabel,
+    countryCode: 'GLOBAL',
+    domainId: 6,
+    metallurgySpec: 'Dichroic Diamond-Carbon Lattice · Triple-Gimbal 24K Veto Key',
+    historicalProvenance:
+      'Anchored in International Waters aboard The Apex Forum—the planetary crisis-forecasting and treaty-verification heart of The Ledger.',
+    conspiracyNote:
+      'Unlocked live before two billion witnesses in The Arbiter’s Gambit against Julian Vance himself.',
+    uvHiddenInscription: RELIC_CATALOG.master_ledger.hiddenInscription,
+    unlockHowTo: 'Triumph in Stage 7 International Waters — The Apex Forum Finale.',
+  },
+];
+
+/**
+ * Curated Geneva Archival Seed Flashes surfaced when a new Challenger wants to try Search & Recall Quiz
+ * before bookmarking live match debriefs (or toggled alongside personal bookmarks).
+ */
+const GENEVA_SEED_INTEL_FLASHES: readonly FlashCardItem[] = [
+  {
+    qid: 900001,
+    domainId: 0,
+    prompt: 'Which 1814–1815 European diplomatic summit was nicknamed "The Dancing Congress"?',
+    answer: 'Congress of Vienna',
+    whyExplanation:
+      'Prince Metternich hosted lavish nightly balls in Vienna while redrawing post-Napoleonic Europe’s borders.',
+    savedAtIso: '2026-11-01T00:00:00.000Z',
+    isSeedExemplar: true,
+  },
+  {
+    qid: 900002,
+    domainId: 1,
+    prompt: 'Which element has the highest melting point of all pure metals at 3,422 °C?',
+    answer: 'Tungsten',
+    whyExplanation:
+      'Tungsten (W, atomic number 74) owes its extreme thermal resilience to dense 5d-orbital metallic bonding.',
+    savedAtIso: '2026-11-01T00:00:00.000Z',
+    isSeedExemplar: true,
+  },
+  {
+    qid: 900003,
+    domainId: 2,
+    prompt: 'Which strait separates the European and Asian sides of Istanbul?',
+    answer: 'Bosphorus Strait',
+    whyExplanation:
+      'Linking the Black Sea to the Sea of Marmara, the Bosphorus is the world’s narrowest strait used for international navigation.',
+    savedAtIso: '2026-11-01T00:00:00.000Z',
+    isSeedExemplar: true,
+  },
+  {
+    qid: 900004,
+    domainId: 3,
+    prompt: 'Traditional Japanese art of repairing broken pottery with lacquer dusted in powdered gold?',
+    answer: 'Kintsugi',
+    whyExplanation:
+      'Literally "golden joinery," Kintsugi treats breakage and repair as proud chapters of an object’s history rather than flaws to disguise.',
+    savedAtIso: '2026-11-01T00:00:00.000Z',
+    isSeedExemplar: true,
+  },
+  {
+    qid: 900005,
+    domainId: 6,
+    prompt: 'Who authored the 1843 Note G algorithm for Charles Babbage’s Analytical Engine?',
+    answer: 'Ada Lovelace',
+    whyExplanation:
+      'Lovelace computed Bernoulli numbers and foresaw that symbolic engines could compose music and art beyond pure arithmetic.',
+    savedAtIso: '2026-11-01T00:00:00.000Z',
+    isSeedExemplar: true,
+  },
+  {
+    qid: 900006,
+    domainId: 11,
+    prompt: 'In game theory, what state occurs when no player gains by unilaterally changing strategy?',
+    answer: 'Nash Equilibrium',
+    whyExplanation:
+      'Proven by John Nash in 1950 via Kakutani’s fixed-point theorem across every finite non-cooperative game.',
+    savedAtIso: '2026-11-01T00:00:00.000Z',
+    isSeedExemplar: true,
+  },
+];
+
+const DOMAIN_FALLBACK_DECOYS: Record<DomainId, readonly string[]> = {
+  0: ['Treaty of Utrecht', 'Peace of Westphalia', 'Congress of Berlin', 'Treaty of Tilsit'],
+  1: ['Molybdenum', 'Osmium', 'Tantalum', 'Rhenium'],
+  2: ['Dardanelles', 'Strait of Hormuz', 'Bab-el-Mandeb', 'Kerch Strait'],
+  3: ['Raku Ware', 'Cloisonné', 'Chiaroscuro', 'Shibori'],
+  4: ['Palme d’Or', 'Golden Lion', 'Cinéma Vérité', 'Nouvelle Vague'],
+  5: ['Fosbury Flop', 'Elo Rating', 'Marquis of Queensberry', 'Tourbillon'],
+  6: ['Alan Turing', 'Grace Hopper', 'Claude Shannon', 'John von Neumann'],
+  7: ['Cambrian Explosion', 'Symbiogenesis', 'Convergent Evolution', 'Homeostasis'],
+  8: ['Geneva Convention', 'Westphalian Sovereignty', 'Habeas Corpus', 'Jus Cogens'],
+  9: ['Maillard Reaction', 'Guilloché', 'Damascus Steel', 'Haute Horlogerie'],
+  10: ['Allegory of the Cave', 'Ship of Theseus', 'Occam’s Razor', 'Categorical Imperative'],
+  11: ['Pareto Optimality', 'Prisoner’s Dilemma', 'Gödel Incompleteness', 'Bayes’ Theorem'],
+};
+
+function buildQuizOptions(item: FlashCardItem, pool: readonly FlashCardItem[]): {
+  options: string[];
+  correctIdx: number;
+} {
+  const answerNorm = item.answer.trim().toLowerCase();
+  const candidates: string[] = [];
+
+  for (const other of pool) {
+    if (other.qid !== item.qid && other.answer.trim().toLowerCase() !== answerNorm) {
+      if (other.domainId === item.domainId) {
+        candidates.push(other.answer);
+      }
+    }
+  }
+  for (const dec of DOMAIN_FALLBACK_DECOYS[item.domainId] ?? DOMAIN_FALLBACK_DECOYS[0]) {
+    if (dec.trim().toLowerCase() !== answerNorm && !candidates.includes(dec)) {
+      candidates.push(dec);
+    }
+  }
+
+  const distractors = candidates.slice(0, 3);
+  while (distractors.length < 3) {
+    distractors.push(`Decoy Option ${distractors.length + 1}`);
+  }
+
+  const raw = [item.answer, ...distractors];
+  // Deterministic rotation by qid so re-renders keep identical A/B/C/D order!
+  const shift = Math.abs(item.qid) % 4;
+  const rotated = raw.map((_, i) => raw[(i + shift) % 4]);
+  const correctIdx = rotated.indexOf(item.answer);
+  return { options: rotated, correctIdx: Math.max(0, correctIdx) };
+}
+
+export class IntelObservatoryView {
+  private readonly deps: IntelObservatoryDependencies;
+  private modalBackdrop: HTMLElement | null = null;
+  private mountedContainer: HTMLElement | null = null;
+  private detachEscape: (() => void) | null = null;
+  private callbacks: IntelObservatoryCallbacks = {};
+
+  private activeTab: ObservatoryTabId = 'RELICS_3D';
+  private selectedArtifactId: ShowcaseArtifactId = 'championship_trophy';
+  private uvBlacklightActive = false;
+  private relicLatchesOpen = false;
+  private activeHotspotId: string | null = null;
+  private showcaseReqToken = 0;
+
+  // Intel Flash Vault & Quiz State
+  private searchQuery = '';
+  private domainFilter: DomainId | 'ALL' = 'ALL';
+  private includeSeedExemplars = true;
+
+  private quizCursor = 0;
+  private quizPickedIdx: number | null = null;
+  private quizShutterFlipped = false;
+  private quizCorrectCount = 0;
+  private quizAttemptedCount = 0;
+  private quizStreak = 0;
+
+  constructor(deps: IntelObservatoryDependencies) {
+    this.deps = deps;
+    ensureMetaStylesInjected();
+  }
+
+  public isOpen(): boolean {
+    return this.modalBackdrop !== null || this.mountedContainer !== null;
+  }
+
+  public open(options: IntelObservatoryOpenOptions = {}): void {
+    this.close();
+    this.callbacks = options;
+    this.activeTab = options.initialTab ?? 'RELICS_3D';
+    this.selectedArtifactId = options.initialArtifactId ?? 'championship_trophy';
+    this.uvBlacklightActive = false;
+
+    const backdrop = document.createElement('div');
+    backdrop.setAttribute('role', 'dialog');
+    backdrop.setAttribute('aria-label', '3D Intel Observatory & Trophy Study');
+    document.body.appendChild(backdrop);
+    this.modalBackdrop = backdrop;
+    this.detachEscape = attachMetaEscapeHandler(() => this.handleBackOrClose());
+
+    void fetchWave2RelicProvenance().then(() => {
+      if (this.isOpen()) this.rerender();
+    });
+    void this.sync3DShowcase();
+    this.rerender();
+  }
+
+  private handleBackOrClose(): void {
+    this.deps.haptics?.uiTap();
+    this.deps.audio?.playSfx('ui_tap');
+    if (this.callbacks.canGoBack && this.callbacks.onBack) {
+      this.callbacks.onBack();
+      return;
+    }
+    const onClose = this.callbacks.onClose;
+    this.close();
+    onClose?.();
+  }
+
+  private handleClose(): void {
+    this.deps.haptics?.uiTap();
+    this.deps.audio?.playSfx('ui_tap');
+    const onClose = this.callbacks.onClose;
+    this.close();
+    onClose?.();
+  }
+
+  public mount(container: HTMLElement, options: IntelObservatoryOpenOptions = {}): void {
+    this.unmount();
+    this.callbacks = options;
+    this.activeTab = options.initialTab ?? 'RELICS_3D';
+    this.selectedArtifactId = options.initialArtifactId ?? 'championship_trophy';
+    this.mountedContainer = container;
+    void fetchWave2RelicProvenance().then(() => {
+      if (this.isOpen()) this.rerender();
+    });
+    void this.sync3DShowcase();
+    this.renderInto(container, false);
+  }
+
+  public unmount(): void {
+    const wasMounted = this.mountedContainer !== null;
+    this.showcaseReqToken += 1;
+    if (this.detachEscape) {
+      this.detachEscape();
+      this.detachEscape = null;
+    }
+    this.syncUiRootVisibility(false);
+    if (this.mountedContainer) {
+      this.mountedContainer.innerHTML = '';
+      this.mountedContainer = null;
+    }
+    if (wasMounted || this.modalBackdrop !== null) {
+      this.deps.audio?.stopVoice();
+    }
+  }
+
+  public close(): void {
+    this.unmount();
+    if (this.modalBackdrop) {
+      this.modalBackdrop.remove();
+      this.modalBackdrop = null;
+    }
+  }
+
+  public selectArtifact(artifactId: ShowcaseArtifactId): void {
+    this.selectedArtifactId = artifactId;
+    this.activeTab = 'RELICS_3D';
+    this.uvBlacklightActive = false;
+    void this.sync3DShowcase();
+    this.rerender();
+  }
+
+  private syncUiRootVisibility(hideBehind3D: boolean): void {
+    if (typeof document === 'undefined') return;
+    document.documentElement.classList.toggle('ws-3d-showcase-open', hideBehind3D);
+    const uiRoot = document.getElementById('ui-root');
+    if (uiRoot) {
+      uiRoot.style.visibility = hideBehind3D ? 'hidden' : 'visible';
+    }
+  }
+
+  private async sync3DShowcase(): Promise<void> {
+    const dossier =
+      OBSERVATORY_ARTIFACT_DOSSIERS.find((d) => d.id === this.selectedArtifactId) ??
+      OBSERVATORY_ARTIFACT_DOSSIERS[0];
+
+    const reqToken = ++this.showcaseReqToken;
+    this.callbacks.onInspectRelic?.(dossier.id);
+    if (!this.deps.stage3d) return;
+
+    await this.deps.stage3d.showHeroRelic(dossier.id as HeroRelicKey, dossier.domainId);
+    if (reqToken !== this.showcaseReqToken || !this.isOpen()) return;
+    if (this.uvBlacklightActive) {
+      this.deps.stage3d.setLightingMode('TWIST_FRACTURE');
+    }
+    this.actuate3DRelicLatches(this.relicLatchesOpen);
+  }
+
+  /**
+   * Actuates bespoke `Latch_0..2` mechanical nodes on Wave-2 Blender Tier-3 Relics (#139 / #149).
+   */
+  private actuate3DRelicLatches(open: boolean): void {
+    if (this.deps.stage3d) {
+      this.deps.stage3d.actuateRelicLatches(open ? 3 : 0);
+      return;
+    }
+  }
+
+  private isArtifactUnlocked(id: ShowcaseArtifactId): boolean {
+    if (id === 'championship_trophy') return true;
+    const pSnap = this.deps.passport.getSnapshot();
+    const bSnap = this.deps.blackboard?.getSnapshot();
+    if (pSnap.unlockedRelics.includes(id)) return true;
+    if (bSnap?.unlockedRelics.includes(id)) return true;
+    const entry = RELIC_CATALOG[id];
+    if (entry && pSnap.visas[entry.hubId]?.cleared) return true;
+    return false;
+  }
+
+  private getCombinedFlashes(): FlashCardItem[] {
+    const pSnap = this.deps.passport.getSnapshot();
+    const personal: FlashCardItem[] = pSnap.bookmarks.map((b) => ({
+      ...b,
+      isSeedExemplar: false,
+    }));
+
+    const baseList =
+      personal.length === 0 || this.includeSeedExemplars
+        ? [
+            ...personal,
+            ...GENEVA_SEED_INTEL_FLASHES.filter((s) => !personal.some((p) => p.qid === s.qid)),
+          ]
+        : personal;
+
+    const q = this.searchQuery.trim().toLowerCase();
+    return baseList.filter((item) => {
+      if (this.domainFilter !== 'ALL' && item.domainId !== this.domainFilter) {
+        return false;
+      }
+      if (!q) return true;
+      const domName = getSovereignDomainMeta(item.domainId).name.toLowerCase();
+      return (
+        item.prompt.toLowerCase().includes(q) ||
+        item.answer.toLowerCase().includes(q) ||
+        item.whyExplanation.toLowerCase().includes(q) ||
+        domName.includes(q)
+      );
+    });
+  }
+
+  private rerender(): void {
+    const isRelicDock = this.activeTab === 'RELICS_3D';
+    if (this.modalBackdrop) {
+      this.modalBackdrop.className = isRelicDock
+        ? 'ws-meta-backdrop is-stage-dock'
+        : 'ws-meta-backdrop';
+      this.syncUiRootVisibility(isRelicDock);
+      this.renderInto(this.modalBackdrop, true);
+    } else if (this.mountedContainer) {
+      this.renderInto(this.mountedContainer, false);
+    }
+  }
+
+  private renderInto(host: HTMLElement, isModal: boolean): void {
+    const pSnap = this.deps.passport.getSnapshot();
+    const unlockedRelicsCount = OBSERVATORY_ARTIFACT_DOSSIERS.filter(
+      (d) => d.id !== 'championship_trophy' && this.isArtifactUnlocked(d.id),
+    ).length;
+
+    const underlineTabsHtml = `
+      <div class="ws-meta-underline-tabs" role="tablist" aria-label="Observatory Sections">
+        <button type="button" role="tab" aria-selected="${this.activeTab === 'RELICS_3D'}" class="ws-meta-underline-tab ${this.activeTab === 'RELICS_3D' ? 'is-active' : ''}" data-obs-tab="RELICS_3D">
+          360° Relics
+        </button>
+        <button type="button" role="tab" aria-selected="${this.activeTab === 'INTEL_FLASHES'}" class="ws-meta-underline-tab ${this.activeTab === 'INTEL_FLASHES' ? 'is-active' : ''}" data-obs-tab="INTEL_FLASHES">
+          Saved Flashes${pSnap.bookmarks.length > 0 ? ` (${pSnap.bookmarks.length})` : ''}
+        </button>
+        <button type="button" role="tab" aria-selected="${this.activeTab === 'SELF_QUIZ'}" class="ws-meta-underline-tab ${this.activeTab === 'SELF_QUIZ' ? 'is-active' : ''}" data-obs-tab="SELF_QUIZ">
+          Recall Quiz
+        </button>
+      </div>
+    `;
+
+    const uvIconSvg =
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M2 12h3M19 12h3M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12"/></svg>';
+    const latchIconSvg =
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
+
+    if (isModal && this.activeTab === 'RELICS_3D') {
+      const vaultFloatingHtml = renderVaultJumperHtml('OBSERVATORY', {
+        isModal: true,
+        closeBtnId: 'ws-obs-close',
+        canNavigate: Boolean(this.callbacks.onNavigateSection),
+        floatingVariant: true,
+      });
+
+      host.innerHTML = `
+        <!-- Open Unobstructed 54-55dvh Portrait / 50vw Landscape 3D Stage (pointer-events: none pass-through!) -->
+        <div class="ws-meta-stage-zone">
+          <div class="ws-meta-stage-top">
+            <button type="button" class="ws-meta-float-pill" id="ws-obs-back" data-meta-back="true" aria-label="Back">← Back</button>
+            ${vaultFloatingHtml}
+          </div>
+          <div class="ws-meta-stage-bottom">
+            <span class="ws-meta-orbit-whisper">↻ Drag 3D to Orbit</span>
+            <div class="ws-meta-stage-actions">
+              <button
+                type="button"
+                class="ws-meta-float-pill ${this.uvBlacklightActive ? 'is-active-cyan' : ''}"
+                id="ws-obs-uv-scan"
+                aria-pressed="${this.uvBlacklightActive}"
+              >
+                ${uvIconSvg} UV
+              </button>
+              <button
+                type="button"
+                class="ws-meta-float-pill ${this.relicLatchesOpen ? 'is-active-gold' : ''}"
+                id="ws-obs-latch-toggle"
+                aria-pressed="${this.relicLatchesOpen}"
+              >
+                ${latchIconSvg} Latches
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sleek 45-46dvh Portrait / 50vw Landscape Dark-Obsidian Bottom Sheet -->
+        <div class="ws-meta-sheet">
+          <div class="ws-meta-drag-handle" aria-hidden="true"></div>
+          ${underlineTabsHtml}
+          ${this.renderRelicSelectorStrip()}
+          <div class="ws-meta-body-scroll">
+            ${this.renderRelics3DStudy(unlockedRelicsCount)}
+          </div>
+        </div>
+      `;
+
+      this.bindEvents(host);
+      return;
+    }
+
+    const vaultJumperHtml = renderVaultJumperHtml('OBSERVATORY', {
+      isModal,
+      closeBtnId: 'ws-obs-close',
+      canNavigate: Boolean(this.callbacks.onNavigateSection),
+    });
+
+    host.innerHTML = `
+      <div class="ws-meta-shell">
+        <div class="ws-meta-topbar">
+          <div class="ws-meta-topbar-left">
+            <button type="button" class="ws-meta-back-btn" id="ws-obs-back" data-meta-back="true" aria-label="Back">← Back</button>
+            <div class="ws-meta-topbar-titles">
+              <h2 class="ws-meta-title">OBSERVATORY</h2>
+              <div class="ws-meta-eyebrow">${unlockedRelicsCount}/8 Relics · ${pSnap.bookmarks.length} Flashes</div>
+            </div>
+          </div>
+          <div class="ws-meta-topbar-right">
+            ${vaultJumperHtml}
+          </div>
+        </div>
+
+        ${underlineTabsHtml}
+        ${this.activeTab === 'RELICS_3D' ? this.renderRelicSelectorStrip() : ''}
+
+        <div class="ws-meta-body-scroll">
+          ${
+            this.activeTab === 'RELICS_3D'
+              ? this.renderRelics3DStudy(unlockedRelicsCount, true)
+              : this.activeTab === 'INTEL_FLASHES'
+                ? this.renderIntelFlashesVault()
+                : this.renderSelfQuizMode()
+          }
+        </div>
+      </div>
+    `;
+
+    this.bindEvents(host);
+  }
+
+  private renderRelicSelectorStrip(): string {
+    return `
+      <div class="ws-meta-hscroll" style="padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.06);" aria-label="Select 3D Relic">
+        ${OBSERVATORY_ARTIFACT_DOSSIERS.map((item) => {
+          const isSel = item.id === this.selectedArtifactId;
+          const isUnl = this.isArtifactUnlocked(item.id);
+          const chipLabel = item.id === 'championship_trophy' ? 'Crown' : item.cityLabel;
+          return `
+            <button
+              type="button"
+              class="ws-meta-chip ${isSel ? 'is-active' : ''}"
+              data-select-artifact="${item.id}"
+            >
+              <span style="color:${item.id === 'championship_trophy' || isUnl ? 'var(--gold-bright)' : 'var(--ivory-dim)'};">${item.id === 'championship_trophy' ? '♛' : isUnl ? '◆' : '◇'}</span>
+              <span>${escapeMetaHtml(chipLabel)}</span>
+            </button>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+
+  private renderRelics3DStudy(unlockedRelicsCount: number, showInlineTools = false): string {
+    const dossier =
+      OBSERVATORY_ARTIFACT_DOSSIERS.find((d) => d.id === this.selectedArtifactId) ??
+      OBSERVATORY_ARTIFACT_DOSSIERS[0];
+    const unlocked = this.isArtifactUnlocked(dossier.id);
+    const w2 =
+      dossier.id !== 'championship_trophy'
+        ? cachedWave2RelicMap?.[dossier.id] ?? null
+        : null;
+    const hotspots = w2?.inspectionHotspots ?? [];
+    const focusedHotspot =
+      hotspots.find((h) => h.id === this.activeHotspotId) ?? hotspots[0] ?? null;
+
+    const yearSuffix = w2?.yearCrafted ? ` (${formatMetaYear(w2.yearCrafted)})` : '';
+    const specLine = sanitizeMetaCopy(
+      `${w2?.metallurgySpec ?? dossier.metallurgySpec}${w2?.artisanAttribution ? ` · ${w2.artisanAttribution}${yearSuffix}` : ''}`,
+    );
+
+    return `
+      ${
+        showInlineTools
+          ? `
+            <div style="display:flex;gap:8px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.07);">
+              <button type="button" class="ws-meta-chip ${this.uvBlacklightActive ? 'is-active' : ''}" id="ws-obs-uv-scan">✦ UV</button>
+              <button type="button" class="ws-meta-chip ${this.relicLatchesOpen ? 'is-active' : ''}" id="ws-obs-latch-toggle">⚙ Latches</button>
+            </div>
+          `
+          : ''
+      }
+
+      <!-- Crisp Frameless Provenance Header -->
+      <div class="ws-meta-section" style="padding-top:0;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+          <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+            ${
+              w2?.signatureGlyphUrl
+                ? `<img src="./${escapeMetaHtml(w2.signatureGlyphUrl)}" alt="" style="width:30px;height:30px;object-fit:contain;flex-shrink:0;" />`
+                : ''
+            }
+            <div style="min-width:0;">
+              <div style="font-family:var(--font-mono);font-size:10px;color:var(--cyan-clue);letter-spacing:0.08em;">
+                ${escapeMetaHtml(w2?.archiveCode ?? `${dossier.countryCode} · ${dossier.cityLabel.toUpperCase()}`)} · ${unlockedRelicsCount}/8 RECOVERED
+              </div>
+              <div style="font-family:var(--font-display);font-size:16px;font-weight:800;color:var(--gold-bright);margin-top:2px;line-height:1.2;">
+                ${escapeMetaHtml(w2?.name ?? dossier.title)}
+              </div>
+            </div>
+          </div>
+          <span style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:0.05em;color:${unlocked ? 'var(--emerald-win)' : 'var(--crimson-alert)'};white-space:nowrap;flex-shrink:0;padding-top:2px;">
+            ${unlocked ? '✦ RECOVERED' : '🔒 CLASSIFIED'}
+          </span>
+        </div>
+
+        <div style="font-family:var(--font-mono);font-size:10.5px;color:var(--ivory-dim);line-height:1.38;">
+          ${escapeMetaHtml(specLine)}
+        </div>
+
+        <p style="margin:0;font-size:13px;color:var(--ivory-primary);line-height:1.48;">
+          ${escapeMetaHtml(sanitizeMetaCopy(w2?.provenanceEssay ?? dossier.historicalProvenance))}
+        </p>
+
+        ${
+          hotspots.length > 0
+            ? `
+              <div style="display:flex;flex-direction:column;gap:8px;padding-top:4px;">
+                <div class="ws-meta-hscroll">
+                  ${hotspots
+                    .map((hs) => {
+                      const isAct = focusedHotspot?.id === hs.id;
+                      return `
+                        <button type="button" class="ws-meta-chip ${isAct ? 'is-active' : ''}" data-obs-hotspot="${escapeMetaHtml(hs.id)}" data-orbit-deg="${hs.orbitDeg[0]}">
+                          ◎ ${escapeMetaHtml(hs.label)}
+                        </button>
+                      `;
+                    })
+                    .join('')}
+                </div>
+                ${
+                  focusedHotspot
+                    ? `<div class="ws-meta-note is-cyan">
+                        <strong>${escapeMetaHtml(focusedHotspot.label)}:</strong> ${escapeMetaHtml(sanitizeMetaCopy(focusedHotspot.note))}
+                      </div>`
+                    : ''
+                }
+              </div>
+            `
+            : ''
+        }
+      </div>
+
+      <!-- Conspiracy Provenance, Latches & UV Blacklight Readout (Frameless Hairlines) -->
+      <div class="ws-meta-section" style="border-bottom:none;">
+        ${
+          unlocked
+            ? `
+              <div class="ws-meta-note">
+                <div style="font-family:var(--font-mono);font-size:10px;font-weight:700;color:var(--gold-bright);letter-spacing:0.06em;margin-bottom:3px;">
+                  CONSPIRACY PROVENANCE
+                </div>
+                ${escapeMetaHtml(sanitizeMetaCopy(w2?.conspiracySignificance ?? dossier.conspiracyNote))}
+              </div>
+              ${
+                this.relicLatchesOpen && w2?.latches && w2.latches.length > 0
+                  ? `
+                    <div style="display:flex;flex-direction:column;gap:4px;padding-top:4px;">
+                      <div style="font-family:var(--font-mono);font-size:10px;font-weight:700;color:var(--gold-bright);letter-spacing:0.06em;">
+                        ⚙ UNSEALED MECHANICAL LATCHES
+                      </div>
+                      ${w2.latches
+                        .map(
+                          (lt) => `
+                            <div class="ws-meta-row" style="justify-content:flex-start;gap:8px;font-size:11.5px;">
+                              <img src="./${escapeMetaHtml(lt.glyphUrl)}" alt="" style="width:18px;height:18px;object-fit:contain;flex-shrink:0;" />
+                              <span><strong>${escapeMetaHtml(lt.latchName)}:</strong> <code style="color:var(--gold-bright);">“${escapeMetaHtml(sanitizeMetaCopy(lt.engraving))}”</code></span>
+                            </div>
+                          `,
+                        )
+                        .join('')}
+                    </div>
+                  `
+                  : ''
+              }
+              ${
+                this.uvBlacklightActive
+                  ? `
+                    <div class="ws-meta-note is-cyan" style="font-family:var(--font-mono);font-size:11px;">
+                      ✦ ${escapeMetaHtml(sanitizeMetaCopy(w2?.uvHiddenInscription ?? dossier.uvHiddenInscription))}
+                    </div>
+                  `
+                  : `<div style="font-family:var(--font-mono);font-size:10.5px;color:var(--ivory-dim);">Tap <strong>UV</strong> or <strong>Latches</strong> on the 3D stage to inspect concealed engravings.</div>`
+              }
+            `
+            : `
+              <div class="ws-meta-note is-crimson">
+                <div style="font-family:var(--font-mono);font-size:10px;font-weight:700;color:var(--amber-warn);letter-spacing:0.06em;margin-bottom:2px;">
+                  SEALED CONSPIRACY NOTE
+                </div>
+                ${escapeMetaHtml(sanitizeMetaCopy(dossier.unlockHowTo))}
+              </div>
+            `
+        }
+      </div>
+    `;
+  }
+
+  private renderIntelFlashesVault(): string {
+    const items = this.getCombinedFlashes();
+    const personalCount = this.deps.passport.getSnapshot().bookmarks.length;
+
+    return `
+      <!-- Search, Curated Toggle & Launch Quiz -->
+      <div class="ws-meta-section" style="padding-top:0;">
+        <div style="display:flex;gap:10px;align-items:center;">
+          <input
+            id="ws-obs-flash-search"
+            class="ws-meta-input ws-name-input"
+            style="flex:1 1 auto;"
+            type="search"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="🔍 Search bookmarked flashes, answers, or debriefs..."
+            value="${escapeMetaHtml(this.searchQuery)}"
+          />
+          <button type="button" class="ws-meta-btn-gold" id="ws-obs-launch-quiz">
+            Quiz (${items.length}) ▶
+          </button>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
+          <button type="button" class="ws-meta-chip ${this.includeSeedExemplars ? 'is-active' : ''}" id="ws-obs-toggle-seeds">
+            ${this.includeSeedExemplars ? '✓ Geneva Curated Included' : '+ Include Geneva Curated'}
+          </button>
+          ${
+            personalCount === 0
+              ? `<span style="font-size:11px;color:var(--ivory-dim);">Tap <strong>☆ Save Intel</strong> after any question to archive flashes here.</span>`
+              : `<span style="font-family:var(--font-mono);font-size:10.5px;color:var(--gold-bright);">${personalCount} Personal Saved</span>`
+          }
+        </div>
+
+        <!-- Single-Row Horizontal Scrollable 12-Domain Filter -->
+        <div class="ws-meta-hscroll" aria-label="Filter by Domain">
+          <button type="button" class="ws-meta-chip ${this.domainFilter === 'ALL' ? 'is-active' : ''}" data-flash-domain="ALL">
+            All Domains
+          </button>
+          ${SOVEREIGN_DOMAINS.map((dom) => {
+            const isAct = this.domainFilter === dom.id;
+            return `
+              <button type="button" class="ws-meta-chip ${isAct ? 'is-active' : ''}" data-flash-domain="${dom.id}">
+                <img src="./${escapeMetaHtml(dom.medallionUrl)}" alt="" style="width:16px;height:16px;object-fit:contain;" />
+                ${escapeMetaHtml(dom.shortName)}
+              </button>
+            `;
+          }).join('')}
+        </div>
+      </div>
+
+      <!-- Hairline-Divided Intel Flash List (Zero Nested Cards!) -->
+      <div class="ws-meta-section" style="border-bottom:none;padding-top:4px;gap:0;">
+        ${
+          items.length > 0
+            ? items
+                .map((item) => {
+                  const dom = getSovereignDomainMeta(item.domainId);
+                  return `
+                    <div style="padding:13px 0;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:6px;">
+                      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                        <span style="display:inline-flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:10.5px;font-weight:700;color:${dom.accentHex};">
+                          <img src="./${escapeMetaHtml(dom.medallionUrl)}" alt="" style="width:18px;height:18px;object-fit:contain;" />
+                          ${escapeMetaHtml(dom.name)}
+                          <span style="color:var(--ivory-dim);font-weight:500;">· ${item.isSeedExemplar ? 'Geneva Archive' : '★ Saved'}</span>
+                        </span>
+                        ${
+                          !item.isSeedExemplar
+                            ? `<button type="button" class="ws-meta-inline-link" data-remove-bookmark="${item.qid}" style="color:var(--ivory-dim);font-size:10.5px;">Remove</button>`
+                            : ''
+                        }
+                      </div>
+                      <div style="font-size:13.5px;font-weight:600;color:var(--ivory-primary);line-height:1.4;">
+                        ${escapeMetaHtml(sanitizeMetaCopy(item.prompt))}
+                      </div>
+                      <div style="font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--emerald-win);">
+                        ✓ ${escapeMetaHtml(sanitizeMetaCopy(item.answer))}
+                      </div>
+                      <div class="ws-meta-note is-cyan" style="font-size:12px;">
+                        ${escapeMetaHtml(sanitizeMetaCopy(item.whyExplanation))}
+                      </div>
+                    </div>
+                  `;
+                })
+                .join('')
+            : `<div style="padding:28px 0;text-align:center;color:var(--ivory-muted);font-size:13px;">No Intel Flashes match your current filter.</div>`
+        }
+      </div>
+    `;
+  }
+
+  private renderSelfQuizMode(): string {
+    const pool = this.getCombinedFlashes();
+    if (pool.length === 0) {
+      return `
+        <div class="ws-meta-section" style="text-align:center;padding:32px 12px;border-bottom:none;">
+          <div style="font-family:var(--font-display);font-size:15px;color:var(--gold-bright);margin-bottom:10px;">
+            No Intel Flashes in Current Filter
+          </div>
+          <div>
+            <button type="button" class="ws-meta-btn-gold" id="ws-obs-reset-quiz-filter">
+              Load Geneva Archive Deck
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    const safeIdx = ((this.quizCursor % pool.length) + pool.length) % pool.length;
+    const current = pool[safeIdx];
+    const dom = getSovereignDomainMeta(current.domainId);
+    const { options, correctIdx } = buildQuizOptions(current, pool);
+    const answered = this.quizPickedIdx !== null || this.quizShutterFlipped;
+    const letters = ['A', 'B', 'C', 'D'];
+    const recallAcc =
+      this.quizAttemptedCount > 0
+        ? Math.round((this.quizCorrectCount / this.quizAttemptedCount) * 100)
+        : 100;
+
+    return `
+      <div class="ws-meta-section" style="padding-top:0;border-bottom:none;gap:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.07);">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <img src="./${escapeMetaHtml(dom.medallionUrl)}" alt="" style="width:24px;height:24px;object-fit:contain;" />
+            <div>
+              <div style="font-family:var(--font-mono);font-size:10.5px;font-weight:700;color:${dom.accentHex};">
+                ${escapeMetaHtml(dom.name)} · Card ${safeIdx + 1}/${pool.length}
+              </div>
+            </div>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--gold-bright);font-weight:700;">
+            ${this.quizCorrectCount}/${this.quizAttemptedCount} (${recallAcc}%) · ${this.quizStreak}🔥
+          </div>
+        </div>
+
+        <div style="font-size:clamp(15px,1.6vw,18px);font-weight:600;color:var(--ivory-primary);line-height:1.45;">
+          ${escapeMetaHtml(sanitizeMetaCopy(current.prompt))}
+        </div>
+
+        <!-- 4 Sleek Borderless Answer Strips -->
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          ${options
+            .map((optText, idx) => {
+              const isCorrect = idx === correctIdx;
+              const isPicked = this.quizPickedIdx === idx;
+              let bgCss = 'rgba(255, 255, 255, 0.042)';
+              let barCss = 'none';
+              if (answered) {
+                if (isCorrect) {
+                  bgCss = 'rgba(57, 212, 154, 0.14)';
+                  barCss = 'inset 3px 0 0 var(--emerald-win)';
+                } else if (isPicked) {
+                  bgCss = 'rgba(224, 82, 99, 0.14)';
+                  barCss = 'inset 3px 0 0 var(--crimson-alert)';
+                }
+              }
+              return `
+                <button
+                  type="button"
+                  class="ws-meta-btn"
+                  data-quiz-pick="${idx}"
+                  ${answered ? 'disabled' : ''}
+                  style="justify-content:flex-start;text-align:left;min-height:46px;background:${bgCss};box-shadow:${barCss};opacity:1;padding:10px 14px;"
+                >
+                  <span style="width:24px;height:24px;border-radius:6px;background:rgba(242,207,126,0.14);display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:11.5px;color:var(--gold-bright);flex-shrink:0;">
+                    ${letters[idx]}
+                  </span>
+                  <span style="white-space:normal;line-height:1.3;">${escapeMetaHtml(sanitizeMetaCopy(optText))}</span>
+                </button>
+              `;
+            })
+            .join('')}
+        </div>
+
+        ${
+          answered
+            ? `
+              <div class="ws-meta-note is-emerald" style="display:flex;flex-direction:column;gap:4px;">
+                <div style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--emerald-win);">
+                  ${this.quizPickedIdx === correctIdx ? '✦ GOLD RESONANCE — EXACT RECALL' : `✓ ${escapeMetaHtml(sanitizeMetaCopy(current.answer))}`}
+                </div>
+                <div style="font-size:12.5px;color:var(--ivory-primary);line-height:1.42;">
+                  ${escapeMetaHtml(sanitizeMetaCopy(current.whyExplanation))}
+                </div>
+              </div>
+            `
+            : ''
+        }
+
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:6px;">
+          ${
+            !answered
+              ? `<button type="button" class="ws-meta-btn" id="ws-obs-quiz-flip">Reveal Answer</button>`
+              : `<span></span>`
+          }
+          <button type="button" class="ws-meta-btn-gold" id="ws-obs-quiz-next">
+            Next Flash ▶
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  private bindEvents(host: HTMLElement): void {
+    host.querySelector('#ws-obs-back')?.addEventListener('click', () => {
+      this.handleBackOrClose();
+    });
+
+    bindVaultJumperEvents(host, {
+      closeBtnId: 'ws-obs-close',
+      onNavigate: (target) => this.callbacks.onNavigateSection?.(target),
+      onClose: () => this.handleClose(),
+      onTapFeedback: () => {
+        this.deps.haptics?.uiTap();
+        this.deps.audio?.playSfx('ui_tap');
+      },
+    });
+
+    host.querySelectorAll<HTMLButtonElement>('[data-obs-tab]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const nextTab = btn.dataset.obsTab as ObservatoryTabId | undefined;
+        if (!nextTab || nextTab === this.activeTab) return;
+        this.deps.haptics?.uiTap();
+        this.deps.audio?.playSfx('ui_tap');
+        if (nextTab !== 'RELICS_3D') {
+          this.deps.audio?.stopVoice();
+        }
+        this.activeTab = nextTab;
+        if (nextTab === 'RELICS_3D') {
+          void this.sync3DShowcase();
+        }
+        this.rerender();
+      });
+    });
+
+    // 360° 3D Relic Study Controls
+    host.querySelectorAll<HTMLButtonElement>('[data-select-artifact]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.selectArtifact as ShowcaseArtifactId | undefined;
+        if (!id) return;
+        this.deps.haptics?.sightlineSnap();
+        this.deps.audio?.playSfx('sightline_snap');
+        this.deps.audio?.stopVoice();
+        this.selectedArtifactId = id;
+        this.uvBlacklightActive = false;
+        this.relicLatchesOpen = false;
+        this.activeHotspotId = null;
+        void this.sync3DShowcase();
+        this.rerender();
+      });
+    });
+
+    host.querySelectorAll<HTMLButtonElement>('[data-obs-hotspot]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        this.activeHotspotId = btn.dataset.obsHotspot ?? null;
+        const deg = Number(btn.dataset.orbitDeg) || 0;
+        if (this.deps.stage3d) {
+          this.deps.stage3d.prismRig.applyInspectDrag((deg * Math.PI) / 180, 0.8);
+          this.deps.stage3d.prismRig.releaseInspectDrag();
+        }
+        this.deps.haptics?.spinTick();
+        this.deps.audio?.playSfx('sightline_snap');
+        this.rerender();
+      });
+    });
+
+    host.querySelector('#ws-obs-latch-toggle')?.addEventListener('click', () => {
+      this.relicLatchesOpen = !this.relicLatchesOpen;
+      this.actuate3DRelicLatches(this.relicLatchesOpen);
+      this.deps.haptics?.peel(this.relicLatchesOpen ? 2 : 1);
+      this.deps.audio?.playSfx('shutter_peel');
+      if (this.relicLatchesOpen) {
+        this.callbacks.onLatchesOpened?.(this.selectedArtifactId);
+        if (this.isArtifactUnlocked(this.selectedArtifactId)) {
+          this.deps.audio?.playVoice('callout_vance_relic_latch.mp3');
+        }
+      }
+      this.rerender();
+    });
+
+    host.querySelector('#ws-obs-uv-scan')?.addEventListener('click', () => {
+      this.uvBlacklightActive = !this.uvBlacklightActive;
+      this.deps.haptics?.peel(2);
+      this.deps.audio?.playSfx('shutter_peel');
+      if (this.uvBlacklightActive) {
+        this.callbacks.onUvScan?.(this.selectedArtifactId);
+      }
+      if (this.deps.stage3d) {
+        this.deps.stage3d.setLightingMode(
+          this.uvBlacklightActive
+            ? 'TWIST_FRACTURE'
+            : this.selectedArtifactId === 'championship_trophy'
+              ? 'GOLD_RESONANCE'
+              : 'BROADCAST',
+        );
+      }
+      this.rerender();
+    });
+
+    // Intel Flash Search Input (stop key propagation so game shortcuts never trigger!)
+    const searchInput = host.querySelector<HTMLInputElement>('#ws-obs-flash-search');
+    if (searchInput) {
+      const stopKeys = (ev: KeyboardEvent) => ev.stopPropagation();
+      searchInput.addEventListener('keydown', stopKeys);
+      searchInput.addEventListener('keyup', stopKeys);
+      searchInput.addEventListener('keypress', stopKeys);
+      searchInput.addEventListener('input', () => {
+        const caret = searchInput.selectionStart ?? searchInput.value.length;
+        this.searchQuery = searchInput.value;
+        this.quizCursor = 0;
+        this.rerender();
+        const nextEl = host.querySelector<HTMLInputElement>('#ws-obs-flash-search');
+        if (nextEl) {
+          nextEl.focus();
+          nextEl.setSelectionRange(caret, caret);
+        }
+      });
+    }
+
+    host.querySelector('#ws-obs-toggle-seeds')?.addEventListener('click', () => {
+      this.includeSeedExemplars = !this.includeSeedExemplars;
+      this.quizCursor = 0;
+      this.deps.haptics?.uiTap();
+      this.deps.audio?.playSfx('ui_tap');
+      this.rerender();
+    });
+
+    host.querySelector('#ws-obs-launch-quiz')?.addEventListener('click', () => {
+      this.activeTab = 'SELF_QUIZ';
+      this.quizCursor = 0;
+      this.quizPickedIdx = null;
+      this.quizShutterFlipped = false;
+      this.deps.haptics?.uiTap();
+      this.deps.audio?.playSfx('ui_tap');
+      this.rerender();
+    });
+
+    host.querySelectorAll<HTMLButtonElement>('[data-flash-domain]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const raw = btn.dataset.flashDomain;
+        this.domainFilter = raw === 'ALL' ? 'ALL' : (Number(raw) as DomainId);
+        this.quizCursor = 0;
+        this.quizPickedIdx = null;
+        this.quizShutterFlipped = false;
+        this.deps.haptics?.uiTap();
+        this.deps.audio?.playSfx('ui_tap');
+        this.rerender();
+      });
+    });
+
+    host.querySelectorAll<HTMLButtonElement>('[data-remove-bookmark]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const qid = Number(btn.dataset.removeBookmark);
+        const found = this.deps.passport.getSnapshot().bookmarks.find((b) => b.qid === qid);
+        if (!found) return;
+        this.deps.passport.toggleIntelBookmark(found);
+        this.deps.haptics?.uiTap();
+        this.deps.audio?.playSfx('ui_tap');
+        this.rerender();
+      });
+    });
+
+    // Self-Quiz Events
+    host.querySelector('#ws-obs-reset-quiz-filter')?.addEventListener('click', () => {
+      this.searchQuery = '';
+      this.domainFilter = 'ALL';
+      this.includeSeedExemplars = true;
+      this.rerender();
+    });
+
+    host.querySelectorAll<HTMLButtonElement>('[data-quiz-pick]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        if (this.quizPickedIdx !== null || this.quizShutterFlipped) return;
+        const idx = Number(btn.dataset.quizPick);
+        const pool = this.getCombinedFlashes();
+        if (pool.length === 0) return;
+        const safeIdx = ((this.quizCursor % pool.length) + pool.length) % pool.length;
+        const { correctIdx } = buildQuizOptions(pool[safeIdx], pool);
+
+        this.quizPickedIdx = idx;
+        this.quizAttemptedCount += 1;
+        if (idx === correctIdx) {
+          this.quizCorrectCount += 1;
+          this.quizStreak += 1;
+          this.deps.haptics?.correctBloom();
+          this.deps.audio?.playSfx('gold_resonance');
+        } else {
+          this.quizStreak = 0;
+          this.deps.haptics?.wrongThud(false);
+          this.deps.audio?.playSfx('backfire_fracture');
+        }
+        this.rerender();
+      });
+    });
+
+    host.querySelector('#ws-obs-quiz-flip')?.addEventListener('click', () => {
+      this.quizShutterFlipped = true;
+      this.deps.haptics?.peel(2);
+      this.deps.audio?.playSfx('shutter_peel');
+      this.rerender();
+    });
+
+    host.querySelector('#ws-obs-quiz-next')?.addEventListener('click', () => {
+      this.quizCursor += 1;
+      this.quizPickedIdx = null;
+      this.quizShutterFlipped = false;
+      this.deps.haptics?.spinTick();
+      this.deps.audio?.playSfx('spin_tick');
+      this.rerender();
+    });
+  }
+}

@@ -1,0 +1,865 @@
+{
+  "schema_version": "1.0.0",
+  "license": "CC0 1.0 Universal (Poly Haven)",
+  "blender_version": "5.3.0",
+  "summary": {
+    "hdri_count": 5,
+    "hdri_total_bytes": 8066945,
+    "texture_suite_count": 6,
+    "texture_file_count": 18,
+    "texture_total_bytes": 9754951,
+    "model_count": 10,
+    "model_total_bytes": 20519292,
+    "grand_total_bytes": 38341188
+  },
+  "hdris": [
+    {
+      "id": "evening_museum_courtyard",
+      "description": "Geneva Alpine twilight blue-gold luxury reflections",
+      "godot_path": "res://assets/polyhaven/hdris/evening_museum_courtyard.hdr",
+      "disk_path": "godot/assets/polyhaven/hdris/evening_museum_courtyard.hdr",
+      "resolution_tier": "1k",
+      "file_bytes": 1489825,
+      "resolution": [
+        1024,
+        512
+      ]
+    },
+    {
+      "id": "entrance_hall",
+      "description": "London grand domed rotunda reflections",
+      "godot_path": "res://assets/polyhaven/hdris/entrance_hall.hdr",
+      "disk_path": "godot/assets/polyhaven/hdris/entrance_hall.hdr",
+      "resolution_tier": "1k",
+      "file_bytes": 1621287,
+      "resolution": [
+        1024,
+        512
+      ]
+    },
+    {
+      "id": "dresden_station_night",
+      "description": "Tokyo nocturnal rain-slick architectural lights",
+      "godot_path": "res://assets/polyhaven/hdris/dresden_station_night.hdr",
+      "disk_path": "godot/assets/polyhaven/hdris/dresden_station_night.hdr",
+      "resolution_tier": "1k",
+      "file_bytes": 1744020,
+      "resolution": [
+        1024,
+        512
+      ]
+    },
+    {
+      "id": "blue_lagoon_night",
+      "description": "Reykjavik geothermal twilight reflections",
+      "godot_path": "res://assets/polyhaven/hdris/blue_lagoon_night.hdr",
+      "disk_path": "godot/assets/polyhaven/hdris/blue_lagoon_night.hdr",
+      "resolution_tier": "1k",
+      "file_bytes": 1596565,
+      "resolution": [
+        1024,
+        512
+      ]
+    },
+    {
+      "id": "studio_small_09",
+      "description": "Warm dramatic Rembrandt spotlight studio reflections",
+      "godot_path": "res://assets/polyhaven/hdris/studio_small_09.hdr",
+      "disk_path": "godot/assets/polyhaven/hdris/studio_small_09.hdr",
+      "resolution_tier": "1k",
+      "file_bytes": 1615248,
+      "resolution": [
+        1024,
+        512
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "id": "marble_01",
+      "description": "Veined luxury marble tabletop & trim",
+      "godot_dir": "res://assets/polyhaven/textures/marble_01",
+      "total_bytes": 469999,
+      "maps": {
+        "diffuse.jpg": {
+          "godot_path": "res://assets/polyhaven/textures/marble_01/diffuse.jpg",
+          "file_bytes": 305029,
+          "resolution": [
+            1024,
+            1024
+          ]
+        },
+        "nor_gl.jpg": {
+          "godot_path": "res://assets/polyhaven/textures/marble_01/nor_gl.jpg",
+          "file_bytes": 110230,
+          "resolution": [
+            1024,
+            1024
+          ]
+        },
+        "arm.jpg": {
+          "godot_path": "res://assets/polyhaven/textures/marble_01/arm.jpg",
+          "file_bytes": 54740,
+          "resolution": [
+            1024,
+            1024
+          ]
+        }
+      }
+    },
+    {
+      "id": "granite_tile_02",
+      "description": "Honed dark architectural slate-granite floor",
+      "godot_dir": "res://assets/polyhaven/textures/granite_tile_02",
+      "total_bytes": 1921424,
+      "maps": {
+        "diffuse.jpg": {
+          "godot_path": "res://assets/polyhaven/textures/granite_tile_02/diffuse.jpg",
+          "file_bytes": 681382,
+          "resolution": [
+            1024,
+            1024
+          ]
+        },
+        "nor_gl.jpg": {
+          "godot_path": "res://assets/polyhaven/textures/granite_tile_02/nor_gl.jpg",
+          "file_bytes": 726173,
+          "resolution": [
+            1024,
+            1024
+          ]
+        },
+        "arm.jpg": {
+          "godot_path": "res://assets/polyhaven/textures/granite_tile_02/arm.jpg",
+          "file_bytes": 513869,
+          "resolution": [
+            1024,
+            1024
+          ]
+        }
+      }
+    },
+    {
+      "id": "black_walnut_veneer_01",
+      "description": "Luxury dark smoked walnut diplomatic table & wall paneling",
+      "godot_dir": "res://assets/polyhaven/textures/black_walnut_veneer_01",
+      "total_bytes": 1805855,
+      "maps": {
+        "diffuse.jpg": {
+          "godot_path": "res://assets/polyhaven/textures/black_walnut_veneer_01/diffuse.jpg",
+          "file_bytes": 592588,
+          "resolution": [
+            1024,
+            1024
+          ]
+        },
+        "nor_gl.jpg": {
+          "godot_path": "res://assets/polyhaven/textures/black_walnut_veneer_01/nor_gl.jpg",
+          "file_bytes": 403301,
+          "resolution": [
+            1024,
+            1024
+          ]
+        },
+        "arm.jpg": {
+          "godot_path": "res://assets/polyhaven/textures/black_walnut_veneer_01/arm.jpg",
+          "file_bytes": 809966,
+          "resolution": [
+            1024,
+            1024
+          ]
+        }
+      }
+    },
+    {
+      "id": "brown_leather",
+      "description": "Stitched diplomatic leather tabletop blotter & seating",
+      "godot_dir": "res://assets/polyhaven/textures/brown_leather",
+      "total_bytes": 1803559,
+      "maps": {
+        "diffuse.jpg": {
+          "godot_path": "res://assets/polyhaven/textures/brown_leather/diffuse.jpg",
+          "file_bytes": 503348,
+          "resolution": [
+            1024,
+            1024
+          ]
+        },
+        "nor_gl.jpg": {
+          "godot_path": "res://assets/polyhaven/textures/brown_leather/nor_gl.jpg",
+          "file_bytes": 863280,
+          "resolution": [
+            1024,
+            1024
+          ]
+        },
+        "arm.jpg": {
+          "godot_path": "res://assets/polyhaven/textures/brown_leather/arm.jpg",
+          "file_bytes": 436931,
+          "resolution": [
+            1024,
+            1024
+          ]
+        }
+      }
+    },
+    {
+      "id": "castle_wall_slates",
+      "description": "Brutalist dark Alpine slate monolith columns",
+      "godot_dir": "res://assets/polyhaven/textures/castle_wall_slates",
+      "total_bytes": 1996720,
+      "maps": {
+        "diffuse.jpg": {
+          "godot_path": "res://assets/polyhaven/textures/castle_wall_slates/diffuse.jpg",
+          "file_bytes": 625282,
+          "resolution": [
+            1024,
+            1024
+          ]
+        },
+        "nor_gl.jpg": {
+          "godot_path": "res://assets/polyhaven/textures/castle_wall_slates/nor_gl.jpg",
+          "file_bytes": 1072473,
+          "resolution": [
+            1024,
+            1024
+          ]
+        },
+        "arm.jpg": {
+          "godot_path": "res://assets/polyhaven/textures/castle_wall_slates/arm.jpg",
+          "file_bytes": 298965,
+          "resolution": [
+            1024,
+            1024
+          ]
+        }
+      }
+    },
+    {
+      "id": "herringbone_parquet",
+      "description": "London Sovereign Rotunda classic gallery floor",
+      "godot_dir": "res://assets/polyhaven/textures/herringbone_parquet",
+      "total_bytes": 1757394,
+      "maps": {
+        "diffuse.jpg": {
+          "godot_path": "res://assets/polyhaven/textures/herringbone_parquet/diffuse.jpg",
+          "file_bytes": 829046,
+          "resolution": [
+            1024,
+            1024
+          ]
+        },
+        "nor_gl.jpg": {
+          "godot_path": "res://assets/polyhaven/textures/herringbone_parquet/nor_gl.jpg",
+          "file_bytes": 373438,
+          "resolution": [
+            1024,
+            1024
+          ]
+        },
+        "arm.jpg": {
+          "godot_path": "res://assets/polyhaven/textures/herringbone_parquet/arm.jpg",
+          "file_bytes": 554910,
+          "resolution": [
+            1024,
+            1024
+          ]
+        }
+      }
+    }
+  ],
+  "models": [
+    {
+      "id": "desk_lamp_arm_01",
+      "description": "Articulated brass executive desk lamp for interrogation table",
+      "godot_path": "res://assets/polyhaven/models/desk_lamp_arm_01.glb",
+      "disk_path": "godot/assets/polyhaven/models/desk_lamp_arm_01.glb",
+      "blender_stats": {
+        "mesh_objects": 1,
+        "evaluated_triangles": 24102,
+        "top_nodes": [
+          "desk_lamp_arm_01"
+        ],
+        "materials": [
+          "desk_lamp_arm_01",
+          "desk_lamp_arm_01_light"
+        ]
+      },
+      "glb_verified": {
+        "file_bytes": 2918440,
+        "glb_meshes": 1,
+        "glb_materials": 2,
+        "glb_triangles": 24102,
+        "embedded_images": 3,
+        "image_mime_types": {
+          "image/jpeg": 3
+        },
+        "embedded_image_bytes": 2134727,
+        "external_uris": 0
+      },
+      "bounds_yup_m": {
+        "min": [
+          -0.1185,
+          -0.088,
+          -0.2966
+        ],
+        "max": [
+          0.0833,
+          0.8046,
+          0.3172
+        ],
+        "size_whd": [
+          0.2017,
+          0.8926,
+          0.6139
+        ],
+        "center": [
+          -0.0176,
+          0.3583,
+          0.0103
+        ],
+        "surface_place_y_offset": 0.088,
+        "ceiling_hang_y_offset": -0.8046
+      }
+    },
+    {
+      "id": "chess_set",
+      "description": "Sculpted chess pieces mid-gambit on the diplomatic table",
+      "godot_path": "res://assets/polyhaven/models/chess_set.glb",
+      "disk_path": "godot/assets/polyhaven/models/chess_set.glb",
+      "blender_stats": {
+        "mesh_objects": 33,
+        "evaluated_triangles": 76920,
+        "top_nodes": [
+          "piece_rook_white_01",
+          "piece_pawn_white_01",
+          "piece_bishop_white_01",
+          "piece_queen_white",
+          "piece_king_white",
+          "piece_knight_white_01",
+          "board",
+          "piece_knight_white_02",
+          "piece_rook_white_02",
+          "piece_bishop_white_02",
+          "piece_pawn_white_02",
+          "piece_pawn_white_03",
+          "piece_pawn_white_04",
+          "piece_pawn_white_05",
+          "piece_pawn_white_06",
+          "piece_pawn_white_07",
+          "piece_pawn_white_08",
+          "piece_rook_black_01",
+          "piece_pawn_black_01",
+          "piece_bishop_black_01",
+          "piece_queen_black",
+          "piece_king_black",
+          "piece_knight_black_01",
+          "piece_knight_black_02",
+          "piece_rook_black_02",
+          "piece_bishop_black_02",
+          "piece_pawn_black_02",
+          "piece_pawn_black_03",
+          "piece_pawn_black_04",
+          "piece_pawn_black_05",
+          "piece_pawn_black_06",
+          "piece_pawn_black_07",
+          "piece_pawn_black_08"
+        ],
+        "materials": [
+          "chess_set_board",
+          "chess_set_pieces_black",
+          "chess_set_pieces_white"
+        ]
+      },
+      "glb_verified": {
+        "file_bytes": 3070460,
+        "glb_meshes": 33,
+        "glb_materials": 3,
+        "glb_triangles": 76920,
+        "embedded_images": 9,
+        "image_mime_types": {
+          "image/jpeg": 9
+        },
+        "embedded_image_bytes": 1236361,
+        "external_uris": 0
+      },
+      "bounds_yup_m": {
+        "min": [
+          -0.2766,
+          0.0,
+          -0.2766
+        ],
+        "max": [
+          0.2766,
+          0.1124,
+          0.2766
+        ],
+        "size_whd": [
+          0.5532,
+          0.1124,
+          0.5532
+        ],
+        "center": [
+          0.0,
+          0.0562,
+          0.0
+        ],
+        "surface_place_y_offset": -0.0,
+        "ceiling_hang_y_offset": -0.1124
+      }
+    },
+    {
+      "id": "pocket_watch",
+      "description": "Julian Vance's sculpted brass pocket watch",
+      "godot_path": "res://assets/polyhaven/models/pocket_watch.glb",
+      "disk_path": "godot/assets/polyhaven/models/pocket_watch.glb",
+      "blender_stats": {
+        "mesh_objects": 6,
+        "evaluated_triangles": 15615,
+        "top_nodes": [
+          "pocket_watch_button",
+          "pocket_watch_frame",
+          "pocket_watch_hand_hours",
+          "pocket_watch_ring",
+          "pocket_watch_hand_secondes",
+          "pocket_watch_hand_minutes"
+        ],
+        "materials": [
+          "pocket_watch",
+          "pocket_watch_glass"
+        ]
+      },
+      "glb_verified": {
+        "file_bytes": 2073092,
+        "glb_meshes": 6,
+        "glb_materials": 2,
+        "glb_triangles": 15615,
+        "embedded_images": 4,
+        "image_mime_types": {
+          "image/jpeg": 4
+        },
+        "embedded_image_bytes": 1645845,
+        "external_uris": 0
+      },
+      "bounds_yup_m": {
+        "min": [
+          -0.0288,
+          -0.029,
+          -0.0078
+        ],
+        "max": [
+          0.0288,
+          0.0466,
+          0.0078
+        ],
+        "size_whd": [
+          0.0577,
+          0.0756,
+          0.0156
+        ],
+        "center": [
+          0.0,
+          0.0088,
+          -0.0
+        ],
+        "surface_place_y_offset": 0.029,
+        "ceiling_hang_y_offset": -0.0466
+      }
+    },
+    {
+      "id": "magnifying_glass_01",
+      "description": "Brass & optical glass magnifying lens",
+      "godot_path": "res://assets/polyhaven/models/magnifying_glass_01.glb",
+      "disk_path": "godot/assets/polyhaven/models/magnifying_glass_01.glb",
+      "blender_stats": {
+        "mesh_objects": 1,
+        "evaluated_triangles": 7240,
+        "top_nodes": [
+          "magnifying_glass_01"
+        ],
+        "materials": [
+          "magnifying_glass_01",
+          "magnifying_glass_01_lense"
+        ]
+      },
+      "glb_verified": {
+        "file_bytes": 377032,
+        "glb_meshes": 1,
+        "glb_materials": 2,
+        "glb_triangles": 7240,
+        "embedded_images": 4,
+        "image_mime_types": {
+          "image/jpeg": 4
+        },
+        "embedded_image_bytes": 191910,
+        "external_uris": 0
+      },
+      "bounds_yup_m": {
+        "min": [
+          -0.0661,
+          -0.0,
+          -0.0134
+        ],
+        "max": [
+          0.0661,
+          0.2716,
+          0.0134
+        ],
+        "size_whd": [
+          0.1321,
+          0.2716,
+          0.0267
+        ],
+        "center": [
+          0.0,
+          0.1358,
+          0.0
+        ],
+        "surface_place_y_offset": 0.0,
+        "ceiling_hang_y_offset": -0.2716
+      }
+    },
+    {
+      "id": "book_encyclopedia_set_01",
+      "description": "Antique leather-bound reference books",
+      "godot_path": "res://assets/polyhaven/models/book_encyclopedia_set_01.glb",
+      "disk_path": "godot/assets/polyhaven/models/book_encyclopedia_set_01.glb",
+      "blender_stats": {
+        "mesh_objects": 20,
+        "evaluated_triangles": 67306,
+        "top_nodes": [
+          "book_encyclopedia_set_01_book01",
+          "book_encyclopedia_set_01_book02",
+          "book_encyclopedia_set_01_book03",
+          "book_encyclopedia_set_01_book04",
+          "book_encyclopedia_set_01_book05",
+          "book_encyclopedia_set_01_book06",
+          "book_encyclopedia_set_01_book07",
+          "book_encyclopedia_set_01_book08",
+          "book_encyclopedia_set_01_book09",
+          "book_encyclopedia_set_01_book10",
+          "book_encyclopedia_set_01_book11",
+          "book_encyclopedia_set_01_book12",
+          "book_encyclopedia_set_01_book13",
+          "book_encyclopedia_set_01_book14",
+          "book_encyclopedia_set_01_book15",
+          "book_encyclopedia_set_01_book16",
+          "book_encyclopedia_set_01_book17",
+          "book_encyclopedia_set_01_book18",
+          "book_encyclopedia_set_01_book19",
+          "book_encyclopedia_set_01_book20"
+        ],
+        "materials": [
+          "book_encyclopedia_set_01_cover",
+          "book_encyclopedia_set_01_paper"
+        ]
+      },
+      "glb_verified": {
+        "file_bytes": 3312348,
+        "glb_meshes": 20,
+        "glb_materials": 2,
+        "glb_triangles": 67306,
+        "embedded_images": 6,
+        "image_mime_types": {
+          "image/jpeg": 6
+        },
+        "embedded_image_bytes": 651851,
+        "external_uris": 0
+      },
+      "bounds_yup_m": {
+        "min": [
+          -0.0193,
+          -0.0,
+          -0.0621
+        ],
+        "max": [
+          0.532,
+          0.2374,
+          0.101
+        ],
+        "size_whd": [
+          0.5513,
+          0.2374,
+          0.1631
+        ],
+        "center": [
+          0.2563,
+          0.1187,
+          0.0195
+        ],
+        "surface_place_y_offset": 0.0,
+        "ceiling_hang_y_offset": -0.2374
+      }
+    },
+    {
+      "id": "mid_century_lounge_chair",
+      "description": "Luxury diplomatic armchair across the table",
+      "godot_path": "res://assets/polyhaven/models/mid_century_lounge_chair.glb",
+      "disk_path": "godot/assets/polyhaven/models/mid_century_lounge_chair.glb",
+      "blender_stats": {
+        "mesh_objects": 1,
+        "evaluated_triangles": 6148,
+        "top_nodes": [
+          "mid_century_lounge_chair"
+        ],
+        "materials": [
+          "mid_century_lounge_chair"
+        ]
+      },
+      "glb_verified": {
+        "file_bytes": 2086660,
+        "glb_meshes": 1,
+        "glb_materials": 1,
+        "glb_triangles": 6148,
+        "embedded_images": 3,
+        "image_mime_types": {
+          "image/jpeg": 3
+        },
+        "embedded_image_bytes": 1912751,
+        "external_uris": 0
+      },
+      "bounds_yup_m": {
+        "min": [
+          -0.5043,
+          -0.0,
+          -0.6614
+        ],
+        "max": [
+          0.5043,
+          1.1691,
+          0.5289
+        ],
+        "size_whd": [
+          1.0086,
+          1.1691,
+          1.1903
+        ],
+        "center": [
+          0.0,
+          0.5845,
+          -0.0662
+        ],
+        "surface_place_y_offset": 0.0,
+        "ceiling_hang_y_offset": -1.1691
+      }
+    },
+    {
+      "id": "marble_bust_01",
+      "description": "Photogrammetry classical marble bust for London Rotunda",
+      "godot_path": "res://assets/polyhaven/models/marble_bust_01.glb",
+      "disk_path": "godot/assets/polyhaven/models/marble_bust_01.glb",
+      "blender_stats": {
+        "mesh_objects": 1,
+        "evaluated_triangles": 17456,
+        "top_nodes": [
+          "marble_bust_01"
+        ],
+        "materials": [
+          "marble_bust_01"
+        ]
+      },
+      "glb_verified": {
+        "file_bytes": 854808,
+        "glb_meshes": 1,
+        "glb_materials": 1,
+        "glb_triangles": 17456,
+        "embedded_images": 3,
+        "image_mime_types": {
+          "image/jpeg": 3
+        },
+        "embedded_image_bytes": 436364,
+        "external_uris": 0
+      },
+      "bounds_yup_m": {
+        "min": [
+          -0.1229,
+          0.0001,
+          -0.1446
+        ],
+        "max": [
+          0.1489,
+          0.515,
+          0.1551
+        ],
+        "size_whd": [
+          0.2717,
+          0.5149,
+          0.2997
+        ],
+        "center": [
+          0.013,
+          0.2575,
+          0.0053
+        ],
+        "surface_place_y_offset": -0.0001,
+        "ceiling_hang_y_offset": -0.515
+      }
+    },
+    {
+      "id": "Chandelier_01",
+      "description": "Ornate brass & crystal chandelier",
+      "godot_path": "res://assets/polyhaven/models/Chandelier_01.glb",
+      "disk_path": "godot/assets/polyhaven/models/Chandelier_01.glb",
+      "blender_stats": {
+        "mesh_objects": 1,
+        "evaluated_triangles": 26860,
+        "top_nodes": [
+          "Chandelier_01"
+        ],
+        "materials": [
+          "basecolor_classic_chandelier_1",
+          "lamps_classic_chandelier_1"
+        ]
+      },
+      "glb_verified": {
+        "file_bytes": 1366032,
+        "glb_meshes": 1,
+        "glb_materials": 2,
+        "glb_triangles": 26860,
+        "embedded_images": 3,
+        "image_mime_types": {
+          "image/jpeg": 3
+        },
+        "embedded_image_bytes": 409753,
+        "external_uris": 0
+      },
+      "bounds_yup_m": {
+        "min": [
+          -0.373,
+          -0.7983,
+          -0.4022
+        ],
+        "max": [
+          0.3735,
+          0.0,
+          0.4133
+        ],
+        "size_whd": [
+          0.7465,
+          0.7983,
+          0.8155
+        ],
+        "center": [
+          0.0003,
+          -0.3991,
+          0.0056
+        ],
+        "surface_place_y_offset": 0.7983,
+        "ceiling_hang_y_offset": -0.0
+      }
+    },
+    {
+      "id": "mantel_clock_01",
+      "description": "Antique luxury horological mantel clock",
+      "godot_path": "res://assets/polyhaven/models/mantel_clock_01.glb",
+      "disk_path": "godot/assets/polyhaven/models/mantel_clock_01.glb",
+      "blender_stats": {
+        "mesh_objects": 2,
+        "evaluated_triangles": 25721,
+        "top_nodes": [
+          "mantel_clock_01",
+          "mantel_clock_01_glass"
+        ],
+        "materials": [
+          "mantel_clock_01",
+          "mantel_clock_01_glass"
+        ]
+      },
+      "glb_verified": {
+        "file_bytes": 2550412,
+        "glb_meshes": 2,
+        "glb_materials": 2,
+        "glb_triangles": 25721,
+        "embedded_images": 4,
+        "image_mime_types": {
+          "image/jpeg": 4
+        },
+        "embedded_image_bytes": 1901519,
+        "external_uris": 0
+      },
+      "bounds_yup_m": {
+        "min": [
+          -0.1712,
+          0.0005,
+          -0.0631
+        ],
+        "max": [
+          0.1712,
+          0.1609,
+          0.0631
+        ],
+        "size_whd": [
+          0.3423,
+          0.1605,
+          0.1262
+        ],
+        "center": [
+          0.0,
+          0.0807,
+          0.0
+        ],
+        "surface_place_y_offset": -0.0005,
+        "ceiling_hang_y_offset": -0.1609
+      }
+    },
+    {
+      "id": "brass_candleholders",
+      "description": "Brushed brass gallery accent candleholders",
+      "godot_path": "res://assets/polyhaven/models/brass_candleholders.glb",
+      "disk_path": "godot/assets/polyhaven/models/brass_candleholders.glb",
+      "blender_stats": {
+        "mesh_objects": 3,
+        "evaluated_triangles": 41936,
+        "top_nodes": [
+          "brass_candleholder_03",
+          "brass_candleholder_02",
+          "brass_candleholder_01"
+        ],
+        "materials": [
+          "brass_candleholders_01",
+          "brass_candleholders_02",
+          "brass_candleholders_03",
+          "brass_candleholders_candles",
+          "brass_candleholders_flame"
+        ]
+      },
+      "glb_verified": {
+        "file_bytes": 1910008,
+        "glb_meshes": 3,
+        "glb_materials": 5,
+        "glb_triangles": 41936,
+        "embedded_images": 14,
+        "image_mime_types": {
+          "image/jpeg": 13,
+          "image/png": 1
+        },
+        "embedded_image_bytes": 701879,
+        "external_uris": 0
+      },
+      "bounds_yup_m": {
+        "min": [
+          -0.4487,
+          -0.0005,
+          -0.1823
+        ],
+        "max": [
+          0.6042,
+          0.8348,
+          0.1824
+        ],
+        "size_whd": [
+          1.0529,
+          0.8353,
+          0.3647
+        ],
+        "center": [
+          0.0778,
+          0.4172,
+          0.0001
+        ],
+        "surface_place_y_offset": 0.0005,
+        "ceiling_hang_y_offset": -0.8348
+      }
+    }
+  ]
+}
