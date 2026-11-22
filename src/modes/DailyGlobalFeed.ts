@@ -4,7 +4,14 @@
 // ============================================================================
 
 import type { DailyBroadcastPacket, ForgeEngine, PrismQuestion } from '../forge';
-import type { PassportSystem } from '../narrative/PassportSystem';
+import type { FactionId, PassportSystem } from '../narrative/PassportSystem';
+import {
+  buildGlobalCohortLeaderboard,
+  duelRivalsStore,
+  utcDateToBroadcastNumber,
+  type DuelLeaderboardFriend,
+  type LeaderboardCohortSnapshot,
+} from './DuelLinkCodec';
 import {
   ScoringEngine,
   type PrismAnswerSubmission,
@@ -117,6 +124,40 @@ export function buildFiveLineDailyShareCard(params: {
   ].join('\n');
 }
 
+/**
+ * Generates a deterministic UTC-seeded international top-20 Global Feed contender board
+ * calibrated around `median = 19,500` (zero 4-digit year commas!), merged with all
+ * persisted `?duel=` friends (`ws_duel_rivals_v2`), optional explicit `duelFriends`,
+ * and the player's live rank.
+ */
+export function getDailyGlobalLeaderboard(
+  utcDate: string,
+  playerName: string,
+  playerScore: number,
+  playerFaction: FactionId,
+  duelFriends?: ReadonlyArray<DuelLeaderboardFriend>
+): LeaderboardCohortSnapshot {
+  const cleanDate =
+    typeof utcDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(utcDate.trim())
+      ? utcDate.trim()
+      : getCurrentUtcDateString();
+  const broadcastNumber = utcDateToBroadcastNumber(cleanDate);
+  duelRivalsStore.reload();
+  const persistedFriends = duelRivalsStore.getFriendsForDaily(cleanDate);
+
+  return buildGlobalCohortLeaderboard({
+    scope: 'DAILY',
+    scopeKey: cleanDate,
+    title: `Global Feed #${broadcastNumber} · ${cleanDate}`,
+    utcDate: cleanDate,
+    playerName,
+    playerScore,
+    playerFaction,
+    duelFriends,
+    persistedFriends,
+  });
+}
+
 export class DailyGlobalFeed {
   private readonly forge: ForgeEngine;
   private readonly passport: PassportSystem;
@@ -187,6 +228,28 @@ export class DailyGlobalFeed {
 
   public getDailyStreak(): number {
     return this.persistence.dailyStreak;
+  }
+
+  /**
+   * Convenience instance wrapper returning today's merged Global Cohort Leaderboard
+   * (persisted `?duel=` friends + international top-20 + player live/saved score).
+   */
+  public getGlobalLeaderboard(
+    utcDate = getCurrentUtcDateString(),
+    playerFaction: FactionId = 'AGORA',
+    duelFriends?: ReadonlyArray<DuelLeaderboardFriend>
+  ): LeaderboardCohortSnapshot {
+    const saved = this.persistence.completedRunsByDate[utcDate];
+    const activeScore =
+      this.activePacket?.utcDate === utcDate ? this.scoring.getMatchScore() : 0;
+    const score = Math.max(activeScore, saved?.score ?? 0);
+    return getDailyGlobalLeaderboard(
+      utcDate,
+      this.passport.getChallengerName(),
+      score,
+      playerFaction,
+      duelFriends
+    );
   }
 
   /**

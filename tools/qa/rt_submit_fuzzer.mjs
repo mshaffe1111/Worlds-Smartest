@@ -613,10 +613,12 @@ async function inspectQuestionState(page) {
     const hasCal = Boolean(document.querySelector('#ws-cal-slider'));
     const hasCodex = Boolean(document.querySelector('[data-codex-subj]'));
     const hasGauntlet = Boolean(document.querySelector('[data-gauntlet]'));
+    const hasGlobe = Boolean(document.querySelector('.ws-globe-pin-controls, .ws-globe-anchor-btn'));
     const domainLabel = (document.querySelector('.ws-domain-label')?.textContent || '').replace(/\\s+/g, ' ').trim();
     const isHeroStep = /LATCH|STEP|SYNTHESIS/i.test(domainLabel);
     let morph = 'UNKNOWN';
     if (hasGauntlet) morph = 'GAUNTLET_SHATTER';
+    else if (hasGlobe) morph = 'GLOBE_PIN_DROP';
     else if (hasCal) morph = 'CALIBRATOR_DIAL';
     else if (hasCodex) morph = 'CODEX_DUAL_RING';
     else if (facets.length > 0) morph = isHeroStep ? 'HERO_ARTIFACT_SYNTHESIS' : 'SIGHTLINE_LOCK';
@@ -813,6 +815,12 @@ async function runSubmissionTrial(page, viewport, scenario, ctx = {}) {
         await page.mousePressMoveRelease({ startX: btn.cx, startY: btn.cy, durationMs: 20 });
         await sleep(35);
       }
+    }
+  } else if (morph === 'GLOBE_PIN_DROP') {
+    const anchorBtn = await page.getRect('.ws-globe-anchor-btn');
+    if (anchorBtn && anchorBtn.visible && anchorBtn.hitMatches) {
+      await page.mousePressMoveRelease({ startX: anchorBtn.cx, startY: anchorBtn.cy, durationMs: 20 });
+      await sleep(45);
     }
   }
 
@@ -1387,8 +1395,11 @@ async function clickUntilTargetAppears(page, triggerSel, targetSel, timeoutMs = 
 }
 
 async function launchBriefingMarathon(page, count = 50) {
-  await clickUntilTargetAppears(page, '[data-title-mode="BRIEFING"]', '#ws-open-briefing-modal');
-  await clickUntilTargetAppears(page, '#ws-open-briefing-modal', '#ws-cat-launch');
+  await clickUntilTargetAppears(page, '[data-title-mode="BRIEFING"]', '#ws-cat-launch, #ws-open-briefing-modal');
+  const hasCatLaunch = await page.eval(`Boolean(document.querySelector('#ws-cat-launch'))`);
+  if (!hasCatLaunch) {
+    await clickUntilTargetAppears(page, '#ws-open-briefing-modal', '#ws-cat-launch');
+  }
   await page.clickSelectorSafe(`[data-len="${count}"]`, 10000);
   await sleep(100);
   await page.clickSelectorSafe('#ws-cat-launch', 10000);
@@ -1400,8 +1411,11 @@ async function launchBriefingMarathon(page, count = 50) {
 }
 
 async function launchDailyBroadcast(page) {
-  await clickUntilTargetAppears(page, '[data-title-mode="DAILY"]', '#ws-launch-daily');
-  await page.clickSelectorSafe('#ws-launch-daily', 10000);
+  await clickUntilTargetAppears(page, '[data-title-mode="DAILY"]', '.ws-question-prompt, #ws-launch-daily');
+  const alreadyPlaying = await page.eval(`Boolean(document.querySelector('.ws-question-prompt'))`);
+  if (!alreadyPlaying) {
+    await page.clickSelectorSafe('#ws-launch-daily', 10000);
+  }
   await page.waitFor(
     `Boolean(document.querySelector('.ws-question-prompt'))`,
     15000,
@@ -1440,8 +1454,15 @@ async function seedSaveForGenevaBossAndLaunch(page, baseUrl) {
   await page.navigate(baseUrl);
   await waitForAppBoot(page);
 
-  await clickUntilTargetAppears(page, '[data-title-mode="CAMPAIGN"]', '[data-mission-id="ch_5"]', 15000);
-  await page.clickSelectorSafe('[data-mission-id="ch_5"]', 10000);
+  await clickUntilTargetAppears(page, '[data-title-mode="CAMPAIGN"]', '[data-mission-id="ch_5"], [data-city-hub="ch"]', 15000);
+  const hasCh5 = await page.eval(`Boolean(document.querySelector('[data-mission-id="ch_5"]'))`);
+  if (!hasCh5) {
+    await clickUntilTargetAppears(page, '[data-city-hub="ch"]', '[data-mission-id="ch_5"], .ws-question-prompt, #ws-boss-engage', 10000);
+  }
+  const hasCh5Now = await page.eval(`Boolean(document.querySelector('[data-mission-id="ch_5"]'))`);
+  if (hasCh5Now) {
+    await page.clickSelectorSafe('[data-mission-id="ch_5"]', 10000);
+  }
   await sleep(250);
   await dismissInterstitials(page);
   await page.waitFor(
@@ -1456,6 +1477,19 @@ function buildScenarioQueueForMorph(morph, viewport, counter) {
     const seq = viewport.touchEnabled
       ? ['GAUNTLET_TOUCH_TAP', 'GAUNTLET_MOUSE', 'GAUNTLET_KEY_ARROW']
       : ['GAUNTLET_MOUSE', 'GAUNTLET_KEY_ARROW'];
+    return seq[counter % seq.length];
+  }
+  if (morph === 'GLOBE_PIN_DROP') {
+    const seq = [
+      'RAPID_MOUSE_CLICK_LT40MS',
+      'JITTERY_HUMAN_MOUSE_CLICK_35_65PX',
+      'POINTERUP_4PX_OUTSIDE_BOX',
+      'SYNTHETIC_DOM_CLICK',
+      'KEYBOARD_SPACE_TAP',
+      'PEEL_TIER2_IMMEDIATE_SUBMIT',
+      'OVERCLOCK_HOLD_600MS',
+      'BLUFF_ECHO_95PX_CANCEL_THEN_FRESH_CLICK',
+    ];
     return seq[counter % seq.length];
   }
   if (morph === 'CALIBRATOR_DIAL') {

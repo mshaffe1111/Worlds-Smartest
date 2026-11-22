@@ -908,10 +908,47 @@ html.ws-3d-showcase-open *::after {
 .ws-title-dock .ws-btn-gold,
 .ws-title-pedestal .ws-btn-gold,
 .ws-title-primary-cta {
-  width: min(100%, 340px);
+  width: min(100%, 360px);
   min-height: 48px;
-  padding: 12px 26px;
-  font-size: clamp(13px, 3.4vw, 15px);
+  padding: 10px 22px;
+  font-size: clamp(12.5px, 3.3vw, 15px);
+}
+
+.ws-title-primary-cta:has(.ws-title-primary-sub) {
+  flex-direction: column;
+  gap: 2px;
+  padding: 7px 18px;
+  min-height: 50px;
+  max-height: 54px;
+  line-height: 1.12;
+}
+
+.ws-title-primary-label,
+.ws-title-primary-main {
+  display: block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ws-title-primary-sub {
+  display: block;
+  max-width: 100%;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: #cfd6e4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.ws-title-primary-cta .ws-title-primary-sub {
+  color: rgba(13, 17, 26, 0.86);
 }
 
 .ws-title-meta-row {
@@ -920,7 +957,42 @@ html.ws-3d-showcase-open *::after {
   flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
+}
+
+.ws-title-meta-row .ws-instant-prism-pill,
+.ws-instant-prism-pill.is-compact {
+  min-height: 38px;
+  padding: 4px 10px;
+  font-size: clamp(10px, 2.55vw, 11.5px);
+  letter-spacing: 0.03em;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+#ws-title-srs-cta {
+  min-height: 38px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(242, 207, 126, 0.14);
+  border: none;
+  color: var(--gold-bright);
+  font-family: var(--font-mono);
+  font-size: clamp(10px, 2.55vw, 11px);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: background 0.14s ease, color 0.14s ease;
+}
+
+#ws-title-srs-cta:hover {
+  background: rgba(242, 207, 126, 0.24);
+  color: #ffffff;
 }
 
 .ws-title-verified-count {
@@ -928,7 +1000,7 @@ html.ws-3d-showcase-open *::after {
   font-size: clamp(10px, 2.6vw, 10.5px);
   font-weight: 600;
   letter-spacing: 0.04em;
-  color: var(--ivory-dim);
+  color: #9ba5b8;
   white-space: nowrap;
   min-width: 0;
   overflow: hidden;
@@ -936,37 +1008,37 @@ html.ws-3d-showcase-open *::after {
   font-variant-numeric: tabular-nums;
 }
 
-/* Single-Row Frameless 5-Mode Hairline Strip */
+/* Single-Row Frameless 5-Mode Hairline Strip (Plain-English Labels, Zero Clipping on 360px!) */
 .ws-title-mode-strip,
 .ws-title-quick-modes {
   width: 100%;
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: nowrap;
   align-items: center;
+  justify-content: space-between;
   gap: 2px;
-  padding-top: 6px;
+  padding-top: 5px;
   box-shadow: inset 0 1px 0 var(--hairline-subtle);
 }
 
 .ws-title-mode-strip button,
 .ws-title-quick-modes button,
 .ws-title-mode-btn {
-  min-height: 44px;
+  flex: 1 1 auto;
+  min-height: 42px;
   min-width: 0;
-  padding: 6px 4px;
+  padding: 6px 5px;
   border-radius: 8px;
   background: transparent;
   border: none;
   box-shadow: none;
-  color: var(--ivory-muted);
-  font-family: var(--font-mono);
-  font-size: clamp(10px, 2.5vw, 11.5px);
+  color: #cfd6e4;
+  font-family: var(--font-sans);
+  font-size: clamp(10.5px, 2.75vw, 12px);
   font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  text-transform: none;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1904,17 +1976,18 @@ html.ws-3d-showcase-open *::after {
   padding-bottom: 12px;
 }
 
-/* Sleek 2026 Underline Mode Tabs (Dark Obsidian Scrim Keeps Subtitles Crisp Over Bright Windows) */
+/* Sleek 2026 Compact Single-Row Mode Bar (Zero Jargon Multi-Line Boxes, Zero 360px Clip!) */
 .ws-mode-tabs {
   display: flex;
   flex-wrap: nowrap;
+  justify-content: space-between;
   overflow-x: auto;
-  gap: 4px;
+  gap: 2px;
   width: 100%;
   flex-shrink: 0;
-  padding: 4px;
-  border-radius: 12px;
-  background: rgba(6, 10, 18, 0.84);
+  padding: 3px;
+  border-radius: 10px;
+  background: rgba(6, 10, 18, 0.88);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     inset 0 -1px 0 var(--hairline-subtle);
@@ -1927,33 +2000,49 @@ html.ws-3d-showcase-open *::after {
 
 .ws-mode-tab {
   position: relative;
-  flex: 1 0 auto;
+  flex: 1 1 auto;
   min-width: 0;
-  min-height: 46px;
-  padding: 8px 12px;
-  border-radius: 8px 8px 0 0;
+  min-height: 36px;
+  padding: 6px 6px;
+  border-radius: 7px;
   background: transparent;
   border: none;
-  text-align: left;
+  text-align: center;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   transition: background 0.15s ease, color 0.15s ease;
 }
 
 .ws-mode-tab:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .ws-mode-tab.is-selected {
-  background: linear-gradient(180deg, rgba(242, 207, 126, 0.13) 0%, rgba(242, 207, 126, 0.03) 100%);
+  background: rgba(242, 207, 126, 0.15);
   box-shadow: inset 0 -2px 0 var(--gold-bright);
 }
 
 .ws-mode-tab-title {
-  font-family: var(--font-display);
-  font-size: clamp(11px, 1.1vw, 12.5px);
+  font-family: var(--font-sans);
+  font-size: clamp(10.5px, 2.75vw, 12.5px);
   font-weight: 700;
-  color: var(--ivory-muted);
-  letter-spacing: 0.06em;
+  color: #cfd6e4;
+  letter-spacing: 0.01em;
   white-space: nowrap;
+  line-height: 1.2;
+}
+
+@media (max-width: 440px) {
+  .ws-mode-tabs .ws-mode-tab {
+    padding: 5px 3px;
+  }
+
+  .ws-mode-tabs .ws-mode-tab-title {
+    font-size: 10.5px;
+    letter-spacing: 0;
+  }
 }
 
 .ws-mode-tab.is-selected .ws-mode-tab-title {
@@ -1971,8 +2060,19 @@ html.ws-3d-showcase-open *::after {
   overflow: hidden;
 }
 
+/* Keep Hub Mode Bar a razor-compact single row on mobile & compact heights so Continue Hero + 8 Cities sit above the fold */
+@media (max-width: 900px), (max-height: 760px) {
+  .ws-mode-tabs .ws-mode-tab-sub {
+    display: none;
+  }
+}
+
 /* Registration / Story Choice Cards (use .ws-mode-tab inside grids -> restore sleek tonal row look) */
 .ws-frame-cinema .ws-mode-tab {
+  min-height: 46px;
+  padding: 8px 12px;
+  text-align: left;
+  align-items: flex-start;
   border-radius: 10px;
   background: var(--surface-row);
   box-shadow: inset 3px 0 0 rgba(232, 197, 116, 0.20);
@@ -3207,4 +3307,1044 @@ body:has(.ws-unlock-toast.is-visible) .ws-rival-strip {
   opacity: 0 !important;
   pointer-events: none !important;
   transition: opacity 0.16s ease;
+}
+
+/* Never let an Honour toast hijack clicks over an open Vault dropdown or slide-over Vault drawer (#359) */
+body:has(.ws-meta-vault-menu:not([hidden])) .ws-honour-toast-host,
+body:has(.ws-meta-vault-menu:not([hidden])) .ws-honour-toast-card,
+body:has(.ws-vault-drawer.is-open) .ws-honour-toast-host,
+body:has(.ws-vault-drawer.is-open) .ws-honour-toast-card {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* ==========================================================================
+   V2.0 COMMERCIAL UPGRADES — SLEEK FRAMELESS EXTENSIONS
+   Zero Nested 4-Sided Boxes · Zero WebGL Blur · WCAG-AA (>= 4.5:1, >= 10px)
+   ========================================================================== */
+
+/* ☰ VAULT Live Badges (Spaced-Repetition Due Count + Offline Pack Status) */
+.ws-vault-badge.is-due {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(242, 207, 126, 0.20);
+  color: var(--gold-bright);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  font-variant-numeric: tabular-nums;
+}
+
+.ws-vault-badge.is-offline-ready {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(57, 212, 154, 0.18);
+  color: #67ebb8;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+/* Upgrade #4: Start Screen 1-Tap Instant Live Prism Quick-Hook Pill */
+.ws-instant-prism-pill {
+  position: relative;
+  min-height: 44px;
+  max-width: 100%;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(86, 212, 245, 0.16) 0%,
+    rgba(242, 207, 126, 0.14) 100%
+  );
+  border: none;
+  box-shadow:
+    inset 0 1px 0 rgba(86, 212, 245, 0.36),
+    0 4px 16px rgba(0, 0, 0, 0.36);
+  color: #e6f9ff;
+  font-family: var(--font-mono);
+  font-size: clamp(11px, 2.9vw, 12.5px);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  transition: background 0.16s ease, color 0.15s ease, transform 0.12s var(--ease-luxury);
+}
+
+.ws-instant-prism-pill:hover:not(:disabled) {
+  background: linear-gradient(
+    90deg,
+    rgba(86, 212, 245, 0.28) 0%,
+    rgba(242, 207, 126, 0.24) 100%
+  );
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.ws-instant-prism-pill:active:not(:disabled) {
+  transform: scale(0.985);
+}
+
+/* Upgrade #1: Incoming ?duel= Challenger Banner (Frameless Editorial Obsidian) */
+.ws-duel-banner {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 12px 15px;
+  border-radius: 14px;
+  background: linear-gradient(
+    180deg,
+    rgba(13, 19, 34, 0.96) 0%,
+    rgba(7, 11, 21, 0.985) 100%
+  );
+  border: none;
+  box-shadow:
+    var(--indicator-gold),
+    0 14px 36px rgba(0, 0, 0, 0.66);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: auto;
+  text-align: left;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.ws-duel-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--hairline-gold-grad);
+  pointer-events: none;
+}
+
+.ws-duel-banner-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ws-duel-banner-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+}
+
+.ws-duel-banner-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(14px, 3.6vw, 17px);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--ivory-primary);
+  line-height: 1.24;
+}
+
+.ws-duel-banner-meta {
+  font-family: var(--font-mono);
+  font-size: clamp(11px, 2.8vw, 12px);
+  color: #b8bfcc;
+  line-height: 1.35;
+}
+
+.ws-duel-banner-actions {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+  padding-top: 2px;
+}
+
+.ws-duel-banner-actions .ws-btn-gold {
+  flex: 1 1 auto;
+  min-height: 44px;
+  padding: 8px 16px;
+}
+
+.ws-duel-banner-actions .ws-btn-obsidian {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 8px 14px;
+}
+
+/* Upgrade #1: Compact 1-Line Live Head-to-Head Ghost Split Race Bar */
+.ws-duel-live-split-bar {
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 4px 10px;
+  border-radius: 9px;
+  background: rgba(7, 12, 23, 0.88);
+  border: none;
+  box-shadow: inset 3px 0 0 var(--gold-bright);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: auto;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.ws-duel-split-head {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: clamp(10.5px, 2.6vw, 12px);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.ws-duel-split-you {
+  color: var(--gold-bright);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ws-duel-split-rival {
+  color: #8ee5ff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ws-duel-split-delta {
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(242, 207, 126, 0.16);
+  color: var(--gold-bright);
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ws-duel-split-delta.is-ahead {
+  background: rgba(57, 212, 154, 0.20);
+  color: #67ebb8;
+}
+
+.ws-duel-split-delta.is-behind {
+  background: rgba(224, 82, 99, 0.22);
+  color: #ff99a5;
+}
+
+.ws-duel-split-delta.is-tied {
+  background: rgba(242, 207, 126, 0.18);
+  color: var(--gold-bright);
+}
+
+.ws-duel-split-track {
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(86, 212, 245, 0.26);
+  overflow: hidden;
+  position: relative;
+}
+
+.ws-duel-split-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #c69635 0%, #f5d47a 100%);
+  transition: width 0.32s var(--ease-luxury);
+}
+
+/* Global & Topic Cohort Leaderboard (Frameless Hairline Rows) */
+.ws-leaderboard-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.ws-leaderboard-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 8px;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.065);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--ivory-primary);
+}
+
+.ws-leaderboard-row:last-child {
+  border-bottom: none;
+}
+
+.ws-leaderboard-row.is-player {
+  background: rgba(242, 207, 126, 0.12);
+  box-shadow: var(--indicator-gold);
+  color: var(--gold-bright);
+  font-weight: 700;
+}
+
+.ws-leaderboard-row.is-friend {
+  background: rgba(86, 212, 245, 0.09);
+  box-shadow: var(--indicator-cyan);
+}
+
+/* Upgrade #2: Compact Sapphire Visual Blueprint Preview Frame (Zero A-D Clip!) */
+.ws-visual-plate-frame {
+  position: relative;
+  width: 100%;
+  max-height: clamp(82px, 13.5dvh, 128px);
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: linear-gradient(
+    90deg,
+    rgba(9, 18, 34, 0.94) 0%,
+    rgba(6, 11, 22, 0.90) 100%
+  );
+  border: none;
+  box-shadow: var(--indicator-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.ws-visual-plate-frame img,
+.ws-visual-plate-img {
+  height: clamp(64px, 11dvh, 108px);
+  width: auto;
+  max-width: 52%;
+  object-fit: contain;
+  display: block;
+  border-radius: 6px;
+  flex-shrink: 0;
+  background: rgba(4, 8, 16, 0.72);
+}
+
+.ws-visual-plate-meta {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.ws-visual-plate-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cyan-clue);
+}
+
+.ws-visual-plate-caption {
+  font-size: clamp(11px, 2.8vw, 12.5px);
+  font-weight: 500;
+  color: #e4eef7;
+  line-height: 1.28;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+#ui-root .ws-broadcast-dock.is-revealed .ws-visual-plate-frame,
+#ui-root .ws-broadcast-dock.is-reveal .ws-visual-plate-frame,
+#ui-root .ws-broadcast-dock:has(.ws-intel-flash) .ws-visual-plate-frame {
+  max-height: 52px;
+  padding: 3px 8px;
+}
+
+#ui-root .ws-broadcast-dock.is-revealed .ws-visual-plate-frame img,
+#ui-root .ws-broadcast-dock.is-reveal .ws-visual-plate-frame img,
+#ui-root .ws-broadcast-dock:has(.ws-intel-flash) .ws-visual-plate-frame img {
+  height: 44px;
+}
+
+.ws-visual-plate-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 88;
+  background: rgba(4, 7, 14, 0.94);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 18px;
+  pointer-events: auto;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.ws-visual-plate-lightbox img {
+  max-width: min(94vw, 680px);
+  max-height: 70dvh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 20px 56px rgba(0, 0, 0, 0.8);
+}
+
+/* Upgrade #2: Interactive 6th Morph — 3D Globe Pin-Drop Compact Controls */
+.ws-globe-pin-controls {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.ws-globe-coord-readout {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: rgba(86, 212, 245, 0.10);
+  border: none;
+  box-shadow: var(--indicator-cyan);
+  font-family: var(--font-mono);
+  font-size: clamp(10.5px, 2.7vw, 12px);
+  font-weight: 600;
+  color: #daf6ff;
+  min-width: 0;
+}
+
+.ws-globe-coord-status {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ws-globe-coord-val {
+  color: var(--gold-bright);
+  font-weight: 800;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ws-globe-anchors-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  width: 100%;
+}
+
+.ws-globe-anchor-btn {
+  min-width: 0;
+  min-height: 44px;
+  padding: 6px 10px;
+  border-radius: 9px;
+  background: var(--surface-row);
+  border: none;
+  box-shadow: inset 3px 0 0 rgba(232, 197, 116, 0.22);
+  color: var(--ivory-primary);
+  font-family: var(--font-sans);
+  font-size: clamp(11.5px, 2.9vw, 12.5px);
+  font-weight: 600;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  transition: background 0.14s ease, box-shadow 0.14s ease, color 0.14s ease;
+}
+
+.ws-globe-anchor-btn:hover:not(:disabled) {
+  background: var(--surface-row-hover);
+  box-shadow: inset 3px 0 0 var(--gold-bright);
+  color: #ffffff;
+}
+
+.ws-globe-anchor-btn.is-selected,
+.ws-globe-anchor-btn.is-active {
+  background: var(--surface-row-selected);
+  box-shadow: var(--indicator-gold);
+  color: #ffffff;
+}
+
+.ws-globe-anchor-btn.is-correct,
+.ws-globe-anchor-btn.is-correct:disabled {
+  opacity: 1;
+  background: rgba(57, 212, 154, 0.20);
+  box-shadow: var(--indicator-emerald);
+  color: #eafff6;
+}
+
+.ws-globe-anchor-btn.is-wrong,
+.ws-globe-anchor-btn.is-wrong:disabled {
+  opacity: 1;
+  background: rgba(224, 82, 99, 0.20);
+  box-shadow: var(--indicator-crimson);
+  color: #ffe8eb;
+}
+
+.ws-globe-anchor-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Upgrade #3: Discreet Monochrome Upvote / Flag Micro-Group inside Reveal .ws-action-row */
+.ws-action-row:has(.ws-feedback-micro-group),
+.ws-action-row.ws-reveal-action-row:has(.ws-feedback-micro-group) {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 6px;
+  width: 100%;
+}
+
+.ws-action-row:has(.ws-feedback-micro-group) #ws-btn-bookmark {
+  flex: 0 0 auto;
+  min-height: 44px;
+  height: 44px;
+  padding: 0 11px;
+}
+
+.ws-action-row:has(.ws-feedback-micro-group) #ws-btn-next-q {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: auto;
+  min-height: 44px;
+  height: 44px;
+  padding: 0 14px;
+}
+
+.ws-feedback-micro-group {
+  flex: 0 0 auto;
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 4px;
+  height: 44px;
+}
+
+.ws-feedback-micro-group button,
+.ws-feedback-micro-btn {
+  min-width: 38px;
+  width: 38px;
+  min-height: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.055);
+  border: none;
+  color: #b8bfcc;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.14s ease, color 0.14s ease, transform 0.12s ease;
+}
+
+.ws-feedback-micro-group button:hover:not(:disabled),
+.ws-feedback-micro-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--ivory-primary);
+}
+
+.ws-feedback-micro-group button.is-upvoted,
+.ws-feedback-micro-group button.is-active,
+#ws-btn-q-upvote.is-active,
+#ws-btn-q-upvote.is-upvoted {
+  background: rgba(57, 212, 154, 0.20);
+  color: #67ebb8;
+}
+
+.ws-feedback-micro-group button.is-flagged,
+#ws-btn-q-flag.is-active,
+#ws-btn-q-flag.is-flagged {
+  background: rgba(224, 82, 99, 0.22);
+  color: #ff99a5;
+}
+
+/* Responsive Mobile Portrait & Compact Height Budget Guards (360×640 .. 768×1024) */
+@media (max-width: 720px) {
+  .ws-globe-anchors-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+  }
+}
+
+@media (max-width: 599px) and (orientation: portrait) {
+  .ws-duel-live-split-bar {
+    padding: 3px 10px;
+    border-radius: 0;
+  }
+
+  .ws-visual-plate-frame {
+    max-height: clamp(60px, 9.5dvh, 84px);
+    padding: 4px 8px;
+    gap: 8px;
+  }
+
+  .ws-visual-plate-frame img,
+  .ws-visual-plate-img {
+    height: clamp(50px, 8dvh, 72px);
+    max-width: 48%;
+  }
+
+  .ws-globe-pin-controls {
+    gap: 5px;
+  }
+
+  .ws-globe-coord-readout {
+    padding: 4px 8px;
+    font-size: 10.5px;
+  }
+
+  .ws-globe-anchor-btn {
+    min-height: 44px;
+    padding: 5px 8px;
+    font-size: 11.5px;
+  }
+}
+
+/* Compact Portrait (360×640, 375×667): Strictly 0px Overlap on Visual Plates, Globe & Reveal Row */
+@media (max-width: 599px) and (max-height: 740px) and (orientation: portrait) {
+  .ws-visual-plate-frame {
+    max-height: 58px;
+    padding: 3px 7px;
+    gap: 7px;
+  }
+
+  .ws-visual-plate-frame img,
+  .ws-visual-plate-img {
+    height: 50px;
+  }
+
+  .ws-visual-plate-caption {
+    -webkit-line-clamp: 1;
+    font-size: 10.5px;
+  }
+
+  .ws-globe-pin-controls {
+    gap: 4px;
+  }
+
+  .ws-globe-anchors-grid {
+    gap: 4px;
+  }
+
+  .ws-globe-anchor-btn {
+    min-height: 44px;
+    padding: 4px 7px;
+    font-size: 11px;
+  }
+
+  .ws-action-row:has(.ws-feedback-micro-group) {
+    gap: 4px;
+  }
+
+  .ws-action-row:has(.ws-feedback-micro-group) #ws-btn-bookmark {
+    padding: 0 9px;
+    font-size: 10.5px;
+  }
+
+  .ws-action-row:has(.ws-feedback-micro-group) #ws-btn-next-q {
+    padding: 0 10px;
+    font-size: 11.5px;
+  }
+
+  .ws-feedback-micro-group {
+    gap: 3px;
+  }
+
+  .ws-feedback-micro-group button,
+  .ws-feedback-micro-btn {
+    min-width: 36px;
+    width: 36px;
+  }
+
+  .ws-instant-prism-pill {
+    min-height: 44px;
+    padding: 6px 14px;
+    font-size: 11px;
+  }
+}
+
+/* Landscape Mobile (844×390): Keep Blueprint Frame & Globe Anchors Ultra-Compact in Right Dock */
+@media (max-height: 520px) and (orientation: landscape) {
+  .ws-visual-plate-frame {
+    max-height: 56px;
+    padding: 3px 7px;
+    gap: 7px;
+  }
+
+  .ws-visual-plate-frame img,
+  .ws-visual-plate-img {
+    height: 48px;
+  }
+
+  .ws-visual-plate-caption {
+    -webkit-line-clamp: 1;
+    font-size: 10.5px;
+  }
+
+  .ws-globe-anchors-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .ws-globe-anchor-btn {
+    min-height: 40px;
+    padding: 4px 7px;
+    font-size: 10.5px;
+  }
+
+  .ws-globe-coord-readout {
+    padding: 3px 8px;
+    font-size: 10px;
+  }
+}
+
+/* ==========================================================================
+   V2.0 MENU & "CONTINUE WHERE I LEFT OFF" OVERHAUL (#325 P0 UX MANDATE)
+   Frameless 24K Gold Left-Accent Surfaces · 0 Nested Boxes · >= 4.5:1 WCAG
+   ========================================================================== */
+
+/* Pinned Top-of-Hub "WHERE YOU LEFT OFF" 1-Click Continue Hero Banner */
+.ws-hub-continue-hero {
+  position: relative;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: linear-gradient(
+    90deg,
+    rgba(242, 207, 126, 0.14) 0%,
+    rgba(11, 16, 29, 0.96) 54%,
+    rgba(7, 11, 21, 0.985) 100%
+  );
+  border: none;
+  box-shadow:
+    var(--indicator-gold),
+    0 10px 28px rgba(0, 0, 0, 0.52);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  flex-shrink: 0;
+  pointer-events: auto;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.ws-hub-continue-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--hairline-gold-grad);
+  pointer-events: none;
+}
+
+.ws-hub-continue-copy {
+  min-width: 0;
+  flex: 1 1 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+
+.ws-hub-continue-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+  line-height: 1.2;
+}
+
+.ws-hub-continue-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(13px, 3.3vw, 16px);
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: var(--ivory-primary);
+  line-height: 1.24;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.ws-hub-continue-sub {
+  font-size: clamp(11px, 2.7vw, 12.5px);
+  color: #c5ccd9;
+  line-height: 1.3;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.ws-hub-continue-hero .ws-btn-gold,
+.ws-hub-continue-cta {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 8px 18px;
+  font-size: clamp(11.5px, 2.9vw, 13px);
+}
+
+/* Active Resume City Card Pill ("● RESUME HERE ▶" — Zero Mid-Word Truncation at 360px) */
+.ws-city-active-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  margin-top: 3px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #fae39e 0%, #d8ab4e 100%);
+  border: none;
+  color: #0b0f18;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 2px 10px rgba(242, 207, 126, 0.34);
+}
+
+.ws-city-card.is-active-resume {
+  background: linear-gradient(180deg, rgba(22, 24, 34, 0.96) 0%, rgba(10, 14, 24, 0.98) 100%);
+  box-shadow:
+    var(--indicator-gold),
+    0 12px 30px rgba(242, 207, 126, 0.16);
+}
+
+/* Inline Locked-City Requirement Notice (Never Silently Ignores Locked Tap!) */
+.ws-hub-lock-notice {
+  width: 100%;
+  padding: 9px 13px;
+  border-radius: 10px;
+  background: linear-gradient(
+    90deg,
+    rgba(240, 157, 70, 0.16) 0%,
+    rgba(13, 18, 30, 0.96) 100%
+  );
+  border: none;
+  box-shadow: var(--indicator-gold);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  flex-shrink: 0;
+  pointer-events: auto;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.ws-hub-lock-notice-copy,
+.ws-hub-lock-copy {
+  min-width: 0;
+  flex: 1 1 200px;
+  font-size: clamp(11.5px, 2.9vw, 12.5px);
+  font-weight: 600;
+  color: #f6e7c8;
+  line-height: 1.35;
+}
+
+.ws-hub-lock-notice .ws-btn-gold,
+.ws-hub-lock-notice-cta,
+#ws-hub-lock-play-current {
+  flex: 0 0 auto;
+  min-height: 38px;
+  padding: 6px 14px;
+  font-size: 11px;
+}
+
+.ws-hub-lock-notice .ws-hub-lock-dismiss {
+  flex: 0 0 auto;
+  min-width: 36px;
+  min-height: 36px;
+  padding: 0 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #cfd6e4;
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ws-hub-lock-notice .ws-hub-lock-dismiss:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+}
+
+/* Missions Panel Header Quick-Launch Button ("▶ PLAY NEXT IN [CITY]") */
+.ws-missions-panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ws-missions-play-next-btn,
+#ws-hub-play-next-in-city {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 7px 15px;
+  font-size: clamp(11px, 2.8vw, 12.5px);
+}
+
+/* Compact Mobile Portrait (360×640, 375×667): Keep Title Dock Lean (>= 48% Open 3D!) & Continue Hero Crisp */
+@media (max-width: 599px) and (max-height: 740px) and (orientation: portrait) {
+  .ws-title-dock,
+  .ws-title-pedestal {
+    padding: 10px 12px max(8px, env(safe-area-inset-bottom, 0px)) 12px;
+    gap: 6px;
+  }
+
+  .ws-title-primary-cta {
+    min-height: 46px;
+    padding: 8px 16px;
+  }
+
+  .ws-title-primary-cta:has(.ws-title-primary-sub) {
+    min-height: 48px;
+    max-height: 52px;
+    padding: 6px 14px;
+  }
+
+  .ws-title-mode-strip button,
+  .ws-title-quick-modes button,
+  .ws-title-mode-btn {
+    min-height: 38px;
+    padding: 4px 3px;
+    font-size: 10.5px;
+  }
+
+  .ws-title-saves-link {
+    min-height: 38px;
+    padding: 4px 8px;
+  }
+
+  .ws-hub-continue-hero {
+    padding: 8px 11px;
+    gap: 6px;
+  }
+
+  .ws-hub-continue-hero .ws-btn-gold,
+  .ws-hub-continue-cta {
+    width: 100%;
+    min-height: 42px;
+    padding: 7px 14px;
+  }
+
+  .ws-city-active-pill {
+    padding: 2px 6px;
+    font-size: 10px;
+  }
+}
+
+/* Landscape Mobile (844×390): Keep Start Screen CTA & Hub Continue Hero Ultra-Compact */
+@media (max-height: 520px) and (orientation: landscape) {
+  .ws-title-primary-cta:has(.ws-title-primary-sub) {
+    min-height: 46px;
+    max-height: 50px;
+    padding: 5px 14px;
+  }
+
+  .ws-hub-continue-hero {
+    padding: 7px 12px;
+    gap: 8px;
+  }
+
+  .ws-hub-continue-hero .ws-btn-gold,
+  .ws-hub-continue-cta {
+    min-height: 38px;
+    padding: 6px 14px;
+    font-size: 11px;
+  }
+}
+
+/* ==========================================================================
+   V2.0 5-TIER CALIBRATED DIFFICULTY BADGE (#329: MIDDLE SCHOOL -> MENSA)
+   ========================================================================== */
+
+.ws-difficulty-tier-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #e4ebf7;
+  white-space: nowrap;
+  flex-shrink: 0;
+  line-height: 1.2;
+}
+
+.ws-difficulty-tier-badge.is-middle-school {
+  background: rgba(57, 212, 154, 0.18);
+  color: #70f0be;
+}
+
+.ws-difficulty-tier-badge.is-high-school {
+  background: rgba(86, 212, 245, 0.18);
+  color: #8ee5ff;
+}
+
+.ws-difficulty-tier-badge.is-college {
+  background: rgba(242, 207, 126, 0.18);
+  color: #f6db96;
+}
+
+.ws-difficulty-tier-badge.is-graduate {
+  background: rgba(240, 157, 70, 0.20);
+  color: #ffc585;
+}
+
+.ws-difficulty-tier-badge.is-mensa {
+  background: rgba(199, 155, 255, 0.22);
+  color: #e0c7ff;
 }

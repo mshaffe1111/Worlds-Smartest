@@ -14,6 +14,8 @@ export * from './CareerAnalyticsDashboardView';
 export * from './HallOfHonoursSystem';
 export * from './HallOfHonoursView';
 export * from './HonourToastOverlay';
+export * from './SpacedRepetitionEngine';
+export * from './QuestionQualityFeedbackStore';
 
 import type { Stage3DDirector } from '../stage3d';
 import type { CouncilTrialsGhostMode } from '../modes';
@@ -39,6 +41,7 @@ import {
   type ShowcaseArtifactId,
 } from './IntelObservatoryView';
 import {
+  PRISM_ATELIER_FINISHES,
   PrismAtelierView,
   applyEquippedPrismFinishToStage3D,
   loadEquippedPrismFinish,
@@ -55,14 +58,24 @@ import {
 } from './CareerAnalyticsStore';
 import { CareerAnalyticsDashboardView } from './CareerAnalyticsDashboardView';
 import {
+  BROADCAST_TITLES_CATALOG,
+  HUD_ACCENT_THEMES,
   HallOfHonoursSystem,
   getEquippedHudTheme,
+  getTotalHonoursCount,
+  getTotalUnlockablesCount,
   type HonourProgressItem,
   type HonourRarityTier,
   type HudAccentThemeSpec,
 } from './HallOfHonoursSystem';
 import { HallOfHonoursView, type HonoursSubTab } from './HallOfHonoursView';
 import { HonourToastOverlay } from './HonourToastOverlay';
+import {
+  SpacedRepetitionEngine,
+  type SrsDeckSummary,
+  type SrsQuestionOutcomeInput,
+  type SrsReviewCard,
+} from './SpacedRepetitionEngine';
 
 export interface MetaProgressionSuiteDependencies {
   passport: PassportSystem;
@@ -85,6 +98,7 @@ export interface MetaProgressionSuiteCallbacks {
   onHonourUnlocked?: (items: readonly HonourProgressItem[]) => void;
   onLaunchGhostDuel?: (contenderId?: string) => void;
   onLaunchBlackSalon?: () => void;
+  onLaunchLivePrismReview?: (cards: readonly SrsReviewCard[]) => void;
   onCloseSuite?: () => void;
 }
 
@@ -109,6 +123,7 @@ export class MetaProgressionSuite {
   public readonly honoursSystem: HallOfHonoursSystem;
   public readonly honoursView: HallOfHonoursView;
   public readonly toastOverlay: HonourToastOverlay;
+  public readonly srsEngine: SpacedRepetitionEngine;
 
   private readonly deps: MetaProgressionSuiteDependencies;
   private callbacks: MetaProgressionSuiteCallbacks;
@@ -125,6 +140,7 @@ export class MetaProgressionSuite {
     this.callbacks = callbacks;
 
     this.analyticsStore = new CareerAnalyticsStore(deps.passport);
+    this.srsEngine = new SpacedRepetitionEngine(deps.passport);
     this.honoursSystem = new HallOfHonoursSystem(
       this.analyticsStore,
       deps.passport,
@@ -149,10 +165,15 @@ export class MetaProgressionSuite {
 
     this.observatory = new IntelObservatoryView({
       passport: deps.passport,
+      srsEngine: this.srsEngine,
       stage3d: deps.stage3d,
       blackboard: deps.blackboard,
       audio: deps.audio,
       haptics: deps.haptics,
+    });
+
+    this.srsEngine.subscribe(() => {
+      this.evaluateHonoursAndToast();
     });
 
     this.atelier = new PrismAtelierView({
@@ -392,6 +413,12 @@ export class MetaProgressionSuite {
           });
         }
       },
+      onLaunchLivePrismReview: this.callbacks.onLaunchLivePrismReview
+        ? (cards) => {
+            this.resetSuiteNavigationState(false);
+            this.callbacks.onLaunchLivePrismReview?.(cards);
+          }
+        : undefined,
       onNavigateSection: (sec) => this.openSection(sec),
       onClose: () => {
         this.resetSuiteNavigationState(true);
@@ -496,8 +523,8 @@ export class MetaProgressionSuite {
   }
 
   /**
-   * Evaluates all 64 Trophies & Medals and pops the non-blocking 24K Gold Citation Toast
-   * for any newly earned Honours + 32 Unlockables (`#166` §2.2 & §3).
+   * Evaluates all Trophies & Medals across Core + Expansion Packs and pops the
+   * non-blocking 24K Gold Citation Toast for any newly earned Honours & Unlockables.
    */
   public evaluateHonoursAndToast(): HonourProgressItem[] {
     const unlocked = this.honoursSystem.evaluateAndUnlock(false);
@@ -506,6 +533,31 @@ export class MetaProgressionSuite {
       this.callbacks.onHonourUnlocked?.(unlocked);
     }
     return unlocked;
+  }
+
+  /** Convenience alias matching HUD integration call sites. */
+  public evaluateAndToastHonours(): HonourProgressItem[] {
+    return this.evaluateHonoursAndToast();
+  }
+
+  /**
+   * Returns live dynamic catalog totals (84 Honours, 44 Unlockables = 16 Finishes + 17 Titles + 11 Themes)
+   * so HUD / Vault badges automatically scale with every future expansion pack!
+   */
+  public getCatalogTotals(): {
+    honours: number;
+    unlockables: number;
+    finishes: number;
+    titles: number;
+    themes: number;
+  } {
+    return {
+      honours: getTotalHonoursCount(),
+      unlockables: getTotalUnlockablesCount(),
+      finishes: PRISM_ATELIER_FINISHES.length,
+      titles: BROADCAST_TITLES_CATALOG.length,
+      themes: HUD_ACCENT_THEMES.length,
+    };
   }
 
   /**
@@ -538,6 +590,38 @@ export class MetaProgressionSuite {
 
   public getAnalyticsSnapshot(): CareerAnalyticsState {
     return this.analyticsStore.getSnapshot();
+  }
+
+  /**
+   * Returns the live count of 5-Box Leitner Mastery Deck cards due right now
+   * (syncs existing `passport.bookmarks` first so the `☰ VAULT` badge is always exact).
+   */
+  public getDueReviewCount(nowMs?: number): number {
+    this.srsEngine.syncFromPassportBookmarks(this.deps.passport.getSnapshot().bookmarks, nowMs);
+    return this.srsEngine.getDueCount(nowMs);
+  }
+
+  public getSrsDeckSummary(nowMs?: number): SrsDeckSummary {
+    this.srsEngine.syncFromPassportBookmarks(this.deps.passport.getSnapshot().bookmarks, nowMs);
+    return this.srsEngine.getDeckSummary(nowMs);
+  }
+
+  public ingestSpacedRepetitionOutcome(input: SrsQuestionOutcomeInput): SrsReviewCard | null {
+    return this.srsEngine.ingestQuestionOutcome(input);
+  }
+
+  public syncSpacedRepetitionBookmarks(nowMs?: number): number {
+    return this.srsEngine.syncFromPassportBookmarks(
+      this.deps.passport.getSnapshot().bookmarks,
+      nowMs,
+    );
+  }
+
+  /**
+   * Opens the 3D Intel Observatory directly on the 5-Box Leitner Mastery Deck tab.
+   */
+  public openMasteryReviewDeck(recordHistory = true): void {
+    this.openObservatory('SELF_QUIZ', 'championship_trophy', recordHistory);
   }
 
   public getEquippedHudAccentTheme(): HudAccentThemeSpec {

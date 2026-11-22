@@ -1,4 +1,5 @@
 export * from './types';
+export * from './QuestionDifficultyCalibration';
 export * from './TaxonomyCatalog';
 export * from './RoaringSeenTracker';
 export * from './IrtAdaptiveDirector';

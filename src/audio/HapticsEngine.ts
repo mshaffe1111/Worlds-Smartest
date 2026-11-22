@@ -1,41 +1,58 @@
 // ============================================================================
 // WORLD'S SMARTEST — Machined-Luxury Horological Haptics Engine
-// Supports Capacitor Native CoreHaptics / Android VibrationEffect + Web Vibrate
+// Supports Capacitor Native Core Haptics (iOS) / Android Haptics + Web Vibrate
+// Zero build-time Capacitor npm dependency (clean ambient bridge typing)
 // ============================================================================
 
 export type HapticPeelTier = 1 | 2 | 3;
+export type HapticsBackendKind = 'CAPACITOR_NATIVE' | 'WEB_VIBRATE' | 'NONE';
+
+export interface CapacitorHapticsPlugin {
+  impact?: (options: { style: 'HEAVY' | 'MEDIUM' | 'LIGHT' }) => Promise<void> | void;
+  notification?: (options: { type: 'SUCCESS' | 'WARNING' | 'ERROR' }) => Promise<void> | void;
+  vibrate?: (options: { duration: number }) => Promise<void> | void;
+  selectionStart?: () => Promise<void> | void;
+  selectionChanged?: () => Promise<void> | void;
+  selectionEnd?: () => Promise<void> | void;
+}
+
+export interface CapacitorGlobalBridge {
+  isNativePlatform?: () => boolean;
+  getPlatform?: () => string;
+  Plugins?: {
+    Haptics?: CapacitorHapticsPlugin;
+    [pluginName: string]: unknown;
+  };
+}
+
+declare global {
+  interface Window {
+    Capacitor?: CapacitorGlobalBridge;
+  }
+}
 
 export interface IHapticsEngine {
   setEnabled(enabled: boolean): void;
   isEnabled(): boolean;
+  isNativePlatform(): boolean;
+  getBackend(): HapticsBackendKind;
   spinTick(): void;
   sightlineSnap(): void;
   peel(tier: HapticPeelTier): void;
+  peelSnap(tier?: HapticPeelTier): void;
   overclockPulse(progress: number): void;
   lockThunk(): void;
   correctBloom(): void;
+  goldResonance(): void;
   wrongThud(backfired: boolean): void;
+  backfireFracture(): void;
   passportStamp(): void;
   shatterPlate(): void;
   uiTap(): void;
+  tap(): void;
 }
 
 const STORAGE_KEY = 'ws_haptics_enabled_v2';
-
-interface CapacitorHapticsPlugin {
-  impact?: (options: { style: 'HEAVY' | 'MEDIUM' | 'LIGHT' }) => Promise<void> | void;
-  notification?: (options: { type: 'SUCCESS' | 'WARNING' | 'ERROR' }) => Promise<void> | void;
-  vibrate?: (options: { duration: number }) => Promise<void> | void;
-  selectionChanged?: () => Promise<void> | void;
-}
-
-interface CapacitorWindow {
-  Capacitor?: {
-    Plugins?: {
-      Haptics?: CapacitorHapticsPlugin;
-    };
-  };
-}
 
 function clamp01(value: number): number {
   if (!Number.isFinite(value)) return 0;
@@ -84,11 +101,55 @@ export class HapticsEngine implements IHapticsEngine {
     }
   }
 
+  /**
+   * Detects whether we are executing inside a native Capacitor iOS/Android shell.
+   */
+  public isNativePlatform(): boolean {
+    try {
+      if (typeof window === 'undefined') return false;
+      const cap = window.Capacitor;
+      if (!cap) return false;
+      if (typeof cap.isNativePlatform === 'function') {
+        return Boolean(cap.isNativePlatform());
+      }
+      if (typeof cap.getPlatform === 'function') {
+        const platform = String(cap.getPlatform() || '').toLowerCase();
+        return platform === 'ios' || platform === 'android';
+      }
+      return Boolean(cap.Plugins?.Haptics);
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Reports the active haptics transport backend.
+   */
+  public getBackend(): HapticsBackendKind {
+    if (this.getCapacitorHaptics()) {
+      return 'CAPACITOR_NATIVE';
+    }
+    if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+      return 'WEB_VIBRATE';
+    }
+    return 'NONE';
+  }
+
   private getCapacitorHaptics(): CapacitorHapticsPlugin | null {
     try {
       if (typeof window === 'undefined') return null;
-      const cap = (window as unknown as CapacitorWindow).Capacitor;
-      return cap?.Plugins?.Haptics ?? null;
+      const cap = window.Capacitor;
+      if (!cap?.Plugins?.Haptics) return null;
+      if (typeof cap.isNativePlatform === 'function' && !cap.isNativePlatform()) {
+        return null;
+      }
+      if (typeof cap.isNativePlatform !== 'function' && typeof cap.getPlatform === 'function') {
+        const platform = String(cap.getPlatform() || '').toLowerCase();
+        if (platform !== 'ios' && platform !== 'android') {
+          return null;
+        }
+      }
+      return cap.Plugins.Haptics;
     } catch {
       return null;
     }
@@ -111,11 +172,17 @@ export class HapticsEngine implements IHapticsEngine {
     this.scheduledTimers.add(timer);
   }
 
-  private invokeSafe(maybePromise: Promise<void> | void | undefined): void {
-    if (maybePromise && typeof (maybePromise as Promise<void>).catch === 'function') {
-      (maybePromise as Promise<void>).catch(() => {
-        // Ignore bridge errors
-      });
+  private callNativeSafe(fn: () => Promise<void> | void | undefined): boolean {
+    try {
+      const maybePromise = fn();
+      if (maybePromise && typeof (maybePromise as Promise<void>).catch === 'function') {
+        (maybePromise as Promise<void>).catch(() => {
+          // Ignore async native bridge rejections
+        });
+      }
+      return true;
+    } catch {
+      return false;
     }
   }
 
@@ -152,17 +219,14 @@ export class HapticsEngine implements IHapticsEngine {
 
     const cap = this.getCapacitorHaptics();
     if (cap) {
-      if (cap.selectionChanged) {
-        this.invokeSafe(cap.selectionChanged());
-        return;
+      if (typeof cap.selectionChanged === 'function') {
+        if (this.callNativeSafe(() => cap.selectionChanged?.())) return;
       }
-      if (cap.impact) {
-        this.invokeSafe(cap.impact({ style: 'LIGHT' }));
-        return;
+      if (typeof cap.impact === 'function') {
+        if (this.callNativeSafe(() => cap.impact?.({ style: 'LIGHT' }))) return;
       }
-      if (cap.vibrate) {
-        this.invokeSafe(cap.vibrate({ duration: 8 }));
-        return;
+      if (typeof cap.vibrate === 'function') {
+        if (this.callNativeSafe(() => cap.vibrate?.({ duration: 8 }))) return;
       }
     }
     this.vibrateWeb(8);
@@ -173,12 +237,13 @@ export class HapticsEngine implements IHapticsEngine {
     if (!this.enabled) return;
 
     const cap = this.getCapacitorHaptics();
-    if (cap?.impact) {
-      this.invokeSafe(cap.impact({ style: 'LIGHT' }));
-      this.scheduleStep(26, () => {
-        this.invokeSafe(cap.impact?.({ style: 'MEDIUM' }));
-      });
-      return;
+    if (cap && typeof cap.impact === 'function') {
+      if (this.callNativeSafe(() => cap.impact?.({ style: 'LIGHT' }))) {
+        this.scheduleStep(26, () => {
+          this.callNativeSafe(() => cap.impact?.({ style: 'MEDIUM' }));
+        });
+        return;
+      }
     }
     this.vibrateWeb([10, 16, 12]);
   }
@@ -188,18 +253,29 @@ export class HapticsEngine implements IHapticsEngine {
     if (!this.enabled) return;
 
     const cap = this.getCapacitorHaptics();
-    if (cap?.impact) {
+    if (cap && typeof cap.impact === 'function') {
       if (tier === 3) {
-        this.invokeSafe(cap.impact({ style: 'MEDIUM' }));
-        this.scheduleStep(36, () => this.invokeSafe(cap.impact?.({ style: 'HEAVY' })));
-        this.scheduleStep(82, () => this.invokeSafe(cap.impact?.({ style: 'LIGHT' })));
+        if (this.callNativeSafe(() => cap.impact?.({ style: 'MEDIUM' }))) {
+          this.scheduleStep(36, () => {
+            this.callNativeSafe(() => cap.impact?.({ style: 'HEAVY' }));
+          });
+          this.scheduleStep(82, () => {
+            this.callNativeSafe(() => cap.impact?.({ style: 'LIGHT' }));
+          });
+          return;
+        }
       } else if (tier === 2) {
-        this.invokeSafe(cap.impact({ style: 'MEDIUM' }));
-        this.scheduleStep(40, () => this.invokeSafe(cap.impact?.({ style: 'MEDIUM' })));
+        if (this.callNativeSafe(() => cap.impact?.({ style: 'MEDIUM' }))) {
+          this.scheduleStep(40, () => {
+            this.callNativeSafe(() => cap.impact?.({ style: 'MEDIUM' }));
+          });
+          return;
+        }
       } else {
-        this.invokeSafe(cap.impact({ style: 'LIGHT' }));
+        if (this.callNativeSafe(() => cap.impact?.({ style: 'LIGHT' }))) {
+          return;
+        }
       }
-      return;
     }
 
     if (tier === 3) {
@@ -209,6 +285,11 @@ export class HapticsEngine implements IHapticsEngine {
     } else {
       this.vibrateWeb(10);
     }
+  }
+
+  /** Semantic alias for shutter peel snap (defaults to Tier 2 MEDIUM impact) */
+  public peelSnap(tier: HapticPeelTier = 2): void {
+    this.peel(tier);
   }
 
   /** Rising turbine/heartbeat ramp (0.2 -> 0.9) during Hold-to-Overclock */
@@ -223,20 +304,18 @@ export class HapticsEngine implements IHapticsEngine {
     const duration = Math.round(10 + p * 16);
     const cap = this.getCapacitorHaptics();
     if (cap) {
-      if (cap.impact) {
-        const style = p >= 0.7 ? 'HEAVY' : p >= 0.35 ? 'MEDIUM' : 'LIGHT';
-        this.invokeSafe(cap.impact({ style }));
-        return;
+      if (typeof cap.impact === 'function') {
+        const style: 'LIGHT' | 'MEDIUM' | 'HEAVY' = p >= 0.7 ? 'HEAVY' : p >= 0.35 ? 'MEDIUM' : 'LIGHT';
+        if (this.callNativeSafe(() => cap.impact?.({ style }))) return;
       }
-      if (cap.vibrate) {
-        this.invokeSafe(cap.vibrate({ duration }));
-        return;
+      if (typeof cap.vibrate === 'function') {
+        if (this.callNativeSafe(() => cap.vibrate?.({ duration }))) return;
       }
     }
     this.vibrateWeb(duration);
   }
 
-  /** Heavy vault-bolt PRIMITIVE_THUD when Overclock firing pin slams home */
+  /** Heavy vault-bolt PRIMITIVE_THUD when Overclock firing pin slams home (75ms dedupe) */
   public lockThunk(): void {
     if (!this.enabled) return;
     const t = nowMs();
@@ -245,13 +324,11 @@ export class HapticsEngine implements IHapticsEngine {
 
     const cap = this.getCapacitorHaptics();
     if (cap) {
-      if (cap.impact) {
-        this.invokeSafe(cap.impact({ style: 'HEAVY' }));
-        return;
+      if (typeof cap.impact === 'function') {
+        if (this.callNativeSafe(() => cap.impact?.({ style: 'HEAVY' }))) return;
       }
-      if (cap.vibrate) {
-        this.invokeSafe(cap.vibrate({ duration: 45 }));
-        return;
+      if (typeof cap.vibrate === 'function') {
+        if (this.callNativeSafe(() => cap.vibrate?.({ duration: 45 }))) return;
       }
     }
     this.vibrateWeb(45);
@@ -263,19 +340,34 @@ export class HapticsEngine implements IHapticsEngine {
 
     const cap = this.getCapacitorHaptics();
     if (cap) {
-      if (cap.notification) {
-        this.invokeSafe(cap.notification({ type: 'SUCCESS' }));
-        this.scheduleStep(75, () => this.invokeSafe(cap.impact?.({ style: 'MEDIUM' })));
-        return;
+      if (typeof cap.notification === 'function') {
+        if (this.callNativeSafe(() => cap.notification?.({ type: 'SUCCESS' }))) {
+          if (typeof cap.impact === 'function') {
+            this.scheduleStep(75, () => {
+              this.callNativeSafe(() => cap.impact?.({ style: 'MEDIUM' }));
+            });
+          }
+          return;
+        }
       }
-      if (cap.impact) {
-        this.invokeSafe(cap.impact({ style: 'LIGHT' }));
-        this.scheduleStep(46, () => this.invokeSafe(cap.impact?.({ style: 'MEDIUM' })));
-        this.scheduleStep(96, () => this.invokeSafe(cap.impact?.({ style: 'HEAVY' })));
-        return;
+      if (typeof cap.impact === 'function') {
+        if (this.callNativeSafe(() => cap.impact?.({ style: 'LIGHT' }))) {
+          this.scheduleStep(46, () => {
+            this.callNativeSafe(() => cap.impact?.({ style: 'MEDIUM' }));
+          });
+          this.scheduleStep(96, () => {
+            this.callNativeSafe(() => cap.impact?.({ style: 'HEAVY' }));
+          });
+          return;
+        }
       }
     }
     this.vibrateWeb([18, 28, 22, 28, 36]);
+  }
+
+  /** Semantic alias for Gold Resonance Core Haptics SUCCESS notification */
+  public goldResonance(): void {
+    this.correctBloom();
   }
 
   /** Restrained crimson fracture thud on wrong answer or Overclock Backfire */
@@ -284,33 +376,49 @@ export class HapticsEngine implements IHapticsEngine {
 
     const cap = this.getCapacitorHaptics();
     if (cap) {
-      if (cap.notification) {
-        this.invokeSafe(cap.notification({ type: backfired ? 'ERROR' : 'WARNING' }));
-        if (backfired && cap.impact) {
-          this.scheduleStep(65, () => this.invokeSafe(cap.impact?.({ style: 'HEAVY' })));
+      if (typeof cap.notification === 'function') {
+        if (this.callNativeSafe(() => cap.notification?.({ type: backfired ? 'ERROR' : 'WARNING' }))) {
+          if (backfired && typeof cap.impact === 'function') {
+            this.scheduleStep(65, () => {
+              this.callNativeSafe(() => cap.impact?.({ style: 'HEAVY' }));
+            });
+          }
+          return;
         }
-        return;
       }
-      if (cap.impact) {
-        this.invokeSafe(cap.impact({ style: 'HEAVY' }));
-        if (backfired) {
-          this.scheduleStep(60, () => this.invokeSafe(cap.impact?.({ style: 'HEAVY' })));
-          this.scheduleStep(140, () => this.invokeSafe(cap.impact?.({ style: 'MEDIUM' })));
+      if (typeof cap.impact === 'function') {
+        if (this.callNativeSafe(() => cap.impact?.({ style: 'HEAVY' }))) {
+          if (backfired) {
+            this.scheduleStep(60, () => {
+              this.callNativeSafe(() => cap.impact?.({ style: 'HEAVY' }));
+            });
+            this.scheduleStep(140, () => {
+              this.callNativeSafe(() => cap.impact?.({ style: 'MEDIUM' }));
+            });
+          }
+          return;
         }
-        return;
       }
     }
     this.vibrateWeb(backfired ? [35, 25, 70, 20, 40] : [50]);
+  }
+
+  /** Semantic alias for Overclock Backfire Core Haptics ERROR notification */
+  public backfireFracture(): void {
+    this.wrongThud(true);
   }
 
   /** Heavy diplomatic seal emboss when Julian Vance stamps your Meridian Passport */
   public passportStamp(): void {
     if (!this.enabled) return;
     const cap = this.getCapacitorHaptics();
-    if (cap?.impact) {
-      this.invokeSafe(cap.impact({ style: 'HEAVY' }));
-      this.scheduleStep(55, () => this.invokeSafe(cap.impact?.({ style: 'MEDIUM' })));
-      return;
+    if (cap && typeof cap.impact === 'function') {
+      if (this.callNativeSafe(() => cap.impact?.({ style: 'HEAVY' }))) {
+        this.scheduleStep(55, () => {
+          this.callNativeSafe(() => cap.impact?.({ style: 'MEDIUM' }));
+        });
+        return;
+      }
     }
     this.vibrateWeb([48, 24, 24]);
   }
@@ -319,14 +427,18 @@ export class HapticsEngine implements IHapticsEngine {
   public shatterPlate(): void {
     if (!this.enabled) return;
     const cap = this.getCapacitorHaptics();
-    if (cap?.impact) {
-      this.invokeSafe(cap.impact({ style: 'MEDIUM' }));
-      this.scheduleStep(30, () => this.invokeSafe(cap.impact?.({ style: 'LIGHT' })));
-      return;
+    if (cap && typeof cap.impact === 'function') {
+      if (this.callNativeSafe(() => cap.impact?.({ style: 'MEDIUM' }))) {
+        this.scheduleStep(30, () => {
+          this.callNativeSafe(() => cap.impact?.({ style: 'LIGHT' }));
+        });
+        return;
+      }
     }
     this.vibrateWeb([16, 14, 12]);
   }
 
+  /** Crisp tactile LIGHT tap for HUD controls and 3D Globe pin placement */
   public uiTap(): void {
     if (!this.enabled) return;
     const t = nowMs();
@@ -335,15 +447,18 @@ export class HapticsEngine implements IHapticsEngine {
 
     const cap = this.getCapacitorHaptics();
     if (cap) {
-      if (cap.impact) {
-        this.invokeSafe(cap.impact({ style: 'LIGHT' }));
-        return;
+      if (typeof cap.impact === 'function') {
+        if (this.callNativeSafe(() => cap.impact?.({ style: 'LIGHT' }))) return;
       }
-      if (cap.vibrate) {
-        this.invokeSafe(cap.vibrate({ duration: 6 }));
-        return;
+      if (typeof cap.vibrate === 'function') {
+        if (this.callNativeSafe(() => cap.vibrate?.({ duration: 6 }))) return;
       }
     }
     this.vibrateWeb(6);
+  }
+
+  /** Semantic alias for `uiTap()` (LIGHT tactile click) */
+  public tap(): void {
+    this.uiTap();
   }
 }

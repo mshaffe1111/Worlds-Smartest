@@ -43,7 +43,11 @@ export type PrismFinishId =
   | 'CONSUL_MALACHITE_VERDIGRIS'
   | 'ARBITER_SMOKED_SAPPHIRE_PLATINUM'
   | 'SOLAR_OCULUS_WHITE_GOLD'
-  | 'CELESTIAL_DIAMOND_SOVEREIGN';
+  | 'CELESTIAL_DIAMOND_SOVEREIGN'
+  | 'SAPPHIRE_BLUEPRINT_CYANOTYPE'
+  | 'DUELIST_BLOODSTONE_PLATINUM'
+  | 'NEURAL_ENGRAM_AMETHYST_GOLD'
+  | 'MENSA_QUANTUM_IRIDIUM_GLASS';
 
 export interface PrismMaterialFinishSpec {
   id: PrismFinishId;
@@ -117,9 +121,9 @@ const ENDLESS_STORAGE_KEY = 'ws_archive_descent_v2';
 const TRIALS_STORAGE_KEY = 'ws_council_trials_v2';
 
 /**
- * Full 12 Prestige Veritas Prism PBR Material Finishes (`#127` + `#166` §2.2).
+ * Core v1.0 12 Prestige Veritas Prism PBR Material Finishes (`#127` + `#166` §2.2).
  */
-export const PRISM_ATELIER_FINISHES: readonly PrismMaterialFinishSpec[] = [
+export const PRISM_ATELIER_FINISHES_V1_CORE: readonly PrismMaterialFinishSpec[] = [
   {
     id: 'SOVEREIGN_OBSIDIAN_24K',
     legacyBlackboardSkinId: 'OBSIDIAN_BRASS',
@@ -301,7 +305,7 @@ export const PRISM_ATELIER_FINISHES: readonly PrismMaterialFinishSpec[] = [
     name: 'Black Salon Velvet Crimson & Carbon',
     shortBadge: 'BLACK SALON',
     milestoneTitle: 'Hall of Honours · Bluff & Ghost Trial Citation',
-    unlockRequirementSummary: 'Catch a Rival Bluff (⚡ CALL BLUFF) · OR Win a World Council Ghost Duel.',
+    unlockRequirementSummary: 'Catch a Rival Bluff (CALL BLUFF) · OR Win a World Council Ghost Duel.',
     craftProvenance:
       'Matte forged-carbon tourbillon rings accented with ruby-garnet corundum facets from Teo Rojas’s underground Camden & Shinjuku tables.',
     hubOrigin: 'gb',
@@ -470,6 +474,133 @@ export const PRISM_ATELIER_FINISHES: readonly PrismMaterialFinishSpec[] = [
   },
 ];
 
+/**
+ * Modular v2.0 Prism Atelier PBR Finish Expansion Pack (+4 Prestige Finishes -> 16 Total).
+ */
+export const PRISM_ATELIER_FINISHES_V2_EXPANSION: readonly PrismMaterialFinishSpec[] = [
+  {
+    id: 'SAPPHIRE_BLUEPRINT_CYANOTYPE',
+    legacyBlackboardSkinId: 'DAMASCUS_TITANIUM',
+    order: 13,
+    name: 'Sapphire Blueprint Cyanotype & Brass',
+    shortBadge: 'CYANOTYPE',
+    milestoneTitle: 'Hall of Honours v2.0 · Master Blueprint Architect',
+    unlockRequirementSummary: 'Solve 10 Visual Blueprint Questions (#75) · Zero Pay-to-Win.',
+    craftProvenance:
+      'Architectural Prussian-blue cyanotype optics encased in drafting-instrument brushed brass tuned for Sapphire Hologram Plates.',
+    hubOrigin: 'ch',
+    baseDomainId: 3,
+    swatchPrimaryCss: '#64e6ff',
+    swatchSecondaryCss: '#0f2e5e',
+    swatchCrystalCss: '#071a38',
+    stage3dSkinId: 'ARCTIC_CRYO_SAPPHIRE',
+    primaryMetalHex: 0xe6c373,
+    secondaryMetalHex: 0x103166,
+    metalRoughness: 0.17,
+    shutterRoughness: 0.19,
+    crystalColorHex: 0x061833,
+    attenuationHex: 0x1a5ca8,
+    crystalRoughness: 0.13,
+    iridescence: 0.72,
+    ior: 1.6,
+    emissiveHex: 0x56d4f5,
+    emissiveIntensity: 0.07,
+    sightlineBeamHex: 0x64e6ff,
+  },
+  {
+    id: 'DUELIST_BLOODSTONE_PLATINUM',
+    legacyBlackboardSkinId: 'BLACK_SALON_CRIMSON',
+    order: 14,
+    name: 'Duelist Bloodstone & 950 Platinum',
+    shortBadge: 'H2H DUELIST',
+    milestoneTitle: 'Hall of Honours v2.0 · Ghost Split Breaker',
+    unlockRequirementSummary: 'Beat a Challenger Ghost in a 1v1 Head-to-Head Duel (#78).',
+    craftProvenance:
+      'Machined 950 platinum duel jaws clasping deep bloodstone-garnet crystal forged for one-tap Head-to-Head rivals.',
+    hubOrigin: 'gb',
+    baseDomainId: 5,
+    swatchPrimaryCss: '#e5ecf5',
+    swatchSecondaryCss: '#6e1120',
+    swatchCrystalCss: '#2b0710',
+    stage3dSkinId: 'CRIMSON_BLACK_SALON',
+    primaryMetalHex: 0xe5ecf5,
+    secondaryMetalHex: 0x6b1222,
+    metalRoughness: 0.15,
+    shutterRoughness: 0.19,
+    crystalColorHex: 0x22060e,
+    attenuationHex: 0x8f182d,
+    crystalRoughness: 0.14,
+    iridescence: 0.46,
+    ior: 1.59,
+    emissiveHex: 0xff5a73,
+    emissiveIntensity: 0.06,
+    sightlineBeamHex: 0xff6b81,
+  },
+  {
+    id: 'NEURAL_ENGRAM_AMETHYST_GOLD',
+    legacyBlackboardSkinId: 'KYOTO_KINTSUGI',
+    order: 15,
+    name: 'Neural Engram Amethyst & 24K Gold',
+    shortBadge: 'BOX-5 ENGRAM',
+    milestoneTitle: 'Hall of Honours v2.0 · Leitner Box-5 Polymath',
+    unlockRequirementSummary: 'Promote 5 Cards to Box 5 Mastered in the Leitner Deck (#81).',
+    craftProvenance:
+      'Synaptic Siberian amethyst crystal faceted with 24K Geneva memory-lattice filigree celebrating permanent recall mastery.',
+    hubOrigin: 'jp',
+    baseDomainId: 10,
+    swatchPrimaryCss: '#f2cf7e',
+    swatchSecondaryCss: '#5b2f8f',
+    swatchCrystalCss: '#1b0e36',
+    stage3dSkinId: 'AURORA_DICHROIC',
+    primaryMetalHex: 0xf2cf7e,
+    secondaryMetalHex: 0x5b2f8f,
+    metalRoughness: 0.16,
+    shutterRoughness: 0.18,
+    crystalColorHex: 0x160a2e,
+    attenuationHex: 0x6a35ab,
+    crystalRoughness: 0.12,
+    iridescence: 0.84,
+    ior: 1.63,
+    emissiveHex: 0xc79bff,
+    emissiveIntensity: 0.07,
+    sightlineBeamHex: 0xd2a8ff,
+  },
+  {
+    id: 'MENSA_QUANTUM_IRIDIUM_GLASS',
+    legacyBlackboardSkinId: 'OBSIDIAN_BRASS',
+    order: 16,
+    name: 'Mensa Quantum Iridium & Prismatic Glass',
+    shortBadge: 'MENSA 99TH',
+    milestoneTitle: 'Hall of Honours v2.0 · Mensa 99th-Percentile Laureate',
+    unlockRequirementSummary: 'Score ≥ 80% on a Mensa-Tier Round (#69) · Zero Pay-to-Win.',
+    craftProvenance:
+      'Ultra-dense sintered iridium-platinum gimbals suspending ultraviolet quantum-dispersion crystal reserved for 99th-percentile laureates.',
+    hubOrigin: 'global',
+    baseDomainId: 11,
+    swatchPrimaryCss: '#e8f1ff',
+    swatchSecondaryCss: '#39227a',
+    swatchCrystalCss: '#091124',
+    stage3dSkinId: 'MYTHIC_CELESTIAL_DIAMOND',
+    primaryMetalHex: 0xe8f1ff,
+    secondaryMetalHex: 0x39227a,
+    metalRoughness: 0.11,
+    shutterRoughness: 0.13,
+    crystalColorHex: 0x091124,
+    attenuationHex: 0x4b2eb8,
+    crystalRoughness: 0.09,
+    iridescence: 1.0,
+    ior: 1.7,
+    emissiveHex: 0x8ef2ff,
+    emissiveIntensity: 0.07,
+    sightlineBeamHex: 0xc8a2ff,
+  },
+];
+
+export const PRISM_ATELIER_FINISHES: readonly PrismMaterialFinishSpec[] = [
+  ...PRISM_ATELIER_FINISHES_V1_CORE,
+  ...PRISM_ATELIER_FINISHES_V2_EXPANSION,
+];
+
 function readHonourUnlockedFinishIds(): PrismFinishId[] {
   try {
     if (typeof localStorage === 'undefined') return [];
@@ -543,6 +674,10 @@ interface MilestoneTelemetry {
   globalElo: number;
   bestStreak: number;
   totalCorrect: number;
+  visualBlueprintsSolved: number;
+  duelWins: number;
+  srsBox5Mastered: number;
+  mensaBestAccPct: number;
 }
 
 function readMilestoneTelemetry(pSnap: PassportStateSnapshot): MilestoneTelemetry {
@@ -551,6 +686,10 @@ function readMilestoneTelemetry(pSnap: PassportStateSnapshot): MilestoneTelemetr
   let bestEndlessDepth = 0;
   let trialsElo = 1200;
   let trialsWins = 0;
+  let visualBlueprintsSolved = 0;
+  let duelWins = 0;
+  let srsBox5Mastered = 0;
+  let mensaBestAccPct = 0;
 
   try {
     if (typeof localStorage !== 'undefined') {
@@ -578,6 +717,44 @@ function readMilestoneTelemetry(pSnap: PassportStateSnapshot): MilestoneTelemetr
         trialsElo = Math.max(700, Math.floor(Number(parsed?.trialsElo) || 1200));
         trialsWins = Math.max(0, Math.floor(Number(parsed?.wins) || 0));
       }
+      const rawAnalytics = localStorage.getItem('ws_career_analytics_v1');
+      if (rawAnalytics) {
+        const parsed = JSON.parse(rawAnalytics) as {
+          feats?: {
+            visualBlueprintsSolved?: number;
+            duelGhostWins?: number;
+            difficultyBestAccuracyPct?: { MENSA?: number };
+          };
+        };
+        visualBlueprintsSolved = Math.max(0, Math.floor(Number(parsed?.feats?.visualBlueprintsSolved) || 0));
+        duelWins = Math.max(duelWins, Math.floor(Number(parsed?.feats?.duelGhostWins) || 0));
+        mensaBestAccPct = Math.max(0, Math.floor(Number(parsed?.feats?.difficultyBestAccuracyPct?.MENSA) || 0));
+      }
+      const rawDuels = localStorage.getItem('ws_duel_rivals_v2');
+      if (rawDuels) {
+        const parsed = JSON.parse(rawDuels) as {
+          history?: Array<{ winner?: string }>;
+          rivalsById?: Record<string, { lossesAgainstPlayer?: number }>;
+        };
+        const histWins = Array.isArray(parsed?.history)
+          ? parsed.history.filter((h) => h?.winner === 'PLAYER').length
+          : 0;
+        const rivalWins =
+          parsed?.rivalsById && typeof parsed.rivalsById === 'object'
+            ? Object.values(parsed.rivalsById).reduce(
+                (acc, r) => acc + Math.max(0, Math.floor(Number(r?.lossesAgainstPlayer) || 0)),
+                0,
+              )
+            : 0;
+        duelWins = Math.max(duelWins, histWins, rivalWins);
+      }
+      const rawSrs = localStorage.getItem('ws_spaced_repetition_v2');
+      if (rawSrs) {
+        const parsed = JSON.parse(rawSrs) as { cards?: Array<{ box?: number }> };
+        if (Array.isArray(parsed?.cards)) {
+          srsBox5Mastered = parsed.cards.filter((c) => Number(c?.box) === 5).length;
+        }
+      }
     }
   } catch {
     // Ignore parse errors
@@ -593,6 +770,10 @@ function readMilestoneTelemetry(pSnap: PassportStateSnapshot): MilestoneTelemetr
     globalElo: skillSnap.globalElo,
     bestStreak: skillSnap.bestStreak,
     totalCorrect: skillSnap.totalCorrect,
+    visualBlueprintsSolved,
+    duelWins,
+    srsBox5Mastered,
+    mensaBestAccPct,
   };
 }
 
@@ -780,14 +961,66 @@ export function evaluatePrismFinishUnlocks(
       };
     }
 
-    // 12. CELESTIAL_DIAMOND_SOVEREIGN
-    const unlocked = byHonour || Boolean(bSnap && bSnap.achievedEndings.length >= 4);
+    if (spec.id === 'CELESTIAL_DIAMOND_SOVEREIGN') {
+      const unlocked = byHonour || Boolean(bSnap && bSnap.achievedEndings.length >= 4);
+      return {
+        spec,
+        unlocked,
+        equipped,
+        progressRatio: unlocked ? 1 : Math.min(1, (bSnap?.achievedEndings.length ?? 0) / 4),
+        progressLabel: unlocked ? 'Unlocked · Mythic 0.1% Crown' : 'Earn ANY Tier-5 Mythic Trophy in Hall of Honours',
+      };
+    }
+
+    if (spec.id === 'SAPPHIRE_BLUEPRINT_CYANOTYPE') {
+      const unlocked = byHonour || tel.visualBlueprintsSolved >= 10;
+      return {
+        spec,
+        unlocked,
+        equipped,
+        progressRatio: unlocked ? 1 : Math.min(1, tel.visualBlueprintsSolved / 10),
+        progressLabel: unlocked
+          ? 'Unlocked · Master Blueprint Architect'
+          : `Visual Blueprints Solved ${tel.visualBlueprintsSolved}/10`,
+      };
+    }
+
+    if (spec.id === 'DUELIST_BLOODSTONE_PLATINUM') {
+      const unlocked = byHonour || tel.duelWins >= 1;
+      return {
+        spec,
+        unlocked,
+        equipped,
+        progressRatio: unlocked ? 1 : 0,
+        progressLabel: unlocked
+          ? 'Unlocked · Ghost Split Breaker'
+          : 'Beat a Challenger Ghost in a 1v1 Duel',
+      };
+    }
+
+    if (spec.id === 'NEURAL_ENGRAM_AMETHYST_GOLD') {
+      const unlocked = byHonour || tel.srsBox5Mastered >= 5;
+      return {
+        spec,
+        unlocked,
+        equipped,
+        progressRatio: unlocked ? 1 : Math.min(1, tel.srsBox5Mastered / 5),
+        progressLabel: unlocked
+          ? 'Unlocked · Leitner Box-5 Polymath'
+          : `Box-5 Mastered Cards ${tel.srsBox5Mastered}/5`,
+      };
+    }
+
+    // 16. MENSA_QUANTUM_IRIDIUM_GLASS
+    const unlocked = byHonour || tel.mensaBestAccPct >= 80;
     return {
       spec,
       unlocked,
       equipped,
-      progressRatio: unlocked ? 1 : Math.min(1, (bSnap?.achievedEndings.length ?? 0) / 4),
-      progressLabel: unlocked ? 'Unlocked · Mythic 0.1% Crown' : 'Earn ANY Tier-5 Mythic Trophy in Hall of Honours',
+      progressRatio: unlocked ? 1 : Math.min(1, tel.mensaBestAccPct / 80),
+      progressLabel: unlocked
+        ? 'Unlocked · Mensa 99th-Percentile Laureate'
+        : `Mensa Best Round ${tel.mensaBestAccPct}% / 80%`,
     };
   });
 }
@@ -1129,7 +1362,7 @@ export class PrismAtelierView {
               ? `<span style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--emerald-win);white-space:nowrap;flex-shrink:0;">✓ EQUIPPED</span>`
               : activeStatus.unlocked
                 ? `<button type="button" class="ws-meta-btn-gold" id="ws-atelier-equip-btn" style="flex-shrink:0;">Equip</button>`
-                : `<span style="font-family:var(--font-mono);font-size:10.5px;color:var(--ivory-dim);white-space:nowrap;flex-shrink:0;">🔒 Preview</span>`
+                : `<span style="font-family:var(--font-mono);font-size:10.5px;color:#9aa4b7;white-space:nowrap;flex-shrink:0;">◇ Preview</span>`
           }
         </div>
 
@@ -1148,11 +1381,11 @@ export class PrismAtelierView {
         </div>
       </div>
 
-      <!-- Hairline Catalog of All 12 Zero-Pay-to-Win Finishes -->
+      <!-- Hairline Catalog of All Zero-Pay-to-Win Finishes -->
       <div class="ws-meta-section" style="border-bottom:none;gap:2px;">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px;">
-          <span class="ws-meta-section-title">All 12 Finishes (${unlockedCount}/12)</span>
-          <span style="font-family:var(--font-mono);font-size:9.5px;color:var(--emerald-win);">✦ 100% Zero Pay-to-Win</span>
+          <span class="ws-meta-section-title">All ${PRISM_ATELIER_FINISHES.length} Finishes (${unlockedCount}/${PRISM_ATELIER_FINISHES.length})</span>
+          <span style="font-family:var(--font-mono);font-size:10px;color:var(--emerald-win);">✦ 100% Zero Pay-to-Win</span>
         </div>
         ${statuses
           .map((st) => {
@@ -1168,7 +1401,7 @@ export class PrismAtelierView {
                   <span style="width:20px;height:20px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg, ${st.spec.swatchPrimaryCss} 0%, ${st.spec.swatchSecondaryCss} 55%, ${st.spec.swatchCrystalCss} 100%);box-shadow:0 0 0 1px rgba(255,255,255,0.4);"></span>
                   <span style="min-width:0;display:flex;flex-direction:column;">
                     <span style="font-size:12.5px;font-weight:600;color:var(--ivory-primary);line-height:1.25;">${st.spec.order}. ${escapeMetaHtml(st.spec.name)}</span>
-                    <span style="font-family:var(--font-mono);font-size:9.5px;color:var(--ivory-dim);">${escapeMetaHtml(st.spec.unlockRequirementSummary)}</span>
+                    <span style="font-family:var(--font-mono);font-size:10px;color:#9aa4b7;">${escapeMetaHtml(st.spec.unlockRequirementSummary)}</span>
                   </span>
                 </span>
                 <span style="font-family:var(--font-mono);font-size:10px;font-weight:700;color:${st.equipped ? 'var(--emerald-win)' : st.unlocked ? 'var(--gold-bright)' : 'var(--ivory-dim)'};flex-shrink:0;">

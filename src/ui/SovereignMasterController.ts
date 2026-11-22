@@ -47,6 +47,7 @@ import {
   type HubId,
   type LiveCalloutEvent,
   type OriginId,
+  type ProloguePhase,
   type PrologueQuestionCard,
   type PrologueStepSnapshot,
   type ReactionTriggerKind,
@@ -56,40 +57,59 @@ import {
   BriefingCategoriesMode,
   CouncilTrialsGhostMode,
   DailyGlobalFeed,
+  DuelRaceTracker,
   ScoringEngine,
+  buildShareableDuelUrl,
+  computeHaversineDistanceKm,
+  createDuelSplitFromResult,
+  duelRivalsStore,
+  encodeDuelChallenge,
+  extractDuelParamFromLocation,
+  getDailyGlobalLeaderboard,
+  getSubcategoryLeaderboard,
+  utcDateToCode,
   type BriefingRunLength,
+  type DuelChallengePayload,
+  type DuelMode,
+  type DuelQuestionSplit,
+  type LeaderboardCohortSnapshot,
   type PrismAnswerSubmission,
   type ScoredQuestionResult,
 } from '../modes';
-import {
-  BossPhaseBannerDirector,
-  EndingSequenceDirector,
-  MotionCinemaDirector,
-} from '../cinema';
+import type { BossPhaseBannerDirector } from '../cinema/BossPhaseBannerDirector';
+import type { EndingSequenceDirector } from '../cinema/EndingSequenceDirector';
+import type { MotionCinemaDirector } from '../cinema/MotionCinemaDirector';
 import {
   MetaProgressionSuite,
   equipHudAccentTheme,
+  getQuarantinedQidSet,
+  getQuestionVote,
+  recordQuestionFeedback,
   type SpecialFeatKind,
+  type SrsReviewCard,
 } from '../meta';
+import type { OfflineVaultStatus } from '../pwa/OfflineServiceWorkerClient';
 import { TactileErgonomicsSuite, type BridgeScreenMode } from '../ergonomics';
 import { CharacterStageRigDirector, preloadCharacterCutouts } from '../characters';
 import { StudioAudioEngine } from '../audio/StudioAudioEngine';
 import { HapticsEngine } from '../audio/HapticsEngine';
 import { VfxOverlayCanvas } from './VfxOverlayCanvas';
-import { EvidenceDossierModal } from './EvidenceDossierModal';
-import { BriefingCategoriesModal } from './BriefingCategoriesModal';
-import {
+import type { EvidenceDossierModal } from './EvidenceDossierModal';
+import type { BriefingCategoriesModal } from './BriefingCategoriesModal';
+import type {
   CampaignSaveSlotsModal,
-  type CampaignSlotCardView,
-  type CampaignSlotId,
+  CampaignSlotCardView,
+  CampaignSlotId,
 } from './CampaignSaveSlotsModal';
 import {
   SovereignHUD,
   buildDefaultCityCards,
   formatHudValue,
   type ActiveHubTab,
+  type CampaignResumeViewInfo,
   type CityCardState,
   type GameplayQuestionViewState,
+  type HubViewState,
   type MatchSummaryViewState,
   type StoryDialogueViewState,
 } from './SovereignHUD';
@@ -98,6 +118,29 @@ type ScreenKind = 'TITLE' | 'REGISTRATION' | 'HUB' | 'STORY_DIALOGUE' | 'GAMEPLA
 
 type ActiveMatchContext =
   | { kind: 'PROLOGUE'; qCard: PrologueQuestionCard }
+  | { kind: 'INSTANT_TRIAL'; question: PrismQuestion; scoring: ScoringEngine }
+  | {
+      kind: 'DUEL';
+      payload: DuelChallengePayload;
+      tracker: DuelRaceTracker;
+      questions: PrismQuestion[];
+      index: number;
+      scoring: ScoringEngine;
+    }
+  | {
+      kind: 'SRS_REVIEW';
+      cards: SrsReviewCard[];
+      questions: PrismQuestion[];
+      index: number;
+      scoring: ScoringEngine;
+    }
+  | {
+      kind: 'SHOWCASE';
+      showcaseKind: 'GLOBE_PIN_DROP' | 'VISUAL_BLUEPRINT';
+      questions: PrismQuestion[];
+      index: number;
+      scoring: ScoringEngine;
+    }
   | {
       kind: 'CAMPAIGN';
       mission: CampaignMissionView;
@@ -113,10 +156,46 @@ type ActiveMatchContext =
       choiceOverrideNextMission?: string | null;
       deferredEndingChoices: CampaignChoiceOption[];
     }
-  | { kind: 'DAILY'; total: number; index: number }
-  | { kind: 'BRIEFING'; total: number; index: number; domainsLabel: string }
+  | { kind: 'DAILY'; total: number; index: number; utcDate: string }
+  | {
+      kind: 'BRIEFING';
+      total: number;
+      index: number;
+      domainsLabel: string;
+      difficultyPreset: BriefingDifficultyPreset;
+      domainId: number;
+      l1Id?: string;
+      l2Id?: string;
+      topicLabel?: string;
+    }
   | { kind: 'ENDLESS' }
   | { kind: 'TRIALS'; isBlackSalon: boolean; opponentHandle: string; total: number; index: number };
+
+function formatDifficultyPresetLabel(raw: string | undefined | null): string {
+  const key = String(raw ?? '').trim().toUpperCase();
+  switch (key) {
+    case 'MIDDLE_SCHOOL':
+    case 'EASY':
+      return 'Middle School';
+    case 'HIGH_SCHOOL':
+      return 'High School';
+    case 'COLLEGE':
+    case 'MEDIUM':
+      return 'College';
+    case 'GRADUATE':
+    case 'HARD':
+      return 'Graduate';
+    case 'MENSA':
+    case 'GENIUS':
+      return 'Mensa';
+    case 'ADAPTIVE':
+      return 'Adaptive';
+    case 'PROGRESSIVE':
+      return 'Progressive';
+    default:
+      return String(raw ?? '').replace(/_/g, ' ').trim();
+  }
+}
 
 const VISA_STAMP_URLS: Record<HubId, string> = {
   ch: './assets/visas/visa_ch.png',
@@ -195,19 +274,46 @@ export class SovereignMasterController {
   private readonly trialsMode: CouncilTrialsGhostMode;
   private readonly prologueScoring = new ScoringEngine();
 
-  private readonly motionCinema: MotionCinemaDirector;
-  private readonly bossBanner: BossPhaseBannerDirector;
-  private readonly endingDirector: EndingSequenceDirector;
+  private motionCinema: MotionCinemaDirector | null = null;
+  private bossBanner: BossPhaseBannerDirector | null = null;
+  private endingDirector: EndingSequenceDirector | null = null;
+  private pendingWave2BossBanners: Array<{
+    phase: number;
+    code: string;
+    bannerTitle: string;
+    bannerSubtitle: string;
+    archetype: string;
+    lightingMode: string;
+    voiceClipId?: string;
+    voiceUrl?: string;
+    text?: string;
+  }> = [];
+
   private readonly metaSuite: MetaProgressionSuite;
   private readonly characterRig: CharacterStageRigDirector;
   private readonly ergonomics: TactileErgonomicsSuite;
 
-  private readonly dossierModal: EvidenceDossierModal;
-  private readonly briefingModal: BriefingCategoriesModal;
-  private readonly saveSlotsModal: CampaignSaveSlotsModal;
+  private dossierModal: EvidenceDossierModal | null = null;
+  private briefingModal: BriefingCategoriesModal | null = null;
+  private saveSlotsModal: CampaignSaveSlotsModal | null = null;
   private readonly hud: SovereignHUD;
   private localFailedMissions = new Map<string, { attempts: number; lastFailReason: string }>();
   private restartFromStartModalEl: HTMLElement | null = null;
+
+  // v2.0 Commercial Upgrades & #325 Menu State
+  private pendingIncomingDuel: DuelChallengePayload | null = null;
+  private lockedCityNotice: HubViewState['lockedCityNotice'] = null;
+  private currentMatchRecordedQids: number[] = [];
+  private currentMatchRecordedSplits: DuelQuestionSplit[] = [];
+  private recentInstantTrialQids: number[] = [];
+  private offlineUnsubscribe: (() => void) | null = null;
+  private offlineStatusSnapshot: OfflineVaultStatus = {
+    swReady: false,
+    isOnline: typeof navigator !== 'undefined' ? navigator.onLine !== false : true,
+    cachedEntryCount: 0,
+    packsReady: [],
+  };
+  private offlineDownloadingLabel: string | null = null;
 
   private screen: ScreenKind = 'TITLE';
   private activeHubTab: ActiveHubTab = 'CAMPAIGN';
@@ -318,9 +424,27 @@ export class SovereignMasterController {
     this.endlessMode = new ArchiveDescentEndless(forgeEngine, this.passport);
     this.trialsMode = new CouncilTrialsGhostMode(forgeEngine, this.passport, this.blackboard);
 
-    this.motionCinema = new MotionCinemaDirector(this.audio, this.haptics, this.stage3d);
-    this.bossBanner = new BossPhaseBannerDirector(this.audio, this.haptics);
-    this.endingDirector = new EndingSequenceDirector(this.audio, this.haptics);
+    // Upgrade #3: Sync persisted user-flagged quarantined QIDs into ForgeEngine before any draw!
+    forgeEngine.setQuarantinedQids(getQuarantinedQidSet());
+
+    // Upgrade #1: Check cold-boot URL for 1-tap `?duel=` challenge link!
+    if (typeof window !== 'undefined') {
+      try {
+        const incoming = extractDuelParamFromLocation(
+          window.location.search,
+          window.location.hash,
+        );
+        if (incoming && incoming.qids.length > 0) {
+          this.pendingIncomingDuel = incoming;
+          duelRivalsStore.recordIncomingChallenger(incoming);
+        }
+      } catch {
+        this.pendingIncomingDuel = null;
+      }
+    }
+
+    // #325: Auto-sync selectedCityHub to the player's actual resume city on boot!
+    this.selectedCityHub = this.resolveCampaignResumeState().activeHub;
 
     this.metaSuite = new MetaProgressionSuite(
       {
@@ -366,6 +490,10 @@ export class SovereignMasterController {
           this.closeAllModals();
           void this.launchGhostOrSalon(true);
         },
+        onLaunchLivePrismReview: (cards) => {
+          this.closeAllModals();
+          void this.launchSpacedRepetitionReview(cards);
+        },
         onCloseSuite: () => {
           this.lastMetaSuiteClosedAtMs = performance.now();
           document.documentElement.classList.remove('ws-3d-showcase-open');
@@ -376,6 +504,7 @@ export class SovereignMasterController {
           if (modalSnap && modalSnap.originScreen === 'HUB') {
             this.restoreHubScrollIfNeeded(modalSnap.hubScrollTop);
           }
+          this.syncVaultLiveStatus();
           void this.restore3DAfterModal();
         },
       },
@@ -389,26 +518,23 @@ export class SovereignMasterController {
       showMicroCaption: true,
     });
 
-    this.dossierModal = new EvidenceDossierModal(this.audio, this.haptics);
-    this.briefingModal = new BriefingCategoriesModal(this.audio, this.haptics);
-    this.saveSlotsModal = new CampaignSaveSlotsModal(this.audio, this.haptics);
-
     this.ergonomics = new TactileErgonomicsSuite({
       stateQuery: {
         getScreenMode: (): BridgeScreenMode => {
           if (
-            this.motionCinema.isActive() ||
-            this.bossBanner.isActive() ||
-            this.endingDirector.isActive()
+            this.motionCinema?.isActive() ||
+            this.bossBanner?.isActive() ||
+            this.endingDirector?.isActive()
           ) {
             return 'CUTSCENE';
           }
           if (
             this.metaSuite.isOpen() ||
-            this.dossierModal.isOpen() ||
-            this.briefingModal.isOpen() ||
-            this.saveSlotsModal.isOpen() ||
+            this.dossierModal?.isOpen() ||
+            this.briefingModal?.isOpen() ||
+            this.saveSlotsModal?.isOpen() ||
             this.hud?.isVaultDrawerOpen() ||
+            this.hud?.isVisualLightboxOpen() ||
             this.leaveConfirmModalEl !== null ||
             this.restartFromStartModalEl !== null
           ) {
@@ -422,7 +548,10 @@ export class SovereignMasterController {
           }
           return this.screen;
         },
-        getActiveArchetype: () => this.liveVm?.question.archetype ?? 'SIGHTLINE_LOCK',
+        getActiveArchetype: () => {
+          const arch = this.liveVm?.question.archetype ?? 'SIGHTLINE_LOCK';
+          return arch === 'GLOBE_PIN_DROP' ? 'SIGHTLINE_LOCK' : arch;
+        },
       },
       audio: this.audio,
       haptics: this.haptics,
@@ -448,10 +577,27 @@ export class SovereignMasterController {
       shortcutCallbacks: {
         onSpinStep: (delta) => {
           if (!this.liveVm || this.liveVm.revealed) return;
+          if (this.liveVm.question.archetype === 'GLOBE_PIN_DROP' && this.liveVm.question.globePin) {
+            const anchors = this.liveVm.question.globePin.quickAnchors;
+            if (anchors.length > 0) {
+              const cur = this.liveVm.selectedGlobeAnchorIndex ?? -1;
+              const next = (cur + delta + anchors.length) % anchors.length;
+              const picked = anchors[next];
+              if (picked) this.handleSelectGlobeCoords(picked.lat, picked.lon, next, true);
+            }
+            return;
+          }
           const next = this.stage3d.stepFacet(delta);
           this.handleUiSelectFacet(next, true);
         },
         onDirectFacetSpin: (idx) => {
+          if (this.liveVm?.question.archetype === 'GLOBE_PIN_DROP' && this.liveVm.question.globePin) {
+            const picked = this.liveVm.question.globePin.quickAnchors[idx];
+            if (picked) {
+              this.handleSelectGlobeCoords(picked.lat, picked.lon, idx, true);
+            }
+            return;
+          }
           this.handleUiSelectFacet(idx);
         },
         onPeelCrown: () => {
@@ -527,43 +673,60 @@ export class SovereignMasterController {
           this.rerenderTopState();
         },
         onOpenPassport: () => this.openPassportModal(false),
-        onOpenSaveSlots: () => this.openSaveSlotsModal(),
+        onOpenSaveSlots: () => void this.openSaveSlotsModal(),
         onOpenAnalytics: () => this.openAnalyticsModal(),
         onOpenHonours: () => this.openHonoursModal(),
         onOpenAtelier: () => this.openAtelierModal(),
         onOpenObservatory: () => this.openObservatoryModal(),
+        onOpenMasteryReviewDeck: () => this.openMasteryReviewDeckModal(),
+        onDownloadOfflinePack: () => void this.handleDownloadOfflinePack(),
         onOpenFactions: () => this.openFactionsModal(),
-        onOpenDossier: () => this.openDossierModal(),
+        onOpenDossier: () => void this.openDossierModal(),
         onReturnToTitle: () => this.enterTitleShowcase(),
         onReturnToHub: () => this.handleLeaveOrReturnToHub(),
         onTopBarBack: () => this.handleTopBarBack(),
         onVaultDrawerToggle: (open) => {
           if (open) {
             this.stopAnyActiveOverclockAudio();
+            this.syncVaultLiveStatus();
           }
         },
 
         onTitleEnterMeridian: () => this.handleTitleEnterMeridian(),
         onTitleQuickMode: (tab) => this.handleTitleQuickMode(tab),
+        onLaunchInstantPrism: () => this.launchInstantTrialPrism(),
+        onInstantPrismAction: (dest) => this.handleInstantPrismAction(dest),
+        onAcceptIncomingDuel: (payload) => void this.acceptIncomingDuel(payload),
+        onDismissIncomingDuel: () => {
+          this.pendingIncomingDuel = null;
+          if (this.screen === 'TITLE') this.renderTitleScreen();
+        },
 
         onCompleteRegistration: (name, origin) => this.handleCompleteRegistration(name, origin),
 
         onSelectHubTab: (tab) => {
+          this.lockedCityNotice = null;
           this.activeHubTab = tab;
           this.renderHubScreen();
         },
-        onSelectCity: (hub) => {
-          this.selectedCityHub = hub;
-          this.audio.setVenueAmbience(hub);
-          this.stage3d.focusGlobeCity(hub as VenueCode);
-          this.renderHubScreen();
+        onSelectCity: (hub) => this.handleHubSelectCity(hub),
+        onHubContinueNow: () => this.handleContinueWhereLeftOff(),
+        onDismissLockedCityNotice: () => {
+          this.lockedCityNotice = null;
+          if (this.screen === 'HUB') this.renderHubScreen();
         },
-        onStartPrologue: () => this.startFullPrologueFlow(),
+        onStartPrologue: () => {
+          if (this.blackboard.getSnapshot().prologueComplete) {
+            this.startFullPrologueFlow();
+          } else {
+            this.resumePrologueWhereLeftOff();
+          }
+        },
         onChooseFlightFork: (dest) => this.handleFlightForkChoice(dest === 'gb' ? 'GB' : 'JP'),
         onLaunchMission: (missionId) => void this.launchCampaignMission(missionId),
         onLaunchBackstageHub: (hub) => void this.launchBackstageConversation(hub as HubId),
         onLaunchDaily: () => this.launchDailyBroadcast(),
-        onOpenBriefingPicker: (opts) => this.openBriefingPickerModal(opts),
+        onOpenBriefingPicker: (opts) => void this.openBriefingPickerModal(opts),
         onLaunchQuickBriefing: () =>
           void this.launchBriefingRun({
             domains: 'GLOBAL_MIX',
@@ -579,6 +742,7 @@ export class SovereignMasterController {
             l2TopicId: spec.l2TopicId,
             topicDisplayLabel: spec.label,
           }),
+        onLaunchVisualOrGlobeShowcase: (kind) => void this.launchVisualOrGlobeShowcase(kind),
         onLaunchEndless: (resume) => void this.launchEndlessDescent(resume),
         onPledgeFaction: (f) => {
           this.trialsMode.pledgeFaction(f);
@@ -593,6 +757,8 @@ export class SovereignMasterController {
         onSecondaryDialogueAction: () => this.onDialogueSecondaryAction?.(),
 
         onSelectFacet: (idx) => this.handleUiSelectFacet(idx),
+        onSelectGlobeAnchor: (lat, lon, anchorIdx) =>
+          this.handleSelectGlobeCoords(lat, lon, anchorIdx, true),
         onTriggerPeel: () => this.handleTriggerPeel(),
         onTriggerCouncilVeto: () => this.handleCouncilVeto(),
         onUpdateCalibrator: (est, cone) => this.handleUpdateCalibrator(est, cone),
@@ -604,6 +770,7 @@ export class SovereignMasterController {
         onOverclockBluffCancel: () => this.handleBluffCancel(),
         onCommitLock: (charge01) => void this.commitCurrentAnswer(charge01),
         onToggleBookmark: () => this.handleToggleBookmark(),
+        onRateQuestion: (vote) => this.handleRateQuestion(vote),
         onNextQuestion: () => void this.advanceAfterReveal(),
 
         onContinueEndlessDescent: () => void this.continueEndlessFromAirlock(),
@@ -613,6 +780,7 @@ export class SovereignMasterController {
         onCopyDailyShare: (text) => {
           void navigator.clipboard?.writeText(text).catch(() => {});
         },
+        onShareDuelLink: (url, title, text) => this.handleShareDuelLink(url, title, text),
         onSummaryPrimaryContinue: () => this.handleSummaryPrimaryContinue(),
       },
       {
@@ -621,9 +789,69 @@ export class SovereignMasterController {
       },
     );
 
+    this.syncVaultLiveStatus();
     this.bindStage3DEvents();
     this.installPopStateNavigationGuard();
     void this.bootAsync(canvasRoot);
+  }
+
+  // ==========================================================================
+  // DYNAMIC `import()` LAZY LOADERS (Upgrade #4: Ultra-Lean Initial Entry Bundle)
+  // ==========================================================================
+
+  private async getMotionCinema(): Promise<MotionCinemaDirector> {
+    if (!this.motionCinema) {
+      const mod = await import('../cinema/MotionCinemaDirector');
+      this.motionCinema = new mod.MotionCinemaDirector(this.audio, this.haptics, this.stage3d);
+    }
+    return this.motionCinema;
+  }
+
+  private async getBossBanner(): Promise<BossPhaseBannerDirector> {
+    if (!this.bossBanner) {
+      const mod = await import('../cinema/BossPhaseBannerDirector');
+      this.bossBanner = new mod.BossPhaseBannerDirector(this.audio, this.haptics);
+      if (this.pendingWave2BossBanners.length > 0) {
+        this.bossBanner.ingestWave2Banners(this.pendingWave2BossBanners);
+      }
+    }
+    return this.bossBanner;
+  }
+
+  private async getEndingDirector(): Promise<EndingSequenceDirector> {
+    if (!this.endingDirector) {
+      const mod = await import('../cinema/EndingSequenceDirector');
+      this.endingDirector = new mod.EndingSequenceDirector(this.audio, this.haptics);
+    }
+    return this.endingDirector;
+  }
+
+  private async getDossierModal(): Promise<EvidenceDossierModal> {
+    if (!this.dossierModal) {
+      const mod = await import('./EvidenceDossierModal');
+      this.dossierModal = new mod.EvidenceDossierModal(this.audio, this.haptics);
+    }
+    return this.dossierModal;
+  }
+
+  private async getBriefingModal(): Promise<BriefingCategoriesModal> {
+    if (!this.briefingModal) {
+      const mod = await import('./BriefingCategoriesModal');
+      this.briefingModal = new mod.BriefingCategoriesModal(this.audio, this.haptics);
+    }
+    return this.briefingModal;
+  }
+
+  private async getSaveSlotsModal(): Promise<CampaignSaveSlotsModal> {
+    if (!this.saveSlotsModal) {
+      const mod = await import('./CampaignSaveSlotsModal');
+      this.saveSlotsModal = new mod.CampaignSaveSlotsModal(this.audio, this.haptics);
+    }
+    return this.saveSlotsModal;
+  }
+
+  private getOfflineClient() {
+    return import('../pwa/OfflineServiceWorkerClient');
   }
 
   private installPopStateNavigationGuard(): void {
@@ -685,6 +913,10 @@ export class SovereignMasterController {
   }
 
   private popNavigationReturnStack(fromPopState = false): boolean {
+    if (this.hud.isVisualLightboxOpen()) {
+      this.hud.closeVisualLightbox();
+      return true;
+    }
     if (this.hud.isVaultDrawerOpen()) {
       this.hud.closeVaultDrawer();
       return true;
@@ -701,9 +933,9 @@ export class SovereignMasterController {
     if (!top) {
       if (
         this.metaSuite.isOpen() ||
-        this.dossierModal.isOpen() ||
-        this.briefingModal.isOpen() ||
-        this.saveSlotsModal.isOpen()
+        this.dossierModal?.isOpen() ||
+        this.briefingModal?.isOpen() ||
+        this.saveSlotsModal?.isOpen()
       ) {
         this.closeAllModals(false);
         return true;
@@ -854,6 +1086,21 @@ export class SovereignMasterController {
     this.enterTitleShowcase();
     void preloadCharacterCutouts();
 
+    // Upgrade #5A: Lazy-bind Offline Service Worker status subscription
+    void this.getOfflineClient()
+      .then(async (pwa) => {
+        this.offlineStatusSnapshot = pwa.getOfflineVaultStatus();
+        this.syncVaultLiveStatus();
+        this.offlineUnsubscribe = pwa.subscribeOfflineStatus((st) => {
+          this.offlineStatusSnapshot = st;
+          this.syncVaultLiveStatus();
+        });
+        const refreshed = await pwa.refreshOfflineVaultStatus();
+        this.offlineStatusSnapshot = refreshed;
+        this.syncVaultLiveStatus();
+      })
+      .catch(() => {});
+
     await this.stage3d.mount(canvasRoot, 'ch');
     this.audio.setVenueAmbience('ch');
     this.metaSuite.applyEquippedFinish();
@@ -866,7 +1113,7 @@ export class SovereignMasterController {
       await this.syncHub3DGlobe();
     }
 
-    // Stream 949,729+ Forge catalog + 40-mission Campaign + Wave-2 Narrative Bible concurrently
+    // Stream 1M+ Forge catalog + 96-mission Campaign + Wave-2 Narrative Bible concurrently
     await Promise.allSettled([
       forgeEngine.init('./data'),
       this.campaign.loadCampaignData('./data/campaign_20hr.json'),
@@ -888,17 +1135,27 @@ export class SovereignMasterController {
               text: b.text,
             }));
           if (banners.length > 0) {
-            this.bossBanner.ingestWave2Banners(banners);
+            this.pendingWave2BossBanners = banners;
+            this.bossBanner?.ingestWave2Banners(banners);
           }
         }
       }),
     ]);
 
+    // #325: Re-sync selectedCityHub to the player's actual active campaign city once campaign_20hr.json is hydrated
+    this.selectedCityHub = this.resolveCampaignResumeState().activeHub;
+    this.syncVaultLiveStatus();
+
     if (this.screen === 'TITLE') {
       this.renderTitleScreen();
     } else if (this.screen === 'HUB') {
+      const prevScrollTop =
+        document.querySelector<HTMLElement>('.ws-hub-scroll')?.scrollTop ?? 0;
       await this.syncHub3DGlobe();
       this.renderHubScreen();
+      if (prevScrollTop > 0) {
+        this.restoreHubScrollIfNeeded(prevScrollTop);
+      }
     }
   }
 
@@ -926,7 +1183,337 @@ export class SovereignMasterController {
   }
 
   // ==========================================================================
-  // 0. MAJESTIC FIRST-BOOT 3D TITLE SHOWCASE (#137 P1 #7a & #154 #8)
+  // #325 DETERMINISTIC "CONTINUE WHERE I LEFT OFF" & CAMPAIGN RESUME ENGINE
+  // ==========================================================================
+
+  private deriveResumeProloguePhase(): { phase: ProloguePhase; stepLabel: string; hasProgress: boolean } {
+    const snap = this.blackboard.getSnapshot();
+    const completed = new Set(snap.completedMissions);
+    const flags = snap.branchFlags ?? {};
+    const hasName = this.passport.hasRegisteredName();
+    const pState = this.prologue.getInternalStateSnapshot();
+
+    if (completed.has('ch_4')) {
+      return { phase: 'PASSPORT_STAMP_PAYOFF', stepLabel: 'Passport Stamp', hasProgress: true };
+    }
+    if (completed.has('ch_3')) {
+      return { phase: 'VETTING_Q4_CALIBRATOR', stepLabel: 'Q4 of 4 · Calibrator', hasProgress: true };
+    }
+    if (completed.has('ch_2')) {
+      if (flags.manifesto) {
+        return { phase: 'VETTING_Q3_OVERCLOCK', stepLabel: 'Q3 of 4 · Overclock', hasProgress: true };
+      }
+      return { phase: 'SPOTLIGHT_MANIFESTO', stepLabel: 'Charter Oath · Q3/4', hasProgress: true };
+    }
+    if (completed.has('ch_1')) {
+      if (flags.prologue_leak) {
+        return { phase: 'VETTING_Q2_PEEL', stepLabel: 'Q2 of 4 · Depth Peel', hasProgress: true };
+      }
+      return { phase: 'MIRROR_LEAK_CHOICE', stepLabel: 'Mirror Choice · Q2/4', hasProgress: true };
+    }
+    if (hasName) {
+      return { phase: 'VETTING_Q1_SPIN', stepLabel: 'Q1 of 4 · Sightline', hasProgress: true };
+    }
+    if (pState.phase !== 'SUMMONS_CUTSCENE') {
+      const label =
+        pState.phase === 'IDENTITY_REGISTRATION'
+          ? 'Identity Registration'
+          : pState.phase === 'CHAMBER_OPENING'
+            ? 'Geneva Vetting Chamber'
+            : 'Geneva Vetting';
+      return { phase: pState.phase, stepLabel: label, hasProgress: true };
+    }
+    return { phase: 'SUMMONS_CUTSCENE', stepLabel: 'Act 0 · Geneva Sanctuary', hasProgress: false };
+  }
+
+  private resolveCampaignResumeState(): CampaignResumeViewInfo {
+    const snap = this.blackboard.getSnapshot();
+
+    // Case 1: Act 0 Geneva Prologue not yet completed
+    if (!snap.prologueComplete) {
+      const derived = this.deriveResumeProloguePhase();
+      if (!derived.hasProgress) {
+        return {
+          hasProgress: false,
+          kind: 'NEW_GAME',
+          activeHub: 'ch',
+          nextMissionId: 'ch_1',
+          primaryCtaLabel: '▶ START STORY CAMPAIGN',
+          subLabel: 'Act 0 · Geneva Sanctuary',
+          bannerTitle: 'Act 0 · Geneva Vetting Screening',
+          bannerSub: '4-question diplomatic vetting to claim your Meridian Passport and unlock the World Circuit.',
+        };
+      }
+      return {
+        hasProgress: true,
+        kind: 'RESUME_PROLOGUE',
+        activeHub: 'ch',
+        nextMissionId: null,
+        primaryCtaLabel: '▶ CONTINUE: GENEVA VETTING',
+        subLabel: `Geneva · ${derived.stepLabel}`,
+        bannerTitle: `Geneva Vetting · ${derived.stepLabel}`,
+        bannerSub: 'Pick up right where you left off in Julian Vance’s Geneva Chamber.',
+      };
+    }
+
+    // Case 2: Prologue complete, Act I Flight Fork pending (London vs Tokyo)
+    if (!snap.firstFlight) {
+      return {
+        hasProgress: true,
+        kind: 'FLIGHT_FORK',
+        activeHub: 'ch',
+        nextMissionId: null,
+        primaryCtaLabel: '▶ CONTINUE: CHOOSE LONDON OR TOKYO',
+        subLabel: 'Act I World Circuit Fork',
+        bannerTitle: 'Act I Flight Fork · London or Tokyo',
+        bannerSub: 'Your Geneva Visa is stamped. Choose your opening World Circuit departure city.',
+      };
+    }
+
+    // Case 3: Active World Circuit Campaign mission
+    const completedSet = new Set(snap.completedMissions);
+    let nextMissionId: string | null = null;
+    let activeHub: CampaignHubCode = (snap.firstFlight === 'JP' ? 'jp' : 'gb') as CampaignHubCode;
+    let cityName = activeHub === 'jp' ? 'Tokyo' : 'London';
+    let slotNum = 1;
+    let missionTitle = `${cityName} Mission 1`;
+
+    if (this.campaign.isLoaded()) {
+      const grid = this.campaign.getHubGridCards();
+      const candidateCurId = snap.currentMissionId;
+      const curView = candidateCurId ? this.campaign.getMissionView(candidateCurId) : null;
+      const curHubCard = curView ? grid.find((g) => g.hubId === curView.hubId) : null;
+
+      if (curView && curHubCard && curHubCard.status !== 'LOCKED' && !completedSet.has(curView.id)) {
+        nextMissionId = curView.id;
+        activeHub = curView.hubId as CampaignHubCode;
+        cityName = curHubCard.city;
+        slotNum = curView.rhythmSlot || 1;
+        missionTitle = curView.title;
+      } else {
+        // Scan unlocked hubs in progression order (prioritizing chosen firstFlight track first!)
+        const ordered = [...grid].sort((a, b) => {
+          if (snap.firstFlight === 'JP') {
+            if (a.hubId === 'jp' && b.hubId === 'gb') return -1;
+            if (a.hubId === 'gb' && b.hubId === 'jp') return 1;
+          }
+          return a.order - b.order;
+        });
+        const nextHub =
+          ordered.find((h) => h.status !== 'LOCKED' && h.nextPlayableMissionId) ??
+          ordered.find((h) => h.status !== 'LOCKED') ??
+          ordered[0];
+        if (nextHub) {
+          activeHub = nextHub.hubId as CampaignHubCode;
+          cityName = nextHub.city;
+          nextMissionId =
+            nextHub.nextPlayableMissionId ??
+            nextHub.coreMissionIds[0] ??
+            nextHub.missionIds[0] ??
+            `${activeHub}_1`;
+          const mView = nextMissionId ? this.campaign.getMissionView(nextMissionId) : null;
+          slotNum = mView?.rhythmSlot || 1;
+          missionTitle = mView?.title ?? `${cityName} Round ${slotNum}`;
+        }
+      }
+    } else {
+      // Fallback before campaign_20hr.json finishes streaming
+      const curId = snap.currentMissionId || (snap.firstFlight === 'JP' ? 'jp_1' : 'gb_1');
+      const parts = curId.split('_');
+      const prefix = (parts[0] || 'gb') as CampaignHubCode;
+      const num = Math.max(1, Number(parts[1]) || 1);
+      const cityNames: Record<CampaignHubCode, string> = {
+        ch: 'Geneva',
+        gb: 'London',
+        jp: 'Tokyo',
+        br: 'Rio de Janeiro',
+        eg: 'Cairo',
+        is: 'Reykjavik',
+        sg: 'Singapore',
+        global: 'The Apex Forum',
+      };
+      activeHub = cityNames[prefix] ? prefix : 'gb';
+      cityName = cityNames[activeHub];
+      slotNum = num;
+      nextMissionId = curId;
+      missionTitle = `${cityName} Round ${slotNum}`;
+    }
+
+    return {
+      hasProgress: true,
+      kind: 'RESUME_MISSION',
+      activeHub,
+      nextMissionId,
+      primaryCtaLabel: `▶ CONTINUE: ${cityName.toUpperCase()} · M${slotNum}`,
+      subLabel: missionTitle,
+      bannerTitle: `${cityName} · Mission ${slotNum} — ${missionTitle}`,
+      bannerSub: `Next story stage on your Meridian World Circuit.`,
+    };
+  }
+
+  private resumePrologueWhereLeftOff(): void {
+    const snap = this.blackboard.getSnapshot();
+    if (snap.prologueComplete && !snap.firstFlight) {
+      this.stopTelemetryLoop();
+      this.activeBackstageCtx = null;
+      this.activeMissionForChoice = null;
+      this.presentPrologueStep(this.prologue.proceedToFlightFork());
+      return;
+    }
+
+    const derived = this.deriveResumeProloguePhase();
+    if (!derived.hasProgress) {
+      this.startFullPrologueFlow();
+      return;
+    }
+
+    this.stopTelemetryLoop();
+    this.activeBackstageCtx = null;
+    this.activeMissionForChoice = null;
+
+    const flags = snap.branchFlags ?? {};
+    const leakFlag = flags.prologue_leak;
+    const mirrorChoice: 'EXPLOITED' | 'FLAGGED' | 'CLEAN' =
+      leakFlag === 'EXPLOITED'
+        ? 'EXPLOITED'
+        : leakFlag === 'FLAGGED'
+          ? 'FLAGGED'
+          : 'CLEAN';
+    const manFlag = flags.manifesto;
+    const manifestoChoice: 'COUNCIL' | 'PUBLIC' | 'SELF' =
+      manFlag === 'COUNCIL'
+        ? 'COUNCIL'
+        : manFlag === 'SELF'
+          ? 'SELF'
+          : 'PUBLIC';
+
+    const cur = this.prologue.getInternalStateSnapshot();
+    this.prologue.hydrateInternalState({
+      ...cur,
+      phase: derived.phase,
+      selectedOrigin: this.passport.getSnapshot().origin ?? cur.selectedOrigin,
+      mirrorChoice,
+      manifestoChoice,
+      leakedHintRevealed: mirrorChoice === 'EXPLOITED',
+      stampedPersonaId: this.passport.getSnapshot().persona ?? cur.stampedPersonaId,
+    });
+    this.saveSlotManager.saveActiveSlot();
+    this.presentPrologueStep(this.prologue.getSnapshot());
+  }
+
+  private handleContinueWhereLeftOff(): void {
+    const resume = this.resolveCampaignResumeState();
+    this.lockedCityNotice = null;
+    if (resume.kind === 'NEW_GAME') {
+      this.startFullPrologueFlow();
+      return;
+    }
+    if (resume.kind === 'RESUME_PROLOGUE') {
+      this.resumePrologueWhereLeftOff();
+      return;
+    }
+    if (resume.kind === 'FLIGHT_FORK') {
+      this.presentPrologueStep(this.prologue.proceedToFlightFork());
+      return;
+    }
+    if (resume.nextMissionId) {
+      this.selectedCityHub = resume.activeHub;
+      void this.launchCampaignMission(resume.nextMissionId);
+      return;
+    }
+    this.enterHub('CAMPAIGN');
+  }
+
+  private getCityLockRequirementText(hub: CampaignHubCode): string {
+    const snap = this.blackboard.getSnapshot();
+    if (!snap.prologueComplete) {
+      return 'Complete the 4-question Geneva Vetting Interview first to unlock Act I departures.';
+    }
+    if (!snap.firstFlight && (hub === 'gb' || hub === 'jp')) {
+      return 'Choose London or Tokyo at the Act I Flight Fork to begin your World Circuit.';
+    }
+    switch (hub) {
+      case 'gb':
+      case 'jp':
+        return 'Complete Geneva Vetting and pick your Act I departure track.';
+      case 'br':
+      case 'eg':
+        return 'Clear both London and Tokyo Boss Showdowns (Act I) to unlock Act II sanctuaries.';
+      case 'is':
+      case 'sg':
+        return 'Clear both Rio de Janeiro and Cairo Boss Showdowns (Act II) to unlock Act III.';
+      case 'global':
+        return 'Clear Reykjavik and Singapore Boss Showdowns (Act III) to enter The Apex Forum Championship.';
+      default:
+        return 'Clear the current active sanctuary stage to unlock this venue.';
+    }
+  }
+
+  private handleHubSelectCity(hub: CampaignHubCode): void {
+    const cities = this.buildHubCitiesList();
+    const picked = cities.find((c) => c.hub === hub);
+    if (!picked) return;
+
+    const snap = this.blackboard.getSnapshot();
+
+    // #353 P0 #2: Flight Fork pending click on London or Tokyo MUST run BEFORE locked check!
+    if (snap.prologueComplete && !snap.firstFlight && (hub === 'gb' || hub === 'jp')) {
+      this.lockedCityNotice = null;
+      this.handleFlightForkChoice(hub === 'gb' ? 'GB' : 'JP');
+      return;
+    }
+
+    if (!picked.unlocked) {
+      this.lockedCityNotice = {
+        hub,
+        city: picked.city,
+        requirementText: this.getCityLockRequirementText(hub),
+      };
+      this.haptics.uiTap();
+      this.renderHubScreen();
+      // #353 P0 #3: Always scroll locked notice into view at top of Hub!
+      requestAnimationFrame(() => {
+        const sc = document.querySelector<HTMLElement>('.ws-hub-scroll');
+        if (sc) sc.scrollTop = 0;
+        document
+          .getElementById('ws-hub-lock-notice')
+          ?.scrollIntoView({ behavior: 'auto', block: 'start' });
+      });
+      return;
+    }
+
+    this.lockedCityNotice = null;
+
+    // Mid-Prologue click on Geneva immediately resumes Geneva Vetting!
+    if (!snap.prologueComplete && hub === 'ch') {
+      this.resumePrologueWhereLeftOff();
+      return;
+    }
+
+    // Clicking the already-selected unlocked city launches its next playable mission immediately!
+    if (hub === this.selectedCityHub && picked.nextPlayableMissionId) {
+      void this.launchCampaignMission(picked.nextPlayableMissionId);
+      return;
+    }
+
+    // #353 P0 #3: Switch city and deterministically scroll `#ws-hub-missions-panel` into view!
+    this.selectedCityHub = hub;
+    this.audio.setVenueAmbience(hub);
+    this.stage3d.focusGlobeCity(hub as VenueCode);
+    this.renderHubScreen();
+    requestAnimationFrame(() => {
+      const sc = document.querySelector<HTMLElement>('.ws-hub-scroll');
+      const panel = document.getElementById('ws-hub-missions-panel');
+      if (sc && panel) {
+        sc.scrollTop = Math.max(0, panel.offsetTop - 8);
+      } else {
+        panel?.scrollIntoView({ behavior: 'auto', block: 'start' });
+      }
+    });
+  }
+
+  // ==========================================================================
+  // 0. MAJESTIC FIRST-BOOT 3D TITLE SHOWCASE (#137 P1 #7a & #154 #8 & #325)
   // ==========================================================================
 
   private enterTitleShowcase(): void {
@@ -934,6 +1521,7 @@ export class SovereignMasterController {
     this.audio.stopVoice();
     this.pausePassive2DActors();
     this.hud.closeVaultDrawer();
+    this.hud.closeVisualLightbox();
     this.screen = 'TITLE';
     this.renderTitleScreen();
     void this.stage3d.showTitleShowcase('ch').then(() => {
@@ -945,6 +1533,7 @@ export class SovereignMasterController {
   private renderTitleScreen(): void {
     const counts = forgeEngine.getDomainCounts();
     const snap = this.blackboard.getSnapshot();
+    const resumeState = this.resolveCampaignResumeState();
     this.hud.renderTitleShowcase({
       challengerName: this.passport.getChallengerName(),
       hasRegisteredName: this.passport.hasRegisteredName(),
@@ -953,27 +1542,42 @@ export class SovereignMasterController {
         counts.verifiedUniqueTotal > 50000 ? counts.verifiedUniqueTotal : 949729,
       playableQuestionTotal:
         counts.totalPlayableCount > 50000 ? counts.totalPlayableCount : 1000129,
+      resumeState,
+      incomingDuel: this.pendingIncomingDuel,
+      srsDueCount: this.metaSuite.getDueReviewCount(),
     });
   }
 
   private handleTitleEnterMeridian(): void {
-    const snap = this.blackboard.getSnapshot();
     this.pushNavigationReturnSnapshot('HUB_FROM_TITLE');
-    if (!this.passport.hasRegisteredName() && !snap.prologueComplete) {
-      this.startFullPrologueFlow();
-    } else {
-      this.enterHub('CAMPAIGN');
-    }
+    this.handleContinueWhereLeftOff();
   }
 
   private handleTitleQuickMode(tab: ActiveHubTab): void {
+    if (tab === 'BRIEFING') {
+      // #325 & #341: 1-click Topic Picker straight over Start Screen (Back/Close returns to Title!)
+      void this.openBriefingPickerModal();
+      return;
+    }
     this.pushNavigationReturnSnapshot('HUB_FROM_TITLE');
-    if (tab === 'CAMPAIGN') {
-      const snap = this.blackboard.getSnapshot();
-      if (!this.passport.hasRegisteredName() && !snap.prologueComplete) {
-        this.startFullPrologueFlow();
+    if (tab === 'DAILY') {
+      if (!this.dailyMode.hasCompletedToday()) {
+        this.launchDailyBroadcast();
         return;
       }
+      this.enterHub('DAILY');
+      return;
+    }
+    if (tab === 'ENDLESS') {
+      if (!this.endlessMode.canResumeCheckpoint()) {
+        void this.launchEndlessDescent(false);
+        return;
+      }
+      this.enterHub('ENDLESS');
+      return;
+    }
+    if (tab === 'CAMPAIGN') {
+      this.selectedCityHub = this.resolveCampaignResumeState().activeHub;
     }
     this.enterHub(tab);
   }
@@ -1005,6 +1609,9 @@ export class SovereignMasterController {
           totalSec: this.timerTotalSec,
           selectedFacetIndex: idx,
         });
+      },
+      onGlobePinSelected: (lat, lon) => {
+        this.handleSelectGlobeCoords(lat, lon, null, false);
       },
       onPeelTriggered: () => {
         this.handleTriggerPeel(true);
@@ -1039,11 +1646,10 @@ export class SovereignMasterController {
         }
         const fillEl = document.getElementById('ws-overclock-fill');
         const labelEl = document.getElementById('ws-overclock-label');
-        const tierMult =
-          this.liveVm.peelTier === 1 ? 3.0 : this.liveVm.peelTier === 2 ? 2.0 : 1.2;
+        const tierMult = this.resolveLiveTierMultiplier(this.liveVm);
         if (fillEl) fillEl.style.width = active ? `${(charge01 * 100).toFixed(1)}%` : '0%';
         if (labelEl && active) {
-          labelEl.textContent = `⚡ OVERCLOCKING ${(tierMult * (1 + charge01)).toFixed(2)}x — RELEASE TO LOCK`;
+          labelEl.textContent = `OVERCLOCKING ${(tierMult * (1 + charge01)).toFixed(2)}x — RELEASE TO LOCK`;
         }
       },
       onOverclockCommit: (idx, finalCharge01) => {
@@ -1087,7 +1693,7 @@ export class SovereignMasterController {
         const unitStr = cal.unit ? ` ${cal.unit}` : '';
         if (slider) slider.value = String(snapped);
         if (readout) {
-          readout.textContent = `YOUR ESTIMATE: ${formatHudValue(snapped, cal.unit, this.liveVm.question.prompt)}${unitStr}`;
+          readout.textContent = `EST: ${formatHudValue(snapped, cal.unit, this.liveVm.question.prompt)}${unitStr}`;
         }
       },
       onCalibratorConeChanged: (coneId) => {
@@ -1105,11 +1711,7 @@ export class SovereignMasterController {
         if (this.screen !== 'HUB') return;
         const validHubs = new Set(['ch', 'gb', 'jp', 'br', 'eg', 'is', 'sg', 'global']);
         if (validHubs.has(venue)) {
-          this.selectedCityHub = venue as CampaignHubCode;
-          this.audio.setVenueAmbience(venue);
-          this.haptics.uiTap();
-          this.audio.playSfx('ui_tap');
-          this.renderHubScreen();
+          this.handleHubSelectCity(venue as CampaignHubCode);
         }
       },
     };
@@ -1152,7 +1754,7 @@ export class SovereignMasterController {
     const unitStr = cal.unit ? ` ${cal.unit}` : '';
     if (slider) slider.value = String(next);
     if (readout) {
-      readout.textContent = `YOUR ESTIMATE: ${formatHudValue(next, cal.unit, this.liveVm.question.prompt)}${unitStr}`;
+      readout.textContent = `EST: ${formatHudValue(next, cal.unit, this.liveVm.question.prompt)}${unitStr}`;
     }
   }
 
@@ -1214,29 +1816,32 @@ export class SovereignMasterController {
     this.onDialogueSecondaryAction = null;
 
     if (snap.phase === 'SUMMONS_CUTSCENE' && snap.cutsceneSlides) {
-      this.motionCinema.play(
-        {
-          id: 'act0_invitation',
-          title: 'ACT 0 · THE BLACK-GLASS SUMMONS',
-          location: 'Geneva, Switzerland · 23:42 CET',
-          image: snap.cutsceneImageUrl ?? './assets/cutscenes/act0_invitation.jpg',
-          weather_fx: 'alpine_snow',
-          lines: snap.cutsceneSlides.map((s) => ({
-            id: s.id,
-            speaker: s.speakerId,
-            speaker_name: s.speakerName,
-            expression: s.expression,
-            voice_clip: s.voiceUrl,
-            text: s.subtitle,
-          })),
-        },
-        this.passport.getChallengerName(),
-        () => {
-          const next = this.prologue.advanceFromCutscene();
-          this.presentPrologueStep(next);
-        },
-        { showPrologueSummons: true },
-      );
+      void this.getMotionCinema().then((cinema) => {
+        cinema.play(
+          {
+            id: 'act0_invitation',
+            title: 'ACT 0 · THE BLACK-GLASS SUMMONS',
+            location: 'Geneva, Switzerland · 23:42 CET',
+            image: snap.cutsceneImageUrl ?? './assets/cutscenes/act0_invitation.jpg',
+            weather_fx: 'alpine_snow',
+            lines: snap.cutsceneSlides!.map((s) => ({
+              id: s.id,
+              speaker: s.speakerId,
+              speaker_name: s.speakerName,
+              expression: s.expression,
+              voice_clip: s.voiceUrl,
+              text: s.subtitle,
+            })),
+          },
+          this.passport.getChallengerName(),
+          () => {
+            const next = this.prologue.advanceFromCutscene();
+            this.saveSlotManager.saveActiveSlot();
+            this.presentPrologueStep(next);
+          },
+          { showPrologueSummons: true },
+        );
+      });
       return;
     }
 
@@ -1309,6 +1914,8 @@ export class SovereignMasterController {
     }
 
     // Story / Ethical Interrupt / Passport Stamp Ceremony / Flight Fork Dialogue
+    // #353 P0 #1: Clear active Prologue question matchCtx so UNLOCK WORLD GLOBE ▶ advances cleanly!
+    this.matchCtx = null;
     this.screen = 'STORY_DIALOGUE';
 
     if (snap.phase === 'ACT1_FLIGHT_FORK') {
@@ -1380,7 +1987,7 @@ export class SovereignMasterController {
       tellText: snap.tellHint,
       choices,
       secondaryActionLabel:
-        snap.phase === 'PASSPORT_STAMP_PAYOFF' ? '🛂 INSPECT STAMPED PASSPORT' : undefined,
+        snap.phase === 'PASSPORT_STAMP_PAYOFF' ? 'INSPECT STAMPED PASSPORT' : undefined,
       continueLabel:
         snap.phase === 'PASSPORT_STAMP_PAYOFF' ? 'UNLOCK WORLD GLOBE ▶' : 'CONTINUE ▶',
     };
@@ -1390,6 +1997,7 @@ export class SovereignMasterController {
   private handleFlightForkChoice(dest: 'GB' | 'JP'): void {
     const { nextMissionId } = this.prologue.selectAct1FlightFork(dest);
     this.selectedCityHub = dest === 'GB' ? 'gb' : 'jp';
+    this.lockedCityNotice = null;
     this.saveSlotManager.saveActiveSlot();
     void this.launchCampaignMission(nextMissionId);
   }
@@ -1403,12 +2011,18 @@ export class SovereignMasterController {
     this.audio.stopVoice();
     this.pausePassive2DActors();
     this.hud.closeVaultDrawer();
+    this.hud.closeVisualLightbox();
     this.matchCtx = null;
     this.liveVm = null;
     this.activeBackstageCtx = null;
     this.onDialogueSecondaryAction = null;
+    this.lockedCityNotice = null;
     this.screen = 'HUB';
     this.activeHubTab = tab;
+    if (tab === 'CAMPAIGN') {
+      const resume = this.resolveCampaignResumeState();
+      this.selectedCityHub = resume.activeHub;
+    }
     this.renderHubScreen();
     void this.syncHub3DGlobe();
   }
@@ -1434,15 +2048,33 @@ export class SovereignMasterController {
   }
 
   private buildHubCitiesList(): CityCardState[] {
+    const resume = this.resolveCampaignResumeState();
+    const snap = this.blackboard.getSnapshot();
+    const forkPending = snap.prologueComplete && !snap.firstFlight;
     if (!this.campaign.isLoaded()) {
-      return buildDefaultCityCards();
+      const defaults = buildDefaultCityCards();
+      return defaults.map((c) => {
+        const unlocked =
+          c.unlocked || (forkPending && (c.hub === 'gb' || c.hub === 'jp'));
+        return {
+          ...c,
+          unlocked,
+          isActiveResumeHub: c.hub === resume.activeHub,
+          nextPlayableMissionId:
+            c.hub === resume.activeHub
+              ? resume.nextMissionId
+              : c.missions.find((m) => m.unlocked && !m.completed)?.id ?? null,
+          lockRequirementText: unlocked ? undefined : this.getCityLockRequirementText(c.hub),
+        };
+      });
     }
     const grid = this.campaign.getHubGridCards();
-    const snap = this.blackboard.getSnapshot();
     const completedSet = new Set(snap.completedMissions);
 
     return grid.map((card) => {
-      const unlockedHub = card.status !== 'LOCKED';
+      const unlockedHub =
+        card.status !== 'LOCKED' ||
+        (forkPending && (card.hubId === 'gb' || card.hubId === 'jp'));
       const hubView = this.campaign.getHubView(card.hubId);
 
       const missions = hubView
@@ -1497,6 +2129,14 @@ export class SovereignMasterController {
       const firstCoreId = card.coreMissionIds[0] ?? card.missionIds[0];
       const timerSec =
         this.campaign.getMissionView(firstCoreId)?.matchSpec.timePerQuestionSec ?? 18;
+      const nextPlayableId =
+        card.nextPlayableMissionId ??
+        missions.find((m) => m.unlocked && !m.completed)?.id ??
+        missions.find((m) => m.unlocked)?.id ??
+        null;
+      const nextPlayableTitle = nextPlayableId
+        ? missions.find((m) => m.id === nextPlayableId)?.title ?? null
+        : null;
 
       return {
         hub: card.hubId as CampaignHubCode,
@@ -1514,6 +2154,12 @@ export class SovereignMasterController {
         sideTotalMissions: card.sideTotalCount,
         diplomaticCrossClearance: card.diplomaticCrossClearance,
         activeBranchBadge: card.activeBranchBadge,
+        isActiveResumeHub: card.hubId === resume.activeHub,
+        nextPlayableMissionId: nextPlayableId,
+        nextPlayableMissionTitle: nextPlayableTitle,
+        lockRequirementText: unlockedHub
+          ? undefined
+          : this.getCityLockRequirementText(card.hubId as CampaignHubCode),
         missions,
       };
     });
@@ -1526,6 +2172,14 @@ export class SovereignMasterController {
     const trialsOverview = this.trialsMode.getHubOverview();
     const endlessHud = this.endlessMode.getHUDState();
     const campOverview = this.campaign.getCampaignOverview();
+    const resumeState = this.resolveCampaignResumeState();
+
+    const duelTotals = duelRivalsStore.getRecordSummary();
+    const recentRivals = duelRivalsStore.getRivals().slice(0, 4).map((r) => ({
+      name: r.name,
+      bestScore: r.bestScoreOverall,
+      recordLabel: `${r.lossesAgainstPlayer}W-${r.winsAgainstPlayer}L${r.tiesWithPlayer > 0 ? `-${r.tiesWithPlayer}T` : ''}`,
+    }));
 
     const activeCrest = passSnap.activeTitleCrest?.trim();
     const basePersona = passSnap.persona
@@ -1553,6 +2207,16 @@ export class SovereignMasterController {
       prologueCompleted: snap.prologueComplete,
       flightForkPending: snap.prologueComplete && !snap.firstFlight,
       selectedCityHub: this.selectedCityHub,
+      activeResumeHub: resumeState.activeHub,
+      resumeState,
+      lockedCityNotice: this.lockedCityNotice,
+      duelRivalsSummary: {
+        totalDuels: duelTotals.totalDuels,
+        wins: duelTotals.wins,
+        losses: duelTotals.losses,
+        ties: duelTotals.ties,
+        recentRivals,
+      },
       cities: this.buildHubCitiesList(),
       campaignCompletedMissions: campOverview.completedMissionsCount,
       campaignTotalMissions: campOverview.totalMissionsCount,
@@ -1635,9 +2299,9 @@ export class SovereignMasterController {
         ? node.options.map((opt) => {
             const extOpt = opt as typeof opt & { unlockPerk?: string; vaultClue?: string };
             const tags: string[] = [];
-            if (opt.unlockEvidenceClue) tags.push('🔍 DOSSIER CLUE');
+            if (opt.unlockEvidenceClue) tags.push('DOSSIER CLUE');
             if (extOpt.unlockPerk) tags.push('✦ PERK');
-            if (extOpt.vaultClue) tags.push('🔑 VAULT KEY');
+            if (extOpt.vaultClue) tags.push('VAULT KEY');
             if (opt.integrityDelta) {
               tags.push(`${opt.integrityDelta > 0 ? '+' : ''}${opt.integrityDelta} INTEGRITY`);
             }
@@ -1700,8 +2364,10 @@ export class SovereignMasterController {
     this.selectedCityHub = mView.hubId as CampaignHubCode;
     this.pendingChoiceNextMissionOverride = undefined;
 
-    await this.setStageVenueWithAmbience(mView.hubId as VenueCode);
-    this.stage3d.setLightingMode(mView.matchSpec.stageLightingMode);
+    // #353 P0 #4: Stream 3D venue room non-blocking so Start Screen -> Continue transitions instantly!
+    void this.setStageVenueWithAmbience(mView.hubId as VenueCode).then(() => {
+      this.stage3d.setLightingMode(mView.matchSpec.stageLightingMode);
+    });
 
     // #145 P0 #1: Split pre-match choices vs post-match Championship Ending choices (`global_5`)!
     const preMatchChoices = mView.choices.filter((c) => !c.endingId);
@@ -1722,7 +2388,8 @@ export class SovereignMasterController {
     if (mView.cutsceneBefore && !this.playedCutsceneIds.has(mView.cutsceneBefore.id)) {
       this.playedCutsceneIds.add(mView.cutsceneBefore.id);
       const cs = mView.cutsceneBefore;
-      this.motionCinema.play(
+      const cinema = await this.getMotionCinema();
+      cinema.play(
         {
           id: cs.id,
           title: cs.title,
@@ -1864,14 +2531,21 @@ export class SovereignMasterController {
       return;
     }
 
-    if (this.matchCtx === null && !this.activeMissionForChoice) {
+    if (
+      (this.matchCtx === null || this.matchCtx.kind === 'PROLOGUE') &&
+      !this.activeMissionForChoice
+    ) {
       const snap = this.prologue.getSnapshot();
       if (snap.phase === 'CHAMBER_OPENING') {
-        this.presentPrologueStep(this.prologue.advanceFromCutscene());
+        const next = this.prologue.advanceFromCutscene();
+        this.saveSlotManager.saveActiveSlot();
+        this.presentPrologueStep(next);
         return;
       }
       if (snap.phase === 'PASSPORT_STAMP_PAYOFF') {
-        this.presentPrologueStep(this.prologue.proceedToFlightFork());
+        const next = this.prologue.proceedToFlightFork();
+        this.saveSlotManager.saveActiveSlot();
+        this.presentPrologueStep(next);
         return;
       }
     }
@@ -2011,19 +2685,21 @@ export class SovereignMasterController {
         this.pausePassive2DActors();
         void this.stage3d.showChampionshipTrophy(0);
         this.vfx.playGoldResonance(5, true);
-        this.endingDirector.play({
-          ending: res.endingCommitted,
-          challengerName: this.passport.getChallengerName(),
-          blackboard: this.blackboard,
-          passport: this.passport,
-          stage3d: this.stage3d,
-          onStartNewCircuitPlus: (heatMutators) => {
-            this.campaign.startNewCircuitPlus(heatMutators);
-            this.saveSlotManager.saveActiveSlot();
-            this.selectedCityHub = 'gb';
-            this.enterHub('CAMPAIGN');
-          },
-          onReturnToHub: () => this.enterHub('CAMPAIGN'),
+        void this.getEndingDirector().then((endingDir) => {
+          endingDir.play({
+            ending: res.endingCommitted!,
+            challengerName: this.passport.getChallengerName(),
+            blackboard: this.blackboard,
+            passport: this.passport,
+            stage3d: this.stage3d,
+            onStartNewCircuitPlus: (heatMutators) => {
+              this.campaign.startNewCircuitPlus(heatMutators);
+              this.saveSlotManager.saveActiveSlot();
+              this.selectedCityHub = 'gb';
+              this.enterHub('CAMPAIGN');
+            },
+            onReturnToHub: () => this.enterHub('CAMPAIGN'),
+          });
         });
         return;
       }
@@ -2156,7 +2832,8 @@ export class SovereignMasterController {
     // Play Phase I Boss Showdown Broadcast Stinger before Q0 on Boss missions (#140 & #176/#178)!
     if (spec.isBossShowdown) {
       const cue = this.campaign.getRivalReaction(spec.rivalId, 'on_boss_intro');
-      await this.bossBanner.playIfPhaseTransition(
+      const bossBanner = await this.getBossBanner();
+      await bossBanner.playIfPhaseTransition(
         {
           isBossShowdown: true,
           questionIndex: 0,
@@ -2218,6 +2895,8 @@ export class SovereignMasterController {
     this.matchMax6xWins = 0;
     this.matchShieldsLost = 0;
     this.matchSorenBluffCaught = false;
+    this.currentMatchRecordedQids = [];
+    this.currentMatchRecordedSplits = [];
   }
 
   private launchDailyBroadcast(): void {
@@ -2226,7 +2905,12 @@ export class SovereignMasterController {
     const { packet, firstQuestion, hostGreeting } = this.dailyMode.startBroadcast();
     if (!firstQuestion) return;
 
-    this.matchCtx = { kind: 'DAILY', total: packet.questions.length, index: 0 };
+    this.matchCtx = {
+      kind: 'DAILY',
+      total: packet.questions.length,
+      index: 0,
+      utcDate: packet.utcDate,
+    };
     void this.setStageVenueWithAmbience('global');
     this.stage3d.setLightingMode('BROADCAST');
     this.playGameplayVoiceOnce('vance_intro_2');
@@ -2250,21 +2934,22 @@ export class SovereignMasterController {
     });
   }
 
-  private openBriefingPickerModal(opts?: {
+  private async openBriefingPickerModal(opts?: {
     initialL0DomainId?: number;
     initialL1SubcategoryId?: string;
     initialL2TopicId?: string;
     initialSearchQuery?: string;
-  }): void {
+  }): Promise<void> {
     this.pushNavigationReturnSnapshot('MODAL');
     this.stopAnyActiveOverclockAudio();
     this.metaSuite.closeAll(false);
-    this.dossierModal.close();
-    this.saveSlotsModal.close();
+    this.dossierModal?.close();
+    this.saveSlotsModal?.close();
     document.documentElement.classList.remove('ws-3d-showcase-open');
 
+    const modal = await this.getBriefingModal();
     const counts = forgeEngine.getDomainCounts();
-    this.briefingModal.open(
+    modal.open(
       counts,
       (spec) => {
         this.navigationReturnStack = this.navigationReturnStack.filter(
@@ -2312,21 +2997,29 @@ export class SovereignMasterController {
       await this.briefingMode.startBriefingRun(cfg);
     if (!firstQuestion) return;
 
+    const diffLabel = formatDifficultyPresetLabel(cfg.difficulty);
     const subLabel = cfg.topicDisplayLabel
-      ? `${cfg.topicDisplayLabel} · ${cfg.difficulty}`
-      : cfg.difficulty;
+      ? `${cfg.topicDisplayLabel} · ${diffLabel}`
+      : diffLabel;
+    const singleDomainId =
+      Array.isArray(cfg.domains) && cfg.domains.length === 1 ? cfg.domains[0] : -1;
 
     this.matchCtx = {
       kind: 'BRIEFING',
       total: questions.length,
       index: 0,
       domainsLabel: subLabel,
+      difficultyPreset: cfg.difficulty,
+      domainId: singleDomainId,
+      l1Id: cfg.l1SubcategoryId,
+      l2Id: cfg.l2TopicId,
+      topicLabel: cfg.topicDisplayLabel,
     };
     await this.setStageVenueWithAmbience('studio');
     this.stage3d.setLightingMode('BROADCAST');
 
     await this.beginQuestionOnStage(firstQuestion, {
-      modeLabel: `BRIEFING · ${cfg.difficulty}`,
+      modeLabel: `BRIEFING · ${diffLabel.toUpperCase()}`,
       chyronTitle: 'THE BRIEFING ROOM',
       chyronSub: subLabel,
       questionIndex: 0,
@@ -2341,6 +3034,258 @@ export class SovereignMasterController {
       actorName: 'Nadia Al-Mansoor',
       actorExpression: 'neutral',
       tellLine: nadiaGreeting,
+    });
+  }
+
+  // ==========================================================================
+  // V2.0 LAUNCHERS: INSTANT 1-TAP TRIAL PRISM · ?duel= HEAD-TO-HEAD ·
+  // GLOBE/VISUAL SHOWCASE · LIVE SPACED-REPETITION 3D REVIEW
+  // ==========================================================================
+
+  private launchInstantTrialPrism(): void {
+    this.stopTelemetryLoop();
+    this.resetPerMatchAnalyticsCounters();
+    this.activeBackstageCtx = null;
+
+    // Upgrade #4: Synchronous < 100ms cold-open 1-Prism launch (zero cutscenes, zero name gate!)
+    const q = forgeEngine.getInstantTrialPrism(this.recentInstantTrialQids);
+    this.recentInstantTrialQids.push(q.qid);
+    if (this.recentInstantTrialQids.length > 10) {
+      this.recentInstantTrialQids.shift();
+    }
+
+    const scoring = new ScoringEngine();
+    this.matchCtx = { kind: 'INSTANT_TRIAL', question: q, scoring };
+    this.stage3d.setLightingMode('BROADCAST');
+
+    void this.beginQuestionOnStage(q, {
+      modeLabel: 'INSTANT PRISM',
+      chyronTitle: 'THE MERIDIAN · LIVE PRISM',
+      chyronSub: '1-TAP SHOWCASE',
+      questionIndex: 0,
+      questionTotal: 1,
+      playerScore: 0,
+      streak: 0,
+      rivalId: 'vance',
+      rivalName: 'Vance',
+      rivalScore: 0,
+      rivalStatus: 'HIDDEN',
+      actorId: 'vance',
+      actorName: 'Julian Vance',
+      actorExpression: 'neutral',
+      tellLine: 'Spin A–D, tap Peel for clues, or hold Lock to Overclock up to 6.0×!',
+      isInstantTrialPrism: true,
+    });
+  }
+
+  private handleInstantPrismAction(dest: 'CAMPAIGN' | 'BASEBALL' | 'DAILY' | 'ANOTHER'): void {
+    this.audio.stopVoice();
+    if (dest === 'CAMPAIGN') {
+      this.handleContinueWhereLeftOff();
+      return;
+    }
+    if (dest === 'BASEBALL') {
+      void this.launchBriefingRun({
+        domains: [5],
+        difficulty: 'ADAPTIVE',
+        length: 10,
+        l1SubcategoryId: 'sports',
+        l2TopicId: 'sports_baseball',
+        topicDisplayLabel: 'Sports › Baseball',
+      });
+      return;
+    }
+    if (dest === 'DAILY') {
+      this.launchDailyBroadcast();
+      return;
+    }
+    this.launchInstantTrialPrism();
+  }
+
+  private async acceptIncomingDuel(payload: DuelChallengePayload): Promise<void> {
+    this.stopTelemetryLoop();
+    this.resetPerMatchAnalyticsCounters();
+    this.pendingIncomingDuel = null;
+    this.activeBackstageCtx = null;
+
+    // Strip `?duel=` cleanly from browser URL without reloading page
+    if (typeof window !== 'undefined' && window.history?.replaceState) {
+      try {
+        const cleanUrl = new URL(window.location.href);
+        cleanUrl.searchParams.delete('duel');
+        window.history.replaceState(window.history.state, '', cleanUrl.href);
+      } catch {
+        // Ignore sandboxed history errors
+      }
+    }
+
+    if (!forgeEngine.isReady()) {
+      await forgeEngine.init('./data');
+    }
+
+    let questions = await forgeEngine.queryExactQuestionsByIds(payload.qids, {
+      facetCount: 4,
+      seed: payload.utcDateCode || 2026,
+    });
+    if (questions.length === 0) {
+      questions = forgeEngine.queryQuestions({
+        count: Math.max(1, Math.min(10, payload.qids.length || 5)),
+        mode: 'BRIEFING',
+      });
+    }
+    const q0 = questions[0];
+    if (!q0) {
+      this.enterHub('TRIALS');
+      return;
+    }
+
+    const tracker = new DuelRaceTracker(payload, this.passport.getChallengerName());
+    const scoring = new ScoringEngine();
+    this.matchCtx = {
+      kind: 'DUEL',
+      payload,
+      tracker,
+      questions,
+      index: 0,
+      scoring,
+    };
+
+    this.metaSuite.recordSpecialFeat('DUEL_CHALLENGE_PLAYED');
+    await this.setStageVenueWithAmbience('sg');
+    this.stage3d.setLightingMode('BROADCAST');
+
+    await this.beginQuestionOnStage(q0, {
+      modeLabel: `1v1 DUEL · ${payload.topicLabel || payload.mode}`,
+      chyronTitle: `1v1 DUEL VS ${payload.challengerName.toUpperCase()}`,
+      chyronSub: payload.topicLabel || `${questions.length} PRISMS`,
+      questionIndex: 0,
+      questionTotal: questions.length,
+      playerScore: 0,
+      streak: 0,
+      rivalId: 'soren',
+      rivalName: payload.challengerName,
+      rivalScore: 0,
+      rivalStatus: 'THINKING',
+      actorId: 'soren',
+      actorName: payload.challengerName,
+      actorExpression: 'intense',
+      tellLine: `Beat ${payload.challengerName}'s ${payload.totalScore.toLocaleString('en-US')} PTS across ${questions.length} exact Prisms!`,
+      duelLiveSplit: {
+        challengerName: payload.challengerName,
+        playerScore: 0,
+        challengerScore: 0,
+        deltaPts: 0,
+        leader: 'TIED',
+      },
+    });
+  }
+
+  private async launchVisualOrGlobeShowcase(
+    kind: 'GLOBE_PIN_DROP' | 'VISUAL_BLUEPRINT',
+  ): Promise<void> {
+    this.stopTelemetryLoop();
+    this.resetPerMatchAnalyticsCounters();
+    this.activeBackstageCtx = null;
+
+    if (!forgeEngine.isReady()) {
+      await forgeEngine.init('./data');
+    }
+
+    const questions = forgeEngine.queryVisualOrGlobeShowcase({ count: 5, kind });
+    const q0 = questions[0];
+    if (!q0) {
+      await this.launchBriefingRun({
+        domains: 'GLOBAL_MIX',
+        difficulty: 'ADAPTIVE',
+        length: 5,
+      });
+      return;
+    }
+
+    const scoring = new ScoringEngine();
+    this.matchCtx = {
+      kind: 'SHOWCASE',
+      showcaseKind: kind,
+      questions,
+      index: 0,
+      scoring,
+    };
+
+    await this.setStageVenueWithAmbience(kind === 'GLOBE_PIN_DROP' ? 'global' : 'studio');
+    this.stage3d.setLightingMode('BROADCAST');
+
+    await this.beginQuestionOnStage(q0, {
+      modeLabel: kind === 'GLOBE_PIN_DROP' ? '3D GLOBE PIN-DROP' : 'VISUAL BLUEPRINTS',
+      chyronTitle: kind === 'GLOBE_PIN_DROP' ? 'MERIDIAN 3D GLOBE ATLAS' : 'SAPPHIRE BLUEPRINT LENS',
+      chyronSub: `${questions.length}-PRISM SHOWCASE`,
+      questionIndex: 0,
+      questionTotal: questions.length,
+      playerScore: 0,
+      streak: 0,
+      rivalId: 'nadia',
+      rivalName: 'Nadia',
+      rivalScore: 0,
+      rivalStatus: 'HIDDEN',
+      actorId: 'nadia',
+      actorName: 'Nadia Al-Mansoor',
+      actorExpression: 'neutral',
+      tellLine:
+        kind === 'GLOBE_PIN_DROP'
+          ? 'Tap the 3D Meridian Globe (or a Quick Region pill) to drop your pinpoint!'
+          : 'Inspect the Sapphire Blueprint Lens plate — tap it to enlarge full-screen!',
+    });
+  }
+
+  private async launchSpacedRepetitionReview(cards: readonly SrsReviewCard[]): Promise<void> {
+    if (!cards || cards.length === 0) return;
+    this.stopTelemetryLoop();
+    this.resetPerMatchAnalyticsCounters();
+    this.activeBackstageCtx = null;
+
+    if (!forgeEngine.isReady()) {
+      await forgeEngine.init('./data');
+    }
+
+    const targetCards = cards.slice(0, 10);
+    const qids = targetCards.map((c) => c.qid);
+    let questions = await forgeEngine.queryExactQuestionsByIds(qids, { facetCount: 4 });
+    if (questions.length === 0) {
+      questions = forgeEngine.queryQuestions({
+        count: Math.min(5, targetCards.length),
+        mode: 'BRIEFING',
+      });
+    }
+    const q0 = questions[0];
+    if (!q0) return;
+
+    const scoring = new ScoringEngine();
+    this.matchCtx = {
+      kind: 'SRS_REVIEW',
+      cards: [...targetCards],
+      questions,
+      index: 0,
+      scoring,
+    };
+
+    await this.setStageVenueWithAmbience('studio');
+    this.stage3d.setLightingMode('BROADCAST');
+
+    await this.beginQuestionOnStage(q0, {
+      modeLabel: 'LEITNER MASTERY DECK',
+      chyronTitle: 'SPACED-REPETITION REVIEW',
+      chyronSub: `${questions.length} DUE CARDS`,
+      questionIndex: 0,
+      questionTotal: questions.length,
+      playerScore: 0,
+      streak: 0,
+      rivalId: 'nadia',
+      rivalName: 'Nadia',
+      rivalScore: 0,
+      rivalStatus: 'HIDDEN',
+      actorId: 'nadia',
+      actorName: 'Nadia Al-Mansoor',
+      actorExpression: 'neutral',
+      tellLine: 'Correct recalls promote cards up the 5-Box Leitner mastery schedule!',
     });
   }
 
@@ -2533,10 +3478,13 @@ export class SovereignMasterController {
       initialPeelTier?: PeelTier;
       peelSealed?: boolean;
       autoRedactOneDecoy?: boolean;
+      isInstantTrialPrism?: boolean;
+      duelLiveSplit?: GameplayQuestionViewState['duelLiveSplit'];
     },
   ): Promise<void> {
     this.screen = 'GAMEPLAY';
     this.hud.closeVaultDrawer();
+    this.hud.closeVisualLightbox();
     this.spinUsedThisQ = false;
 
     const ctxSnap = this.matchCtx;
@@ -2630,6 +3578,10 @@ export class SovereignMasterController {
       calibratorEstimate: initEst,
       calibratorCone: 'SHARP',
       codexTargetSelections: initialCodexSelections,
+      selectedGlobeCoords: null,
+      selectedGlobeAnchorIndex: null,
+      isInstantTrialPrism: Boolean(opts.isInstantTrialPrism),
+      duelLiveSplit: opts.duelLiveSplit ?? null,
       revealed: null,
     };
 
@@ -2683,15 +3635,16 @@ export class SovereignMasterController {
   private isAnyOverlayModalOpen(): boolean {
     return (
       this.metaSuite.isOpen() ||
-      this.dossierModal.isOpen() ||
-      this.briefingModal.isOpen() ||
-      this.saveSlotsModal.isOpen() ||
+      Boolean(this.dossierModal?.isOpen()) ||
+      Boolean(this.briefingModal?.isOpen()) ||
+      Boolean(this.saveSlotsModal?.isOpen()) ||
       this.hud.isVaultDrawerOpen() ||
+      this.hud.isVisualLightboxOpen() ||
       this.leaveConfirmModalEl !== null ||
       this.restartFromStartModalEl !== null ||
-      this.motionCinema.isActive() ||
-      this.bossBanner.isActive() ||
-      this.endingDirector.isActive() ||
+      Boolean(this.motionCinema?.isActive()) ||
+      Boolean(this.bossBanner?.isActive()) ||
+      Boolean(this.endingDirector?.isActive()) ||
       document.querySelector('.ws-modal-backdrop, .ws-meta-backdrop') !== null
     );
   }
@@ -2806,6 +3759,9 @@ export class SovereignMasterController {
             : 2.5;
       return Math.round(baseCone * peelScale * 100) / 100;
     }
+    if (vm.question.archetype === 'GLOBE_PIN_DROP') {
+      return Math.round(3.5 * peelScale * 100) / 100;
+    }
     if (vm.question.archetype === 'CODEX_DUAL_RING') {
       return Math.round(3.0 * peelScale * 100) / 100;
     }
@@ -2909,6 +3865,30 @@ export class SovereignMasterController {
           this.liveVm.tellLine = ghostFrame.telemetryBanner;
           this.characterRig.syncLiveGhostOpponent(this.liveVm.actorId, ghostFrame);
         }
+      } else if (this.matchCtx?.kind === 'DUEL') {
+        const { tracker, index, payload } = this.matchCtx;
+        const split = tracker.getChallengerSplit(index);
+        const prevCum = index > 0 ? tracker.getChallengerCumulativeAt(index - 1) : 0;
+        const lockSec = split ? split.lockTime100ms / 10 : 4.5;
+        const ghostLocked = elapsed >= lockSec;
+        const ghostCum = ghostLocked ? tracker.getChallengerCumulativeAt(index) : prevCum;
+        const ghostStatus: GameplayQuestionViewState['rivalStatus'] = ghostLocked
+          ? 'LOCKED'
+          : split && split.overclockTier > 0 && elapsed >= Math.max(0.8, lockSec - 1.2)
+            ? 'OVERCLOCKING'
+            : split && split.peelTier > 1 && elapsed >= lockSec * 0.55
+              ? 'PEELING'
+              : 'THINKING';
+        const deltaPts = this.liveVm.playerScore - ghostCum;
+        this.liveVm.rivalStatus = ghostStatus;
+        this.liveVm.rivalScore = ghostCum;
+        this.liveVm.duelLiveSplit = {
+          challengerName: payload.challengerName,
+          playerScore: this.liveVm.playerScore,
+          challengerScore: ghostCum,
+          deltaPts,
+          leader: deltaPts > 0 ? 'PLAYER' : deltaPts < 0 ? 'CHALLENGER' : 'TIED',
+        };
       }
 
       this.hud.updateLiveTelemetry({
@@ -2921,6 +3901,7 @@ export class SovereignMasterController {
         actorId: this.liveVm.actorId,
         actorExpression: this.liveVm.actorExpression,
         tellLine: this.liveVm.tellLine,
+        duelLiveSplit: this.liveVm.duelLiveSplit,
       });
 
       if (this.timerRemainingSec <= 0) {
@@ -2970,6 +3951,38 @@ export class SovereignMasterController {
       totalSec: this.timerTotalSec,
       selectedFacetIndex: idx,
     });
+  }
+
+  private handleSelectGlobeCoords(
+    lat: number,
+    lon: number,
+    anchorIdx: number | null = null,
+    moveStagePin = false,
+  ): void {
+    if (!this.liveVm || this.liveVm.revealed) return;
+    if (this.liveVm.question.archetype !== 'GLOBE_PIN_DROP' || !this.liveVm.question.globePin) {
+      return;
+    }
+    const safeLat = Math.max(-90, Math.min(90, lat));
+    const safeLon = Math.max(-180, Math.min(180, lon));
+    this.spinUsedThisQ = true;
+    this.liveVm.selectedGlobeCoords = { lat: safeLat, lon: safeLon };
+    this.liveVm.selectedGlobeAnchorIndex = anchorIdx;
+
+    if (moveStagePin) {
+      this.stage3d.setGlobeCandidatePin(safeLat, safeLon, true);
+    }
+
+    this.haptics.sightlineSnap();
+    this.audio.playSfx('sightline_snap');
+
+    const anchorLabel =
+      anchorIdx !== null
+        ? this.liveVm.question.globePin.quickAnchors[anchorIdx]?.label
+        : undefined;
+    const tierMult = this.resolveLiveTierMultiplier(this.liveVm);
+    this.ergonomics.overclock.setTierMultiplier(tierMult);
+    this.hud.updateGlobeSelectionDom(safeLat, safeLon, anchorIdx, tierMult, anchorLabel);
   }
 
   private handleTriggerPeel(from3D = false): void {
@@ -3246,6 +4259,16 @@ export class SovereignMasterController {
         }
       }
 
+      // Guard unpinned GLOBE_PIN_DROP manual lock — require a pin drop unless timer expired
+      if (
+        !timedOut &&
+        q.archetype === 'GLOBE_PIN_DROP' &&
+        !this.liveVm.selectedGlobeCoords
+      ) {
+        this.haptics.uiTap();
+        return;
+      }
+
       const frozenLockTimeSec = Math.max(0, this.timerRemainingSec);
       this.stopTelemetryLoop();
       this.liveVm.remainingTimeSec = frozenLockTimeSec;
@@ -3267,6 +4290,7 @@ export class SovereignMasterController {
         calibratorEstimate: this.liveVm.calibratorEstimate,
         calibratorConeId: this.liveVm.calibratorCone,
         codexSelectedTargetIndices: [...this.liveVm.codexTargetSelections],
+        selectedGlobeCoords: this.liveVm.selectedGlobeCoords ?? undefined,
         gauntletAction,
         synthesisStepIndex: this.liveVm.heroStepIndex ?? 0,
       };
@@ -3286,6 +4310,76 @@ export class SovereignMasterController {
           submission.peelTier,
           scored.overclocked,
         );
+        this.saveSlotManager.saveActiveSlot();
+      } else if (
+        this.matchCtx.kind === 'INSTANT_TRIAL' ||
+        this.matchCtx.kind === 'SRS_REVIEW' ||
+        this.matchCtx.kind === 'SHOWCASE'
+      ) {
+        scored = this.matchCtx.scoring.submitAnswer(q, submission);
+        this.liveVm.playerScore = scored.matchScoreAfter;
+        this.liveVm.streak = scored.streakAfter;
+        forgeEngine.recordQuestionOutcome({
+          qid: q.qid,
+          l0Domain: q.l0Domain,
+          archetype: q.archetype,
+          irtB: q.irtB,
+          irtA: q.irtA,
+          correct: scored.correct,
+          peelTier: submission.peelTier,
+          accuracyRatio: scored.partialCreditRatio,
+          bullseye: scored.bullseye,
+          overclocked: scored.overclocked,
+        });
+        this.passport.recordDomainQuestionOutcome(
+          q.l0Domain,
+          scored.correct,
+          submission.peelTier,
+          q.irtB,
+        );
+      } else if (this.matchCtx.kind === 'DUEL') {
+        const ctx = this.matchCtx;
+        scored = ctx.scoring.submitAnswer(q, submission);
+        this.liveVm.playerScore = scored.matchScoreAfter;
+        this.liveVm.streak = scored.streakAfter;
+        forgeEngine.recordQuestionOutcome({
+          qid: q.qid,
+          l0Domain: q.l0Domain,
+          archetype: q.archetype,
+          irtB: q.irtB,
+          irtA: q.irtA,
+          correct: scored.correct,
+          peelTier: submission.peelTier,
+          accuracyRatio: scored.partialCreditRatio,
+          bullseye: scored.bullseye,
+          overclocked: scored.overclocked,
+        });
+        this.passport.recordDomainQuestionOutcome(
+          q.l0Domain,
+          scored.correct,
+          submission.peelTier,
+          q.irtB,
+        );
+        const comp = ctx.tracker.recordPlayerSplit(
+          ctx.index,
+          scored.pointsEarned,
+          scored.matchScoreAfter,
+          Math.round(elapsedSec * 1000),
+          {
+            correct: scored.correct,
+            peelTier: submission.peelTier,
+            overclockCharge: overclockCharge01,
+          },
+        );
+        this.liveVm.rivalScore = comp.challengerCumulativePts;
+        this.liveVm.rivalStatus = 'LOCKED';
+        this.liveVm.duelLiveSplit = {
+          challengerName: ctx.payload.challengerName,
+          playerScore: comp.playerCumulativePts,
+          challengerScore: comp.challengerCumulativePts,
+          deltaPts: comp.deltaCumulativePts,
+          leader: comp.leader,
+        };
       } else if (this.matchCtx.kind === 'CAMPAIGN') {
         const ctx = this.matchCtx;
         const spec = ctx.mission.matchSpec;
@@ -3395,6 +4489,19 @@ export class SovereignMasterController {
         }
       }
 
+      // Upgrade #1: Record compact per-question split for 1-Tap `?duel=` Share Links (up to 15 Qs)
+      if (
+        this.matchCtx.kind !== 'PROLOGUE' &&
+        this.matchCtx.kind !== 'ENDLESS' &&
+        this.matchCtx.kind !== 'INSTANT_TRIAL' &&
+        this.currentMatchRecordedQids.length < 15
+      ) {
+        this.currentMatchRecordedQids.push(q.qid);
+        this.currentMatchRecordedSplits.push(
+          createDuelSplitFromResult(scored, Math.round(elapsedSec * 1000)),
+        );
+      }
+
       if (scored.correct && submission.peelTier === 1 && overclockCharge01 >= 0.88) {
         this.matchMax6xWins += 1;
       }
@@ -3414,6 +4521,35 @@ export class SovereignMasterController {
           ? q.heroSynthesis.steps[this.liveVm.heroStepIndex ?? 0].correctFacetIndex
           : q.correctFacetIndex;
 
+      let globeReveal:
+        | {
+            targetLat: number;
+            targetLon: number;
+            candidateLat?: number;
+            candidateLon?: number;
+            distanceKm?: number;
+            targetLabel?: string;
+          }
+        | undefined;
+      if (q.archetype === 'GLOBE_PIN_DROP' && q.globePin) {
+        const gp = q.globePin;
+        const sel = this.liveVm.selectedGlobeCoords;
+        const distKm =
+          typeof scored.globeDistanceKm === 'number'
+            ? scored.globeDistanceKm
+            : sel
+              ? computeHaversineDistanceKm(sel.lat, sel.lon, gp.targetLat, gp.targetLon)
+              : undefined;
+        globeReveal = {
+          targetLat: gp.targetLat,
+          targetLon: gp.targetLon,
+          candidateLat: sel?.lat,
+          candidateLon: sel?.lon,
+          distanceKm: distKm,
+          targetLabel: gp.targetLabel,
+        };
+      }
+
       this.stage3d.resolveOutcome({
         correct: scored.correct,
         correctIndex: activeCorrectIdx,
@@ -3421,6 +4557,7 @@ export class SovereignMasterController {
         wasOverclocked: scored.overclocked,
         exactCalibratorVal: q.calibrator?.exactVal,
         gauntletVerdict: gauntletAction,
+        globeReveal,
       });
 
       if (scored.correct) {
@@ -3469,14 +4606,14 @@ export class SovereignMasterController {
       });
       this.liveVm.tellLine = reactionSubtitle ?? '';
 
-        const isBookmarked = this.passport
-          .getSnapshot()
-          .bookmarks.some((b) => b.qid === q.qid);
+      const isBookmarked = this.passport
+        .getSnapshot()
+        .bookmarks.some((b) => b.qid === q.qid);
 
-        // #166 §3: Live Career Analytics & Hall of Honours real-time telemetry hook!
-        this.notifyMetaQuestionOutcome(q, submission, scored);
+      // #166 §3 + Upgrade #5 + #329: Live Career Analytics, Leitner SRS Auto-Capture & 84 Honours!
+      this.notifyMetaQuestionOutcome(q, submission, scored);
 
-        this.liveVm.revealed = {
+      this.liveVm.revealed = {
         correct: scored.correct,
         backfired: scored.backfired,
         bullseye: scored.bullseye,
@@ -3489,6 +4626,10 @@ export class SovereignMasterController {
         correctDisplay: scored.correctAnswerDisplay,
         whyExplanation: scored.whyExplanation,
         bookmarked: isBookmarked,
+        feedbackVote: getQuestionVote(q.qid),
+        feedbackToast: null,
+        globeDistanceKm: globeReveal?.distanceKm ?? scored.globeDistanceKm,
+        globeAccuracyTier: scored.globeAccuracyTier,
       };
 
       this.hud.renderGameplay(this.liveVm);
@@ -3520,7 +4661,33 @@ export class SovereignMasterController {
       whyExplanation: q.whyExplanation,
     });
     this.liveVm.revealed.bookmarked = nowSaved;
+    if (nowSaved) {
+      this.metaSuite.syncSpacedRepetitionBookmarks();
+      this.syncVaultLiveStatus();
+    }
     this.saveSlotManager.saveActiveSlot();
+    this.hud.renderGameplay(this.liveVm);
+  }
+
+  private handleRateQuestion(vote: 'UPVOTE' | 'FLAG'): void {
+    if (!this.liveVm?.revealed) return;
+    const q = this.liveVm.question;
+    recordQuestionFeedback({
+      qid: q.qid,
+      vote,
+      reason: vote === 'FLAG' ? 'AWKWARD_PHRASING' : undefined,
+      domainId: q.l0Domain,
+      subcatLabel: q.l1Category,
+      promptSnippet: q.prompt,
+    });
+    if (vote === 'FLAG') {
+      forgeEngine.addQuarantinedQid(q.qid);
+    }
+    this.liveVm.revealed.feedbackVote = vote;
+    this.liveVm.revealed.feedbackToast =
+      vote === 'FLAG' ? '✓ Question Flagged & Quarantined' : '✓ Upvoted — Thanks!';
+    this.metaSuite.evaluateAndToastHonours();
+    this.syncVaultLiveStatus();
     this.hud.renderGameplay(this.liveVm);
   }
 
@@ -3550,6 +4717,232 @@ export class SovereignMasterController {
         return;
       }
 
+      if (this.matchCtx.kind === 'INSTANT_TRIAL') {
+        this.handleInstantPrismAction('CAMPAIGN');
+        return;
+      }
+
+      if (this.matchCtx.kind === 'DUEL') {
+        const ctx = this.matchCtx;
+        ctx.index += 1;
+        const nextQ = ctx.questions[ctx.index];
+        if (nextQ) {
+          const ghostCum =
+            ctx.index > 0 ? ctx.tracker.getChallengerCumulativeAt(ctx.index - 1) : 0;
+          const playerScore = ctx.scoring.getMatchScore();
+          const deltaPts = playerScore - ghostCum;
+          await this.beginQuestionOnStage(nextQ, {
+            modeLabel: this.liveVm.modeLabel,
+            chyronTitle: this.liveVm.chyronTitle,
+            chyronSub: this.liveVm.chyronSub,
+            questionIndex: ctx.index,
+            questionTotal: ctx.questions.length,
+            playerScore,
+            streak: ctx.scoring.getStreak(),
+            rivalId: 'soren',
+            rivalName: ctx.payload.challengerName,
+            rivalScore: ghostCum,
+            rivalStatus: 'THINKING',
+            actorId: 'soren',
+            actorName: ctx.payload.challengerName,
+            actorExpression: 'intense',
+            tellLine: `Split ${ctx.index + 1} of ${ctx.questions.length} vs ${ctx.payload.challengerName}`,
+            duelLiveSplit: {
+              challengerName: ctx.payload.challengerName,
+              playerScore,
+              challengerScore: ghostCum,
+              deltaPts,
+              leader: deltaPts > 0 ? 'PLAYER' : deltaPts < 0 ? 'CHALLENGER' : 'TIED',
+            },
+          });
+          return;
+        }
+
+        const faction = (this.blackboard.getSnapshot().pledgedFaction ?? 'AGORA') as FactionId;
+        const elo = forgeEngine.getSkillSnapshot().globalElo;
+        const baseHref =
+          typeof window !== 'undefined' ? new URL('./', window.location.href).href : undefined;
+        const verdict = ctx.tracker.buildFinalHeadToHeadSummary({
+          playerName: this.passport.getChallengerName(),
+          playerFaction: faction,
+          playerElo: elo,
+          playerTotalScore: ctx.scoring.getMatchScore(),
+          playerCorrectCount: ctx.scoring.getCorrectCount(),
+          baseHref,
+        });
+        duelRivalsStore.recordCompletedDuel(verdict, encodeDuelChallenge(ctx.payload));
+        if (verdict.playerWon) {
+          this.metaSuite.recordSpecialFeat('DUEL_GHOST_BEATEN');
+        }
+        this.notifyMetaMatchCompleted({
+          mode: 'TRIALS',
+          hubId: 'sg',
+          won: verdict.playerWon || verdict.tied,
+          correctCount: verdict.playerCorrectCount,
+          totalQuestions: verdict.totalQuestions,
+          score: verdict.playerScore,
+          peelsUsed: this.matchPeelsUsed,
+          max6xOverclockWinsInMatch: this.matchMax6xWins,
+        });
+        const lb = this.buildSummaryLeaderboard({
+          scope: ctx.payload.mode === 'DAILY' ? 'DAILY' : 'SUBCATEGORY',
+          topicKey: verdict.topicKey,
+          topicLabel: verdict.topicLabel,
+          utcDate: ctx.payload.utcDate,
+          playerScore: verdict.playerScore,
+        });
+        this.pausePassive2DActors();
+        void this.stage3d.showChampionshipTrophy(0);
+        this.screen = 'SUMMARY';
+        this.activeSummaryVm = {
+          mode: 'TRIALS',
+          victory: verdict.playerWon || verdict.tied,
+          headline: verdict.headline,
+          subheadline: `${verdict.topicLabel} · ${verdict.totalQuestions} Prisms Head-to-Head`,
+          challengerName: verdict.playerName,
+          playerScore: verdict.playerScore,
+          rivalName: verdict.challengerName,
+          rivalScore: verdict.challengerScore,
+          correctCount: verdict.playerCorrectCount,
+          totalCount: verdict.totalQuestions,
+          bestStreak: ctx.scoring.getMaxStreak(),
+          duelVerdict: verdict,
+          duelShareUrl: verdict.rematchUrl,
+          duelShareLabel: 'Share Rematch Link',
+          leaderboard: lb,
+        };
+        this.hud.renderMatchSummary(this.activeSummaryVm);
+        return;
+      }
+
+      if (this.matchCtx.kind === 'SHOWCASE') {
+        const ctx = this.matchCtx;
+        ctx.index += 1;
+        const nextQ = ctx.questions[ctx.index];
+        if (nextQ) {
+          await this.beginQuestionOnStage(nextQ, {
+            modeLabel: this.liveVm.modeLabel,
+            chyronTitle: this.liveVm.chyronTitle,
+            chyronSub: this.liveVm.chyronSub,
+            questionIndex: ctx.index,
+            questionTotal: ctx.questions.length,
+            playerScore: ctx.scoring.getMatchScore(),
+            streak: ctx.scoring.getStreak(),
+            rivalId: 'nadia',
+            rivalName: 'Nadia',
+            rivalScore: 0,
+            rivalStatus: 'HIDDEN',
+            actorId: 'nadia',
+            actorName: 'Nadia Al-Mansoor',
+            actorExpression: 'neutral',
+            tellLine:
+              ctx.showcaseKind === 'GLOBE_PIN_DROP'
+                ? 'Tap the 3D Meridian Globe (or a Quick Region) to drop your pinpoint!'
+                : 'Inspect the Sapphire Blueprint plate — tap it to enlarge!',
+          });
+          return;
+        }
+        const playerScore = ctx.scoring.getMatchScore();
+        const correctCount = ctx.scoring.getCorrectCount();
+        const won = correctCount >= Math.ceil(ctx.questions.length * 0.5);
+        const label =
+          ctx.showcaseKind === 'GLOBE_PIN_DROP' ? '3D Globe Pin-Drop' : 'Visual Blueprints';
+        this.notifyMetaMatchCompleted({
+          mode: 'BRIEFING',
+          won,
+          correctCount,
+          totalQuestions: ctx.questions.length,
+          score: playerScore,
+          peelsUsed: this.matchPeelsUsed,
+          max6xOverclockWinsInMatch: this.matchMax6xWins,
+        });
+        const duelShareUrl = this.buildDuelShareUrlForCurrentMatch({
+          mode: 'BRIEFING',
+          domainId: -1,
+          topicLabel: label,
+          totalScore: playerScore,
+        });
+        const lb = this.buildSummaryLeaderboard({
+          scope: 'SUBCATEGORY',
+          topicKey: ctx.showcaseKind === 'GLOBE_PIN_DROP' ? 'globe_pin_drop' : 'visual_blueprints',
+          topicLabel: label,
+          playerScore,
+        });
+        this.pausePassive2DActors();
+        void this.stage3d.showChampionshipTrophy(0);
+        this.screen = 'SUMMARY';
+        this.activeSummaryVm = {
+          mode: 'BRIEFING',
+          victory: won,
+          headline: `${label.toUpperCase()} SHOWCASE COMPLETE`,
+          subheadline: `${correctCount}/${ctx.questions.length} Solved · ${playerScore.toLocaleString('en-US')} PTS`,
+          challengerName: this.passport.getChallengerName(),
+          playerScore,
+          correctCount,
+          totalCount: ctx.questions.length,
+          bestStreak: ctx.scoring.getMaxStreak(),
+          duelShareUrl,
+          leaderboard: lb,
+        };
+        this.hud.renderMatchSummary(this.activeSummaryVm);
+        return;
+      }
+
+      if (this.matchCtx.kind === 'SRS_REVIEW') {
+        const ctx = this.matchCtx;
+        ctx.index += 1;
+        const nextQ = ctx.questions[ctx.index];
+        if (nextQ) {
+          await this.beginQuestionOnStage(nextQ, {
+            modeLabel: 'LEITNER MASTERY DECK',
+            chyronTitle: 'SPACED-REPETITION REVIEW',
+            chyronSub: `${ctx.questions.length} DUE CARDS`,
+            questionIndex: ctx.index,
+            questionTotal: ctx.questions.length,
+            playerScore: ctx.scoring.getMatchScore(),
+            streak: ctx.scoring.getStreak(),
+            rivalId: 'nadia',
+            rivalName: 'Nadia',
+            rivalScore: 0,
+            rivalStatus: 'HIDDEN',
+            actorId: 'nadia',
+            actorName: 'Nadia Al-Mansoor',
+            actorExpression: 'neutral',
+            tellLine: 'Correct recalls promote cards toward Box 5 Mastery!',
+          });
+          return;
+        }
+        const playerScore = ctx.scoring.getMatchScore();
+        const correctCount = ctx.scoring.getCorrectCount();
+        this.metaSuite.recordSpecialFeat('SRS_REVIEW_COMPLETED');
+        this.notifyMetaMatchCompleted({
+          mode: 'BRIEFING',
+          won: correctCount >= Math.ceil(ctx.questions.length * 0.5),
+          correctCount,
+          totalQuestions: ctx.questions.length,
+          score: playerScore,
+          peelsUsed: this.matchPeelsUsed,
+          max6xOverclockWinsInMatch: this.matchMax6xWins,
+        });
+        this.syncVaultLiveStatus();
+        this.pausePassive2DActors();
+        void this.stage3d.showChampionshipTrophy(0);
+        this.screen = 'SUMMARY';
+        this.activeSummaryVm = {
+          mode: 'BRIEFING',
+          victory: true,
+          headline: 'LEITNER MASTERY REVIEW COMPLETE',
+          subheadline: `${correctCount}/${ctx.questions.length} Cards Promoted · ${this.metaSuite.getDueReviewCount()} Due Remaining`,
+          challengerName: this.passport.getChallengerName(),
+          playerScore,
+          correctCount,
+          totalCount: ctx.questions.length,
+          bestStreak: ctx.scoring.getMaxStreak(),
+        };
+        this.hud.renderMatchSummary(this.activeSummaryVm);
+        return;
+      }
+
       if (this.matchCtx.kind === 'CAMPAIGN') {
         const ctx = this.matchCtx;
         const spec = ctx.mission.matchSpec;
@@ -3562,7 +4955,8 @@ export class SovereignMasterController {
         if (nextQ) {
           // Play Phase II / Phase III Boss Showdown Broadcast Stinger on phase boundaries (#140 & #176/#178)!
           if (spec.isBossShowdown) {
-            await this.bossBanner.playIfPhaseTransition(
+            const bossBanner = await this.getBossBanner();
+            await bossBanner.playIfPhaseTransition(
               {
                 isBossShowdown: true,
                 questionIndex: ctx.index,
@@ -3696,6 +5090,19 @@ export class SovereignMasterController {
             ? 'SHIELDS SHATTERED (0 / 3)'
             : `OUTSCORED BY ${ctx.rival.getName().toUpperCase()}: ${playerPts.toLocaleString()} VS ${rivalPts.toLocaleString()}`;
 
+        const campDuelUrl = this.buildDuelShareUrlForCurrentMatch({
+          mode: 'TRIALS',
+          domainId: spec.preferredDomains[0] ?? -1,
+          topicLabel: ctx.mission.title.slice(0, 28),
+          totalScore: playerPts,
+        });
+        const campLb = this.buildSummaryLeaderboard({
+          scope: 'SUBCATEGORY',
+          topicKey: `campaign_${ctx.mission.hubId}`,
+          topicLabel: `${ctx.mission.countryCode} · ${ctx.mission.title}`,
+          playerScore: playerPts,
+        });
+
         const showSummary = () => {
           this.pausePassive2DActors();
           if (won) {
@@ -3728,6 +5135,8 @@ export class SovereignMasterController {
             bestStreak: ctx.scoring.getMaxStreak(),
             unlockedRelicTitle: completion?.unlockedRelicId ?? undefined,
             unlockedClueTitle: completion?.unlockedEvidenceClueId ?? undefined,
+            duelShareUrl: campDuelUrl,
+            leaderboard: won ? campLb : null,
             flightForkPending:
               this.blackboard.getSnapshot().prologueComplete &&
               !this.blackboard.getSnapshot().firstFlight,
@@ -3806,6 +5215,20 @@ export class SovereignMasterController {
           curRunStreak = r.correct ? curRunStreak + 1 : 0;
           if (curRunStreak > maxRunStreak) maxRunStreak = curRunStreak;
         }
+        const dailyDuelUrl = this.buildDuelShareUrlForCurrentMatch({
+          mode: 'DAILY',
+          domainId: -1,
+          topicLabel: `Daily #${sum.broadcastNumber}`,
+          utcDate: sum.utcDate,
+          totalScore: sum.totalScore,
+        });
+        const dailyLb = this.buildSummaryLeaderboard({
+          scope: 'DAILY',
+          topicKey: `daily:${sum.utcDate}`,
+          topicLabel: `Global Feed #${sum.broadcastNumber}`,
+          utcDate: sum.utcDate,
+          playerScore: sum.totalScore,
+        });
         this.pausePassive2DActors();
         void this.stage3d.showChampionshipTrophy(0);
         this.screen = 'SUMMARY';
@@ -3820,21 +5243,24 @@ export class SovereignMasterController {
           totalCount: sum.totalQuestions,
           bestStreak: maxRunStreak,
           dailyShareText: sum.shareText,
+          duelShareUrl: dailyDuelUrl,
+          leaderboard: dailyLb,
         };
         this.hud.renderMatchSummary(this.activeSummaryVm);
         return;
       }
 
       if (this.matchCtx.kind === 'BRIEFING') {
+        const ctx = this.matchCtx;
         const nextQ = this.briefingMode.getCurrentQuestion();
         if (nextQ && !this.pendingBriefingSummary) {
-          this.matchCtx.index += 1;
+          ctx.index += 1;
           await this.beginQuestionOnStage(nextQ, {
             modeLabel: this.liveVm.modeLabel,
             chyronTitle: 'THE BRIEFING ROOM',
-            chyronSub: this.matchCtx.domainsLabel,
-            questionIndex: this.matchCtx.index,
-            questionTotal: this.matchCtx.total,
+            chyronSub: ctx.domainsLabel,
+            questionIndex: ctx.index,
+            questionTotal: ctx.total,
             playerScore: this.liveVm.playerScore,
             streak: this.liveVm.streak,
             rivalId: 'nadia',
@@ -3860,6 +5286,21 @@ export class SovereignMasterController {
           score: sum.totalScore,
           peelsUsed: this.matchPeelsUsed,
           max6xOverclockWinsInMatch: this.matchMax6xWins,
+          difficultyPreset: ctx.difficultyPreset,
+        });
+        const briefDuelUrl = this.buildDuelShareUrlForCurrentMatch({
+          mode: 'BRIEFING',
+          domainId: ctx.domainId,
+          l1Id: ctx.l1Id,
+          l2Id: ctx.l2Id,
+          topicLabel: (ctx.topicLabel || sum.domainsLabel).slice(0, 28),
+          totalScore: sum.totalScore,
+        });
+        const briefLb = this.buildSummaryLeaderboard({
+          scope: 'SUBCATEGORY',
+          topicKey: ctx.l2Id || ctx.l1Id || (ctx.domainId >= 0 ? `domain:${ctx.domainId}` : 'global'),
+          topicLabel: ctx.topicLabel || sum.domainsLabel,
+          playerScore: sum.totalScore,
         });
         this.pausePassive2DActors();
         void this.stage3d.showChampionshipTrophy(0);
@@ -3868,12 +5309,14 @@ export class SovereignMasterController {
           mode: 'BRIEFING',
           victory: wonBriefing,
           headline: 'BRIEFING CALIBRATION COMPLETE',
-          subheadline: `${sum.domainsLabel} · ${sum.difficulty}`,
+          subheadline: `${sum.domainsLabel} · ${formatDifficultyPresetLabel(sum.difficulty)}`,
           challengerName: sum.challengerName,
           playerScore: sum.totalScore,
           correctCount: sum.correctCount,
           totalCount: sum.totalQuestions,
           bestStreak: sum.maxStreak,
+          duelShareUrl: briefDuelUrl,
+          leaderboard: briefLb,
         };
         this.hud.renderMatchSummary(this.activeSummaryVm);
         return;
@@ -4023,6 +5466,18 @@ export class SovereignMasterController {
           peelsUsed: this.matchPeelsUsed,
           max6xOverclockWinsInMatch: this.matchMax6xWins,
         });
+        const trialsDuelUrl = this.buildDuelShareUrlForCurrentMatch({
+          mode: 'TRIALS',
+          domainId: -1,
+          topicLabel: isBlackSalon ? 'Black Salon Blitz' : 'Council Trials Duel',
+          totalScore: sum.playerScore,
+        });
+        const trialsLb = this.buildSummaryLeaderboard({
+          scope: 'SUBCATEGORY',
+          topicKey: 'trials:global',
+          topicLabel: isBlackSalon ? 'Black Salon Blitz' : 'Council Trials',
+          playerScore: sum.playerScore,
+        });
         this.pausePassive2DActors();
         void this.stage3d.showChampionshipTrophy(0);
         this.screen = 'SUMMARY';
@@ -4041,6 +5496,8 @@ export class SovereignMasterController {
           totalCount: sum.totalQuestions,
           bestStreak: sum.maxStreak,
           dailyShareText: sum.shareableGhostCode,
+          duelShareUrl: trialsDuelUrl,
+          leaderboard: trialsLb,
         };
         this.hud.renderMatchSummary(this.activeSummaryVm);
       }
@@ -4056,16 +5513,17 @@ export class SovereignMasterController {
   private closeAllModals(clearReturnModalSnap = true): void {
     const hadModal =
       this.metaSuite.isOpen() ||
-      this.dossierModal.isOpen() ||
-      this.briefingModal.isOpen() ||
-      this.saveSlotsModal.isOpen() ||
+      Boolean(this.dossierModal?.isOpen()) ||
+      Boolean(this.briefingModal?.isOpen()) ||
+      Boolean(this.saveSlotsModal?.isOpen()) ||
       this.leaveConfirmModalEl !== null ||
       this.restartFromStartModalEl !== null;
     this.hud.closeVaultDrawer();
+    this.hud.closeVisualLightbox();
     this.metaSuite.closeAll(false);
-    this.dossierModal.close();
-    this.briefingModal.close();
-    this.saveSlotsModal.close();
+    this.dossierModal?.close();
+    this.briefingModal?.close();
+    this.saveSlotsModal?.close();
     this.closeLeaveConfirmModal();
     this.closeRestartFromStartModal();
     if (clearReturnModalSnap) {
@@ -4082,9 +5540,9 @@ export class SovereignMasterController {
   private openPassportModal(playStampCeremony = false): void {
     this.pushNavigationReturnSnapshot('MODAL', true);
     this.stopAnyActiveOverclockAudio();
-    this.dossierModal.close();
-    this.briefingModal.close();
-    this.saveSlotsModal.close();
+    this.dossierModal?.close();
+    this.briefingModal?.close();
+    this.saveSlotsModal?.close();
     document.documentElement.classList.add('ws-3d-showcase-open');
     this.metaSuite.openPassport('CREDENTIALS', playStampCeremony);
   }
@@ -4092,9 +5550,9 @@ export class SovereignMasterController {
   private openAnalyticsModal(): void {
     this.pushNavigationReturnSnapshot('MODAL', true);
     this.stopAnyActiveOverclockAudio();
-    this.dossierModal.close();
-    this.briefingModal.close();
-    this.saveSlotsModal.close();
+    this.dossierModal?.close();
+    this.briefingModal?.close();
+    this.saveSlotsModal?.close();
     document.documentElement.classList.remove('ws-3d-showcase-open');
     this.metaSuite.openAnalytics('ALL_TIME');
   }
@@ -4102,9 +5560,9 @@ export class SovereignMasterController {
   private openHonoursModal(): void {
     this.pushNavigationReturnSnapshot('MODAL', true);
     this.stopAnyActiveOverclockAudio();
-    this.dossierModal.close();
-    this.briefingModal.close();
-    this.saveSlotsModal.close();
+    this.dossierModal?.close();
+    this.briefingModal?.close();
+    this.saveSlotsModal?.close();
     document.documentElement.classList.remove('ws-3d-showcase-open');
     this.metaSuite.openHonours();
   }
@@ -4112,19 +5570,29 @@ export class SovereignMasterController {
   private openObservatoryModal(): void {
     this.pushNavigationReturnSnapshot('MODAL', true);
     this.stopAnyActiveOverclockAudio();
-    this.dossierModal.close();
-    this.briefingModal.close();
-    this.saveSlotsModal.close();
+    this.dossierModal?.close();
+    this.briefingModal?.close();
+    this.saveSlotsModal?.close();
     document.documentElement.classList.add('ws-3d-showcase-open');
     this.metaSuite.openObservatory('RELICS_3D', 'championship_trophy');
+  }
+
+  private openMasteryReviewDeckModal(): void {
+    this.pushNavigationReturnSnapshot('MODAL', true);
+    this.stopAnyActiveOverclockAudio();
+    this.dossierModal?.close();
+    this.briefingModal?.close();
+    this.saveSlotsModal?.close();
+    document.documentElement.classList.add('ws-3d-showcase-open');
+    this.metaSuite.openMasteryReviewDeck(true);
   }
 
   private openAtelierModal(): void {
     this.pushNavigationReturnSnapshot('MODAL', true);
     this.stopAnyActiveOverclockAudio();
-    this.dossierModal.close();
-    this.briefingModal.close();
-    this.saveSlotsModal.close();
+    this.dossierModal?.close();
+    this.briefingModal?.close();
+    this.saveSlotsModal?.close();
     document.documentElement.classList.add('ws-3d-showcase-open');
     this.metaSuite.openAtelier();
   }
@@ -4132,22 +5600,23 @@ export class SovereignMasterController {
   private openFactionsModal(): void {
     this.pushNavigationReturnSnapshot('MODAL', true);
     this.stopAnyActiveOverclockAudio();
-    this.dossierModal.close();
-    this.briefingModal.close();
-    this.saveSlotsModal.close();
+    this.dossierModal?.close();
+    this.briefingModal?.close();
+    this.saveSlotsModal?.close();
     this.metaSuite.openFactions();
   }
 
-  private openDossierModal(): void {
+  private async openDossierModal(): Promise<void> {
     this.pushNavigationReturnSnapshot('MODAL');
     this.stopAnyActiveOverclockAudio();
     this.metaSuite.closeAll(false);
-    this.briefingModal.close();
-    this.saveSlotsModal.close();
+    this.briefingModal?.close();
+    this.saveSlotsModal?.close();
     document.documentElement.classList.remove('ws-3d-showcase-open');
 
+    const modal = await this.getDossierModal();
     const dVm = this.dossier.buildViewModel();
-    this.dossierModal.open(
+    modal.open(
       {
         challengerName: dVm.challengerName,
         boardTitle: dVm.boardTitle,
@@ -4182,6 +5651,142 @@ export class SovereignMasterController {
         void this.restore3DAfterModal();
       },
     );
+  }
+
+  private syncVaultLiveStatus(): void {
+    const srsSummary = this.metaSuite.getSrsDeckSummary();
+    const totals = this.metaSuite.getCatalogTotals();
+    const honoursUnlocked = this.metaSuite.honoursSystem
+      .getAllProgress()
+      .filter((h) => h.unlocked).length;
+    this.hud.setVaultLiveStatus({
+      srsDueCount: srsSummary.dueCount,
+      srsTotalCount: srsSummary.totalCards,
+      isOnline: this.offlineStatusSnapshot.isOnline,
+      swReady: this.offlineStatusSnapshot.swReady,
+      offlinePacksReady: [...this.offlineStatusSnapshot.packsReady],
+      offlineDownloadingLabel: this.offlineDownloadingLabel,
+      honoursTotal: totals.honours,
+      honoursUnlocked,
+      atelierFinishesTotal: totals.finishes,
+    });
+  }
+
+  private async handleDownloadOfflinePack(): Promise<void> {
+    if (this.offlineDownloadingLabel) return;
+    this.offlineDownloadingLabel = '0%';
+    this.syncVaultLiveStatus();
+    try {
+      const pwa = await this.getOfflineClient();
+      const res = await pwa.downloadOfflinePack('BASEBALL_PRO', (done, total) => {
+        const pct = total > 0 ? Math.min(99, Math.round((done / total) * 100)) : 50;
+        this.offlineDownloadingLabel = `${pct}%`;
+        this.syncVaultLiveStatus();
+      });
+      this.offlineStatusSnapshot = await pwa.refreshOfflineVaultStatus();
+      if (res.packsReady.length > 0 || this.offlineStatusSnapshot.packsReady.length > 0) {
+        this.metaSuite.recordSpecialFeat('OFFLINE_PACK_CACHED');
+      }
+    } catch {
+      // Keep UI responsive even in restricted offline test environments
+    } finally {
+      this.offlineDownloadingLabel = null;
+      this.syncVaultLiveStatus();
+    }
+  }
+
+  private buildDuelShareUrlForCurrentMatch(opts: {
+    mode: DuelMode;
+    domainId: number;
+    l1Id?: string;
+    l2Id?: string;
+    topicLabel?: string;
+    utcDate?: string;
+    totalScore: number;
+  }): string | undefined {
+    if (this.currentMatchRecordedQids.length === 0) return undefined;
+    try {
+      const faction = (this.blackboard.getSnapshot().pledgedFaction ?? 'AGORA') as FactionId;
+      const elo = forgeEngine.getSkillSnapshot().globalElo;
+      const cleanDate = opts.utcDate ?? new Date().toISOString().slice(0, 10);
+      const baseHref =
+        typeof window !== 'undefined' ? new URL('./', window.location.href).href : undefined;
+      return buildShareableDuelUrl(
+        {
+          version: 2,
+          mode: opts.mode,
+          challengerName: this.passport.getChallengerName(),
+          faction,
+          elo,
+          utcDateCode: opts.mode === 'DAILY' ? utcDateToCode(cleanDate) : 0,
+          utcDate: opts.mode === 'DAILY' ? cleanDate : undefined,
+          domainId: opts.domainId,
+          l1Id: opts.l1Id,
+          l2Id: opts.l2Id,
+          topicLabel: opts.topicLabel?.slice(0, 28),
+          qids: [...this.currentMatchRecordedQids],
+          splits: [...this.currentMatchRecordedSplits],
+          totalScore: Math.max(0, Math.round(opts.totalScore)),
+        },
+        baseHref,
+      );
+    } catch {
+      return undefined;
+    }
+  }
+
+  private buildSummaryLeaderboard(opts: {
+    scope: 'DAILY' | 'SUBCATEGORY';
+    topicKey: string;
+    topicLabel: string;
+    utcDate?: string;
+    playerScore: number;
+  }): LeaderboardCohortSnapshot | null {
+    try {
+      const playerName = this.passport.getChallengerName();
+      const faction = (this.blackboard.getSnapshot().pledgedFaction ?? 'AGORA') as FactionId;
+      const elo = forgeEngine.getSkillSnapshot().globalElo;
+      const dateStr = opts.utcDate ?? new Date().toISOString().slice(0, 10);
+      if (opts.scope === 'DAILY') {
+        return getDailyGlobalLeaderboard(dateStr, playerName, opts.playerScore, faction);
+      }
+      return getSubcategoryLeaderboard(
+        opts.topicKey,
+        playerName,
+        opts.playerScore,
+        elo,
+        undefined,
+        dateStr,
+        faction,
+      );
+    } catch {
+      return null;
+    }
+  }
+
+  private async handleShareDuelLink(
+    url: string,
+    title: string,
+    text: string,
+  ): Promise<boolean> {
+    this.metaSuite.recordSpecialFeat('DUEL_CHALLENGE_PLAYED');
+    try {
+      if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+        await navigator.share({ title, text, url });
+        return true;
+      }
+    } catch {
+      // User dismissed native share sheet or unsupported — fall through cleanly to clipboard!
+    }
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+        return true;
+      }
+    } catch {
+      // Clipboard restricted in non-HTTPS iframe
+    }
+    return true;
   }
 
   /**
@@ -4232,7 +5837,7 @@ export class SovereignMasterController {
         this.stage3d.redactFacet(sIdx);
       }
 
-      // Re-apply Calibrator / Codex positions
+      // Re-apply Calibrator / Codex / Globe Pin-Drop positions
       if (q.archetype === 'CALIBRATOR_DIAL' && q.calibrator) {
         this.stage3d.setCalibratorValue(vm.calibratorEstimate);
         const coneSpec = q.calibrator.toleranceCones.find((c) => c.id === vm.calibratorCone);
@@ -4244,16 +5849,34 @@ export class SovereignMasterController {
         this.stage3d.spinCodexRing('TOP', 0, false);
         this.stage3d.spinCodexRing('BOTTOM', vm.codexTargetSelections[0] ?? 0, false);
         this.syncCodexConduitsTo3D();
+      } else if (q.archetype === 'GLOBE_PIN_DROP' && vm.selectedGlobeCoords) {
+        this.stage3d.setGlobeCandidatePin(
+          vm.selectedGlobeCoords.lat,
+          vm.selectedGlobeCoords.lon,
+          false,
+        );
       }
 
       // Re-apply Reveal state if already locked
       if (vm.revealed) {
+        const gp = q.globePin;
         this.stage3d.resolveOutcome({
           correct: vm.revealed.correct,
           correctIndex: vm.revealed.correctFacetIndex,
           selectedIndex: vm.revealed.selectedFacetIndex,
           wasOverclocked: vm.revealed.overclockMultiplier > 1.01,
           exactCalibratorVal: q.calibrator?.exactVal,
+          globeReveal:
+            q.archetype === 'GLOBE_PIN_DROP' && gp
+              ? {
+                  targetLat: gp.targetLat,
+                  targetLon: gp.targetLon,
+                  candidateLat: vm.selectedGlobeCoords?.lat,
+                  candidateLon: vm.selectedGlobeCoords?.lon,
+                  distanceKm: vm.revealed.globeDistanceKm,
+                  targetLabel: gp.targetLabel,
+                }
+              : undefined,
         });
       }
     }
@@ -4265,11 +5888,16 @@ export class SovereignMasterController {
       window.removeEventListener('popstate', this.boundPopState);
       this.boundPopState = null;
     }
-    this.motionCinema.dispose();
-    this.bossBanner.dispose();
-    this.endingDirector.dispose();
+    this.offlineUnsubscribe?.();
+    this.offlineUnsubscribe = null;
+    this.hud.closeVisualLightbox();
+    this.motionCinema?.dispose();
+    this.bossBanner?.dispose();
+    this.endingDirector?.dispose();
     this.metaSuite.dispose();
-    this.saveSlotsModal.close();
+    this.dossierModal?.close();
+    this.briefingModal?.close();
+    this.saveSlotsModal?.close();
     this.closeLeaveConfirmModal();
     this.closeRestartFromStartModal();
     this.ergonomics.dispose();
@@ -4280,7 +5908,7 @@ export class SovereignMasterController {
   }
 
   // ==========================================================================
-  // #166 & #171: STRONGLY-TYPED META ANALYTICS / HONOURS & 5-SLOT CAMPAIGN SAVES
+  // #166, #171, #329 & V2.0: META ANALYTICS, LEITNER SRS, 84 HONOURS & 5-SLOT SAVES
   // ==========================================================================
 
   private notifyMetaQuestionOutcome(
@@ -4297,6 +5925,18 @@ export class SovereignMasterController {
       this.matchCtx?.kind === 'CAMPAIGN' ? this.matchCtx.mission.hubId : this.selectedCityHub;
     const isFirstTryCodex =
       q.archetype === 'CODEX_DUAL_RING' && scored.correct && this.questionCodexMoves <= 3;
+
+    // Upgrade #5: Feed EVERY answered question into 5-Box Leitner Spaced-Repetition Deck!
+    this.metaSuite.ingestSpacedRepetitionOutcome({
+      qid: q.qid,
+      prompt: q.prompt,
+      correctAnswer: scored.correctAnswerDisplay,
+      distractors: q.facets.filter((f) => !f.isCorrect).map((f) => f.text),
+      whyExplanation: scored.whyExplanation,
+      domainId: q.l0Domain,
+      subcatLabel: q.l1Category,
+      wasCorrect: scored.correct,
+    });
 
     this.metaSuite.recordQuestionOutcome({
       ts: Date.now(),
@@ -4318,7 +5958,12 @@ export class SovereignMasterController {
       eloAfter: skillSnap.globalElo,
       promptSnippet: q.prompt,
       answerLabel: scored.correctAnswerDisplay,
+      difficultyTier: q.difficultyTier,
+      globeDistanceKm: scored.globeDistanceKm,
+      hasVisualPlate: Boolean(q.visualPlate?.imageUrl),
     });
+
+    this.syncVaultLiveStatus();
   }
 
   private notifyMetaMatchCompleted(
@@ -4327,6 +5972,7 @@ export class SovereignMasterController {
     this.metaSuite.recordMatchCompleted(input);
     // Flush Passport/Blackboard/Honours mutations into active Save Slot so page reload never wipes them
     this.saveSlotManager.saveActiveSlot();
+    this.syncVaultLiveStatus();
   }
 
   protected notifyMetaSpecialFeat(
@@ -4453,12 +6099,12 @@ export class SovereignMasterController {
     }));
   }
 
-  private openSaveSlotsModal(): void {
+  private async openSaveSlotsModal(): Promise<void> {
     this.pushNavigationReturnSnapshot('MODAL');
     this.stopAnyActiveOverclockAudio();
     this.metaSuite.closeAll(false);
-    this.dossierModal.close();
-    this.briefingModal.close();
+    this.dossierModal?.close();
+    this.briefingModal?.close();
     document.documentElement.classList.remove('ws-3d-showcase-open');
 
     if (
@@ -4469,7 +6115,8 @@ export class SovereignMasterController {
       this.saveSlotManager.saveActiveSlot();
     }
 
-    this.saveSlotsModal.open({
+    const modal = await this.getSaveSlotsModal();
+    modal.open({
       getSlots: () => this.buildSaveSlotCards(),
       onSwitchOrStartSlot: (slotId: CampaignSlotId) => {
         this.navigationReturnStack = this.navigationReturnStack.filter(

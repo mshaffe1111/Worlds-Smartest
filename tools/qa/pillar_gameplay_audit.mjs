@@ -859,7 +859,7 @@ async function runSimulationSuite() {
       const smcCallsEchoFeat = /recordSpecialFeat\(['"]BLUFF_ECHO_CANCEL['"]\)/.test(smcBluffCancelBlock);
       const smcMetaQBlock = smcSrc.slice(
         smcSrc.indexOf('private notifyMetaQuestionOutcome'),
-        smcSrc.indexOf('private notifyMetaQuestionOutcome') + 1400,
+        smcSrc.indexOf('private notifyMetaQuestionOutcome') + 2400,
       );
       const smcPassesBluffCalled = /bluffCalled:\s*this\.questionBluffCalled/.test(smcMetaQBlock);
       const smcPassesBluffEcho = /bluffEchoCancelled:\s*this\.questionBluffEchoCancelled/.test(smcMetaQBlock);
@@ -1469,6 +1469,7 @@ async function clickFirstVisible(br, selectors) {
 async function playAnyCurrentQuestion(br, { preferCorrect = false, holdMs = 0 } = {}) {
   const kind = await br.evalJs(`(() => {
     if (document.querySelector('[data-gauntlet]')) return 'GAUNTLET';
+    if (document.querySelector('.ws-globe-pin-controls, .ws-globe-anchor-btn')) return 'GLOBE_PIN_DROP';
     if (document.querySelector('#ws-cal-slider')) return 'CALIBRATOR';
     if (document.querySelector('[data-codex-subj]')) return 'CODEX';
     if (document.querySelector('[data-facet-idx]')) return 'SIGHTLINE';
@@ -1482,7 +1483,10 @@ async function playAnyCurrentQuestion(br, { preferCorrect = false, holdMs = 0 } 
     return kind;
   }
 
-  if (kind === 'CALIBRATOR') {
+  if (kind === 'GLOBE_PIN_DROP') {
+    await br.evalJs(`document.querySelector('.ws-globe-anchor-btn')?.click()`);
+    await sleep(140);
+  } else if (kind === 'CALIBRATOR') {
     await br.evalJs(`(() => {
       const s = document.querySelector('#ws-cal-slider');
       if (s) {
@@ -2064,27 +2068,27 @@ async function runBrowserPlaytestSuite(useDist, softwareGl) {
     }
 
     const briefingDrill = await (async () => {
-      await br.evalJs(`Array.from(document.querySelectorAll('[data-pick-l0], .ws-sheet-row, button')).find((b) => /Sports\\s*&\\s*Games/i.test(b.textContent || ''))?.click()`);
+      await br.evalJs(`Array.from(document.querySelectorAll('.ws-briefing-sheet [data-pick-l0], [data-pick-l0]')).find((b) => /Sports\\s*&\\s*Games/i.test(b.textContent || ''))?.click()`);
       await sleep(300);
-      await br.evalJs(`Array.from(document.querySelectorAll('[data-pick-l1], .ws-sheet-row, button')).find((b) => /^Sports\\b/i.test((b.querySelector('.ws-briefing-row-title')?.textContent || b.textContent || '').trim()))?.click()`);
+      await br.evalJs(`Array.from(document.querySelectorAll('.ws-briefing-sheet [data-pick-l1], [data-pick-l1]')).find((b) => /^Sports\\b/i.test((b.querySelector('.ws-briefing-row-title')?.textContent || b.textContent || '').trim()))?.click()`);
       await sleep(300);
       const l2Info = await br.evalJs(`(() => {
-        const b = Array.from(document.querySelectorAll('[data-pick-l2], .ws-sheet-row, button')).find((el) => /\\bBaseball\\b/i.test(el.textContent || ''));
+        const b = Array.from(document.querySelectorAll('.ws-briefing-sheet [data-pick-l2], [data-pick-l2]')).find((el) => /\\bBaseball\\b/i.test(el.textContent || ''));
         if (!b) return null;
         const txt = b.textContent.replace(/\\s+/g, ' ').trim();
         b.click();
         return txt;
       })()`);
       await sleep(350);
-      const lengthsAvailable = await br.evalJs(`Array.from(document.querySelectorAll('[data-briefing-count], [data-count], .ws-seg-btn')).map((b) => b.textContent.trim()).filter(Boolean)`);
+      const lengthsAvailable = await br.evalJs(`Array.from(document.querySelectorAll('.ws-briefing-sheet [data-len], [data-briefing-count], [data-count], .ws-seg-btn')).map((b) => b.textContent.trim()).filter(Boolean)`);
       const breadcrumbs = await br.evalJs(`document.querySelector('#ws-briefing-breadcrumbs, .ws-sheet-breadcrumbs')?.textContent?.replace(/\\s+/g, ' ').trim() || ''`);
       return { l2Info, lengthsAvailable, breadcrumbs };
     })();
 
     // Launch 5-Q Baseball round and play all 5 Qs!
-    await br.evalJs(`Array.from(document.querySelectorAll('[data-briefing-count="5"], [data-count="5"], button')).find((b) => /^5(\\s*Q)?$/i.test((b.textContent || '').trim()))?.click()`);
+    await br.evalJs(`Array.from(document.querySelectorAll('.ws-briefing-sheet [data-len="5"], [data-briefing-count="5"], [data-count="5"], .ws-briefing-sheet button')).find((b) => /^5(\\s*Qs?)?$/i.test((b.textContent || '').trim()))?.click()`);
     await sleep(150);
-    await clickFirstVisible(br, ['#ws-cat-launch-btn', '.ws-briefing-launch-cta']);
+    await clickFirstVisible(br, ['#ws-cat-launch', '#ws-cat-launch-btn', '.ws-briefing-launch-cta']);
     await br.waitFor(`Boolean(document.querySelector('#ws-btn-overclock') || document.querySelector('[data-gauntlet]'))`, 10000, 150);
     await sleep(350);
 
@@ -2118,7 +2122,9 @@ async function runBrowserPlaytestSuite(useDist, softwareGl) {
     await waitForAppBoot(br);
     await br.clickSelector('[data-title-mode="DAILY"]');
     await sleep(500);
-    await clickFirstVisible(br, ['#ws-launch-daily', '.ws-btn-gold']);
+    if (!(await br.evalJs(`Boolean(document.querySelector('#ws-btn-overclock') || document.querySelector('[data-gauntlet]'))`))) {
+      await clickFirstVisible(br, ['#ws-launch-daily', '.ws-btn-gold']);
+    }
     await br.waitFor(`Boolean(document.querySelector('#ws-btn-overclock') || document.querySelector('[data-gauntlet]'))`, 10000, 150);
     await sleep(350);
 
@@ -2155,7 +2161,9 @@ async function runBrowserPlaytestSuite(useDist, softwareGl) {
     await waitForAppBoot(br);
     await br.clickSelector('[data-title-mode="ENDLESS"]');
     await sleep(500);
-    await clickFirstVisible(br, ['#ws-launch-endless', '.ws-btn-gold']);
+    if (!(await br.evalJs(`Boolean(document.querySelector('#ws-btn-overclock') || document.querySelector('[data-gauntlet]'))`))) {
+      await clickFirstVisible(br, ['#ws-launch-endless', '.ws-btn-gold']);
+    }
     await br.waitFor(`Boolean(document.querySelector('#ws-btn-overclock') || document.querySelector('[data-gauntlet]'))`, 10000, 150);
     await sleep(350);
 
@@ -2273,17 +2281,18 @@ async function runBrowserPlaytestSuite(useDist, softwareGl) {
     const honoursAudit = await br.evalJs(`(() => {
       const txt = document.querySelector('.ws-meta-backdrop')?.innerText || '';
       const trophyRows = document.querySelectorAll('[data-trophy-id], .ws-honour-row, .ws-trophy-row, .ws-meta-row').length;
-      const unlockTab = Array.from(document.querySelectorAll('button')).find((b) => /Unlock|Reward|Title|Theme|32/i.test(b.textContent || ''));
+      const unlockTab = Array.from(document.querySelectorAll('.ws-meta-backdrop button')).find((b) => /Unlock|Reward|Title|Theme|32|44/i.test(b.textContent || ''));
       if (unlockTab) unlockTab.click();
       return {
-        has64Ref: /64/.test(txt),
+        has64Ref: /64|84/.test(txt),
+        has84Ref: /84/.test(txt),
         trophyRows,
         clickedUnlockTab: unlockTab?.textContent?.trim() || null,
       };
     })()`);
     await sleep(300);
     const equipResult = await br.evalJs(`(() => {
-      const equipBtn = Array.from(document.querySelectorAll('button')).find((b) => /Equip/i.test(b.textContent || '') && !b.disabled);
+      const equipBtn = Array.from(document.querySelectorAll('.ws-meta-backdrop button')).find((b) => /Equip/i.test(b.textContent || '') && !b.disabled);
       if (!equipBtn) return { foundEquipBtn: false };
       equipBtn.click();
       return { foundEquipBtn: true, label: equipBtn.textContent.trim() };

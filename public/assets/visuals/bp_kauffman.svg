@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" width="480" height="300">
+  <defs>
+    <radialGradient id="bgObsidian" cx="50%" cy="46%" r="64%">
+      <stop offset="0%" stop-color="#0e1a33"/>
+      <stop offset="58%" stop-color="#091021"/>
+      <stop offset="100%" stop-color="#070b16"/>
+    </radialGradient>
+    <linearGradient id="goldStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f7e4ad"/>
+      <stop offset="50%" stop-color="#e5c16c"/>
+      <stop offset="100%" stop-color="#b68a35"/>
+    </linearGradient>
+    <linearGradient id="cyanStroke" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7ce2ff"/>
+      <stop offset="50%" stop-color="#4cc9f0"/>
+      <stop offset="100%" stop-color="#2894c8"/>
+    </linearGradient>
+    <radialGradient id="turfGrad" cx="50%" cy="82%" r="72%">
+      <stop offset="0%" stop-color="#112b31" stop-opacity="0.92"/>
+      <stop offset="65%" stop-color="#0b1d27" stop-opacity="0.88"/>
+      <stop offset="100%" stop-color="#07121d" stop-opacity="0.82"/>
+    </radialGradient>
+    <pattern id="bpGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#182b4d" stroke-width="0.6"/>
+      <path d="M 80 0 L 0 0 0 80" fill="none" stroke="#233d6b" stroke-width="0.9"/>
+    </pattern>
+    <filter id="glowCyan" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="2.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="glowGold" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="1.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <clipPath id="clip_bp_kauffman">
+      <polygon points="240.0,256.0 142.0,158.0 173.9,107.5 210.5,88.9 240.0,83.8 269.5,88.9 306.1,107.5 338.0,158.0"/>
+    </clipPath>
+  </defs>
+  <rect x="0" y="0" width="480" height="300" fill="url(#bgObsidian)"/>
+  <rect x="14" y="14" width="452" height="272" fill="url(#bpGrid)" opacity="0.65"/>
+
+  <!-- Outer Horological Blueprint Frame -->
+  <rect x="8" y="8" width="464" height="284" rx="6" fill="none" stroke="url(#goldStroke)" stroke-width="1.3" stroke-opacity="0.78"/>
+  <rect x="14" y="14" width="452" height="272" rx="3" fill="none" stroke="#4cc9f0" stroke-width="0.65" stroke-opacity="0.34"/>
+  <g>
+    <line x1="40" y1="14" x2="40" y2="19.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="40" y1="286" x2="40" y2="281.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="60" y1="14" x2="60" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="60" y1="286" x2="60" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="80" y1="14" x2="80" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="80" y1="286" x2="80" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="100" y1="14" x2="100" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="100" y1="286" x2="100" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="120" y1="14" x2="120" y2="19.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="120" y1="286" x2="120" y2="281.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="140" y1="14" x2="140" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="140" y1="286" x2="140" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="160" y1="14" x2="160" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="160" y1="286" x2="160" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="180" y1="14" x2="180" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="180" y1="286" x2="180" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="200" y1="14" x2="200" y2="19.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="200" y1="286" x2="200" y2="281.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="220" y1="14" x2="220" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="220" y1="286" x2="220" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="240" y1="14" x2="240" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="240" y1="286" x2="240" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="260" y1="14" x2="260" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="260" y1="286" x2="260" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="280" y1="14" x2="280" y2="19.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="280" y1="286" x2="280" y2="281.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="300" y1="14" x2="300" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="300" y1="286" x2="300" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="320" y1="14" x2="320" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="320" y1="286" x2="320" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="340" y1="14" x2="340" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="340" y1="286" x2="340" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="360" y1="14" x2="360" y2="19.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="360" y1="286" x2="360" y2="281.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="380" y1="14" x2="380" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="380" y1="286" x2="380" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="400" y1="14" x2="400" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="400" y1="286" x2="400" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="420" y1="14" x2="420" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="420" y1="286" x2="420" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="440" y1="14" x2="440" y2="19.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="440" y1="286" x2="440" y2="281.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+  </g>
+  <!-- Corner Registration Reticles -->
+  <path d="M 14 28 L 14 14 L 28 14 M 452 14 L 466 14 L 466 28 M 14 272 L 14 286 L 28 286 M 452 286 L 466 286 L 466 272" fill="none" stroke="#e5c16c" stroke-width="1.8"/>
+  <!-- Main Blueprint Geometry -->
+  <g>
+    <!-- Architectural Context & Signature Landmarks -->
+    <g fill="none">
+      <path d="M 106 112 Q 168 62 240 58 Q 312 62 374 112" stroke="#4cc9f0" stroke-width="2.4" stroke-opacity="0.88" filter="url(#glowCyan)"/>
+      <path d="M 118 116 Q 174 72 240 68 Q 306 72 362 116" stroke="#4cc9f0" stroke-width="1.2" stroke-dasharray="4 3" stroke-opacity="0.72"/>
+      <polygon points="222,58 226,42 234,50 240,38 246,50 254,42 258,58" fill="#10203a" stroke="#e5c16c" stroke-width="1.3"/>
+      <text x="394" y="90" fill="#7ce2ff" font-family="'Consolas',monospace" font-size="8" text-anchor="middle">322 FT</text>
+      <text x="394" y="100" fill="#7ce2ff" font-family="'Consolas',monospace" font-size="8" text-anchor="middle">FOUNTAINS</text>
+    </g>
+    <!-- Outfield Turf Silhouette -->
+    <polygon points="240.0,256.0 142.0,158.0 173.9,107.5 210.5,88.9 240.0,83.8 269.5,88.9 306.1,107.5 338.0,158.0" fill="url(#turfGrad)"/>
+    <g clip-path="url(#clip_bp_kauffman)">
+      <path d="M 195.5,211.5 A 63.0,63.0 0 0,1 284.5,211.5" fill="none" stroke="#4cc9f0" stroke-opacity="0.18" stroke-width="0.7" stroke-dasharray="3 4"/>
+      <path d="M 173.2,189.2 A 94.5,94.5 0 0,1 306.8,189.2" fill="none" stroke="#4cc9f0" stroke-opacity="0.18" stroke-width="0.7" stroke-dasharray="3 4"/>
+      <path d="M 150.9,166.9 A 126.0,126.0 0 0,1 329.1,166.9" fill="none" stroke="#4cc9f0" stroke-opacity="0.18" stroke-width="0.7" stroke-dasharray="3 4"/>
+      <path d="M 128.6,144.6 A 157.5,157.5 0 0,1 351.4,144.6" fill="none" stroke="#4cc9f0" stroke-opacity="0.18" stroke-width="0.7" stroke-dasharray="3 4"/>
+    </g>
+    <!-- Warning Track Inner Echo -->
+    <path d="M 142.0,158.0 L 173.9,107.5 L 210.5,88.9 L 240.0,83.8 L 269.5,88.9 L 306.1,107.5 L 338.0,158.0" fill="none" stroke="#e5c16c" stroke-opacity="0.22" stroke-width="6.5" stroke-linejoin="round"/>
+    <!-- Outfield Wall Geometry -->
+    <path d="M 142.0,158.0 L 173.9,107.5 L 210.5,88.9 L 240.0,83.8 L 269.5,88.9 L 306.1,107.5 L 338.0,158.0" fill="none" stroke="url(#goldStroke)" stroke-width="2.2" stroke-linejoin="round" filter="url(#glowGold)"/>
+
+    <!-- Foul Lines -->
+    <line x1="240.0" y1="256.0" x2="142.0" y2="158.0" stroke="#e5c16c" stroke-width="1.2" stroke-opacity="0.82"/>
+    <line x1="240.0" y1="256.0" x2="338.0" y2="158.0" stroke="#e5c16c" stroke-width="1.2" stroke-opacity="0.82"/>
+    <!-- Infield Arc & 90-ft Diamond -->
+    <path d="M 200.8,216.8 A 39.9,39.9 0 0,1 279.2,216.8" fill="none" stroke="#e5c16c" stroke-opacity="0.55" stroke-width="1.1"/>
+    <polygon points="240.0,256.0 266.7,229.3 240.0,202.5 213.3,229.3" fill="#172438" fill-opacity="0.65" stroke="#e5c16c" stroke-width="1.15"/>
+
+    <!-- Pitcher Mound & 4 Bases -->
+    <circle cx="240.0" cy="230.6" r="3.4" fill="#e5c16c" fill-opacity="0.28" stroke="#e5c16c" stroke-width="1.0"/>
+    <rect x="264.5" y="227.1" width="4.4" height="4.4" fill="#f7e4ad" transform="rotate(45 266.7 229.3)"/>
+    <rect x="237.8" y="200.3" width="4.4" height="4.4" fill="#f7e4ad" transform="rotate(45 240.0 202.5)"/>
+    <rect x="211.1" y="227.1" width="4.4" height="4.4" fill="#f7e4ad" transform="rotate(45 213.3 229.3)"/>
+    <circle cx="240.0" cy="256.0" r="3.2" fill="#f7e4ad"/>
+    <!-- Foul Pole Beacons -->
+    <circle cx="142.0" cy="158.0" r="3.4" fill="#e5c16c" stroke="#070b16" stroke-width="1"/>
+    <circle cx="338.0" cy="158.0" r="3.4" fill="#e5c16c" stroke="#070b16" stroke-width="1"/>
+    <!-- Scaled Distance Readouts -->
+    <line x1="142.0" y1="158.0" x2="130.3" y2="151.3" stroke="#f4e6be" stroke-opacity="0.55" stroke-width="0.8"/>
+    <circle cx="142.0" cy="158.0" r="2.2" fill="#f4e6be"/>
+    <text x="130.3" y="154.3" fill="#f4e6be" font-family="'Consolas',monospace" font-size="10.5" font-weight="bold" text-anchor="end">330'</text>
+    <line x1="173.9" y1="107.5" x2="161.4" y2="90.5" stroke="#f4e6be" stroke-opacity="0.55" stroke-width="0.8"/>
+    <circle cx="173.9" cy="107.5" r="2.2" fill="#f4e6be"/>
+    <text x="161.4" y="93.5" fill="#f4e6be" font-family="'Consolas',monospace" font-size="10.5" font-weight="bold" text-anchor="middle">387'</text>
+    <line x1="240.0" y1="83.8" x2="240.0" y2="97.9" stroke="#f4e6be" stroke-opacity="0.55" stroke-width="0.8"/>
+    <circle cx="240.0" cy="83.8" r="2.2" fill="#f4e6be"/>
+    <text x="240.0" y="100.9" fill="#f4e6be" font-family="'Consolas',monospace" font-size="10.5" font-weight="bold" text-anchor="middle">410'</text>
+    <line x1="306.1" y1="107.5" x2="318.6" y2="90.5" stroke="#f4e6be" stroke-opacity="0.55" stroke-width="0.8"/>
+    <circle cx="306.1" cy="107.5" r="2.2" fill="#f4e6be"/>
+    <text x="318.6" y="93.5" fill="#f4e6be" font-family="'Consolas',monospace" font-size="10.5" font-weight="bold" text-anchor="middle">387'</text>
+    <line x1="338.0" y1="158.0" x2="349.7" y2="151.3" stroke="#f4e6be" stroke-opacity="0.55" stroke-width="0.8"/>
+    <circle cx="338.0" cy="158.0" r="2.2" fill="#f4e6be"/>
+    <text x="349.7" y="154.3" fill="#f4e6be" font-family="'Consolas',monospace" font-size="10.5" font-weight="bold" text-anchor="start">330'</text>
+    <!-- Telemetry Callout Badges -->
+    <rect x="24" y="24" width="124.8" height="20" rx="3" fill="#0b1830" stroke="#4cc9f0" stroke-width="0.9" stroke-opacity="0.85"/>
+    <text x="32" y="37" fill="#7ce2ff" font-family="'Consolas',monospace" font-size="9" font-weight="bold">WATER SPECTACULAR</text>
+    <rect x="369.6" y="24" width="86.4" height="20" rx="3" fill="#0b1830" stroke="#e5c16c" stroke-width="0.9" stroke-opacity="0.82"/>
+    <text x="377.6" y="37" fill="#f4e6be" font-family="'Consolas',monospace" font-size="9" font-weight="bold">OPENED 1973</text>
+
+  </g>
+  <!-- Plate Catalog Footer Stamps (Zero Spoiler) -->
+  <g font-family="'Consolas','Courier New',monospace" font-size="8.5" letter-spacing="1.2">
+    <text x="24" y="278" fill="#e5c16c" fill-opacity="0.82">PLATE · BB-11</text>
+    <text x="456" y="278" fill="#4cc9f0" fill-opacity="0.78" text-anchor="end">DIAMOND SURVEY · FT</text>
+  </g>
+</svg>

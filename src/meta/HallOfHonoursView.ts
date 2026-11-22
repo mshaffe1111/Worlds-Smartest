@@ -35,6 +35,8 @@ import {
   RARITY_TIER_META,
   equipHudAccentTheme,
   getEquippedHudTheme,
+  getTotalHonoursCount,
+  getTotalUnlockablesCount,
   getUnlockedHudThemeIds,
   type HallOfHonoursSystem,
   type HonourAspectCategory,
@@ -43,7 +45,11 @@ import {
   type HudAccentThemeSpec,
 } from './HallOfHonoursSystem';
 
-export type HonoursSubTab = 'TROPHIES_64' | 'UNLOCKABLES_32';
+export type HonoursSubTab = 'TROPHIES_64' | 'UNLOCKABLES_32' | 'TROPHIES' | 'UNLOCKABLES';
+
+function isTrophiesTab(tab: HonoursSubTab): boolean {
+  return tab === 'TROPHIES_64' || tab === 'TROPHIES';
+}
 
 export interface HallOfHonoursViewDependencies {
   honoursSystem: HallOfHonoursSystem;
@@ -104,7 +110,10 @@ export class HallOfHonoursView {
     backdrop.className = 'ws-meta-backdrop';
     backdrop.setAttribute('role', 'dialog');
     backdrop.setAttribute('aria-modal', 'true');
-    backdrop.setAttribute('aria-label', 'Hall of Honours — 64 Trophies & 32 Unlockables');
+    backdrop.setAttribute(
+      'aria-label',
+      `Hall of Honours — ${getTotalHonoursCount()} Trophies & ${getTotalUnlockablesCount()} Unlockables`,
+    );
     backdrop.addEventListener('click', (ev) => {
       if (ev.target === backdrop && !this.trophy3DDockActive) {
         this.handleClose();
@@ -199,36 +208,44 @@ export class HallOfHonoursView {
 
   private renderInto(host: HTMLElement, isModal: boolean): void {
     const allHonours = this.deps.honoursSystem.getAllProgress();
+    const totalHonours = allHonours.length;
     const unlockedHonoursCount = allHonours.filter((h) => h.unlocked).length;
 
     const finishStatuses = evaluatePrismFinishUnlocks(this.deps.passport, this.deps.blackboard);
     const pSnap = this.deps.passport.getSnapshot();
     const unlockedThemeIds = getUnlockedHudThemeIds();
+    const totalFinishes = finishStatuses.length;
+    const totalTitles = BROADCAST_TITLES_CATALOG.length;
+    const totalThemes = HUD_ACCENT_THEMES.length;
+    const totalRewards = totalFinishes + totalTitles + totalThemes;
+    const unlockedTitlesCount = BROADCAST_TITLES_CATALOG.filter(
+      (bt) => bt.order === 1 || pSnap.titleCrests.includes(bt.title),
+    ).length;
     const totalUnlockedRewards =
       finishStatuses.filter((f) => f.unlocked).length +
-      BROADCAST_TITLES_CATALOG.filter((bt) => pSnap.titleCrests.includes(bt.title)).length +
+      unlockedTitlesCount +
       unlockedThemeIds.length;
 
+    const onTrophies = isTrophiesTab(this.activeTab);
     const underlineTabsHtml = `
       <div class="ws-meta-underline-tabs" role="tablist" aria-label="Hall of Honours Sections">
-        <button type="button" role="tab" aria-selected="${this.activeTab === 'TROPHIES_64'}" class="ws-meta-underline-tab ${this.activeTab === 'TROPHIES_64' ? 'is-active' : ''}" data-honours-tab="TROPHIES_64">
-          64 Trophies (${unlockedHonoursCount}/64)
+        <button type="button" role="tab" aria-selected="${onTrophies}" class="ws-meta-underline-tab ${onTrophies ? 'is-active' : ''}" data-honours-tab="TROPHIES_64">
+          ${totalHonours} Trophies (${unlockedHonoursCount}/${totalHonours})
         </button>
-        <button type="button" role="tab" aria-selected="${this.activeTab === 'UNLOCKABLES_32'}" class="ws-meta-underline-tab ${this.activeTab === 'UNLOCKABLES_32' ? 'is-active' : ''}" data-honours-tab="UNLOCKABLES_32">
-          32 Rewards (${totalUnlockedRewards}/32)
+        <button type="button" role="tab" aria-selected="${!onTrophies}" class="ws-meta-underline-tab ${!onTrophies ? 'is-active' : ''}" data-honours-tab="UNLOCKABLES_32">
+          ${totalRewards} Rewards (${totalUnlockedRewards}/${totalRewards})
         </button>
       </div>
     `;
 
-    const bodyHtml =
-      this.activeTab === 'TROPHIES_64'
-        ? this.renderTrophiesGrid(allHonours)
-        : this.renderUnlockablesStudio(
-            finishStatuses,
-            pSnap.titleCrests,
-            pSnap.activeTitleCrest,
-            unlockedThemeIds,
-          );
+    const bodyHtml = onTrophies
+      ? this.renderTrophiesGrid(allHonours)
+      : this.renderUnlockablesStudio(
+          finishStatuses,
+          pSnap.titleCrests,
+          pSnap.activeTitleCrest,
+          unlockedThemeIds,
+        );
 
     if (isModal && this.trophy3DDockActive) {
       const vaultFloatingHtml = renderVaultJumperHtml('HONOURS', {
@@ -280,7 +297,7 @@ export class HallOfHonoursView {
             <button type="button" class="ws-meta-back-btn" id="ws-honours-back" data-meta-back="true" aria-label="Back">← Back</button>
             <div class="ws-meta-topbar-titles">
               <h2 class="ws-meta-title">HONOURS</h2>
-              <div class="ws-meta-eyebrow">${unlockedHonoursCount}/64 Trophies · ${totalUnlockedRewards}/32</div>
+              <div class="ws-meta-eyebrow">${unlockedHonoursCount}/${totalHonours} Trophies · ${totalUnlockedRewards}/${totalRewards} Rewards</div>
             </div>
           </div>
           <div class="ws-meta-topbar-right">
@@ -317,7 +334,7 @@ export class HallOfHonoursView {
         <div class="ws-meta-hscroll" aria-label="Filter by Rarity Tier">
           ${(
             [
-              ['ALL', 'All 64'],
+              ['ALL', `All ${allHonours.length}`],
               ['TIER_1_EASY', 'Bronze'],
               ['TIER_2_MEDIUM', 'Sterling'],
               ['TIER_3_HARD', '24K Gold'],
@@ -376,7 +393,7 @@ export class HallOfHonoursView {
                   />
                   <div style="min-width:0;flex:1 1 auto;display:flex;flex-direction:column;gap:4px;">
                     <div style="display:flex;justify-content:space-between;gap:6px;align-items:baseline;">
-                      <span style="font-family:var(--font-mono);font-size:9.5px;font-weight:700;color:${tm.colorHex};letter-spacing:0.06em;">
+                      <span style="font-family:var(--font-mono);font-size:10px;font-weight:700;color:${tm.colorHex};letter-spacing:0.06em;">
                         #${item.def.number} · ${escapeMetaHtml(tm.shortLabel.toUpperCase())}
                       </span>
                       <span style="font-family:var(--font-mono);font-size:10.5px;font-weight:700;color:${item.unlocked ? 'var(--emerald-win)' : 'var(--ivory-muted)'};flex-shrink:0;">
@@ -394,7 +411,7 @@ export class HallOfHonoursView {
                     </div>
                     ${
                       item.def.reward
-                        ? `<div style="font-family:var(--font-mono);font-size:9.5px;color:var(--gold-bright);margin-top:1px;">
+                        ? `<div style="font-family:var(--font-mono);font-size:10px;color:var(--gold-bright);margin-top:1px;">
                             ✦ ${escapeMetaHtml(item.def.reward.rewardLabel)}
                           </div>`
                         : ''
@@ -416,12 +433,18 @@ export class HallOfHonoursView {
     unlockedThemeIds: readonly HudAccentThemeId[],
   ): string {
     const equippedTheme = getEquippedHudTheme();
+    const totalFinishes = finishStatuses.length;
+    const totalTitles = BROADCAST_TITLES_CATALOG.length;
+    const totalThemes = HUD_ACCENT_THEMES.length;
+    const unlockedTitlesCount = BROADCAST_TITLES_CATALOG.filter(
+      (b) => b.order === 1 || unlockedTitles.includes(b.title),
+    ).length;
 
     return `
-      <!-- 1. 12 PBR 3D Prism Finishes -->
+      <!-- 1. PBR 3D Prism Finishes (Dynamic Total) -->
       <div class="ws-meta-section" style="padding-top:0;">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
-          <h3 class="ws-meta-section-title">1. 3D Prism Finishes (${finishStatuses.filter((f) => f.unlocked).length}/12)</h3>
+          <h3 class="ws-meta-section-title">1. 3D Prism Finishes (${finishStatuses.filter((f) => f.unlocked).length}/${totalFinishes})</h3>
           ${
             this.callbacks.onNavigateSection
               ? `<button type="button" class="ws-meta-inline-link" data-suite-nav="ATELIER">◈ 3D Atelier ›</button>`
@@ -443,8 +466,8 @@ export class HallOfHonoursView {
                     <span style="width:18px;height:18px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,${st.spec.swatchPrimaryCss},${st.spec.swatchSecondaryCss});box-shadow:0 0 0 1px rgba(255,255,255,0.45);"></span>
                     <span style="font-size:12px;font-weight:600;color:var(--ivory-primary);line-height:1.25;">${escapeMetaHtml(st.spec.name)}</span>
                   </span>
-                  <span style="font-family:var(--font-mono);font-size:10px;font-weight:700;color:${st.equipped ? 'var(--emerald-win)' : st.unlocked ? 'var(--gold-bright)' : 'var(--ivory-dim)'};flex-shrink:0;">
-                    ${st.equipped ? '✓ ON' : st.unlocked ? 'EQUIP' : '🔒'}
+                  <span style="font-family:var(--font-mono);font-size:10px;font-weight:700;color:${st.equipped ? 'var(--emerald-win)' : st.unlocked ? 'var(--gold-bright)' : '#9aa4b7'};flex-shrink:0;">
+                    ${st.equipped ? '✓ ON' : st.unlocked ? 'EQUIP' : '◇'}
                   </span>
                 </button>
               `,
@@ -453,9 +476,9 @@ export class HallOfHonoursView {
         </div>
       </div>
 
-      <!-- 2. 12 Diplomatic Broadcast Titles -->
+      <!-- 2. Diplomatic Broadcast Titles (Dynamic Total) -->
       <div class="ws-meta-section">
-        <h3 class="ws-meta-section-title">2. Diplomatic Broadcast Titles (${BROADCAST_TITLES_CATALOG.filter((b) => unlockedTitles.includes(b.title)).length}/12)</h3>
+        <h3 class="ws-meta-section-title">2. Diplomatic Broadcast Titles (${unlockedTitlesCount}/${totalTitles})</h3>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:0 20px;">
           ${BROADCAST_TITLES_CATALOG.map((bt) => {
             const isUnl = bt.order === 1 || unlockedTitles.includes(bt.title);
@@ -472,12 +495,12 @@ export class HallOfHonoursView {
                   <span style="font-family:var(--font-display);font-size:11.5px;font-weight:700;color:${isAct ? 'var(--gold-bright)' : 'var(--ivory-primary)'};">
                     ${escapeMetaHtml(bt.title)}
                   </span>
-                  <span style="font-family:var(--font-mono);font-size:9.5px;color:var(--ivory-dim);">
+                  <span style="font-family:var(--font-mono);font-size:10px;color:#9aa4b7;">
                     ${escapeMetaHtml(sanitizeMetaCopy(bt.unlockRequirement))}
                   </span>
                 </span>
-                <span style="font-family:var(--font-mono);font-size:10px;font-weight:700;color:${isAct ? 'var(--emerald-win)' : isUnl ? 'var(--gold-bright)' : 'var(--ivory-dim)'};flex-shrink:0;">
-                  ${isAct ? '✓ ON' : isUnl ? 'EQUIP' : '🔒'}
+                <span style="font-family:var(--font-mono);font-size:10px;font-weight:700;color:${isAct ? 'var(--emerald-win)' : isUnl ? 'var(--gold-bright)' : '#9aa4b7'};flex-shrink:0;">
+                  ${isAct ? '✓ ON' : isUnl ? 'EQUIP' : '◇'}
                 </span>
               </button>
             `;
@@ -485,9 +508,9 @@ export class HallOfHonoursView {
         </div>
       </div>
 
-      <!-- 3. 8 Chrono-Ring & HUD Accent Themes -->
+      <!-- 3. Chrono-Ring & HUD Accent Themes (Dynamic Total) -->
       <div class="ws-meta-section" style="border-bottom:none;">
-        <h3 class="ws-meta-section-title">3. Chrono-Ring &amp; HUD Accent Themes (${unlockedThemeIds.length}/8)</h3>
+        <h3 class="ws-meta-section-title">3. Chrono-Ring &amp; HUD Accent Themes (${unlockedThemeIds.length}/${totalThemes})</h3>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:0 20px;">
           ${HUD_ACCENT_THEMES.map((th) => {
             const isUnl = unlockedThemeIds.includes(th.id);
@@ -504,11 +527,11 @@ export class HallOfHonoursView {
                   <span style="width:16px;height:16px;border-radius:50%;background:${th.primaryHex};box-shadow:0 0 0 2px ${th.secondaryHex};flex-shrink:0;"></span>
                   <span style="min-width:0;">
                     <span style="display:block;font-size:12px;font-weight:600;color:var(--ivory-primary);line-height:1.25;">${escapeMetaHtml(th.name)}</span>
-                    <span style="display:block;font-family:var(--font-mono);font-size:9.5px;color:var(--ivory-dim);">${escapeMetaHtml(sanitizeMetaCopy(th.unlockRequirement))}</span>
+                    <span style="display:block;font-family:var(--font-mono);font-size:10px;color:#9aa4b7;">${escapeMetaHtml(sanitizeMetaCopy(th.unlockRequirement))}</span>
                   </span>
                 </span>
-                <span style="font-family:var(--font-mono);font-size:10px;font-weight:700;color:${isEq ? 'var(--emerald-win)' : isUnl ? 'var(--gold-bright)' : 'var(--ivory-dim)'};flex-shrink:0;">
-                  ${isEq ? '✓ ON' : isUnl ? 'EQUIP' : '🔒'}
+                <span style="font-family:var(--font-mono);font-size:10px;font-weight:700;color:${isEq ? 'var(--emerald-win)' : isUnl ? 'var(--gold-bright)' : '#9aa4b7'};flex-shrink:0;">
+                  ${isEq ? '✓ ON' : isUnl ? 'EQUIP' : '◇'}
                 </span>
               </button>
             `;

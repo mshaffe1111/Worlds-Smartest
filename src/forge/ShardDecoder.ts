@@ -4,6 +4,7 @@
 // + Deterministic Graded Codex Synthesis + 5-Morph PrismQuestion Normalizer
 // ============================================================================
 
+import { scoreQuestionDifficulty } from './QuestionDifficultyCalibration';
 import {
   getCampaignStageSpec,
   getForgeDomainInfo,
@@ -15,6 +16,7 @@ import {
   type DomainId,
   type FacetSlotLetter,
   type GauntletPlateSpec,
+  type GlobePinDropSpec,
   type GlyphHint,
   type HeroRelicId,
   type NarrativeTag,
@@ -29,6 +31,7 @@ import {
   type ShardTableTypeSpec,
   type SightlineFacet,
   type ToneTag,
+  type VisualLensPlateSpec,
 } from './types';
 
 export const CODEX_SYNTHESIS_BASE_QID = 995_000;
@@ -825,7 +828,9 @@ export function isCleanShardCandidate(raw: RawQuestionRecord): boolean {
   }
 
   const distTextsLower = Array.isArray(raw.distractors)
-    ? raw.distractors.map((d) => d.text.trim().toLowerCase())
+    ? raw.distractors.map((d) =>
+        String(typeof d === 'string' ? d : d?.text ?? '').trim().toLowerCase(),
+      )
     : [];
 
   // Block broken shuffled letter-reference options ("A and B only", "Both C and D")
@@ -1085,6 +1090,27 @@ function formatTemplate(tpl: string, ctx: Record<string, string | number>): stri
   return sanitizeTriviaCopy(filled);
 }
 
+function pickAngleTemplate(
+  variants: ReadonlyArray<string> | undefined,
+  fallback: string | undefined,
+  qid: number,
+): string {
+  if (Array.isArray(variants) && variants.length > 0) {
+    // Full 32-bit Murmur3 fmix32 avalanche so modulo 2/3/4/5/6 never locks onto qid parity!
+    let h = (qid >>> 0) ^ 0x9e3779b9;
+    h ^= h >>> 16;
+    h = Math.imul(h, 0x85ebca6b);
+    h ^= h >>> 13;
+    h = Math.imul(h, 0xc2b2ae35);
+    h ^= h >>> 16;
+    const candidate = variants[(h >>> 0) % variants.length];
+    if (typeof candidate === 'string' && candidate.trim().length > 0) {
+      return candidate;
+    }
+  }
+  return fallback ?? '';
+}
+
 function adaptiveStep(exactVal: number, brackets: ReadonlyArray<[number, number]>): number {
   const av = Math.abs(exactVal);
   for (let i = 0; i < brackets.length; i++) {
@@ -1321,6 +1347,14 @@ export function decodeShardRawQuestion(
   const baseIrt = Number(row[row.length - 1]) / 100.0;
   const irtB =
     Math.round(clamp(baseIrt + Number(angle.irtOffset ?? 0.0), -1.6, 2.75) * 100) / 100;
+  let shardRowRank01 = rows.length > 1 ? rowIdx / (rows.length - 1) : 0;
+  if (restrictedRowIndices && restrictedRowIndices.length > 1) {
+    const localPos = restrictedRowIndices.indexOf(rowIdx);
+    if (localPos >= 0) {
+      shardRowRank01 = localPos / (restrictedRowIndices.length - 1);
+    }
+  }
+  shardRowRank01 = Math.round(clamp(shardRowRank01, 0, 1) * 10000) / 10000;
   const arch = angle.archetype;
   const radius = manifest.decoderSpec?.distractorWindowRadius ?? 60;
   const primarySubject = resolveCell(row, 0, poolCols, pool);
@@ -1348,6 +1382,7 @@ export function decodeShardRawQuestion(
     glyphHint: spec.glyphHint ?? getForgeDomainInfo(spec.l0Domain).glyphShape,
     shardType: typeId,
     angleId: angle.id,
+    shardRowRank01,
   };
 
   if (arch === 'SIGHTLINE_LOCK') {
@@ -1393,7 +1428,12 @@ export function decodeShardRawQuestion(
         Math.max(3, desiredDistractors),
       );
     }
-    out.prompt = sanitizeTriviaCopy(formatTemplate(angle.prompt ?? '', ctx));
+    const sightPromptTpl = pickAngleTemplate(
+      angle.stemVariants ?? angle.promptVariants,
+      angle.prompt ?? angle.stem,
+      qid,
+    );
+    out.prompt = sanitizeTriviaCopy(formatTemplate(sightPromptTpl, ctx));
     const cleanAns = sanitizeAnswerOrFacet(ans, out.prompt);
     out.answerCorrect = cleanAns;
     out.distractors = dists.map((d, idx) => ({
@@ -1416,7 +1456,12 @@ export function decodeShardRawQuestion(
   } else if (arch === 'GAUNTLET_SHATTER') {
     const isTrue = (fnv1a32(`TF:${qid}`) & 1) === 0;
     if (isTrue) {
-      out.prompt = sanitizeTriviaCopy(formatTemplate(angle.truePrompt ?? '', ctx));
+      const trueTpl = pickAngleTemplate(
+        angle.truePromptVariants ?? angle.trueStemVariants,
+        angle.truePrompt,
+        qid,
+      );
+      out.prompt = sanitizeTriviaCopy(formatTemplate(trueTpl, ctx));
       out.answerCorrect = 'TRUE';
       out.whyExplanation = sanitizeTriviaCopy(formatTemplate(angle.whyTrue ?? '', ctx));
     } else {
@@ -1438,7 +1483,12 @@ export function decodeShardRawQuestion(
         if (fakeCands.length > 0) fake = fakeCands[0];
       }
       ctx.fake = sanitizeTriviaCopy(fake);
-      out.prompt = sanitizeTriviaCopy(formatTemplate(angle.falsePrompt ?? '', ctx));
+      const falseTpl = pickAngleTemplate(
+        angle.falsePromptVariants ?? angle.falseStemVariants,
+        angle.falsePrompt,
+        qid,
+      );
+      out.prompt = sanitizeTriviaCopy(formatTemplate(falseTpl, ctx));
       out.answerCorrect = 'FALSE';
       out.whyExplanation = sanitizeTriviaCopy(formatTemplate(angle.whyFalse ?? '', ctx));
     }
@@ -1459,7 +1509,12 @@ export function decodeShardRawQuestion(
         ? resolveCell(row, Math.trunc(angle.unitCol), poolCols, pool)
         : String(angle.unit ?? '');
     const bounds = computeShardCalibratorBounds(exactV, angle, qid, manifest.decoderSpec);
-    out.prompt = sanitizeTriviaCopy(formatTemplate(angle.prompt ?? '', ctx));
+    const calPromptTpl = pickAngleTemplate(
+      angle.stemVariants ?? angle.promptVariants,
+      angle.prompt ?? angle.stem,
+      qid,
+    );
+    out.prompt = sanitizeTriviaCopy(formatTemplate(calPromptTpl, ctx));
     const formattedExact = formatCleanTriviaNumber(bounds.exactVal, unit, out.prompt, exactColName);
     out.answerCorrect = sanitizeTriviaCopy(`${formattedExact}${unit ? ` ${unit}` : ''}`.trim());
     const c1 = sanitizeTriviaCopy(formatTemplate(angle.clue1 ?? '', ctx));
@@ -1529,13 +1584,14 @@ export function decodeShardRawQuestion(
       }
     }
     if (pairs.length < 3 || !decoyTarget) return null;
-    out.prompt = sanitizeTriviaCopy(
-      formatTemplate(
-        angle.prompt ??
-          `Align each ${spec.l1Category.toLowerCase()} entry on the upper ring with its verified match below.`,
-        ctx,
-      ),
+    const codexPromptTpl = pickAngleTemplate(
+      angle.stemVariants ?? angle.promptVariants,
+      angle.prompt ??
+        angle.stem ??
+        `Align each ${spec.l1Category.toLowerCase()} entry on the upper ring with its verified match below.`,
+      qid,
     );
+    out.prompt = sanitizeTriviaCopy(formatTemplate(codexPromptTpl, ctx));
     out.answerCorrect = `3/3 ${spec.l1Category} Matches`;
     out.clues = [
       sanitizeTriviaCopy(
@@ -1735,7 +1791,7 @@ export function decodeQuestionByQidFromChunks(
   for (const chunk of chunks) {
     for (let ti = 0; ti < chunk.t.length; ti++) {
       const tbl = chunk.t[ti];
-      const spec = manifest.types[tbl.type];
+      const spec = chunk.types?.[tbl.type] ?? manifest.types[tbl.type];
       if (!spec) continue;
       const nAngles = spec.angles.length;
       const start = tbl.baseQid;
@@ -1767,6 +1823,7 @@ export interface NormalizeOptions {
   facetCount?: 4 | 5 | 6;
   shuffleSalt?: number;
   sourceTier?: QuestionSourceTier;
+  shardRowRank01?: number;
 }
 
 function buildSightlineFacets(
@@ -1787,13 +1844,15 @@ function buildSightlineFacets(
   const seenText = new Set<string>([cleanAnswer.trim().toLowerCase()]);
   for (const d of rawDists) {
     if (poolItems.length >= facetCount) break;
-    const t = sanitizeAnswerOrFacet(String(d.text ?? '').trim(), promptCtx);
+    const rawText = typeof d === 'string' ? d : d?.text;
+    const rawPlaus = typeof d === 'string' ? 0.74 : d?.plausibility;
+    const t = sanitizeAnswerOrFacet(String(rawText ?? '').trim(), promptCtx);
     if (!t || seenText.has(t.toLowerCase())) continue;
     seenText.add(t.toLowerCase());
     poolItems.push({
       text: t,
       isCorrect: false,
-      plausibility: clamp(Number(d.plausibility ?? 0.72), 0.1, 0.95),
+      plausibility: clamp(Number(rawPlaus ?? 0.72), 0.1, 0.95),
     });
   }
 
@@ -2022,51 +2081,278 @@ function buildGauntletSpec(raw: RawQuestionRecord, cleanPrompt?: string): Gauntl
   };
 }
 
+const WORLD_CAPITAL_ANCHORS: ReadonlyArray<{ label: string; lat: number; lon: number }> = [
+  { label: 'London, UK', lat: 51.5074, lon: -0.1278 },
+  { label: 'Tokyo, Japan', lat: 35.6762, lon: 139.6503 },
+  { label: 'Cairo, Egypt', lat: 30.0444, lon: 31.2357 },
+  { label: 'Rio de Janeiro, Brazil', lat: -22.9068, lon: -43.1729 },
+  { label: 'New York, USA', lat: 40.7128, lon: -74.006 },
+  { label: 'Sydney, Australia', lat: -33.8688, lon: 151.2093 },
+  { label: 'Reykjavik, Iceland', lat: 64.1466, lon: -21.9426 },
+  { label: 'Singapore', lat: 1.3521, lon: 103.8198 },
+  { label: 'Nairobi, Kenya', lat: -1.2921, lon: 36.8219 },
+  { label: 'Mexico City, Mexico', lat: 19.4326, lon: -99.1332 },
+  { label: 'New Delhi, India', lat: 28.6139, lon: 77.209 },
+  { label: 'Buenos Aires, Argentina', lat: -34.6037, lon: -58.3816 },
+  { label: 'Paris, France', lat: 48.8566, lon: 2.3522 },
+  { label: 'Athens, Greece', lat: 37.9838, lon: 23.7275 },
+  { label: 'Cape Town, South Africa', lat: -33.9249, lon: 18.4241 },
+  { label: 'Lima, Peru', lat: -12.0464, lon: -77.0428 },
+  { label: 'Seoul, South Korea', lat: 37.5665, lon: 126.978 },
+  { label: 'Toronto, Canada', lat: 43.6532, lon: -79.3832 },
+  { label: 'Istanbul, Turkey', lat: 41.0082, lon: 28.9784 },
+  { label: 'Wellington, New Zealand', lat: -41.2865, lon: 174.7762 },
+  { label: 'Anchorage, Alaska', lat: 61.2181, lon: -149.9003 },
+  { label: 'Honolulu, Hawaii', lat: 21.3069, lon: -157.8583 },
+  { label: 'Rome, Italy', lat: 41.9028, lon: 12.4964 },
+  { label: 'Geneva, Switzerland', lat: 46.2044, lon: 6.1432 },
+];
+
+function approxGreatCircleKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const toRad = Math.PI / 180;
+  const dLat = (lat2 - lat1) * toRad;
+  const dLon = (lon2 - lon1) * toRad;
+  const sLat = Math.sin(dLat * 0.5);
+  const sLon = Math.sin(dLon * 0.5);
+  const a = clamp(
+    sLat * sLat + Math.cos(lat1 * toRad) * Math.cos(lat2 * toRad) * sLon * sLon,
+    0,
+    1,
+  );
+  return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+/**
+ * Normalizes any visual blueprint path into a subpath-safe `./assets/visuals/...` URL
+ * so SVGs load cleanly on both localhost and `https://<host>/Worlds-Smartest/`.
+ */
+export function normalizeVisualAssetUrl(rawUrl: string): string {
+  const trimmed = String(rawUrl ?? '').trim();
+  if (!trimmed) return '';
+  if (/^(?:https?:\/\/|data:)/i.test(trimmed)) {
+    return trimmed;
+  }
+  const cleaned = trimmed
+    .replace(/\\/g, '/')
+    .replace(/\/{2,}/g, '/')
+    .replace(/^\.\/+/, '')
+    .replace(/^\/+/, '')
+    .replace(/^public\//i, '');
+
+  if (cleaned.startsWith('assets/visuals/')) {
+    return `./${cleaned}`;
+  }
+  if (cleaned.startsWith('visuals/')) {
+    return `./assets/${cleaned}`;
+  }
+  if (cleaned.startsWith('assets/')) {
+    return `./${cleaned}`;
+  }
+  return `./assets/visuals/${cleaned}`;
+}
+
+function buildVisualPlateSpec(raw: RawQuestionRecord): VisualLensPlateSpec | undefined {
+  if (!raw.visualPlate || !raw.visualPlate.imageUrl) {
+    return undefined;
+  }
+  const normalizedUrl = normalizeVisualAssetUrl(raw.visualPlate.imageUrl);
+  if (!normalizedUrl) return undefined;
+  const cleanCaption = sanitizeTriviaCopy(
+    raw.visualPlate.caption?.trim() || raw.l1Category?.trim() || 'Visual Blueprint Plate',
+  );
+  return {
+    imageUrl: normalizedUrl,
+    caption: cleanCaption,
+    aspect: raw.visualPlate.aspect === 'SQUARE' ? 'SQUARE' : 'WIDE',
+    ...(raw.visualPlate.altText
+      ? { altText: sanitizeTriviaCopy(raw.visualPlate.altText) }
+      : { altText: cleanCaption }),
+    ...(raw.visualPlate.kind ? { kind: raw.visualPlate.kind } : {}),
+  };
+}
+
+function synthesizeGlobeRegionHint(lat: number, lon: number): string {
+  const ns = lat >= 0 ? 'Northern' : 'Southern';
+  const ew = lon >= 0 ? 'Eastern' : 'Western';
+  let zone = 'global meridian sector';
+  if (lon >= -170 && lon <= -50 && lat >= 12) {
+    zone = 'North & Central America';
+  } else if (lon >= -85 && lon <= -30 && lat < 12) {
+    zone = 'South America';
+  } else if (lon >= -26 && lon <= 45 && lat >= 34) {
+    zone = 'Europe & the Mediterranean basin';
+  } else if (lon >= -20 && lon <= 52 && lat < 34 && lat >= -36) {
+    zone = 'Africa & the Middle East';
+  } else if (lon > 45 && lon <= 150 && lat >= 5) {
+    zone = 'Asia & the Indo-Pacific arc';
+  } else if (lon >= 110 && lat < 5) {
+    zone = 'Oceania & the South Pacific';
+  }
+  return `Target lies in the ${ns} and ${ew} Hemispheres — focus on ${zone}.`;
+}
+
+function synthesizeGlobeCoordHint(lat: number, lon: number): string {
+  const latBand = Math.round(Math.abs(lat) / 5) * 5;
+  const lonBand = Math.round(Math.abs(lon) / 5) * 5;
+  const latDir = lat >= 0 ? 'N' : 'S';
+  const lonDir = lon >= 0 ? 'E' : 'W';
+  return `Coordinate corridor: near ${latBand}° ${latDir}, ${lonBand}° ${lonDir}.`;
+}
+
+function buildGlobePinSpec(raw: RawQuestionRecord, shuffleSalt: number): GlobePinDropSpec {
+  const ext = raw.globePin;
+  const targetLat = clamp(Number(ext?.targetLat ?? 46.2044), -89.9, 89.9);
+  const targetLon = clamp(Number(ext?.targetLon ?? 6.1432), -180, 180);
+  const targetLabel = sanitizeTriviaCopy(
+    ext?.targetLabel?.trim() || raw.answerCorrect?.trim() || 'Meridian Target',
+  );
+  const bullseyeKm = clamp(Number(ext?.bullseyeKm ?? 300), 50, 1500);
+  const goldKm = Math.max(bullseyeKm + 150, clamp(Number(ext?.goldKm ?? 1000), 250, 3500));
+  const grazeKm = Math.max(goldKm + 300, clamp(Number(ext?.grazeKm ?? 2200), 600, 6000));
+
+  const rawClues = Array.isArray(raw.clues) ? raw.clues : [];
+  const regionHint = sanitizeTriviaCopy(
+    ext?.regionHint?.trim() ||
+      rawClues[0]?.trim() ||
+      synthesizeGlobeRegionHint(targetLat, targetLon),
+  );
+  const coordHint = sanitizeTriviaCopy(
+    ext?.coordHint?.trim() ||
+      rawClues[1]?.trim() ||
+      synthesizeGlobeCoordHint(targetLat, targetLon),
+  );
+
+  const rng = new DeterministicRng(
+    fnv1a32(`WS_GLOBE_ANCHORS:${raw.qid}:${shuffleSalt}:${targetLabel}`),
+  );
+
+  let anchors: Array<{ label: string; lat: number; lon: number }> = [];
+  if (Array.isArray(ext?.quickAnchors) && ext.quickAnchors.length >= 4) {
+    const seenLabels = new Set<string>();
+    for (const a of ext.quickAnchors) {
+      if (!a || !a.label) continue;
+      const lbl = sanitizeTriviaCopy(String(a.label).trim());
+      if (!lbl || seenLabels.has(lbl.toLowerCase())) continue;
+      seenLabels.add(lbl.toLowerCase());
+      anchors.push({
+        label: lbl,
+        lat: clamp(Number(a.lat), -89.9, 89.9),
+        lon: clamp(Number(a.lon), -180, 180),
+      });
+      if (anchors.length >= 4) break;
+    }
+  }
+
+  if (anchors.length < 4) {
+    anchors = [{ label: targetLabel, lat: targetLat, lon: targetLon }];
+    const targetLow = targetLabel.toLowerCase();
+    const minDistFromTarget = Math.max(grazeKm + 400, 2600);
+    const pool = [...WORLD_CAPITAL_ANCHORS];
+    rng.shuffleInPlace(pool);
+
+    for (const cand of pool) {
+      if (anchors.length >= 4) break;
+      const cLow = cand.label.toLowerCase();
+      if (cLow === targetLow || cLow.includes(targetLow) || targetLow.includes(cLow)) continue;
+      const dTarget = approxGreatCircleKm(targetLat, targetLon, cand.lat, cand.lon);
+      if (dTarget < minDistFromTarget) continue;
+      const tooCloseToExisting = anchors.some(
+        (existing) => approxGreatCircleKm(existing.lat, existing.lon, cand.lat, cand.lon) < 1800,
+      );
+      if (tooCloseToExisting) continue;
+      anchors.push({ ...cand });
+    }
+    // Safety fallback if target is unusual or spacing was tight
+    for (const cand of pool) {
+      if (anchors.length >= 4) break;
+      if (anchors.some((existing) => existing.label.toLowerCase() === cand.label.toLowerCase())) {
+        continue;
+      }
+      if (approxGreatCircleKm(targetLat, targetLon, cand.lat, cand.lon) > goldKm + 200) {
+        anchors.push({ ...cand });
+      }
+    }
+  }
+
+  rng.shuffleInPlace(anchors);
+
+  return {
+    targetLat,
+    targetLon,
+    targetLabel,
+    bullseyeKm,
+    goldKm,
+    grazeKm,
+    regionHint,
+    coordHint,
+    quickAnchors: anchors,
+  };
+}
+
 export function normalizeToPrismQuestion(
   raw: RawQuestionRecord,
   options: NormalizeOptions = {},
 ): PrismQuestion {
-  const domId = clamp(Math.trunc(raw.l0Domain ?? 0), 0, 11) as DomainId;
+  const domId = clamp(Math.trunc(raw.l0Domain ?? raw.domainId ?? 0), 0, 11) as DomainId;
   const domainMeta = getForgeDomainInfo(domId);
   const arch: Archetype3D = raw.archetype ?? 'SIGHTLINE_LOCK';
   const facetCount: 4 | 5 | 6 = options.facetCount ?? 4;
   const salt = options.shuffleSalt ?? 0;
 
+  const isCodexSynthQid =
+    raw.qid >= CODEX_SYNTHESIS_BASE_QID &&
+    raw.qid < CODEX_SYNTHESIS_BASE_QID + CODEX_SYNTHESIS_PER_DOMAIN * 12;
+  const isCuratedPackQid =
+    raw.qid <= 4_964 ||
+    (raw.qid >= 50_000 && raw.qid < 60_000) ||
+    (raw.qid >= 1_060_000 && raw.qid < 1_090_000);
+
   const sourceTier: QuestionSourceTier =
     options.sourceTier ??
-    (raw.qid >= CODEX_SYNTHESIS_BASE_QID
+    (isCodexSynthQid
       ? 'CODEX_SYNTHESIS'
-      : raw.qid >= 60_000
-        ? 'FACT_GRAPH_SHARD'
-        : raw.qid <= 4_964 || (raw.qid >= 50_000 && raw.qid < 60_000)
-          ? 'GOLD_CURATED'
+      : isCuratedPackQid
+        ? 'GOLD_CURATED'
+        : raw.qid >= 60_000
+          ? 'FACT_GRAPH_SHARD'
           : 'VERIFIED_BENCHMARK');
 
   const cleanPrompt = sanitizeTriviaCopy(raw.prompt);
+  const globePin = arch === 'GLOBE_PIN_DROP' ? buildGlobePinSpec(raw, salt) : undefined;
+  const visualPlate = buildVisualPlateSpec(raw);
+
   const cleanAnswerCorrect =
     arch === 'CALIBRATOR_DIAL' && raw.calibratorExt
       ? sanitizeTriviaCopy(
           `${formatCleanTriviaNumber(raw.calibratorExt.exactVal, raw.calibratorExt.unit, cleanPrompt)}${raw.calibratorExt.unit ? ` ${raw.calibratorExt.unit}` : ''}`.trim(),
         )
-      : sanitizeAnswerOrFacet(raw.answerCorrect, cleanPrompt);
+      : arch === 'GLOBE_PIN_DROP' && globePin
+        ? globePin.targetLabel
+        : sanitizeAnswerOrFacet(raw.answerCorrect, cleanPrompt);
 
   const rawClues = Array.isArray(raw.clues) ? raw.clues : [];
-  const lateralClue = sanitizeTriviaCopy(
-    rawClues[0]?.trim() ||
-      `Category focus: ${raw.l1Category ?? domainMeta.name}.`,
-  );
-  const pinpointClue = sanitizeTriviaCopy(
-    rawClues[1]?.trim() ||
-      (arch === 'SIGHTLINE_LOCK' || arch === 'HERO_ARTIFACT_SYNTHESIS'
-        ? `Half of the false facets have been eliminated—verify the ${domainMeta.shortName.toLowerCase()} link.`
-        : lateralClue),
-  );
+  const lateralClue =
+    arch === 'GLOBE_PIN_DROP' && globePin
+      ? globePin.regionHint
+      : sanitizeTriviaCopy(
+          rawClues[0]?.trim() ||
+            `Category focus: ${raw.l1Category ?? domainMeta.name}.`,
+        );
+  const pinpointClue =
+    arch === 'GLOBE_PIN_DROP' && globePin
+      ? globePin.coordHint
+      : sanitizeTriviaCopy(
+          rawClues[1]?.trim() ||
+            (arch === 'SIGHTLINE_LOCK' || arch === 'HERO_ARTIFACT_SYNTHESIS'
+              ? `Half of the false facets have been eliminated—verify the ${domainMeta.shortName.toLowerCase()} link.`
+              : lateralClue),
+        );
 
   const glyphHint: GlyphHint = raw.glyphHint ?? domainMeta.glyphShape;
   const glyphId = resolveSdfGlyphId(raw, domId);
   const glyphUrl = `./assets/glyphs/${glyphId}.png`;
   const l1Category = raw.l1Category?.trim() || domainMeta.name;
-  const l2Subcategory = raw.l2Subcategory?.trim() || 'General Archive';
+  const l2Subcategory = raw.l2Subcategory?.trim() || raw.l2Category?.trim() || 'General Archive';
   const glyphCategoryLabel = `${domainMeta.shortName.toUpperCase()} · ${l1Category.toUpperCase()}`;
 
   let facets: SightlineFacet[] = [];
@@ -2119,10 +2405,22 @@ export function normalizeToPrismQuestion(
     },
   ];
 
+  const diff = scoreQuestionDifficulty(
+    {
+      ...raw,
+      prompt: cleanPrompt,
+      answerCorrect: cleanAnswerCorrect,
+      archetype: arch,
+    },
+    { shardRowRank01: options.shardRowRank01 ?? raw.shardRowRank01 },
+  );
+
   const defaultTimer =
     arch === 'GAUNTLET_SHATTER'
       ? Number(raw.gauntletExt?.windowSec ?? 10)
-      : 18;
+      : arch === 'GLOBE_PIN_DROP'
+        ? Math.max(20, diff.timerSec)
+        : diff.timerSec;
 
   const normalized: PrismQuestion = {
     qid: raw.qid,
@@ -2134,8 +2432,12 @@ export function normalizeToPrismQuestion(
     regions: Array.isArray(raw.regions) && raw.regions.length > 0 ? raw.regions : ['GLOBAL'],
     narrativeTags: (Array.isArray(raw.narrativeTags) ? raw.narrativeTags : []) as NarrativeTag[],
     tone: (raw.tone as ToneTag) || 'PRESTIGE',
-    irtB: Number(raw.irtB ?? 0),
+    irtB: Number(raw.irtB ?? diff.calibratedIrtB),
     irtA: Number(raw.irtA ?? 1.25),
+    difficultyTier: diff.difficultyTier,
+    difficultyScore: diff.difficultyScore,
+    difficultyLabel: diff.difficultyLabel,
+    difficultyMultiplier: diff.scoreMultiplier,
     freshness: raw.freshness ?? 'EVERGREEN',
     sourceTier,
     archetype: arch,
@@ -2162,6 +2464,12 @@ export function normalizeToPrismQuestion(
     normalized.calibrator = buildCalibratorSpec(raw);
   } else if (arch === 'GAUNTLET_SHATTER') {
     normalized.gauntlet = buildGauntletSpec(raw, cleanPrompt);
+  } else if (arch === 'GLOBE_PIN_DROP' && globePin) {
+    normalized.globePin = globePin;
+  }
+
+  if (visualPlate) {
+    normalized.visualPlate = visualPlate;
   }
 
   return normalized;

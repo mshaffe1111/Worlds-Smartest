@@ -12,6 +12,11 @@ import type {
   PrismQuestion,
 } from '../forge/types';
 import { CAMPAIGN_DIFFICULTY_CURVE, FORGE_DOMAINS } from '../forge/types';
+import type {
+  DuelChallengePayload,
+  DuelHeadToHeadSummary,
+  LeaderboardCohortSnapshot,
+} from '../modes';
 import type { OriginId } from '../narrative/PassportSystem';
 import { resolvePortraitCutoutUrl } from './CutscenePlayer';
 import type { StudioAudioEngine } from '../audio/StudioAudioEngine';
@@ -21,12 +26,38 @@ import type { OverclockGestureController } from '../ergonomics';
 
 export type ActiveHubTab = 'CAMPAIGN' | 'DAILY' | 'BRIEFING' | 'ENDLESS' | 'TRIALS';
 
+export interface VaultLiveStatus {
+  srsDueCount: number;
+  srsTotalCount: number;
+  isOnline: boolean;
+  swReady: boolean;
+  offlinePacksReady: string[];
+  offlineDownloadingLabel?: string | null;
+  honoursTotal?: number;
+  honoursUnlocked?: number;
+  atelierFinishesTotal?: number;
+}
+
+export interface CampaignResumeViewInfo {
+  hasProgress: boolean;
+  kind: 'NEW_GAME' | 'RESUME_PROLOGUE' | 'FLIGHT_FORK' | 'RESUME_MISSION';
+  activeHub: CampaignHubCode;
+  nextMissionId: string | null;
+  primaryCtaLabel: string;
+  subLabel: string;
+  bannerTitle: string;
+  bannerSub: string;
+}
+
 export interface TitleShowcaseViewState {
   challengerName: string;
   hasRegisteredName: boolean;
   prologueCompleted: boolean;
   verifiedQuestionTotal: number;
   playableQuestionTotal: number;
+  resumeState?: CampaignResumeViewInfo;
+  incomingDuel?: DuelChallengePayload | null;
+  srsDueCount?: number;
 }
 
 export interface CityCardState {
@@ -45,6 +76,10 @@ export interface CityCardState {
   sideTotalMissions?: number;
   diplomaticCrossClearance?: boolean;
   activeBranchBadge?: string | null;
+  isActiveResumeHub?: boolean;
+  nextPlayableMissionId?: string | null;
+  nextPlayableMissionTitle?: string | null;
+  lockRequirementText?: string;
   missions: Array<{
     id: string;
     slot: number;
@@ -125,6 +160,17 @@ export interface GameplayQuestionViewState {
   calibratorEstimate: number;
   calibratorCone: CalibratorConeId;
   codexTargetSelections: [number, number, number];
+  selectedGlobeCoords?: { lat: number; lon: number } | null;
+  selectedGlobeAnchorIndex?: number | null;
+  isInstantTrialPrism?: boolean;
+  duelLiveSplit?: {
+    challengerName: string;
+    playerScore: number;
+    challengerScore: number;
+    deltaPts: number;
+    leader: 'PLAYER' | 'CHALLENGER' | 'TIED';
+    challengerLockLabel?: string;
+  } | null;
   revealed?: {
     correct: boolean;
     backfired: boolean;
@@ -138,6 +184,10 @@ export interface GameplayQuestionViewState {
     correctDisplay: string;
     whyExplanation: string;
     bookmarked: boolean;
+    feedbackVote?: 'UPVOTE' | 'FLAG' | null;
+    feedbackToast?: string | null;
+    globeDistanceKm?: number;
+    globeAccuracyTier?: string;
   } | null;
 }
 
@@ -156,6 +206,10 @@ export interface MatchSummaryViewState {
   unlockedRelicTitle?: string;
   unlockedClueTitle?: string;
   dailyShareText?: string;
+  duelShareUrl?: string;
+  duelShareLabel?: string;
+  duelVerdict?: DuelHeadToHeadSummary | null;
+  leaderboard?: LeaderboardCohortSnapshot | null;
   endlessCanContinueFloor?: number;
   endlessShieldsLeft?: number;
   flightForkPending?: boolean;
@@ -173,6 +227,20 @@ export interface HubViewState {
   prologueCompleted: boolean;
   flightForkPending: boolean;
   selectedCityHub: CampaignHubCode;
+  activeResumeHub?: CampaignHubCode;
+  resumeState?: CampaignResumeViewInfo;
+  lockedCityNotice?: {
+    hub: CampaignHubCode;
+    city: string;
+    requirementText: string;
+  } | null;
+  duelRivalsSummary?: {
+    totalDuels: number;
+    wins: number;
+    losses: number;
+    ties: number;
+    recentRivals: Array<{ name: string; bestScore: number; recordLabel: string }>;
+  };
   cities: CityCardState[];
   campaignCompletedMissions?: number;
   campaignTotalMissions?: number;
@@ -201,6 +269,8 @@ export interface SovereignHUDActions {
   onOpenHonours: () => void;
   onOpenAtelier: () => void;
   onOpenObservatory: () => void;
+  onOpenMasteryReviewDeck?: () => void;
+  onDownloadOfflinePack?: () => void;
   onOpenFactions: () => void;
   onOpenDossier: () => void;
   onReturnToTitle: () => void;
@@ -208,9 +278,13 @@ export interface SovereignHUDActions {
   onTopBarBack?: () => void;
   onVaultDrawerToggle?: (open: boolean) => void;
 
-  // Title Showcase Actions (#137 P1 #7a)
+  // Title Showcase Actions (#137 P1 #7a + v2.0 Instant Prism & Incoming Duel)
   onTitleEnterMeridian: () => void;
   onTitleQuickMode: (tab: ActiveHubTab) => void;
+  onLaunchInstantPrism?: () => void;
+  onInstantPrismAction?: (dest: 'CAMPAIGN' | 'BASEBALL' | 'DAILY' | 'ANOTHER') => void;
+  onAcceptIncomingDuel?: (payload: DuelChallengePayload) => void;
+  onDismissIncomingDuel?: () => void;
 
   // Registration (Geneva Encrypted Summons)
   onCompleteRegistration: (name: string, origin: OriginId) => void;
@@ -218,6 +292,8 @@ export interface SovereignHUDActions {
   // Hub Actions
   onSelectHubTab: (tab: ActiveHubTab) => void;
   onSelectCity: (hub: CampaignHubCode) => void;
+  onHubContinueNow?: () => void;
+  onDismissLockedCityNotice?: () => void;
   onStartPrologue: () => void;
   onChooseFlightFork: (hub: 'gb' | 'jp') => void;
   onLaunchMission: (missionId: string) => void;
@@ -237,6 +313,7 @@ export interface SovereignHUDActions {
     label: string;
     count?: 5 | 10 | 20 | 50;
   }) => void;
+  onLaunchVisualOrGlobeShowcase?: (kind: 'GLOBE_PIN_DROP' | 'VISUAL_BLUEPRINT') => void;
   onLaunchEndless: (resume: boolean) => void;
   onPledgeFaction: (faction: 'SOVEREIGN' | 'HORIZON' | 'AGORA') => void;
   onLaunchGhostTrial: (blackSalon: boolean) => void;
@@ -248,6 +325,7 @@ export interface SovereignHUDActions {
 
   // Live Gameplay Actions
   onSelectFacet: (facetIndex: number) => void;
+  onSelectGlobeAnchor?: (lat: number, lon: number, anchorIndex: number) => void;
   onTriggerPeel: () => void;
   onTriggerCouncilVeto: () => void;
   onUpdateCalibrator: (estimate: number, cone: CalibratorConeId) => void;
@@ -257,13 +335,15 @@ export interface SovereignHUDActions {
   onOverclockBluffCancel: () => void;
   onCommitLock: (overclockCharge01: number) => void;
   onToggleBookmark: () => void;
+  onRateQuestion?: (vote: 'UPVOTE' | 'FLAG') => void;
   onNextQuestion: () => void;
 
-  // Summary / Endless Airlock / Failure Actions
+  // Summary / Endless Airlock / Failure / Duel Share Actions
   onContinueEndlessDescent: () => void;
   onRetryMission?: (missionId: string) => void;
   onRestartFromStart?: (cityFirstMissionId?: string) => void;
   onCopyDailyShare: (text: string) => void;
+  onShareDuelLink?: (url: string, title: string, text: string) => Promise<boolean> | boolean | void;
   onSummaryPrimaryContinue: () => void;
 }
 
@@ -278,7 +358,19 @@ function escapeHtml(text: string): string {
 /** Strips any `[[DOMAIN] ...]` prompt metadata tags so spoken dialogue is 100% clean (#137 P1 #5) */
 export function cleanNarrativeCopy(raw: string | undefined | null): string {
   if (!raw) return '';
-  return raw.replace(/\[\[[\s\S]*?\]\]/g, '').replace(/\s{2,}/g, ' ').trim();
+  return raw
+    .replace(/\[\[[\s\S]*?\]\]/g, '')
+    .replace(/\bMIDDLE_SCHOOL\b/g, 'Middle School')
+    .replace(/\bHIGH_SCHOOL\b/g, 'High School')
+    .replace(/\bGLOBAL_MIX\b/g, 'Global Mix')
+    .replace(/\bGLOBE_PIN_DROP\b/g, 'Globe Pin-Drop')
+    .replace(/\bVISUAL_BLUEPRINT\b/g, 'Visual Blueprint')
+    .replace(/\bSIGHTLINE_LOCK\b/g, 'Sightline Lock')
+    .replace(/\bCALIBRATOR_DIAL\b/g, 'Calibrator Dial')
+    .replace(/\bCODEX_DUAL_RING\b/g, 'Codex Dual-Ring')
+    .replace(/\bGAUNTLET_SHATTER\b/g, 'Gauntlet Shatter')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
 }
 
 const HUD_YEAR_UNIT_RE =
@@ -332,6 +424,12 @@ export function formatCalibratorMargin(
   return margin.toLocaleString('en-US');
 }
 
+/** Formats non-year counts, score deltas, and geodesic distances with clean thousands separators. */
+function formatCount(val: number): string {
+  if (!Number.isFinite(val)) return String(val);
+  return Math.round(val).toLocaleString('en-US');
+}
+
 /**
  * Runtime copy hygiene guard for displayed prompts, facets, clues, and reveal answers:
  * strips accidental commas inside calendar years (`1,984` -> `1984`, `1,864 CE` -> `1864 CE`)
@@ -379,6 +477,69 @@ export function sanitizeHudDisplayText(
   return text;
 }
 
+/** Formats WGS84 latitude/longitude compactly without calendar-year commas (e.g. `42.3°N, 71.1°W`). */
+export function formatLatLonCompact(lat: number, lon: number): string {
+  const safeLat = Number.isFinite(lat) ? Math.max(-90, Math.min(90, lat)) : 0;
+  const safeLon = Number.isFinite(lon) ? Math.max(-180, Math.min(180, lon)) : 0;
+  const ns = safeLat >= 0 ? 'N' : 'S';
+  const ew = safeLon >= 0 ? 'E' : 'W';
+  return `${Math.abs(safeLat).toFixed(1)}°${ns}, ${Math.abs(safeLon).toFixed(1)}°${ew}`;
+}
+
+export interface QuestionDifficultyBadge {
+  tierKey: 'middle-school' | 'high-school' | 'college' | 'graduate' | 'mensa';
+  label: string;
+  color: string;
+  bg: string;
+}
+
+/** Resolves calibrated 5-tier academic difficulty pill (`MIDDLE SCHOOL` .. `MENSA`) from `PrismQuestion`. */
+export function resolveQuestionDifficultyBadge(q: PrismQuestion): QuestionDifficultyBadge {
+  const ext = q as PrismQuestion & {
+    difficultyTier?: string;
+    difficultyLabel?: string;
+  };
+  const tier = (ext.difficultyTier ?? '').toUpperCase();
+  if (tier === 'MIDDLE_SCHOOL' || (!tier && q.irtB < -0.85)) {
+    return {
+      tierKey: 'middle-school',
+      label: (ext.difficultyLabel || 'Middle School').toUpperCase(),
+      color: '#6ee7b7',
+      bg: 'rgba(57,212,154,0.16)',
+    };
+  }
+  if (tier === 'HIGH_SCHOOL' || (!tier && q.irtB < -0.15)) {
+    return {
+      tierKey: 'high-school',
+      label: (ext.difficultyLabel || 'High School').toUpperCase(),
+      color: '#7dd3fc',
+      bg: 'rgba(86,212,245,0.16)',
+    };
+  }
+  if (tier === 'COLLEGE' || (!tier && q.irtB < 0.65)) {
+    return {
+      tierKey: 'college',
+      label: (ext.difficultyLabel || 'College').toUpperCase(),
+      color: '#f2cf7e',
+      bg: 'rgba(242,207,126,0.16)',
+    };
+  }
+  if (tier === 'GRADUATE' || (!tier && q.irtB < 1.45)) {
+    return {
+      tierKey: 'graduate',
+      label: (ext.difficultyLabel || 'Graduate').toUpperCase(),
+      color: '#fdba74',
+      bg: 'rgba(240,157,70,0.18)',
+    };
+  }
+  return {
+    tierKey: 'mensa',
+    label: (ext.difficultyLabel || 'Mensa').toUpperCase(),
+    color: '#f0abfc',
+    bg: 'rgba(217,70,239,0.18)',
+  };
+}
+
 type HudIconName =
   | 'audioOn'
   | 'audioOff'
@@ -398,7 +559,14 @@ type HudIconName =
   | 'lock'
   | 'shield'
   | 'bolt'
-  | 'copy';
+  | 'copy'
+  | 'thumbUp'
+  | 'flag'
+  | 'swords'
+  | 'share'
+  | 'pin'
+  | 'layers'
+  | 'wifi';
 
 const HUD_ICON_PATHS: Record<HudIconName, string> = {
   audioOn:
@@ -439,6 +607,20 @@ const HUD_ICON_PATHS: Record<HudIconName, string> = {
     '<polygon points="13 2 4.5 13 11.5 13 10.5 22 19.5 11 12.5 11 13 2"/>',
   copy:
     '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a1.5 1.5 0 0 1-1.5-1.5v-9A1.5 1.5 0 0 1 4 3h9A1.5 1.5 0 0 1 14.5 4.5V6"/>',
+  thumbUp:
+    '<path d="M7 10v11"/><path d="M15 5.88L14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/>',
+  flag:
+    '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/>',
+  swords:
+    '<polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" y1="14" x2="9" y2="18"/><line x1="7" y1="17" x2="4" y2="20"/>',
+  share:
+    '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>',
+  pin:
+    '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+  layers:
+    '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
+  wifi:
+    '<path d="M12 20h.01"/><path d="M2 8.82a15 15 0 0 1 20 0"/><path d="M5 12.859a10 10 0 0 1 14 0"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/>',
 };
 
 function hudIcon(name: HudIconName, size = 15): string {
@@ -463,6 +645,18 @@ export class SovereignHUD {
   private lastOverclockHandledMs = 0;
   private fallbackWindowCleanup: (() => void) | null = null;
   private vaultOpen = false;
+  private visualLightboxEl: HTMLElement | null = null;
+  private vaultStatus: VaultLiveStatus = {
+    srsDueCount: 0,
+    srsTotalCount: 0,
+    isOnline: typeof navigator !== 'undefined' ? navigator.onLine !== false : true,
+    swReady: false,
+    offlinePacksReady: [],
+    offlineDownloadingLabel: null,
+    honoursTotal: 84,
+    honoursUnlocked: 0,
+    atelierFinishesTotal: 16,
+  };
 
   constructor(
     root: HTMLElement,
@@ -504,10 +698,76 @@ export class SovereignHUD {
     return this.vaultOpen;
   }
 
+  public isVisualLightboxOpen(): boolean {
+    return this.visualLightboxEl !== null;
+  }
+
+  public closeVisualLightbox(): void {
+    if (this.visualLightboxEl) {
+      this.visualLightboxEl.remove();
+      this.visualLightboxEl = null;
+    }
+  }
+
+  public setVaultLiveStatus(partial: Partial<VaultLiveStatus>): void {
+    this.vaultStatus = { ...this.vaultStatus, ...partial };
+    this.syncVaultLiveStatusDom();
+  }
+
+  private syncVaultLiveStatusDom(): void {
+    const srsBadge = this.root.querySelector<HTMLElement>('#ws-vault-srs-badge');
+    if (srsBadge) {
+      const due = Math.max(0, this.vaultStatus.srsDueCount);
+      const total = Math.max(0, this.vaultStatus.srsTotalCount);
+      srsBadge.textContent = due > 0 ? `${due} Due` : `${total} Cards`;
+      srsBadge.classList.toggle('is-due', due > 0);
+    }
+
+    const offBadge = this.root.querySelector<HTMLElement>('#ws-vault-offline-badge');
+    const offSub = this.root.querySelector<HTMLElement>('#ws-vault-offline-sub');
+    const packReady =
+      this.vaultStatus.offlinePacksReady.includes('BASEBALL_PRO') ||
+      this.vaultStatus.offlinePacksReady.includes('FULL_WORLD_CIRCUIT');
+    const downloading = this.vaultStatus.offlineDownloadingLabel;
+    if (offBadge) {
+      offBadge.textContent = downloading
+        ? downloading
+        : packReady
+          ? 'Ready Offline'
+          : 'Download';
+      offBadge.classList.toggle('is-offline-ready', packReady && !downloading);
+    }
+    if (offSub) {
+      const netTag = this.vaultStatus.isOnline ? 'Online' : 'Airplane Mode';
+      offSub.textContent = downloading
+        ? `Caching offline pack (${downloading})...`
+        : packReady
+          ? `${netTag} · Baseball & World Pack Cached`
+          : `${netTag} · Download Baseball & World Pack`;
+    }
+
+    const honoursTitle = this.root.querySelector<HTMLElement>('#ws-vault-trophies-title');
+    if (honoursTitle) {
+      const total = Math.max(1, this.vaultStatus.honoursTotal ?? 84);
+      const unlocked = Math.max(0, this.vaultStatus.honoursUnlocked ?? 0);
+      honoursTitle.textContent =
+        unlocked > 0
+          ? `${total} Medals & Trophies (${unlocked}/${total})`
+          : `${total} Medals & Trophies`;
+    }
+
+    const atelierSub = this.root.querySelector<HTMLElement>('#ws-vault-atelier-sub');
+    if (atelierSub) {
+      const finishes = Math.max(1, this.vaultStatus.atelierFinishesTotal ?? 16);
+      atelierSub.textContent = `${finishes} Finishes · 24K prism & HUD themes`;
+    }
+  }
+
   public openVaultDrawer(): void {
     if (this.vaultOpen) return;
     this.vaultOpen = true;
     this.syncVaultDrawerDomState();
+    this.syncVaultLiveStatusDom();
     this.actions.onVaultDrawerToggle?.(true);
   }
 
@@ -590,6 +850,23 @@ export class SovereignHUD {
     const musicAvail = this.audio.isMusicAvailable();
     const sfxOn = this.audio.isSfxEnabled();
     const openClass = this.vaultOpen ? 'is-open' : '';
+    const srsDue = Math.max(0, this.vaultStatus.srsDueCount);
+    const srsTotal = Math.max(0, this.vaultStatus.srsTotalCount);
+    const packReady =
+      this.vaultStatus.offlinePacksReady.includes('BASEBALL_PRO') ||
+      this.vaultStatus.offlinePacksReady.includes('FULL_WORLD_CIRCUIT');
+    const downloading = this.vaultStatus.offlineDownloadingLabel;
+    const netTag = this.vaultStatus.isOnline ? 'Online' : 'Airplane Mode';
+    const offlineSub = downloading
+      ? `Caching offline pack (${downloading})...`
+      : packReady
+        ? `${netTag} · Baseball & World Pack Cached`
+        : `${netTag} · Download Baseball & World Pack`;
+    const offlineBadge = downloading
+      ? downloading
+      : packReady
+        ? 'Ready Offline'
+        : 'Download';
 
     return `
       <div
@@ -612,6 +889,14 @@ export class SovereignHUD {
 
           <div class="ws-vault-list">
             <div class="ws-vault-section-label">CAREER &amp; SHOWCASE</div>
+            <button type="button" class="ws-vault-item" id="ws-vault-srs">
+              <span class="ws-vault-item-icon" aria-hidden="true">${hudIcon('layers', 16)}</span>
+              <span class="ws-vault-item-body">
+                <span class="ws-vault-item-title">Spaced-Repetition Deck</span>
+                <span class="ws-vault-item-sub">5-Box Leitner mastery &amp; missed-question queue</span>
+              </span>
+              <span class="ws-vault-badge ${srsDue > 0 ? 'is-due' : ''}" id="ws-vault-srs-badge">${srsDue > 0 ? `${srsDue} Due` : `${srsTotal} Cards`}</span>
+            </button>
             <button type="button" class="ws-vault-item" id="ws-util-passport">
               <span class="ws-vault-item-icon" aria-hidden="true">${hudIcon('passport', 16)}</span>
               <span class="ws-vault-item-body">
@@ -631,7 +916,11 @@ export class SovereignHUD {
             <button type="button" class="ws-vault-item" id="ws-util-trophies">
               <span class="ws-vault-item-icon" aria-hidden="true">${hudIcon('trophy', 16)}</span>
               <span class="ws-vault-item-body">
-                <span class="ws-vault-item-title">64 Trophies &amp; Unlockables</span>
+                <span class="ws-vault-item-title" id="ws-vault-trophies-title">${
+                  (this.vaultStatus.honoursUnlocked ?? 0) > 0
+                    ? `${this.vaultStatus.honoursTotal ?? 84} Medals &amp; Trophies (${this.vaultStatus.honoursUnlocked}/${this.vaultStatus.honoursTotal ?? 84})`
+                    : `${this.vaultStatus.honoursTotal ?? 84} Medals &amp; Trophies`
+                }</span>
                 <span class="ws-vault-item-sub">Sculpted medals &amp; zero-P2W rewards</span>
               </span>
               <span class="ws-vault-item-chev" aria-hidden="true">›</span>
@@ -648,7 +937,7 @@ export class SovereignHUD {
               <span class="ws-vault-item-icon" aria-hidden="true">${hudIcon('prism', 16)}</span>
               <span class="ws-vault-item-body">
                 <span class="ws-vault-item-title">Prism Atelier</span>
-                <span class="ws-vault-item-sub">24K prism finishes &amp; HUD accent themes</span>
+                <span class="ws-vault-item-sub" id="ws-vault-atelier-sub">${this.vaultStatus.atelierFinishesTotal ?? 16} Finishes · 24K prism &amp; HUD themes</span>
               </span>
               <span class="ws-vault-item-chev" aria-hidden="true">›</span>
             </button>
@@ -661,7 +950,7 @@ export class SovereignHUD {
               <span class="ws-vault-item-chev" aria-hidden="true">›</span>
             </button>
 
-            <div class="ws-vault-section-label">CAMPAIGN &amp; INTEL</div>
+            <div class="ws-vault-section-label">CAMPAIGN &amp; OFFLINE</div>
             <button type="button" class="ws-vault-item" id="ws-util-saves">
               <span class="ws-vault-item-icon" aria-hidden="true">${hudIcon('save', 16)}</span>
               <span class="ws-vault-item-body">
@@ -677,6 +966,14 @@ export class SovereignHUD {
                 <span class="ws-vault-item-sub">Conspiracy board &amp; suspect red-threads</span>
               </span>
               <span class="ws-vault-item-chev" aria-hidden="true">›</span>
+            </button>
+            <button type="button" class="ws-vault-item" id="ws-vault-offline-pack">
+              <span class="ws-vault-item-icon" aria-hidden="true">${hudIcon('wifi', 16)}</span>
+              <span class="ws-vault-item-body">
+                <span class="ws-vault-item-title">Offline Airplane Pack</span>
+                <span class="ws-vault-item-sub" id="ws-vault-offline-sub">${escapeHtml(offlineSub)}</span>
+              </span>
+              <span class="ws-vault-badge ${packReady && !downloading ? 'is-offline-ready' : ''}" id="ws-vault-offline-badge">${escapeHtml(offlineBadge)}</span>
             </button>
 
             <div class="ws-vault-section-label">STUDIO AUDIO</div>
@@ -704,7 +1001,7 @@ export class SovereignHUD {
               <button type="button" class="ws-vault-item" id="ws-util-menu">
                 <span class="ws-vault-item-icon" aria-hidden="true">${hudIcon('globe', 16)}</span>
                 <span class="ws-vault-item-body">
-                  <span class="ws-vault-item-title">${compactGameplay ? 'Leave Match to Hub' : 'Meridian Hub'}</span>
+                  <span class="ws-vault-item-title">${compactGameplay ? 'Leave Match to Hub' : 'Campaign Map & Modes'}</span>
                   <span class="ws-vault-item-sub">8-city globe &amp; all 5 game modes</span>
                 </span>
                 <span class="ws-vault-item-chev" aria-hidden="true">›</span>
@@ -712,7 +1009,7 @@ export class SovereignHUD {
               <button type="button" class="ws-vault-item" id="ws-util-title">
                 <span class="ws-vault-item-icon" aria-hidden="true">${hudIcon('star', 16)}</span>
                 <span class="ws-vault-item-body">
-                  <span class="ws-vault-item-title">Title Showcase</span>
+                  <span class="ws-vault-item-title">Start Screen</span>
                   <span class="ws-vault-item-sub">Return to 3D Veritas Prism front stage</span>
                 </span>
                 <span class="ws-vault-item-chev" aria-hidden="true">›</span>
@@ -784,6 +1081,13 @@ export class SovereignHUD {
       });
     };
 
+    bindVaultNav('#ws-vault-srs', () => {
+      if (this.actions.onOpenMasteryReviewDeck) {
+        this.actions.onOpenMasteryReviewDeck();
+      } else {
+        this.actions.onOpenObservatory();
+      }
+    });
     bindVaultNav('#ws-util-passport', () => this.actions.onOpenPassport());
     bindVaultNav('#ws-util-saves', () => this.actions.onOpenSaveSlots());
     bindVaultNav('#ws-util-stats', () => this.actions.onOpenAnalytics());
@@ -794,6 +1098,12 @@ export class SovereignHUD {
     bindVaultNav('#ws-util-dossier', () => this.actions.onOpenDossier());
     bindVaultNav('#ws-util-title', () => this.actions.onReturnToTitle());
     bindVaultNav('#ws-util-menu', () => this.actions.onReturnToHub());
+
+    this.root.querySelector('#ws-vault-offline-pack')?.addEventListener('click', () => {
+      this.haptics.uiTap();
+      this.audio.playSfx('ui_tap');
+      this.actions.onDownloadOfflinePack?.();
+    });
 
     this.root.querySelector('#ws-util-music')?.addEventListener('click', () => {
       this.haptics.uiTap();
@@ -810,15 +1120,47 @@ export class SovereignHUD {
   }
 
   // ==========================================================================
-  // 0. 2026 MOBILE-FIRST SLEEK 3D TITLE SHOWCASE (OPEN MIDDLE 14..58dvh!)
+  // 0. 2026 MOBILE-FIRST SLEEK 3D TITLE SHOWCASE (1-CLICK CONTINUE & ZERO JARGON)
   // ==========================================================================
 
   public renderTitleShowcase(vm: TitleShowcaseViewState): void {
     this.cancelOverclockHold(true);
+    this.closeVisualLightbox();
 
-    const ctaLabel = vm.prologueCompleted
-      ? `CONTINUE AS ${vm.challengerName.toUpperCase()} ▶`
-      : 'ENTER THE MERIDIAN ▶';
+    const ctaMain =
+      vm.resumeState?.primaryCtaLabel ??
+      (vm.prologueCompleted
+        ? `▶ CONTINUE AS ${vm.challengerName.toUpperCase()}`
+        : '▶ START STORY CAMPAIGN');
+    const ctaSub =
+      vm.resumeState?.subLabel ??
+      (vm.prologueCompleted ? 'Resume Where You Left Off' : 'Act 0 · Geneva Sanctuary');
+
+    const duel = vm.incomingDuel;
+    const duelBannerHtml = duel
+      ? `
+        <section class="ws-duel-banner" id="ws-incoming-duel-banner" role="region" aria-label="Incoming Challenger Duel">
+          <div class="ws-duel-banner-head">
+            <span class="ws-duel-banner-eyebrow" style="display:inline-flex;align-items:center;gap:6px;">
+              ${hudIcon('swords', 13)}<span>CHALLENGER DUEL · ${escapeHtml(duel.mode)}</span>
+            </span>
+            <span class="ws-duel-banner-meta">${escapeHtml(duel.faction)} · ELO ${duel.elo}</span>
+          </div>
+          <h2 class="ws-duel-banner-title">
+            ${escapeHtml(duel.challengerName)} · ${duel.totalScore.toLocaleString('en-US')} PTS
+          </h2>
+          <div class="ws-duel-banner-meta">
+            ${escapeHtml(duel.topicLabel || (duel.mode === 'DAILY' ? 'Daily Global Feed' : 'Meridian Challenge'))} · ${duel.qids.length} Exact Prisms
+          </div>
+          <div class="ws-duel-banner-actions">
+            <button type="button" class="ws-btn-gold" id="ws-btn-accept-duel">ACCEPT DUEL ▶</button>
+            <button type="button" class="ws-btn-obsidian" id="ws-btn-dismiss-duel">Dismiss</button>
+          </div>
+        </section>
+      `
+      : '';
+
+    const dueSrs = Math.max(0, vm.srsDueCount ?? this.vaultStatus.srsDueCount);
 
     this.root.innerHTML = `
       ${this.renderTopBarHtml('THE MERIDIAN', 'GENEVA', false, false, true)}
@@ -830,25 +1172,37 @@ export class SovereignHUD {
         </header>
 
         <section class="ws-title-dock" aria-label="Meridian Launch Controls">
+          ${duelBannerHtml}
+
           <button type="button" class="ws-btn-gold ws-title-primary-cta" id="ws-title-enter-cta">
-            ${escapeHtml(ctaLabel)}
+            <span class="ws-title-primary-label">${escapeHtml(ctaMain)}</span>
+            <span class="ws-title-primary-sub">${escapeHtml(ctaSub)}</span>
           </button>
 
           <nav class="ws-title-mode-strip" aria-label="Direct Mode Select">
-            <button type="button" class="ws-title-mode-btn" data-title-mode="CAMPAIGN">Circuit</button>
-            <button type="button" class="ws-title-mode-btn" data-title-mode="DAILY">Daily</button>
-            <button type="button" class="ws-title-mode-btn" data-title-mode="BRIEFING">Briefing</button>
+            <button type="button" class="ws-title-mode-btn" data-title-mode="CAMPAIGN">Campaign Map</button>
+            <button type="button" class="ws-title-mode-btn" data-title-mode="BRIEFING">Pick a Topic</button>
+            <button type="button" class="ws-title-mode-btn" data-title-mode="DAILY">Daily 10</button>
             <button type="button" class="ws-title-mode-btn" data-title-mode="ENDLESS">Endless</button>
-            <button type="button" class="ws-title-mode-btn" data-title-mode="TRIALS">Trials</button>
+            <button type="button" class="ws-title-mode-btn" data-title-mode="TRIALS">1v1 Duels</button>
           </nav>
 
           <div class="ws-title-meta-row">
-            <button type="button" class="ws-title-saves-link" id="ws-title-saves-cta" style="white-space:nowrap;display:inline-flex;align-items:center;gap:6px;">
-              ${hudIcon('save', 14)}<span>Saves (5 Slots)</span>
+            <button type="button" class="ws-instant-prism-pill" id="ws-btn-instant-prism" title="Jump into 1 live 3D Prism right now">
+              ${hudIcon('bolt', 13)}<span>Quick 1-Q</span>
             </button>
-            <span class="ws-title-verified-count" style="white-space:nowrap;">
-              ${vm.verifiedQuestionTotal.toLocaleString('en-US')} Verified Qs
-            </span>
+            <button type="button" class="ws-title-saves-link" id="ws-title-saves-cta" style="white-space:nowrap;display:inline-flex;align-items:center;gap:5px;">
+              ${hudIcon('save', 13)}<span>Saves (5)</span>
+            </button>
+            ${
+              dueSrs > 0
+                ? `<button type="button" class="ws-title-saves-link" id="ws-title-srs-cta" style="color:var(--gold-bright);white-space:nowrap;display:inline-flex;align-items:center;gap:5px;">
+                    ${hudIcon('layers', 13)}<span>Review (${dueSrs})</span>
+                  </button>`
+                : `<span class="ws-title-verified-count" style="white-space:nowrap;">
+                    ${vm.verifiedQuestionTotal.toLocaleString('en-US')} Qs
+                  </span>`
+            }
           </div>
         </section>
       </div>
@@ -862,11 +1216,44 @@ export class SovereignHUD {
       this.closeVaultDrawer();
       this.actions.onTitleEnterMeridian();
     });
+
+    this.root.querySelector('#ws-btn-instant-prism')?.addEventListener('click', () => {
+      this.haptics.sightlineSnap();
+      this.audio.playSfx('sightline_snap');
+      this.closeVaultDrawer();
+      this.actions.onLaunchInstantPrism?.();
+    });
+
     this.root.querySelector('#ws-title-saves-cta')?.addEventListener('click', () => {
       this.haptics.uiTap();
       this.audio.playSfx('ui_tap');
       this.closeVaultDrawer();
       this.actions.onOpenSaveSlots();
+    });
+
+    this.root.querySelector('#ws-title-srs-cta')?.addEventListener('click', () => {
+      this.haptics.uiTap();
+      this.audio.playSfx('ui_tap');
+      this.closeVaultDrawer();
+      if (this.actions.onOpenMasteryReviewDeck) {
+        this.actions.onOpenMasteryReviewDeck();
+      } else {
+        this.actions.onOpenObservatory();
+      }
+    });
+
+    this.root.querySelector('#ws-btn-accept-duel')?.addEventListener('click', () => {
+      if (!duel) return;
+      this.haptics.sightlineSnap();
+      this.audio.playSfx('sightline_snap');
+      this.closeVaultDrawer();
+      this.actions.onAcceptIncomingDuel?.(duel);
+    });
+
+    this.root.querySelector('#ws-btn-dismiss-duel')?.addEventListener('click', () => {
+      this.haptics.uiTap();
+      this.audio.playSfx('ui_tap');
+      this.actions.onDismissIncomingDuel?.();
     });
 
     this.root.querySelectorAll<HTMLButtonElement>('[data-title-mode]').forEach((btn) => {
@@ -1057,27 +1444,22 @@ export class SovereignHUD {
       )}
 
       <div class="ws-hub-scroll">
-        <!-- 5 Game Mode Suite Tabs (PITCH_BIBLE.md §4) -->
-        <nav class="ws-mode-tabs" aria-label="Game Modes">
-          <button type="button" class="ws-mode-tab ${vm.activeTab === 'CAMPAIGN' ? 'is-selected' : ''}" data-hub-tab="CAMPAIGN">
-            <div class="ws-mode-tab-title">1 · THE MERIDIAN CIRCUIT</div>
-            <div class="ws-mode-tab-sub">8 Global Venues · ${vm.campaignTotalMissions ?? 96} Missions · 4 Endings</div>
+        <!-- Compact Single-Row Plain-English Mode Tabs (0px Clipping at 360px..1280px) -->
+        <nav class="ws-mode-tabs" aria-label="Game Modes" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;overflow:visible;">
+          <button type="button" class="ws-mode-tab ${vm.activeTab === 'CAMPAIGN' ? 'is-selected' : ''}" data-hub-tab="CAMPAIGN" style="min-width:0;padding:5px 3px;min-height:38px;align-items:center;justify-content:center;text-align:center;">
+            <div class="ws-mode-tab-title" style="font-size:clamp(10px,2.5vw,12px);white-space:normal;line-height:1.12;text-align:center;">Campaign Map</div>
           </button>
-          <button type="button" class="ws-mode-tab ${vm.activeTab === 'DAILY' ? 'is-selected' : ''}" data-hub-tab="DAILY">
-            <div class="ws-mode-tab-title">2 · THE GLOBAL FEED</div>
-            <div class="ws-mode-tab-sub">Daily 10-Prism UTC World Broadcast</div>
+          <button type="button" class="ws-mode-tab ${vm.activeTab === 'DAILY' ? 'is-selected' : ''}" data-hub-tab="DAILY" style="min-width:0;padding:5px 3px;min-height:38px;align-items:center;justify-content:center;text-align:center;">
+            <div class="ws-mode-tab-title" style="font-size:clamp(10px,2.5vw,12px);white-space:normal;line-height:1.12;text-align:center;">Daily 10</div>
           </button>
-          <button type="button" class="ws-mode-tab ${vm.activeTab === 'BRIEFING' ? 'is-selected' : ''}" data-hub-tab="BRIEFING">
-            <div class="ws-mode-tab-title">3 · BRIEFING ROOM</div>
-            <div class="ws-mode-tab-sub">12 Domains · ${vm.verifiedQuestionTotal.toLocaleString()} Verified Qs</div>
+          <button type="button" class="ws-mode-tab ${vm.activeTab === 'BRIEFING' ? 'is-selected' : ''}" data-hub-tab="BRIEFING" style="min-width:0;padding:5px 3px;min-height:38px;align-items:center;justify-content:center;text-align:center;">
+            <div class="ws-mode-tab-title" style="font-size:clamp(10px,2.5vw,12px);white-space:normal;line-height:1.12;text-align:center;">Pick Topic</div>
           </button>
-          <button type="button" class="ws-mode-tab ${vm.activeTab === 'ENDLESS' ? 'is-selected' : ''}" data-hub-tab="ENDLESS">
-            <div class="ws-mode-tab-title">4 · ARCHIVE DESCENT</div>
-            <div class="ws-mode-tab-sub">Endless 3-Shield Push-Your-Luck</div>
+          <button type="button" class="ws-mode-tab ${vm.activeTab === 'ENDLESS' ? 'is-selected' : ''}" data-hub-tab="ENDLESS" style="min-width:0;padding:5px 3px;min-height:38px;align-items:center;justify-content:center;text-align:center;">
+            <div class="ws-mode-tab-title" style="font-size:clamp(10px,2.5vw,12px);white-space:normal;line-height:1.12;text-align:center;">Endless</div>
           </button>
-          <button type="button" class="ws-mode-tab ${vm.activeTab === 'TRIALS' ? 'is-selected' : ''}" data-hub-tab="TRIALS">
-            <div class="ws-mode-tab-title">5 · COUNCIL TRIALS</div>
-            <div class="ws-mode-tab-sub">3D Kinetic Ghost Duels & Black Salon</div>
+          <button type="button" class="ws-mode-tab ${vm.activeTab === 'TRIALS' ? 'is-selected' : ''}" data-hub-tab="TRIALS" style="min-width:0;padding:5px 3px;min-height:38px;align-items:center;justify-content:center;text-align:center;">
+            <div class="ws-mode-tab-title" style="font-size:clamp(10px,2.5vw,12px);white-space:normal;line-height:1.12;text-align:center;">1v1 Duels</div>
           </button>
         </nav>
 
@@ -1094,6 +1476,50 @@ export class SovereignHUD {
         this.audio.playSfx('ui_tap');
         this.actions.onSelectHubTab(tab);
       });
+    });
+
+    this.root.querySelector('#ws-hub-continue-now')?.addEventListener('click', () => {
+      this.haptics.sightlineSnap();
+      this.audio.playSfx('sightline_snap');
+      if (this.actions.onHubContinueNow) {
+        this.actions.onHubContinueNow();
+      } else {
+        this.actions.onTitleEnterMeridian();
+      }
+    });
+
+    this.root.querySelector('#ws-hub-lock-play-current')?.addEventListener('click', () => {
+      this.haptics.sightlineSnap();
+      this.audio.playSfx('sightline_snap');
+      if (this.actions.onHubContinueNow) {
+        this.actions.onHubContinueNow();
+      } else {
+        this.actions.onTitleEnterMeridian();
+      }
+    });
+
+    this.root.querySelector('#ws-hub-lock-dismiss')?.addEventListener('click', () => {
+      this.haptics.uiTap();
+      this.audio.playSfx('ui_tap');
+      this.actions.onDismissLockedCityNotice?.();
+    });
+
+    this.root.querySelector('#ws-hub-play-next-in-city')?.addEventListener('click', (ev) => {
+      const btn = ev.currentTarget as HTMLButtonElement;
+      const mid = btn.dataset.nextMissionId;
+      const fork = btn.dataset.nextFlightFork as 'gb' | 'jp' | undefined;
+      const resumePrologue = btn.dataset.nextPrologue === '1';
+      this.haptics.sightlineSnap();
+      this.audio.playSfx('sightline_snap');
+      if (resumePrologue) {
+        this.actions.onStartPrologue();
+      } else if (fork === 'gb' || fork === 'jp') {
+        this.actions.onChooseFlightFork(fork);
+      } else if (mid) {
+        this.actions.onLaunchMission(mid);
+      } else if (this.actions.onHubContinueNow) {
+        this.actions.onHubContinueNow();
+      }
     });
 
     this.root.querySelectorAll<HTMLButtonElement>('[data-city-hub]').forEach((btn) => {
@@ -1192,6 +1618,16 @@ export class SovereignHUD {
       });
     });
 
+    this.root.querySelectorAll<HTMLButtonElement>('[data-showcase-kind]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const kind = btn.dataset.showcaseKind as 'GLOBE_PIN_DROP' | 'VISUAL_BLUEPRINT';
+        if (!kind) return;
+        this.haptics.sightlineSnap();
+        this.audio.playSfx('sightline_snap');
+        this.actions.onLaunchVisualOrGlobeShowcase?.(kind);
+      });
+    });
+
     this.root.querySelectorAll<HTMLButtonElement>('[data-quick-topic]').forEach((btn) => {
       btn.addEventListener('click', () => {
         const dom = Number(btn.dataset.quickDom || '5');
@@ -1266,25 +1702,48 @@ export class SovereignHUD {
 
   private renderActiveHubBodyHtml(vm: HubViewState, selectedCity: CityCardState): string {
     if (vm.activeTab === 'CAMPAIGN') {
+      const resume = vm.resumeState;
+      const resumeEyebrow = resume?.hasProgress
+        ? 'CONTINUE WHERE YOU LEFT OFF'
+        : 'NEW STORY CAMPAIGN · ACT 0';
+      const resumeTitle = resume
+        ? resume.bannerTitle
+        : vm.prologueCompleted
+          ? 'Geneva Sanctuary · Round 1'
+          : 'Geneva Vetting Interview';
+      const resumeSub = resume
+        ? resume.bannerSub
+        : 'Answer 4 screening questions to claim your Meridian passport and unlock the World Circuit.';
+      const resumeBtnText = resume?.hasProgress ? '▶ CONTINUE NOW' : '▶ START STORY CAMPAIGN';
+      const activeResumeHub = vm.activeResumeHub ?? resume?.activeHub ?? 'ch';
+
       return `
+        <!-- Pinned Continue-Where-You-Left-Off Hero Banner (Always Visible at Top of Campaign Map!) -->
+        <section class="ws-hub-continue-hero" id="ws-hub-continue-banner" aria-label="Continue Campaign">
+          <div class="ws-hub-continue-copy">
+            <div class="ws-hub-continue-eyebrow">${escapeHtml(resumeEyebrow)}</div>
+            <div class="ws-hub-continue-title" style="white-space:normal;overflow:visible;text-overflow:clip;">${escapeHtml(cleanNarrativeCopy(resumeTitle))}</div>
+            <div class="ws-hub-continue-sub" style="white-space:normal;overflow:visible;text-overflow:clip;">${escapeHtml(cleanNarrativeCopy(resumeSub))}</div>
+          </div>
+          <button type="button" class="ws-btn-gold ws-hub-continue-cta" id="ws-hub-continue-now">
+            ${escapeHtml(resumeBtnText)}
+          </button>
+        </section>
+
         ${
-          !vm.prologueCompleted
+          vm.lockedCityNotice
             ? `
-          <div class="ws-frame-tableau" style="padding:14px 18px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;">
-            <div style="flex:1 1 380px;min-width:0;">
-              <div style="font-family:var(--font-mono);font-size:10.5px;color:var(--cyan-clue);letter-spacing:0.06em;">
-                ENCRYPTED BLACK-GLASS DIPLOMATIC SUMMONS · GENEVA
-              </div>
-              <div style="font-family:var(--font-display);font-size:clamp(15px,1.7vw,20px);font-weight:800;color:var(--gold-bright);margin-top:2px;">
-                “YOU SOLVED WHAT 400,000 COULDN'T. TAKE A SEAT.”
-              </div>
-              <div style="font-size:12.5px;color:var(--ivory-muted);margin-top:3px;">
-                Enter Julian Vance's 4-Question Vetting Screening to register your Challenger Name, stamp your Meridian Passport Persona, and unlock the Act I Global Flight Fork.
-              </div>
+          <div class="ws-hub-lock-notice" id="ws-hub-lock-notice" role="status" aria-live="polite">
+            <div class="ws-hub-lock-copy" style="display:flex;align-items:center;gap:8px;">
+              <span aria-hidden="true" style="color:var(--gold-bright);flex:0 0 auto;">${hudIcon('lock', 15)}</span>
+              <span><strong>${escapeHtml(vm.lockedCityNotice.city)} Locked:</strong> ${escapeHtml(vm.lockedCityNotice.requirementText)}</span>
             </div>
-            <button type="button" class="ws-btn-gold" data-start-prologue="1">
-              ENTER GENEVA VETTING INTERVIEW ▶
-            </button>
+            <div style="display:flex;align-items:center;gap:8px;flex:0 0 auto;">
+              <button type="button" class="ws-btn-gold ws-hub-lock-notice-cta" id="ws-hub-lock-play-current">
+                ▶ PLAY CURRENT STAGE
+              </button>
+              <button type="button" class="ws-hub-lock-dismiss" id="ws-hub-lock-dismiss" aria-label="Dismiss notice">✕</button>
+            </div>
           </div>
         `
             : ''
@@ -1293,16 +1752,16 @@ export class SovereignHUD {
         ${
           vm.flightForkPending
             ? `
-          <div class="ws-frame-tableau" style="padding:14px 18px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;">
+          <div class="ws-frame-tableau" style="padding:12px 16px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;">
             <div>
-              <div style="font-family:var(--font-mono);font-size:10.5px;color:var(--gold-bright);">ACT I GLOBAL FLIGHT FORK UNLOCKED</div>
-              <div style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--ivory-primary);">
-                Choose Your Opening World Circuit Track on the 3D Meridian Globe
+              <div style="font-family:var(--font-mono);font-size:10.5px;color:var(--gold-bright);">ACT I WORLD CIRCUIT FORK UNLOCKED</div>
+              <div style="font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--ivory-primary);">
+                Choose Your Opening World Circuit City: London or Tokyo
               </div>
             </div>
             <div style="display:flex;flex-wrap:wrap;gap:8px;">
-              <button type="button" class="ws-btn-gold" data-flight-fork="gb">${hudIcon('flight', 14)} LONDON FIRST (SOVEREIGN)</button>
-              <button type="button" class="ws-btn-gold" data-flight-fork="jp">${hudIcon('flight', 14)} TOKYO FIRST (HORIZON)</button>
+              <button type="button" class="ws-btn-gold" data-flight-fork="gb">${hudIcon('flight', 14)} LONDON FIRST</button>
+              <button type="button" class="ws-btn-gold" data-flight-fork="jp">${hudIcon('flight', 14)} TOKYO FIRST</button>
             </div>
           </div>
         `
@@ -1310,7 +1769,7 @@ export class SovereignHUD {
         }
 
         <!-- 96-Mission Campaign Progress & Remaining Playtime Telemetry (#175) -->
-        <div class="ws-frame-tableau" style="padding:10px 16px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;">
+        <div class="ws-frame-tableau" style="padding:9px 14px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;">
           <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11.5px;">
             <span style="color:var(--gold-bright);font-weight:800;">
               ◆ ${escapeHtml(vm.campaignCompletionLabel ?? `${vm.campaignCompletedMissions ?? 0} / ${vm.campaignTotalMissions ?? 96} Missions (${vm.campaignCompletionPct ?? 0}%)`)}
@@ -1319,7 +1778,7 @@ export class SovereignHUD {
               ${escapeHtml(vm.campaignRemainingHoursLabel ?? '~20.8 hrs remaining')}
             </span>
           </div>
-          <div style="flex:1 1 180px;max-width:340px;height:7px;border-radius:999px;background:rgba(255,255,255,0.1);overflow:hidden;">
+          <div style="flex:1 1 160px;max-width:300px;height:6px;border-radius:999px;background:rgba(255,255,255,0.1);overflow:hidden;">
             <div style="height:100%;width:${Math.max(2, Math.min(100, vm.campaignCompletionPct ?? 0))}%;background:linear-gradient(90deg,var(--gold-24k) 0%,var(--gold-bright) 100%);"></div>
           </div>
         </div>
@@ -1330,6 +1789,7 @@ export class SovereignHUD {
             ${vm.cities
               .map((c) => {
                 const isSel = c.hub === selectedCity?.hub;
+                const isActiveResume = Boolean(c.isActiveResumeHub || c.hub === activeResumeHub);
                 const coreStarsDone = c.coreClearedMissions ?? Math.min(5, c.clearedMissions);
                 const starsHtml = [0, 1, 2, 3, 4]
                   .map(
@@ -1340,8 +1800,9 @@ export class SovereignHUD {
                 return `
                   <button
                     type="button"
-                    class="ws-city-card ${isSel ? 'is-selected' : ''} ${c.unlocked ? '' : 'is-locked'}"
+                    class="ws-city-card ${isSel ? 'is-selected' : ''} ${isActiveResume ? 'is-active-resume' : ''} ${c.unlocked ? '' : 'is-locked'}"
                     data-city-hub="${c.hub}"
+                    aria-pressed="${isSel ? 'true' : 'false'}"
                   >
                     <div class="ws-city-thumb" style="background-image:url('./assets/venues/${c.hub}.jpg');">
                       <span class="ws-city-diff-tag">${escapeHtml(c.difficultyLabel)} · ${c.timerSec}s</span>
@@ -1352,6 +1813,11 @@ export class SovereignHUD {
                         ${escapeHtml(c.venueName)}
                         ${c.diplomaticCrossClearance ? ' <span style="color:var(--cyan-clue);font-size:10px;">· CROSS-CLEARED</span>' : ''}
                       </div>
+                      ${
+                        isActiveResume
+                          ? `<div class="ws-city-active-pill">● RESUME HERE ▶</div>`
+                          : ''
+                      }
                       <div class="ws-city-stars">
                         ${starsHtml}
                         <span style="margin-left:auto;font-family:var(--font-mono);font-size:10px;color:${c.unlocked ? 'var(--gold-bright)' : '#b4bdd0'};">
@@ -1372,6 +1838,19 @@ export class SovereignHUD {
             ? (() => {
                 const coreMissions = selectedCity.missions.filter((m) => !m.isSideInvestigation);
                 const sideMissions = selectedCity.missions.filter((m) => m.isSideInvestigation);
+                const nextInCityMid =
+                  selectedCity.nextPlayableMissionId ??
+                  selectedCity.missions.find((m) => m.unlocked && !m.completed)?.id ??
+                  selectedCity.missions.find((m) => m.unlocked)?.id ??
+                  null;
+                const cityIsMidPrologue = selectedCity.hub === 'ch' && !vm.prologueCompleted;
+                const cityIsFlightFork =
+                  vm.flightForkPending &&
+                  (selectedCity.hub === 'gb' || selectedCity.hub === 'jp');
+                const canQuickPlayCity =
+                  selectedCity.unlocked &&
+                  (cityIsMidPrologue || cityIsFlightFork || Boolean(nextInCityMid));
+
                 const renderMissionCard = (
                   m: CityCardState['missions'][number],
                   prefixLabel: string,
@@ -1423,8 +1902,8 @@ export class SovereignHUD {
                 };
 
                 return `
-                  <div class="ws-frame-tableau" style="padding:12px 16px;display:flex;flex-direction:column;gap:10px;">
-                    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;">
+                  <div class="ws-frame-tableau" id="ws-hub-missions-panel" style="padding:12px 16px;display:flex;flex-direction:column;gap:10px;">
+                    <div class="ws-missions-panel-head">
                       <div>
                         <span style="font-family:var(--font-display);font-size:15px;font-weight:800;color:var(--gold-bright);">
                           STAGE ${selectedCity.order}: ${escapeHtml(selectedCity.city.toUpperCase())} — ${escapeHtml(selectedCity.venueName.toUpperCase())}
@@ -1438,16 +1917,28 @@ export class SovereignHUD {
                             : ''
                         }
                       </div>
-                      <div style="display:flex;flex-wrap:wrap;gap:8px;">
-                        <button type="button" class="ws-btn-obsidian" data-open-saves="1">${hudIcon('save', 14)} CAMPAIGN SAVES</button>
+                      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+                        ${
+                          canQuickPlayCity
+                            ? `<button
+                                type="button"
+                                class="ws-btn-gold ws-missions-play-next-btn"
+                                id="ws-hub-play-next-in-city"
+                                ${cityIsMidPrologue ? 'data-next-prologue="1"' : ''}
+                                ${cityIsFlightFork ? `data-next-flight-fork="${selectedCity.hub}"` : ''}
+                                ${nextInCityMid ? `data-next-mission-id="${escapeHtml(nextInCityMid)}"` : ''}
+                              >▶ PLAY NEXT IN ${escapeHtml(selectedCity.city.toUpperCase())}</button>`
+                            : ''
+                        }
+                        <button type="button" class="ws-btn-obsidian" data-open-saves="1">${hudIcon('save', 14)} SAVES</button>
                         ${
                           selectedCity.unlocked
-                            ? `<button type="button" class="ws-btn-obsidian" data-backstage-hub="${selectedCity.hub}">${hudIcon('mic', 14)} BACKSTAGE INTERROGATION</button>`
+                            ? `<button type="button" class="ws-btn-obsidian" data-backstage-hub="${selectedCity.hub}">${hudIcon('mic', 14)} BACKSTAGE</button>`
                             : ''
                         }
                         ${
-                          selectedCity.hub === 'ch'
-                            ? `<button type="button" class="ws-btn-obsidian" data-start-prologue="1">REPLAY 4-Q VETTING INTERVIEW</button>`
+                          selectedCity.hub === 'ch' && vm.prologueCompleted
+                            ? `<button type="button" class="ws-btn-obsidian" data-start-prologue="1">REPLAY VETTING</button>`
                             : ''
                         }
                       </div>
@@ -1464,7 +1955,7 @@ export class SovereignHUD {
                       sideMissions.length > 0
                         ? `
                       <div style="font-family:var(--font-mono);font-size:10.5px;font-weight:700;color:var(--cyan-clue);letter-spacing:0.06em;margin-top:4px;display:inline-flex;align-items:center;gap:6px;">
-                        ${hudIcon('dossier', 13)} CITY DOSSIER INVESTIGATIONS (${sideMissions.filter((m) => m.completed).length}/${sideMissions.length} OPTIONAL ESPIONAGE SIDE-OPS)
+                        ${hudIcon('dossier', 13)} CITY DOSSIER INVESTIGATIONS (${sideMissions.filter((m) => m.completed).length}/${sideMissions.length} OPTIONAL SIDE-OPS)
                       </div>
                       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(174px,1fr));gap:8px;">
                         ${sideMissions.map((m, idx) => renderMissionCard(m, `DOSSIER #${idx + 1}`)).join('')}
@@ -1486,7 +1977,7 @@ export class SovereignHUD {
           <div style="flex:1 1 420px;">
             <div style="font-family:var(--font-mono);font-size:11px;color:var(--cyan-clue);">00:00 UTC SYNCHRONIZED WORLD BROADCAST</div>
             <div style="font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--gold-bright);margin-top:4px;">
-              THE GLOBAL FEED · DAILY UTC-LOCKED WORLD BROADCAST
+              DAILY 10 · GLOBAL UTC BROADCAST
             </div>
             <p style="margin:6px 0 0;font-size:13px;line-height:1.45;color:var(--ivory-muted);">
               Hosted by Julian Vance. Identical UTC-date deterministic seed worldwide spanning Sightline Lock, Codex Dual-Ring, Gauntlet Shatter, and a final Calibrator Bullseye Tiebreaker so every player on Earth compares scores fairly!
@@ -1495,7 +1986,7 @@ export class SovereignHUD {
               PERSONAL BEST: ${vm.dailyBestScore.toLocaleString()} PTS · STATUS: ${vm.dailyCompletedToday ? '✓ COMPLETED TODAY (PRACTICE REPLAY OPEN)' : 'LIVE NOW'}
             </div>
           </div>
-          <button type="button" class="ws-btn-gold" id="ws-launch-daily">LAUNCH DAILY BROADCAST ▶</button>
+          <button type="button" class="ws-btn-gold" id="ws-launch-daily">LAUNCH DAILY 10 ▶</button>
         </div>
       `;
     }
@@ -1509,15 +2000,15 @@ export class SovereignHUD {
                 HOSTED BY NADIA AL-MANSOOR · ${vm.verifiedQuestionTotal.toLocaleString()} VERIFIED QUESTIONS · CRYPTO-RANDOM ZERO-REPEAT
               </div>
               <div style="font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--ivory-primary);margin-top:3px;">
-                THE BRIEFING ROOM · 3-LEVEL SUBCATEGORY DRILL-DOWN
+                PICK A TOPIC · 3-LEVEL SUBCATEGORY DRILL-DOWN
               </div>
               <p style="margin:5px 0 0;font-size:12.5px;line-height:1.42;color:var(--ivory-muted);">
-                Drill down from any of the 12 Sovereign Domains into 48+ Categories and 150+ Specialist Topics (e.g. <strong>Sports &amp; Games › Sports › Baseball</strong>) across 5, 10, 20, or 50-Prism Marathon rounds.
+                Drill down from any of the 12 Sovereign Domains into 48+ Categories and 150+ Specialist Topics (e.g. <strong>Sports &amp; Games › Sports › Baseball</strong>) across Middle School to Mensa difficulty tiers.
               </p>
             </div>
             <div style="display:flex;flex-wrap:wrap;gap:10px;">
-              <button type="button" class="ws-btn-obsidian" id="ws-quick-briefing">QUICK 5-Q GLOBAL MIX</button>
-              <button type="button" class="ws-btn-gold" id="ws-open-briefing-modal">3-LEVEL DRILL-DOWN PICKER ▶</button>
+              <button type="button" class="ws-btn-obsidian" id="ws-quick-briefing">QUICK 5-Q MIX</button>
+              <button type="button" class="ws-btn-gold" id="ws-open-briefing-modal">OPEN TOPIC PICKER ▶</button>
             </div>
           </div>
 
@@ -1537,6 +2028,12 @@ export class SovereignHUD {
 
           <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
             <span style="font-family:var(--font-mono);font-size:10.5px;color:var(--cyan-clue);">POPULAR SPECIALIST TOPICS:</span>
+            <button type="button" class="ws-util-pill" id="ws-quick-globe-showcase" data-showcase-kind="GLOBE_PIN_DROP" style="color:var(--gold-bright);display:inline-flex;align-items:center;gap:5px;">
+              ${hudIcon('pin', 12)}<span>3D GLOBE PIN-DROP</span>
+            </button>
+            <button type="button" class="ws-util-pill" id="ws-quick-visual-showcase" data-showcase-kind="VISUAL_BLUEPRINT" style="color:var(--cyan-clue);display:inline-flex;align-items:center;gap:5px;">
+              ${hudIcon('layers', 12)}<span>VISUAL BLUEPRINTS</span>
+            </button>
             <button type="button" class="ws-util-pill" data-quick-dom="5" data-quick-l1="sports" data-quick-topic="sports_baseball" data-quick-label="Sports › Baseball">◈ BASEBALL</button>
             <button type="button" class="ws-util-pill" data-quick-dom="5" data-quick-l1="sports" data-quick-topic="sports_basketball" data-quick-label="Sports › Basketball">◈ BASKETBALL</button>
             <button type="button" class="ws-util-pill" data-quick-dom="5" data-quick-l1="sports" data-quick-topic="sports_soccer" data-quick-label="Sports › Soccer">◈ SOCCER</button>
@@ -1567,10 +2064,10 @@ export class SovereignHUD {
           <div style="flex:1 1 420px;">
             <div style="font-family:var(--font-mono);font-size:11px;color:var(--crimson-alert);">3 PRISM SHIELDS · 5-Q EXTRACTION AIRLOCKS</div>
             <div style="font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--gold-bright);margin-top:4px;">
-              THE ARCHIVE DESCENT · SUBTERRANEAN LEDGER VAULTS
+              ENDLESS DESCENT · SUBTERRANEAN LEDGER VAULTS
             </div>
             <p style="margin:6px 0 0;font-size:13px;line-height:1.45;color:var(--ivory-muted);">
-              Descend from Public Strata into Diplomatic Vaults and the Meridian Zero Core as IRT difficulty climbs monotonically. Bank your score at every 5-Prism Extraction Airlock—or risk deeper floors! Overclock 3-streaks repair 1 Shield; Backfires shatter 2.
+              Descend from Public Strata into Diplomatic Vaults and the Meridian Zero Core as difficulty climbs monotonically. Bank your score at every 5-Prism Extraction Airlock—or risk deeper floors! Overclock 3-streaks repair 1 Shield; Backfires shatter 2.
             </p>
             <div style="margin-top:10px;font-family:var(--font-mono);font-size:11.5px;color:var(--gold-bright);">
               DEEPEST FLOOR: FLOOR ${vm.endlessBestFloor} · HIGH HAUL: ${vm.endlessBestScore.toLocaleString()} PTS
@@ -1588,20 +2085,47 @@ export class SovereignHUD {
       `;
     }
 
-    // COUNCIL TRIALS & BLACK SALON
+    // 1v1 DUELS, COUNCIL TRIALS & BLACK SALON
+    const rivals = vm.duelRivalsSummary;
     return `
       <div class="ws-frame-tableau" style="padding:18px 22px;display:flex;flex-direction:column;gap:14px;">
         <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;">
           <div>
-            <div style="font-family:var(--font-mono);font-size:11px;color:var(--cyan-clue);">3D ASYNC KINETIC GHOST DUELS & PIRATE CIRCUIT</div>
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--cyan-clue);">1-TAP FRIEND DUEL LINKS · 3D ASYNC KINETIC GHOSTS</div>
             <div style="font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--gold-bright);margin-top:3px;">
-              WORLD COUNCIL TRIALS & TEO'S BLACK SALON
+              1v1 DUELS, COUNCIL TRIALS &amp; BLACK SALON
             </div>
           </div>
           <div style="font-family:var(--font-mono);font-size:11.5px;color:var(--gold-bright);">
-            TRIAL VICTORIES: ${vm.trialsWins}
+            TRIAL VICTORIES: ${vm.trialsWins}${
+              rivals && rivals.totalDuels > 0
+                ? ` · H2H DUELS: ${rivals.wins}W-${rivals.losses}L${rivals.ties > 0 ? `-${rivals.ties}T` : ''}`
+                : ''
+            }
           </div>
         </div>
+
+        ${
+          rivals && rivals.recentRivals.length > 0
+            ? `
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;background:rgba(242,207,126,0.08);box-shadow:inset 3px 0 0 var(--gold-bright);">
+            <span style="font-family:var(--font-mono);font-size:10.5px;font-weight:700;color:var(--gold-bright);display:inline-flex;align-items:center;gap:5px;">
+              ${hudIcon('swords', 13)}<span>RECENT DUEL RIVALS:</span>
+            </span>
+            ${rivals.recentRivals
+              .slice(0, 4)
+              .map(
+                (r) => `<span style="font-family:var(--font-mono);font-size:11px;color:var(--ivory-primary);padding:2px 8px;border-radius:999px;background:rgba(255,255,255,0.06);">${escapeHtml(r.name)} (${escapeHtml(r.recordLabel)} · Best ${r.bestScore.toLocaleString('en-US')})</span>`,
+              )
+              .join('')}
+          </div>
+        `
+            : `
+          <div style="font-size:12.5px;color:var(--ivory-muted);line-height:1.4;">
+            Finish any match in Campaign, Daily 10, Pick Topic, or Council Trials and tap <strong>Share 1-Tap Duel Link</strong> on the summary screen to challenge friends head-to-head on your exact question splits!
+          </div>
+        `
+        }
 
         <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;">
           <span style="font-family:var(--font-mono);font-size:11px;color:var(--ivory-muted);">PLEDGED COUNCIL BLOC:</span>
@@ -1780,6 +2304,9 @@ export class SovereignHUD {
             : 2.5;
       return Math.round(baseCone * peelScale * 100) / 100;
     }
+    if (vm.question.archetype === 'GLOBE_PIN_DROP') {
+      return Math.round(3.5 * peelScale * 100) / 100;
+    }
     if (vm.question.archetype === 'CODEX_DUAL_RING') {
       return Math.round(3.0 * peelScale * 100) / 100;
     }
@@ -1788,6 +2315,7 @@ export class SovereignHUD {
 
   public renderGameplay(vm: GameplayQuestionViewState): void {
     this.cancelOverclockHold(true);
+    this.closeVisualLightbox();
 
     const q = vm.question;
     const activeStep =
@@ -1798,6 +2326,7 @@ export class SovereignHUD {
     const promptText = sanitizeHudDisplayText(activeStep ? activeStep.prompt : q.prompt, q);
     const facets = activeStep ? activeStep.facets : q.facets;
     const clueTiers = activeStep ? activeStep.clueTiers : q.clueTiers;
+    const diffBadge = resolveQuestionDifficultyBadge(q);
 
     const tierMult = this.resolveActiveTierMultiplier(vm);
     const tierShort = `${tierMult.toFixed(1)}x`;
@@ -1808,11 +2337,17 @@ export class SovereignHUD {
           : vm.peelTier === 2
             ? ` ${vm.calibratorCone} · CLUE`
             : ` ${vm.calibratorCone} · BLUEPRINT`
-        : vm.peelTier === 1
-          ? ' INSTINCT'
-          : vm.peelTier === 2
-            ? ' CLUE'
-            : ' BLUEPRINT';
+        : q.archetype === 'GLOBE_PIN_DROP'
+          ? vm.peelTier === 1
+            ? ' PINPOINT'
+            : vm.peelTier === 2
+              ? ' REGION'
+              : ' BLUEPRINT'
+          : vm.peelTier === 1
+            ? ' INSTINCT'
+            : vm.peelTier === 2
+              ? ' CLUE'
+              : ' BLUEPRINT';
 
     const leakedMirrorHint =
       vm.isPrologueQuestion &&
@@ -1852,8 +2387,30 @@ export class SovereignHUD {
     const tellQuiet = !cleanTell && vm.rivalStatus === 'HIDDEN';
     const isFinalQuestion = vm.questionIndex + 1 >= vm.questionTotal;
     const pinnedActionsHtml = vm.revealed
-      ? this.renderRevealPinnedButtonsHtml(vm.revealed, isFinalQuestion)
+      ? this.renderRevealPinnedButtonsHtml(vm, vm.revealed, isFinalQuestion)
       : this.renderLiveActionRowHtml(vm, q.archetype, tierMult, facets);
+
+    const duelSplit = vm.duelLiveSplit ?? null;
+    const duelTotal = duelSplit ? Math.max(1, duelSplit.playerScore + duelSplit.challengerScore) : 1;
+    const duelFillPct = duelSplit
+      ? duelSplit.playerScore === 0 && duelSplit.challengerScore === 0
+        ? 50
+        : Math.max(12, Math.min(88, Math.round((duelSplit.playerScore / duelTotal) * 100)))
+      : 50;
+    const duelDeltaSign = duelSplit
+      ? duelSplit.deltaPts > 0
+        ? `+${formatCount(duelSplit.deltaPts)}`
+        : duelSplit.deltaPts < 0
+          ? `-${formatCount(Math.abs(duelSplit.deltaPts))}`
+          : '0'
+      : '0';
+    const duelDeltaCls = duelSplit
+      ? duelSplit.leader === 'PLAYER'
+        ? 'is-ahead'
+        : duelSplit.leader === 'CHALLENGER'
+          ? 'is-behind'
+          : 'is-tied'
+      : 'is-tied';
 
     this.root.innerHTML = `
       ${this.renderTopBarHtml(
@@ -1865,52 +2422,71 @@ export class SovereignHUD {
       )}
 
       <div class="ws-gameplay-layout">
-        <!-- ZONE 1: Slim Frameless Stage & Story Telemetry Ribbon -->
-        <section class="ws-stage-story-strip" aria-label="Match Scoreboard and Live Character Tell">
-          <div class="ws-momentum-card">
-            <div class="ws-momentum-row">
-              <span class="ws-player-score" id="ws-player-pts">
-                ${escapeHtml(vm.challengerName.toUpperCase())} · ${vm.playerScore.toLocaleString('en-US')} PTS
-                ${
-                  vm.streak >= 2
-                    ? `<img src="./assets/ui/badge_streak_fire.png" alt="" style="width:15px;height:15px;vertical-align:middle;margin-left:3px;" />×${vm.streak}`
-                    : ''
-                }
-                ${typeof vm.shields === 'number' ? ` · ${hudIcon('shield', 13)}×${vm.shields}` : ''}
-              </span>
-              ${
-                vm.rivalStatus !== 'HIDDEN'
-                  ? `
-                <span class="ws-rival-score">
-                  <span class="ws-rival-status-chip ${vm.rivalStatus === 'OVERCLOCKING' ? 'is-overclock' : ''}" id="ws-rival-chip">
-                    ${escapeHtml(vm.rivalStatus)}
-                  </span>
-                  <span id="ws-rival-pts">${escapeHtml(vm.rivalName.toUpperCase())} ${vm.rivalScore.toLocaleString('en-US')}</span>
+        <!-- ZONE 1: Single Wrapper (Preserves Strict 3-Row Grid!) for Telemetry Ribbon + Optional Live 1v1 Ghost Split Bar -->
+        <div class="ws-gameplay-zone1" style="display:flex;flex-direction:column;gap:4px;min-width:0;">
+          <section class="ws-stage-story-strip" aria-label="Match Scoreboard and Live Character Tell">
+            <div class="ws-momentum-card">
+              <div class="ws-momentum-row">
+                <span class="ws-player-score" id="ws-player-pts">
+                  ${escapeHtml(vm.challengerName.toUpperCase())} · ${vm.playerScore.toLocaleString('en-US')} PTS
+                  ${
+                    vm.streak >= 2
+                      ? `<img src="./assets/ui/badge_streak_fire.png" alt="" style="width:15px;height:15px;vertical-align:middle;margin-left:3px;" />×${vm.streak}`
+                      : ''
+                  }
+                  ${typeof vm.shields === 'number' ? ` · ${hudIcon('shield', 13)}×${vm.shields}` : ''}
                 </span>
-              `
-                  : `<span style="font-family:var(--font-mono);font-size:10.5px;color:var(--ivory-muted);white-space:nowrap;">${escapeHtml(vm.modeLabel)}</span>`
-              }
+                ${
+                  vm.rivalStatus !== 'HIDDEN'
+                    ? `
+                  <span class="ws-rival-score">
+                    <span class="ws-rival-status-chip ${vm.rivalStatus === 'OVERCLOCKING' ? 'is-overclock' : ''}" id="ws-rival-chip">
+                      ${escapeHtml(vm.rivalStatus)}
+                    </span>
+                    <span id="ws-rival-pts">${escapeHtml(vm.rivalName.toUpperCase())} ${vm.rivalScore.toLocaleString('en-US')}</span>
+                  </span>
+                `
+                    : `<span style="font-family:var(--font-mono);font-size:10.5px;color:var(--ivory-muted);white-space:nowrap;">${escapeHtml(cleanNarrativeCopy(vm.modeLabel).toUpperCase())}</span>`
+                }
+              </div>
+              <div class="ws-tug-track">
+                <div class="ws-tug-fill" id="ws-tug-fill" style="width:${tugPct}%;"></div>
+              </div>
             </div>
-            <div class="ws-tug-track">
-              <div class="ws-tug-fill" id="ws-tug-fill" style="width:${tugPct}%;"></div>
-            </div>
-          </div>
 
-          <div class="ws-actor-tell-cluster ${tellQuiet ? 'is-quiet' : ''}">
-            <div class="ws-actor-cutout-wrap">
-              <img
-                id="ws-live-actor-img"
-                class="ws-actor-cutout-img"
-                src="${resolvePortraitCutoutUrl(vm.actorId, vm.actorExpression)}"
-                alt="${escapeHtml(vm.actorName)}"
-              />
+            <div class="ws-actor-tell-cluster ${tellQuiet ? 'is-quiet' : ''}">
+              <div class="ws-actor-cutout-wrap">
+                <img
+                  id="ws-live-actor-img"
+                  class="ws-actor-cutout-img"
+                  src="${resolvePortraitCutoutUrl(vm.actorId, vm.actorExpression)}"
+                  alt="${escapeHtml(vm.actorName)}"
+                />
+              </div>
+              <div class="ws-tell-copy">
+                <div class="ws-tell-speaker">${escapeHtml(vm.actorName.toUpperCase())}</div>
+                <div class="ws-tell-text" id="ws-live-tell-text" style="${cleanTell ? '' : 'display:none;'}">${escapeHtml(cleanTell)}</div>
+              </div>
             </div>
-            <div class="ws-tell-copy">
-              <div class="ws-tell-speaker">${escapeHtml(vm.actorName.toUpperCase())}</div>
-              <div class="ws-tell-text" id="ws-live-tell-text" style="${cleanTell ? '' : 'display:none;'}">${escapeHtml(cleanTell)}</div>
+          </section>
+
+          ${
+            duelSplit
+              ? `
+            <div class="ws-duel-live-split-bar" id="ws-duel-live-split-bar" aria-label="Head-to-Head Ghost Split Comparison">
+              <div class="ws-duel-split-head">
+                <span class="ws-duel-split-you" id="ws-duel-split-you">YOU: ${duelSplit.playerScore.toLocaleString('en-US')} PTS</span>
+                <span class="ws-duel-split-delta ${duelDeltaCls}" id="ws-duel-split-delta">Δ ${duelDeltaSign}</span>
+                <span class="ws-duel-split-rival" id="ws-duel-split-rival">${escapeHtml(duelSplit.challengerName.toUpperCase())}: ${duelSplit.challengerScore.toLocaleString('en-US')} PTS</span>
+              </div>
+              <div class="ws-duel-split-track">
+                <div class="ws-duel-split-fill" id="ws-duel-split-fill" style="width:${duelFillPct}%;"></div>
+              </div>
             </div>
-          </div>
-        </section>
+          `
+              : ''
+          }
+        </div>
 
         <!-- ZONE 2: Center Unobstructed 3D Veritas Prism Spotlight Plane -->
         <section class="ws-spotlight-plane" aria-hidden="true">
@@ -1928,7 +2504,11 @@ export class SovereignHUD {
                     ${escapeHtml(FORGE_DOMAINS[q.l0Domain]?.shortName ?? FORGE_DOMAINS[q.l0Domain]?.name ?? 'General')}${activeStep ? ` · ${escapeHtml(activeStep.stepLabel)}` : ''}
                   </span>
                   <span class="ws-domain-sub">
-                    ${escapeHtml(q.l1Category || q.archetype.replace(/_/g, ' '))}${
+                    <span
+                      id="ws-question-difficulty-badge"
+                      class="ws-difficulty-tier-badge is-${diffBadge.tierKey}"
+                      style="margin-right:5px;"
+                    >${escapeHtml(diffBadge.label)}</span>${escapeHtml(q.l1Category || q.archetype.replace(/_/g, ' '))}${
                       inlineMutatorHint
                         ? ` · <span style="color:var(--cyan-clue);">${escapeHtml(inlineMutatorHint)}</span>`
                         : ''
@@ -2006,6 +2586,86 @@ export class SovereignHUD {
     facets: PrismQuestion['facets'],
     promptText: string,
   ): string {
+    if (archetype === 'GLOBE_PIN_DROP' && vm.question.globePin) {
+      const gp = vm.question.globePin;
+      const anchors = gp.quickAnchors.slice(0, 4);
+      const sel = vm.selectedGlobeCoords ?? null;
+      const distKm = vm.revealed?.globeDistanceKm;
+      const statusText = vm.revealed
+        ? typeof distKm === 'number'
+          ? `DISTANCE: ${formatCount(distKm)} KM${vm.revealed.globeAccuracyTier ? ` · ${vm.revealed.globeAccuracyTier}` : ''}`
+          : `TARGET: ${gp.targetLabel}`
+        : sel
+          ? 'Tap 3D Globe to Pinpoint · Armed'
+          : 'Tap 3D Globe or Quick Region below';
+      const coordValText = vm.revealed
+        ? `TARGET ${formatLatLonCompact(gp.targetLat, gp.targetLon)}`
+        : sel
+          ? formatLatLonCompact(sel.lat, sel.lon)
+          : 'NO PIN DROPPED';
+
+      // Identify closest quick-anchor to the true target for clean Reveal highlighting
+      let bestAnchorIdx = -1;
+      if (vm.revealed && anchors.length > 0) {
+        let bestSq = Infinity;
+        anchors.forEach((a, idx) => {
+          const dLat = a.lat - gp.targetLat;
+          const dLon = a.lon - gp.targetLon;
+          const sq = dLat * dLat + dLon * dLon;
+          if (sq < bestSq) {
+            bestSq = sq;
+            bestAnchorIdx = idx;
+          }
+        });
+      }
+
+      return `
+        <div class="ws-globe-pin-controls" id="ws-globe-pin-controls">
+          <div class="ws-globe-coord-readout">
+            <span class="ws-globe-coord-status" id="ws-globe-coord-status">
+              ${hudIcon('pin', 13)} <span>${escapeHtml(statusText)}</span>
+            </span>
+            <span class="ws-globe-coord-val" id="ws-globe-coord-val">${escapeHtml(coordValText)}</span>
+          </div>
+          <div class="ws-globe-anchors-grid">
+            ${anchors
+              .map((a, idx) => {
+                const isSel = !vm.revealed && vm.selectedGlobeAnchorIndex === idx;
+                const isCorrect = Boolean(vm.revealed && idx === bestAnchorIdx);
+                const isWrong = Boolean(
+                  vm.revealed &&
+                    !vm.revealed.correct &&
+                    vm.selectedGlobeAnchorIndex === idx &&
+                    idx !== bestAnchorIdx,
+                );
+                const stateCls = isCorrect
+                  ? 'is-correct'
+                  : isWrong
+                    ? 'is-wrong'
+                    : isSel
+                      ? 'is-selected'
+                      : '';
+                return `
+                  <button
+                    type="button"
+                    class="ws-globe-anchor-btn ${stateCls}"
+                    data-globe-anchor-idx="${idx}"
+                    data-globe-lat="${a.lat}"
+                    data-globe-lon="${a.lon}"
+                    data-globe-label="${escapeHtml(a.label)}"
+                    ${vm.revealed ? 'disabled' : ''}
+                  >
+                    <span class="ws-facet-key">${idx + 1}</span>
+                    <span class="ws-globe-anchor-label">${escapeHtml(sanitizeHudDisplayText(a.label, vm.question))}</span>
+                  </button>
+                `;
+              })
+              .join('')}
+          </div>
+        </div>
+      `;
+    }
+
     if (archetype === 'CALIBRATOR_DIAL' && vm.question.calibrator) {
       const cal = vm.question.calibrator;
       const unitStr = cal.unit ? ` ${cal.unit}` : '';
@@ -2018,15 +2678,15 @@ export class SovereignHUD {
 
       return `
         <div class="ws-calibrator-box">
-          <div class="ws-calibrator-top">
-            <span class="ws-calibrator-readout" id="ws-cal-readout">
-              YOUR ESTIMATE: ${escapeHtml(estDisplay)}${escapeHtml(unitStr)}
+          <div class="ws-calibrator-top" style="gap:6px;flex-wrap:nowrap;">
+            <span class="ws-calibrator-readout" id="ws-cal-readout" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1 1 auto;">
+              EST: ${escapeHtml(estDisplay)}${escapeHtml(unitStr)}
             </span>
-            <div class="ws-step-cluster">
-              <button type="button" class="ws-step-btn" data-cal-delta="${-bigStep}" ${vm.revealed ? 'disabled' : ''}>-${bigStep}</button>
-              <button type="button" class="ws-step-btn" data-cal-delta="${-cal.step}" ${vm.revealed ? 'disabled' : ''}>-${cal.step}</button>
-              <button type="button" class="ws-step-btn" data-cal-delta="${cal.step}" ${vm.revealed ? 'disabled' : ''}>+${cal.step}</button>
-              <button type="button" class="ws-step-btn" data-cal-delta="${bigStep}" ${vm.revealed ? 'disabled' : ''}>+${bigStep}</button>
+            <div class="ws-step-cluster" style="flex:0 0 auto;gap:4px;">
+              <button type="button" class="ws-step-btn" data-cal-delta="${-bigStep}" style="padding:3px 7px;" ${vm.revealed ? 'disabled' : ''}>-${bigStep}</button>
+              <button type="button" class="ws-step-btn" data-cal-delta="${-cal.step}" style="padding:3px 7px;" ${vm.revealed ? 'disabled' : ''}>-${cal.step}</button>
+              <button type="button" class="ws-step-btn" data-cal-delta="${cal.step}" style="padding:3px 7px;" ${vm.revealed ? 'disabled' : ''}>+${cal.step}</button>
+              <button type="button" class="ws-step-btn" data-cal-delta="${bigStep}" style="padding:3px 7px;" ${vm.revealed ? 'disabled' : ''}>+${bigStep}</button>
             </div>
           </div>
 
@@ -2105,8 +2765,34 @@ export class SovereignHUD {
       `;
     }
 
-    // Default: SIGHTLINE_LOCK & HERO_ARTIFACT_SYNTHESIS (Synced 4-Facet Strip)
+    // Default: SIGHTLINE_LOCK & HERO_ARTIFACT_SYNTHESIS (+ Optional Sapphire Visual Blueprint Lens Plate)
+    const vp = vm.question.visualPlate;
+    const visualPlateHtml =
+      vp && vp.imageUrl
+        ? `
+      <div
+        class="ws-visual-plate-frame"
+        id="ws-visual-plate-frame"
+        role="button"
+        tabindex="0"
+        aria-label="${escapeHtml(vp.altText || 'Inspect Sapphire Blueprint Visual')}"
+        title="Tap to inspect full blueprint"
+      >
+        <img
+          class="ws-visual-plate-img"
+          src="${escapeHtml(vp.imageUrl)}"
+          alt="${escapeHtml(vp.altText || vp.caption || 'Visual Blueprint')}"
+        />
+        <div class="ws-visual-plate-meta">
+          <span class="ws-visual-plate-tag">${escapeHtml((vp.kind || 'BLUEPRINT').replace(/_/g, ' '))} · TAP TO ZOOM</span>
+          ${vp.caption ? `<span class="ws-visual-plate-caption">${escapeHtml(sanitizeHudDisplayText(vp.caption, vm.question))}</span>` : ''}
+        </div>
+      </div>
+    `
+        : '';
+
     return `
+      ${visualPlateHtml}
       <div class="ws-facet-strip ws-facets-grid">
         ${facets
           .slice(0, 4)
@@ -2182,9 +2868,13 @@ export class SovereignHUD {
         ? vm.question.calibrator?.toleranceCones.find((c) => c.id === vm.calibratorCone)
             ?.multiplier ??
           (vm.calibratorCone === 'PINHOLE' ? 3.5 : vm.calibratorCone === 'WIDE' ? 1.5 : 2.5)
-        : 3.0;
+        : archetype === 'GLOBE_PIN_DROP'
+          ? 3.5
+          : 3.0;
     const isScaledPeel =
-      archetype === 'CALIBRATOR_DIAL' || archetype === 'CODEX_DUAL_RING';
+      archetype === 'CALIBRATOR_DIAL' ||
+      archetype === 'CODEX_DUAL_RING' ||
+      archetype === 'GLOBE_PIN_DROP';
     const nextT2Mult = isScaledPeel
       ? Math.round(baseUnpeeledMult * 0.78 * 100) / 100
       : 2.0;
@@ -2215,8 +2905,16 @@ export class SovereignHUD {
       peelDisabled = false;
     }
 
-    const armedSlot = facets[vm.selectedFacetIndex]?.slotLabel ?? 'A';
-    const idleLabel = this.getConciseOverclockIdleLabel(tierMult);
+    const globeUnpinned = archetype === 'GLOBE_PIN_DROP' && !vm.selectedGlobeCoords;
+    const armedSlot =
+      archetype === 'GLOBE_PIN_DROP'
+        ? vm.selectedGlobeCoords
+          ? 'PIN'
+          : 'UNPINNED'
+        : (facets[vm.selectedFacetIndex]?.slotLabel ?? 'A');
+    const idleLabel = globeUnpinned
+      ? 'DROP PIN ON GLOBE TO ARM'
+      : this.getConciseOverclockIdleLabel(tierMult);
 
     return `
       <div class="ws-action-row ${vm.councilVetoAvailable ? 'has-veto' : ''}">
@@ -2235,6 +2933,7 @@ export class SovereignHUD {
           class="ws-overclock-bar"
           id="ws-btn-overclock"
           data-armed-slot="${escapeHtml(armedSlot)}"
+          ${globeUnpinned ? 'disabled' : ''}
         >
           <div class="ws-overclock-fill" id="ws-overclock-fill"></div>
           <span class="ws-overclock-label" id="ws-overclock-label">
@@ -2251,19 +2950,28 @@ export class SovereignHUD {
   ): string {
     const cleanCorrect = sanitizeHudDisplayText(rev.correctDisplay, question);
     const cleanWhy = sanitizeHudDisplayText(rev.whyExplanation, question);
+    const globeDistTag =
+      typeof rev.globeDistanceKm === 'number' && !cleanCorrect.toLowerCase().includes('km')
+        ? ` · ${formatCount(rev.globeDistanceKm)} km`
+        : '';
     const statusLabel = rev.correct
       ? rev.bullseye
-        ? `BULLSEYE! +${rev.earnedPoints.toLocaleString('en-US')} PTS`
-        : `GOLD RESONANCE! +${rev.earnedPoints.toLocaleString('en-US')} PTS`
+        ? `BULLSEYE! +${rev.earnedPoints.toLocaleString('en-US')} PTS${globeDistTag}`
+        : `GOLD RESONANCE! +${rev.earnedPoints.toLocaleString('en-US')} PTS${globeDistTag}`
       : rev.backfired
-        ? `BACKFIRE! ANSWER: ${cleanCorrect}`
-        : `ANSWER: ${cleanCorrect}`;
+        ? `BACKFIRE! ANSWER: ${cleanCorrect}${globeDistTag}`
+        : `ANSWER: ${cleanCorrect}${globeDistTag}`;
 
     return `
       <div class="ws-intel-flash ${rev.correct ? '' : 'is-miss'}">
         <div style="flex:1 1 100%;min-width:0;">
-          <div class="ws-intel-flash-title" style="color:${rev.correct ? 'var(--emerald-win)' : '#ff8e9b'};">
-            ${escapeHtml(statusLabel)}
+          <div class="ws-intel-flash-title" style="color:${rev.correct ? 'var(--emerald-win)' : '#ff8e9b'};display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
+            <span>${escapeHtml(statusLabel)}</span>
+            ${
+              rev.feedbackToast
+                ? `<span id="ws-q-feedback-toast" style="font-family:var(--font-mono);font-size:10px;color:var(--gold-bright);padding:1px 6px;border-radius:999px;background:rgba(242,207,126,0.16);">${escapeHtml(rev.feedbackToast)}</span>`
+                : ''
+            }
           </div>
           <div class="ws-intel-flash-body">
             ${escapeHtml(cleanWhy)}
@@ -2274,14 +2982,66 @@ export class SovereignHUD {
   }
 
   private renderRevealPinnedButtonsHtml(
+    vm: GameplayQuestionViewState,
     rev: NonNullable<GameplayQuestionViewState['revealed']>,
     isFinalQuestion = false,
   ): string {
+    const feedbackControls = `
+      <div class="ws-feedback-micro-group">
+        <button
+          type="button"
+          class="ws-feedback-micro-btn ${rev.feedbackVote === 'UPVOTE' ? 'is-upvoted' : ''}"
+          id="ws-btn-q-upvote"
+          aria-label="Upvote Question"
+          aria-pressed="${rev.feedbackVote === 'UPVOTE' ? 'true' : 'false'}"
+          title="Great question"
+        >${hudIcon('thumbUp', 14)}</button>
+        <button
+          type="button"
+          class="ws-feedback-micro-btn ${rev.feedbackVote === 'FLAG' ? 'is-flagged' : ''}"
+          id="ws-btn-q-flag"
+          aria-label="Flag and Quarantine Question"
+          aria-pressed="${rev.feedbackVote === 'FLAG' ? 'true' : 'false'}"
+          title="Flag awkward phrasing & quarantine from pool"
+        >${hudIcon('flag', 14)}</button>
+      </div>
+      <button type="button" class="ws-util-pill ${rev.bookmarked ? 'is-active' : ''}" id="ws-btn-bookmark" style="display:inline-flex;align-items:center;gap:4px;">
+        ${hudIcon('star', 13)}<span>${rev.bookmarked ? 'SAVED' : 'SAVE'}</span>
+      </button>
+    `;
+
+    if (vm.isInstantTrialPrism) {
+      const headline = rev.correct
+        ? 'Impressive Instinct — Choose Your Next Move'
+        : 'Sharp Warmup — Choose Your Next Move';
+      return `
+        <div id="ws-instant-prism-next-bar" style="display:flex;flex-direction:column;gap:6px;width:100%;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <span style="font-family:var(--font-mono);font-size:10.5px;font-weight:800;letter-spacing:0.06em;color:var(--gold-bright);text-transform:uppercase;">
+              ${escapeHtml(headline)}
+            </span>
+            <div style="display:inline-flex;align-items:center;gap:5px;flex:0 0 auto;">
+              ${feedbackControls}
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1.2fr 1fr 0.9fr;gap:6px;width:100%;">
+            <button type="button" class="ws-btn-gold" id="ws-instant-go-campaign" style="min-height:42px;padding:6px 6px;font-size:clamp(10.5px,2.8vw,11.5px);letter-spacing:0.02em;white-space:nowrap;">
+              Story Mode ▶
+            </button>
+            <button type="button" class="ws-btn-obsidian" id="ws-instant-go-baseball" style="min-height:42px;padding:6px 6px;font-size:clamp(10.5px,2.8vw,11.5px);letter-spacing:0.02em;white-space:nowrap;">
+              Baseball
+            </button>
+            <button type="button" class="ws-btn-obsidian" id="ws-instant-go-daily" style="min-height:42px;padding:6px 6px;font-size:clamp(10.5px,2.8vw,11.5px);letter-spacing:0.02em;white-space:nowrap;">
+              Daily 10
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
     return `
       <div class="ws-action-row ws-reveal-action-row">
-        <button type="button" class="ws-util-pill ${rev.bookmarked ? 'is-active' : ''}" id="ws-btn-bookmark">
-          ${rev.bookmarked ? '★ SAVED' : '☆ SAVE'}
-        </button>
+        ${feedbackControls}
         <button type="button" class="ws-btn-gold" id="ws-btn-next-q">
           ${isFinalQuestion ? 'FINISH STAGE ▶' : 'NEXT PRISM ▶'}
         </button>
@@ -2289,7 +3049,101 @@ export class SovereignHUD {
     `;
   }
 
+  /** Surgically updates Globe Pin-Drop readout & arms Overclock without rebuilding DOM. */
+  public updateGlobeSelectionDom(
+    lat: number,
+    lon: number,
+    anchorIdx: number | null,
+    tierMult: number,
+    anchorLabel?: string,
+  ): void {
+    const statusEl = this.root.querySelector<HTMLElement>('#ws-globe-coord-status span');
+    if (statusEl) {
+      statusEl.textContent = anchorLabel
+        ? `Selected: ${anchorLabel} · Armed`
+        : 'Tap 3D Globe to Pinpoint · Armed';
+    }
+    const valEl = this.root.querySelector<HTMLElement>('#ws-globe-coord-val');
+    if (valEl) {
+      valEl.textContent = formatLatLonCompact(lat, lon);
+    }
+    this.root.querySelectorAll<HTMLButtonElement>('[data-globe-anchor-idx]').forEach((btn) => {
+      const idx = Number(btn.dataset.globeAnchorIdx);
+      btn.classList.toggle('is-selected', anchorIdx !== null && idx === anchorIdx);
+    });
+    const ocBtn = this.root.querySelector<HTMLButtonElement>('#ws-btn-overclock');
+    if (ocBtn) {
+      ocBtn.disabled = false;
+      ocBtn.dataset.armedSlot = anchorLabel ? anchorLabel.slice(0, 10) : 'PIN';
+    }
+    const labelEl = this.root.querySelector<HTMLElement>('#ws-overclock-label');
+    if (labelEl) {
+      labelEl.textContent = this.getConciseOverclockIdleLabel(tierMult);
+    }
+  }
+
+  private openVisualPlateLightbox(imageUrl: string, caption?: string, altText?: string): void {
+    this.closeVisualLightbox();
+    const overlay = document.createElement('div');
+    overlay.className = 'ws-visual-plate-lightbox';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', altText || 'Sapphire Blueprint Zoom');
+    overlay.innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px;max-width:min(94vw,680px);width:100%;">
+        <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(altText || caption || 'Blueprint Visual')}" />
+        ${
+          caption
+            ? `<div style="font-family:var(--font-mono);font-size:12px;color:var(--ivory-primary);text-align:center;">${escapeHtml(caption)}</div>`
+            : ''
+        }
+        <button type="button" class="ws-btn-obsidian" id="ws-lightbox-close" style="min-height:40px;padding:6px 18px;">CLOSE BLUEPRINT ✕</button>
+      </div>
+    `;
+    overlay.addEventListener('click', (ev) => {
+      if (ev.target === overlay) {
+        this.closeVisualLightbox();
+      }
+    });
+    overlay.querySelector('#ws-lightbox-close')?.addEventListener('click', () => {
+      this.haptics.uiTap();
+      this.audio.playSfx('ui_tap');
+      this.closeVisualLightbox();
+    });
+    document.body.appendChild(overlay);
+    this.visualLightboxEl = overlay;
+  }
+
   private bindGameplayControls(vm: GameplayQuestionViewState, promptText: string): void {
+    // Visual Blueprint Lightbox Trigger
+    const vp = vm.question.visualPlate;
+    const plateFrame = this.root.querySelector<HTMLElement>('#ws-visual-plate-frame');
+    if (plateFrame && vp?.imageUrl) {
+      const openZoom = () => {
+        this.haptics.uiTap();
+        this.audio.playSfx('ui_tap');
+        this.openVisualPlateLightbox(vp.imageUrl, vp.caption, vp.altText);
+      };
+      plateFrame.addEventListener('click', openZoom);
+      plateFrame.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter' || ev.key === ' ') {
+          ev.preventDefault();
+          openZoom();
+        }
+      });
+    }
+
+    // 3D Globe Pin-Drop Quick Region Anchor Pills
+    this.root.querySelectorAll<HTMLButtonElement>('[data-globe-anchor-idx]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const idx = Number(btn.dataset.globeAnchorIdx);
+        const lat = Number(btn.dataset.globeLat);
+        const lon = Number(btn.dataset.globeLon);
+        if (Number.isNaN(idx) || Number.isNaN(lat) || Number.isNaN(lon)) return;
+        this.actions.onSelectGlobeAnchor?.(lat, lon, idx);
+      });
+    });
+
     // 4-Facet Pills: 1st tap selects & highlights clearly; 2nd tap on armed facet locks immediately!
     this.root.querySelectorAll<HTMLButtonElement>('[data-facet-idx]').forEach((btn) => {
       btn.addEventListener('click', () => {
@@ -2317,7 +3171,7 @@ export class SovereignHUD {
     slider?.addEventListener('input', () => {
       const val = Number(slider.value);
       if (readout) {
-        readout.textContent = `YOUR ESTIMATE: ${formatHudValue(val, calUnit, promptText)}${unitStr}`;
+        readout.textContent = `EST: ${formatHudValue(val, calUnit, promptText)}${unitStr}`;
       }
       this.haptics.spinTick();
       this.audio.playSfx('spin_tick');
@@ -2333,7 +3187,7 @@ export class SovereignHUD {
         const next = Math.max(cal.minVal, Math.min(cal.maxVal, cur + delta));
         if (slider) slider.value = String(next);
         if (readout) {
-          readout.textContent = `YOUR ESTIMATE: ${formatHudValue(next, cal.unit, promptText)}${unitStr}`;
+          readout.textContent = `EST: ${formatHudValue(next, cal.unit, promptText)}${unitStr}`;
         }
         this.haptics.spinTick();
         this.audio.playSfx('spin_tick');
@@ -2390,6 +3244,7 @@ export class SovereignHUD {
     const fillEl = this.root.querySelector<HTMLElement>('#ws-overclock-fill');
     const labelEl = this.root.querySelector<HTMLElement>('#ws-overclock-label');
     const tierMult = this.resolveActiveTierMultiplier(vm);
+    const globeUnpinned = vm.question.archetype === 'GLOBE_PIN_DROP' && !vm.selectedGlobeCoords;
 
     if (overclockBtn && !vm.revealed) {
       if (this.overclockController) {
@@ -2401,13 +3256,16 @@ export class SovereignHUD {
         });
         // Keep single-line concise mobile-first idle label
         if (labelEl) {
-          labelEl.textContent = this.getConciseOverclockIdleLabel(tierMult);
+          labelEl.textContent = globeUnpinned
+            ? 'DROP PIN ON GLOBE TO ARM'
+            : this.getConciseOverclockIdleLabel(tierMult);
         }
       } else {
         this.bindFallbackOverclockButton(overclockBtn, fillEl, labelEl, tierMult);
         // Native `click` safety net for fallback mode (OverclockGestureController has its own
         // authoritative `handleClickSafetyNet` synced with `ventedPointerId` & `lastHandledReleaseMs`)
         overclockBtn.addEventListener('click', (ev) => {
+          if (overclockBtn.disabled) return;
           const now = performance.now();
           if (now - this.lastOverclockHandledMs < 320) return;
           if (this.overclockPointerId !== null) return;
@@ -2418,7 +3276,19 @@ export class SovereignHUD {
       }
     }
 
-    // Reveal Actions
+    // Reveal Actions (Upvote / Flag Quarantine / Bookmark / Next Prism / Instant Trial Next Move)
+    this.root.querySelector('#ws-btn-q-upvote')?.addEventListener('click', () => {
+      this.haptics.uiTap();
+      this.audio.playSfx('ui_tap');
+      this.actions.onRateQuestion?.('UPVOTE');
+    });
+
+    this.root.querySelector('#ws-btn-q-flag')?.addEventListener('click', () => {
+      this.haptics.uiTap();
+      this.audio.playSfx('ui_tap');
+      this.actions.onRateQuestion?.('FLAG');
+    });
+
     this.root.querySelector('#ws-btn-bookmark')?.addEventListener('click', () => {
       this.haptics.uiTap();
       this.audio.playSfx('ui_tap');
@@ -2429,6 +3299,24 @@ export class SovereignHUD {
       this.haptics.uiTap();
       this.audio.playSfx('ui_tap');
       this.actions.onNextQuestion();
+    });
+
+    this.root.querySelector('#ws-instant-go-campaign')?.addEventListener('click', () => {
+      this.haptics.sightlineSnap();
+      this.audio.playSfx('sightline_snap');
+      this.actions.onInstantPrismAction?.('CAMPAIGN');
+    });
+
+    this.root.querySelector('#ws-instant-go-baseball')?.addEventListener('click', () => {
+      this.haptics.sightlineSnap();
+      this.audio.playSfx('sightline_snap');
+      this.actions.onInstantPrismAction?.('BASEBALL');
+    });
+
+    this.root.querySelector('#ws-instant-go-daily')?.addEventListener('click', () => {
+      this.haptics.sightlineSnap();
+      this.audio.playSfx('sightline_snap');
+      this.actions.onInstantPrismAction?.('DAILY');
     });
   }
 
@@ -2524,7 +3412,7 @@ export class SovereignHUD {
           const liveMult = (tierMult * (1 + charge)).toFixed(2);
           if (fillEl) fillEl.style.width = `${(charge * 100).toFixed(1)}%`;
           if (labelEl) {
-            labelEl.textContent = `⚡ OVERCLOCK ${liveMult}× — RELEASE · SLIDE ↔ CANCEL`;
+            labelEl.textContent = `OVERCLOCK ${liveMult}× — RELEASE · SLIDE ↔ CANCEL`;
           }
         }
         this.overclockHoldRaf = requestAnimationFrame(stepHold);
@@ -2546,6 +3434,7 @@ export class SovereignHUD {
     actorId?: string;
     actorExpression?: string;
     tellLine?: string;
+    duelLiveSplit?: GameplayQuestionViewState['duelLiveSplit'];
   }): void {
     const chronoText = this.root.querySelector<HTMLElement>('#ws-chrono-text');
     const chronoBox = this.root.querySelector<HTMLElement>('#ws-chrono-box');
@@ -2610,6 +3499,40 @@ export class SovereignHUD {
             ? 50
             : Math.max(12, Math.min(88, Math.round((params.playerScore / tot) * 100)));
         if (tugFill) tugFill.style.width = `${pct}%`;
+      }
+    }
+
+    if (params.duelLiveSplit) {
+      const ds = params.duelLiveSplit;
+      const youEl = this.root.querySelector<HTMLElement>('#ws-duel-split-you');
+      const rivalEl = this.root.querySelector<HTMLElement>('#ws-duel-split-rival');
+      const deltaEl = this.root.querySelector<HTMLElement>('#ws-duel-split-delta');
+      const fillEl = this.root.querySelector<HTMLElement>('#ws-duel-split-fill');
+      if (youEl) {
+        youEl.textContent = `YOU: ${ds.playerScore.toLocaleString('en-US')} PTS`;
+      }
+      if (rivalEl) {
+        rivalEl.textContent = `${ds.challengerName.toUpperCase()}: ${ds.challengerScore.toLocaleString('en-US')} PTS`;
+      }
+      if (deltaEl) {
+        const sign =
+          ds.deltaPts > 0
+            ? `+${formatCount(ds.deltaPts)}`
+            : ds.deltaPts < 0
+              ? `-${formatCount(Math.abs(ds.deltaPts))}`
+              : '0';
+        deltaEl.textContent = `Δ ${sign}`;
+        deltaEl.classList.toggle('is-ahead', ds.leader === 'PLAYER');
+        deltaEl.classList.toggle('is-behind', ds.leader === 'CHALLENGER');
+        deltaEl.classList.toggle('is-tied', ds.leader === 'TIED');
+      }
+      if (fillEl) {
+        const tot = Math.max(1, ds.playerScore + ds.challengerScore);
+        const pct =
+          ds.playerScore === 0 && ds.challengerScore === 0
+            ? 50
+            : Math.max(12, Math.min(88, Math.round((ds.playerScore / tot) * 100)));
+        fillEl.style.width = `${pct}%`;
       }
     }
 
@@ -2780,11 +3703,111 @@ export class SovereignHUD {
       return;
     }
 
+    const duelVerdict = vm.duelVerdict ?? null;
+    const duelShareUrl = vm.duelShareUrl || duelVerdict?.rematchUrl || '';
+    const duelShareBtnLabel =
+      vm.duelShareLabel ||
+      (duelVerdict ? 'Share Rematch Link' : 'Share 1-Tap Duel Link');
+    const lb = vm.leaderboard ?? null;
+
+    const renderLeaderboardRows = (expanded: boolean): string => {
+      if (!lb) return '';
+      let rows = lb.top20;
+      if (!expanded) {
+        const picked = new Map<string, (typeof lb.top20)[number]>();
+        for (const r of lb.top20.slice(0, 5)) picked.set(`${r.rank}:${r.handle}`, r);
+        for (const r of lb.entries) {
+          if (r.isFriend || r.isPlayer) picked.set(`${r.rank}:${r.handle}`, r);
+        }
+        rows = Array.from(picked.values()).sort((a, b) => a.rank - b.rank);
+      }
+      return rows
+        .map((entry) => {
+          const rawTag = (entry.tag || entry.faction || '').trim();
+          const cc = (entry.countryCode || '').trim();
+          const metaLabel = entry.isPlayer
+            ? rawTag || 'YOU · LIVE RANK'
+            : cc && !new RegExp(`\\b${cc}\\b`, 'i').test(rawTag)
+              ? `${rawTag ? `${rawTag}, ` : ''}${cc}`
+              : rawTag.replace(/\s*·\s*([A-Z]{2})$/, ', $1');
+          return `
+        <div class="ws-leaderboard-row ${entry.isPlayer ? 'is-player' : entry.isFriend ? 'is-friend' : ''}">
+          <span class="ws-lb-rank">#${entry.rank}</span>
+          <span class="ws-lb-handle">
+            ${escapeHtml(entry.handle)}
+            <span class="ws-lb-meta">· ${escapeHtml(metaLabel)}</span>
+          </span>
+          <span class="ws-lb-score">${escapeHtml(entry.scoreFormatted)} PTS</span>
+        </div>
+      `;
+        })
+        .join('');
+    };
+
+    const duelVerdictHtml = duelVerdict
+      ? `
+        <div id="ws-duel-verdict-card" style="padding:10px 13px;border-radius:10px;background:rgba(12,17,30,0.88);box-shadow:inset 3px 0 0 ${duelVerdict.playerWon ? 'var(--emerald-win)' : duelVerdict.tied ? 'var(--gold-bright)' : 'var(--amber-warn)'};display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;">
+            <span style="font-family:var(--font-mono);font-size:11px;font-weight:800;color:var(--gold-bright);display:inline-flex;align-items:center;gap:6px;">
+              ${hudIcon('swords', 14)}<span>${escapeHtml(duelVerdict.headline)}</span>
+            </span>
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--cyan-clue);">
+              Splits Won: You ${duelVerdict.splitsWonByPlayer} · ${escapeHtml(duelVerdict.challengerName)} ${duelVerdict.splitsWonByChallenger}${duelVerdict.splitsTied > 0 ? ` · Tied ${duelVerdict.splitsTied}` : ''}
+            </span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;max-height:132px;overflow-y:auto;">
+            ${duelVerdict.splitBreakdown
+              .map((row) => {
+                const deltaStr =
+                  row.deltaSplitPts > 0
+                    ? `+${formatCount(row.deltaSplitPts)}`
+                    : row.deltaSplitPts < 0
+                      ? `-${formatCount(Math.abs(row.deltaSplitPts))}`
+                      : '0';
+                const col =
+                  row.deltaSplitPts > 0
+                    ? 'var(--emerald-win)'
+                    : row.deltaSplitPts < 0
+                      ? '#ff8e9b'
+                      : 'var(--ivory-muted)';
+                return `
+                  <div style="display:grid;grid-template-columns:36px 1fr 1fr 72px;gap:6px;align-items:center;padding:4px 8px;border-radius:6px;background:rgba(255,255,255,0.03);font-family:var(--font-mono);font-size:11px;font-variant-numeric:tabular-nums;">
+                    <span style="color:var(--ivory-muted);font-weight:700;">Q${row.qIndex + 1}</span>
+                    <span style="color:var(--ivory-primary);">You: ${formatCount(row.playerSplitPts)}</span>
+                    <span style="color:var(--cyan-clue);">${escapeHtml(duelVerdict.challengerName)}: ${formatCount(row.challengerSplitPts)}</span>
+                    <span style="text-align:right;font-weight:700;color:${col};">${deltaStr}</span>
+                  </div>
+                `;
+              })
+              .join('')}
+          </div>
+        </div>
+      `
+      : '';
+
+    const leaderboardHtml = lb
+      ? `
+        <div id="ws-summary-leaderboard" style="display:flex;flex-direction:column;gap:7px;padding:10px 12px;border-radius:10px;background:rgba(10,14,24,0.84);box-shadow:inset 3px 0 0 rgba(86,212,245,0.62);">
+          <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;">
+            <div style="font-family:var(--font-mono);font-size:11px;font-weight:800;color:var(--cyan-clue);">
+              GLOBAL CONTENDERS · ${escapeHtml(lb.title.toUpperCase())} · YOUR RANK #${lb.playerRank}/${lb.totalEntries} (${escapeHtml(lb.topPercentBanner)})
+            </div>
+            <button type="button" class="ws-util-pill" id="ws-leaderboard-toggle" style="min-height:32px;padding:3px 9px;font-size:10.5px;">
+              Show Top 20 ▾
+            </button>
+          </div>
+          <div class="ws-leaderboard-list" id="ws-leaderboard-rows">
+            ${renderLeaderboardRows(false)}
+          </div>
+        </div>
+      `
+      : '';
+
     this.root.innerHTML = `
       ${this.renderTopBarHtml('BROADCAST SUMMARY', vm.mode, true, false, false)}
 
       <div style="flex:1 1 auto;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;overflow-y:auto;">
-        <div class="ws-frame-cinema ws-interactive" style="width:100%;max-width:780px;padding:clamp(16px,2.2vw,24px);display:flex;flex-direction:column;gap:14px;">
+        <div class="ws-frame-cinema ws-interactive" style="width:100%;max-width:780px;padding:clamp(14px,2.1vw,22px);display:flex;flex-direction:column;gap:12px;">
           <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;">
             <div>
               <div style="font-family:var(--font-mono);font-size:11px;color:${vm.victory ? 'var(--emerald-win)' : 'var(--amber-warn)'};">
@@ -2813,6 +3836,8 @@ export class SovereignHUD {
             </div>
           </div>
 
+          ${duelVerdictHtml}
+
           ${
             vm.unlockedRelicTitle || vm.unlockedClueTitle
               ? `
@@ -2835,32 +3860,87 @@ export class SovereignHUD {
               : ''
           }
 
-          <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:10px;">
+          ${leaderboardHtml}
+
+          <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;">
             ${
-              typeof vm.endlessCanContinueFloor === 'number' && (vm.endlessShieldsLeft ?? 0) > 0
+              duelShareUrl
                 ? `
-              <button type="button" class="ws-btn-obsidian" id="ws-summary-hub">BANK HAUL & EXTRACT</button>
-              <button type="button" class="ws-btn-gold" id="ws-endless-deeper">
-                DESCEND TO FLOOR ${vm.endlessCanContinueFloor} (${hudIcon('shield', 13)}×${vm.endlessShieldsLeft}) ▶
+              <button
+                type="button"
+                class="ws-btn-obsidian"
+                id="ws-btn-share-duel-link"
+                data-duel-url="${escapeHtml(duelShareUrl)}"
+                style="display:inline-flex;align-items:center;gap:7px;box-shadow:inset 3px 0 0 var(--gold-bright);color:var(--gold-bright);"
+              >
+                ${hudIcon('share', 14)}<span id="ws-share-duel-label">${escapeHtml(duelShareBtnLabel)}</span>
               </button>
             `
-                : vm.retryMissionId
-                  ? `
-              <button type="button" class="ws-btn-obsidian" id="ws-summary-continue">RETURN TO MERIDIAN HUB</button>
-              <button type="button" class="ws-btn-gold" id="ws-retry-mission">↻ RETRY MISSION ▶</button>
-            `
-                  : `
-              <button type="button" class="ws-btn-gold" id="ws-summary-continue">
-                ${vm.flightForkPending ? 'CHART ACT I FLIGHT FORK ▶' : 'CONTINUE TO MERIDIAN HUB ▶'}
-              </button>
-            `
+                : '<span></span>'
             }
+
+            <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:10px;">
+              ${
+                typeof vm.endlessCanContinueFloor === 'number' && (vm.endlessShieldsLeft ?? 0) > 0
+                  ? `
+                <button type="button" class="ws-btn-obsidian" id="ws-summary-hub">BANK HAUL &amp; EXTRACT</button>
+                <button type="button" class="ws-btn-gold" id="ws-endless-deeper">
+                  DESCEND TO FLOOR ${vm.endlessCanContinueFloor} (${hudIcon('shield', 13)}×${vm.endlessShieldsLeft}) ▶
+                </button>
+              `
+                  : vm.retryMissionId
+                    ? `
+                <button type="button" class="ws-btn-obsidian" id="ws-summary-continue">RETURN TO MERIDIAN HUB</button>
+                <button type="button" class="ws-btn-gold" id="ws-retry-mission">↻ RETRY MISSION ▶</button>
+              `
+                    : `
+                <button type="button" class="ws-btn-gold" id="ws-summary-continue">
+                  ${vm.flightForkPending ? 'CHART ACT I FLIGHT FORK ▶' : 'CONTINUE TO MERIDIAN HUB ▶'}
+                </button>
+              `
+              }
+            </div>
           </div>
         </div>
       </div>
     `;
 
     this.bindTopBarEvents();
+
+    let lbExpanded = false;
+    this.root.querySelector('#ws-leaderboard-toggle')?.addEventListener('click', (ev) => {
+      if (!lb) return;
+      lbExpanded = !lbExpanded;
+      this.haptics.uiTap();
+      this.audio.playSfx('ui_tap');
+      const rowsEl = this.root.querySelector<HTMLElement>('#ws-leaderboard-rows');
+      if (rowsEl) {
+        rowsEl.innerHTML = renderLeaderboardRows(lbExpanded);
+      }
+      const btn = ev.currentTarget as HTMLButtonElement;
+      btn.textContent = lbExpanded ? 'Compact ▴' : 'Show Top 20 ▾';
+    });
+
+    this.root.querySelector('#ws-btn-share-duel-link')?.addEventListener('click', async () => {
+      if (!duelShareUrl) return;
+      this.haptics.uiTap();
+      this.audio.playSfx('ui_tap');
+      const shareTitle = `World's Smartest 1v1 Duel · ${vm.challengerName}`;
+      const shareText =
+        duelVerdict?.shareCaption ||
+        `${vm.challengerName} scored ${vm.playerScore.toLocaleString('en-US')} PTS (${vm.correctCount}/${vm.totalCount}). Beat my exact Ghost splits!`;
+      const lbl = this.root.querySelector<HTMLElement>('#ws-share-duel-label');
+      try {
+        await this.actions.onShareDuelLink?.(duelShareUrl, shareTitle, shareText);
+        if (lbl) {
+          lbl.textContent = '✓ Copied 1-Tap Duel Link!';
+        }
+      } catch {
+        if (lbl) {
+          lbl.textContent = '✓ Duel Link Ready!';
+        }
+      }
+    });
 
     this.root.querySelector('#ws-copy-daily')?.addEventListener('click', (ev) => {
       if (!vm.dailyShareText) return;

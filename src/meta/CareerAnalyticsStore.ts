@@ -4,7 +4,7 @@
 //  • 2,000-event detailed historical ring-buffer (`QuestionAnalyticsEvent`)
 //  • Daily UTC/local date buckets (`YYYY-MM-DD`: right, wrong, acc, avgMs, streak, pts)
 //  • Session ELO & score trajectory history (`SessionAnalyticsEntry`)
-//  • Lifetime per-domain (0..11), per-morph (5 archetypes), per-peel-tier (1..3),
+//  • Lifetime per-domain (0..11), per-morph (6 archetypes), per-peel-tier (1..3),
 //    per-mode, Overclock conviction, and 5-bucket response-time counters!
 //  • Seamless backfill from `PassportSystem` / `ForgeEngine` on existing saves!
 // ============================================================================
@@ -25,9 +25,25 @@ export type AnalyticsArchetype =
   | 'CODEX_DUAL_RING'
   | 'CALIBRATOR_DIAL'
   | 'GAUNTLET_SHATTER'
-  | 'HERO_ARTIFACT_SYNTHESIS';
+  | 'HERO_ARTIFACT_SYNTHESIS'
+  | 'GLOBE_PIN_DROP';
 
 export type AnalyticsTimeRange = 'LAST_25' | 'DAYS_7' | 'DAYS_30' | 'ALL_TIME';
+
+export type AnalyticsDifficultyTier =
+  | 'MIDDLE_SCHOOL'
+  | 'HIGH_SCHOOL'
+  | 'COLLEGE'
+  | 'GRADUATE'
+  | 'MENSA';
+
+export const ALL_ANALYTICS_DIFFICULTY_TIERS: readonly AnalyticsDifficultyTier[] = [
+  'MIDDLE_SCHOOL',
+  'HIGH_SCHOOL',
+  'COLLEGE',
+  'GRADUATE',
+  'MENSA',
+];
 
 export type SpecialFeatKind =
   | 'PASSPORT_STAMPED'
@@ -43,7 +59,11 @@ export type SpecialFeatKind =
   | 'ACT1_CLEARED'
   | 'CAMPAIGN_COMPLETED'
   | 'ENDING_UNLOCKED'
-  | 'BLACK_SALON_VICTORY';
+  | 'BLACK_SALON_VICTORY'
+  | 'DUEL_CHALLENGE_PLAYED'
+  | 'DUEL_GHOST_BEATEN'
+  | 'SRS_REVIEW_COMPLETED'
+  | 'OFFLINE_PACK_CACHED';
 
 export interface QuestionAnalyticsInput {
   ts?: number;
@@ -52,6 +72,9 @@ export interface QuestionAnalyticsInput {
   mode?: AnalyticsGameMode | string;
   hubId?: string;
   archetype?: AnalyticsArchetype | string;
+  difficultyTier?: AnalyticsDifficultyTier | string;
+  globeDistanceKm?: number;
+  hasVisualPlate?: boolean;
   correct: boolean;
   peelTier?: 1 | 2 | 3;
   overclockCharge01?: number;
@@ -155,6 +178,10 @@ export interface MatchCompletedAnalyticsInput {
   utcDate?: string;
   /** True when replaying an already-completed Daily Global Feed in practice mode */
   isReplay?: boolean;
+  /** Optional calibrated 5-tier difficulty preset played (`MIDDLE_SCHOOL`..`MENSA`) */
+  difficultyPreset?: AnalyticsDifficultyTier | string;
+  /** Alias for `difficultyPreset` */
+  difficultyTier?: AnalyticsDifficultyTier | string;
 }
 
 export interface SpecialFeatCounters {
@@ -183,6 +210,17 @@ export interface SpecialFeatCounters {
   completedDailyDates: string[];
   maxEndlessDepth: number;
   achievedEndings: EndingId[];
+  // v2.0 Expansion Counters (Difficulty Ladder, 3D Globe Pin-Drop, Visual Blueprints, Duels, SRS, Offline)
+  difficultyRoundsCleared: Record<AnalyticsDifficultyTier, number>;
+  difficultyBestAccuracyPct: Record<AnalyticsDifficultyTier, number>;
+  globeBullseyes300Km: number;
+  globeNoPeel120Km: number;
+  visualBlueprintsSolved: number;
+  tier1ColdDomains: number[];
+  duelChallengesPlayed: number;
+  duelGhostWins: number;
+  srsReviewsCompleted: number;
+  offlinePacksCached: number;
 }
 
 export interface OverclockConvictionStats {
@@ -243,6 +281,7 @@ export const ALL_ANALYTICS_ARCHETYPES: readonly AnalyticsArchetype[] = [
   'CALIBRATOR_DIAL',
   'GAUNTLET_SHATTER',
   'HERO_ARTIFACT_SYNTHESIS',
+  'GLOBE_PIN_DROP',
 ];
 
 export const ALL_ANALYTICS_MODES: readonly AnalyticsGameMode[] = [
@@ -294,6 +333,27 @@ function normalizeMode(raw?: string, isBlackSalon?: boolean): AnalyticsGameMode 
   return 'CAMPAIGN';
 }
 
+function normalizeDifficultyTier(raw?: string): AnalyticsDifficultyTier | null {
+  if (!raw) return null;
+  const up = raw.trim().toUpperCase();
+  if (up === 'MIDDLE_SCHOOL' || up === 'MID_SCHOOL' || up === 'EASY') return 'MIDDLE_SCHOOL';
+  if (up === 'HIGH_SCHOOL') return 'HIGH_SCHOOL';
+  if (up === 'COLLEGE' || up === 'MEDIUM') return 'COLLEGE';
+  if (up === 'GRADUATE' || up === 'HARD') return 'GRADUATE';
+  if (up === 'MENSA' || up === 'GENIUS') return 'MENSA';
+  return null;
+}
+
+function createEmptyDifficultyMap(): Record<AnalyticsDifficultyTier, number> {
+  return {
+    MIDDLE_SCHOOL: 0,
+    HIGH_SCHOOL: 0,
+    COLLEGE: 0,
+    GRADUATE: 0,
+    MENSA: 0,
+  };
+}
+
 function normalizeArchetype(raw?: string): AnalyticsArchetype {
   const up = (raw ?? 'SIGHTLINE_LOCK').toUpperCase();
   if (
@@ -301,7 +361,8 @@ function normalizeArchetype(raw?: string): AnalyticsArchetype {
     up === 'CODEX_DUAL_RING' ||
     up === 'CALIBRATOR_DIAL' ||
     up === 'GAUNTLET_SHATTER' ||
-    up === 'HERO_ARTIFACT_SYNTHESIS'
+    up === 'HERO_ARTIFACT_SYNTHESIS' ||
+    up === 'GLOBE_PIN_DROP'
   ) {
     return up;
   }
@@ -323,6 +384,7 @@ function createDefaultState(): CareerAnalyticsState {
     CALIBRATOR_DIAL: { right: 0, wrong: 0 },
     GAUNTLET_SHATTER: { right: 0, wrong: 0 },
     HERO_ARTIFACT_SYNTHESIS: { right: 0, wrong: 0 },
+    GLOBE_PIN_DROP: { right: 0, wrong: 0 },
   };
 
   const byPeelTier: Record<'1' | '2' | '3', RightWrongCounter> = {
@@ -400,6 +462,16 @@ function createDefaultState(): CareerAnalyticsState {
       completedDailyDates: [],
       maxEndlessDepth: 0,
       achievedEndings: [],
+      difficultyRoundsCleared: createEmptyDifficultyMap(),
+      difficultyBestAccuracyPct: createEmptyDifficultyMap(),
+      globeBullseyes300Km: 0,
+      globeNoPeel120Km: 0,
+      visualBlueprintsSolved: 0,
+      tier1ColdDomains: [],
+      duelChallengesPlayed: 0,
+      duelGhostWins: 0,
+      srsReviewsCompleted: 0,
+      offlinePacksCached: 0,
     },
     dailyBuckets: {},
     sessions: [],
@@ -529,6 +601,26 @@ export class CareerAnalyticsStore {
           completedDailyDates: Array.isArray(parsed.feats?.completedDailyDates)
             ? parsed.feats!.completedDailyDates.filter((d): d is string => typeof d === 'string').slice(-365)
             : [],
+          difficultyRoundsCleared: {
+            ...createEmptyDifficultyMap(),
+            ...(parsed.feats?.difficultyRoundsCleared ?? {}),
+          },
+          difficultyBestAccuracyPct: {
+            ...createEmptyDifficultyMap(),
+            ...(parsed.feats?.difficultyBestAccuracyPct ?? {}),
+          },
+          globeBullseyes300Km: Math.max(0, Math.floor(Number(parsed.feats?.globeBullseyes300Km) || 0)),
+          globeNoPeel120Km: Math.max(0, Math.floor(Number(parsed.feats?.globeNoPeel120Km) || 0)),
+          visualBlueprintsSolved: Math.max(0, Math.floor(Number(parsed.feats?.visualBlueprintsSolved) || 0)),
+          tier1ColdDomains: Array.isArray(parsed.feats?.tier1ColdDomains)
+            ? parsed.feats!.tier1ColdDomains
+                .map((n) => Math.floor(Number(n)))
+                .filter((n) => Number.isFinite(n) && n >= 0 && n <= 11)
+            : [],
+          duelChallengesPlayed: Math.max(0, Math.floor(Number(parsed.feats?.duelChallengesPlayed) || 0)),
+          duelGhostWins: Math.max(0, Math.floor(Number(parsed.feats?.duelGhostWins) || 0)),
+          srsReviewsCompleted: Math.max(0, Math.floor(Number(parsed.feats?.srsReviewsCompleted) || 0)),
+          offlinePacksCached: Math.max(0, Math.floor(Number(parsed.feats?.offlinePacksCached) || 0)),
         },
         dailyBuckets:
           parsed.dailyBuckets && typeof parsed.dailyBuckets === 'object'
@@ -664,6 +756,7 @@ export class CareerAnalyticsStore {
         CALIBRATOR_DIAL: { ...this.state.byArchetype.CALIBRATOR_DIAL },
         GAUNTLET_SHATTER: { ...this.state.byArchetype.GAUNTLET_SHATTER },
         HERO_ARTIFACT_SYNTHESIS: { ...this.state.byArchetype.HERO_ARTIFACT_SYNTHESIS },
+        GLOBE_PIN_DROP: { ...this.state.byArchetype.GLOBE_PIN_DROP },
       },
       byPeelTier: {
         '1': { ...this.state.byPeelTier['1'] },
@@ -686,6 +779,9 @@ export class CareerAnalyticsStore {
         openedLatchKeys: [...this.state.feats.openedLatchKeys],
         achievedEndings: [...this.state.feats.achievedEndings],
         completedDailyDates: [...this.state.feats.completedDailyDates],
+        difficultyRoundsCleared: { ...this.state.feats.difficultyRoundsCleared },
+        difficultyBestAccuracyPct: { ...this.state.feats.difficultyBestAccuracyPct },
+        tier1ColdDomains: [...this.state.feats.tier1ColdDomains],
       },
       dailyBuckets: { ...this.state.dailyBuckets },
       sessions: [...this.state.sessions],
@@ -802,6 +898,24 @@ export class CareerAnalyticsStore {
 
       if (ev.bullseye && archetype === 'CALIBRATOR_DIAL') {
         this.state.feats.calibratorBullseyes += 1;
+      }
+      if (archetype === 'GLOBE_PIN_DROP') {
+        const distKm =
+          typeof input.globeDistanceKm === 'number' && Number.isFinite(input.globeDistanceKm)
+            ? Math.max(0, input.globeDistanceKm)
+            : null;
+        if (ev.bullseye || (distKm !== null && distKm <= 300)) {
+          this.state.feats.globeBullseyes300Km += 1;
+        }
+        if (peelTier === 1 && distKm !== null && distKm <= 120) {
+          this.state.feats.globeNoPeel120Km += 1;
+        }
+      }
+      if (input.hasVisualPlate) {
+        this.state.feats.visualBlueprintsSolved += 1;
+      }
+      if (peelTier === 1 && !this.state.feats.tier1ColdDomains.includes(domainId)) {
+        this.state.feats.tier1ColdDomains.push(domainId);
       }
       if (archetype === 'CODEX_DUAL_RING' && (input.firstTryCodex ?? peelTier === 1)) {
         this.state.feats.codexFirstTryLocks += 1;
@@ -963,6 +1077,19 @@ export class CareerAnalyticsStore {
       this.state.feats.campaignCompleted = true;
     }
 
+    const diffTier = normalizeDifficultyTier(input.difficultyPreset ?? input.difficultyTier);
+    if (diffTier && total > 0) {
+      const accPct = Math.round((right / total) * 100);
+      this.state.feats.difficultyBestAccuracyPct[diffTier] = Math.max(
+        this.state.feats.difficultyBestAccuracyPct[diffTier] ?? 0,
+        accPct,
+      );
+      if (diffTier === 'MIDDLE_SCHOOL' || input.won || accPct >= 50) {
+        this.state.feats.difficultyRoundsCleared[diffTier] =
+          (this.state.feats.difficultyRoundsCleared[diffTier] ?? 0) + 1;
+      }
+    }
+
     this.state.sessions.push({
       ts,
       dateKey,
@@ -1055,6 +1182,19 @@ export class CareerAnalyticsStore {
       case 'BLACK_SALON_VICTORY':
         this.state.feats.blackSalonWins += 1;
         this.state.feats.ghostTrialWins += 1;
+        break;
+      case 'DUEL_CHALLENGE_PLAYED':
+        this.state.feats.duelChallengesPlayed += 1;
+        break;
+      case 'DUEL_GHOST_BEATEN':
+        this.state.feats.duelChallengesPlayed += 1;
+        this.state.feats.duelGhostWins += 1;
+        break;
+      case 'SRS_REVIEW_COMPLETED':
+        this.state.feats.srsReviewsCompleted += 1;
+        break;
+      case 'OFFLINE_PACK_CACHED':
+        this.state.feats.offlinePacksCached += 1;
         break;
     }
 

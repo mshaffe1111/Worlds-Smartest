@@ -62,6 +62,7 @@ const ARCHETYPE_SHORT_LABELS: Record<AnalyticsArchetype, string> = {
   CALIBRATOR_DIAL: 'Calibrator Dial',
   GAUNTLET_SHATTER: 'Gauntlet Shatter',
   HERO_ARTIFACT_SYNTHESIS: 'Boss Relic Synth',
+  GLOBE_PIN_DROP: 'Globe Pin-Drop',
 };
 
 function pctStr(right: number, wrong: number): string {
@@ -562,7 +563,7 @@ export class CareerAnalyticsDashboardView {
             </div>
             <div class="ws-meta-kpi-cell">
               <span class="ws-meta-kpi-lbl">Streak</span>
-              <span class="ws-meta-kpi-val">${snap.currentStreak} <span style="font-size:12px;color:var(--gold-bright);">/ ${snap.bestStreak}🔥</span></span>
+              <span class="ws-meta-kpi-val">${snap.currentStreak} <span style="font-size:12px;color:var(--gold-bright);">/ ${snap.bestStreak} BEST</span></span>
             </div>
             <div class="ws-meta-kpi-cell">
               <span class="ws-meta-kpi-lbl">Global ELO</span>
@@ -653,7 +654,7 @@ export class CareerAnalyticsDashboardView {
           <div class="ws-meta-section">
             <div class="ws-meta-two-col">
               <div style="display:flex;flex-direction:column;gap:8px;">
-                <h3 class="ws-meta-section-title">4A. 5-Morph &amp; Peel-Tier Matrix</h3>
+                <h3 class="ws-meta-section-title">4A. 6-Morph &amp; Peel-Tier Matrix</h3>
                 <div>
                   ${ALL_ANALYTICS_ARCHETYPES.map((arch) => {
                     const c = snap.byArchetype[arch];
@@ -709,7 +710,7 @@ export class CareerAnalyticsDashboardView {
                           <div class="ws-meta-row" style="flex-wrap:wrap;padding:7px 4px;font-family:var(--font-mono);font-size:11px;box-shadow:inset 2px 0 0 ${ev.correct ? 'var(--emerald-win)' : 'var(--crimson-alert)'};padding-left:10px;">
                             <span style="display:inline-flex;align-items:center;gap:7px;">
                               <span style="font-weight:800;color:${ev.correct ? 'var(--emerald-win)' : 'var(--crimson-alert)'};">
-                                ${ev.correct ? '✓' : ev.backfired ? '💥' : '✕'}
+                                ${ev.correct ? '✓' : ev.backfired ? '✕!' : '✕'}
                               </span>
                               <img src="./${escapeMetaHtml(dom.medallionUrl)}" alt="" style="width:16px;height:16px;object-fit:contain;"/>
                               <span style="color:var(--ivory-primary);">${escapeMetaHtml(dom.shortName)}</span>

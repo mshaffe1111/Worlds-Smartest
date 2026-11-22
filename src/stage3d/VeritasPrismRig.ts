@@ -55,6 +55,12 @@ function createTroikaMesh(): TroikaTextMesh {
   return instance;
 }
 
+export interface VisualBlueprintPlateSpec {
+  readonly imageUrl: string;
+  readonly caption?: string;
+  readonly aspect?: 'SQUARE' | 'WIDE';
+}
+
 export interface SightlineLockSpec {
   options: string[];
   domainId?: number;
@@ -64,6 +70,7 @@ export interface SightlineLockSpec {
   eliminatedIndices?: number[];
   stressFractureIndices?: number[];
   peopleHeatmapWeights?: number[];
+  visualPlate?: VisualBlueprintPlateSpec;
 }
 
 export interface CodexDualRingSpec {
@@ -112,12 +119,26 @@ export interface GlobeFlightArcSpec {
   highlight?: boolean;
 }
 
+export interface GlobePinDropVisualSpec {
+  readonly targetLat: number;
+  readonly targetLon: number;
+  readonly targetLabel: string;
+  readonly bullseyeKm?: number;
+  readonly goldKm?: number;
+  readonly grazeKm?: number;
+  readonly domainId?: number;
+  readonly peelTier?: 1 | 2 | 3;
+}
+
 export interface WorldGlobeSpec {
   focusedVenue?: VenueCode;
   unlockedVenues?: VenueCode[];
   completedVenues?: VenueCode[];
   showAct1FlightFork?: boolean;
   customArcs?: GlobeFlightArcSpec[];
+  /** Activates 6th morph interactive `GLOBE_PIN_DROP` mode on `meridian_world_globe.glb`. */
+  pinDropMode?: boolean;
+  pinDrop?: GlobePinDropVisualSpec;
 }
 
 export type MorphSpecMap = {
@@ -156,6 +177,7 @@ export interface RaycastHitResult {
     | 'ARTIFACT';
   facetIndex?: number;
   venueCode?: VenueCode;
+  globeCoords?: { lat: number; lon: number };
 }
 
 interface FacetEntry {
@@ -322,14 +344,412 @@ function normalizeAngleSigned(rad: number): number {
   return a - Math.PI;
 }
 
-function latLonToSphereVec(latDeg: number, lonDeg: number, radius: number): THREE.Vector3 {
-  const lat = THREE.MathUtils.degToRad(latDeg);
+export const GLOBE_SURFACE_RADIUS = 0.55;
+export const EARTH_MEAN_RADIUS_KM = 6371.0088;
+const GLOBE_MAX_PITCH_RAD = THREE.MathUtils.degToRad(55);
+const MAX_VISUAL_PLATE_CACHE = 24;
+
+/**
+ * Exact spherical projection aligned 1:1 with `meridian_world_globe.glb`'s `Globe_Sphere` geometry
+ * (`lat` in `-90..90`, `lon` in `-180..180`, `+Z` = Prime Meridian Equator `(0, 0)`, `+Y` = North Pole,
+ * `+X` = `(0, +90°E)`).
+ */
+export function latLonToSphereVec(
+  latDeg: number,
+  lonDeg: number,
+  radius = GLOBE_SURFACE_RADIUS,
+  out?: THREE.Vector3
+): THREE.Vector3 {
+  const lat = THREE.MathUtils.degToRad(THREE.MathUtils.clamp(latDeg, -90, 90));
   const lon = THREE.MathUtils.degToRad(lonDeg);
-  return new THREE.Vector3(
-    Math.cos(lat) * Math.sin(lon) * radius,
+  const cosLat = Math.cos(lat);
+  const v = out ?? new THREE.Vector3();
+  return v.set(
+    cosLat * Math.sin(lon) * radius,
     Math.sin(lat) * radius,
-    Math.cos(lat) * Math.cos(lon) * radius
+    cosLat * Math.cos(lon) * radius
   );
+}
+
+/**
+ * Exact inverse spherical projection from a `Globe_Spin_Pivot`-local surface vector back to
+ * WGS84 degrees (`lat` in `-90..90`, `lon` in `-180..180`). Round-trip error `< 1e-12°`.
+ */
+export function sphereVecToLatLon(localPoint: THREE.Vector3): { lat: number; lon: number } {
+  const len = localPoint.length();
+  if (len < 1e-8) {
+    return { lat: 0, lon: 0 };
+  }
+  const ny = THREE.MathUtils.clamp(localPoint.y / len, -1, 1);
+  const lat = THREE.MathUtils.radToDeg(Math.asin(ny));
+  const lon = THREE.MathUtils.radToDeg(Math.atan2(localPoint.x, localPoint.z));
+  return { lat, lon };
+}
+
+/**
+ * Great-circle Haversine distance in kilometers (`R = 6,371.0088 km`).
+ */
+export function computeGreatCircleDistanceKm(
+  lat1Deg: number,
+  lon1Deg: number,
+  lat2Deg: number,
+  lon2Deg: number
+): number {
+  const lat1 = THREE.MathUtils.degToRad(lat1Deg);
+  const lat2 = THREE.MathUtils.degToRad(lat2Deg);
+  const dLat = lat2 - lat1;
+  const dLon = THREE.MathUtils.degToRad(lon2Deg - lon1Deg);
+  const sinLat = Math.sin(dLat * 0.5);
+  const sinLon = Math.sin(dLon * 0.5);
+  const a =
+    sinLat * sinLat + Math.cos(lat1) * Math.cos(lat2) * sinLon * sinLon;
+  const c = 2 * Math.atan2(Math.sqrt(Math.max(0, a)), Math.sqrt(Math.max(0, 1 - a)));
+  return EARTH_MEAN_RADIUS_KM * c;
+}
+
+/**
+ * Formats a comma-safe Troika 3D Globe Pin-Drop reveal label (`"FENWAY PARK\n142 km · BULLSEYE"`).
+ */
+export function formatGlobeRevealReadout(
+  targetLabel: string,
+  distanceKm?: number,
+  bullseyeKm = 300,
+  goldKm = 1000,
+  grazeKm = 2200
+): string {
+  const cleanLabel = sanitize3DYearCommas(targetLabel || 'TARGET').toUpperCase();
+  if (distanceKm === undefined || !Number.isFinite(distanceKm)) {
+    return cleanLabel;
+  }
+  const kmRounded = Math.max(0, Math.round(distanceKm));
+  const tier =
+    kmRounded <= bullseyeKm
+      ? 'BULLSEYE'
+      : kmRounded <= goldKm
+        ? 'GOLD LOCK'
+        : kmRounded <= grazeKm
+          ? 'GRAZE'
+          : 'MISS';
+  const kmText =
+    kmRounded >= 1000 ? kmRounded.toLocaleString('en-US') : String(kmRounded);
+  return `${cleanLabel}\n${kmText} km · ${tier}`;
+}
+
+interface GlobeTactileUniforms {
+  uTime: { value: number };
+  uModeMix: { value: number };
+  uHintBandActive: { value: number };
+  uHintLatDeg: { value: number };
+  uHintBandHalfDeg: { value: number };
+  uRevealActive: { value: number };
+  uTargetDir: { value: THREE.Vector3 };
+  uBullseyeRad: { value: number };
+  uGoldRad: { value: number };
+  uGrazeRad: { value: number };
+}
+
+/**
+ * Analytical WebGL2-safe spherical graticule, Equator/Prime Meridian 24K gold hairlines,
+ * Peel Tier 2/3 glowing latitude band, and post-reveal concentric geodesic target rings.
+ * Evaluates `(lat, lon)` directly from normalized local sphere coordinates -> 0% UV seam error!
+ */
+function createGlobeTactileOverlayMaterial(): {
+  material: THREE.ShaderMaterial;
+  uniforms: GlobeTactileUniforms;
+} {
+  const uniforms: GlobeTactileUniforms = {
+    uTime: { value: 0 },
+    uModeMix: { value: 0 },
+    uHintBandActive: { value: 0 },
+    uHintLatDeg: { value: 0 },
+    uHintBandHalfDeg: { value: 14 },
+    uRevealActive: { value: 0 },
+    uTargetDir: { value: new THREE.Vector3(0, 0, 1) },
+    uBullseyeRad: { value: 300 / EARTH_MEAN_RADIUS_KM },
+    uGoldRad: { value: 1000 / EARTH_MEAN_RADIUS_KM },
+    uGrazeRad: { value: 2200 / EARTH_MEAN_RADIUS_KM },
+  };
+
+  const material = new THREE.ShaderMaterial({
+    uniforms: uniforms as unknown as Record<string, THREE.IUniform>,
+    transparent: true,
+    depthWrite: false,
+    side: THREE.FrontSide,
+    vertexShader: `
+      varying vec3 vLocalPos;
+      varying vec3 vWorldNormal;
+      varying vec3 vViewDir;
+      void main() {
+        vLocalPos = position;
+        vec4 worldPos = modelMatrix * vec4(position, 1.0);
+        vWorldNormal = normalize(mat3(modelMatrix) * normal);
+        vViewDir = normalize(cameraPosition - worldPos.xyz);
+        gl_Position = projectionMatrix * viewMatrix * worldPos;
+      }
+    `,
+    fragmentShader: `
+      uniform float uTime;
+      uniform float uModeMix;
+      uniform float uHintBandActive;
+      uniform float uHintLatDeg;
+      uniform float uHintBandHalfDeg;
+      uniform float uRevealActive;
+      uniform vec3 uTargetDir;
+      uniform float uBullseyeRad;
+      uniform float uGoldRad;
+      uniform float uGrazeRad;
+
+      varying vec3 vLocalPos;
+      varying vec3 vWorldNormal;
+      varying vec3 vViewDir;
+
+      void main() {
+        if (uModeMix < 0.005) discard;
+
+        vec3 n = normalize(vLocalPos);
+        float latRad = asin(clamp(n.y, -1.0, 1.0));
+        float latDeg = degrees(latRad);
+        float lonDeg = (length(n.xz) > 0.0002) ? degrees(atan(n.x, n.z)) : 0.0;
+        float cosLat = max(0.18, cos(latRad));
+
+        // 15-degree analytical lat/lon cartographic graticule (pole-softened)
+        float latMod = abs(mod(latDeg + 7.5, 15.0) - 7.5);
+        float lonMod = abs(mod(lonDeg + 187.5, 15.0) - 7.5) * cosLat;
+        float poleFade = 1.0 - smoothstep(72.0, 84.0, abs(latDeg));
+        float latLine = 1.0 - smoothstep(0.14, 0.44, latMod);
+        float lonLine = (1.0 - smoothstep(0.14, 0.44, lonMod)) * poleFade;
+        float gridMask = max(latLine, lonLine);
+
+        // Luminous 24K gold Equator (0°) & Prime Meridian (0°) hairlines
+        float eqLine = 1.0 - smoothstep(0.24, 0.72, abs(latDeg));
+        float pmFade = 1.0 - smoothstep(76.0, 86.0, abs(latDeg));
+        float pmLine = (1.0 - smoothstep(0.24, 0.72, abs(lonDeg) * cosLat)) * pmFade;
+        float primaryMask = max(eqLine, pmLine);
+
+        // Dashed Tropics (±23.44°) & Polar Circles (±66.56°)
+        float tropicDist = min(abs(abs(latDeg) - 23.44), abs(abs(latDeg) - 66.56));
+        float dash = step(0.45, fract(lonDeg / 6.0));
+        float tropicLine = (1.0 - smoothstep(0.16, 0.48, tropicDist)) * dash;
+
+        // Subtle tactile Fresnel atmospheric rim in Pin-Drop mode
+        float ndv = clamp(dot(normalize(vWorldNormal), normalize(vViewDir)), 0.0, 1.0);
+        float fresnel = pow(max(0.0001, 1.0 - ndv), 2.8);
+
+        vec3 col = vec3(0.0);
+        float alpha = 0.0;
+
+        vec3 cyanGrid = vec3(0.32, 0.82, 1.0);
+        vec3 goldLine = vec3(1.0, 0.87, 0.48);
+
+        col += cyanGrid * (gridMask * 0.16 + fresnel * 0.22);
+        alpha = max(alpha, gridMask * 0.20 + fresnel * 0.24);
+
+        col += goldLine * (primaryMask * 0.78 + tropicLine * 0.28);
+        alpha = max(alpha, primaryMask * 0.64 + tropicLine * 0.24);
+
+        // Peel Tier 2 / Tier 3 glowing latitude band around targetLat
+        if (uHintBandActive > 0.01) {
+          float dLat = abs(latDeg - uHintLatDeg);
+          float halfW = max(2.5, uHintBandHalfDeg);
+          float inside = 1.0 - smoothstep(halfW - 1.4, halfW + 0.6, dLat);
+          float edgeArg = (dLat - halfW) / 0.85;
+          float edge = exp(-(edgeArg * edgeArg));
+          float scan = 0.76 + 0.24 * sin(radians(lonDeg * 3.0) - uTime * 2.8);
+          vec3 bandCol = mix(vec3(0.30, 0.86, 1.0), vec3(1.0, 0.85, 0.42), clamp(uHintBandActive - 0.35, 0.0, 1.0));
+          float bandStrength = (inside * 0.26 + edge * 0.78) * scan * uHintBandActive;
+          col += bandCol * bandStrength;
+          alpha = max(alpha, clamp(bandStrength * 0.85, 0.0, 0.82));
+        }
+
+        // Post-Reveal concentric geodesic Bullseye & Gold Lock radar rings
+        if (uRevealActive > 0.01) {
+          vec3 tDir = normalize(uTargetDir);
+          float ang = acos(clamp(dot(n, tDir), -1.0, 1.0));
+          float pulse = 0.82 + 0.18 * sin(uTime * 4.2);
+          float bullArg = (ang - uBullseyeRad) / 0.0085;
+          float bullRing = exp(-(bullArg * bullArg));
+          float bullFill = (1.0 - smoothstep(0.0, max(0.002, uBullseyeRad), ang)) * 0.22;
+          float goldArg = (ang - uGoldRad) / 0.0095;
+          float goldRing = exp(-(goldArg * goldArg));
+          float grazeArg = (ang - uGrazeRad) / 0.011;
+          float grazeRing = exp(-(grazeArg * grazeArg));
+
+          vec3 emerald = vec3(0.24, 0.96, 0.66);
+          col += emerald * (bullRing * 0.92 + bullFill) * pulse * uRevealActive;
+          col += goldLine * (goldRing * 0.68 + grazeRing * 0.30) * uRevealActive;
+          alpha = max(alpha, clamp((bullRing * 0.85 + bullFill + goldRing * 0.58 + grazeRing * 0.26) * uRevealActive, 0.0, 0.88));
+        }
+
+        gl_FragColor = vec4(col, clamp(alpha * uModeMix, 0.0, 0.92));
+      }
+    `,
+  });
+
+  return { material, uniforms };
+}
+
+/**
+ * Fallback procedural equirectangular landmass silhouette texture (`flipY = false`, aligned 1:1
+ * with `u = (lon + 180) / 360`, `v = (90 - lat) / 180`) used only if `meridian_world_globe.glb`
+ * fails to load.
+ */
+function createProceduralGlobeEarthTexture(): THREE.CanvasTexture | null {
+  if (typeof document === 'undefined') return null;
+  const w = 1024;
+  const h = 512;
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+
+  // Deep midnight sapphire ocean
+  const grad = ctx.createLinearGradient(0, 0, 0, h);
+  grad.addColorStop(0, '#07142e');
+  grad.addColorStop(0.5, '#091c3e');
+  grad.addColorStop(1, '#07142e');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, w, h);
+
+  const toXY = (lat: number, lon: number): [number, number] => [
+    ((lon + 180) / 360) * w,
+    ((90 - lat) / 180) * h,
+  ];
+
+  const drawPoly = (coords: Array<[number, number]>) => {
+    if (coords.length < 3) return;
+    ctx.beginPath();
+    coords.forEach(([lat, lon], idx) => {
+      const [px, py] = toXY(lat, lon);
+      if (idx === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    });
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  };
+
+  // Accurate simplified WGS84 continental silhouettes ([lat, lon])
+  ctx.fillStyle = '#cca24c';
+  ctx.strokeStyle = '#f2d382';
+  ctx.lineWidth = 2;
+
+  // North America
+  drawPoly([
+    [70, -162], [71, -135], [68, -95], [60, -64], [47, -53], [42, -70],
+    [35, -75], [25, -80], [29, -90], [20, -87], [15, -84], [8, -78],
+    [16, -98], [23, -106], [32, -117], [40, -124], [49, -125], [60, -145],
+    [60, -165],
+  ]);
+  // Greenland & Iceland
+  drawPoly([[82, -35], [76, -18], [60, -44], [68, -54], [78, -68]]);
+  drawPoly([[66, -24], [66, -14], [63.5, -14], [63.5, -23]]);
+  // South America
+  drawPoly([
+    [11, -74], [10, -62], [0, -50], [-6, -35], [-23, -43], [-35, -54],
+    [-55, -67], [-46, -75], [-18, -71], [-5, -81], [7, -78],
+  ]);
+  // Europe + UK
+  drawPoly([
+    [36, -9], [43, -9], [48, -5], [51, 2], [54, 9], [60, 5], [70, 20],
+    [70, 40], [55, 40], [45, 38], [41, 29], [37, 23], [40, 18], [44, 12],
+    [43, 5], [36, -5],
+  ]);
+  drawPoly([[58.5, -6], [58.5, -2], [51, 1.5], [50, -5.5]]);
+  // Africa + Madagascar
+  drawPoly([
+    [35, -6], [37, 10], [31, 32], [12, 44], [11, 51], [-1, 41], [-26, 33],
+    [-34, 20], [-20, 13], [4, 9], [5, -8], [15, -17], [28, -13],
+  ]);
+  drawPoly([[-12, 49], [-25, 47], [-25, 44], [-15, 46]]);
+  // Asia + Japan + SE Asia
+  drawPoly([
+    [70, 40], [74, 105], [68, 170], [60, 165], [44, 136], [38, 128],
+    [31, 122], [22, 114], [10, 106], [1, 104], [16, 97], [22, 88],
+    [8, 77], [23, 68], [25, 57], [13, 45], [31, 35], [41, 29], [55, 40],
+  ]);
+  drawPoly([[44, 145], [40, 141], [35, 140], [31, 131], [34, 130], [39, 139]]);
+  drawPoly([[-6, 106], [-8, 115], [-2, 117], [5, 118], [0, 109]]);
+  // Australia & New Zealand
+  drawPoly([
+    [-12, 131], [-12, 142], [-25, 153], [-38, 148], [-35, 135], [-34, 115],
+    [-21, 114],
+  ]);
+  drawPoly([[-35, 173], [-41, 175], [-46, 167], [-41, 171]]);
+  // Antarctica
+  drawPoly([[-68, -180], [-72, -90], [-66, 0], [-70, 90], [-72, 180], [-90, 180], [-90, -180]]);
+
+  // Equator & Prime Meridian gold hairlines
+  ctx.strokeStyle = 'rgba(255, 224, 132, 0.72)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(0, h * 0.5);
+  ctx.lineTo(w, h * 0.5);
+  ctx.moveTo(w * 0.5, 0);
+  ctx.lineTo(w * 0.5, h);
+  ctx.stroke();
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.flipY = false;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.needsUpdate = true;
+  return tex;
+}
+
+/**
+ * Builds a sphere BufferGeometry whose exact vertex positions & UVs match `meridian_world_globe.glb`
+ * (`x = R cos(lat) sin(lon)`, `y = R sin(lat)`, `z = R cos(lat) cos(lon)`,
+ * `u = (lon + 180) / 360`, `v = (90 - lat) / 180`).
+ */
+function createAlignedGlobeSphereGeometry(
+  radius: number,
+  lonSegments = 64,
+  latSegments = 32
+): THREE.BufferGeometry {
+  const positions: number[] = [];
+  const normals: number[] = [];
+  const uvs: number[] = [];
+  const indices: number[] = [];
+
+  for (let iy = 0; iy <= latSegments; iy++) {
+    const v = iy / latSegments; // 0 = North Pole (+90°), 1 = South Pole (-90°)
+    const latDeg = 90 - v * 180;
+    const latRad = THREE.MathUtils.degToRad(latDeg);
+    const cosLat = Math.cos(latRad);
+    const sinLat = Math.sin(latRad);
+
+    for (let ix = 0; ix <= lonSegments; ix++) {
+      const u = ix / lonSegments; // 0 = -180°, 0.5 = 0° (+Z), 1 = +180°
+      const lonDeg = u * 360 - 180;
+      const lonRad = THREE.MathUtils.degToRad(lonDeg);
+      const nx = cosLat * Math.sin(lonRad);
+      const ny = sinLat;
+      const nz = cosLat * Math.cos(lonRad);
+
+      positions.push(nx * radius, ny * radius, nz * radius);
+      normals.push(nx, ny, nz);
+      uvs.push(u, v);
+    }
+  }
+
+  const stride = lonSegments + 1;
+  for (let iy = 0; iy < latSegments; iy++) {
+    for (let ix = 0; ix < lonSegments; ix++) {
+      const a = iy * stride + ix;
+      const b = a + 1;
+      const c = (iy + 1) * stride + ix;
+      const d = c + 1;
+      indices.push(a, c, b);
+      indices.push(b, c, d);
+    }
+  }
+
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geo.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+  geo.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+  geo.setIndex(indices);
+  return geo;
 }
 
 /**
@@ -376,6 +796,18 @@ export class VeritasPrismRig {
   private prismShutterMats: THREE.MeshStandardMaterial[] = [];
   private readonly glyphTexLoader = new THREE.TextureLoader();
   private readonly glyphTexCache = new Map<string, Promise<THREE.Texture | null>>();
+  private readonly visualPlateTexCache = new Map<string, THREE.Texture>();
+  private readonly visualPlatePending = new Map<string, Promise<THREE.Texture | null>>();
+  private visualPlateLoadToken = 0;
+  private visualPlateGroup: THREE.Group | null = null;
+  private visualPlateBackingMesh: THREE.Mesh | null = null;
+  private visualPlateFrameMesh: THREE.Mesh | null = null;
+  private visualPlateScreenMesh: THREE.Mesh | null = null;
+  private visualPlateScreenMat: THREE.MeshBasicMaterial | null = null;
+  private visualPlateCaptionText: TroikaTextMesh | null = null;
+  private visualPlateAspect: 'SQUARE' | 'WIDE' = 'WIDE';
+  private visualPlateActiveUrl: string | null = null;
+  private visualPlateRevealAnim = 0;
   private facetCarousel: THREE.Object3D | null = null;
   private gimbalOuter: THREE.Object3D | null = null;
   private gimbalEquatorial: THREE.Object3D | null = null;
@@ -473,7 +905,13 @@ export class VeritasPrismRig {
   private titleShowcaseOrbit = false;
 
   private globeLoaded = false;
+  private globeAxisTiltNode: THREE.Object3D | null = null;
+  private globeAxisBaseZ = -0.409;
   private globeSpinPivot: THREE.Object3D | null = null;
+  private globeSphereMesh: THREE.Mesh | null = null;
+  private globeFallbackEarthTex: THREE.CanvasTexture | null = null;
+  private globeTactileOverlayMesh: THREE.Mesh | null = null;
+  private globeTactileUniforms: GlobeTactileUniforms | null = null;
   private globePins = new Map<VenueCode, THREE.Mesh>();
   private globeCityTexts: TroikaTextMesh[] = [];
   private globeArcsGroup = new THREE.Group();
@@ -481,8 +919,25 @@ export class VeritasPrismRig {
   private globeYaw = -THREE.MathUtils.degToRad(6.14);
   private globeTargetYaw = -THREE.MathUtils.degToRad(6.14);
   private globeYawVel = 0;
+  private globePitch = 0;
+  private globeTargetPitch = 0;
+  private globePitchVel = 0;
   private isDraggingGlobe = false;
   private focusedGlobeVenue: VenueCode = 'ch';
+  private globePinDropMode = false;
+  private globePinDropSpec: GlobePinDropVisualSpec | null = null;
+  private globeCandidateGroup: THREE.Group | null = null;
+  private globeCandidatePulseRing: THREE.Mesh | null = null;
+  private globeCandidateCoords: { lat: number; lon: number } | null = null;
+  private globeTargetGroup: THREE.Group | null = null;
+  private globeTargetPulseRing: THREE.Mesh | null = null;
+  private globeRevealArcGroup = new THREE.Group();
+  private globeRevealArcMesh: THREE.Mesh | null = null;
+  private globeRevealArcTotalIndices = 0;
+  private globeRevealArcAnim = 0;
+  private globeRevealReadout: TroikaTextMesh | null = null;
+  private readonly globeRevealReadoutOutward = new THREE.Vector3(0, 0, 1);
+  private readonly _axisY = new THREE.Vector3(0, 1, 0);
 
   private trophyLoaded = false;
   private trophyCrown: THREE.Object3D | null = null;
@@ -635,6 +1090,13 @@ export class VeritasPrismRig {
 
     if (switching) {
       this.morphTransitionScale = 0.88;
+    }
+
+    if (archetype !== 'SIGHTLINE_LOCK') {
+      this.clearVisualBlueprintPlate();
+    }
+    if (archetype !== 'WORLD_GLOBE') {
+      this.globePinDropMode = false;
     }
 
     switch (archetype) {
@@ -1174,6 +1636,12 @@ export class VeritasPrismRig {
     if (spec.peelTier === 2 || spec.peelTier === 3) {
       this.pullCrownPeel(spec.peelTier, spec.eliminatedIndices, false);
     }
+
+    if (spec.visualPlate?.imageUrl) {
+      this.setVisualBlueprintPlate(spec.visualPlate);
+    } else {
+      this.clearVisualBlueprintPlate();
+    }
   }
 
   public setDomainPalette(domainId: number): void {
@@ -1248,6 +1716,272 @@ export class VeritasPrismRig {
     }
     parent.add(glyph);
     this.activeHologramGlyph = glyph;
+  }
+
+  private resolveVisualAssetUrl(url: string): string {
+    const trimmed = url.trim();
+    if (/^(https?:|data:|blob:)/i.test(trimmed)) {
+      return trimmed;
+    }
+    const stripped = trimmed.replace(/^\.?\//, '');
+    return `${this.baseUrl}${stripped}`;
+  }
+
+  private buildVisualPlateFrameGeometry(width: number, height: number): THREE.ExtrudeGeometry {
+    const hw = width * 0.5;
+    const hh = height * 0.5;
+    const border = 0.011;
+    const ch = 0.022;
+    const outer = new THREE.Shape();
+    outer.moveTo(-(hw + border) + ch, -(hh + border));
+    outer.lineTo(hw + border - ch, -(hh + border));
+    outer.lineTo(hw + border, -(hh + border) + ch);
+    outer.lineTo(hw + border, hh + border - ch);
+    outer.lineTo(hw + border - ch, hh + border);
+    outer.lineTo(-(hw + border) + ch, hh + border);
+    outer.lineTo(-(hw + border), hh + border - ch);
+    outer.lineTo(-(hw + border), -(hh + border) + ch);
+    outer.closePath();
+
+    const hole = new THREE.Path();
+    const ihw = hw - 0.002;
+    const ihh = hh - 0.002;
+    const ich = ch * 0.72;
+    hole.moveTo(-ihw + ich, -ihh);
+    hole.lineTo(ihw - ich, -ihh);
+    hole.lineTo(ihw, -ihh + ich);
+    hole.lineTo(ihw, ihh - ich);
+    hole.lineTo(ihw - ich, ihh);
+    hole.lineTo(-ihw + ich, ihh);
+    hole.lineTo(-ihw, ihh - ich);
+    hole.lineTo(-ihw, -ihh + ich);
+    hole.closePath();
+    outer.holes.push(hole);
+
+    const geo = new THREE.ExtrudeGeometry(outer, {
+      depth: 0.012,
+      bevelEnabled: true,
+      bevelSegments: 2,
+      steps: 1,
+      bevelSize: 0.0025,
+      bevelThickness: 0.0025,
+    });
+    geo.center();
+    return geo;
+  }
+
+  private ensureVisualPlateRig(): void {
+    if (this.visualPlateGroup) return;
+
+    const group = new THREE.Group();
+    group.name = 'SapphireVisualBlueprintPlate';
+    // Suspended cleanly above the front Sightline answer facet & strictly inside Portrait `12.5..44.5 dvh`
+    group.position.set(0, 0.77, 0.25);
+    group.rotation.x = 0.08;
+    group.visible = false;
+
+    const w = 0.44;
+    const h = 0.275;
+
+    // Deep smoked-sapphire backing slab (transmission: 0 -> zero extra render pass!)
+    const backing = new THREE.Mesh(
+      new THREE.PlaneGeometry(w + 0.018, h + 0.018),
+      new THREE.MeshBasicMaterial({
+        color: 0x050b18,
+        transparent: true,
+        opacity: 0.94,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+      })
+    );
+    backing.position.z = -0.004;
+    backing.renderOrder = 6;
+    group.add(backing);
+    this.visualPlateBackingMesh = backing;
+
+    // Sculpted chamfered 24K gold bevel frame
+    const frameMat = new THREE.MeshPhysicalMaterial({
+      color: 0xe5be64,
+      metalness: 0.96,
+      roughness: 0.18,
+      clearcoat: 0.35,
+      clearcoatRoughness: 0.14,
+      transmission: 0,
+      envMapIntensity: 0.94,
+    });
+    const frame = new THREE.Mesh(this.buildVisualPlateFrameGeometry(w, h), frameMat);
+    frame.renderOrder = 7;
+    group.add(frame);
+    this.visualPlateFrameMesh = frame;
+
+    // Blueprint SVG/PNG screen plane (SRGBColorSpace, toneMapped: false for razor-crisp cyan/gold lines)
+    const screenMat = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.98,
+      toneMapped: false,
+      depthWrite: false,
+    });
+    const screen = new THREE.Mesh(new THREE.PlaneGeometry(w, h), screenMat);
+    screen.position.z = 0.008;
+    screen.renderOrder = 8;
+    group.add(screen);
+    this.visualPlateScreenMesh = screen;
+    this.visualPlateScreenMat = screenMat;
+
+    // Subtle comma-safe gold blueprint caption underneath the frame
+    const caption = createTroikaMesh();
+    caption.fontSize = 0.0145;
+    caption.fontWeight = 'bold';
+    caption.letterSpacing = 0.04;
+    caption.maxWidth = 0.44;
+    caption.color = 0xffe494;
+    caption.anchorX = 'center';
+    caption.anchorY = 'top';
+    caption.textAlign = 'center';
+    caption.outlineWidth = '14%';
+    caption.outlineColor = 0x02040a;
+    caption.outlineOpacity = 0.96;
+    caption.position.set(0, -(h * 0.5 + 0.018), 0.01);
+    caption.visible = false;
+    group.add(caption);
+    this.visualPlateCaptionText = caption;
+
+    this.prismFloatBody.add(group);
+    this.visualPlateGroup = group;
+  }
+
+  private resizeVisualPlateAspect(aspect: 'SQUARE' | 'WIDE'): void {
+    if (!this.visualPlateGroup || this.visualPlateAspect === aspect) return;
+    this.visualPlateAspect = aspect;
+    const w = aspect === 'SQUARE' ? 0.34 : 0.44;
+    const h = aspect === 'SQUARE' ? 0.285 : 0.275;
+
+    if (this.visualPlateBackingMesh) {
+      this.visualPlateBackingMesh.geometry.dispose();
+      this.visualPlateBackingMesh.geometry = new THREE.PlaneGeometry(w + 0.018, h + 0.018);
+    }
+    if (this.visualPlateFrameMesh) {
+      this.visualPlateFrameMesh.geometry.dispose();
+      this.visualPlateFrameMesh.geometry = this.buildVisualPlateFrameGeometry(w, h);
+    }
+    if (this.visualPlateScreenMesh) {
+      this.visualPlateScreenMesh.geometry.dispose();
+      this.visualPlateScreenMesh.geometry = new THREE.PlaneGeometry(w, h);
+    }
+    if (this.visualPlateCaptionText) {
+      this.visualPlateCaptionText.maxWidth = w;
+      this.visualPlateCaptionText.position.y = -(h * 0.5 + 0.018);
+    }
+  }
+
+  private loadVisualPlateTextureCached(resolvedUrl: string): Promise<THREE.Texture | null> {
+    const hit = this.visualPlateTexCache.get(resolvedUrl);
+    if (hit) {
+      // Refresh LRU recency
+      this.visualPlateTexCache.delete(resolvedUrl);
+      this.visualPlateTexCache.set(resolvedUrl, hit);
+      return Promise.resolve(hit);
+    }
+
+    const inflight = this.visualPlatePending.get(resolvedUrl);
+    if (inflight) return inflight;
+
+    const promise = new Promise<THREE.Texture | null>((resolve) => {
+      this.glyphTexLoader.load(
+        resolvedUrl,
+        (tex) => {
+          tex.colorSpace = THREE.SRGBColorSpace;
+          tex.minFilter = THREE.LinearFilter;
+          tex.magFilter = THREE.LinearFilter;
+          tex.generateMipmaps = false;
+          tex.needsUpdate = true;
+
+          // Evict oldest LRU entry if over bounded cap
+          this.visualPlateTexCache.set(resolvedUrl, tex);
+          if (this.visualPlateTexCache.size > MAX_VISUAL_PLATE_CACHE) {
+            const oldestKey = this.visualPlateTexCache.keys().next().value;
+            if (oldestKey && oldestKey !== resolvedUrl && oldestKey !== this.visualPlateActiveUrl) {
+              const evicted = this.visualPlateTexCache.get(oldestKey);
+              this.visualPlateTexCache.delete(oldestKey);
+              evicted?.dispose();
+            }
+          }
+          this.visualPlatePending.delete(resolvedUrl);
+          resolve(tex);
+        },
+        undefined,
+        () => {
+          this.visualPlatePending.delete(resolvedUrl);
+          resolve(null);
+        }
+      );
+    });
+
+    this.visualPlatePending.set(resolvedUrl, promise);
+    return promise;
+  }
+
+  /**
+   * Mounts a `.svg`/`.png` blueprint onto the floating 24K gold-beveled Sapphire Hologram Plate
+   * above the Veritas Prism core (cached via bounded LRU map, zero `transmission > 0` pass).
+   */
+  public setVisualBlueprintPlate(spec?: VisualBlueprintPlateSpec): void {
+    if (!spec?.imageUrl) {
+      this.clearVisualBlueprintPlate();
+      return;
+    }
+
+    this.ensureVisualPlateRig();
+    const resolvedUrl = this.resolveVisualAssetUrl(spec.imageUrl);
+    const token = ++this.visualPlateLoadToken;
+    this.visualPlateActiveUrl = resolvedUrl;
+    this.resizeVisualPlateAspect(spec.aspect ?? 'WIDE');
+
+    if (this.visualPlateCaptionText) {
+      const cleanCap = spec.caption ? sanitize3DYearCommas(spec.caption.trim()) : '';
+      if (cleanCap) {
+        this.visualPlateCaptionText.text = cleanCap;
+        this.visualPlateCaptionText.visible = true;
+        this.visualPlateCaptionText.sync();
+      } else {
+        this.visualPlateCaptionText.visible = false;
+      }
+    }
+
+    void this.loadVisualPlateTextureCached(resolvedUrl).then((tex) => {
+      if (token !== this.visualPlateLoadToken || !this.visualPlateGroup || !this.visualPlateScreenMat) {
+        return;
+      }
+      if (!tex) {
+        this.visualPlateGroup.visible = false;
+        return;
+      }
+      this.visualPlateScreenMat.map = tex;
+      this.visualPlateScreenMat.needsUpdate = true;
+      this.visualPlateRevealAnim = 0.01;
+      this.visualPlateGroup.scale.setScalar(0.86);
+      this.visualPlateGroup.visible = this.prismGroup.visible;
+    });
+  }
+
+  /**
+   * Immediately hides & detaches the Sapphire Hologram Plate when transitioning to a non-visual question.
+   */
+  public clearVisualBlueprintPlate(): void {
+    this.visualPlateLoadToken++;
+    this.visualPlateActiveUrl = null;
+    this.visualPlateRevealAnim = 0;
+    if (this.visualPlateGroup) {
+      this.visualPlateGroup.visible = false;
+    }
+    if (this.visualPlateScreenMat) {
+      this.visualPlateScreenMat.map = null;
+      this.visualPlateScreenMat.needsUpdate = true;
+    }
+    if (this.visualPlateCaptionText) {
+      this.visualPlateCaptionText.visible = false;
+    }
   }
 
   /**
@@ -2370,6 +3104,81 @@ export class VeritasPrismRig {
     this.relicLatchOpenCount = THREE.MathUtils.clamp(Math.round(openCount), 0, 3);
   }
 
+  private buildGlobeBeaconPin(
+    spireHex: number,
+    emissiveHex: number,
+    ringHex: number,
+    heightScale = 1.0
+  ): { group: THREE.Group; pulseRing: THREE.Mesh } {
+    const group = new THREE.Group();
+    const h = 0.072 * heightScale;
+
+    // Tapered metallic beacon spire pointing strictly along local +Y (surface normal)
+    const spireMat = new THREE.MeshStandardMaterial({
+      color: spireHex,
+      emissive: emissiveHex,
+      emissiveIntensity: 0.72,
+      metalness: 0.88,
+      roughness: 0.18,
+    });
+    const spire = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.0045, 0.013, h, 12),
+      spireMat
+    );
+    spire.position.y = h * 0.5;
+    group.add(spire);
+
+    // Faceted radiant beacon gem crowning the spire
+    const gemMat = new THREE.MeshStandardMaterial({
+      color: spireHex,
+      emissive: emissiveHex,
+      emissiveIntensity: 2.2,
+      metalness: 0.35,
+      roughness: 0.12,
+    });
+    const gem = new THREE.Mesh(
+      new THREE.OctahedronGeometry(0.023 * heightScale, 1),
+      gemMat
+    );
+    gem.position.y = h + 0.008 * heightScale;
+    group.add(gem);
+
+    // Inner surface lock collar ring
+    const baseRing = new THREE.Mesh(
+      new THREE.RingGeometry(0.013, 0.02, 24),
+      new THREE.MeshBasicMaterial({
+        color: ringHex,
+        transparent: true,
+        opacity: 0.9,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+      })
+    );
+    baseRing.rotation.x = -Math.PI * 0.5;
+    baseRing.position.y = 0.004;
+    baseRing.renderOrder = 8;
+    group.add(baseRing);
+
+    // Outer animated pulsing target halo ring
+    const pulseRing = new THREE.Mesh(
+      new THREE.RingGeometry(0.024, 0.035, 32),
+      new THREE.MeshBasicMaterial({
+        color: ringHex,
+        transparent: true,
+        opacity: 0.82,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+      })
+    );
+    pulseRing.rotation.x = -Math.PI * 0.5;
+    pulseRing.position.y = 0.006;
+    pulseRing.renderOrder = 9;
+    group.add(pulseRing);
+
+    group.visible = false;
+    return { group, pulseRing };
+  }
+
   private async ensureGlobeLoaded(): Promise<void> {
     if (this.globeLoaded) return;
     const tpl = await this.venueLoader.loadGlbTemplate(
@@ -2403,19 +3212,100 @@ export class VeritasPrismRig {
           obj.material = Array.isArray(obj.material)
             ? obj.material.map(remap)
             : remap(obj.material);
+          if (obj.name === 'Globe_Sphere') {
+            this.globeSphereMesh = obj;
+          }
         }
       });
       wrapper.add(inst);
+      this.globeAxisTiltNode = inst.getObjectByName('Globe_Axis_Tilt') ?? null;
+      if (this.globeAxisTiltNode) {
+        this.globeAxisBaseZ = this.globeAxisTiltNode.rotation.z;
+      }
       this.globeSpinPivot =
         inst.getObjectByName('Globe_Spin_Pivot') ??
         inst.getObjectByName('Globe_Sphere') ??
         inst;
     } else {
+      const fallbackTilt = new THREE.Group();
+      fallbackTilt.name = 'Globe_Axis_Tilt';
+      fallbackTilt.position.set(0, 1.06, 0);
+      fallbackTilt.rotation.z = -0.409;
+      wrapper.add(fallbackTilt);
+      this.globeAxisTiltNode = fallbackTilt;
+      this.globeAxisBaseZ = -0.409;
+
       const fallbackPivot = new THREE.Group();
-      fallbackPivot.position.set(0, 1.06, 0);
-      wrapper.add(fallbackPivot);
+      fallbackPivot.name = 'Globe_Spin_Pivot';
+      fallbackTilt.add(fallbackPivot);
       this.globeSpinPivot = fallbackPivot;
+
+      // Complete fallback equirectangular gold-on-sapphire Earth sphere aligned 1:1 with latLonToSphereVec
+      const earthTex = createProceduralGlobeEarthTexture();
+      this.globeFallbackEarthTex = earthTex;
+      const fallbackSphere = new THREE.Mesh(
+        createAlignedGlobeSphereGeometry(GLOBE_SURFACE_RADIUS, 64, 32),
+        new THREE.MeshStandardMaterial({
+          map: earthTex,
+          color: 0xffffff,
+          metalness: 0.28,
+          roughness: 0.36,
+          envMapIntensity: 0.92,
+        })
+      );
+      fallbackSphere.name = 'Globe_Sphere';
+      fallbackPivot.add(fallbackSphere);
+      this.globeSphereMesh = fallbackSphere;
     }
+
+    // Use 'XYZ' rotation order so Ry(yaw) spins geographic longitude first, then Rx(pitch) tilts toward camera!
+    this.globeSpinPivot.rotation.order = 'XYZ';
+
+    // Analytical WebGL2 Tactile Graticule + Peel Latitude Band + Geodesic Target-Ring Overlay (1 mesh, transmission: 0!)
+    const { material: tactileMat, uniforms: tactileUniforms } = createGlobeTactileOverlayMaterial();
+    const tactileGeo = createAlignedGlobeSphereGeometry(GLOBE_SURFACE_RADIUS + 0.0036, 64, 32);
+    const tactileMesh = new THREE.Mesh(tactileGeo, tactileMat);
+    tactileMesh.name = 'Globe_Tactile_Graticule_Overlay';
+    tactileMesh.renderOrder = 6;
+    tactileMesh.visible = false;
+    this.globeSpinPivot.add(tactileMesh);
+    this.globeTactileOverlayMesh = tactileMesh;
+    this.globeTactileUniforms = tactileUniforms;
+
+    // 24K Gold Candidate Beacon Pin + Pulsing Target Ring (GLOBE_PIN_DROP)
+    const cand = this.buildGlobeBeaconPin(0xffe488, 0xffbe3b, 0xffdf78, 1.0);
+    cand.group.name = 'Globe_Candidate_Beacon';
+    this.globeSpinPivot.add(cand.group);
+    this.globeCandidateGroup = cand.group;
+    this.globeCandidatePulseRing = cand.pulseRing;
+
+    // Emerald Sovereign Target Pin + Pulsing Halo Ring (GLOBE_PIN_DROP Reveal)
+    const targ = this.buildGlobeBeaconPin(0x6effc4, 0x22e894, 0x4ef7b2, 1.18);
+    targ.group.name = 'Globe_Target_Beacon';
+    this.globeSpinPivot.add(targ.group);
+    this.globeTargetGroup = targ.group;
+    this.globeTargetPulseRing = targ.pulseRing;
+
+    // 3D Great-Circle Geodesic Reveal Arc group
+    this.globeRevealArcGroup.name = 'Globe_Reveal_Geodesic_Arc';
+    this.globeSpinPivot.add(this.globeRevealArcGroup);
+
+    // Comma-safe Billboarded Troika Reveal Readout (`"FENWAY PARK\n142 km · BULLSEYE"`)
+    const revealLbl = createTroikaMesh();
+    revealLbl.fontSize = 0.038;
+    revealLbl.fontWeight = 'bold';
+    revealLbl.lineHeight = 1.24;
+    revealLbl.color = 0xfff8dc;
+    revealLbl.anchorX = 'center';
+    revealLbl.anchorY = 'middle';
+    revealLbl.textAlign = 'center';
+    revealLbl.outlineWidth = '18%';
+    revealLbl.outlineColor = 0x040812;
+    revealLbl.outlineOpacity = 0.98;
+    revealLbl.visible = false;
+    revealLbl.renderOrder = 14;
+    this.globeSpinPivot.add(revealLbl);
+    this.globeRevealReadout = revealLbl;
 
     // Attach 8 glowing 3D City Pins + world-space MSDF labels directly onto Globe_Spin_Pivot (r = 0.55m)
     const pinGeo = new THREE.OctahedronGeometry(0.026, 1);
@@ -2455,16 +3345,109 @@ export class VeritasPrismRig {
 
     this.globeSpinPivot.add(this.globeArcsGroup);
 
+    // Exact surface-matched invisible raycast sphere (`r = 0.554`) for sub-degree `(lat, lon)` pin drops!
     this.globeHitSphere = new THREE.Mesh(
-      new THREE.SphereGeometry(0.57, 24, 16),
+      new THREE.SphereGeometry(GLOBE_SURFACE_RADIUS + 0.004, 48, 32),
       new THREE.MeshBasicMaterial({ visible: false })
     );
     this.globeHitSphere.userData = { hitKind: 'GLOBE_BODY' };
     this.globeSpinPivot.add(this.globeHitSphere);
   }
 
+  public isGlobePinDropMode(): boolean {
+    return this.activeArchetype === 'WORLD_GLOBE' && this.globePinDropMode;
+  }
+
+  public getGlobeCandidateCoords(): { lat: number; lon: number } | null {
+    return this.globeCandidateCoords ? { ...this.globeCandidateCoords } : null;
+  }
+
+  private setCampaignGlobeElementsVisible(visible: boolean): void {
+    for (const pin of this.globePins.values()) {
+      pin.visible = visible;
+    }
+    for (const lbl of this.globeCityTexts) {
+      lbl.visible = visible;
+    }
+    this.globeArcsGroup.visible = visible;
+  }
+
+  public clearGlobePinDropState(): void {
+    this.globeCandidateCoords = null;
+    if (this.globeCandidateGroup) {
+      this.globeCandidateGroup.visible = false;
+    }
+    if (this.globeTargetGroup) {
+      this.globeTargetGroup.visible = false;
+    }
+    if (this.globeRevealReadout) {
+      this.globeRevealReadout.visible = false;
+    }
+    if (this.globeRevealArcMesh) {
+      this.globeRevealArcGroup.remove(this.globeRevealArcMesh);
+      this.globeRevealArcMesh.geometry.dispose();
+      (this.globeRevealArcMesh.material as THREE.Material).dispose();
+      this.globeRevealArcMesh = null;
+      this.globeRevealArcTotalIndices = 0;
+      this.globeRevealArcAnim = 0;
+    }
+    if (this.globeTactileUniforms) {
+      this.globeTactileUniforms.uHintBandActive.value = 0;
+      this.globeTactileUniforms.uRevealActive.value = 0;
+    }
+  }
+
   public async configureWorldGlobe(spec: WorldGlobeSpec): Promise<void> {
     await this.ensureGlobeLoaded();
+
+    const isPinDrop = Boolean(spec.pinDropMode || spec.pinDrop);
+    this.globePinDropMode = isPinDrop;
+    this.globePinDropSpec = spec.pinDrop ?? null;
+    this.peelTier = 1;
+
+    if (isPinDrop) {
+      if (spec.pinDrop?.domainId !== undefined) {
+        this.setDomainPalette(spec.pinDrop.domainId);
+      }
+      this.setCampaignGlobeElementsVisible(false);
+      this.clearGlobePinDropState();
+
+      if (this.globeTactileOverlayMesh && this.globeTactileUniforms) {
+        this.globeTactileOverlayMesh.visible = true;
+        this.globeTactileUniforms.uModeMix.value = 1.0;
+        const pSpec = spec.pinDrop;
+        this.globeTactileUniforms.uHintLatDeg.value = pSpec?.targetLat ?? 0;
+        this.globeTactileUniforms.uHintBandActive.value = 0;
+        this.globeTactileUniforms.uRevealActive.value = 0;
+        this.globeTactileUniforms.uBullseyeRad.value =
+          (pSpec?.bullseyeKm ?? 300) / EARTH_MEAN_RADIUS_KM;
+        this.globeTactileUniforms.uGoldRad.value =
+          (pSpec?.goldKm ?? 1000) / EARTH_MEAN_RADIUS_KM;
+        this.globeTactileUniforms.uGrazeRad.value =
+          (pSpec?.grazeKm ?? 2200) / EARTH_MEAN_RADIUS_KM;
+      }
+
+      // Present an inviting neutral Atlantic/Americas/Europe/Africa panorama (never spoiling targetLon!)
+      this.globeYawVel = 0;
+      this.globePitchVel = 0;
+      this.rotateGlobeToLatLon(20, -18, false);
+
+      if (spec.pinDrop?.peelTier === 2 || spec.pinDrop?.peelTier === 3) {
+        this.pullGlobePeel(spec.pinDrop.peelTier, false);
+      }
+      return;
+    }
+
+    // Standard Campaign Hub WORLD_GLOBE showcase
+    this.clearGlobePinDropState();
+    this.setCampaignGlobeElementsVisible(true);
+    if (this.globeTactileOverlayMesh && this.globeTactileUniforms) {
+      this.globeTactileOverlayMesh.visible = false;
+      this.globeTactileUniforms.uModeMix.value = 0;
+    }
+    this.globePitchVel = 0;
+    this.globeTargetPitch = 0;
+
     if (spec.focusedVenue) {
       this.focusGlobeCity(spec.focusedVenue);
     }
@@ -2486,6 +3469,273 @@ export class VeritasPrismRig {
         : []);
 
     this.setGlobeFlightArcs(arcs);
+  }
+
+  /**
+   * Smoothly rotates the 3D Globe (`yaw` + clamped `±55°` `pitch`) so `(lat, lon)` faces the camera.
+   */
+  public rotateGlobeToLatLon(latDeg: number, lonDeg: number, instant = false): void {
+    const desiredYaw = -THREE.MathUtils.degToRad(lonDeg);
+    this.globeTargetYaw = this.globeYaw + normalizeAngleSigned(desiredYaw - this.globeYaw);
+    this.globeTargetPitch = THREE.MathUtils.clamp(
+      THREE.MathUtils.degToRad(latDeg),
+      -GLOBE_MAX_PITCH_RAD,
+      GLOBE_MAX_PITCH_RAD
+    );
+    this.globeYawVel = 0;
+    this.globePitchVel = 0;
+
+    if (instant) {
+      this.globeYaw = this.globeTargetYaw;
+      this.globePitch = this.globeTargetPitch;
+      if (this.globeSpinPivot) {
+        this.globeSpinPivot.rotation.set(this.globePitch, this.globeYaw, 0, 'XYZ');
+      }
+    }
+  }
+
+  /**
+   * Drops the glowing 24K Gold Candidate Beacon Pin + pulsing target ring at exact `(lat, lon)`
+   * on the 3D Globe surface, optionally rotating the globe so that point faces the camera.
+   */
+  public setGlobeCandidatePin(lat: number, lon: number, rotateToFace = false): void {
+    const clampedLat = THREE.MathUtils.clamp(lat, -90, 90);
+    const normLon = ((((lon + 180) % 360) + 360) % 360) - 180;
+    this.globeCandidateCoords = { lat: clampedLat, lon: normLon };
+
+    if (this.globeCandidateGroup) {
+      const unitDir = latLonToSphereVec(clampedLat, normLon, 1.0);
+      this.globeCandidateGroup.position.copy(unitDir).multiplyScalar(GLOBE_SURFACE_RADIUS + 0.002);
+      this.globeCandidateGroup.quaternion.setFromUnitVectors(this._axisY, unitDir);
+      this.globeCandidateGroup.visible = true;
+    }
+
+    if (rotateToFace) {
+      this.rotateGlobeToLatLon(clampedLat, normLon, false);
+    }
+
+    // Crisp miniature gold surface spark where the beacon locks into the globe
+    if (this.globeSpinPivot) {
+      const localPt = latLonToSphereVec(clampedLat, normLon, GLOBE_SURFACE_RADIUS + 0.04);
+      this.globeSpinPivot.updateWorldMatrix(true, false);
+      const worldPt = this.globeSpinPivot.localToWorld(localPt);
+      const vfxPt = this.vfxGroup.worldToLocal(worldPt);
+      this.spawnSparkBurst(vfxPt, 0xffdf78, 16);
+    }
+  }
+
+  /**
+   * Peel Tier 2 / Tier 3 in `GLOBE_PIN_DROP`: illuminates a subtle glowing latitude corridor
+   * around `targetLat` (`Tier 2 = ±14° sapphire-gold band`, `Tier 3 = ±5.5° precision gold band`).
+   */
+  public pullGlobePeel(targetTier?: 2 | 3, withVfx = true): 1 | 2 | 3 {
+    const nextTier: 2 | 3 = targetTier ?? (this.peelTier === 1 ? 2 : 3);
+    this.peelTier = nextTier;
+
+    if (this.globeTactileUniforms && this.globePinDropSpec) {
+      this.globeTactileUniforms.uHintLatDeg.value = this.globePinDropSpec.targetLat;
+      if (nextTier === 2) {
+        this.globeTactileUniforms.uHintBandActive.value = 0.65;
+        this.globeTactileUniforms.uHintBandHalfDeg.value = 14.0;
+      } else {
+        this.globeTactileUniforms.uHintBandActive.value = 1.0;
+        this.globeTactileUniforms.uHintBandHalfDeg.value = 5.5;
+        // Gently tilt latitude into view without revealing longitude
+        this.globeTargetPitch = THREE.MathUtils.clamp(
+          THREE.MathUtils.degToRad(this.globePinDropSpec.targetLat),
+          -GLOBE_MAX_PITCH_RAD,
+          GLOBE_MAX_PITCH_RAD
+        );
+      }
+    }
+
+    if (withVfx) {
+      this.spawnSparkBurst(new THREE.Vector3(0, 0.62, 0.25), 0x62d8ff, 22);
+    }
+    return this.peelTier;
+  }
+
+  /**
+   * Reveals the Emerald Sovereign Target Pin, animates a glowing 3D Great-Circle Geodesic Arc
+   * from Candidate Pin -> Target Pin above the sphere, pulses Bullseye/Gold radar rings,
+   * and shows a comma-safe Troika distance/label readout!
+   */
+  public revealGlobeTarget(
+    targetLat: number,
+    targetLon: number,
+    candidateLat?: number,
+    candidateLon?: number,
+    distanceKm?: number,
+    targetLabel?: string
+  ): void {
+    const tLat = THREE.MathUtils.clamp(targetLat, -90, 90);
+    const tLon = ((((targetLon + 180) % 360) + 360) % 360) - 180;
+    const tDir = latLonToSphereVec(tLat, tLon, 1.0);
+
+    // 1. Place Emerald Sovereign Target Pin
+    if (this.globeTargetGroup) {
+      this.globeTargetGroup.position.copy(tDir).multiplyScalar(GLOBE_SURFACE_RADIUS + 0.002);
+      this.globeTargetGroup.quaternion.setFromUnitVectors(this._axisY, tDir);
+      this.globeTargetGroup.visible = true;
+    }
+
+    // 2. Sync Candidate Pin if coordinates provided (or reuse tapped candidate pin)
+    const cLat = candidateLat ?? this.globeCandidateCoords?.lat;
+    const cLon = candidateLon ?? this.globeCandidateCoords?.lon;
+    const hasCandidate = cLat !== undefined && cLon !== undefined;
+    if (hasCandidate && candidateLat !== undefined && candidateLon !== undefined) {
+      this.globeCandidateCoords = { lat: cLat, lon: cLon };
+      if (this.globeCandidateGroup) {
+        const cDir = latLonToSphereVec(cLat, cLon, 1.0);
+        this.globeCandidateGroup.position.copy(cDir).multiplyScalar(GLOBE_SURFACE_RADIUS + 0.002);
+        this.globeCandidateGroup.quaternion.setFromUnitVectors(this._axisY, cDir);
+        this.globeCandidateGroup.visible = true;
+      }
+    }
+
+    // 3. Compute Haversine distance if omitted
+    const resolvedKm =
+      distanceKm !== undefined
+        ? distanceKm
+        : hasCandidate
+          ? computeGreatCircleDistanceKm(cLat, cLon, tLat, tLon)
+          : undefined;
+
+    // 4. Activate concentric geodesic tolerance rings on tactile shader overlay
+    const bullKm = this.globePinDropSpec?.bullseyeKm ?? 300;
+    const goldKm = this.globePinDropSpec?.goldKm ?? 1000;
+    const grazeKm = this.globePinDropSpec?.grazeKm ?? 2200;
+    if (this.globeTactileUniforms) {
+      this.globeTactileUniforms.uTargetDir.value.copy(tDir);
+      this.globeTactileUniforms.uBullseyeRad.value = bullKm / EARTH_MEAN_RADIUS_KM;
+      this.globeTactileUniforms.uGoldRad.value = goldKm / EARTH_MEAN_RADIUS_KM;
+      this.globeTactileUniforms.uGrazeRad.value = grazeKm / EARTH_MEAN_RADIUS_KM;
+      this.globeTactileUniforms.uRevealActive.value = 1.0;
+    }
+
+    // 5. Build glowing 3D Great-Circle SLERP Geodesic Arc connecting Candidate -> Target
+    if (this.globeRevealArcMesh) {
+      this.globeRevealArcGroup.remove(this.globeRevealArcMesh);
+      this.globeRevealArcMesh.geometry.dispose();
+      (this.globeRevealArcMesh.material as THREE.Material).dispose();
+      this.globeRevealArcMesh = null;
+      this.globeRevealArcTotalIndices = 0;
+    }
+
+    if (hasCandidate) {
+      const cDir = latLonToSphereVec(cLat, cLon, 1.0);
+      const dot = THREE.MathUtils.clamp(cDir.dot(tDir), -1, 1);
+      const omega = Math.acos(dot);
+
+      if (omega > 0.002) {
+        const samples = 40;
+        const pts: THREE.Vector3[] = [];
+        const lift = THREE.MathUtils.clamp(omega * 0.145, 0.048, 0.25);
+
+        // Handle near-antipodal points cleanly with deterministic orthogonal great-circle plane
+        let ortho: THREE.Vector3 | null = null;
+        if (Math.sin(omega) < 1e-4) {
+          const ref = Math.abs(cDir.y) < 0.9 ? this._axisY : this._axisX;
+          ortho = new THREE.Vector3().crossVectors(cDir, ref).normalize();
+        }
+
+        const sinOmega = Math.sin(omega);
+        for (let i = 0; i <= samples; i++) {
+          const t = i / samples;
+          const dir = new THREE.Vector3();
+          if (ortho) {
+            dir
+              .copy(cDir)
+              .multiplyScalar(Math.cos(omega * t))
+              .addScaledVector(ortho, Math.sin(omega * t))
+              .normalize();
+          } else {
+            const w0 = Math.sin((1 - t) * omega) / sinOmega;
+            const w1 = Math.sin(t * omega) / sinOmega;
+            dir.copy(cDir).multiplyScalar(w0).addScaledVector(tDir, w1).normalize();
+          }
+          const r = GLOBE_SURFACE_RADIUS + 0.006 + Math.sin(Math.PI * t) * lift;
+          pts.push(dir.multiplyScalar(r));
+        }
+
+        const curve = new THREE.CatmullRomCurve3(pts);
+        const tubeGeo = new THREE.TubeGeometry(curve, 48, 0.0076, 8, false);
+        const isHit = resolvedKm === undefined || resolvedKm <= grazeKm;
+        const tubeMat = new THREE.MeshBasicMaterial({
+          color: isHit ? 0x5ef7b4 : 0xffbe55,
+          transparent: true,
+          opacity: 0.94,
+        });
+        const arcMesh = new THREE.Mesh(tubeGeo, tubeMat);
+        arcMesh.renderOrder = 10;
+        const idxAttr = tubeGeo.getIndex();
+        this.globeRevealArcTotalIndices = idxAttr ? idxAttr.count : 0;
+        if (this.globeRevealArcTotalIndices > 0) {
+          tubeGeo.setDrawRange(0, 0);
+        }
+        this.globeRevealArcAnim = 0.01;
+        this.globeRevealArcGroup.add(arcMesh);
+        this.globeRevealArcMesh = arcMesh;
+      }
+
+      // Smoothly orient globe toward weighted midpoint (68% target, 32% candidate) so both pins + arc frame cleanly
+      const focusVec = tDir.clone().multiplyScalar(0.68).addScaledVector(cDir, 0.32);
+      if (focusVec.lengthSq() > 0.04) {
+        const focusLL = sphereVecToLatLon(focusVec);
+        this.rotateGlobeToLatLon(focusLL.lat, focusLL.lon, false);
+      } else {
+        this.rotateGlobeToLatLon(tLat, tLon, false);
+      }
+    } else {
+      this.rotateGlobeToLatLon(tLat, tLon, false);
+    }
+
+    // 6. Position & sync comma-safe Troika distance/label readout floating cleanly above the target pin
+    if (this.globeRevealReadout) {
+      const labelStr = formatGlobeRevealReadout(
+        targetLabel ?? this.globePinDropSpec?.targetLabel ?? 'TARGET',
+        resolvedKm,
+        bullKm,
+        goldKm,
+        grazeKm
+      );
+      this.globeRevealReadout.text = labelStr;
+      this.globeRevealReadout.color =
+        resolvedKm !== undefined && resolvedKm > grazeKm ? 0xffc87a : 0x8cffd2;
+      this.globeRevealReadout.position.copy(tDir).multiplyScalar(GLOBE_SURFACE_RADIUS + 0.165);
+      this.globeRevealReadoutOutward.copy(tDir);
+      this.globeRevealReadout.visible = true;
+      this.globeRevealReadout.sync();
+    }
+
+    // 7. Emerald / Gold burst right at target pin
+    if (this.globeSpinPivot) {
+      this.globeSpinPivot.updateWorldMatrix(true, false);
+      const worldPt = this.globeSpinPivot.localToWorld(
+        tDir.clone().multiplyScalar(GLOBE_SURFACE_RADIUS + 0.06)
+      );
+      const vfxPt = this.vfxGroup.worldToLocal(worldPt);
+      const burstColor =
+        resolvedKm !== undefined && resolvedKm > grazeKm ? 0xff5a52 : 0x4ef7b2;
+      this.spawnSparkBurst(vfxPt, burstColor, 34);
+    }
+  }
+
+  /**
+   * Direct surface raycast against the 3D Globe sphere mesh returning exact `(lat, lon)` degrees
+   * (`-90..90`, `-180..180`) in `Globe_Spin_Pivot` local space.
+   */
+  public raycastGlobeSurface(raycaster: THREE.Raycaster): { lat: number; lon: number } | null {
+    if (!this.globeSpinPivot || !this.globeGroup.visible) return null;
+    this.globeSpinPivot.updateWorldMatrix(true, true);
+    const targetMesh = this.globeHitSphere ?? this.globeSphereMesh;
+    if (!targetMesh) return null;
+
+    const hits = raycaster.intersectObject(targetMesh, false);
+    if (hits.length === 0) return null;
+
+    const localPoint = this.globeSpinPivot.worldToLocal(hits[0].point.clone());
+    return sphereVecToLatLon(localPoint);
   }
 
   public focusGlobeCity(venue: VenueCode): void {
@@ -2543,11 +3793,25 @@ export class VeritasPrismRig {
     }
   }
 
-  public applyGlobeDrag(deltaYaw: number, vel: number): void {
+  public applyGlobeDrag(
+    deltaYaw: number,
+    velYaw: number,
+    deltaPitch = 0,
+    velPitch = 0
+  ): void {
     this.isDraggingGlobe = true;
     this.globeYaw += deltaYaw;
     this.globeTargetYaw = this.globeYaw;
-    this.globeYawVel = vel;
+    this.globeYawVel = velYaw;
+    if (this.globePinDropMode) {
+      this.globePitch = THREE.MathUtils.clamp(
+        this.globePitch + deltaPitch,
+        -GLOBE_MAX_PITCH_RAD,
+        GLOBE_MAX_PITCH_RAD
+      );
+      this.globeTargetPitch = this.globePitch;
+      this.globePitchVel = velPitch;
+    }
   }
 
   public releaseGlobeDrag(): void {
@@ -2719,6 +3983,13 @@ export class VeritasPrismRig {
         return { kind: 'GAUNTLET' };
       }
     } else if (this.activeArchetype === 'WORLD_GLOBE') {
+      if (this.globePinDropMode) {
+        const coords = this.raycastGlobeSurface(raycaster);
+        if (coords) {
+          return { kind: 'GLOBE_BODY', globeCoords: coords };
+        }
+        return null;
+      }
       const pinList = Array.from(this.globePins.values());
       const pinHits = raycaster.intersectObjects(pinList, false);
       if (pinHits.length > 0) {
@@ -2989,6 +4260,16 @@ export class VeritasPrismRig {
         const popScale = 1.0 + 0.038 * sightlineFocus;
         f.node.scale.setScalar(popScale);
       }
+
+      // Gently levitate & pop-in the floating Sapphire Hologram Blueprint Plate
+      if (this.visualPlateGroup && this.visualPlateGroup.visible) {
+        if (this.visualPlateRevealAnim > 0 && this.visualPlateRevealAnim < 1) {
+          this.visualPlateRevealAnim = Math.min(1, this.visualPlateRevealAnim + dt * 5.2);
+          const eased = 1 - Math.pow(1 - this.visualPlateRevealAnim, 3);
+          this.visualPlateGroup.scale.setScalar(THREE.MathUtils.lerp(0.86, 1.0, eased));
+        }
+        this.visualPlateGroup.position.y = 0.77 + Math.sin(this.elapsed * 2.1) * 0.006;
+      }
     }
 
     // 2. Update CODEX_DUAL_RING
@@ -3058,6 +4339,16 @@ export class VeritasPrismRig {
     }
 
     if (this.globeGroup.visible && this.globeSpinPivot) {
+      // Smoothly upright Globe_Axis_Tilt in GLOBE_PIN_DROP mode vs regal -23.4° axial tilt in Campaign Hub
+      if (this.globeAxisTiltNode) {
+        const desiredTiltZ = this.globePinDropMode ? 0 : this.globeAxisBaseZ;
+        this.globeAxisTiltNode.rotation.z = THREE.MathUtils.lerp(
+          this.globeAxisTiltNode.rotation.z,
+          desiredTiltZ,
+          smoothMed
+        );
+      }
+
       if (!this.isDraggingGlobe) {
         if (Math.abs(this.globeYawVel) > 0.04) {
           this.globeYaw += this.globeYawVel * dt;
@@ -3066,32 +4357,96 @@ export class VeritasPrismRig {
         } else {
           this.globeYaw = THREE.MathUtils.lerp(this.globeYaw, this.globeTargetYaw, smoothMed);
         }
-      }
-      this.globeSpinPivot.rotation.y = this.globeYaw;
 
-      // #273 Fix #5: Billboard all 8 World Globe city labels cleanly toward camera & fade rear hemisphere
-      if (camera && this.globeCityTexts.length > 0) {
+        if (this.globePinDropMode) {
+          if (Math.abs(this.globePitchVel) > 0.04) {
+            this.globePitch = THREE.MathUtils.clamp(
+              this.globePitch + this.globePitchVel * dt,
+              -GLOBE_MAX_PITCH_RAD,
+              GLOBE_MAX_PITCH_RAD
+            );
+            this.globePitchVel *= Math.exp(-dt * 4.4);
+            this.globeTargetPitch = this.globePitch;
+          } else {
+            this.globePitch = THREE.MathUtils.lerp(this.globePitch, this.globeTargetPitch, smoothMed);
+          }
+        } else {
+          this.globePitchVel = 0;
+          this.globePitch = THREE.MathUtils.lerp(this.globePitch, 0, smoothMed);
+        }
+      }
+      this.globeSpinPivot.rotation.set(this.globePitch, this.globeYaw, 0, 'XYZ');
+
+      if (this.globeTactileUniforms && this.globeTactileOverlayMesh?.visible) {
+        this.globeTactileUniforms.uTime.value = this.elapsed;
+      }
+
+      // Pulse Candidate & Target Beacon Rings in GLOBE_PIN_DROP mode
+      if (this.globeCandidateGroup?.visible && this.globeCandidatePulseRing) {
+        const phase = (this.elapsed * 1.45) % 1.0;
+        const ringScale = 1.0 + phase * 0.85;
+        this.globeCandidatePulseRing.scale.setScalar(ringScale);
+        (this.globeCandidatePulseRing.material as THREE.MeshBasicMaterial).opacity =
+          (1.0 - phase) * 0.82;
+      }
+      if (this.globeTargetGroup?.visible && this.globeTargetPulseRing) {
+        const phase = (this.elapsed * 1.6 + 0.45) % 1.0;
+        const ringScale = 1.0 + phase * 1.05;
+        this.globeTargetPulseRing.scale.setScalar(ringScale);
+        (this.globeTargetPulseRing.material as THREE.MeshBasicMaterial).opacity =
+          (1.0 - phase) * 0.88;
+      }
+
+      // Animate glowing 3D Great-Circle Geodesic Reveal Arc draw progress (0 -> 1 over ~0.45s)
+      if (
+        this.globeRevealArcMesh &&
+        this.globeRevealArcTotalIndices > 0 &&
+        this.globeRevealArcAnim > 0 &&
+        this.globeRevealArcAnim < 1
+      ) {
+        this.globeRevealArcAnim = Math.min(1, this.globeRevealArcAnim + dt * 2.35);
+        const eased = 1 - Math.pow(1 - this.globeRevealArcAnim, 3);
+        const drawCount = Math.floor(eased * this.globeRevealArcTotalIndices);
+        this.globeRevealArcMesh.geometry.setDrawRange(0, drawCount - (drawCount % 3));
+      }
+
+      // Billboard camera-facing Troika labels (Campaign Hub cities OR Pin-Drop Reveal readout)
+      if (camera) {
         this.globeSpinPivot.updateWorldMatrix(true, false);
         this.globeSpinPivot.getWorldQuaternion(this._qTmpA);
         this._qTmpB.copy(this._qTmpA).invert().multiply(camera.quaternion);
         camera.getWorldPosition(this._vTmpC);
-        for (const lbl of this.globeCityTexts) {
-          lbl.quaternion.copy(this._qTmpB);
-          const outward = lbl.userData.outwardDir as THREE.Vector3 | undefined;
-          if (outward) {
-            this._vTmpA.copy(outward).applyQuaternion(this._qTmpA).normalize();
-            lbl.getWorldPosition(this._vTmpB);
-            this._vTmpB.subVectors(this._vTmpC, this._vTmpB).normalize();
-            const facing = this._vTmpA.dot(this._vTmpB);
-            if (facing > 0.08) {
-              lbl.visible = true;
-              const alpha = THREE.MathUtils.smoothstep(facing, 0.08, 0.34);
-              lbl.fillOpacity = alpha;
-              lbl.outlineOpacity = alpha * 0.95;
-            } else {
-              lbl.visible = false;
+
+        if (!this.globePinDropMode && this.globeCityTexts.length > 0) {
+          for (const lbl of this.globeCityTexts) {
+            lbl.quaternion.copy(this._qTmpB);
+            const outward = lbl.userData.outwardDir as THREE.Vector3 | undefined;
+            if (outward) {
+              this._vTmpA.copy(outward).applyQuaternion(this._qTmpA).normalize();
+              lbl.getWorldPosition(this._vTmpB);
+              this._vTmpB.subVectors(this._vTmpC, this._vTmpB).normalize();
+              const facing = this._vTmpA.dot(this._vTmpB);
+              if (facing > 0.08) {
+                lbl.visible = true;
+                const alpha = THREE.MathUtils.smoothstep(facing, 0.08, 0.34);
+                lbl.fillOpacity = alpha;
+                lbl.outlineOpacity = alpha * 0.95;
+              } else {
+                lbl.visible = false;
+              }
             }
           }
+        }
+
+        if (this.globeRevealReadout && this.globeRevealReadout.visible) {
+          this.globeRevealReadout.quaternion.copy(this._qTmpB);
+          this._vTmpA.copy(this.globeRevealReadoutOutward).applyQuaternion(this._qTmpA).normalize();
+          this.globeRevealReadout.getWorldPosition(this._vTmpB);
+          this._vTmpB.subVectors(this._vTmpC, this._vTmpB).normalize();
+          const facing = this._vTmpA.dot(this._vTmpB);
+          const alpha = THREE.MathUtils.smoothstep(facing, -0.25, 0.12);
+          this.globeRevealReadout.fillOpacity = alpha;
+          this.globeRevealReadout.outlineOpacity = alpha * 0.98;
         }
       }
     }
@@ -3209,6 +4564,15 @@ export class VeritasPrismRig {
     this.gauntletStatementText?.dispose();
     this.gauntletHintText?.dispose();
     this.passportInnerCharterText?.dispose();
+    this.globeRevealReadout?.dispose();
+    this.visualPlateCaptionText?.dispose();
+    for (const tex of this.visualPlateTexCache.values()) {
+      tex.dispose();
+    }
+    this.visualPlateTexCache.clear();
+    this.visualPlatePending.clear();
+    this.globeFallbackEarthTex?.dispose();
+    this.globeFallbackEarthTex = null;
     this.shardGeometry.dispose();
     disposeObject3D(this.root);
   }

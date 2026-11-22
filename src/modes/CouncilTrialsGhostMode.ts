@@ -11,6 +11,19 @@ import type { CastMemberId, InkBlackboard, MutatorId } from '../narrative/InkBla
 import type { FactionId, PassportSystem } from '../narrative/PassportSystem';
 import { getPortraitUrl, type CharacterExpression, type RivalPrismStatus } from '../narrative/RivalAI';
 import {
+  buildGlobalCohortLeaderboard,
+  buildShareableDuelUrl,
+  decodeDuelChallenge,
+  duelChallengeToKineticGhostPacket,
+  duelRivalsStore,
+  encodeDuelChallenge,
+  formatTopicKeyLabel,
+  kineticGhostPacketToDuelChallenge,
+  type DuelChallengePayload,
+  type DuelLeaderboardFriend,
+  type LeaderboardCohortSnapshot,
+} from './DuelLinkCodec';
+import {
   ScoringEngine,
   type PrismAnswerSubmission,
   type ScoredQuestionResult,
@@ -109,6 +122,10 @@ export interface GhostDuelSummary {
   eloDelta: number;
   newTrialsElo: number;
   shareableGhostCode: string;
+  /** Compact `WSD2...` one-tap `?duel=` token for this completed Ghost Duel */
+  shareableDuelToken?: string;
+  /** Ready-to-share one-tap `?duel=WSD2...` URL for this completed Ghost Duel */
+  shareableDuelUrl?: string;
   salonRoundCleared?: 1 | 2 | 3 | 4;
   salonChampionCrowned?: boolean;
 }
@@ -243,6 +260,45 @@ export function decodeGhostPacket(code: string): KineticGhostPacket | null {
   } catch {
     return null;
   }
+}
+
+/**
+ * Generates a deterministic UTC-seeded international top-20 subcategory/topic contender
+ * leaderboard calibrated around `median = 19,500` (zero 4-digit year commas!), merged with
+ * all persisted `?duel=` friends (`ws_duel_rivals_v2`), optional explicit `duelFriends`,
+ * and the player's own live rank.
+ */
+export function getSubcategoryLeaderboard(
+  topicKey: string,
+  playerName: string,
+  playerScore: number,
+  playerElo: number,
+  duelFriends?: ReadonlyArray<DuelLeaderboardFriend>,
+  utcDate?: string,
+  playerFaction: FactionId = 'AGORA'
+): LeaderboardCohortSnapshot {
+  const cleanKey = (topicKey ?? '').trim() || 'global';
+  const cleanDate =
+    typeof utcDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(utcDate.trim())
+      ? utcDate.trim()
+      : new Date().toISOString().slice(0, 10);
+  const label = formatTopicKeyLabel(cleanKey);
+
+  duelRivalsStore.reload();
+  const persistedFriends = duelRivalsStore.getFriendsForTopic(cleanKey);
+
+  return buildGlobalCohortLeaderboard({
+    scope: 'SUBCATEGORY',
+    scopeKey: cleanKey.toLowerCase(),
+    title: `${label} · Global Cohort`,
+    utcDate: cleanDate,
+    playerName,
+    playerScore,
+    playerFaction,
+    playerElo,
+    duelFriends,
+    persistedFriends,
+  });
 }
 
 /**
@@ -413,9 +469,34 @@ export class CouncilTrialsGhostMode {
   }
 
   /**
-   * Starts a 3D Async Kinetic Ghost Duel against a Ranked Contender OR an imported `WSG1:` Ghost Code!
+   * Convenience instance wrapper returning the UTC-seeded international top-20 cohort
+   * merged with persisted `?duel=` friends and the player's current Trials ELO & score.
    */
-  public async startGhostDuel(target: string | KineticGhostPacket): Promise<{
+  public getSubcategoryLeaderboard(
+    topicKey: string,
+    playerScore: number,
+    duelFriends?: ReadonlyArray<DuelLeaderboardFriend>,
+    utcDate?: string
+  ): LeaderboardCohortSnapshot {
+    const snap = this.blackboard.getSnapshot();
+    return getSubcategoryLeaderboard(
+      topicKey,
+      this.passport.getChallengerName(),
+      playerScore,
+      this.persistence.trialsElo,
+      duelFriends,
+      utcDate,
+      snap.pledgedFaction ?? 'AGORA'
+    );
+  }
+
+  /**
+   * Starts a 3D Async Kinetic Ghost Duel against a Ranked Contender, an imported `WSG1:`
+   * Ghost Code, OR a compact one-tap `WSD2` `?duel=` link / `DuelChallengePayload`!
+   */
+  public async startGhostDuel(
+    target: string | KineticGhostPacket | DuelChallengePayload
+  ): Promise<{
     questions: PrismQuestion[];
     firstQuestion: PrismQuestion | null;
     opponentHandle: string;
@@ -425,10 +506,25 @@ export class CouncilTrialsGhostMode {
     this.activeSalonSpec = null;
 
     let importedPacket: KineticGhostPacket | null = null;
-    if (typeof target === 'object') {
-      importedPacket = target;
-    } else if (target.startsWith('WSG1:')) {
-      importedPacket = decodeGhostPacket(target);
+    if (typeof target === 'object' && target !== null) {
+      if ('traces' in target && Array.isArray(target.traces)) {
+        importedPacket = target;
+      } else if ('qids' in target && 'splits' in target) {
+        importedPacket = duelChallengeToKineticGhostPacket(target);
+      }
+    } else if (typeof target === 'string') {
+      const trimmedTarget = target.trim();
+      if (trimmedTarget.startsWith('WSG1:')) {
+        importedPacket = decodeGhostPacket(trimmedTarget);
+      } else if (
+        trimmedTarget.startsWith('WSD2') ||
+        /(?:^|[?#&])duel=/i.test(trimmedTarget)
+      ) {
+        const decodedDuel = decodeDuelChallenge(trimmedTarget);
+        if (decodedDuel) {
+          importedPacket = duelChallengeToKineticGhostPacket(decodedDuel);
+        }
+      }
     }
 
     if (importedPacket) {
@@ -842,6 +938,17 @@ export class CouncilTrialsGhostMode {
       traces: this.recordedTraces,
     };
 
+    let shareableDuelToken: string | undefined;
+    let shareableDuelUrl: string | undefined;
+    if (this.recordedTraces.length >= 1) {
+      const duelPayload = kineticGhostPacketToDuelChallenge(outgoingPacket, {
+        mode: 'TRIALS',
+        topicLabel: this.activeKind === 'BLACK_SALON' ? 'Black Salon' : 'Ghost Duel',
+      });
+      shareableDuelToken = encodeDuelChallenge(duelPayload);
+      shareableDuelUrl = buildShareableDuelUrl(duelPayload);
+    }
+
     return {
       modeKind: this.activeKind,
       challengerName: this.passport.getChallengerName(),
@@ -856,6 +963,8 @@ export class CouncilTrialsGhostMode {
       eloDelta,
       newTrialsElo: this.persistence.trialsElo,
       shareableGhostCode: encodeGhostPacket(outgoingPacket),
+      shareableDuelToken,
+      shareableDuelUrl,
       salonRoundCleared,
       salonChampionCrowned,
     };

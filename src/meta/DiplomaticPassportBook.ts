@@ -1086,11 +1086,11 @@ export function ensureMetaStylesInjected(): void {
 
     .ws-meta-kpi-lbl {
       font-family: var(--font-mono, monospace);
-      font-size: 9.5px;
+      font-size: 10px;
       font-weight: 600;
       letter-spacing: 0.07em;
       text-transform: uppercase;
-      color: var(--ivory-dim, #7d8594);
+      color: #9aa4b7;
     }
 
     .ws-meta-kpi-val {
@@ -1326,8 +1326,8 @@ export function ensureMetaStylesInjected(): void {
 
     .ws-persona-seal-disc {
       position: relative;
-      width: 132px;
-      height: 132px;
+      width: 146px;
+      height: 146px;
       border-radius: 50%;
       display: flex;
       flex-direction: column;
@@ -1412,6 +1412,254 @@ export function ensureMetaStylesInjected(): void {
       height: 100%;
       border-radius: 999px;
       transition: width 0.25s ease;
+    }
+
+    /* =====================================================================
+       5-BOX LEITNER SPACED-REPETITION MASTERY DECK (Frameless Editorial)
+       ===================================================================== */
+    .ws-srs-boxes-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 6px;
+      width: 100%;
+      padding: 6px 0 4px;
+    }
+
+    .ws-srs-box-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 8px 7px;
+      border-radius: 9px;
+      background: rgba(255, 255, 255, 0.042);
+      border: none;
+      text-align: left;
+      min-width: 0;
+      cursor: pointer;
+      transition: background 0.14s ease, transform 0.12s ease;
+    }
+
+    .ws-srs-box-bar:hover {
+      background: rgba(255, 255, 255, 0.085);
+    }
+
+    .ws-srs-box-bar.is-active {
+      background: rgba(242, 207, 126, 0.13);
+      box-shadow: inset 0 -2px 0 var(--gold-bright, #f2cf7e);
+    }
+
+    .ws-srs-box-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .ws-srs-box-name {
+      font-family: var(--font-mono, monospace);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--ivory-primary, #f6f2e9);
+      white-space: nowrap;
+    }
+
+    .ws-srs-box-count {
+      font-family: var(--font-mono, monospace);
+      font-size: 12px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+
+    .ws-srs-box-track {
+      width: 100%;
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.09);
+      overflow: hidden;
+    }
+
+    .ws-srs-box-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .ws-srs-box-interval {
+      font-family: var(--font-mono, monospace);
+      font-size: 10px;
+      font-weight: 600;
+      color: #a5afc2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ws-srs-card-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding-bottom: 9px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .ws-srs-box-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: rgba(242, 207, 126, 0.14);
+      font-family: var(--font-mono, monospace);
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--gold-bright, #f2cf7e);
+      white-space: nowrap;
+    }
+
+    .ws-srs-box-pill.is-box-1 {
+      background: rgba(224, 82, 99, 0.18);
+      color: #ff99a5;
+    }
+
+    .ws-srs-box-pill.is-box-2 {
+      background: rgba(240, 157, 70, 0.18);
+      color: #ffc27a;
+    }
+
+    .ws-srs-box-pill.is-box-3 {
+      background: rgba(86, 212, 245, 0.16);
+      color: #8ee5ff;
+    }
+
+    .ws-srs-box-pill.is-box-4 {
+      background: rgba(242, 207, 126, 0.16);
+      color: #f6db96;
+    }
+
+    .ws-srs-box-pill.is-box-5 {
+      background: rgba(57, 212, 154, 0.18);
+      color: #67ebb8;
+    }
+
+    .ws-srs-options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .ws-srs-option-btn {
+      width: 100%;
+      min-height: 46px;
+      padding: 10px 13px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.045);
+      border: none;
+      box-shadow: inset 3px 0 0 rgba(232, 197, 116, 0.18);
+      color: var(--ivory-primary, #f6f2e9);
+      font-family: var(--font-sans, Inter, sans-serif);
+      font-size: 13.5px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.14s ease, box-shadow 0.14s ease;
+    }
+
+    .ws-srs-option-btn:hover:not(:disabled) {
+      background: rgba(242, 207, 126, 0.11);
+      box-shadow: inset 3px 0 0 var(--gold-bright, #f2cf7e);
+    }
+
+    .ws-srs-option-btn:disabled {
+      cursor: default;
+      opacity: 0.72;
+    }
+
+    .ws-srs-option-btn.is-correct,
+    .ws-srs-option-btn.is-correct:disabled {
+      opacity: 1;
+      background: rgba(57, 212, 154, 0.16);
+      box-shadow: inset 3.5px 0 0 var(--emerald-win, #39d49a);
+      color: #ecfff7;
+    }
+
+    .ws-srs-option-btn.is-wrong,
+    .ws-srs-option-btn.is-wrong:disabled {
+      opacity: 1;
+      background: rgba(224, 82, 99, 0.18);
+      box-shadow: inset 3.5px 0 0 var(--crimson-alert, #e05263);
+      color: #ffe8eb;
+    }
+
+    .ws-srs-option-key {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: rgba(242, 207, 126, 0.16);
+      color: var(--gold-bright, #f2cf7e);
+      font-family: var(--font-mono, monospace);
+      font-size: 11px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .ws-srs-option-btn.is-correct .ws-srs-option-key {
+      background: var(--emerald-win, #39d49a);
+      color: #071b14;
+    }
+
+    .ws-srs-option-btn.is-wrong .ws-srs-option-key {
+      background: #b52a3b;
+      color: #ffffff;
+    }
+
+    .ws-srs-promotion-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-family: var(--font-mono, monospace);
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .ws-srs-promotion-badge.is-promoted {
+      background: rgba(57, 212, 154, 0.18);
+      color: #67ebb8;
+    }
+
+    .ws-srs-promotion-badge.is-reset {
+      background: rgba(224, 82, 99, 0.2);
+      color: #ff99a5;
+    }
+
+    @media (max-width: 440px) {
+      .ws-srs-boxes-grid {
+        gap: 4px;
+      }
+      .ws-srs-box-bar {
+        padding: 6px 5px;
+      }
+      .ws-srs-box-name {
+        font-size: 10px;
+      }
+      .ws-srs-box-interval {
+        font-size: 10px;
+      }
     }
   `;
   document.head.appendChild(style);
@@ -2006,17 +2254,17 @@ export class DiplomaticPassportBook {
           <div class="ws-persona-seal-stage" style="--seal-accent:${sealAccent};">
             <div class="ws-ink-ring-burst ${stampAnimClass}"></div>
             <div class="ws-persona-seal-disc ${stampAnimClass}">
-              <div style="font-family:var(--font-mono);font-size:8.5px;font-weight:700;color:${sealAccent};letter-spacing:0.1em;">
+              <div style="font-family:var(--font-mono);font-size:10px;font-weight:700;color:${sealAccent};letter-spacing:0.08em;">
                 GENEVA SEAL
               </div>
-              <div style="font-family:var(--font-display);font-size:14px;font-weight:800;color:var(--ivory-primary);margin:5px 0 3px;line-height:1.15;">
+              <div style="font-family:var(--font-display);font-size:14px;font-weight:800;color:var(--ivory-primary);margin:4px 0 3px;line-height:1.15;">
                 ${escapeMetaHtml((personaDef?.title ?? 'CANDIDATE').toUpperCase())}
               </div>
-              <div style="font-family:var(--font-mono);font-size:8px;color:var(--ivory-muted);">
-                ${escapeMetaHtml(personaDef?.stampCode ?? 'MRD-00 // PENDING')}
+              <div style="font-family:var(--font-mono);font-size:10px;color:var(--ivory-muted);">
+                ${escapeMetaHtml(personaDef?.stampCode ?? 'MRD-00')}
               </div>
-              <div style="margin-top:6px;font-family:var(--font-mono);font-size:8px;color:var(--emerald-win);">
-                ${pSnap.stampedAtIso ? `STAMPED ${escapeMetaHtml(pSnap.stampedAtIso.slice(0, 10))}` : 'AWAITING Q1–Q4'}
+              <div style="margin-top:4px;font-family:var(--font-mono);font-size:10px;color:var(--emerald-win);">
+                ${pSnap.stampedAtIso ? `${escapeMetaHtml(pSnap.stampedAtIso.slice(0, 10))}` : 'AWAITING Q1–Q4'}
               </div>
             </div>
             <div style="margin-top:10px;font-size:12.5px;color:var(--ivory-primary);font-style:italic;text-align:center;max-width:380px;line-height:1.42;">
@@ -2082,7 +2330,7 @@ export class DiplomaticPassportBook {
           <div style="font-family:var(--font-display);font-size:12.5px;font-weight:800;color:var(--ivory-primary);letter-spacing:0.04em;">
             ${escapeMetaHtml(visa.city.toUpperCase())}
           </div>
-          <div style="font-family:var(--font-mono);font-size:9.5px;color:${visa.cleared ? 'var(--emerald-win)' : 'var(--ivory-dim)'};font-weight:700;">
+          <div style="font-family:var(--font-mono);font-size:10px;color:${visa.cleared ? 'var(--emerald-win)' : '#9aa4b7'};font-weight:700;">
             ${escapeMetaHtml(visa.stampSerial)} · ${visa.cleared ? 'CLEARED' : `${visa.missionsCompleted}/${visa.totalMissions}`}
           </div>
           <div style="font-size:10.5px;color:var(--ivory-muted);line-height:1.25;">
@@ -2095,7 +2343,7 @@ export class DiplomaticPassportBook {
             this.callbacks.onInspectRelicInObservatory
               ? `
                 <button type="button" class="ws-meta-inline-link" data-inspect-relic="${visa.relicId}" style="margin-top:auto;font-size:10.5px;justify-content:center;">
-                  ${visa.relicUnlocked || visa.cleared ? '🏆' : '🔒'} ${escapeMetaHtml(relicEntry?.name ?? 'Relic')} ›
+                  ${visa.relicUnlocked || visa.cleared ? '◆' : '◇'} ${escapeMetaHtml(relicEntry?.name ?? 'Relic')} ›
                 </button>
               `
               : ''
@@ -2164,7 +2412,7 @@ export class DiplomaticPassportBook {
 
           <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-family:var(--font-mono);font-size:11px;color:var(--ivory-muted);padding-top:6px;border-top:1px solid rgba(255,255,255,0.07);">
             <span>★ APEX: <strong style="color:var(--emerald-win);">${escapeMetaHtml(strongest.shortName)} (${strongest.elo})</strong></span>
-            <span>⚠ TARGET: <strong style="color:var(--amber-warn);">${escapeMetaHtml(weakest.shortName)} (${weakest.elo})</strong></span>
+            <span>▲ TARGET: <strong style="color:var(--amber-warn);">${escapeMetaHtml(weakest.shortName)} (${weakest.elo})</strong></span>
           </div>
         </div>
 
@@ -2209,7 +2457,7 @@ export class DiplomaticPassportBook {
       <div class="ws-meta-kpi-strip">
         <div class="ws-meta-kpi-cell">
           <span class="ws-meta-kpi-lbl">Daily Streak</span>
-          <span class="ws-meta-kpi-val" style="color:var(--gold-bright);">${dailyStore.dailyStreak}d 🔥</span>
+          <span class="ws-meta-kpi-val" style="color:var(--gold-bright);">${dailyStore.dailyStreak}d ✦</span>
         </div>
         <div class="ws-meta-kpi-cell">
           <span class="ws-meta-kpi-lbl">Peak Percentile</span>

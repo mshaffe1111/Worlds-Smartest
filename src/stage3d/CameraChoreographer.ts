@@ -157,18 +157,18 @@ const SHOT_SPECS: Record<CameraShotId, ShotSpec> = {
     },
   },
   GLOBE_OVERWATCH: {
-    position: [0, 1.58, 2.68],
-    lookAt: [0, 1.24, 0],
+    position: [0, 1.56, 2.74],
+    lookAt: [0, 1.16, 0],
     fov: 45,
-    orbitDrift: 0.02,
-    minHorizontalSpan: 1.38,
+    orbitDrift: 0.015,
+    minHorizontalSpan: 1.36,
     portrait: {
       objMinY: 0.78,
-      objMaxY: 1.845,
+      objMaxY: 1.87,
       objHalfW: 0.47,
       objHalfD: 0.47,
-      topFrac: 0.095,
-      botFrac: 0.48,
+      topFrac: 0.11,
+      botFrac: 0.455,
       maxWidthFrac: 0.84,
     },
   },
@@ -470,7 +470,8 @@ export class CameraChoreographer {
         this.activeShot === 'PRISM_PEEL_INSPECT' ||
         this.activeShot === 'CODEX_FOCUS' ||
         this.activeShot === 'CALIBRATOR_FOCUS' ||
-        this.activeShot === 'GAUNTLET_FOCUS';
+        this.activeShot === 'GAUNTLET_FOCUS' ||
+        this.activeShot === 'GLOBE_OVERWATCH';
       const isLeftPaneShowcase =
         this.activeShot === 'RELIC_OBSERVATORY' ||
         this.activeShot === 'TROPHY_HERO' ||

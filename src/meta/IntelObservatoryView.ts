@@ -32,8 +32,19 @@ import {
   sanitizeMetaCopy,
   type MetaSuiteSectionId,
 } from './DiplomaticPassportBook';
+import {
+  LEITNER_BOX_LABELS,
+  LEITNER_BOX_SHORT_INTERVALS,
+  SpacedRepetitionEngine,
+  formatTimeUntilReview,
+  type LeitnerBox,
+  type SrsReviewAttemptResult,
+  type SrsReviewCard,
+} from './SpacedRepetitionEngine';
 
 export type ObservatoryTabId = 'RELICS_3D' | 'INTEL_FLASHES' | 'SELF_QUIZ';
+
+export type SrsDeckFilter = 'DUE' | 'ALL' | 'MASTERED';
 
 export type ShowcaseArtifactId = 'championship_trophy' | HeroRelicId;
 
@@ -53,6 +64,7 @@ export interface ObservatoryArtifactDossier {
 
 export interface IntelObservatoryDependencies {
   passport: PassportSystem;
+  srsEngine?: SpacedRepetitionEngine;
   stage3d?: Stage3DDirector;
   blackboard?: InkBlackboard;
   audio?: StudioAudioEngine;
@@ -63,6 +75,7 @@ export interface IntelObservatoryCallbacks {
   onInspectRelic?: (artifactId: ShowcaseArtifactId) => void;
   onUvScan?: (artifactId: ShowcaseArtifactId) => void;
   onLatchesOpened?: (artifactId: ShowcaseArtifactId) => void;
+  onLaunchLivePrismReview?: (cards: readonly SrsReviewCard[]) => void;
   onNavigateSection?: (section: MetaSuiteSectionId) => void;
   onBack?: () => void;
   canGoBack?: boolean;
@@ -358,41 +371,123 @@ const DOMAIN_FALLBACK_DECOYS: Record<DomainId, readonly string[]> = {
   11: ['Pareto Optimality', 'Prisoner’s Dilemma', 'Gödel Incompleteness', 'Bayes’ Theorem'],
 };
 
-function buildQuizOptions(item: FlashCardItem, pool: readonly FlashCardItem[]): {
+const BOOLEAN_CARD_VALUES = new Set([
+  'verify (true)',
+  'debunk (false)',
+  'true',
+  'false',
+]);
+
+function buildSrsQuizOptions(
+  card: SrsReviewCard,
+  pool: readonly SrsReviewCard[],
+  seedOverride?: number,
+): {
   options: string[];
   correctIdx: number;
 } {
-  const answerNorm = item.answer.trim().toLowerCase();
+  const answerClean = sanitizeMetaCopy(card.correctAnswer).trim();
+  const answerNorm = answerClean.toLowerCase();
+
+  // GAUNTLET_SHATTER True/False cards ALWAYS present clean 2-choice binary options
+  if (answerNorm === 'verify (true)' || answerNorm === 'debunk (false)') {
+    return {
+      options: ['VERIFY (True)', 'DEBUNK (False)'],
+      correctIdx: answerNorm === 'verify (true)' ? 0 : 1,
+    };
+  }
+  if (answerNorm === 'true' || answerNorm === 'false') {
+    return {
+      options: ['True', 'False'],
+      correctIdx: answerNorm === 'true' ? 0 : 1,
+    };
+  }
+
+  const seen = new Set<string>([answerNorm]);
   const candidates: string[] = [];
 
-  for (const other of pool) {
-    if (other.qid !== item.qid && other.answer.trim().toLowerCase() !== answerNorm) {
-      if (other.domainId === item.domainId) {
-        candidates.push(other.answer);
+  const tryPush = (raw: string, skipBooleans = false): void => {
+    const clean = sanitizeMetaCopy(raw).trim();
+    if (!clean) return;
+    const norm = clean.toLowerCase();
+    if (skipBooleans && BOOLEAN_CARD_VALUES.has(norm)) return;
+    if (seen.has(norm)) return;
+    seen.add(norm);
+    candidates.push(clean);
+  };
+
+  for (const dist of card.distractors) {
+    tryPush(dist, true);
+  }
+
+  // If a CALIBRATOR_DIAL calendar-year card has fewer than 3 distractors, synthesize era-matched comma-free years
+  const yearMatch = answerClean.match(/^(\d{3,4})(?:\s+(CE|BCE|AD|BC))?$/i);
+  if (yearMatch && candidates.length < 3) {
+    const baseYear = Number(yearMatch[1]);
+    const eraSuffix = yearMatch[2] ? ` ${yearMatch[2].toUpperCase()}` : '';
+    const offsets =
+      baseYear >= 1900
+        ? [-11, -5, 6, 13, -18, 19]
+        : baseYear >= 1500
+          ? [-24, -9, 12, 27, -38, 41]
+          : [-65, -25, 30, 75, -110, 120];
+    const rot = Math.abs(card.qid) % offsets.length;
+    for (let k = 0; k < offsets.length && candidates.length < 3; k++) {
+      const yr = baseYear + offsets[(rot + k) % offsets.length];
+      if (yr > 0 && yr <= 2026) {
+        tryPush(`${yr}${eraSuffix}`, true);
       }
     }
   }
-  for (const dec of DOMAIN_FALLBACK_DECOYS[item.domainId] ?? DOMAIN_FALLBACK_DECOYS[0]) {
-    if (dec.trim().toLowerCase() !== answerNorm && !candidates.includes(dec)) {
-      candidates.push(dec);
+
+  for (const other of pool) {
+    if (candidates.length >= 3) break;
+    if (other.qid !== card.qid && other.domainId === card.domainId) {
+      tryPush(other.correctAnswer, true);
+    }
+  }
+  for (const dec of DOMAIN_FALLBACK_DECOYS[card.domainId] ?? DOMAIN_FALLBACK_DECOYS[0]) {
+    if (candidates.length >= 3) break;
+    tryPush(dec, true);
+  }
+  for (const other of pool) {
+    if (candidates.length >= 3) break;
+    if (other.qid !== card.qid) {
+      tryPush(other.correctAnswer, true);
     }
   }
 
   const distractors = candidates.slice(0, 3);
   while (distractors.length < 3) {
-    distractors.push(`Decoy Option ${distractors.length + 1}`);
+    distractors.push(`Archive Candidate ${distractors.length + 1}`);
   }
 
-  const raw = [item.answer, ...distractors];
-  // Deterministic rotation by qid so re-renders keep identical A/B/C/D order!
-  const shift = Math.abs(item.qid) % 4;
-  const rotated = raw.map((_, i) => raw[(i + shift) % 4]);
-  const correctIdx = rotated.indexOf(item.answer);
-  return { options: rotated, correctIdx: Math.max(0, correctIdx) };
+  const raw = [answerClean, ...distractors];
+  // Deterministic Fisher-Yates keyed by (qid, reviewCount) so UI re-renders stay identical
+  // for a given review turn while shuffling cleanly on future reviews!
+  let state = ((seedOverride ?? (card.qid * 2654435761 + card.totalReviews * 1013904223)) >>> 0) || 1;
+  for (let i = raw.length - 1; i > 0; i--) {
+    state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+    const j = state % (i + 1);
+    const tmp = raw[i];
+    raw[i] = raw[j];
+    raw[j] = tmp;
+  }
+  const correctIdx = raw.indexOf(answerClean);
+  return { options: raw, correctIdx: Math.max(0, correctIdx) };
 }
+
+const SRS_BOX_ACCENTS: Record<LeitnerBox, string> = {
+  1: '#e05263',
+  2: '#f09d46',
+  3: '#56d4f5',
+  4: '#f2cf7e',
+  5: '#39d49a',
+};
 
 export class IntelObservatoryView {
   private readonly deps: IntelObservatoryDependencies;
+  private readonly srs: SpacedRepetitionEngine;
   private modalBackdrop: HTMLElement | null = null;
   private mountedContainer: HTMLElement | null = null;
   private detachEscape: (() => void) | null = null;
@@ -405,10 +500,16 @@ export class IntelObservatoryView {
   private activeHotspotId: string | null = null;
   private showcaseReqToken = 0;
 
-  // Intel Flash Vault & Quiz State
+  // Intel Flash Vault & 5-Box Leitner Mastery Deck State
   private searchQuery = '';
   private domainFilter: DomainId | 'ALL' = 'ALL';
   private includeSeedExemplars = true;
+
+  private srsFilter: SrsDeckFilter = 'DUE';
+  private srsBoxFilter: LeitnerBox | null = null;
+  private srsActiveCard: SrsReviewCard | null = null;
+  private srsActiveOptions: { qid: number; options: string[]; correctIdx: number } | null = null;
+  private srsLastAttemptResult: SrsReviewAttemptResult | null = null;
 
   private quizCursor = 0;
   private quizPickedIdx: number | null = null;
@@ -419,6 +520,7 @@ export class IntelObservatoryView {
 
   constructor(deps: IntelObservatoryDependencies) {
     this.deps = deps;
+    this.srs = deps.srsEngine ?? new SpacedRepetitionEngine(deps.passport);
     ensureMetaStylesInjected();
   }
 
@@ -432,6 +534,8 @@ export class IntelObservatoryView {
     this.activeTab = options.initialTab ?? 'RELICS_3D';
     this.selectedArtifactId = options.initialArtifactId ?? 'championship_trophy';
     this.uvBlacklightActive = false;
+    this.resetSrsRunnerTurn(true);
+    this.syncSrsBookmarksAndDefaultFilter();
 
     const backdrop = document.createElement('div');
     backdrop.setAttribute('role', 'dialog');
@@ -473,11 +577,52 @@ export class IntelObservatoryView {
     this.activeTab = options.initialTab ?? 'RELICS_3D';
     this.selectedArtifactId = options.initialArtifactId ?? 'championship_trophy';
     this.mountedContainer = container;
+    this.resetSrsRunnerTurn(true);
+    this.syncSrsBookmarksAndDefaultFilter();
     void fetchWave2RelicProvenance().then(() => {
       if (this.isOpen()) this.rerender();
     });
     void this.sync3DShowcase();
     this.renderInto(container, false);
+  }
+
+  private resetSrsRunnerTurn(resetCursor = false): void {
+    this.srsActiveCard = null;
+    this.srsActiveOptions = null;
+    this.srsLastAttemptResult = null;
+    this.quizPickedIdx = null;
+    this.quizShutterFlipped = false;
+    if (resetCursor) {
+      this.quizCursor = 0;
+      this.srsBoxFilter = null;
+    }
+  }
+
+  private syncSrsBookmarksAndDefaultFilter(): void {
+    this.srs.syncFromPassportBookmarks(this.deps.passport.getSnapshot().bookmarks);
+    const summary = this.srs.getDeckSummary();
+    if (summary.dueCount > 0) {
+      this.srsFilter = 'DUE';
+    } else if (summary.totalCards > 0) {
+      this.srsFilter = 'ALL';
+    } else {
+      this.srsFilter = 'DUE';
+    }
+  }
+
+  private getFilteredSrsCards(): SrsReviewCard[] {
+    let base: ReadonlyArray<SrsReviewCard>;
+    if (this.srsFilter === 'DUE') {
+      base = this.srs.getDueCards();
+    } else if (this.srsFilter === 'MASTERED') {
+      base = this.srs.getMasteredCards();
+    } else {
+      base = this.srs.getAllCards();
+    }
+    if (this.srsBoxFilter !== null) {
+      return base.filter((c) => c.box === this.srsBoxFilter);
+    }
+    return [...base];
   }
 
   public unmount(): void {
@@ -606,6 +751,8 @@ export class IntelObservatoryView {
 
   private renderInto(host: HTMLElement, isModal: boolean): void {
     const pSnap = this.deps.passport.getSnapshot();
+    this.srs.syncFromPassportBookmarks(pSnap.bookmarks);
+    const srsSummary = this.srs.getDeckSummary();
     const unlockedRelicsCount = OBSERVATORY_ARTIFACT_DOSSIERS.filter(
       (d) => d.id !== 'championship_trophy' && this.isArtifactUnlocked(d.id),
     ).length;
@@ -619,7 +766,7 @@ export class IntelObservatoryView {
           Saved Flashes${pSnap.bookmarks.length > 0 ? ` (${pSnap.bookmarks.length})` : ''}
         </button>
         <button type="button" role="tab" aria-selected="${this.activeTab === 'SELF_QUIZ'}" class="ws-meta-underline-tab ${this.activeTab === 'SELF_QUIZ' ? 'is-active' : ''}" data-obs-tab="SELF_QUIZ">
-          Recall Quiz
+          Mastery Deck${srsSummary.dueCount > 0 ? ` (${srsSummary.dueCount})` : ''}
         </button>
       </div>
     `;
@@ -695,7 +842,7 @@ export class IntelObservatoryView {
             <button type="button" class="ws-meta-back-btn" id="ws-obs-back" data-meta-back="true" aria-label="Back">← Back</button>
             <div class="ws-meta-topbar-titles">
               <h2 class="ws-meta-title">OBSERVATORY</h2>
-              <div class="ws-meta-eyebrow">${unlockedRelicsCount}/8 Relics · ${pSnap.bookmarks.length} Flashes</div>
+              <div class="ws-meta-eyebrow">${unlockedRelicsCount}/8 Relics · ${srsSummary.dueCount} Due · ${pSnap.bookmarks.length} Flashes</div>
             </div>
           </div>
           <div class="ws-meta-topbar-right">
@@ -792,7 +939,7 @@ export class IntelObservatoryView {
             </div>
           </div>
           <span style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:0.05em;color:${unlocked ? 'var(--emerald-win)' : 'var(--crimson-alert)'};white-space:nowrap;flex-shrink:0;padding-top:2px;">
-            ${unlocked ? '✦ RECOVERED' : '🔒 CLASSIFIED'}
+            ${unlocked ? '✦ RECOVERED' : '◇ CLASSIFIED'}
           </span>
         </div>
 
@@ -903,11 +1050,11 @@ export class IntelObservatoryView {
             type="search"
             autocomplete="off"
             spellcheck="false"
-            placeholder="🔍 Search bookmarked flashes, answers, or debriefs..."
+            placeholder="Search bookmarked flashes, answers, or debriefs..."
             value="${escapeMetaHtml(this.searchQuery)}"
           />
           <button type="button" class="ws-meta-btn-gold" id="ws-obs-launch-quiz">
-            Quiz (${items.length}) ▶
+            Mastery Deck ▶
           </button>
         </div>
 
@@ -917,7 +1064,7 @@ export class IntelObservatoryView {
           </button>
           ${
             personalCount === 0
-              ? `<span style="font-size:11px;color:var(--ivory-dim);">Tap <strong>☆ Save Intel</strong> after any question to archive flashes here.</span>`
+              ? `<span style="font-size:11px;color:#9aa4b7;">Tap <strong>◇ Save Intel</strong> after any question to archive flashes here.</span>`
               : `<span style="font-family:var(--font-mono);font-size:10.5px;color:var(--gold-bright);">${personalCount} Personal Saved</span>`
           }
         </div>
@@ -980,82 +1127,241 @@ export class IntelObservatoryView {
   }
 
   private renderSelfQuizMode(): string {
-    const pool = this.getCombinedFlashes();
-    if (pool.length === 0) {
+    const summary = this.srs.getDeckSummary();
+    const allCards = this.srs.getAllCards();
+    const filteredQueue = this.getFilteredSrsCards();
+    const maxBoxCount = Math.max(1, ...summary.boxCounts);
+    const boxes: readonly LeitnerBox[] = [1, 2, 3, 4, 5];
+
+    const headerStatsAndBarsHtml = `
+      <!-- Frameless 4-KPI Leitner Mastery Strip -->
+      <div class="ws-meta-kpi-strip is-four-col" id="ws-srs-kpi-strip">
+        <div class="ws-meta-kpi-cell" data-srs-kpi="due">
+          <span class="ws-meta-kpi-lbl">Due Now</span>
+          <span class="ws-meta-kpi-val" id="ws-srs-due-count" style="color:${summary.dueCount > 0 ? 'var(--gold-bright)' : 'var(--emerald-win)'};">${summary.dueCount}</span>
+        </div>
+        <div class="ws-meta-kpi-cell" data-srs-kpi="total">
+          <span class="ws-meta-kpi-lbl">Deck Cards</span>
+          <span class="ws-meta-kpi-val" id="ws-srs-total-count">${summary.totalCards}</span>
+        </div>
+        <div class="ws-meta-kpi-cell" data-srs-kpi="retention">
+          <span class="ws-meta-kpi-lbl">Retention</span>
+          <span class="ws-meta-kpi-val" id="ws-srs-retention" style="color:var(--cyan-clue);">${summary.retentionPct}%</span>
+        </div>
+        <div class="ws-meta-kpi-cell" data-srs-kpi="mastered">
+          <span class="ws-meta-kpi-lbl">Mastered</span>
+          <span class="ws-meta-kpi-val" id="ws-srs-mastered-count" style="color:var(--emerald-win);">${summary.masteredCount}</span>
+        </div>
+      </div>
+
+      <!-- 5-Box Leitner Mastery Bars (Zero Nested Boxes) -->
+      <div class="ws-meta-section" style="padding-top:10px;padding-bottom:10px;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+          <h3 class="ws-meta-section-title">5-Box Leitner Mastery Deck</h3>
+          <span style="font-family:var(--font-mono);font-size:10px;color:#a5afc2;">
+            ${this.srsBoxFilter ? `Filtered: Box ${this.srsBoxFilter} (tap to clear)` : 'Box 1 Immediate → Box 5 Mastered (21d)'}
+          </span>
+        </div>
+
+        <div class="ws-srs-boxes-grid" id="ws-srs-box-bars" aria-label="Leitner Boxes 1 to 5">
+          ${boxes
+            .map((boxNum) => {
+              const count = summary.boxCounts[boxNum - 1];
+              const fillPct = summary.totalCards > 0 ? Math.max(count > 0 ? 14 : 0, Math.round((count / maxBoxCount) * 100)) : 0;
+              const accent = SRS_BOX_ACCENTS[boxNum];
+              const isSelected = this.srsBoxFilter === boxNum;
+              return `
+                <button
+                  type="button"
+                  class="ws-srs-box-bar ${isSelected ? 'is-active' : ''}"
+                  data-srs-box="${boxNum}"
+                  data-srs-box-count="${count}"
+                  aria-pressed="${isSelected}"
+                >
+                  <div class="ws-srs-box-head">
+                    <span class="ws-srs-box-name">Box ${boxNum}</span>
+                    <span class="ws-srs-box-count" style="color:${accent};">${count}</span>
+                  </div>
+                  <div class="ws-srs-box-track">
+                    <div class="ws-srs-box-fill" style="width:${fillPct}%;background:${accent};"></div>
+                  </div>
+                  <span class="ws-srs-box-interval">${escapeMetaHtml(LEITNER_BOX_SHORT_INTERVALS[boxNum])}</span>
+                </button>
+              `;
+            })
+            .join('')}
+        </div>
+
+        <!-- Filter Pills + Optional 3D Stage Review Launch (Zero Right-Edge Clip on 360px!) -->
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;" role="group" aria-label="Mastery Deck Filter">
+          <button type="button" class="ws-meta-chip ${this.srsFilter === 'DUE' ? 'is-active' : ''}" data-srs-filter="DUE">
+            Due (${summary.dueCount})
+          </button>
+          <button type="button" class="ws-meta-chip ${this.srsFilter === 'ALL' ? 'is-active' : ''}" data-srs-filter="ALL">
+            All (${summary.totalCards})
+          </button>
+          <button type="button" class="ws-meta-chip ${this.srsFilter === 'MASTERED' ? 'is-active' : ''}" data-srs-filter="MASTERED">
+            Mastered (${summary.masteredCount})
+          </button>
+          ${
+            this.callbacks.onLaunchLivePrismReview && filteredQueue.length > 0
+              ? `<button type="button" class="ws-meta-chip" id="ws-srs-launch-3d" style="color:var(--cyan-clue);">
+                  3D Review ▶
+                </button>`
+              : ''
+          }
+        </div>
+      </div>
+    `;
+
+    // Empty Deck Onboarding State
+    if (summary.totalCards === 0) {
       return `
-        <div class="ws-meta-section" style="text-align:center;padding:32px 12px;border-bottom:none;">
-          <div style="font-family:var(--font-display);font-size:15px;color:var(--gold-bright);margin-bottom:10px;">
-            No Intel Flashes in Current Filter
+        ${headerStatsAndBarsHtml}
+        <div class="ws-meta-section" style="text-align:center;padding:24px 8px;border-bottom:none;gap:12px;">
+          <div style="font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--gold-bright);">
+            Your Leitner Mastery Deck Is Ready
           </div>
-          <div>
-            <button type="button" class="ws-meta-btn-gold" id="ws-obs-reset-quiz-filter">
-              Load Geneva Archive Deck
+          <p style="margin:0 auto;max-width:440px;font-size:12.5px;color:var(--ivory-muted);line-height:1.48;">
+            Every missed question automatically enters <strong>Box 1 (Immediate Review)</strong>, and every Saved Intel Flash enters <strong>Box 2 (24h)</strong>. Promote cards across 5 spaced intervals to lock facts into permanent memory.
+          </p>
+          <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;padding-top:4px;">
+            <button type="button" class="ws-meta-btn-gold" id="ws-srs-load-demo">
+              Load Geneva Starter Deck (6 Cards)
             </button>
           </div>
         </div>
       `;
     }
 
-    const safeIdx = ((this.quizCursor % pool.length) + pool.length) % pool.length;
-    const current = pool[safeIdx];
-    const dom = getSovereignDomainMeta(current.domainId);
-    const { options, correctIdx } = buildQuizOptions(current, pool);
+    // Resolve currently displayed review card (keep revealed card visible until Next is clicked!)
     const answered = this.quizPickedIdx !== null || this.quizShutterFlipped;
+    let current: SrsReviewCard | null = answered ? this.srsActiveCard : null;
+    if (!current && filteredQueue.length > 0) {
+      const safeIdx = ((this.quizCursor % filteredQueue.length) + filteredQueue.length) % filteredQueue.length;
+      current = filteredQueue[safeIdx];
+    }
+
+    if (!current) {
+      const isDueEmpty = this.srsFilter === 'DUE' && this.srsBoxFilter === null;
+      const headline = isDueEmpty
+        ? 'All Due Reviews Cleared'
+        : this.srsFilter === 'MASTERED'
+          ? 'No Cards in Box 5 Mastered Yet'
+          : 'No Cards Match This Box Filter';
+      const detail = isDueEmpty
+        ? `All ${summary.totalCards} card${summary.totalCards === 1 ? '' : 's'} in your Leitner deck are scheduled ahead. Review the full deck early or play another match to capture new cards.`
+        : 'Promote cards correctly through Boxes 1 → 5 or switch to All Saved & Missed to practice now.';
+      return `
+        ${headerStatsAndBarsHtml}
+        <div class="ws-meta-section" style="text-align:center;padding:22px 8px;border-bottom:none;gap:12px;">
+          <div style="font-family:var(--font-display);font-size:15px;font-weight:700;color:${isDueEmpty ? 'var(--emerald-win)' : 'var(--gold-bright)'};">
+            ${isDueEmpty ? '✦ ' : ''}${escapeMetaHtml(headline)}
+          </div>
+          <p style="margin:0 auto;max-width:440px;font-size:12.5px;color:var(--ivory-muted);line-height:1.45;">
+            ${escapeMetaHtml(detail)}
+          </p>
+          <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
+            <button type="button" class="ws-meta-btn-gold" id="ws-obs-reset-quiz-filter">
+              Practice All Deck Cards (${summary.totalCards}) ▶
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // Keep exact same A-D options during an active/revealed turn
+    let quizChoice = this.srsActiveOptions;
+    if (!quizChoice || quizChoice.qid !== current.qid) {
+      const built = buildSrsQuizOptions(current, allCards);
+      quizChoice = { qid: current.qid, options: built.options, correctIdx: built.correctIdx };
+      this.srsActiveOptions = quizChoice;
+    }
+
+    const { options, correctIdx } = quizChoice;
+    const dom = getSovereignDomainMeta(current.domainId);
+    const displayBox: LeitnerBox = this.srsLastAttemptResult?.newBox ?? current.box;
     const letters = ['A', 'B', 'C', 'D'];
-    const recallAcc =
-      this.quizAttemptedCount > 0
-        ? Math.round((this.quizCorrectCount / this.quizAttemptedCount) * 100)
-        : 100;
+    const sourceBadge =
+      current.source === 'BOTH'
+        ? 'Missed + Saved'
+        : current.source === 'MISSED'
+          ? 'Auto-Captured Miss'
+          : current.source === 'BOOKMARKED'
+            ? 'Saved Flash'
+            : 'Geneva Archive';
+    const dueLabel = formatTimeUntilReview(
+      this.srsLastAttemptResult?.card.nextReviewAtMs ?? current.nextReviewAtMs,
+    );
+    const queuePos =
+      filteredQueue.length > 0
+        ? `${(((this.quizCursor % filteredQueue.length) + filteredQueue.length) % filteredQueue.length) + 1}/${filteredQueue.length}`
+        : 'Done';
+
+    const result = this.srsLastAttemptResult;
+    const promotionBadgeHtml = result
+      ? result.wasCorrect
+        ? `<span class="ws-srs-promotion-badge is-promoted" id="ws-srs-promotion-badge">
+            ${
+              result.promoted
+                ? `✦ BOX ${result.previousBox} → BOX ${result.newBox} · NEXT IN ${result.nextIntervalLabel.toUpperCase()}`
+                : `✦ BOX 5 MASTERED · NEXT IN ${result.nextIntervalLabel.toUpperCase()}`
+            }
+          </span>`
+        : `<span class="ws-srs-promotion-badge is-reset" id="ws-srs-promotion-badge">
+            ↺ RESET BOX ${result.previousBox} → BOX 1 · DUE NOW
+          </span>`
+      : '';
 
     return `
-      <div class="ws-meta-section" style="padding-top:0;border-bottom:none;gap:14px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.07);">
-          <div style="display:flex;align-items:center;gap:8px;">
-            <img src="./${escapeMetaHtml(dom.medallionUrl)}" alt="" style="width:24px;height:24px;object-fit:contain;" />
-            <div>
-              <div style="font-family:var(--font-mono);font-size:10.5px;font-weight:700;color:${dom.accentHex};">
-                ${escapeMetaHtml(dom.name)} · Card ${safeIdx + 1}/${pool.length}
+      ${headerStatsAndBarsHtml}
+      <div class="ws-meta-section ws-srs-runner" id="ws-srs-runner" data-srs-active-qid="${current.qid}" data-srs-active-box="${displayBox}" style="padding-top:12px;border-bottom:none;gap:12px;">
+        <div class="ws-srs-card-header">
+          <div style="display:flex;align-items:center;gap:8px;min-width:0;">
+            <img src="./${escapeMetaHtml(dom.medallionUrl)}" alt="" style="width:22px;height:22px;object-fit:contain;flex-shrink:0;" />
+            <div style="min-width:0;">
+              <div style="font-family:var(--font-mono);font-size:10.5px;font-weight:700;color:${dom.accentHex};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                ${escapeMetaHtml(dom.name)}${current.subcatLabel ? ` · ${escapeMetaHtml(current.subcatLabel)}` : ''}
+              </div>
+              <div style="font-family:var(--font-mono);font-size:10px;color:#a5afc2;">
+                ${escapeMetaHtml(sourceBadge)} · ${escapeMetaHtml(dueLabel)} · Card ${escapeMetaHtml(queuePos)}
               </div>
             </div>
           </div>
-          <div style="font-family:var(--font-mono);font-size:11px;color:var(--gold-bright);font-weight:700;">
-            ${this.quizCorrectCount}/${this.quizAttemptedCount} (${recallAcc}%) · ${this.quizStreak}🔥
+          <div style="display:flex;align-items:center;gap:7px;flex-shrink:0;">
+            <span class="ws-srs-box-pill is-box-${displayBox}" id="ws-srs-card-box-pill">
+              ${escapeMetaHtml(LEITNER_BOX_LABELS[displayBox])}
+            </span>
           </div>
         </div>
 
-        <div style="font-size:clamp(15px,1.6vw,18px);font-weight:600;color:var(--ivory-primary);line-height:1.45;">
+        <div style="font-size:clamp(14.5px,1.55vw,17px);font-weight:600;color:var(--ivory-primary);line-height:1.44;">
           ${escapeMetaHtml(sanitizeMetaCopy(current.prompt))}
         </div>
 
-        <!-- 4 Sleek Borderless Answer Strips -->
-        <div style="display:flex;flex-direction:column;gap:6px;">
+        <!-- 4 Sleek Borderless A-D Review Strips -->
+        <div class="ws-srs-options-list">
           ${options
             .map((optText, idx) => {
               const isCorrect = idx === correctIdx;
               const isPicked = this.quizPickedIdx === idx;
-              let bgCss = 'rgba(255, 255, 255, 0.042)';
-              let barCss = 'none';
-              if (answered) {
-                if (isCorrect) {
-                  bgCss = 'rgba(57, 212, 154, 0.14)';
-                  barCss = 'inset 3px 0 0 var(--emerald-win)';
-                } else if (isPicked) {
-                  bgCss = 'rgba(224, 82, 99, 0.14)';
-                  barCss = 'inset 3px 0 0 var(--crimson-alert)';
-                }
-              }
+              const stateClass = answered
+                ? isCorrect
+                  ? 'is-correct'
+                  : isPicked
+                    ? 'is-wrong'
+                    : ''
+                : '';
               return `
                 <button
                   type="button"
-                  class="ws-meta-btn"
+                  class="ws-srs-option-btn ${stateClass}"
                   data-quiz-pick="${idx}"
+                  data-srs-correct="${isCorrect ? 'true' : 'false'}"
                   ${answered ? 'disabled' : ''}
-                  style="justify-content:flex-start;text-align:left;min-height:46px;background:${bgCss};box-shadow:${barCss};opacity:1;padding:10px 14px;"
                 >
-                  <span style="width:24px;height:24px;border-radius:6px;background:rgba(242,207,126,0.14);display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:11.5px;color:var(--gold-bright);flex-shrink:0;">
-                    ${letters[idx]}
-                  </span>
-                  <span style="white-space:normal;line-height:1.3;">${escapeMetaHtml(sanitizeMetaCopy(optText))}</span>
+                  <span class="ws-srs-option-key">${letters[idx]}</span>
+                  <span style="white-space:normal;line-height:1.3;">${escapeMetaHtml(optText)}</span>
                 </button>
               `;
             })
@@ -1065,26 +1371,33 @@ export class IntelObservatoryView {
         ${
           answered
             ? `
-              <div class="ws-meta-note is-emerald" style="display:flex;flex-direction:column;gap:4px;">
-                <div style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--emerald-win);">
-                  ${this.quizPickedIdx === correctIdx ? '✦ GOLD RESONANCE — EXACT RECALL' : `✓ ${escapeMetaHtml(sanitizeMetaCopy(current.answer))}`}
+              <div class="ws-meta-note ${result?.wasCorrect ? 'is-emerald' : 'is-crimson'}" style="display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;">
+                  <span style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:${result?.wasCorrect ? 'var(--emerald-win)' : '#ff99a5'};">
+                    ${result?.wasCorrect ? '✦ EXACT RECALL' : `✓ ${escapeMetaHtml(sanitizeMetaCopy(current.correctAnswer))}`}
+                  </span>
+                  ${promotionBadgeHtml}
                 </div>
-                <div style="font-size:12.5px;color:var(--ivory-primary);line-height:1.42;">
-                  ${escapeMetaHtml(sanitizeMetaCopy(current.whyExplanation))}
-                </div>
+                ${
+                  current.whyExplanation
+                    ? `<div style="font-size:12.5px;color:var(--ivory-primary);line-height:1.42;">
+                        ${escapeMetaHtml(sanitizeMetaCopy(current.whyExplanation))}
+                      </div>`
+                    : ''
+                }
               </div>
             `
             : ''
         }
 
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:6px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:4px;">
           ${
             !answered
               ? `<button type="button" class="ws-meta-btn" id="ws-obs-quiz-flip">Reveal Answer</button>`
-              : `<span></span>`
+              : `<span style="font-family:var(--font-mono);font-size:10.5px;color:#a5afc2;">Session: ${this.quizCorrectCount}/${this.quizAttemptedCount} · Streak ${this.quizStreak}</span>`
           }
           <button type="button" class="ws-meta-btn-gold" id="ws-obs-quiz-next">
-            Next Flash ▶
+            ${this.srsFilter === 'DUE' ? 'Next Due Card ▶' : 'Next Card ▶'}
           </button>
         </div>
       </div>
@@ -1118,6 +1431,9 @@ export class IntelObservatoryView {
         this.activeTab = nextTab;
         if (nextTab === 'RELICS_3D') {
           void this.sync3DShowcase();
+        } else if (nextTab === 'SELF_QUIZ') {
+          this.resetSrsRunnerTurn(true);
+          this.syncSrsBookmarksAndDefaultFilter();
         }
         this.rerender();
       });
@@ -1217,9 +1533,8 @@ export class IntelObservatoryView {
 
     host.querySelector('#ws-obs-launch-quiz')?.addEventListener('click', () => {
       this.activeTab = 'SELF_QUIZ';
-      this.quizCursor = 0;
-      this.quizPickedIdx = null;
-      this.quizShutterFlipped = false;
+      this.resetSrsRunnerTurn(true);
+      this.syncSrsBookmarksAndDefaultFilter();
       this.deps.haptics?.uiTap();
       this.deps.audio?.playSfx('ui_tap');
       this.rerender();
@@ -1244,17 +1559,69 @@ export class IntelObservatoryView {
         const found = this.deps.passport.getSnapshot().bookmarks.find((b) => b.qid === qid);
         if (!found) return;
         this.deps.passport.toggleIntelBookmark(found);
+        this.srs.syncFromPassportBookmarks(this.deps.passport.getSnapshot().bookmarks);
         this.deps.haptics?.uiTap();
         this.deps.audio?.playSfx('ui_tap');
         this.rerender();
       });
     });
 
-    // Self-Quiz Events
+    // 5-Box Leitner Spaced-Repetition Mastery Deck Events
+    host.querySelectorAll<HTMLButtonElement>('[data-srs-box]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const boxNum = Number(btn.dataset.srsBox) as LeitnerBox;
+        if (boxNum < 1 || boxNum > 5) return;
+        this.srsBoxFilter = this.srsBoxFilter === boxNum ? null : boxNum;
+        if (this.srsBoxFilter !== null && this.srsFilter === 'DUE') {
+          this.srsFilter = 'ALL';
+        }
+        this.resetSrsRunnerTurn(false);
+        this.quizCursor = 0;
+        this.deps.haptics?.uiTap();
+        this.deps.audio?.playSfx('ui_tap');
+        this.rerender();
+      });
+    });
+
+    host.querySelectorAll<HTMLButtonElement>('[data-srs-filter]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const nextFilter = btn.dataset.srsFilter as SrsDeckFilter | undefined;
+        if (!nextFilter) return;
+        this.srsFilter = nextFilter;
+        this.srsBoxFilter = null;
+        this.resetSrsRunnerTurn(true);
+        this.deps.haptics?.uiTap();
+        this.deps.audio?.playSfx('ui_tap');
+        this.rerender();
+      });
+    });
+
+    host.querySelector('#ws-srs-load-demo')?.addEventListener('click', () => {
+      this.srs.seedDemoCardsIfEmpty();
+      this.srsFilter = 'DUE';
+      this.srsBoxFilter = null;
+      this.resetSrsRunnerTurn(true);
+      this.deps.haptics?.correctBloom();
+      this.deps.audio?.playSfx('sightline_snap');
+      this.rerender();
+    });
+
+    host.querySelector('#ws-srs-launch-3d')?.addEventListener('click', () => {
+      const queue = this.getFilteredSrsCards();
+      if (queue.length === 0 || !this.callbacks.onLaunchLivePrismReview) return;
+      const launchCb = this.callbacks.onLaunchLivePrismReview;
+      this.deps.haptics?.uiTap();
+      this.deps.audio?.playSfx('ui_tap');
+      this.close();
+      launchCb(queue);
+    });
+
     host.querySelector('#ws-obs-reset-quiz-filter')?.addEventListener('click', () => {
-      this.searchQuery = '';
-      this.domainFilter = 'ALL';
-      this.includeSeedExemplars = true;
+      this.srsFilter = 'ALL';
+      this.srsBoxFilter = null;
+      this.resetSrsRunnerTurn(true);
+      this.deps.haptics?.uiTap();
+      this.deps.audio?.playSfx('ui_tap');
       this.rerender();
     });
 
@@ -1262,14 +1629,23 @@ export class IntelObservatoryView {
       btn.addEventListener('click', () => {
         if (this.quizPickedIdx !== null || this.quizShutterFlipped) return;
         const idx = Number(btn.dataset.quizPick);
-        const pool = this.getCombinedFlashes();
-        if (pool.length === 0) return;
-        const safeIdx = ((this.quizCursor % pool.length) + pool.length) % pool.length;
-        const { correctIdx } = buildQuizOptions(pool[safeIdx], pool);
+        const queue = this.getFilteredSrsCards();
+        if (queue.length === 0) return;
+        const safeIdx = ((this.quizCursor % queue.length) + queue.length) % queue.length;
+        const card = queue[safeIdx];
+        const choice =
+          this.srsActiveOptions && this.srsActiveOptions.qid === card.qid
+            ? this.srsActiveOptions
+            : { qid: card.qid, ...buildSrsQuizOptions(card, this.srs.getAllCards()) };
+        this.srsActiveOptions = choice;
 
+        const isCorrect = idx === choice.correctIdx;
+        this.srsActiveCard = card;
         this.quizPickedIdx = idx;
         this.quizAttemptedCount += 1;
-        if (idx === correctIdx) {
+        this.srsLastAttemptResult = this.srs.recordReviewAttempt(card.qid, isCorrect);
+
+        if (isCorrect) {
           this.quizCorrectCount += 1;
           this.quizStreak += 1;
           this.deps.haptics?.correctBloom();
@@ -1284,16 +1660,30 @@ export class IntelObservatoryView {
     });
 
     host.querySelector('#ws-obs-quiz-flip')?.addEventListener('click', () => {
+      if (this.quizPickedIdx !== null || this.quizShutterFlipped) return;
+      const queue = this.getFilteredSrsCards();
+      if (queue.length === 0) return;
+      const safeIdx = ((this.quizCursor % queue.length) + queue.length) % queue.length;
+      const card = queue[safeIdx];
+      this.srsActiveCard = card;
       this.quizShutterFlipped = true;
+      this.quizAttemptedCount += 1;
+      this.quizStreak = 0;
+      this.srsLastAttemptResult = this.srs.recordReviewAttempt(card.qid, false);
       this.deps.haptics?.peel(2);
       this.deps.audio?.playSfx('shutter_peel');
       this.rerender();
     });
 
     host.querySelector('#ws-obs-quiz-next')?.addEventListener('click', () => {
-      this.quizCursor += 1;
-      this.quizPickedIdx = null;
-      this.quizShutterFlipped = false;
+      const wasRemovedFromDueQueue =
+        this.srsFilter === 'DUE' && Boolean(this.srsLastAttemptResult?.wasCorrect);
+      if (wasRemovedFromDueQueue) {
+        this.quizCursor = 0;
+      } else {
+        this.quizCursor += 1;
+      }
+      this.resetSrsRunnerTurn(false);
       this.deps.haptics?.spinTick();
       this.deps.audio?.playSfx('spin_tick');
       this.rerender();

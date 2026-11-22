@@ -28,7 +28,42 @@ export type Archetype3D =
   | 'CODEX_DUAL_RING'
   | 'CALIBRATOR_DIAL'
   | 'GAUNTLET_SHATTER'
-  | 'HERO_ARTIFACT_SYNTHESIS';
+  | 'HERO_ARTIFACT_SYNTHESIS'
+  | 'GLOBE_PIN_DROP';
+
+/** Alias exported alongside `Archetype3D` for Upgrade #2 ergonomics */
+export type PrismArchetype = Archetype3D;
+
+export interface GlobeCoordinates {
+  readonly lat: number;
+  readonly lon: number;
+}
+
+export interface GlobePinAnchor {
+  readonly label: string;
+  readonly lat: number;
+  readonly lon: number;
+}
+
+export interface GlobePinDropSpec {
+  targetLat: number;
+  targetLon: number;
+  targetLabel: string;
+  bullseyeKm: number;
+  goldKm: number;
+  grazeKm: number;
+  regionHint: string;
+  coordHint: string;
+  quickAnchors: ReadonlyArray<{ label: string; lat: number; lon: number }>;
+}
+
+export interface VisualLensPlateSpec {
+  imageUrl: string;
+  caption: string;
+  aspect?: 'SQUARE' | 'WIDE';
+  altText?: string;
+  kind?: string;
+}
 
 export type FactionAffinity = 'SOVEREIGN' | 'HORIZON' | 'AGORA';
 
@@ -44,7 +79,27 @@ export type CampaignDifficultyTier =
   | 'EXPERT'
   | 'GENIUS';
 
-export type BriefingDifficultyPreset = 'EASY' | 'MEDIUM' | 'HARD' | 'GENIUS' | 'ADAPTIVE' | 'PROGRESSIVE';
+export type AcademicDifficultyTier =
+  | 'MIDDLE_SCHOOL'
+  | 'HIGH_SCHOOL'
+  | 'COLLEGE'
+  | 'GRADUATE'
+  | 'MENSA';
+
+export type {
+  AcademicDifficultyTierSpec,
+  QuestionDifficultyAssessment,
+  QuestionDifficultyBreakdown,
+} from './QuestionDifficultyCalibration';
+
+export type BriefingDifficultyPreset =
+  | AcademicDifficultyTier
+  | 'ADAPTIVE'
+  | 'PROGRESSIVE'
+  | 'EASY'
+  | 'MEDIUM'
+  | 'HARD'
+  | 'GENIUS';
 
 export type PeelTier = 1 | 2 | 3;
 
@@ -146,8 +201,15 @@ export interface RawGauntletExt {
 export interface RawQuestionRecord {
   qid: number;
   l0Domain: number;
+  /** Optional alias accepted from visual/globe/jeopardy JSON packs (normalized to `l0Domain`) */
+  domainId?: number;
   l1Category?: string;
   l2Subcategory?: string;
+  /** Optional aliases accepted from visual/globe/jeopardy JSON packs */
+  l2Category?: string;
+  l1Id?: string;
+  l2Id?: string;
+  subcatId?: string;
   microTopicId?: string;
   regions?: string[];
   narrativeTags?: string[];
@@ -167,9 +229,28 @@ export interface RawQuestionRecord {
   codexExt?: RawCodexExt;
   calibratorExt?: RawCalibratorExt;
   gauntletExt?: RawGauntletExt;
+  globePin?: Partial<GlobePinDropSpec> & {
+    targetLat: number;
+    targetLon: number;
+    targetLabel: string;
+  };
+  visualPlate?: VisualLensPlateSpec;
   heroRelicId?: HeroRelicId;
   shardType?: string;
   angleId?: string;
+  /** Optional 0..1 normalized row rank inside a sorted shard table (0 = household GOAT, 1 = deep archive cut) */
+  shardRowRank01?: number;
+}
+
+export interface RawVisualGlobePackBundle {
+  schemaVersion?: string;
+  generatedAt?: string;
+  totalCount?: number;
+  questions?: RawQuestionRecord[];
+  globeQuestions?: RawQuestionRecord[];
+  visualQuestions?: RawQuestionRecord[];
+  items?: RawQuestionRecord[];
+  packs?: Record<string, RawQuestionRecord[]>;
 }
 
 export interface RawQuestionsBundle {
@@ -190,6 +271,13 @@ export interface ShardAngleSpec {
   archetype: 'SIGHTLINE_LOCK' | 'GAUNTLET_SHATTER' | 'CALIBRATOR_DIAL' | 'CODEX_DUAL_RING';
   irtOffset?: number;
   prompt?: string;
+  stem?: string;
+  readonly stemVariants?: ReadonlyArray<string>;
+  readonly promptVariants?: ReadonlyArray<string>;
+  readonly truePromptVariants?: ReadonlyArray<string>;
+  readonly falsePromptVariants?: ReadonlyArray<string>;
+  readonly trueStemVariants?: ReadonlyArray<string>;
+  readonly falseStemVariants?: ReadonlyArray<string>;
   answerCol?: number;
   subjectCol?: number;
   targetCol?: number;
@@ -440,6 +528,14 @@ export interface PrismQuestion {
   tone: ToneTag;
   irtB: number;
   irtA: number;
+  /** Calibrated 5-tier Academic / IQ placement ('MIDDLE_SCHOOL' .. 'MENSA') */
+  difficultyTier: AcademicDifficultyTier;
+  /** Deterministic 6-factor difficulty score (0..100) */
+  difficultyScore: number;
+  /** Human-readable tier label ('Middle School' | 'High School' | 'College' | 'Graduate' | 'Mensa') */
+  difficultyLabel: string;
+  /** Tier score bonus multiplier (1.0x | 1.15x | 1.35x | 1.6x | 2.0x) */
+  difficultyMultiplier: number;
   freshness: 'EVERGREEN' | 'SLOW_DRIFT' | 'CURRENT_EVENTS';
   sourceTier: QuestionSourceTier;
   archetype: Archetype3D;
@@ -459,8 +555,42 @@ export interface PrismQuestion {
   codex?: CodexRingSpec;
   calibrator?: CalibratorDialSpec;
   gauntlet?: GauntletPlateSpec;
+  globePin?: GlobePinDropSpec;
+  visualPlate?: VisualLensPlateSpec;
   heroRelicId?: HeroRelicId;
   heroSynthesis?: HeroSynthesisSpec;
+}
+
+export interface PlayerPrismSubmission {
+  archetype?: Archetype3D;
+  /** Selected facet index (0..5) for SIGHTLINE_LOCK / HERO_ARTIFACT_SYNTHESIS */
+  selectedFacetIndex?: number;
+  /** Optional selected answer text (checked case-insensitively alongside facet index) */
+  selectedText?: string;
+  /** Active Peel tier when locked: 1 = Cold Instinct (3.0x), 2 = Clue Core (2.0x), 3 = Blueprint (1.2x) */
+  peelTier: PeelTier;
+  /** True if player held Lock >= 0.3s to engage Conviction Overclock */
+  overclocked: boolean;
+  /** Normalized Overclock charge in [0..1] (0.3s -> 0.15, 1.0s -> 1.0 -> 2.0x multiplier!) */
+  overclockCharge: number;
+  /** Elapsed time on the question in seconds */
+  elapsedSec: number;
+  /** True if Chrono-Ring hit 0.0s before locking */
+  timedOut?: boolean;
+  // Calibrator Astrolabe inputs
+  calibratorEstimate?: number;
+  calibratorConeId?: CalibratorConeId;
+  calibratorTolerancePct?: number; // fallback if raw slider pct passed (0.02..0.35)
+  // Codex Dual-Ring inputs: target index aligned under each of the 3 top subjects [t0, t1, t2]
+  codexSelectedTargetIndices?: [number, number, number] | number[];
+  // Gauntlet Shatter input
+  gauntletAction?: GauntletAction | 'TRUE' | 'FALSE';
+  // Globe Pin-Drop 3D / 2D WGS84 coordinates submission
+  selectedGlobeCoords?: { readonly lat: number; readonly lon: number };
+  // Hero Artifact Synthesis step index (0..2) if evaluating single latch
+  synthesisStepIndex?: 0 | 1 | 2;
+  // Optional Double-or-Nothing category wager (risks ONLY optional excess bonus, NEVER banked floor!)
+  doubleOrNothingActive?: boolean;
 }
 
 // ----------------------------------------------------------------------------
@@ -571,6 +701,10 @@ export interface ForgeQueryRequest {
   boostTags?: NarrativeTag[];
   pinnedQids?: number[];
   excludeQids?: number[];
+  /** Optional set of player-flagged/quarantined QIDs to exclude from selection */
+  quarantinedQids?: ReadonlySet<number>;
+  /** Optional hint to prefer Visual Blueprint or 3D Globe Pin-Drop showcase items */
+  preferVisualOrGlobe?: boolean;
   /** Optional deterministic 32-bit seed (used by Daily Broadcast & Ghost Trials) */
   seed?: number;
   /** Defaults to true for non-Daily modes; Daily sets false so all players share identical 7 Qs */
@@ -774,7 +908,7 @@ export const CAMPAIGN_DIFFICULTY_CURVE: ReadonlyArray<CampaignStageSpec> = [
     rivalAccuracy: 0.58,
     heroRelicId: 'armillary_orrery',
     heroRelicTitle: 'Locked Armillary Orrery',
-    unlockedArchetypes: ['SIGHTLINE_LOCK', 'GAUNTLET_SHATTER', 'CALIBRATOR_DIAL'],
+    unlockedArchetypes: ['SIGHTLINE_LOCK', 'GAUNTLET_SHATTER', 'CALIBRATOR_DIAL', 'GLOBE_PIN_DROP'],
     preferGoldCuratedFirst: true,
   },
   {
@@ -790,7 +924,7 @@ export const CAMPAIGN_DIFFICULTY_CURVE: ReadonlyArray<CampaignStageSpec> = [
     rivalAccuracy: 0.64,
     heroRelicId: 'origami_prism',
     heroRelicTitle: 'Folding Origami Prism',
-    unlockedArchetypes: ['SIGHTLINE_LOCK', 'GAUNTLET_SHATTER', 'CALIBRATOR_DIAL'],
+    unlockedArchetypes: ['SIGHTLINE_LOCK', 'GAUNTLET_SHATTER', 'CALIBRATOR_DIAL', 'GLOBE_PIN_DROP'],
     preferGoldCuratedFirst: true,
   },
   {
@@ -806,7 +940,7 @@ export const CAMPAIGN_DIFFICULTY_CURVE: ReadonlyArray<CampaignStageSpec> = [
     rivalAccuracy: 0.68,
     heroRelicId: 'emerald_sphere',
     heroRelicTitle: 'Emerald Resonance Sphere',
-    unlockedArchetypes: ['SIGHTLINE_LOCK', 'GAUNTLET_SHATTER', 'CALIBRATOR_DIAL', 'CODEX_DUAL_RING'],
+    unlockedArchetypes: ['SIGHTLINE_LOCK', 'GAUNTLET_SHATTER', 'CALIBRATOR_DIAL', 'CODEX_DUAL_RING', 'GLOBE_PIN_DROP'],
     preferGoldCuratedFirst: false,
   },
   {
@@ -822,7 +956,7 @@ export const CAMPAIGN_DIFFICULTY_CURVE: ReadonlyArray<CampaignStageSpec> = [
     rivalAccuracy: 0.73,
     heroRelicId: 'cipher_box',
     heroRelicTitle: 'Meridian Zero Cipher Box',
-    unlockedArchetypes: ['SIGHTLINE_LOCK', 'GAUNTLET_SHATTER', 'CALIBRATOR_DIAL', 'CODEX_DUAL_RING'],
+    unlockedArchetypes: ['SIGHTLINE_LOCK', 'GAUNTLET_SHATTER', 'CALIBRATOR_DIAL', 'CODEX_DUAL_RING', 'GLOBE_PIN_DROP'],
     preferGoldCuratedFirst: false,
   },
   {
@@ -838,7 +972,7 @@ export const CAMPAIGN_DIFFICULTY_CURVE: ReadonlyArray<CampaignStageSpec> = [
     rivalAccuracy: 0.78,
     heroRelicId: 'cryo_relay',
     heroRelicTitle: 'Cryo-Core Relay',
-    unlockedArchetypes: ['SIGHTLINE_LOCK', 'GAUNTLET_SHATTER', 'CALIBRATOR_DIAL', 'CODEX_DUAL_RING'],
+    unlockedArchetypes: ['SIGHTLINE_LOCK', 'GAUNTLET_SHATTER', 'CALIBRATOR_DIAL', 'CODEX_DUAL_RING', 'GLOBE_PIN_DROP'],
     preferGoldCuratedFirst: false,
   },
   {
@@ -854,7 +988,7 @@ export const CAMPAIGN_DIFFICULTY_CURVE: ReadonlyArray<CampaignStageSpec> = [
     rivalAccuracy: 0.83,
     heroRelicId: 'council_seal',
     heroRelicTitle: 'Fractured Council Seal',
-    unlockedArchetypes: ['SIGHTLINE_LOCK', 'GAUNTLET_SHATTER', 'CALIBRATOR_DIAL', 'CODEX_DUAL_RING'],
+    unlockedArchetypes: ['SIGHTLINE_LOCK', 'GAUNTLET_SHATTER', 'CALIBRATOR_DIAL', 'CODEX_DUAL_RING', 'GLOBE_PIN_DROP'],
     preferGoldCuratedFirst: false,
   },
   {
@@ -875,6 +1009,7 @@ export const CAMPAIGN_DIFFICULTY_CURVE: ReadonlyArray<CampaignStageSpec> = [
       'GAUNTLET_SHATTER',
       'CALIBRATOR_DIAL',
       'CODEX_DUAL_RING',
+      'GLOBE_PIN_DROP',
       'HERO_ARTIFACT_SYNTHESIS',
     ],
     preferGoldCuratedFirst: false,

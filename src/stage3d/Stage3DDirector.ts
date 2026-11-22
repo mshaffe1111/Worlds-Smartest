@@ -20,9 +20,11 @@ import {
   type CodexDualRingSpec,
   type GauntletShatterSpec,
   type GlobeFlightArcSpec,
+  type GlobePinDropVisualSpec,
   type HeroArtifactSpec,
   type MorphSpecMap,
   type SightlineLockSpec,
+  type VisualBlueprintPlateSpec,
   type WorldGlobeSpec,
 } from './VeritasPrismRig';
 
@@ -70,6 +72,8 @@ export interface Stage3DEvents {
   onGauntletSwipe?: (verdict: 'VERIFY' | 'DEBUNK' | 'CHALLENGE') => void;
   /** Fires when clicking one of the 8 glowing 3D City Pins on `meridian_world_globe.glb` v2. */
   onGlobeCitySelected?: (venue: VenueCode) => void;
+  /** Fires when tapping the 3D Globe surface in `GLOBE_PIN_DROP` mode (`lat` in `-90..90`, `lon` in `-180..180`). */
+  onGlobePinSelected?: (lat: number, lon: number) => void;
 }
 
 /**
@@ -85,9 +89,10 @@ export interface StageQuestionInput {
     | 'CODEX_DUAL_RING'
     | 'CALIBRATOR_DIAL'
     | 'GAUNTLET_SHATTER'
-    | 'HERO_ARTIFACT_SYNTHESIS';
+    | 'HERO_ARTIFACT_SYNTHESIS'
+    | 'GLOBE_PIN_DROP';
   prompt: string;
-  facets?: Array<{
+  facets?: ReadonlyArray<{
     index: number;
     text: string;
     isCorrect?: boolean;
@@ -96,14 +101,14 @@ export interface StageQuestionInput {
     shattersOnTier3?: boolean;
   }>;
   correctFacetIndex?: number;
-  clueTiers?: [
+  clueTiers?: readonly [
     unknown,
     unknown,
-    { shatteredFacetIndices?: number[] }
+    { shatteredFacetIndices?: readonly number[] }
   ];
   codex?: {
-    subjects: string[];
-    targets: string[];
+    subjects: readonly string[];
+    targets: readonly string[];
   };
   calibrator?: {
     exactVal: number;
@@ -112,18 +117,34 @@ export interface StageQuestionInput {
     step?: number;
     unit?: string;
     initialEstimate?: number;
-    toleranceCones?: Array<{ pctOfSpan: number; multiplier: number }>;
+    toleranceCones?: ReadonlyArray<{ pctOfSpan: number; multiplier: number }>;
   };
   gauntlet?: {
     statement: string;
   };
+  globePin?: {
+    readonly targetLat: number;
+    readonly targetLon: number;
+    readonly targetLabel: string;
+    readonly bullseyeKm?: number;
+    readonly goldKm?: number;
+    readonly grazeKm?: number;
+    readonly regionHint?: string;
+    readonly coordHint?: string;
+    readonly quickAnchors?: ReadonlyArray<{
+      readonly label: string;
+      readonly lat: number;
+      readonly lon: number;
+    }>;
+  };
+  visualPlate?: VisualBlueprintPlateSpec;
   heroRelicId?: HeroRelicKey;
   heroSynthesis?: {
     relicId: HeroRelicKey;
-    steps: Array<{
-      facets: Array<{ text: string; shattersOnTier3?: boolean }>;
+    steps: ReadonlyArray<{
+      facets: ReadonlyArray<{ text: string; shattersOnTier3?: boolean }>;
       correctFacetIndex: number;
-      clueTiers?: [unknown, unknown, { shatteredFacetIndices?: number[] }];
+      clueTiers?: readonly [unknown, unknown, { shatteredFacetIndices?: readonly number[] }];
     }>;
   };
 }
@@ -203,6 +224,7 @@ export class Stage3DDirector {
   private downHitFacetIndex: number | null = null;
   private downStartFacetIndex = 0;
   private downHitGlobeVenue: VenueCode | null = null;
+  private downHitGlobeCoords: { lat: number; lon: number } | null = null;
   private codexAccumPx = 0;
   private holdOverclockArmed = false;
   private holdOverclockCancelled = false;
@@ -488,11 +510,30 @@ export class Stage3DDirector {
 
     const domainId = question.l0Domain ?? 0;
 
+    if (question.archetype === 'GLOBE_PIN_DROP' || question.globePin) {
+      this.pendingTier3Eliminations = [];
+      const gp = question.globePin;
+      await this.setMorph('WORLD_GLOBE', {
+        pinDropMode: true,
+        showAct1FlightFork: false,
+        pinDrop: {
+          targetLat: gp?.targetLat ?? 0,
+          targetLon: gp?.targetLon ?? 0,
+          targetLabel: gp?.targetLabel ?? question.prompt.slice(0, 32),
+          bullseyeKm: gp?.bullseyeKm ?? 300,
+          goldKm: gp?.goldKm ?? 1000,
+          grazeKm: gp?.grazeKm ?? 2200,
+          domainId,
+        },
+      });
+      return;
+    }
+
     if (question.archetype === 'CODEX_DUAL_RING' && question.codex) {
       this.pendingTier3Eliminations = [];
       await this.setMorph('CODEX_DUAL_RING', {
-        subjects: question.codex.subjects,
-        targets: question.codex.targets,
+        subjects: [...question.codex.subjects],
+        targets: [...question.codex.targets],
         domainId,
         lockedConduits: 0,
       });
@@ -540,11 +581,11 @@ export class Stage3DDirector {
       const facets = step?.facets ?? question.facets ?? [];
       this.activeCorrectFacetIndex =
         step?.correctFacetIndex ?? question.correctFacetIndex ?? 0;
-      this.pendingTier3Eliminations =
-        step?.clueTiers?.[2]?.shatteredFacetIndices ??
-        facets
-          .map((f, idx) => (f.shattersOnTier3 ? idx : -1))
-          .filter((idx) => idx >= 0);
+      this.pendingTier3Eliminations = step?.clueTiers?.[2]?.shatteredFacetIndices
+        ? [...step.clueTiers[2].shatteredFacetIndices]
+        : facets
+            .map((f, idx) => (f.shattersOnTier3 ? idx : -1))
+            .filter((idx) => idx >= 0);
 
       let stressIndices: number[] | undefined;
       if (options.horizonLens && facets.length > 0) {
@@ -579,11 +620,11 @@ export class Stage3DDirector {
     // Default: SIGHTLINE_LOCK (4-facet Veritas Prism)
     const facets = question.facets ?? [];
     this.activeCorrectFacetIndex = question.correctFacetIndex ?? 0;
-    this.pendingTier3Eliminations =
-      question.clueTiers?.[2]?.shatteredFacetIndices ??
-      facets
-        .map((f, idx) => (f.shattersOnTier3 ? idx : -1))
-        .filter((idx) => idx >= 0);
+    this.pendingTier3Eliminations = question.clueTiers?.[2]?.shatteredFacetIndices
+      ? [...question.clueTiers[2].shatteredFacetIndices]
+      : facets
+          .map((f, idx) => (f.shattersOnTier3 ? idx : -1))
+          .filter((idx) => idx >= 0);
 
     let stressIndices: number[] | undefined;
     if (options.horizonLens && facets.length > 0) {
@@ -613,6 +654,7 @@ export class Stage3DDirector {
       initialIndex: options.initialFacetIndex ?? 0,
       stressFractureIndices: stressIndices,
       peopleHeatmapWeights: heatmap,
+      visualPlate: question.visualPlate,
     });
   }
 
@@ -649,6 +691,16 @@ export class Stage3DDirector {
     if (curr >= 3) return 3;
 
     const nextTier: 2 | 3 = curr === 1 ? 2 : 3;
+
+    // On GLOBE_PIN_DROP, Peel Tier 2 / Tier 3 highlights a glowing latitude band around targetLat!
+    if (this.prismRig.isGlobePinDropMode()) {
+      const result = this.prismRig.pullGlobePeel(nextTier, true);
+      if (nextTier === 3) {
+        this.cameraChoreographer.triggerShake(0.18);
+      }
+      return result;
+    }
+
     const elim =
       nextTier === 3
         ? customEliminatedIndices ?? this.computeTier3Eliminations()
@@ -707,10 +759,30 @@ export class Stage3DDirector {
     wasOverclocked?: boolean;
     exactCalibratorVal?: number;
     gauntletVerdict?: 'VERIFY' | 'DEBUNK' | 'CHALLENGE';
+    globeReveal?: {
+      targetLat: number;
+      targetLon: number;
+      candidateLat?: number;
+      candidateLon?: number;
+      distanceKm?: number;
+      targetLabel?: string;
+    };
   }): void {
     this.cameraChoreographer.setOverclockCharge(0);
 
-    if (this.prismRig.getArchetype() === 'CALIBRATOR_DIAL' && opts.exactCalibratorVal !== undefined) {
+    if (this.prismRig.isGlobePinDropMode()) {
+      if (opts.globeReveal) {
+        const g = opts.globeReveal;
+        this.prismRig.revealGlobeTarget(
+          g.targetLat,
+          g.targetLon,
+          g.candidateLat,
+          g.candidateLon,
+          g.distanceKm,
+          g.targetLabel
+        );
+      }
+    } else if (this.prismRig.getArchetype() === 'CALIBRATOR_DIAL' && opts.exactCalibratorVal !== undefined) {
       this.prismRig.revealCalibratorTarget(opts.exactCalibratorVal, opts.correct);
     } else if (this.prismRig.getArchetype() === 'GAUNTLET_SHATTER' && opts.gauntletVerdict) {
       this.prismRig.shatterGauntletPlate(opts.gauntletVerdict);
@@ -764,7 +836,7 @@ export class Stage3DDirector {
   // ============================================================================
 
   public async showWorldGlobe(spec: WorldGlobeSpec = {}): Promise<void> {
-    await this.setMorph('WORLD_GLOBE', spec);
+    await this.setMorph('WORLD_GLOBE', { pinDropMode: false, ...spec });
   }
 
   public focusGlobeCity(venue: VenueCode): void {
@@ -773,6 +845,47 @@ export class Stage3DDirector {
 
   public setGlobeFlightArcs(arcs: GlobeFlightArcSpec[]): void {
     this.prismRig.setGlobeFlightArcs(arcs);
+  }
+
+  /**
+   * Drops the glowing 24K Gold Candidate Beacon Pin + pulsing target ring at `(lat, lon)` on the
+   * 3D Globe surface, optionally rotating that point smoothly to face the camera (e.g. from HUD quick-anchors).
+   */
+  public setGlobeCandidatePin(lat: number, lon: number, rotateToFace = false): void {
+    this.prismRig.setGlobeCandidatePin(lat, lon, rotateToFace);
+  }
+
+  /**
+   * Drops the Emerald Sovereign Target Pin, animates the glowing 3D Great-Circle Geodesic Arc
+   * connecting Candidate Pin -> Target Pin above the sphere, and displays a comma-safe Troika readout.
+   */
+  public revealGlobeTarget(
+    targetLat: number,
+    targetLon: number,
+    candidateLat?: number,
+    candidateLon?: number,
+    distanceKm?: number,
+    targetLabel?: string
+  ): void {
+    this.prismRig.revealGlobeTarget(
+      targetLat,
+      targetLon,
+      candidateLat,
+      candidateLon,
+      distanceKm,
+      targetLabel
+    );
+  }
+
+  /**
+   * Mounts or clears a `.svg`/`.png` blueprint onto the floating Sapphire Hologram Medallion Plate.
+   */
+  public setVisualBlueprintPlate(plate?: VisualBlueprintPlateSpec): void {
+    this.prismRig.setVisualBlueprintPlate(plate);
+  }
+
+  public clearVisualBlueprintPlate(): void {
+    this.prismRig.clearVisualBlueprintPlate();
   }
 
   public async showChampionshipTrophy(domainId = 0): Promise<void> {
@@ -839,6 +952,7 @@ export class Stage3DDirector {
           '.ws-broadcast-dock, .ws-bottom-dock, .ws-hub-container, .ws-hub-shell, ' +
           '.ws-title-dock, .ws-title-pedestal, .ws-title-card, .ws-summary-card, ' +
           '.ws-end-crown-sheet, .ws-dialogue-card, .ws-coach-pill, ' +
+          '.ws-globe-pin-controls, .ws-visual-plate-frame, .ws-duel-banner, .ws-duel-live-split-bar, ' +
           '.ws-honour-toast, .ws-save-modal, .ws-briefing-modal'
       )
     ) {
@@ -882,6 +996,7 @@ export class Stage3DDirector {
     this.codexAccumPx = 0;
     this.downHitFacetIndex = null;
     this.downHitGlobeVenue = null;
+    this.downHitGlobeCoords = null;
     this.holdOverclockArmed = false;
     this.holdOverclockCancelled = false;
     this.holdCharge01 = 0;
@@ -917,7 +1032,11 @@ export class Stage3DDirector {
       this.gestureMode = 'GAUNTLET_SWIPE';
     } else if (arch === 'WORLD_GLOBE') {
       this.gestureMode = 'GLOBE_DRAG';
-      if (hit?.kind === 'GLOBE_PIN' && hit.venueCode) {
+      if (this.prismRig.isGlobePinDropMode()) {
+        if (hit?.kind === 'GLOBE_BODY' && hit.globeCoords) {
+          this.downHitGlobeCoords = hit.globeCoords;
+        }
+      } else if (hit?.kind === 'GLOBE_PIN' && hit.venueCode) {
         this.downHitGlobeVenue = hit.venueCode;
       }
     } else {
@@ -1039,8 +1158,17 @@ export class Stage3DDirector {
       }
 
       case 'GLOBE_DRAG': {
-        const dYaw = (dx / viewW) * 4.4;
-        this.prismRig.applyGlobeDrag(dYaw, dYaw / dtSec);
+        if (this.prismRig.isGlobePinDropMode()) {
+          // Strict > 9px drag vs <= 9px tap-to-pin threshold so micro-jitter never shifts the globe on tap!
+          if (this.totalDragPx > 9) {
+            const dYaw = (dx / viewW) * 4.4;
+            const dPitch = (dy / viewH) * 3.4;
+            this.prismRig.applyGlobeDrag(dYaw, dYaw / dtSec, dPitch, dPitch / dtSec);
+          }
+        } else {
+          const dYaw = (dx / viewW) * 4.4;
+          this.prismRig.applyGlobeDrag(dYaw, dYaw / dtSec);
+        }
         break;
       }
 
@@ -1148,7 +1276,17 @@ export class Stage3DDirector {
 
       case 'GLOBE_DRAG': {
         this.prismRig.releaseGlobeDrag();
-        if (this.totalDragPx < 10 && this.downHitGlobeVenue) {
+        if (this.prismRig.isGlobePinDropMode()) {
+          if (totalSpanPx <= 9) {
+            this.updateRaycasterFromEvent(e);
+            const coords =
+              this.prismRig.raycastGlobeSurface(this.raycaster) ?? this.downHitGlobeCoords;
+            if (coords) {
+              this.prismRig.setGlobeCandidatePin(coords.lat, coords.lon, false);
+              this.events.onGlobePinSelected?.(coords.lat, coords.lon);
+            }
+          }
+        } else if (this.totalDragPx < 10 && this.downHitGlobeVenue) {
           this.prismRig.focusGlobeCity(this.downHitGlobeVenue);
           this.events.onGlobeCitySelected?.(this.downHitGlobeVenue);
         }
@@ -1358,6 +1496,7 @@ export type {
   DomainId,
   GauntletShatterSpec,
   GlobeFlightArcSpec,
+  GlobePinDropVisualSpec,
   HeroArtifactSpec,
   HeroRelicKey,
   LightingMode,
@@ -1366,5 +1505,6 @@ export type {
   QualityTier,
   SightlineLockSpec,
   VenueCode,
+  VisualBlueprintPlateSpec,
   WorldGlobeSpec,
 };

@@ -5,45 +5,26 @@
 //   • Getting 2/5 Correct NEVER displays 0 PTS under any circumstance!
 // ============================================================================
 
+import {
+  getAcademicTierSpec,
+  presetToAcademicTier,
+} from '../forge/QuestionDifficultyCalibration';
 import { formatCleanTriviaNumber } from '../forge/ShardDecoder';
 import type {
+  AcademicDifficultyTier,
   Archetype3D,
+  BriefingDifficultyPreset,
   CalibratorConeId,
   DomainId,
   GauntletAction,
   PeelTier,
+  PlayerPrismSubmission,
   PrismQuestion,
 } from '../forge/types';
 
-export interface PrismAnswerSubmission {
-  archetype?: Archetype3D;
-  /** Selected facet index (0..5) for SIGHTLINE_LOCK / HERO_ARTIFACT_SYNTHESIS */
-  selectedFacetIndex?: number;
-  /** Optional selected answer text (checked case-insensitively alongside facet index) */
-  selectedText?: string;
-  /** Active Peel tier when locked: 1 = Cold Instinct (3.0x), 2 = Clue Core (2.0x), 3 = Blueprint (1.2x) */
-  peelTier: PeelTier;
-  /** True if player held Lock >= 0.3s to engage Conviction Overclock */
-  overclocked: boolean;
-  /** Normalized Overclock charge in [0..1] (0.3s -> 0.15, 1.0s -> 1.0 -> 2.0x multiplier!) */
-  overclockCharge: number;
-  /** Elapsed time on the question in seconds */
-  elapsedSec: number;
-  /** True if Chrono-Ring hit 0.0s before locking */
-  timedOut?: boolean;
-  // Calibrator Astrolabe inputs
-  calibratorEstimate?: number;
-  calibratorConeId?: CalibratorConeId;
-  calibratorTolerancePct?: number; // fallback if raw slider pct passed (0.02..0.35)
-  // Codex Dual-Ring inputs: target index aligned under each of the 3 top subjects [t0, t1, t2]
-  codexSelectedTargetIndices?: [number, number, number] | number[];
-  // Gauntlet Shatter input
-  gauntletAction?: GauntletAction | 'TRUE' | 'FALSE';
-  // Hero Artifact Synthesis step index (0..2) if evaluating single latch
-  synthesisStepIndex?: 0 | 1 | 2;
-  // Optional Double-or-Nothing category wager (risks ONLY optional excess bonus, NEVER banked floor!)
-  doubleOrNothingActive?: boolean;
-}
+export type { PlayerPrismSubmission };
+
+export interface PrismAnswerSubmission extends PlayerPrismSubmission {}
 
 export interface ScoringModifierOptions {
   timeTotalSec?: number;
@@ -57,6 +38,10 @@ export interface ScoringModifierOptions {
   chronoSurgeActive?: boolean;
   /** Strata multiplier for Endless Archive Descent (1.0x -> 1.35x -> 1.75x) */
   strataMultiplier?: number;
+  /** Optional explicit 5-tier academic difficulty multiplier (1.0x / 1.15x / 1.35x / 1.60x / 2.00x) */
+  difficultyTierMultiplier?: number;
+  /** When true, automatically applies `question.difficultyMultiplier` from its calibrated academic tier */
+  applyQuestionDifficultyMultiplier?: boolean;
 }
 
 export interface ScoredQuestionResult {
@@ -86,12 +71,21 @@ export interface ScoredQuestionResult {
   correctAnswerDisplay: string;
   whyExplanation: string;
   promptSnapshot: string;
+  /** Great-circle error distance in kilometers for `GLOBE_PIN_DROP` submissions */
+  globeDistanceKm?: number;
+  /** Accuracy ring tier for `GLOBE_PIN_DROP` submissions */
+  globeAccuracyTier?: 'BULLSEYE PINPOINT' | 'REGIONAL LOCK' | 'CONTINENTAL GRAZE' | 'OFF TARGET';
+  /** Calibrated 5-tier Academic / IQ placement of the evaluated question */
+  difficultyTier?: AcademicDifficultyTier;
+  /** Academic difficulty score multiplier applied on this question (1.0..2.0) */
+  difficultyMultiplier?: number;
 }
 
 export const BASE_PRISM_POINTS = 1000;
 export const BASE_MAX_SPEED_BONUS = 300;
 export const STREAK_STEP_POINTS = 150;
 export const MAX_STREAK_STEPS = 5;
+const EARTH_MEAN_RADIUS_KM = 6371;
 
 const SOVEREIGN_BONUS_DOMAINS: ReadonlySet<number> = new Set([0, 3, 8, 10]);
 
@@ -106,10 +100,57 @@ function round2(v: number): number {
   return Math.round(v * 100) / 100;
 }
 
+/**
+ * Computes great-circle distance in kilometers between two WGS84 `(lat, lon)` points
+ * using the numerically-clamped Haversine formula (handles antipodes & ±180° dateline cleanly).
+ */
+export function computeHaversineDistanceKm(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number,
+): number {
+  if (
+    !Number.isFinite(lat1) ||
+    !Number.isFinite(lon1) ||
+    !Number.isFinite(lat2) ||
+    !Number.isFinite(lon2)
+  ) {
+    return Infinity;
+  }
+  const toRad = Math.PI / 180;
+  const dLat = (lat2 - lat1) * toRad;
+  const dLon = (lon2 - lon1) * toRad;
+  const rLat1 = lat1 * toRad;
+  const rLat2 = lat2 * toRad;
+  const sinHalfLat = Math.sin(dLat * 0.5);
+  const sinHalfLon = Math.sin(dLon * 0.5);
+  const a = clamp(
+    sinHalfLat * sinHalfLat +
+      Math.cos(rLat1) * Math.cos(rLat2) * sinHalfLon * sinHalfLon,
+    0,
+    1,
+  );
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return EARTH_MEAN_RADIUS_KM * c;
+}
+
 export function getSightlineTierMultiplier(peelTier: PeelTier): number {
   if (peelTier === 1) return 3.0;
   if (peelTier === 2) return 2.0;
   return 1.2;
+}
+
+/**
+ * Returns the 5-tier academic difficulty score bonus multiplier:
+ * `MIDDLE_SCHOOL` (1.00x), `HIGH_SCHOOL` (1.15x), `COLLEGE` (1.35x),
+ * `GRADUATE` (1.60x), `MENSA` (2.00x).
+ */
+export function getDifficultyTierMultiplier(
+  tierOrPreset?: AcademicDifficultyTier | BriefingDifficultyPreset,
+): number {
+  const tier = presetToAcademicTier(tierOrPreset);
+  return tier ? getAcademicTierSpec(tier).scoreMultiplier : 1.0;
 }
 
 export function getCalibratorConeMultiplier(
@@ -157,9 +198,75 @@ export function evaluatePrismAnswer(
   let basePoints = BASE_PRISM_POINTS;
   let tierMultiplier = 1.0;
   let correctAnswerDisplay = question.answerCorrect;
+  let globeDistanceKm: number | undefined;
+  let globeAccuracyTier: ScoredQuestionResult['globeAccuracyTier'];
+
+  if (archetype === 'GLOBE_PIN_DROP' && question.globePin?.targetLabel) {
+    correctAnswerDisplay = question.globePin.targetLabel;
+  }
 
   if (!submission.timedOut) {
     switch (archetype) {
+      case 'GLOBE_PIN_DROP': {
+        const pin = question.globePin;
+        if (pin) {
+          const targetLabel = pin.targetLabel || question.answerCorrect;
+          const bullseyeKm = pin.bullseyeKm > 0 ? pin.bullseyeKm : 300;
+          const goldKm = pin.goldKm > 0 ? pin.goldKm : 1000;
+          const grazeKm = pin.grazeKm > 0 ? pin.grazeKm : 2200;
+          const coords = submission.selectedGlobeCoords;
+
+          if (coords && Number.isFinite(coords.lat) && Number.isFinite(coords.lon)) {
+            const distKm = computeHaversineDistanceKm(
+              coords.lat,
+              coords.lon,
+              pin.targetLat,
+              pin.targetLon,
+            );
+            const roundedKm = Math.round(distKm);
+            globeDistanceKm = roundedKm;
+            const formattedDist = formatCleanTriviaNumber(roundedKm, 'km');
+            correctAnswerDisplay = `${targetLabel} (${formattedDist} km away)`;
+
+            let accuracyFactor = 0;
+            let baseConeMult = 0;
+            if (distKm <= bullseyeKm) {
+              correct = true;
+              bullseye = true;
+              accuracyFactor = 1.0;
+              baseConeMult = 3.5;
+              globeAccuracyTier = 'BULLSEYE PINPOINT';
+            } else if (distKm <= goldKm) {
+              correct = true;
+              accuracyFactor = 0.86;
+              baseConeMult = 2.5;
+              globeAccuracyTier = 'REGIONAL LOCK';
+            } else if (distKm <= grazeKm) {
+              correct = true;
+              accuracyFactor = 0.68;
+              baseConeMult = 1.5;
+              globeAccuracyTier = 'CONTINENTAL GRAZE';
+            } else {
+              correct = false;
+              globeAccuracyTier = 'OFF TARGET';
+            }
+
+            if (correct) {
+              partialCreditRatio = accuracyFactor;
+              basePoints = Math.round(BASE_PRISM_POINTS * accuracyFactor);
+              const peelScale =
+                submission.peelTier === 1 ? 1.0 : submission.peelTier === 2 ? 0.78 : 0.55;
+              tierMultiplier = round2(baseConeMult * peelScale);
+            }
+          } else {
+            correct = false;
+            globeAccuracyTier = 'OFF TARGET';
+            correctAnswerDisplay = targetLabel;
+          }
+        }
+        break;
+      }
+
       case 'CALIBRATOR_DIAL': {
         const cal = question.calibrator;
         if (cal) {
@@ -314,6 +421,15 @@ export function evaluatePrismAnswer(
   if (modifiers?.strataMultiplier && modifiers.strataMultiplier > 1) {
     perkMultiplier *= modifiers.strataMultiplier;
   }
+  const appliedDifficultyMultiplier =
+    modifiers?.difficultyTierMultiplier && modifiers.difficultyTierMultiplier > 0
+      ? modifiers.difficultyTierMultiplier
+      : modifiers?.applyQuestionDifficultyMultiplier && question.difficultyMultiplier
+        ? question.difficultyMultiplier
+        : 1.0;
+  if (appliedDifficultyMultiplier > 1) {
+    perkMultiplier *= appliedDifficultyMultiplier;
+  }
   perkMultiplier = round2(perkMultiplier);
 
   const streakAfter = correct ? currentStreak + 1 : 0;
@@ -358,6 +474,10 @@ export function evaluatePrismAnswer(
     correctAnswerDisplay,
     whyExplanation: question.whyExplanation,
     promptSnapshot: question.prompt,
+    ...(globeDistanceKm !== undefined ? { globeDistanceKm } : {}),
+    ...(globeAccuracyTier !== undefined ? { globeAccuracyTier } : {}),
+    ...(question.difficultyTier ? { difficultyTier: question.difficultyTier } : {}),
+    difficultyMultiplier: correct ? round2(appliedDifficultyMultiplier) : 1,
   };
 }
 

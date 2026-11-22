@@ -8,3 +8,4 @@ export * from './DailyGlobalFeed';
 export * from './BriefingCategoriesMode';
 export * from './ArchiveDescentEndless';
 export * from './CouncilTrialsGhostMode';
+export * from './DuelLinkCodec';

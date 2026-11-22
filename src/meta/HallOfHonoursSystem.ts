@@ -1,20 +1,17 @@
 // ============================================================================
-// WORLD'S SMARTEST — Hall of Honours System (`#166` §2.2)
-//  • 64 Distinct Trophies & Medals across 5 Rarity Tiers:
-//      - Tier 1: EASY (Initiate Bronze — 14 medals)
-//      - Tier 2: MEDIUM (Envoy Sterling — 14 medals)
-//      - Tier 3: HARD (Consul 24K Gold — 14 medals/trophies)
-//      - Tier 4: VERY RARE (Arbiter Smoked Sapphire — 12 trophies)
-//      - Tier 5: EXTREMELY RARE (Mythic Celestial Diamond 0.1% Feats — 10 trophies)
-//  • 32 Equippable Gameplay Unlockables (100% Zero Pay-to-Win):
-//      - 12 PBR 3D Veritas Prism Material Finishes (`PrismAtelierView`)
-//      - 12 Diplomatic Broadcast Titles (`PassportSystem` + HUD)
-//      - 8 Chrono-Ring & HUD Accent Themes (`localStorage` + CSS vars)
+// WORLD'S SMARTEST — Hall of Honours System (`#166` §2.2 + `v2.0` Expansion)
+//  • Modular Pack Registry: Core 64 + v2.0 Expansion (+20) = 84 Trophies & Medals
+//    across 5 Rarity Tiers (Initiate Bronze -> Mythic Celestial Diamond 0.1%)
+//  • 44 Equippable Gameplay Unlockables (100% Zero Pay-to-Win):
+//      - 16 PBR 3D Veritas Prism Material Finishes (`PrismAtelierView`)
+//      - 17 Diplomatic Broadcast Titles (`PassportSystem` + HUD)
+//      - 11 Chrono-Ring & HUD Accent Themes (`localStorage` + CSS vars)
 // ============================================================================
 
 import type { InkBlackboard, PassportStateSnapshot, PassportSystem } from '../narrative';
 import type { CareerAnalyticsState, CareerAnalyticsStore } from './CareerAnalyticsStore';
 import {
+  PRISM_ATELIER_FINISHES,
   grantAtelierFinishUnlock,
   type PrismFinishId,
 } from './PrismAtelierView';
@@ -51,7 +48,10 @@ export type HudAccentThemeId =
   | 'TOKYO_VERMILION_EMBER'
   | 'CAIRO_SOLAR_AMBER'
   | 'REYKJAVIK_BOREALIS_VIOLET'
-  | 'MYTHIC_PRISMATIC_DIAMOND';
+  | 'MYTHIC_PRISMATIC_DIAMOND'
+  | 'BLUEPRINT_SAPPHIRE_DRAFT'
+  | 'CARTOGRAPHER_MERCATOR_GOLD'
+  | 'MENSA_OBSIDIAN_ULTRAVIOLET';
 
 export interface HudAccentThemeSpec {
   id: HudAccentThemeId;
@@ -77,15 +77,25 @@ export interface HonourRewardGrant {
   rewardLabel: string;
 }
 
+export interface HonourV2StoresTelemetry {
+  duelTotalPlayed: number;
+  duelPlayerWins: number;
+  srsTotalReviews: number;
+  srsBox5Mastered: number;
+  feedbackRatingsCount: number;
+  offlinePacksCount: number;
+}
+
 export interface HonourEvaluationContext {
   analytics: CareerAnalyticsState;
   passport: PassportStateSnapshot;
   blackboard: ReturnType<InkBlackboard['getSnapshot']> | null;
+  v2Stores: HonourV2StoresTelemetry;
 }
 
 export interface HonourDefinition {
   id: string;
-  number: number; // 1..64
+  number: number; // 1..84+ (extensible via expansion packs)
   title: string;
   description: string;
   tier: HonourRarityTier;
@@ -94,6 +104,7 @@ export interface HonourDefinition {
   target: number;
   measure: (ctx: HonourEvaluationContext) => number;
   reward?: HonourRewardGrant;
+  packId?: string;
 }
 
 export interface HonourProgressItem {
@@ -153,14 +164,14 @@ export const RARITY_TIER_META: Record<
 };
 
 /**
- * 12 Equippable Diplomatic Broadcast Titles (`#166` §2.2).
+ * Equippable Diplomatic Broadcast Titles (Core 12 + v2.0 Expansion +5 = 17 Total).
  */
-export const BROADCAST_TITLES_CATALOG: readonly BroadcastTitleSpec[] = [
+export const BROADCAST_TITLES_V1_CORE: readonly BroadcastTitleSpec[] = [
   { id: 'bt_01', order: 1, title: 'MERIDIAN CANDIDATE', unlockRequirement: 'Default Geneva Summons Title' },
   { id: 'bt_02', order: 2, title: 'GENEVA CHARTER INITIATE', unlockRequirement: 'Tier 1: First Sightline Lock' },
   { id: 'bt_03', order: 3, title: 'COLD INSTINCT SPECIALIST', unlockRequirement: 'Tier 2: 10 Unpeeled 3.0x Tier-1 Locks' },
   { id: 'bt_04', order: 4, title: 'CONVICTION HIGH-ROLLER', unlockRequirement: 'Tier 2: First 6.0x Max Overclock Win' },
-  { id: 'bt_05', order: 5, title: 'FORENSIC TELL READER', unlockRequirement: 'Tier 2: Catch a Rival Bluff (⚡ CALL BLUFF)' },
+  { id: 'bt_05', order: 5, title: 'FORENSIC TELL READER', unlockRequirement: 'Tier 2: Catch a Rival Bluff (CALL BLUFF)' },
   { id: 'bt_06', order: 6, title: 'ARCHIVE VAULT DELVER', unlockRequirement: 'Tier 2: Reach Archive Descent Depth 15' },
   { id: 'bt_07', order: 7, title: 'CONSUL OF THE TWELVE', unlockRequirement: 'Tier 3: Reach 1,500 ELO in Any Domain' },
   { id: 'bt_08', order: 8, title: 'BLACK SALON SHARK', unlockRequirement: 'Tier 3: Win a 3D Kinetic Ghost Duel' },
@@ -170,10 +181,23 @@ export const BROADCAST_TITLES_CATALOG: readonly BroadcastTitleSpec[] = [
   { id: 'bt_12', order: 12, title: 'POLYMATH SUPREME', unlockRequirement: 'Tier 5 Mythic: 1,850+ ELO Across All 12 Domains' },
 ];
 
+export const BROADCAST_TITLES_V2_EXPANSION: readonly BroadcastTitleSpec[] = [
+  { id: 'bt_13', order: 13, title: 'VARSITY SCHOLAR', unlockRequirement: 'Tier 1 v2.0: Varsity Letterman (High School ≥ 80%)' },
+  { id: 'bt_14', order: 14, title: "DEAN'S LIST FELLOW", unlockRequirement: 'Tier 2 v2.0: Dean’s List Summa Cum Laude (College ≥ 85%)' },
+  { id: 'bt_15', order: 15, title: 'ROYAL CARTOGRAPHER', unlockRequirement: 'Tier 3 v2.0: Royal Cartographer (5 Globe Pin-Drop Wins)' },
+  { id: 'bt_16', order: 16, title: 'MENSA GRANDMASTER', unlockRequirement: 'Tier 4 v2.0: Mensa 99th-Percentile Laureate (Mensa ≥ 80%)' },
+  { id: 'bt_17', order: 17, title: 'SOVEREIGN OMNISCIENT', unlockRequirement: 'Tier 5 Mythic v2.0: Omniscient Mensa Polymath (#84)' },
+];
+
+export const BROADCAST_TITLES_CATALOG: readonly BroadcastTitleSpec[] = [
+  ...BROADCAST_TITLES_V1_CORE,
+  ...BROADCAST_TITLES_V2_EXPANSION,
+];
+
 /**
- * 8 Equippable Chrono-Ring & HUD Accent Themes (`#166` §2.2).
+ * Equippable Chrono-Ring & HUD Accent Themes (Core 8 + v2.0 Expansion +3 = 11 Total).
  */
-export const HUD_ACCENT_THEMES: readonly HudAccentThemeSpec[] = [
+export const HUD_ACCENT_THEMES_V1_CORE: readonly HudAccentThemeSpec[] = [
   {
     id: 'GENEVA_CHAMPAGNE_24K',
     order: 1,
@@ -246,6 +270,41 @@ export const HUD_ACCENT_THEMES: readonly HudAccentThemeSpec[] = [
     ringGlowRgba: 'rgba(255, 248, 231, 0.44)',
     unlockRequirement: 'Tier 5 Mythic: Lightning Savant (10× <3s Streak)',
   },
+];
+
+export const HUD_ACCENT_THEMES_V2_EXPANSION: readonly HudAccentThemeSpec[] = [
+  {
+    id: 'BLUEPRINT_SAPPHIRE_DRAFT',
+    order: 9,
+    name: 'Sapphire Blueprint Draft',
+    primaryHex: '#5ce1ff',
+    secondaryHex: '#2589c7',
+    ringGlowRgba: 'rgba(92, 225, 255, 0.38)',
+    unlockRequirement: 'Tier 1 v2.0: Sapphire Lens Analyst (#74)',
+  },
+  {
+    id: 'CARTOGRAPHER_MERCATOR_GOLD',
+    order: 10,
+    name: 'Cartographer Mercator Gold',
+    primaryHex: '#f5cb6e',
+    secondaryHex: '#39d49a',
+    ringGlowRgba: 'rgba(245, 203, 110, 0.40)',
+    unlockRequirement: 'Tier 2 v2.0: Geodesic Sharpshooter (≤ 300 km Bullseye, #71)',
+  },
+  {
+    id: 'MENSA_OBSIDIAN_ULTRAVIOLET',
+    order: 11,
+    name: 'Mensa Obsidian Ultraviolet',
+    primaryHex: '#d0a8ff',
+    secondaryHex: '#64e6ff',
+    ringGlowRgba: 'rgba(208, 168, 255, 0.42)',
+    unlockRequirement: 'Tier 3 v2.0: Doctoral Defense (Graduate ≥ 80%, #68)',
+  },
+];
+
+export const HUD_ACCENT_THEMES: readonly HudAccentThemeSpec[] = [
+  ...HUD_ACCENT_THEMES_V1_CORE,
+  ...HUD_ACCENT_THEMES_V2_EXPANSION,
 ];
 
 export function getUnlockedHudThemeIds(): HudAccentThemeId[] {
@@ -425,10 +484,108 @@ function countDomainsAboveElo(ctx: HonourEvaluationContext, threshold: number): 
   return cnt;
 }
 
+function countDomainsWithWins(ctx: HonourEvaluationContext): number {
+  let cnt = 0;
+  for (let i = 0; i < 12; i++) {
+    if ((ctx.analytics.byDomain[i]?.right ?? 0) >= 1) cnt += 1;
+  }
+  return cnt;
+}
+
+function readV2StoresTelemetry(analytics: CareerAnalyticsState): HonourV2StoresTelemetry {
+  let duelTotalPlayed = analytics.feats.duelChallengesPlayed ?? 0;
+  let duelPlayerWins = analytics.feats.duelGhostWins ?? 0;
+  let srsTotalReviews = analytics.feats.srsReviewsCompleted ?? 0;
+  let srsBox5Mastered = 0;
+  let feedbackRatingsCount = 0;
+  let offlinePacksCount = analytics.feats.offlinePacksCached ?? 0;
+
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const rawDuels = localStorage.getItem('ws_duel_rivals_v2');
+      if (rawDuels) {
+        const parsed = JSON.parse(rawDuels) as {
+          history?: Array<{ winner?: string }>;
+          rivalsById?: Record<string, { totalDuels?: number; lossesAgainstPlayer?: number }>;
+        };
+        const histCount = Array.isArray(parsed?.history) ? parsed.history.length : 0;
+        const histWins = Array.isArray(parsed?.history)
+          ? parsed.history.filter((h) => h?.winner === 'PLAYER').length
+          : 0;
+        let rivalDuels = 0;
+        let rivalPlayerWins = 0;
+        if (parsed?.rivalsById && typeof parsed.rivalsById === 'object') {
+          for (const rec of Object.values(parsed.rivalsById)) {
+            rivalDuels += Math.max(0, Math.floor(Number(rec?.totalDuels) || 0));
+            rivalPlayerWins += Math.max(0, Math.floor(Number(rec?.lossesAgainstPlayer) || 0));
+          }
+        }
+        duelTotalPlayed = Math.max(duelTotalPlayed, histCount, rivalDuels);
+        duelPlayerWins = Math.max(duelPlayerWins, histWins, rivalPlayerWins);
+      }
+
+      const rawSrs = localStorage.getItem('ws_spaced_repetition_v2');
+      if (rawSrs) {
+        const parsed = JSON.parse(rawSrs) as {
+          cards?: Array<{ box?: number; totalReviews?: number }>;
+        };
+        if (Array.isArray(parsed?.cards)) {
+          let totalRevs = 0;
+          let box5 = 0;
+          for (const c of parsed.cards) {
+            totalRevs += Math.max(0, Math.floor(Number(c?.totalReviews) || 0));
+            if (Number(c?.box) === 5) box5 += 1;
+          }
+          srsTotalReviews = Math.max(srsTotalReviews, totalRevs);
+          srsBox5Mastered = Math.max(srsBox5Mastered, box5);
+        }
+      }
+
+      const rawFeedback = localStorage.getItem('ws_question_feedback_v1');
+      if (rawFeedback) {
+        const parsed = JSON.parse(rawFeedback) as {
+          entries?: Record<string, unknown>;
+        };
+        if (parsed?.entries && typeof parsed.entries === 'object') {
+          feedbackRatingsCount = Object.keys(parsed.entries).length;
+        }
+      }
+
+      const rawOffline = localStorage.getItem('ws_offline_packs_v2');
+      if (rawOffline) {
+        const parsed = JSON.parse(rawOffline) as unknown;
+        if (Array.isArray(parsed)) {
+          offlinePacksCount = Math.max(offlinePacksCount, parsed.length);
+        } else if (
+          parsed &&
+          typeof parsed === 'object' &&
+          Array.isArray((parsed as { packs?: unknown[] }).packs)
+        ) {
+          offlinePacksCount = Math.max(
+            offlinePacksCount,
+            (parsed as { packs: unknown[] }).packs.length,
+          );
+        }
+      }
+    }
+  } catch {
+    // Ignore restricted/corrupt localStorage cleanly
+  }
+
+  return {
+    duelTotalPlayed,
+    duelPlayerWins,
+    srsTotalReviews,
+    srsBox5Mastered,
+    feedbackRatingsCount,
+    offlinePacksCount,
+  };
+}
+
 /**
- * Canonical 64 Trophies & Medals (`14 + 14 + 14 + 12 + 10 = 64` across 5 Rarity Tiers).
+ * Core v1.0 64 Trophies & Medals (`14 + 14 + 14 + 12 + 10 = 64` across 5 Rarity Tiers).
  */
-export const HALL_OF_HONOURS_CATALOG: readonly HonourDefinition[] = [
+export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   // ================= TIER 1 — EASY (Initiate Bronze, 14) =================
   {
     id: 't1_first_lock',
@@ -640,7 +797,7 @@ export const HALL_OF_HONOURS_CATALOG: readonly HonourDefinition[] = [
     id: 't2_call_bluff_1',
     number: 19,
     title: 'Human Tell Reader',
-    description: 'Spot a physical character tell and catch a Rival Bluff (⚡ CALL BLUFF).',
+    description: 'Spot a physical character tell and catch a Rival Bluff (CALL BLUFF).',
     tier: 'TIER_2_MEDIUM',
     aspect: 'CAMPAIGN_LORE',
     emblemKey: 'medal_tier2_sterling',
@@ -1200,14 +1357,348 @@ export const HALL_OF_HONOURS_CATALOG: readonly HonourDefinition[] = [
     id: 't5_grand_completionist',
     number: 64,
     title: 'Grand Sovereign Completionist',
-    description: 'Unlock all 63 other Trophies & Medals in the Hall of Honours.',
+    description: 'Unlock all 63 other Core Trophies & Medals (#1–#63) in the Hall of Honours.',
     tier: 'TIER_5_MYTHIC',
     aspect: 'DOMAINS_POLYMATH',
     emblemKey: 'medal_tier5_mythic',
     target: 63,
-    measure: () => 0, // Evaluated dynamically over the first 63 honours!
+    measure: () => 0, // Evaluated dynamically over Core Honours #1..#63!
   },
 ];
+
+/**
+ * Modular v2.0 Honours Expansion Pack (+20 Trophies & Medals: #65..#84)
+ * Covering: 5-Tier Difficulty Ladder (#65..#69), 3D Globe Pin-Drop (#70..#73),
+ * Visual Sapphire Blueprints & All-Domain Jeopardy (#74..#76), 1v1 Duel Links
+ * & Rivals (#77..#79), Leitner SRS, Editorial Curation & Offline Vault (#80..#84).
+ */
+export const HONOURS_V2_EXPANSION: readonly HonourDefinition[] = [
+  // ---------- 5 Difficulty Ladder Medals (#65..#69) ----------
+  {
+    id: 'v2_diff_middle_school',
+    number: 65,
+    packId: 'v2.0',
+    title: 'Honor Roll Foundations',
+    description: 'Complete a calibrated Middle School difficulty round.',
+    tier: 'TIER_1_EASY',
+    aspect: 'MODES_TRIALS',
+    emblemKey: 'medal_tier1_bronze',
+    target: 1,
+    measure: (c) => c.analytics.feats.difficultyRoundsCleared?.MIDDLE_SCHOOL ?? 0,
+  },
+  {
+    id: 'v2_diff_high_school',
+    number: 66,
+    packId: 'v2.0',
+    title: 'Varsity Letterman',
+    description: 'Achieve 80% or higher accuracy on a High School difficulty round.',
+    tier: 'TIER_1_EASY',
+    aspect: 'MODES_TRIALS',
+    emblemKey: 'medal_tier1_bronze',
+    target: 80,
+    measure: (c) => c.analytics.feats.difficultyBestAccuracyPct?.HIGH_SCHOOL ?? 0,
+    reward: { broadcastTitle: 'VARSITY SCHOLAR', rewardLabel: 'Title: VARSITY SCHOLAR' },
+  },
+  {
+    id: 'v2_diff_college',
+    number: 67,
+    packId: 'v2.0',
+    title: "Dean's List Summa Cum Laude",
+    description: 'Achieve 85% or higher accuracy on a College difficulty round.',
+    tier: 'TIER_2_MEDIUM',
+    aspect: 'MODES_TRIALS',
+    emblemKey: 'medal_tier2_sterling',
+    target: 85,
+    measure: (c) => c.analytics.feats.difficultyBestAccuracyPct?.COLLEGE ?? 0,
+    reward: { broadcastTitle: "DEAN'S LIST FELLOW", rewardLabel: "Title: DEAN'S LIST FELLOW" },
+  },
+  {
+    id: 'v2_diff_graduate',
+    number: 68,
+    packId: 'v2.0',
+    title: 'Doctoral Defense',
+    description: 'Achieve 80% or higher accuracy on a Graduate difficulty round.',
+    tier: 'TIER_3_HARD',
+    aspect: 'MODES_TRIALS',
+    emblemKey: 'medal_tier3_gold',
+    target: 80,
+    measure: (c) => c.analytics.feats.difficultyBestAccuracyPct?.GRADUATE ?? 0,
+    reward: {
+      hudThemeId: 'MENSA_OBSIDIAN_ULTRAVIOLET',
+      rewardLabel: 'HUD Theme: Mensa Obsidian Ultraviolet',
+    },
+  },
+  {
+    id: 'v2_diff_mensa',
+    number: 69,
+    packId: 'v2.0',
+    title: 'Mensa 99th-Percentile Laureate',
+    description: 'Achieve 80% or higher accuracy on a Mensa Grandmaster round.',
+    tier: 'TIER_4_VERY_RARE',
+    aspect: 'DOMAINS_POLYMATH',
+    emblemKey: 'medal_tier4_sapphire',
+    target: 80,
+    measure: (c) => c.analytics.feats.difficultyBestAccuracyPct?.MENSA ?? 0,
+    reward: {
+      broadcastTitle: 'MENSA GRANDMASTER',
+      prismFinishId: 'MENSA_QUANTUM_IRIDIUM_GLASS',
+      rewardLabel: 'Title: MENSA GRANDMASTER + Finish: Quantum Iridium',
+    },
+  },
+
+  // ---------- 4 3D Globe Pin-Drop Trophies (#70..#73) ----------
+  {
+    id: 'v2_globe_first_pin',
+    number: 70,
+    packId: 'v2.0',
+    title: 'First Meridian Pinpoint',
+    description: 'Solve your first interactive 3D Globe Pin-Drop coordinate challenge.',
+    tier: 'TIER_1_EASY',
+    aspect: 'PRISM_OVERCLOCK',
+    emblemKey: 'trophy_polymath_globe',
+    target: 1,
+    measure: (c) => c.analytics.byArchetype.GLOBE_PIN_DROP?.right ?? 0,
+  },
+  {
+    id: 'v2_globe_bullseye_300',
+    number: 71,
+    packId: 'v2.0',
+    title: 'Geodesic Sharpshooter',
+    description: 'Drop a 3D Globe Pin within 300 km of the target for a Bullseye Pinpoint.',
+    tier: 'TIER_2_MEDIUM',
+    aspect: 'PRISM_OVERCLOCK',
+    emblemKey: 'trophy_polymath_globe',
+    target: 1,
+    measure: (c) => c.analytics.feats.globeBullseyes300Km ?? 0,
+    reward: {
+      hudThemeId: 'CARTOGRAPHER_MERCATOR_GOLD',
+      rewardLabel: 'HUD Theme: Cartographer Mercator Gold',
+    },
+  },
+  {
+    id: 'v2_globe_royal_cartographer',
+    number: 72,
+    packId: 'v2.0',
+    title: 'Royal Cartographer',
+    description: 'Win 5 interactive 3D Globe Pin-Drop challenges across the world circuit.',
+    tier: 'TIER_3_HARD',
+    aspect: 'DOMAINS_POLYMATH',
+    emblemKey: 'trophy_polymath_globe',
+    target: 5,
+    measure: (c) => c.analytics.byArchetype.GLOBE_PIN_DROP?.right ?? 0,
+    reward: { broadcastTitle: 'ROYAL CARTOGRAPHER', rewardLabel: 'Title: ROYAL CARTOGRAPHER' },
+  },
+  {
+    id: 'v2_globe_zero_lat_surveyor',
+    number: 73,
+    packId: 'v2.0',
+    title: 'Zero-Latitude Grand Surveyor',
+    description: 'Land a No-Peel (Tier 1) 3D Globe Pin-Drop Bullseye within 120 km.',
+    tier: 'TIER_4_VERY_RARE',
+    aspect: 'PRISM_OVERCLOCK',
+    emblemKey: 'medal_tier4_sapphire',
+    target: 1,
+    measure: (c) => c.analytics.feats.globeNoPeel120Km ?? 0,
+  },
+
+  // ---------- 3 Visual Blueprint & All-Domain Jeopardy Trophies (#74..#76) ----------
+  {
+    id: 'v2_visual_sapphire_analyst',
+    number: 74,
+    packId: 'v2.0',
+    title: 'Sapphire Lens Analyst',
+    description: 'Solve your first Visual Sapphire Blueprint hologram question.',
+    tier: 'TIER_1_EASY',
+    aspect: 'PRISM_OVERCLOCK',
+    emblemKey: 'medal_tier1_bronze',
+    target: 1,
+    measure: (c) => c.analytics.feats.visualBlueprintsSolved ?? 0,
+    reward: {
+      hudThemeId: 'BLUEPRINT_SAPPHIRE_DRAFT',
+      rewardLabel: 'HUD Theme: Sapphire Blueprint Draft',
+    },
+  },
+  {
+    id: 'v2_visual_master_architect',
+    number: 75,
+    packId: 'v2.0',
+    title: 'Master Blueprint Architect',
+    description: 'Solve 10 Visual Sapphire Blueprint questions across sports, science & monuments.',
+    tier: 'TIER_3_HARD',
+    aspect: 'PRISM_OVERCLOCK',
+    emblemKey: 'medal_tier3_gold',
+    target: 10,
+    measure: (c) => c.analytics.feats.visualBlueprintsSolved ?? 0,
+    reward: {
+      prismFinishId: 'SAPPHIRE_BLUEPRINT_CYANOTYPE',
+      rewardLabel: '3D Finish: Sapphire Blueprint Cyanotype',
+    },
+  },
+  {
+    id: 'v2_jeopardy_lateral_virtuoso',
+    number: 76,
+    packId: 'v2.0',
+    title: 'Two-Step Lateral Virtuoso',
+    description: 'Lock 25 unpeeled Tier-1 (3.0x) Cold Instinct answers spanning at least 6 domains.',
+    tier: 'TIER_3_HARD',
+    aspect: 'DOMAINS_POLYMATH',
+    emblemKey: 'medal_tier3_gold',
+    target: 25,
+    measure: (c) => {
+      const tier1Wins = c.analytics.byPeelTier['1']?.right ?? 0;
+      const domainsHit = c.analytics.feats.tier1ColdDomains?.length ?? 0;
+      return domainsHit >= 6 ? tier1Wins : Math.min(24, tier1Wins);
+    },
+  },
+
+  // ---------- 3 1v1 Duel Link & Rivals Trophies (#77..#79) ----------
+  {
+    id: 'v2_duel_gauntlet_thrown',
+    number: 77,
+    packId: 'v2.0',
+    title: 'Gauntlet Thrown',
+    description: 'Issue or compete in a 1-Tap Head-to-Head Duel Link challenge.',
+    tier: 'TIER_1_EASY',
+    aspect: 'MODES_TRIALS',
+    emblemKey: 'medal_tier1_bronze',
+    target: 1,
+    measure: (c) => c.v2Stores.duelTotalPlayed,
+  },
+  {
+    id: 'v2_duel_ghost_breaker',
+    number: 78,
+    packId: 'v2.0',
+    title: 'Ghost Split Breaker',
+    description: 'Defeat a Challenger Ghost in a Head-to-Head 1v1 Duel.',
+    tier: 'TIER_2_MEDIUM',
+    aspect: 'MODES_TRIALS',
+    emblemKey: 'medal_tier2_sterling',
+    target: 1,
+    measure: (c) => c.v2Stores.duelPlayerWins,
+    reward: {
+      prismFinishId: 'DUELIST_BLOODSTONE_PLATINUM',
+      rewardLabel: '3D Finish: Duelist Bloodstone & Platinum',
+    },
+  },
+  {
+    id: 'v2_duel_rival_nemesis',
+    number: 79,
+    packId: 'v2.0',
+    title: 'Undisputed Rival Nemesis',
+    description: 'Claim 5 Head-to-Head 1v1 Duel victories against Challengers.',
+    tier: 'TIER_3_HARD',
+    aspect: 'MODES_TRIALS',
+    emblemKey: 'medal_tier3_gold',
+    target: 5,
+    measure: (c) => c.v2Stores.duelPlayerWins,
+  },
+
+  // ---------- 5 Leitner SRS, Quality Curation & Offline Vault Trophies (#80..#84) ----------
+  {
+    id: 'v2_srs_vault_initiate',
+    number: 80,
+    packId: 'v2.0',
+    title: 'Memory Vault Initiate',
+    description: 'Complete your first Spaced-Repetition review in the 5-Box Leitner Mastery Deck.',
+    tier: 'TIER_1_EASY',
+    aspect: 'DOMAINS_POLYMATH',
+    emblemKey: 'medal_tier1_bronze',
+    target: 1,
+    measure: (c) => c.v2Stores.srsTotalReviews,
+  },
+  {
+    id: 'v2_srs_box5_polymath',
+    number: 81,
+    packId: 'v2.0',
+    title: 'Leitner Box-5 Polymath',
+    description: 'Promote 5 cards to Box 5 Mastered inside the Spaced-Repetition Mastery Deck.',
+    tier: 'TIER_3_HARD',
+    aspect: 'DOMAINS_POLYMATH',
+    emblemKey: 'medal_tier3_gold',
+    target: 5,
+    measure: (c) => c.v2Stores.srsBox5Mastered,
+    reward: {
+      prismFinishId: 'NEURAL_ENGRAM_AMETHYST_GOLD',
+      rewardLabel: '3D Finish: Neural Engram Amethyst & 24K',
+    },
+  },
+  {
+    id: 'v2_editorial_arbiter',
+    number: 82,
+    packId: 'v2.0',
+    title: 'Editorial Arbiter',
+    description: 'Submit 5 question quality ratings (Upvote or Flag) to curate THE FORGE.',
+    tier: 'TIER_2_MEDIUM',
+    aspect: 'CAMPAIGN_LORE',
+    emblemKey: 'medal_tier2_sterling',
+    target: 5,
+    measure: (c) => c.v2Stores.feedbackRatingsCount,
+  },
+  {
+    id: 'v2_jetsetter_offline_vault',
+    number: 83,
+    packId: 'v2.0',
+    title: 'Jet-Setter Offline Vault',
+    description: 'Cache an Airplane-Mode Offline Pack inside your Meridian Vault.',
+    tier: 'TIER_1_EASY',
+    aspect: 'MODES_TRIALS',
+    emblemKey: 'medal_tier1_bronze',
+    target: 1,
+    measure: (c) => c.v2Stores.offlinePacksCount,
+  },
+  {
+    id: 'v2_omniscient_mensa_polymath',
+    number: 84,
+    packId: 'v2.0',
+    title: 'Omniscient Mensa Polymath',
+    description: 'Win across all 12 Sovereign Domains, score 80%+ in Mensa tier, and master a Leitner Box-5 card.',
+    tier: 'TIER_5_MYTHIC',
+    aspect: 'DOMAINS_POLYMATH',
+    emblemKey: 'medal_tier5_mythic',
+    target: 14,
+    measure: (c) => {
+      const domWins = countDomainsWithWins(c); // 0..12
+      const mensaOk = (c.analytics.feats.difficultyBestAccuracyPct?.MENSA ?? 0) >= 80 ? 1 : 0;
+      const box5Ok = c.v2Stores.srsBox5Mastered >= 1 ? 1 : 0;
+      return domWins + mensaOk + box5Ok;
+    },
+    reward: {
+      broadcastTitle: 'SOVEREIGN OMNISCIENT',
+      rewardLabel: 'Mythic Title: SOVEREIGN OMNISCIENT',
+    },
+  },
+];
+
+export const HONOURS_EXPANSION_PACKS: ReadonlyArray<{
+  packId: string;
+  label: string;
+  honours: readonly HonourDefinition[];
+}> = [
+  { packId: 'v1.0', label: 'Core Meridian Circuit', honours: HONOURS_V1_CORE },
+  { packId: 'v2.0', label: 'Commercial v2.0 Expansion', honours: HONOURS_V2_EXPANSION },
+];
+
+/**
+ * Unified Hall of Honours Catalog (dynamically composed from Core + Expansion Packs = 84 Total).
+ */
+export const HALL_OF_HONOURS_CATALOG: readonly HonourDefinition[] = HONOURS_EXPANSION_PACKS.flatMap(
+  (pack) => pack.honours,
+);
+
+/** Alias for dynamic catalog inspection across UI views */
+export const HONOURS_CATALOG: readonly HonourDefinition[] = HALL_OF_HONOURS_CATALOG;
+
+export function getTotalHonoursCount(): number {
+  return HALL_OF_HONOURS_CATALOG.length;
+}
+
+export function getTotalUnlockablesCount(): number {
+  return (
+    PRISM_ATELIER_FINISHES.length +
+    BROADCAST_TITLES_CATALOG.length +
+    HUD_ACCENT_THEMES.length
+  );
+}
 
 interface PersistedHonoursMap {
   unlockedTimestamps: Record<string, string>;
@@ -1277,30 +1768,42 @@ export class HallOfHonoursSystem {
     }
   }
 
-  /**
-   * Evaluates all 64 Trophies & Medals, grants any newly earned 32 Unlockables,
-   * and returns ONLY newly unlocked Honours (empty on silent boot sync).
-   */
-  public evaluateAndUnlock(silentBoot = false): HonourProgressItem[] {
-    const ctx: HonourEvaluationContext = {
-      analytics: this.analyticsStore.getSnapshot(),
+  private buildEvaluationContext(): HonourEvaluationContext {
+    const analytics = this.analyticsStore.getSnapshot();
+    return {
+      analytics,
       passport: this.passport.getSnapshot(),
       blackboard: this.blackboard?.getSnapshot() ?? null,
+      v2Stores: readV2StoresTelemetry(analytics),
     };
+  }
+
+  /**
+   * Evaluates all Trophies & Medals across Core + Expansion Packs, grants any newly
+   * earned Zero-Pay-to-Win Unlockables, and returns ONLY newly unlocked Honours.
+   */
+  public evaluateAndUnlock(silentBoot = false): HonourProgressItem[] {
+    const ctx = this.buildEvaluationContext();
 
     const newlyUnlocked: HonourProgressItem[] = [];
     const nowIso = new Date().toISOString();
     let dirty = false;
 
-    // Pass 1: Honours 1..63
-    let unlockedFirst63 = 0;
-    for (let i = 0; i < HALL_OF_HONOURS_CATALOG.length - 1; i++) {
-      const def = HALL_OF_HONOURS_CATALOG[i];
+    // Pass 1: All honours except Core Completionist (#64)
+    let unlockedCore63 = 0;
+    let compDef: HonourDefinition | null = null;
+    for (const def of HALL_OF_HONOURS_CATALOG) {
+      if (def.id === 't5_grand_completionist') {
+        compDef = def;
+        continue;
+      }
       const rawCurr = Math.max(0, Math.floor(def.measure(ctx)));
       const already = Boolean(this.unlockedTimestamps[def.id]);
 
       if (already || rawCurr >= def.target) {
-        unlockedFirst63 += 1;
+        if (def.number >= 1 && def.number <= 63) {
+          unlockedCore63 += 1;
+        }
         if (!already) {
           this.unlockedTimestamps[def.id] = nowIso;
           this.applyRewardGrant(def);
@@ -1315,15 +1818,17 @@ export class HallOfHonoursSystem {
       }
     }
 
-    // Pass 2: Honour #64 (Grand Sovereign Completionist: all 63 others unlocked)
-    const compDef = HALL_OF_HONOURS_CATALOG[HALL_OF_HONOURS_CATALOG.length - 1];
-    const compAlready = Boolean(this.unlockedTimestamps[compDef.id]);
-    if (compAlready || unlockedFirst63 >= 63) {
-      if (!compAlready) {
-        this.unlockedTimestamps[compDef.id] = nowIso;
-        dirty = true;
-        if (!silentBoot) {
-          newlyUnlocked.push(this.buildProgressItem(compDef, 63));
+    // Pass 2: Honour #64 (Grand Sovereign Completionist: all 63 Core Honours unlocked)
+    if (compDef) {
+      const compAlready = Boolean(this.unlockedTimestamps[compDef.id]);
+      if (compAlready || unlockedCore63 >= compDef.target) {
+        if (!compAlready) {
+          this.unlockedTimestamps[compDef.id] = nowIso;
+          this.applyRewardGrant(compDef);
+          dirty = true;
+          if (!silentBoot) {
+            newlyUnlocked.push(this.buildProgressItem(compDef, compDef.target));
+          }
         }
       }
     }
@@ -1351,23 +1856,26 @@ export class HallOfHonoursSystem {
   }
 
   public getAllProgress(): HonourProgressItem[] {
-    const ctx: HonourEvaluationContext = {
-      analytics: this.analyticsStore.getSnapshot(),
-      passport: this.passport.getSnapshot(),
-      blackboard: this.blackboard?.getSnapshot() ?? null,
-    };
+    const ctx = this.buildEvaluationContext();
 
-    let first63Unlocked = 0;
+    let unlockedCore63 = 0;
     const items: HonourProgressItem[] = [];
-    for (let i = 0; i < HALL_OF_HONOURS_CATALOG.length - 1; i++) {
-      const def = HALL_OF_HONOURS_CATALOG[i];
+    for (const def of HALL_OF_HONOURS_CATALOG) {
+      if (def.id === 't5_grand_completionist') {
+        items.push(this.buildProgressItem(def, 0)); // placeholder updated right after pass
+        continue;
+      }
       const item = this.buildProgressItem(def, def.measure(ctx));
-      if (item.unlocked) first63Unlocked += 1;
+      if (item.unlocked && def.number >= 1 && def.number <= 63) {
+        unlockedCore63 += 1;
+      }
       items.push(item);
     }
 
-    const compDef = HALL_OF_HONOURS_CATALOG[HALL_OF_HONOURS_CATALOG.length - 1];
-    items.push(this.buildProgressItem(compDef, first63Unlocked));
+    const compIdx = items.findIndex((it) => it.def.id === 't5_grand_completionist');
+    if (compIdx >= 0) {
+      items[compIdx] = this.buildProgressItem(items[compIdx].def, unlockedCore63);
+    }
     return items;
   }
 }

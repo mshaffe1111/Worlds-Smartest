@@ -9,8 +9,16 @@
 // ============================================================================
 
 import { IrtAdaptiveDirector } from './IrtAdaptiveDirector';
+import {
+  getAcademicTierSpec,
+  getAdjacentAcademicTiers,
+  normalizeBriefingDifficultyPreset,
+  presetToAcademicTier,
+  scoreQuestionDifficulty,
+} from './QuestionDifficultyCalibration';
 import { MAX_QID, RoaringSeenTracker } from './RoaringSeenTracker';
 import {
+  CODEX_SYNTHESIS_BASE_QID,
   CODEX_SYNTHESIS_PER_DOMAIN,
   DeterministicRng,
   attachHeroSynthesisChain,
@@ -19,6 +27,7 @@ import {
   fnv1a32,
   isCleanShardCandidate,
   normalizeToPrismQuestion,
+  normalizeVisualAssetUrl,
   sharedCryptoRng,
   synthesizeShardCodexQuestion,
   type RngLike,
@@ -36,6 +45,7 @@ import {
   CAMPAIGN_DIFFICULTY_CURVE,
   FORGE_DOMAINS,
   getCampaignStageSpec,
+  type AcademicDifficultyTier,
   type Archetype3D,
   type BriefingDifficultyPreset,
   type CampaignHubCode,
@@ -56,6 +66,7 @@ import {
   type RawGoldVenuePacksBundle,
   type RawQuestionRecord,
   type RawQuestionsBundle,
+  type RawVisualGlobePackBundle,
   type ShardChunkData,
   type ShardChunkTable,
   type ShardManifest,
@@ -197,6 +208,474 @@ const BOOTSTRAP_GENEVA_SEED: ReadonlyArray<RawQuestionRecord> = [
   },
 ];
 
+const COLD_OPEN_BALLPARK_BLUEPRINT_SVG =
+  'data:image/svg+xml;charset=utf-8,' +
+  encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300">` +
+      `<rect width="480" height="300" fill="#070b16"/>` +
+      `<g stroke="#1b3556" stroke-width="1" opacity="0.65">` +
+      `<line x1="0" y1="60" x2="480" y2="60"/><line x1="0" y1="120" x2="480" y2="120"/>` +
+      `<line x1="0" y1="180" x2="480" y2="180"/><line x1="0" y1="240" x2="480" y2="240"/>` +
+      `<line x1="80" y1="0" x2="80" y2="300"/><line x1="160" y1="0" x2="160" y2="300"/>` +
+      `<line x1="240" y1="0" x2="240" y2="300"/><line x1="320" y1="0" x2="320" y2="300"/>` +
+      `<line x1="400" y1="0" x2="400" y2="300"/></g>` +
+      `<path d="M240 258 L98 116 L122 86 L236 62 L322 54 L366 136 L386 156 L240 258 Z" fill="#102542" stroke="#4cc9f0" stroke-width="2.5"/>` +
+      `<line x1="98" y1="116" x2="122" y2="86" stroke="#e5c16c" stroke-width="6"/>` +
+      `<polygon points="240,254 206,220 240,186 274,220" fill="none" stroke="#e5c16c" stroke-width="2"/>` +
+      `<circle cx="240" cy="222" r="5" fill="#e5c16c"/>` +
+      `<g font-family="monospace" font-size="13" fill="#e5c16c" text-anchor="middle">` +
+      `<text x="72" y="102">310 FT</text><text x="88" y="80" fill="#4cc9f0">37 FT WALL</text>` +
+      `<text x="328" y="42">420 FT</text><text x="412" y="162">302 FT</text>` +
+      `<text x="240" y="284" fill="#9bc2e6" font-size="11">OUTFIELD WALL ELEVATION &amp; FOUL GEOMETRY</text>` +
+      `</g></svg>`,
+  );
+
+const COLD_OPEN_AROMATIC_RING_SVG =
+  'data:image/svg+xml;charset=utf-8,' +
+  encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300">` +
+      `<rect width="480" height="300" fill="#070b16"/>` +
+      `<g stroke="#1a3452" stroke-width="1" opacity="0.55">` +
+      `<circle cx="240" cy="146" r="108" fill="none"/><circle cx="240" cy="146" r="78" fill="none"/></g>` +
+      `<polygon points="240,74 302,110 302,182 240,218 178,182 178,110" fill="#0d1e36" stroke="#4cc9f0" stroke-width="3"/>` +
+      `<circle cx="240" cy="146" r="46" fill="none" stroke="#e5c16c" stroke-width="2.5" stroke-dasharray="8 5"/>` +
+      `<g stroke="#e5c16c" stroke-width="2">` +
+      `<line x1="240" y1="74" x2="240" y2="42"/><line x1="302" y1="110" x2="330" y2="94"/>` +
+      `<line x1="302" y1="182" x2="330" y2="198"/><line x1="240" y1="218" x2="240" y2="250"/>` +
+      `<line x1="178" y1="182" x2="150" y2="198"/><line x1="178" y1="110" x2="150" y2="94"/></g>` +
+      `<g fill="#4cc9f0"><circle cx="240" cy="74" r="5"/><circle cx="302" cy="110" r="5"/>` +
+      `<circle cx="302" cy="182" r="5"/><circle cx="240" cy="218" r="5"/>` +
+      `<circle cx="178" cy="182" r="5"/><circle cx="178" cy="110" r="5"/></g>` +
+      `<g font-family="monospace" font-size="12" fill="#e5c16c" text-anchor="middle">` +
+      `<text x="240" y="34">H</text><text x="342" y="96">H</text><text x="342" y="206">H</text>` +
+      `<text x="240" y="266">H</text><text x="138" y="206">H</text><text x="138" y="96">H</text>` +
+      `<text x="240" y="288" fill="#9bc2e6" font-size="11">PLANAR 6-CARBON DELOCALIZED RING · 120° BOND ANGLES</text>` +
+      `</g></svg>`,
+  );
+
+/**
+ * 12 Hand-Curated Instant Cold-Open Showstoppers (QIDs 1,080,001..1,080,012 — zero overlap!):
+ * Available synchronously in 0ms before `questions.json.gz` even starts downloading!
+ * Spans History, Science, Baseball, Geography Globe Pin-Drop, and Visual Blueprints.
+ */
+export const INSTANT_COLD_OPEN_PRISMS: ReadonlyArray<RawQuestionRecord> = [
+  {
+    qid: 1_080_001,
+    l0Domain: 0,
+    l1Category: 'Ancient History',
+    l2Subcategory: 'Archaeology',
+    microTopicId: 'cold_open_rosetta_stone',
+    regions: ['EG', 'GB', 'GLOBAL'],
+    narrativeTags: ['ARCHIVE_CORE'],
+    tone: 'PRESTIGE',
+    irtB: -0.75,
+    irtA: 1.3,
+    freshness: 'EVERGREEN',
+    archetype: 'SIGHTLINE_LOCK',
+    prompt:
+      'Unearthed in 1799 near the Nile Delta by French soldiers, which inscribed granodiorite stele bore three scripts that unlocked ancient Egyptian hieroglyphs?',
+    answerCorrect: 'Rosetta Stone',
+    distractors: [
+      { text: 'Behistun Inscription', plausibility: 0.78 },
+      { text: 'Code of Hammurabi', plausibility: 0.82 },
+      { text: 'Cyrus Cylinder', plausibility: 0.71 },
+    ],
+    clues: [
+      'Jean-François Champollion deciphered its parallel Greek, Demotic, and hieroglyphic decree in 1822.',
+      'Named for the Egyptian port town of Rashid near Alexandria, it resides in the British Museum.',
+    ],
+    glyphHint: 'scroll',
+    whyExplanation:
+      'Carved in 196 BCE with a decree of Ptolemy V in hieroglyphs, Demotic, and Ancient Greek, the Rosetta Stone gave Jean-François Champollion the key to ancient Egyptian writing.',
+  },
+  {
+    qid: 1_080_002,
+    l0Domain: 1,
+    l1Category: 'Physics',
+    l2Subcategory: 'Waves & Optics',
+    microTopicId: 'cold_open_doppler_effect',
+    regions: ['GLOBAL'],
+    narrativeTags: ['HORIZON_TECH'],
+    tone: 'PRESTIGE',
+    irtB: -0.55,
+    irtA: 1.25,
+    freshness: 'EVERGREEN',
+    archetype: 'SIGHTLINE_LOCK',
+    prompt:
+      'Named for an Austrian physicist, which wave phenomenon makes an approaching siren sound higher in pitch and shifts receding starlight toward red?',
+    answerCorrect: 'Doppler effect',
+    distractors: [
+      { text: 'Coriolis effect', plausibility: 0.84 },
+      { text: 'Photoelectric effect', plausibility: 0.76 },
+      { text: 'Venturi effect', plausibility: 0.68 },
+    ],
+    clues: [
+      'Astronomers rely on its redshift to measure the expansion of the universe.',
+      'Meteorologists use radar named after this 1842 principle to track storm rotation.',
+    ],
+    glyphHint: 'wave',
+    whyExplanation:
+      'Proposed by Christian Doppler in 1842, relative motion compresses wavefronts ahead of a source and stretches them behind, governing both acoustic sirens and cosmic redshift.',
+  },
+  {
+    qid: 1_080_003,
+    l0Domain: 5,
+    l1Category: 'Sports',
+    l2Subcategory: 'Baseball',
+    l1Id: 'sports',
+    l2Id: 'sports_baseball',
+    subcatId: 'sports_baseball',
+    microTopicId: 'cold_open_fenway_blueprint',
+    regions: ['US', 'GLOBAL'],
+    narrativeTags: ['AGORA_CIVIC'],
+    tone: 'PRESTIGE',
+    irtB: -0.65,
+    irtA: 1.28,
+    freshness: 'EVERGREEN',
+    archetype: 'SIGHTLINE_LOCK',
+    prompt:
+      'Study the outfield wall blueprint: which historic Boston ballpark pairs a towering 37-foot left-field wall just 310 feet down the line with a 302-foot right-field foul pole?',
+    answerCorrect: 'Fenway Park',
+    distractors: [
+      { text: 'Wrigley Field', plausibility: 0.86 },
+      { text: 'Yankee Stadium', plausibility: 0.81 },
+      { text: 'Camden Yards', plausibility: 0.74 },
+    ],
+    clues: [
+      'Opened in 1912, its left-field barrier is famously known as the Green Monster.',
+      'Home to the Red Sox since 1912, its short right-field pole honors Johnny Pesky.',
+    ],
+    visualPlate: {
+      imageUrl: COLD_OPEN_BALLPARK_BLUEPRINT_SVG,
+      caption: 'Outfield Wall & Foul-Line Blueprint',
+      aspect: 'WIDE',
+    },
+    glyphHint: 'flame',
+    whyExplanation:
+      'Opened in Boston on April 20, 1912, Fenway Park is MLB’s oldest active venue, defined by its 37-foot Green Monster in left field, 420-foot center-right triangle, and 302-foot Pesky’s Pole.',
+  },
+  {
+    qid: 1_080_004,
+    l0Domain: 2,
+    l1Category: 'World Wonders',
+    l2Subcategory: 'South America',
+    microTopicId: 'cold_open_machu_picchu_pin',
+    regions: ['BR', 'GLOBAL'],
+    narrativeTags: ['ARCHIVE_CORE'],
+    tone: 'PRESTIGE',
+    irtB: -0.4,
+    irtA: 1.25,
+    freshness: 'EVERGREEN',
+    archetype: 'GLOBE_PIN_DROP',
+    prompt:
+      'Drop your Meridian beacon on the 15th-century Incan citadel perched 2,430 meters high in the Peruvian Andes above the Urubamba River valley.',
+    answerCorrect: 'Machu Picchu, Peru',
+    clues: [
+      'High in the central Andes of western South America, northwest of Cusco.',
+      'Southern & Western Hemisphere: near 13° S, 73° W.',
+    ],
+    globePin: {
+      targetLat: -13.1631,
+      targetLon: -72.545,
+      targetLabel: 'Machu Picchu, Peru',
+      bullseyeKm: 300,
+      goldKm: 1000,
+      grazeKm: 2200,
+      regionHint: 'High in the central Andes of western South America, northwest of Cusco.',
+      coordHint: 'Southern & Western Hemisphere: near 13° S, 73° W.',
+      quickAnchors: [
+        { label: 'Machu Picchu, Peru', lat: -13.1631, lon: -72.545 },
+        { label: 'Chichen Itza, Mexico', lat: 20.6843, lon: -88.5678 },
+        { label: 'Petra, Jordan', lat: 30.3285, lon: 35.4444 },
+        { label: 'Angkor Wat, Cambodia', lat: 13.4125, lon: 103.867 },
+      ],
+    },
+    glyphHint: 'globe',
+    whyExplanation:
+      'Built around 1450 for Incan emperor Pachacuti, Machu Picchu sits at 13.16° S, 72.55° W in Peru’s Eastern Cordillera above the Sacred Valley.',
+  },
+  {
+    qid: 1_080_005,
+    l0Domain: 1,
+    l1Category: 'Chemistry',
+    l2Subcategory: 'Organic Chemistry',
+    microTopicId: 'cold_open_benzene_ring',
+    regions: ['GLOBAL'],
+    narrativeTags: ['HORIZON_TECH'],
+    tone: 'PRESTIGE',
+    irtB: -0.2,
+    irtA: 1.3,
+    freshness: 'EVERGREEN',
+    archetype: 'SIGHTLINE_LOCK',
+    prompt:
+      'Inspect the planar six-carbon aromatic ring schematic: which hydrocarbon’s delocalized bond structure did August Kekulé famously link to a dream of a snake biting its own tail?',
+    answerCorrect: 'Benzene',
+    distractors: [
+      { text: 'Cyclohexane', plausibility: 0.85 },
+      { text: 'Toluene', plausibility: 0.79 },
+      { text: 'Naphthalene', plausibility: 0.73 },
+    ],
+    clues: [
+      'Michael Faraday first isolated this aromatic liquid in 1825 with molecular formula C₆H₆.',
+      'Its six carbon atoms share pi-electrons equally around a symmetrical hexagonal ring.',
+    ],
+    visualPlate: {
+      imageUrl: COLD_OPEN_AROMATIC_RING_SVG,
+      caption: 'Planar Aromatic Ring Molecular Blueprint',
+      aspect: 'WIDE',
+    },
+    glyphHint: 'atom',
+    whyExplanation:
+      'Benzene (C₆H₆) is the parent aromatic hydrocarbon; in 1865 August Kekulé proposed its cyclic ring structure, later explained by quantum electron delocalization.',
+  },
+  {
+    qid: 1_080_006,
+    l0Domain: 2,
+    l1Category: 'European Geography',
+    l2Subcategory: 'Nordic Capitals',
+    microTopicId: 'cold_open_reykjavik_pin',
+    regions: ['IS', 'GLOBAL'],
+    narrativeTags: ['MERIDIAN_ZERO'],
+    tone: 'THRILLER',
+    irtB: -0.35,
+    irtA: 1.25,
+    freshness: 'EVERGREEN',
+    archetype: 'GLOBE_PIN_DROP',
+    prompt:
+      'Pinpoint the volcanic North Atlantic island capital straddling the Mid-Atlantic Ridge, near where Europe’s oldest surviving parliament met at Þingvellir in 930 CE.',
+    answerCorrect: 'Reykjavik, Iceland',
+    clues: [
+      'Sub-Arctic North Atlantic island situated just below the Arctic Circle.',
+      'Northern & Western Hemisphere: near 64° N, 22° W.',
+    ],
+    globePin: {
+      targetLat: 64.1466,
+      targetLon: -21.9426,
+      targetLabel: 'Reykjavik, Iceland',
+      bullseyeKm: 300,
+      goldKm: 1000,
+      grazeKm: 2200,
+      regionHint: 'Sub-Arctic North Atlantic island situated just below the Arctic Circle.',
+      coordHint: 'Northern & Western Hemisphere: near 64° N, 22° W.',
+      quickAnchors: [
+        { label: 'Reykjavik, Iceland', lat: 64.1466, lon: -21.9426 },
+        { label: 'Oslo, Norway', lat: 59.9139, lon: 10.7522 },
+        { label: 'Nuuk, Greenland', lat: 64.1814, lon: -51.6941 },
+        { label: 'Anchorage, Alaska', lat: 61.2181, lon: -149.9003 },
+      ],
+    },
+    glyphHint: 'compass',
+    whyExplanation:
+      'At 64.15° N, 21.94° W, Reykjavik is the world’s northernmost capital of a sovereign state, powered almost entirely by Iceland’s geothermal and hydroelectric energy.',
+  },
+  {
+    qid: 1_080_007,
+    l0Domain: 5,
+    l1Category: 'Sports',
+    l2Subcategory: 'Baseball',
+    l1Id: 'sports',
+    l2Id: 'sports_baseball',
+    subcatId: 'sports_baseball',
+    microTopicId: 'cold_open_jackie_robinson_1947',
+    regions: ['US', 'GLOBAL'],
+    narrativeTags: ['AGORA_CIVIC'],
+    tone: 'PRESTIGE',
+    irtB: -0.45,
+    irtA: 1.3,
+    freshness: 'EVERGREEN',
+    archetype: 'CALIBRATOR_DIAL',
+    prompt:
+      'In what year did Jackie Robinson make his Brooklyn Dodgers debut, breaking Major League Baseball’s modern color barrier?',
+    answerCorrect: '1947 CE',
+    clues: [
+      'He took the field at Ebbets Field on April 15 two years after World War II ended.',
+      'He won the inaugural MLB Rookie of the Year honor in the late 1940s.',
+    ],
+    calibratorExt: {
+      exactVal: 1947,
+      unit: 'CE',
+      minVal: 1900,
+      maxVal: 1990,
+      step: 1,
+    },
+    glyphHint: 'flame',
+    whyExplanation:
+      'On April 15, 1947, Jackie Robinson started at first base for the Brooklyn Dodgers, transforming American sports and culture; his number 42 is retired across all of MLB.',
+  },
+  {
+    qid: 1_080_008,
+    l0Domain: 3,
+    l1Category: 'Architecture',
+    l2Subcategory: 'Classical Monuments',
+    microTopicId: 'cold_open_parthenon_pin',
+    regions: ['GLOBAL'],
+    narrativeTags: ['SOVEREIGN_BLOC'],
+    tone: 'PRESTIGE',
+    irtB: -0.5,
+    irtA: 1.25,
+    freshness: 'EVERGREEN',
+    archetype: 'GLOBE_PIN_DROP',
+    prompt:
+      'Drop your beacon on the classical marble temple dedicated to Athena crowning the rocky Acropolis above the Aegean Sea.',
+    answerCorrect: 'Parthenon, Athens',
+    clues: [
+      'Southeastern Mediterranean peninsula in Attica, mainland Greece.',
+      'Northern & Eastern Hemisphere: near 38° N, 24° E.',
+    ],
+    globePin: {
+      targetLat: 37.9715,
+      targetLon: 23.7267,
+      targetLabel: 'Parthenon, Athens',
+      bullseyeKm: 300,
+      goldKm: 1000,
+      grazeKm: 2200,
+      regionHint: 'Southeastern Mediterranean peninsula in Attica, mainland Greece.',
+      coordHint: 'Northern & Eastern Hemisphere: near 38° N, 24° E.',
+      quickAnchors: [
+        { label: 'Parthenon, Athens', lat: 37.9715, lon: 23.7267 },
+        { label: 'Colosseum, Rome', lat: 41.8902, lon: 12.4922 },
+        { label: 'Giza Necropolis, Egypt', lat: 29.9792, lon: 31.1342 },
+        { label: 'Hagia Sophia, Istanbul', lat: 41.0086, lon: 28.9802 },
+      ],
+    },
+    glyphHint: 'column',
+    whyExplanation:
+      'Completed in 438 BCE under Pericles by architects Ictinus and Callicrates, the Parthenon crowns the Acropolis of Athens at 37.97° N, 23.73° E.',
+  },
+  {
+    qid: 1_080_009,
+    l0Domain: 6,
+    l1Category: 'Computing',
+    l2Subcategory: 'Internet History',
+    microTopicId: 'cold_open_berners_lee_www',
+    regions: ['CH', 'GB', 'GLOBAL'],
+    narrativeTags: ['HORIZON_TECH'],
+    tone: 'PRESTIGE',
+    irtB: -0.6,
+    irtA: 1.25,
+    freshness: 'EVERGREEN',
+    archetype: 'SIGHTLINE_LOCK',
+    prompt:
+      'Working at CERN in 1989, which British computer scientist authored the hypertext proposal that invented HTTP, HTML, and the World Wide Web?',
+    answerCorrect: 'Tim Berners-Lee',
+    distractors: [
+      { text: 'Vint Cerf', plausibility: 0.84 },
+      { text: 'Alan Turing', plausibility: 0.78 },
+      { text: 'Linus Torvalds', plausibility: 0.72 },
+    ],
+    clues: [
+      'He built the first web browser and server on a NeXT workstation in Geneva.',
+      'In 1994 he founded the World Wide Web Consortium (W3C) at MIT.',
+    ],
+    glyphHint: 'gear',
+    whyExplanation:
+      'Tim Berners-Lee proposed the World Wide Web at CERN in March 1989 and released the foundational HTTP, HTML, and URL specifications royalty-free to the public in 1993.',
+  },
+  {
+    qid: 1_080_010,
+    l0Domain: 5,
+    l1Category: 'Sports',
+    l2Subcategory: 'Baseball',
+    l1Id: 'sports',
+    l2Id: 'sports_baseball',
+    subcatId: 'sports_baseball',
+    microTopicId: 'cold_open_wrigley_chicago_pin',
+    regions: ['US', 'GLOBAL'],
+    narrativeTags: ['AGORA_CIVIC'],
+    tone: 'WITTY',
+    irtB: -0.5,
+    irtA: 1.25,
+    freshness: 'EVERGREEN',
+    archetype: 'GLOBE_PIN_DROP',
+    prompt:
+      'Pinpoint the Great Lakes metropolis home to Wrigley Field, the ivy-walled National League ballpark opened in 1914 on the North Side.',
+    answerCorrect: 'Chicago, Illinois',
+    clues: [
+      'Upper Midwestern United States along the southwestern shore of Lake Michigan.',
+      'Northern & Western Hemisphere: near 42° N, 88° W.',
+    ],
+    globePin: {
+      targetLat: 41.9484,
+      targetLon: -87.6553,
+      targetLabel: 'Chicago, Illinois',
+      bullseyeKm: 300,
+      goldKm: 1000,
+      grazeKm: 2200,
+      regionHint: 'Upper Midwestern United States along the southwestern shore of Lake Michigan.',
+      coordHint: 'Northern & Western Hemisphere: near 42° N, 88° W.',
+      quickAnchors: [
+        { label: 'Chicago, Illinois', lat: 41.9484, lon: -87.6553 },
+        { label: 'Boston, Massachusetts', lat: 42.3467, lon: -71.0972 },
+        { label: 'Los Angeles, California', lat: 34.0739, lon: -118.24 },
+        { label: 'Tokyo, Japan', lat: 35.7056, lon: 139.7519 },
+      ],
+    },
+    glyphHint: 'globe',
+    whyExplanation:
+      'Located in Chicago’s Lake View neighborhood at 41.95° N, 87.66° W, Wrigley Field has hosted the Cubs since 1916 and became famous for its hand-turned scoreboard and ivy outfield walls.',
+  },
+  {
+    qid: 1_080_011,
+    l0Domain: 7,
+    l1Category: 'Marine Biology',
+    l2Subcategory: 'Cephalopods',
+    microTopicId: 'cold_open_octopus_hearts',
+    regions: ['GLOBAL'],
+    narrativeTags: ['AGORA_CIVIC'],
+    tone: 'WITTY',
+    irtB: -0.8,
+    irtA: 1.2,
+    freshness: 'EVERGREEN',
+    archetype: 'SIGHTLINE_LOCK',
+    prompt:
+      'Which intelligent marine cephalopod relies on three hearts, copper-rich blue blood, and specialized chromatophores to mimic textures in milliseconds?',
+    answerCorrect: 'Octopus',
+    distractors: [
+      { text: 'Nautilus', plausibility: 0.78 },
+      { text: 'Manta ray', plausibility: 0.65 },
+      { text: 'Horseshoe crab', plausibility: 0.74 },
+    ],
+    clues: [
+      'Two of its hearts pump blood through the gills while a third circulates it through the body.',
+      'Its eight flexible arms house roughly two-thirds of its entire nervous system.',
+    ],
+    glyphHint: 'dna',
+    whyExplanation:
+      'Octopuses use copper-based hemocyanin (which turns blue when oxygenated), two branchial hearts, one systemic heart, and thousands of pigment-shifting chromatophores.',
+  },
+  {
+    qid: 1_080_012,
+    l0Domain: 0,
+    l1Category: 'Space History',
+    l2Subcategory: 'Apollo Program',
+    microTopicId: 'cold_open_apollo_11_1969',
+    regions: ['US', 'GLOBAL'],
+    narrativeTags: ['HORIZON_TECH'],
+    tone: 'PRESTIGE',
+    irtB: -0.7,
+    irtA: 1.25,
+    freshness: 'EVERGREEN',
+    archetype: 'CALIBRATOR_DIAL',
+    prompt:
+      'In what year did Apollo 11’s lunar module Eagle touch down on the Sea of Tranquility, carrying the first humans to walk on the Moon?',
+    answerCorrect: '1969 CE',
+    clues: [
+      'Neil Armstrong and Buzz Aldrin landed on July 20 in the final year of the 1960s.',
+      'The landing fulfilled John F. Kennedy’s 1961 pledge before the decade closed.',
+    ],
+    calibratorExt: {
+      exactVal: 1969,
+      unit: 'CE',
+      minVal: 1945,
+      maxVal: 2005,
+      step: 1,
+    },
+    glyphHint: 'rocket',
+    whyExplanation:
+      'Apollo 11 landed on the Moon on July 20, 1969, watched on television by an estimated 650 million people around the world.',
+  },
+];
+
 export interface ForgeEngineOptions {
   dataBaseUrl?: string;
   seenTracker?: RoaringSeenTracker;
@@ -217,10 +696,25 @@ export class ForgeEngine {
   private byArchetype: Map<Archetype3D, RawQuestionRecord[]> = new Map();
   private byRegion: Map<string, RawQuestionRecord[]> = new Map();
 
+  private coldOpenByQid: Map<number, RawQuestionRecord> = new Map();
+  private visualGlobeRecords: RawQuestionRecord[] = [];
+  private visualGlobePackLoaded = false;
+  private jeopardySignatureRecords: RawQuestionRecord[] = [];
+  private jeopardyBySubcatId: Map<string, RawQuestionRecord[]> = new Map();
+  private jeopardyByDomain: Map<DomainId, RawQuestionRecord[]> = new Map();
+  private jeopardySignaturePackLoaded = false;
+  private quarantinedQids: Set<number> = new Set();
+
   private shardManifest: ShardManifest | null = null;
   private extraShardTypes: Record<string, ShardTableTypeSpec> = {};
   private subcatShardBonusByDomain: Map<DomainId, number> = new Map();
   private subcatQidRangesByDomain: Map<DomainId, Array<[number, number]>> = new Map();
+  private subcatFileIndex: Array<{
+    domainId: DomainId;
+    path: string;
+    baseQid: number;
+    qidEnd: number;
+  }> = [];
   private loadedShardsByDomain: Map<DomainId, ShardChunkData[]> = new Map();
   private primaryDomainShardLoaded: Set<DomainId> = new Set();
   private loadedExtraShardFiles: Map<string, ShardChunkData> = new Map();
@@ -234,10 +728,75 @@ export class ForgeEngine {
   private tableRuleRowCache: WeakMap<ShardChunkTable, Map<string, number[]>> = new WeakMap();
 
   constructor(options: ForgeEngineOptions = {}) {
-    this.dataBaseUrl = (options.dataBaseUrl ?? '/data').replace(/\/+$/, '');
+    this.dataBaseUrl = (options.dataBaseUrl ?? './data').replace(/\/+$/, '');
     this.seenTracker = options.seenTracker ?? new RoaringSeenTracker();
     this.irtDirector = options.irtDirector ?? new IrtAdaptiveDirector();
+    for (const q of INSTANT_COLD_OPEN_PRISMS) {
+      this.coldOpenByQid.set(q.qid, q);
+    }
     this.indexTier1Records(BOOTSTRAP_GENEVA_SEED);
+  }
+
+  // --------------------------------------------------------------------------
+  // Instant 0ms Cold-Open Trial Prism & Quarantine Filter Controls
+  // --------------------------------------------------------------------------
+
+  public setQuarantinedQids(qids: ReadonlySet<number> | ReadonlyArray<number>): void {
+    this.quarantinedQids.clear();
+    for (const qid of qids) {
+      if (Number.isFinite(qid)) {
+        this.quarantinedQids.add(Math.trunc(qid));
+      }
+    }
+  }
+
+  public addQuarantinedQid(qid: number): void {
+    if (Number.isFinite(qid)) {
+      this.quarantinedQids.add(Math.trunc(qid));
+    }
+  }
+
+  public getQuarantinedQids(): ReadonlySet<number> {
+    return this.quarantinedQids;
+  }
+
+  /**
+   * Returns 1 hand-curated showstopper `PrismQuestion` **synchronously in 0ms**
+   * before `questions.json.gz` or any network fetch completes!
+   */
+  public getInstantTrialPrism(
+    excludeQids?: ReadonlyArray<number> | ReadonlySet<number>,
+    preferredArchetype?: Archetype3D,
+  ): PrismQuestion {
+    const excludeSet = new Set<number>(this.quarantinedQids);
+    if (excludeQids) {
+      for (const qid of excludeQids) {
+        excludeSet.add(qid);
+      }
+    }
+
+    let pool = INSTANT_COLD_OPEN_PRISMS.filter((q) => !excludeSet.has(q.qid));
+    if (pool.length === 0) {
+      pool = [...INSTANT_COLD_OPEN_PRISMS];
+    }
+
+    if (preferredArchetype) {
+      const archFiltered = pool.filter((q) => q.archetype === preferredArchetype);
+      if (archFiltered.length > 0) {
+        pool = archFiltered;
+      }
+    }
+
+    const unseen = pool.filter((q) => !this.seenTracker.hasSeen(q.qid));
+    const drawPool = unseen.length > 0 ? unseen : pool;
+    const chosen = drawPool[sharedCryptoRng.nextInt(0, drawPool.length - 1)];
+
+    return normalizeToPrismQuestion(chosen, {
+      timerSec: chosen.archetype === 'GLOBE_PIN_DROP' ? 22 : 18,
+      facetCount: 4,
+      shuffleSalt: sharedCryptoRng.nextUint32(),
+      sourceTier: 'GOLD_CURATED',
+    });
   }
 
   // --------------------------------------------------------------------------
@@ -250,7 +809,8 @@ export class ForgeEngine {
 
   /**
    * Initializes `ForgeEngine` by loading `public/data/questions.json` (20,165 pure-factual
-   * human questions) + `public/data/shards/shard_manifest.json` (929,564 shard metadata).
+   * human questions) + `public/data/shards/shard_manifest.json` (929,564 shard metadata)
+   * + non-blocking Visual/Globe & Jeopardy Signature packs (gracefully tolerating missing files).
    * Safe to call multiple times; concurrent calls share the same Promise.
    */
   public async init(customBaseUrl?: string): Promise<ForgeUniverseCounts> {
@@ -265,23 +825,41 @@ export class ForgeEngine {
     }
 
     this.initPromise = (async () => {
-      const [questionsResult, manifestResult, goldPackResult, taxonomyResult] =
-        await Promise.allSettled([
-          this.fetchTier1Questions(),
-          this.fetchJson<ShardManifest>(`${this.dataBaseUrl}/shards/shard_manifest.json`),
-          this.fetchJson<RawGoldVenuePacksBundle | RawQuestionRecord[]>(
-            `${this.dataBaseUrl}/gold_venue_packs.json`,
-          ),
-          this.fetchJson<Record<string, unknown>>(
-            `${this.dataBaseUrl}/shards/taxonomy_tree.json`,
-          ),
-        ]);
+      const [
+        questionsResult,
+        manifestResult,
+        goldPackResult,
+        taxonomyResult,
+        visualGlobeResult,
+        jeopardySigResult,
+      ] = await Promise.allSettled([
+        this.fetchTier1Questions(),
+        this.fetchJson<ShardManifest>(`${this.dataBaseUrl}/shards/shard_manifest.json`),
+        this.fetchJson<RawGoldVenuePacksBundle | RawQuestionRecord[]>(
+          `${this.dataBaseUrl}/gold_venue_packs.json`,
+        ),
+        this.fetchJson<Record<string, unknown>>(
+          `${this.dataBaseUrl}/shards/taxonomy_tree.json`,
+        ),
+        this.fetchJson<RawVisualGlobePackBundle | RawQuestionRecord[]>(
+          `${this.dataBaseUrl}/visual_globe_packs.json`,
+        ),
+        this.fetchJson<RawVisualGlobePackBundle | RawQuestionRecord[]>(
+          `${this.dataBaseUrl}/jeopardy_signature_packs.json`,
+        ),
+      ]);
 
       if (questionsResult.status === 'fulfilled' && questionsResult.value.length > 0) {
         this.indexTier1Records(questionsResult.value);
       }
       if (goldPackResult.status === 'fulfilled' && goldPackResult.value) {
         this.ingestGoldVenuePacksData(goldPackResult.value);
+      }
+      if (visualGlobeResult.status === 'fulfilled' && visualGlobeResult.value) {
+        this.ingestVisualGlobePackData(visualGlobeResult.value);
+      }
+      if (jeopardySigResult.status === 'fulfilled' && jeopardySigResult.value) {
+        this.ingestJeopardySignaturePackData(jeopardySigResult.value);
       }
       if (
         manifestResult.status === 'fulfilled' &&
@@ -299,6 +877,231 @@ export class ForgeEngine {
     })();
 
     return this.initPromise;
+  }
+
+  /**
+   * Loads (or hot-reloads) Upgrade #2 `public/data/visual_globe_packs.json`
+   * (`GLOBE_PIN_DROP` + Visual Sapphire Blueprint `SIGHTLINE_LOCK` items).
+   */
+  public async loadVisualGlobePacks(customUrl?: string): Promise<number> {
+    if (this.visualGlobePackLoaded && !customUrl) {
+      return this.visualGlobeRecords.length;
+    }
+    try {
+      const url = customUrl ?? `${this.dataBaseUrl}/visual_globe_packs.json`;
+      const bundle = await this.fetchJson<RawVisualGlobePackBundle | RawQuestionRecord[]>(url);
+      return this.ingestVisualGlobePackData(bundle);
+    } catch {
+      return 0;
+    }
+  }
+
+  public ingestVisualGlobePackData(
+    bundle: RawVisualGlobePackBundle | RawQuestionRecord[],
+  ): number {
+    const rawList = this.extractPackRecordList(bundle);
+    if (rawList.length === 0) return 0;
+
+    let addedCount = 0;
+    let nextAllocQid = 1_070_001;
+    const allocQid = (candidate?: number): number => {
+      if (
+        typeof candidate === 'number' &&
+        candidate >= 1 &&
+        candidate <= MAX_QID &&
+        !this.byQid.has(candidate)
+      ) {
+        return Math.trunc(candidate);
+      }
+      while (this.byQid.has(nextAllocQid)) {
+        nextAllocQid++;
+      }
+      return nextAllocQid++;
+    };
+
+    for (const raw of rawList) {
+      const normalized = this.prepareExternalPackRecord(raw, allocQid);
+      if (!normalized) continue;
+      this.visualGlobeRecords.push(normalized);
+      this.attachExtraRecordToTier1Indexes(normalized);
+      addedCount++;
+    }
+
+    if (addedCount > 0) {
+      this.visualGlobePackLoaded = true;
+    }
+    return addedCount;
+  }
+
+  /**
+   * Loads (or hot-reloads) Upgrade #3 `public/data/jeopardy_signature_packs.json`
+   * (`1,600+` Jeopardy-style multi-clue questions across all 12 domains & 157 L2 subcategories).
+   */
+  public async loadJeopardySignaturePacks(customUrl?: string): Promise<number> {
+    if (this.jeopardySignaturePackLoaded && !customUrl) {
+      return this.jeopardySignatureRecords.length;
+    }
+    try {
+      const url = customUrl ?? `${this.dataBaseUrl}/jeopardy_signature_packs.json`;
+      const bundle = await this.fetchJson<RawVisualGlobePackBundle | RawQuestionRecord[]>(url);
+      return this.ingestJeopardySignaturePackData(bundle);
+    } catch {
+      return 0;
+    }
+  }
+
+  public ingestJeopardySignaturePackData(
+    bundle: RawVisualGlobePackBundle | RawQuestionRecord[],
+  ): number {
+    const rawList = this.extractPackRecordList(bundle);
+    if (rawList.length === 0) return 0;
+
+    let addedCount = 0;
+    let nextAllocQid = 1_060_001;
+    const allocQid = (candidate?: number): number => {
+      if (
+        typeof candidate === 'number' &&
+        candidate >= 1 &&
+        candidate <= MAX_QID &&
+        !this.byQid.has(candidate)
+      ) {
+        return Math.trunc(candidate);
+      }
+      while (this.byQid.has(nextAllocQid)) {
+        nextAllocQid++;
+      }
+      return nextAllocQid++;
+    };
+
+    for (const raw of rawList) {
+      const normalized = this.prepareExternalPackRecord(raw, allocQid);
+      if (!normalized) continue;
+      this.jeopardySignatureRecords.push(normalized);
+      const dom = clamp(Math.trunc(normalized.l0Domain ?? 0), 0, 11) as DomainId;
+      let domList = this.jeopardyByDomain.get(dom);
+      if (!domList) {
+        domList = [];
+        this.jeopardyByDomain.set(dom, domList);
+      }
+      domList.push(normalized);
+
+      const subKeys = [
+        normalized.subcatId,
+        normalized.l2Id,
+        normalized.l2Subcategory,
+        normalized.l2Category,
+      ]
+        .filter((k): k is string => typeof k === 'string' && k.trim().length > 0)
+        .map((k) => k.trim().toLowerCase());
+      const uniqueSubKeys = Array.from(new Set(subKeys));
+      for (const sk of uniqueSubKeys) {
+        let sList = this.jeopardyBySubcatId.get(sk);
+        if (!sList) {
+          sList = [];
+          this.jeopardyBySubcatId.set(sk, sList);
+        }
+        sList.push(normalized);
+      }
+
+      this.attachExtraRecordToTier1Indexes(normalized);
+      addedCount++;
+    }
+
+    if (addedCount > 0) {
+      this.jeopardySignaturePackLoaded = true;
+    }
+    return addedCount;
+  }
+
+  private extractPackRecordList(
+    bundle: RawVisualGlobePackBundle | RawQuestionRecord[],
+  ): RawQuestionRecord[] {
+    if (Array.isArray(bundle)) {
+      return bundle;
+    }
+    if (!bundle || typeof bundle !== 'object') {
+      return [];
+    }
+    const out: RawQuestionRecord[] = [];
+    if (Array.isArray(bundle.questions)) out.push(...bundle.questions);
+    if (Array.isArray(bundle.globeQuestions)) out.push(...bundle.globeQuestions);
+    if (Array.isArray(bundle.visualQuestions)) out.push(...bundle.visualQuestions);
+    if (Array.isArray(bundle.items)) out.push(...bundle.items);
+    if (bundle.packs && typeof bundle.packs === 'object') {
+      for (const list of Object.values(bundle.packs)) {
+        if (Array.isArray(list)) out.push(...list);
+      }
+    }
+    return out;
+  }
+
+  private prepareExternalPackRecord(
+    raw: RawQuestionRecord,
+    allocQid: (candidate?: number) => number,
+  ): RawQuestionRecord | null {
+    if (!raw || !raw.prompt) return null;
+    const arch: Archetype3D = raw.archetype ?? (raw.globePin ? 'GLOBE_PIN_DROP' : 'SIGHTLINE_LOCK');
+    const answerCorrect =
+      raw.answerCorrect?.trim() ||
+      (arch === 'GLOBE_PIN_DROP' ? raw.globePin?.targetLabel?.trim() ?? '' : '');
+    if (!answerCorrect) return null;
+
+    const qid = allocQid(raw.qid);
+    const l0Domain = clamp(Math.trunc(raw.l0Domain ?? raw.domainId ?? 0), 0, 11) as DomainId;
+    const regions =
+      Array.isArray(raw.regions) && raw.regions.length > 0 ? raw.regions : ['GLOBAL'];
+    const rawDists = Array.isArray(raw.distractors)
+      ? raw.distractors.map((d, idx) =>
+          typeof d === 'string'
+            ? { text: d, plausibility: Number((0.82 - idx * 0.05).toFixed(2)) }
+            : d,
+        )
+      : undefined;
+
+    const visualPlate =
+      raw.visualPlate && raw.visualPlate.imageUrl
+        ? {
+            ...raw.visualPlate,
+            imageUrl: normalizeVisualAssetUrl(raw.visualPlate.imageUrl),
+          }
+        : undefined;
+
+    const enriched: RawQuestionRecord = {
+      ...raw,
+      qid,
+      l0Domain,
+      domainId: l0Domain,
+      l2Subcategory: raw.l2Subcategory ?? raw.l2Category,
+      archetype: arch,
+      answerCorrect,
+      regions,
+      ...(rawDists ? { distractors: rawDists } : {}),
+      ...(visualPlate ? { visualPlate } : {}),
+    };
+
+    if (!isCleanShardCandidate(enriched)) {
+      return null;
+    }
+    return enriched;
+  }
+
+  private attachExtraRecordToTier1Indexes(enriched: RawQuestionRecord): void {
+    this.tier1Questions.push(enriched);
+    this.byQid.set(enriched.qid, enriched);
+    const dom = clamp(Math.trunc(enriched.l0Domain ?? 0), 0, 11) as DomainId;
+    this.byDomain.get(dom)?.push(enriched);
+    const arch: Archetype3D = enriched.archetype ?? 'SIGHTLINE_LOCK';
+    if (!this.byArchetype.has(arch)) this.byArchetype.set(arch, []);
+    this.byArchetype.get(arch)?.push(enriched);
+    const regions = enriched.regions ?? ['GLOBAL'];
+    for (const reg of regions) {
+      let rList = this.byRegion.get(reg);
+      if (!rList) {
+        rList = [];
+        this.byRegion.set(reg, rList);
+      }
+      rList.push(enriched);
+    }
   }
 
   /**
@@ -618,6 +1421,7 @@ export class ForgeEngine {
 
     this.subcatShardBonusByDomain.clear();
     this.subcatQidRangesByDomain.clear();
+    this.subcatFileIndex = [];
 
     const subcatFilesMap = (raw.subcatFiles ?? raw.specialistFiles) as
       | Record<string, Array<string | { path?: string; questions?: number; baseQid?: number; qidEnd?: number }>>
@@ -633,6 +1437,14 @@ export class ForgeEngine {
             qSum += Math.max(0, Number(entry.questions ?? 0));
             if (typeof entry.baseQid === 'number' && typeof entry.qidEnd === 'number') {
               ranges.push([entry.baseQid, entry.qidEnd]);
+              if (typeof entry.path === 'string' && entry.path.trim().length > 0) {
+                this.subcatFileIndex.push({
+                  domainId: d,
+                  path: entry.path.trim(),
+                  baseQid: entry.baseQid,
+                  qidEnd: entry.qidEnd,
+                });
+              }
             }
           }
         }
@@ -996,6 +1808,7 @@ export class ForgeEngine {
     l2TopicId?: string,
   ): {
     domainId: DomainId;
+    topicId: string;
     topicName: string;
     keywords: string[];
     shardRules: TaxonomyShardRule[];
@@ -1015,6 +1828,7 @@ export class ForgeEngine {
           if (hitL2) {
             return {
               domainId: dom.domainId,
+              topicId: hitL2.id,
               topicName: hitL2.name,
               keywords: hitL2.keywords,
               shardRules: hitL2.shardRules,
@@ -1029,6 +1843,7 @@ export class ForgeEngine {
         ) {
           return {
             domainId: dom.domainId,
+            topicId: l1.id,
             topicName: l1.name,
             keywords: l1.keywords,
             shardRules: l1.shardRules,
@@ -1282,6 +2097,7 @@ export class ForgeEngine {
     morphSequence?: Archetype3D[];
     facetCount?: 4 | 5 | 6;
     seed?: number;
+    quarantinedQids?: ReadonlySet<number>;
   }): PrismQuestion[] {
     const stage = getCampaignStageSpec(params.hub);
     const roundIdx = clamp(params.roundIndex ?? 0, 0, 11);
@@ -1346,6 +2162,7 @@ export class ForgeEngine {
       nemesisCounterPick: params.nemesisCounterPick,
       facetCount: params.facetCount ?? 4,
       seed: params.seed,
+      quarantinedQids: params.quarantinedQids,
     });
   }
 
@@ -1569,6 +2386,7 @@ export class ForgeEngine {
     difficultyPreset?: BriefingDifficultyPreset;
     count?: number;
     facetCount?: 4 | 5 | 6;
+    quarantinedQids?: ReadonlySet<number>;
   }): Promise<PrismQuestion[]> {
     if (!this.initialized) {
       await this.init();
@@ -1597,9 +2415,13 @@ export class ForgeEngine {
     difficultyPreset?: BriefingDifficultyPreset;
     count?: number;
     facetCount?: 4 | 5 | 6;
+    quarantinedQids?: ReadonlySet<number>;
   }): PrismQuestion[] {
     const count = clamp(params.count ?? 5, 1, 100);
-    const preset: BriefingDifficultyPreset = params.difficultyPreset ?? 'ADAPTIVE';
+    const preset: BriefingDifficultyPreset = normalizeBriefingDifficultyPreset(
+      params.difficultyPreset ?? 'ADAPTIVE',
+    );
+    const targetTier = presetToAcademicTier(preset);
     if (params.l1SubcategoryId || params.l2TopicId) {
       void this.ensureTopicShardsLoaded({
         domains: params.domains,
@@ -1610,14 +2432,43 @@ export class ForgeEngine {
       this.prefetchDomainShards(params.domains);
     }
 
-    const morphRotation: Archetype3D[] = [
-      'GAUNTLET_SHATTER',
-      'CALIBRATOR_DIAL',
-      'CODEX_DUAL_RING',
-    ];
+    const taxFilter = this.resolveTaxonomyFilter(params.l1SubcategoryId, params.l2TopicId);
+    const hasGlobeMatch = this.hasGlobePinDropForScope(
+      taxFilter ? [taxFilter.domainId] : params.domains,
+      taxFilter,
+      targetTier,
+    );
+
+    // Restrict morph complexity on Middle School (ZERO brutal Codex or tight Calibrator traps!)
+    let morphRotation: Archetype3D[];
+    if (targetTier === 'MIDDLE_SCHOOL') {
+      morphRotation = hasGlobeMatch
+        ? ['GAUNTLET_SHATTER', 'GLOBE_PIN_DROP']
+        : ['GAUNTLET_SHATTER'];
+    } else if (targetTier === 'HIGH_SCHOOL') {
+      morphRotation = hasGlobeMatch
+        ? ['GAUNTLET_SHATTER', 'GLOBE_PIN_DROP', 'CALIBRATOR_DIAL']
+        : ['GAUNTLET_SHATTER', 'CALIBRATOR_DIAL'];
+    } else if (targetTier === 'MENSA') {
+      morphRotation = hasGlobeMatch
+        ? ['CALIBRATOR_DIAL', 'CODEX_DUAL_RING', 'GLOBE_PIN_DROP', 'GAUNTLET_SHATTER']
+        : ['CALIBRATOR_DIAL', 'CODEX_DUAL_RING', 'GAUNTLET_SHATTER'];
+    } else {
+      morphRotation = hasGlobeMatch
+        ? ['GAUNTLET_SHATTER', 'GLOBE_PIN_DROP', 'CALIBRATOR_DIAL', 'CODEX_DUAL_RING']
+        : ['GAUNTLET_SHATTER', 'CALIBRATOR_DIAL', 'CODEX_DUAL_RING'];
+    }
+
     const schedule: Archetype3D[] = [];
     for (let i = 0; i < count; i++) {
-      if (count >= 4 && i % 2 === 1) {
+      if (targetTier === 'MIDDLE_SCHOOL') {
+        // Keep Middle School mostly crisp SIGHTLINE_LOCK (~70%) with gentle True/False or Globe beats
+        if (count >= 4 && i % 3 === 2) {
+          schedule.push(morphRotation[Math.floor(i / 3) % morphRotation.length]);
+        } else {
+          schedule.push('SIGHTLINE_LOCK');
+        }
+      } else if (count >= 4 && i % 2 === 1) {
         schedule.push(morphRotation[Math.floor(i / 2) % morphRotation.length]);
       } else {
         schedule.push('SIGHTLINE_LOCK');
@@ -1633,7 +2484,128 @@ export class ForgeEngine {
       archetypes: schedule,
       difficultyPreset: preset,
       facetCount: params.facetCount ?? 4,
+      quarantinedQids: params.quarantinedQids,
     });
+  }
+
+  /**
+   * Dedicated showcase query for Upgrade #2 Visual Sapphire Blueprints & 3D Globe Pin-Drops.
+   * Works synchronously even before `visual_globe_packs.json` finishes loading via `INSTANT_COLD_OPEN_PRISMS`!
+   */
+  public queryVisualOrGlobeShowcase(opts?: {
+    count?: number;
+    kind?: 'ALL' | 'GLOBE_PIN_DROP' | 'VISUAL_BLUEPRINT';
+    domains?: DomainId[];
+    l1SubcategoryId?: string;
+    l2TopicId?: string;
+    excludeQids?: ReadonlyArray<number>;
+    quarantinedQids?: ReadonlySet<number>;
+    seed?: number;
+    facetCount?: 4 | 5 | 6;
+  }): PrismQuestion[] {
+    const count = clamp(opts?.count ?? 5, 1, 50);
+    const kind = opts?.kind ?? 'ALL';
+    const facetCount: 4 | 5 | 6 = opts?.facetCount ?? 4;
+    const rng: RngLike =
+      opts?.seed !== undefined ? new DeterministicRng(opts.seed) : sharedCryptoRng;
+
+    const excludeSet = new Set<number>(this.quarantinedQids);
+    if (opts?.excludeQids) {
+      for (const qid of opts.excludeQids) excludeSet.add(qid);
+    }
+    if (opts?.quarantinedQids) {
+      for (const qid of opts.quarantinedQids) excludeSet.add(qid);
+    }
+
+    const taxFilter = this.resolveTaxonomyFilter(opts?.l1SubcategoryId, opts?.l2TopicId);
+    const allowDoms = taxFilter
+      ? new Set<number>([taxFilter.domainId])
+      : opts?.domains && opts.domains.length > 0
+        ? new Set<number>(opts.domains)
+        : null;
+
+    // Combine loaded visual_globe_packs + embedded cold-open showcase items (dedup by qid)
+    const combined: RawQuestionRecord[] = [];
+    const seenIds = new Set<number>();
+    const addIfEligible = (q: RawQuestionRecord): void => {
+      if (seenIds.has(q.qid) || excludeSet.has(q.qid)) return;
+      const isGlobe = q.archetype === 'GLOBE_PIN_DROP';
+      const isVisual = Boolean(q.visualPlate?.imageUrl);
+      if (kind === 'GLOBE_PIN_DROP' && !isGlobe) return;
+      if (kind === 'VISUAL_BLUEPRINT' && !isVisual) return;
+      if (kind === 'ALL' && !isGlobe && !isVisual) return;
+      if (allowDoms && !allowDoms.has(clamp(Math.trunc(q.l0Domain ?? q.domainId ?? 0), 0, 11))) {
+        return;
+      }
+      if (taxFilter && !this.recordMatchesTaxonomyFilter(q, taxFilter)) {
+        return;
+      }
+      seenIds.add(q.qid);
+      combined.push(q);
+    };
+
+    for (const q of this.visualGlobeRecords) addIfEligible(q);
+    for (const q of INSTANT_COLD_OPEN_PRISMS) addIfEligible(q);
+
+    // Fallback gracefully to global showcase if narrow domain/topic filter had 0 hits
+    if (combined.length === 0) {
+      for (const q of this.visualGlobeRecords) {
+        if (seenIds.has(q.qid) || excludeSet.has(q.qid)) continue;
+        const isGlobe = q.archetype === 'GLOBE_PIN_DROP';
+        const isVisual = Boolean(q.visualPlate?.imageUrl);
+        if (kind === 'GLOBE_PIN_DROP' && !isGlobe) continue;
+        if (kind === 'VISUAL_BLUEPRINT' && !isVisual) continue;
+        if (kind === 'ALL' && !isGlobe && !isVisual) continue;
+        seenIds.add(q.qid);
+        combined.push(q);
+      }
+      for (const q of INSTANT_COLD_OPEN_PRISMS) {
+        if (seenIds.has(q.qid) || excludeSet.has(q.qid)) continue;
+        const isGlobe = q.archetype === 'GLOBE_PIN_DROP';
+        const isVisual = Boolean(q.visualPlate?.imageUrl);
+        if (kind === 'GLOBE_PIN_DROP' && !isGlobe) continue;
+        if (kind === 'VISUAL_BLUEPRINT' && !isVisual) continue;
+        if (kind === 'ALL' && !isGlobe && !isVisual) continue;
+        seenIds.add(q.qid);
+        combined.push(q);
+      }
+    }
+
+    const sortWithUnseenPriority = (arr: RawQuestionRecord[]): RawQuestionRecord[] => {
+      const unseen = arr.filter((q) => !this.seenTracker.hasSeen(q.qid));
+      const seen = arr.filter((q) => this.seenTracker.hasSeen(q.qid));
+      rng.shuffleInPlace(unseen);
+      rng.shuffleInPlace(seen);
+      return [...unseen, ...seen];
+    };
+
+    let ordered: RawQuestionRecord[];
+    if (kind === 'ALL') {
+      const globes = sortWithUnseenPriority(
+        combined.filter((q) => q.archetype === 'GLOBE_PIN_DROP'),
+      );
+      const visuals = sortWithUnseenPriority(
+        combined.filter((q) => q.archetype !== 'GLOBE_PIN_DROP' && Boolean(q.visualPlate?.imageUrl)),
+      );
+      ordered = [];
+      let gi = 0;
+      let vi = 0;
+      while (ordered.length < count && (gi < globes.length || vi < visuals.length)) {
+        if (gi < globes.length) ordered.push(globes[gi++]);
+        if (ordered.length < count && vi < visuals.length) ordered.push(visuals[vi++]);
+      }
+    } else {
+      ordered = sortWithUnseenPriority(combined).slice(0, count);
+    }
+
+    return ordered.map((raw) =>
+      normalizeToPrismQuestion(raw, {
+        timerSec: raw.archetype === 'GLOBE_PIN_DROP' ? 22 : 18,
+        facetCount,
+        shuffleSalt: rng.nextUint32(),
+        sourceTier: 'GOLD_CURATED',
+      }),
+    );
   }
 
   /**
@@ -1644,6 +2616,7 @@ export class ForgeEngine {
     depthStart: number,
     count = 5,
     facetCount: 4 | 5 | 6 = 4,
+    quarantinedQids?: ReadonlySet<number>,
   ): Promise<PrismQuestion[]> {
     if (!this.initialized) {
       await this.init();
@@ -1651,19 +2624,21 @@ export class ForgeEngine {
     const domA = (Math.floor(Math.max(0, depthStart) / 5) % 12) as DomainId;
     const domB = ((domA + 3) % 12) as DomainId;
     await this.ensureDomainsLoaded([domA, domB]);
-    return this.queryEndlessBatch(depthStart, count, facetCount);
+    return this.queryEndlessBatch(depthStart, count, facetCount, quarantinedQids);
   }
 
   public queryEndlessBatch(
     depthStart: number,
     count = 5,
     facetCount: 4 | 5 | 6 = 4,
+    quarantinedQids?: ReadonlySet<number>,
   ): PrismQuestion[] {
     const safeCount = clamp(count, 1, 20);
     const nextDom = (Math.floor(Math.max(0, depthStart) / 5) % 12) as DomainId;
     this.prefetchDomainShards([nextDom, ((nextDom + 1) % 12) as DomainId]);
 
     const floorIndex = Math.floor(Math.max(0, depthStart) / 5);
+    const hasGlobe = this.hasGlobePinDropForScope(undefined, null);
     const schedule: Archetype3D[] = [];
     const targetCurve: number[] = [];
     for (let i = 0; i < safeCount; i++) {
@@ -1671,11 +2646,19 @@ export class ForgeEngine {
       targetCurve.push(clamp(-1.2 + d * 0.13, -1.5, 2.75));
       if (safeCount >= 4 && i % 2 === 1) {
         if (i === 1) {
-          schedule.push('GAUNTLET_SHATTER');
+          schedule.push(hasGlobe && floorIndex % 3 === 1 ? 'GLOBE_PIN_DROP' : 'GAUNTLET_SHATTER');
         } else if (i === 3) {
-          schedule.push(floorIndex % 2 === 1 && d >= 5 ? 'CODEX_DUAL_RING' : 'CALIBRATOR_DIAL');
+          schedule.push(
+            floorIndex % 2 === 1 && d >= 5
+              ? 'CODEX_DUAL_RING'
+              : hasGlobe && floorIndex % 3 === 2
+                ? 'GLOBE_PIN_DROP'
+                : 'CALIBRATOR_DIAL',
+          );
         } else {
-          const rot: Archetype3D[] = ['CODEX_DUAL_RING', 'GAUNTLET_SHATTER', 'CALIBRATOR_DIAL'];
+          const rot: Archetype3D[] = hasGlobe
+            ? ['CODEX_DUAL_RING', 'GLOBE_PIN_DROP', 'GAUNTLET_SHATTER', 'CALIBRATOR_DIAL']
+            : ['CODEX_DUAL_RING', 'GAUNTLET_SHATTER', 'CALIBRATOR_DIAL'];
           schedule.push(rot[Math.floor(i / 2) % rot.length]);
         }
       } else {
@@ -1692,6 +2675,7 @@ export class ForgeEngine {
       irtMax: Math.max(...targetCurve) + 0.55,
       targetIrtCurve: targetCurve,
       facetCount,
+      quarantinedQids,
     });
     for (const q of questions) {
       if (q.archetype !== 'GAUNTLET_SHATTER') {
@@ -1733,7 +2717,12 @@ export class ForgeEngine {
         : sharedCryptoRng;
 
     const stage = req.hub ? getCampaignStageSpec(req.hub) : null;
-    const baseTimer = stage ? stage.timerSec : 18;
+    const targetTier = presetToAcademicTier(req.difficultyPreset);
+    const baseTimer = targetTier
+      ? getAcademicTierSpec(targetTier).timerSec
+      : stage
+        ? stage.timerSec
+        : 18;
 
     const taxFilter = this.resolveTaxonomyFilter(req.l1SubcategoryId, req.l2TopicId);
 
@@ -1758,7 +2747,22 @@ export class ForgeEngine {
     }
 
     const usedQids = new Set<number>(req.excludeQids ?? []);
+    for (const qid of this.quarantinedQids) {
+      usedQids.add(qid);
+    }
+    if (req.quarantinedQids) {
+      for (const qid of req.quarantinedQids) {
+        usedQids.add(qid);
+      }
+    }
     const usedDomainsInBatch = new Set<DomainId>();
+    const usedAnswersInBatch = new Set<string>();
+    const recordUsedAnswer = (ans?: string): void => {
+      const clean = String(ans ?? '').trim().toLowerCase();
+      if (clean && clean !== 'true' && clean !== 'false' && !clean.startsWith('3/3 ')) {
+        usedAnswersInBatch.add(clean);
+      }
+    };
     const results: PrismQuestion[] = [];
     let prevDomain: DomainId | null = this.seenTracker.getLastDomain();
 
@@ -1774,6 +2778,7 @@ export class ForgeEngine {
         if (found && !usedQids.has(found.qid)) {
           usedQids.add(found.qid);
           usedDomainsInBatch.add(found.l0Domain);
+          recordUsedAnswer(found.answerCorrect);
           prevDomain = found.l0Domain;
           results.push(found);
         }
@@ -1793,6 +2798,7 @@ export class ForgeEngine {
       // questions.json (20,165 items) FIRST before falling back to Tier-2 shards!
       const preferGoldOnly = Boolean(stage && stage.hub === 'ch');
       const canUseShards =
+        wantArch !== 'GLOBE_PIN_DROP' &&
         !preferGoldOnly &&
         req.mode !== 'DAILY' &&
         (!req.requiredTags || req.requiredTags.length === 0) &&
@@ -1800,9 +2806,31 @@ export class ForgeEngine {
 
       let rawPicked: RawQuestionRecord | null = null;
 
-      // When an L1/L2 Subcategory Drill-Down is active (e.g. Baseball 25,000+ Qs!),
+      // Upgrade #2 & #3: When drilling into ANY of the 157 subcategories, organically weave in
+      // high-priority Jeopardy Signature clues + Visual Sapphire Blueprints / Globe Pin-Drops
+      // on curated lead slots before drawing deeply from the 1.2M+ specialist shard corpus!
+      if (
+        taxFilter &&
+        (wantArch === 'GLOBE_PIN_DROP' ||
+          (wantArch === 'SIGHTLINE_LOCK' && (slot === 0 || slot === 2 || slot % 4 === 0)))
+      ) {
+        rawPicked = this.pickFromCuratedTopicPool({
+          wantArch,
+          taxFilter,
+          usedQids,
+          usedAnswersInBatch,
+          rng,
+          respectSeen,
+          targetB,
+          targetTier,
+          preferVisual: slot === 2,
+        });
+      }
+
+      // When an L1/L2 Subcategory Drill-Down is active (e.g. Baseball 34,000+ Qs!),
       // prioritize specialist shard tables & filtered domain tables directly!
       const tryShardFirst =
+        !rawPicked &&
         canUseShards &&
         (Boolean(taxFilter) ||
           (req.mode === 'BRIEFING' && slot % 2 === 1) ||
@@ -1821,6 +2849,8 @@ export class ForgeEngine {
           prevDomain,
           facetCount - 1,
           taxFilter,
+          targetTier,
+          usedAnswersInBatch,
         );
       }
 
@@ -1830,13 +2860,16 @@ export class ForgeEngine {
           irtMin: lo,
           irtMax: hi,
           targetB,
+          targetTier,
           allowedDomains,
           usedQids,
           usedDomainsInBatch,
+          usedAnswersInBatch,
           rng,
           respectSeen,
           prevDomain,
           preferGoldCurated: Boolean(stage?.preferGoldCuratedFirst),
+          preferVisualOrGlobe: Boolean(req.preferVisualOrGlobe),
           regions: slot < Math.ceil(count * 0.45) ? req.regions : undefined,
           requiredTags: req.requiredTags,
           boostTags: req.boostTags,
@@ -1859,10 +2892,13 @@ export class ForgeEngine {
           prevDomain,
           facetCount - 1,
           taxFilter,
+          targetTier,
+          usedAnswersInBatch,
         );
       }
 
-      // If a narrow morph (e.g. CODEX_DUAL_RING inside a small L2 filter) had 0 hits, relax to SIGHTLINE_LOCK inside same topic!
+      // If a narrow morph (e.g. CODEX_DUAL_RING or GLOBE_PIN_DROP inside a small L2 filter) had 0 hits,
+      // relax to SIGHTLINE_LOCK inside the same topic while STILL enforcing targetTier!
       if (!rawPicked && taxFilter && wantArch !== 'SIGHTLINE_LOCK' && canUseShards) {
         rawPicked = this.pickFromLoadedShards(
           'SIGHTLINE_LOCK',
@@ -1876,11 +2912,60 @@ export class ForgeEngine {
           prevDomain,
           facetCount - 1,
           taxFilter,
+          targetTier,
+          usedAnswersInBatch,
         );
       }
 
-      const finalRaw = rawPicked ?? BOOTSTRAP_GENEVA_SEED[slot % BOOTSTRAP_GENEVA_SEED.length];
+      if (!rawPicked && wantArch !== 'SIGHTLINE_LOCK' && targetTier) {
+        // Fallback to SIGHTLINE_LOCK in the exact target academic tier before falling back to generic seed
+        rawPicked = this.pickFromTier1Catalog({
+          wantArch: 'SIGHTLINE_LOCK',
+          irtMin: lo,
+          irtMax: hi,
+          targetB,
+          targetTier,
+          allowedDomains,
+          usedQids,
+          usedDomainsInBatch,
+          usedAnswersInBatch,
+          rng,
+          respectSeen,
+          prevDomain,
+          preferGoldCurated: Boolean(stage?.preferGoldCuratedFirst),
+          preferVisualOrGlobe: Boolean(req.preferVisualOrGlobe),
+          taxFilter,
+        });
+      }
+
+      if (!rawPicked && wantArch === 'GLOBE_PIN_DROP') {
+        // Fallback to non-quarantined Globe Pin-Drop matching targetTier (or adjacent) so Mensa never leaks easy landmarks!
+        const allowedGlobeTiers = targetTier
+          ? new Set<AcademicDifficultyTier>(getAdjacentAcademicTiers(targetTier))
+          : null;
+        const globeFallback = [...this.visualGlobeRecords, ...INSTANT_COLD_OPEN_PRISMS].filter(
+          (q) => {
+            if (q.archetype !== 'GLOBE_PIN_DROP' || usedQids.has(q.qid)) return false;
+            if (allowedGlobeTiers) {
+              const d = scoreQuestionDifficulty(q);
+              if (!allowedGlobeTiers.has(d.difficultyTier)) return false;
+            }
+            return true;
+          },
+        );
+        if (globeFallback.length > 0) {
+          rawPicked = globeFallback[rng.nextInt(0, globeFallback.length - 1)];
+        }
+      }
+
+      const safeFallbackPool =
+        targetTier === 'MIDDLE_SCHOOL'
+          ? BOOTSTRAP_GENEVA_SEED.filter((q) => q.archetype === 'SIGHTLINE_LOCK')
+          : BOOTSTRAP_GENEVA_SEED;
+      const finalRaw =
+        rawPicked ?? safeFallbackPool[slot % Math.max(1, safeFallbackPool.length)] ?? BOOTSTRAP_GENEVA_SEED[0];
       usedQids.add(finalRaw.qid);
+      recordUsedAnswer(finalRaw.answerCorrect);
       const domId = clamp(finalRaw.l0Domain, 0, 11) as DomainId;
       usedDomainsInBatch.add(domId);
       prevDomain = domId;
@@ -1888,7 +2973,9 @@ export class ForgeEngine {
       const timerForMorph =
         finalRaw.archetype === 'GAUNTLET_SHATTER'
           ? clamp(Math.min(baseTimer, Number(finalRaw.gauntletExt?.windowSec ?? 10)), 6, 14)
-          : baseTimer;
+          : finalRaw.archetype === 'GLOBE_PIN_DROP'
+            ? Math.max(baseTimer, 20)
+            : baseTimer;
 
       let pq = normalizeToPrismQuestion(finalRaw, {
         timerSec: timerForMorph,
@@ -1906,7 +2993,102 @@ export class ForgeEngine {
     return results;
   }
 
-  /** Direct QID lookup across Tier-1 and any loaded Tier-2 shards (async auto-loads shard if needed!) */
+  /**
+   * Hydrates an exact ordered list of Question IDs across Cold-Open (`1.08M`), Tier-1,
+   * Gold Venue Packs, Visual/Globe (`1.07M`), Jeopardy Signature (`1.06M`), Main Shards,
+   * Codex Synthesis (`995k..1.045M`), and Specialist Subcat Shards (`1.1M+`) in parallel.
+   * Powers Upgrade #1 `?duel=...` links so challenger and recipient play 100% identical Qs!
+   */
+  public async queryExactQuestionsByIds(
+    qids: ReadonlyArray<number>,
+    opts?: {
+      facetCount?: 4 | 5 | 6;
+      seed?: number;
+      timerSec?: number;
+    },
+  ): Promise<PrismQuestion[]> {
+    if (!Array.isArray(qids) || qids.length === 0) {
+      return [];
+    }
+    if (!this.initialized) {
+      await this.init();
+    }
+
+    const facetCount: 4 | 5 | 6 = opts?.facetCount ?? 4;
+    const neededDomains = new Set<DomainId>();
+    const neededExtraFiles: Array<{ path: string; domainId: DomainId }> = [];
+    const seenExtraPaths = new Set<string>();
+    const codexEnd = CODEX_SYNTHESIS_BASE_QID + CODEX_SYNTHESIS_PER_DOMAIN * 12;
+
+    for (const rawQid of qids) {
+      const qid = Math.trunc(rawQid);
+      if (!Number.isFinite(qid) || qid <= 0) continue;
+      if (this.byQid.has(qid) || this.coldOpenByQid.has(qid)) continue;
+
+      if (qid >= CODEX_SYNTHESIS_BASE_QID && qid < codexEnd) {
+        const d = Math.floor(
+          (qid - CODEX_SYNTHESIS_BASE_QID) / CODEX_SYNTHESIS_PER_DOMAIN,
+        ) as DomainId;
+        if (d >= 0 && d < 12) neededDomains.add(d);
+        continue;
+      }
+
+      let matchedMain = false;
+      if (this.shardManifest && qid >= 60_000) {
+        for (const dom of this.shardManifest.domains) {
+          if (dom.files.some((f) => qid >= f.baseQid && qid <= f.qidEnd)) {
+            neededDomains.add(dom.l0Domain as DomainId);
+            matchedMain = true;
+            break;
+          }
+        }
+      }
+
+      if (!matchedMain) {
+        for (const entry of this.subcatFileIndex) {
+          if (qid >= entry.baseQid && qid <= entry.qidEnd) {
+            if (!seenExtraPaths.has(entry.path)) {
+              seenExtraPaths.add(entry.path);
+              neededExtraFiles.push({ path: entry.path, domainId: entry.domainId });
+            }
+            break;
+          }
+        }
+      }
+    }
+
+    const loadTasks: Array<Promise<unknown>> = [];
+    if (neededDomains.size > 0) {
+      loadTasks.push(this.ensureDomainsLoaded(Array.from(neededDomains)));
+    }
+    for (const ef of neededExtraFiles) {
+      loadTasks.push(this.ensureExtraShardFileLoaded(ef.path, ef.domainId));
+    }
+    if (loadTasks.length > 0) {
+      await Promise.all(loadTasks);
+    }
+
+    const hydrated: PrismQuestion[] = [];
+    for (let idx = 0; idx < qids.length; idx++) {
+      const qid = Math.trunc(qids[idx]);
+      if (!Number.isFinite(qid) || qid <= 0) continue;
+      const shuffleSalt =
+        opts?.seed !== undefined
+          ? (opts.seed ^ Math.imul(idx + 1, 0x9e3779b9)) >>> 0
+          : fnv1a32(`WS_DUEL_EXACT:${qid}:${idx}`);
+      const pq = this.getQuestionByQidSync(qid, {
+        facetCount,
+        timerSec: opts?.timerSec,
+        shuffleSalt,
+      });
+      if (pq) {
+        hydrated.push(pq);
+      }
+    }
+    return hydrated;
+  }
+
+  /** Direct QID lookup across Tier-1, Cold-Open, Visual/Globe, Jeopardy Signature, and any Tier-2/Subcat shards */
   public async getQuestionByQid(
     qid: number,
     facetCount: 4 | 5 | 6 = 4,
@@ -1917,6 +3099,15 @@ export class ForgeEngine {
     const syncHit = this.getQuestionByQidSync(qid, { facetCount });
     if (syncHit) return syncHit;
 
+    const codexEnd = CODEX_SYNTHESIS_BASE_QID + CODEX_SYNTHESIS_PER_DOMAIN * 12;
+    if (qid >= CODEX_SYNTHESIS_BASE_QID && qid < codexEnd) {
+      const d = Math.floor(
+        (qid - CODEX_SYNTHESIS_BASE_QID) / CODEX_SYNTHESIS_PER_DOMAIN,
+      ) as DomainId;
+      await this.ensureDomainShardLoaded(d);
+      return this.getQuestionByQidSync(qid, { facetCount });
+    }
+
     if (this.shardManifest && qid >= 60_000) {
       for (const dom of this.shardManifest.domains) {
         const inDomain = dom.files.some((f) => qid >= f.baseQid && qid <= f.qidEnd);
@@ -1926,6 +3117,14 @@ export class ForgeEngine {
         }
       }
     }
+
+    for (const entry of this.subcatFileIndex) {
+      if (qid >= entry.baseQid && qid <= entry.qidEnd) {
+        await this.ensureExtraShardFileLoaded(entry.path, entry.domainId);
+        return this.getQuestionByQidSync(qid, { facetCount });
+      }
+    }
+
     return null;
   }
 
@@ -1933,7 +3132,7 @@ export class ForgeEngine {
     qid: number,
     opts: { timerSec?: number; facetCount?: 4 | 5 | 6; shuffleSalt?: number } = {},
   ): PrismQuestion | null {
-    const t1 = this.byQid.get(qid);
+    const t1 = this.byQid.get(qid) ?? this.coldOpenByQid.get(qid);
     if (t1) {
       return normalizeToPrismQuestion(t1, {
         ...opts,
@@ -1942,6 +3141,23 @@ export class ForgeEngine {
     }
     const unifiedManifest = this.getUnifiedManifestForDecode();
     if (unifiedManifest && qid >= 60_000) {
+      const codexEnd = CODEX_SYNTHESIS_BASE_QID + CODEX_SYNTHESIS_PER_DOMAIN * 12;
+      if (qid >= CODEX_SYNTHESIS_BASE_QID && qid < codexEnd) {
+        const offset = qid - CODEX_SYNTHESIS_BASE_QID;
+        const domId = Math.floor(offset / CODEX_SYNTHESIS_PER_DOMAIN) as DomainId;
+        const synthSlot = offset % CODEX_SYNTHESIS_PER_DOMAIN;
+        const chunks = this.loadedShardsByDomain.get(domId);
+        if (chunks && chunks.length > 0) {
+          const synthRaw = synthesizeShardCodexQuestion(unifiedManifest, chunks, domId, synthSlot);
+          if (synthRaw) {
+            return normalizeToPrismQuestion(synthRaw, {
+              ...opts,
+              shuffleSalt: opts.shuffleSalt ?? sharedCryptoRng.nextUint32(),
+            });
+          }
+        }
+      }
+
       for (const [, chunks] of this.loadedShardsByDomain) {
         const raw = decodeQuestionByQidFromChunks(
           unifiedManifest,
@@ -1979,14 +3195,169 @@ export class ForgeEngine {
   // Internal Selection, Indexing & Network Helpers
   // --------------------------------------------------------------------------
 
+  private hasGlobePinDropForScope(
+    domains: ReadonlyArray<DomainId> | undefined,
+    taxFilter: {
+      domainId: DomainId;
+      topicId: string;
+      topicName: string;
+      keywords: string[];
+    } | null,
+    targetTier?: AcademicDifficultyTier | null,
+  ): boolean {
+    const globePool = this.byArchetype.get('GLOBE_PIN_DROP') ?? [];
+    if (globePool.length === 0) return false;
+    const allowedTiers = targetTier
+      ? new Set<AcademicDifficultyTier>(getAdjacentAcademicTiers(targetTier))
+      : null;
+    const tierOk = (q: RawQuestionRecord): boolean => {
+      if (!allowedTiers) return true;
+      return allowedTiers.has(scoreQuestionDifficulty(q).difficultyTier);
+    };
+    if (taxFilter) {
+      return globePool.some(
+        (q) =>
+          q.l0Domain === taxFilter.domainId &&
+          this.recordMatchesTaxonomyFilter(q, taxFilter) &&
+          tierOk(q),
+      );
+    }
+    if (domains && domains.length > 0) {
+      const domSet = new Set<number>(domains);
+      return globePool.some((q) => domSet.has(q.l0Domain) && tierOk(q));
+    }
+    return globePool.some((q) => tierOk(q));
+  }
+
+  private recordMatchesTaxonomyFilter(
+    q: RawQuestionRecord,
+    taxFilter: {
+      domainId: DomainId;
+      topicId: string;
+      topicName: string;
+      keywords: string[];
+    },
+  ): boolean {
+    const topicIdLow = taxFilter.topicId.trim().toLowerCase();
+    const topicNameLow = taxFilter.topicName.trim().toLowerCase();
+    if (q.answerCorrect.trim().toLowerCase() === topicNameLow) return false;
+    if (
+      q.subcatId?.trim().toLowerCase() === topicIdLow ||
+      q.l2Id?.trim().toLowerCase() === topicIdLow ||
+      q.l1Id?.trim().toLowerCase() === topicIdLow ||
+      q.l2Subcategory?.trim().toLowerCase() === topicNameLow ||
+      q.l2Category?.trim().toLowerCase() === topicNameLow
+    ) {
+      return true;
+    }
+    const hay = `${q.l1Category ?? ''} ${q.l2Subcategory ?? ''} ${q.l2Category ?? ''} ${q.l1Id ?? ''} ${q.l2Id ?? ''} ${q.subcatId ?? ''} ${q.microTopicId ?? ''} ${q.prompt}`.toLowerCase();
+    return taxFilter.keywords.some((kw) => hay.includes(kw.toLowerCase()));
+  }
+
+  private pickFromCuratedTopicPool(opts: {
+    wantArch: Archetype3D;
+    taxFilter: {
+      domainId: DomainId;
+      topicId: string;
+      topicName: string;
+      keywords: string[];
+    };
+    usedQids: ReadonlySet<number>;
+    usedAnswersInBatch?: ReadonlySet<string>;
+    rng: RngLike;
+    respectSeen: boolean;
+    targetB: number;
+    targetTier?: AcademicDifficultyTier | null;
+    preferVisual: boolean;
+  }): RawQuestionRecord | null {
+    const candidates: RawQuestionRecord[] = [];
+    const seenIds = new Set<number>();
+
+    const collect = (list: ReadonlyArray<RawQuestionRecord> | undefined): void => {
+      if (!list) return;
+      for (const q of list) {
+        if (seenIds.has(q.qid) || opts.usedQids.has(q.qid)) continue;
+        if (opts.usedAnswersInBatch?.has(q.answerCorrect.trim().toLowerCase())) continue;
+        if (q.archetype !== opts.wantArch) continue;
+        if (q.l0Domain !== opts.taxFilter.domainId) continue;
+        if (!this.recordMatchesTaxonomyFilter(q, opts.taxFilter)) continue;
+        if (!isCleanShardCandidate(q)) continue;
+        seenIds.add(q.qid);
+        candidates.push(q);
+      }
+    };
+
+    const topicIdLow = opts.taxFilter.topicId.trim().toLowerCase();
+    const topicNameLow = opts.taxFilter.topicName.trim().toLowerCase();
+
+    if (opts.wantArch === 'GLOBE_PIN_DROP' || opts.preferVisual) {
+      collect(this.visualGlobeRecords);
+    }
+    collect(this.jeopardyBySubcatId.get(topicIdLow));
+    collect(this.jeopardyBySubcatId.get(topicNameLow));
+    collect(this.jeopardyByDomain.get(opts.taxFilter.domainId));
+    if (!opts.preferVisual && opts.wantArch !== 'GLOBE_PIN_DROP') {
+      collect(this.visualGlobeRecords);
+    }
+
+    if (candidates.length === 0) return null;
+
+    const allowedTiersByPass: Array<ReadonlySet<AcademicDifficultyTier> | null> = opts.targetTier
+      ? [
+          new Set<AcademicDifficultyTier>([opts.targetTier]),
+          new Set<AcademicDifficultyTier>(getAdjacentAcademicTiers(opts.targetTier)),
+        ]
+      : [null];
+
+    for (let pass = 0; pass < allowedTiersByPass.length; pass++) {
+      const tierGate = allowedTiersByPass[pass];
+      const scored: Array<{ q: RawQuestionRecord; s: number }> = [];
+      for (const q of candidates) {
+        const diff = scoreQuestionDifficulty(q);
+        if (tierGate && !tierGate.has(diff.difficultyTier)) continue;
+        if (
+          pass === 0 &&
+          opts.targetTier === 'MIDDLE_SCHOOL' &&
+          diff.calibratedIrtB > -0.8
+        ) {
+          continue;
+        }
+        let s = 0;
+        if (opts.respectSeen) {
+          if (!this.seenTracker.hasSeen(q.qid)) s += 55;
+          else s -= 80;
+          if (this.seenTracker.isMicroTopicInCooldown(q.microTopicId)) s -= 70;
+        }
+        if (opts.preferVisual && q.visualPlate?.imageUrl) s += 30;
+        if (q.subcatId?.trim().toLowerCase() === topicIdLow) s += 20;
+        s -= Math.abs(diff.calibratedIrtB - opts.targetB) * 12;
+        s += opts.rng.nextFloat() * 14;
+        scored.push({ q, s });
+      }
+      if (scored.length === 0) continue;
+      scored.sort((a, b) => b.s - a.s);
+      if (opts.respectSeen && this.seenTracker.hasSeen(scored[0].q.qid)) {
+        return null;
+      }
+      const topBand = scored.filter((item) => item.s >= scored[0].s - 12).slice(0, 8);
+      return topBand[opts.rng.nextInt(0, topBand.length - 1)].q;
+    }
+
+    return null;
+  }
+
   private buildCityArchetypeSchedule(
     stage: CampaignStageSpec,
     count: number,
     roundIdx: number,
   ): Archetype3D[] {
     const schedule = new Array<Archetype3D>(count).fill('SIGHTLINE_LOCK');
+    const hasGlobe = (this.byArchetype.get('GLOBE_PIN_DROP')?.length ?? 0) > 0;
     const specials = stage.unlockedArchetypes.filter(
-      (a) => a !== 'SIGHTLINE_LOCK' && a !== 'HERO_ARTIFACT_SYNTHESIS',
+      (a) =>
+        a !== 'SIGHTLINE_LOCK' &&
+        a !== 'HERO_ARTIFACT_SYNTHESIS' &&
+        (a !== 'GLOBE_PIN_DROP' || hasGlobe),
     );
     if (specials.length === 0) {
       return schedule;
@@ -2140,26 +3511,34 @@ export class ForgeEngine {
     }
 
     const frac = slot / Math.max(1, count - 1);
-    const preset = req.difficultyPreset ?? 'ADAPTIVE';
+    const preset = normalizeBriefingDifficultyPreset(req.difficultyPreset ?? 'ADAPTIVE');
     switch (preset) {
+      case 'MIDDLE_SCHOOL':
       case 'EASY': {
-        const tb = lerp(-1.4, -0.35, frac);
-        return { lo: -1.8, hi: -0.2, targetB: tb };
+        const tb = lerp(-1.6, -0.92, frac);
+        return { lo: -1.85, hi: -0.85, targetB: tb };
       }
+      case 'HIGH_SCHOOL': {
+        const tb = lerp(-0.78, -0.22, frac);
+        return { lo: -0.85, hi: -0.15, targetB: tb };
+      }
+      case 'COLLEGE':
       case 'MEDIUM': {
-        const tb = lerp(-0.25, 0.65, frac);
-        return { lo: -0.5, hi: 0.85, targetB: tb };
+        const tb = lerp(-0.08, 0.58, frac);
+        return { lo: -0.15, hi: 0.65, targetB: tb };
       }
+      case 'GRADUATE':
       case 'HARD': {
-        const tb = lerp(0.75, 1.85, frac);
-        return { lo: 0.55, hi: 2.15, targetB: tb };
+        const tb = lerp(0.72, 1.38, frac);
+        return { lo: 0.65, hi: 1.45, targetB: tb };
       }
+      case 'MENSA':
       case 'GENIUS': {
-        const tb = lerp(1.45, 2.65, frac);
-        return { lo: 1.25, hi: 2.85, targetB: tb };
+        const tb = lerp(1.55, 2.55, frac);
+        return { lo: 1.45, hi: 2.85, targetB: tb };
       }
       case 'PROGRESSIVE': {
-        const tb = lerp(-1.3, 1.95, frac);
+        const tb = lerp(-1.45, 2.05, frac);
         return { lo: tb - 0.55, hi: tb + 0.55, targetB: tb };
       }
       case 'ADAPTIVE':
@@ -2259,6 +3638,8 @@ export class ForgeEngine {
       shardRules: TaxonomyShardRule[];
       shardFiles: string[];
     } | null,
+    targetTier?: AcademicDifficultyTier | null,
+    usedAnswersInBatch?: ReadonlySet<string>,
   ): RawQuestionRecord | null {
     const unifiedManifest = this.getUnifiedManifestForDecode();
     if (!unifiedManifest) return null;
@@ -2269,6 +3650,32 @@ export class ForgeEngine {
         : Array.from(this.loadedShardsByDomain.keys());
 
     if (candidateDomains.length === 0) return null;
+
+    const tierSpec = targetTier ? getAcademicTierSpec(targetTier) : null;
+    const adjacentTierSet = targetTier
+      ? new Set<AcademicDifficultyTier>(getAdjacentAcademicTiers(targetTier))
+      : null;
+
+    const getRowWindowBounds = (
+      len: number,
+      pass: number,
+    ): { minPos: number; maxPos: number } => {
+      if (len <= 1 || !tierSpec) {
+        return { minPos: 0, maxPos: Math.max(0, len - 1) };
+      }
+      if (tierSpec.id === 'MIDDLE_SCHOOL') {
+        const cap =
+          pass === 0
+            ? Math.max(10, Math.floor(len * tierSpec.shardRankMax01))
+            : Math.max(18, Math.floor(len * 0.34));
+        return { minPos: 0, maxPos: Math.min(len - 1, cap) };
+      }
+      const loFrac = pass === 0 ? tierSpec.shardRankMin01 : Math.max(0, tierSpec.shardRankMin01 - 0.14);
+      const hiFrac = pass === 0 ? tierSpec.shardRankMax01 : Math.min(1, tierSpec.shardRankMax01 + 0.14);
+      const minPos = clamp(Math.floor(len * loFrac), 0, len - 1);
+      const maxPos = clamp(Math.max(minPos + Math.min(12, len - 1), Math.floor(len * hiFrac)), minPos, len - 1);
+      return { minPos, maxPos };
+    };
 
     // 1. Subcategory Drill-Down Path (`L1` / `L2`, e.g., `Sports & Games -> Sports -> Baseball`)
     if (taxFilter && (taxFilter.shardRules.length > 0 || taxFilter.shardFiles.length > 0)) {
@@ -2355,8 +3762,13 @@ export class ForgeEngine {
       }
 
       // If wantArch === 'CODEX_DUAL_RING' and no native Codex angle existed on the filtered table,
-      // synthesize a 3-pair Codex Dual-Ring directly from the filtered within-topic rows!
-      if (slices.length === 0 && wantArch === 'CODEX_DUAL_RING') {
+      // synthesize a 3-pair Codex Dual-Ring directly from the filtered within-topic rows (College+ only!)
+      if (
+        slices.length === 0 &&
+        wantArch === 'CODEX_DUAL_RING' &&
+        targetTier !== 'MIDDLE_SCHOOL' &&
+        targetTier !== 'HIGH_SCHOOL'
+      ) {
         for (const chunk of chunks) {
           for (let ti = 0; ti < chunk.t.length; ti++) {
             const tbl = chunk.t[ti];
@@ -2378,7 +3790,8 @@ export class ForgeEngine {
                   a.answerCol !== resolvedFilterCol,
               );
               if (sightAi >= 0) {
-                const startRi = indices[rng.nextInt(0, indices.length - 1)];
+                const win = getRowWindowBounds(indices.length, 0);
+                const startRi = indices[rng.nextInt(win.minPos, win.maxPos)];
                 const syntheticAngle = {
                   id: `${spec.angles[sightAi].id}_codex`,
                   archetype: 'CODEX_DUAL_RING' as const,
@@ -2416,51 +3829,84 @@ export class ForgeEngine {
 
       if (slices.length > 0) {
         const topicLow = taxFilter.topicName.trim().toLowerCase();
-        const candidates: Array<{
-          slice: (typeof slices)[number];
-          ri: number;
-          ai: number;
-          score: number;
-        }> = [];
+        const maxPasses = targetTier ? 2 : 2;
+        for (let pass = 0; pass < maxPasses; pass++) {
+          const candidates: Array<{
+            slice: (typeof slices)[number];
+            ri: number;
+            ai: number;
+            rowRank01: number;
+            score: number;
+          }> = [];
 
-        for (let probe = 0; probe < 96; probe++) {
-          const sl = slices[rng.nextInt(0, slices.length - 1)];
-          const ri = sl.rowsIdx[rng.nextInt(0, sl.rowsIdx.length - 1)];
-          const ai = sl.anglesIdx[rng.nextInt(0, sl.anglesIdx.length - 1)];
-          const qid = sl.tbl.baseQid + ri * sl.spec.angles.length + ai;
-          if (usedQids.has(qid)) continue;
-          if (respectSeen && this.seenTracker.hasSeen(qid) && probe < 80) continue;
+          const probes = targetTier ? 140 : 110;
+          for (let probe = 0; probe < probes; probe++) {
+            const sl = slices[rng.nextInt(0, slices.length - 1)];
+            const win = getRowWindowBounds(sl.rowsIdx.length, pass);
+            const pos = rng.nextInt(win.minPos, win.maxPos);
+            const ri = sl.rowsIdx[pos];
+            const ai = sl.anglesIdx[rng.nextInt(0, sl.anglesIdx.length - 1)];
+            const qid = sl.tbl.baseQid + ri * sl.spec.angles.length + ai;
+            if (usedQids.has(qid)) continue;
+            if (respectSeen && this.seenTracker.hasSeen(qid) && probe < probes - 18) continue;
 
-          const row = sl.tbl.r[ri];
-          const irtB = clamp(
-            Number(row[row.length - 1]) / 100.0 + Number(sl.spec.angles[ai].irtOffset ?? 0),
-            -1.6,
-            2.75,
-          );
-          let score = sl.isSpecialistTable ? 22 : 0;
-          if (!this.seenTracker.hasSeen(qid)) score += 50;
-          if (irtB < irtMin || irtB > irtMax) score -= 20;
-          score -= Math.abs(irtB - targetB) * 14;
-          score += rng.nextFloat() * 14; // Strong crypto-random jitter across matching unseen rows!
-          candidates.push({ slice: sl, ri, ai, score });
-        }
+            const row = sl.tbl.r[ri];
+            const irtB = clamp(
+              Number(row[row.length - 1]) / 100.0 + Number(sl.spec.angles[ai].irtOffset ?? 0),
+              -1.6,
+              2.75,
+            );
+            // HARD IRT GATE BEFORE UNSEEN BONUS (Fixes #329 Graduate/Mensa leak into Easy!)
+            if (pass === 0) {
+              const hardPad = targetTier === 'MIDDLE_SCHOOL' ? 0.35 : 0.45;
+              if (irtB < irtMin - hardPad || irtB > irtMax + hardPad) continue;
+            } else if (targetTier === 'MIDDLE_SCHOOL') {
+              // Even on Pass 1 widening, NEVER admit > -0.10 rows into Middle School!
+              if (irtB > -0.1) continue;
+            } else if (targetTier === 'MENSA') {
+              if (irtB < 0.65) continue;
+            }
 
-        candidates.sort((a, b) => b.score - a.score);
-        for (const cand of candidates) {
-          const decoded = decodeShardRawQuestion(
-            unifiedManifest,
-            cand.slice.chunk,
-            cand.slice.ti,
-            cand.ri,
-            cand.ai,
-            desiredDistractors,
-            cand.slice.rowsIdx,
-          );
-          if (
-            decoded &&
-            decoded.answerCorrect.trim().toLowerCase() !== topicLow &&
-            isCleanShardCandidate(decoded)
-          ) {
+            const rowRank01 =
+              sl.rowsIdx.length > 1 ? pos / (sl.rowsIdx.length - 1) : 0;
+            let score = sl.isSpecialistTable ? 22 : 0;
+            if (!this.seenTracker.hasSeen(qid)) score += 45;
+            if (irtB < irtMin || irtB > irtMax) score -= 28;
+            score -= Math.abs(irtB - targetB) * 18;
+            score += rng.nextFloat() * 12;
+            candidates.push({ slice: sl, ri, ai, rowRank01, score });
+          }
+
+          candidates.sort((a, b) => b.score - a.score);
+          for (const cand of candidates) {
+            const decoded = decodeShardRawQuestion(
+              unifiedManifest,
+              cand.slice.chunk,
+              cand.slice.ti,
+              cand.ri,
+              cand.ai,
+              desiredDistractors,
+              cand.slice.rowsIdx,
+            );
+            if (
+              !decoded ||
+              decoded.answerCorrect.trim().toLowerCase() === topicLow ||
+              usedAnswersInBatch?.has(decoded.answerCorrect.trim().toLowerCase()) ||
+              !isCleanShardCandidate(decoded)
+            ) {
+              continue;
+            }
+            if (targetTier) {
+              const diff = scoreQuestionDifficulty(decoded, {
+                shardRowRank01: cand.rowRank01,
+              });
+              if (pass === 0) {
+                if (diff.difficultyTier !== targetTier) continue;
+                if (targetTier === 'MIDDLE_SCHOOL' && diff.calibratedIrtB > -0.8) continue;
+              } else if (adjacentTierSet && !adjacentTierSet.has(diff.difficultyTier)) {
+                continue;
+              }
+            }
             return decoded;
           }
         }
@@ -2470,6 +3916,9 @@ export class ForgeEngine {
 
     // 2. General Domain Shard Path (Crypto-Random across full loaded domain tables!)
     if (wantArch === 'CODEX_DUAL_RING') {
+      if (targetTier === 'MIDDLE_SCHOOL' || targetTier === 'HIGH_SCHOOL') {
+        return null;
+      }
       const nonRepeatDoms =
         candidateDomains.length > 1 && prevDomain !== null
           ? candidateDomains.filter((d) => d !== prevDomain)
@@ -2490,84 +3939,110 @@ export class ForgeEngine {
           !usedQids.has(codexRaw.qid) &&
           (!respectSeen || !this.seenTracker.hasSeen(codexRaw.qid))
         ) {
+          if (targetTier) {
+            const diff = scoreQuestionDifficulty(codexRaw);
+            if (adjacentTierSet && !adjacentTierSet.has(diff.difficultyTier)) continue;
+          }
           return codexRaw;
         }
       }
       return null;
     }
 
-    const candidatos: Array<{
-      chunk: ShardChunkData;
-      ti: number;
-      ri: number;
-      ai: number;
-      score: number;
-    }> = [];
+    const maxGenPasses = targetTier ? 2 : 1;
+    for (let pass = 0; pass < maxGenPasses; pass++) {
+      const candidatos: Array<{
+        chunk: ShardChunkData;
+        ti: number;
+        ri: number;
+        ai: number;
+        rowRank01: number;
+        score: number;
+      }> = [];
 
-    for (let probe = 0; probe < 84; probe++) {
-      const dom = candidateDomains[rng.nextInt(0, candidateDomains.length - 1)];
-      const chunks = this.loadedShardsByDomain.get(dom);
-      if (!chunks || chunks.length === 0) continue;
-      const chunk = chunks[rng.nextInt(0, chunks.length - 1)];
-      if (chunk.t.length === 0) continue;
-      const ti = rng.nextInt(0, chunk.t.length - 1);
-      const tbl = chunk.t[ti];
-      const spec = chunk.types?.[tbl.type] ?? unifiedManifest.types[tbl.type];
-      if (!spec || tbl.r.length === 0) continue;
+      const probes = targetTier ? 128 : 84;
+      for (let probe = 0; probe < probes; probe++) {
+        const dom = candidateDomains[rng.nextInt(0, candidateDomains.length - 1)];
+        const chunks = this.loadedShardsByDomain.get(dom);
+        if (!chunks || chunks.length === 0) continue;
+        const chunk = chunks[rng.nextInt(0, chunks.length - 1)];
+        if (chunk.t.length === 0) continue;
+        const ti = rng.nextInt(0, chunk.t.length - 1);
+        const tbl = chunk.t[ti];
+        const spec = chunk.types?.[tbl.type] ?? unifiedManifest.types[tbl.type];
+        if (!spec || tbl.r.length === 0) continue;
 
-      const matchingAngles: number[] = [];
-      for (let ai = 0; ai < spec.angles.length; ai++) {
-        const ang = spec.angles[ai];
-        // Skip hypernym/multi-discipline broad role & reverse-country leak angles (#118 & #190 P1)
-        if (ang.id === 'la_role' || ang.id === 'lm_type' || ang.id === 'ac_disc' || ang.id === 'hw_rev') continue;
-        if (ang.archetype === wantArch) {
-          matchingAngles.push(ai);
+        const matchingAngles: number[] = [];
+        for (let ai = 0; ai < spec.angles.length; ai++) {
+          const ang = spec.angles[ai];
+          // Skip hypernym/multi-discipline broad role & reverse-country leak angles (#118 & #190 P1)
+          if (ang.id === 'la_role' || ang.id === 'lm_type' || ang.id === 'ac_disc' || ang.id === 'hw_rev') continue;
+          if (ang.archetype === wantArch) {
+            matchingAngles.push(ai);
+          }
         }
+        if (matchingAngles.length === 0) continue;
+
+        const ai = matchingAngles[rng.nextInt(0, matchingAngles.length - 1)];
+        const angle = spec.angles[ai];
+        const win = getRowWindowBounds(tbl.r.length, pass);
+        const ri = rng.nextInt(win.minPos, win.maxPos);
+        const row = tbl.r[ri];
+        const qid = tbl.baseQid + ri * spec.angles.length + ai;
+        if (usedQids.has(qid)) continue;
+
+        const irtB = clamp(
+          Number(row[row.length - 1]) / 100.0 + Number(angle.irtOffset ?? 0),
+          -1.6,
+          2.75,
+        );
+        const pad = pass === 0 ? 0.35 : 0.65;
+        if (irtB < irtMin - pad || irtB > irtMax + pad) continue;
+
+        const rowRank01 = tbl.r.length > 1 ? ri / (tbl.r.length - 1) : 0;
+        let score = 0;
+        if (respectSeen) {
+          if (!this.seenTracker.hasSeen(qid)) score += 48;
+          else score -= 65;
+        }
+        if (prevDomain !== null && dom === prevDomain && candidateDomains.length > 1) {
+          score -= 65;
+        }
+        score -= this.seenTracker.getDomainRepeatPenalty(dom) * 0.4;
+        if (irtB < irtMin || irtB > irtMax) score -= 24;
+        score -= Math.abs(irtB - targetB) * 16;
+        score += rng.nextFloat() * 12;
+
+        candidatos.push({ chunk, ti, ri, ai, rowRank01, score });
       }
-      if (matchingAngles.length === 0) continue;
 
-      const ai = matchingAngles[rng.nextInt(0, matchingAngles.length - 1)];
-      const angle = spec.angles[ai];
-      const ri = rng.nextInt(0, tbl.r.length - 1);
-      const row = tbl.r[ri];
-      const qid = tbl.baseQid + ri * spec.angles.length + ai;
-      if (usedQids.has(qid)) continue;
-
-      const irtB = clamp(
-        Number(row[row.length - 1]) / 100.0 + Number(angle.irtOffset ?? 0),
-        -1.6,
-        2.75,
-      );
-      if (irtB < irtMin - 0.35 || irtB > irtMax + 0.35) continue;
-
-      let score = 0;
-      if (respectSeen) {
-        if (!this.seenTracker.hasSeen(qid)) score += 48;
-        else score -= 65;
-      }
-      if (prevDomain !== null && dom === prevDomain && candidateDomains.length > 1) {
-        score -= 65;
-      }
-      score -= this.seenTracker.getDomainRepeatPenalty(dom) * 0.4;
-      if (irtB < irtMin || irtB > irtMax) score -= 24;
-      score -= Math.abs(irtB - targetB) * 16;
-      score += rng.nextFloat() * 12;
-
-      candidatos.push({ chunk, ti, ri, ai, score });
-    }
-
-    candidatos.sort((a, b) => b.score - a.score);
-    for (let i = 0; i < candidatos.length; i++) {
-      const c = candidatos[i];
-      const decoded = decodeShardRawQuestion(
-        unifiedManifest,
-        c.chunk,
-        c.ti,
-        c.ri,
-        c.ai,
-        desiredDistractors,
-      );
-      if (decoded && isCleanShardCandidate(decoded)) {
+      candidatos.sort((a, b) => b.score - a.score);
+      for (let i = 0; i < candidatos.length; i++) {
+        const c = candidatos[i];
+        const decoded = decodeShardRawQuestion(
+          unifiedManifest,
+          c.chunk,
+          c.ti,
+          c.ri,
+          c.ai,
+          desiredDistractors,
+        );
+        if (
+          !decoded ||
+          usedAnswersInBatch?.has(decoded.answerCorrect.trim().toLowerCase()) ||
+          !isCleanShardCandidate(decoded)
+        ) {
+          continue;
+        }
+        if (targetTier) {
+          const diff = scoreQuestionDifficulty(decoded, { shardRowRank01: c.rowRank01 });
+          if (pass === 0) {
+            if (diff.difficultyTier !== targetTier) continue;
+            if (targetTier === 'MIDDLE_SCHOOL' && diff.calibratedIrtB > -0.8) continue;
+          } else if (adjacentTierSet && !adjacentTierSet.has(diff.difficultyTier)) {
+            continue;
+          }
+        }
         return decoded;
       }
     }
@@ -2579,19 +4054,23 @@ export class ForgeEngine {
     irtMin: number;
     irtMax: number;
     targetB: number;
+    targetTier?: AcademicDifficultyTier | null;
     allowedDomains: ReadonlyArray<DomainId>;
     usedQids: ReadonlySet<number>;
     usedDomainsInBatch: ReadonlySet<DomainId>;
+    usedAnswersInBatch?: ReadonlySet<string>;
     rng: RngLike;
     respectSeen: boolean;
     prevDomain: DomainId | null;
     preferGoldCurated: boolean;
+    preferVisualOrGlobe?: boolean;
     regions?: ReadonlyArray<string>;
     requiredTags?: ReadonlyArray<NarrativeTag>;
     boostTags?: ReadonlyArray<NarrativeTag>;
     lateralJammerMode?: boolean;
     taxFilter?: {
       domainId: DomainId;
+      topicId: string;
       topicName: string;
       keywords: string[];
     } | null;
@@ -2648,13 +4127,8 @@ export class ForgeEngine {
     }
 
     if (opts.taxFilter) {
-      const kws = opts.taxFilter.keywords.map((k) => k.toLowerCase());
-      const topicLow = opts.taxFilter.topicName.trim().toLowerCase();
-      pool = pool.filter((q) => {
-        if (q.answerCorrect.trim().toLowerCase() === topicLow) return false;
-        const hay = `${q.l1Category ?? ''} ${q.l2Subcategory ?? ''} ${q.microTopicId ?? ''} ${q.prompt}`.toLowerCase();
-        return kws.some((kw) => hay.includes(kw));
-      });
+      const tf = opts.taxFilter;
+      pool = pool.filter((q) => this.recordMatchesTaxonomyFilter(q, tf));
     }
 
     if (pool.length === 0) return null;
@@ -2668,8 +4142,13 @@ export class ForgeEngine {
     const regionSet =
       opts.regions && opts.regions.length > 0 ? new Set<string>(opts.regions) : null;
 
+    const targetTier = opts.targetTier ?? null;
+    const adjacentTiers = targetTier
+      ? new Set<AcademicDifficultyTier>(getAdjacentAcademicTiers(targetTier))
+      : null;
+
     // Crypto-random full-pool / reservoir evaluation (NEVER walks sequential QIDs!)
-    const maxSample = 520;
+    const maxSample = targetTier ? 1400 : 520;
     for (let pass = 0; pass < 2; pass++) {
       const topBucket: Array<{ q: RawQuestionRecord; score: number }> = [];
       const total = pool.length;
@@ -2679,8 +4158,23 @@ export class ForgeEngine {
         const idx = total <= maxSample ? sIdx : opts.rng.nextInt(0, total - 1);
         const q = pool[idx];
         if (opts.usedQids.has(q.qid)) continue;
-        if (pass === 0 && (q.irtB < opts.irtMin || q.irtB > opts.irtMax)) continue;
+        if (opts.usedAnswersInBatch?.has(q.answerCorrect.trim().toLowerCase())) continue;
         if (!isCleanShardCandidate(q)) continue;
+
+        let effectiveIrtB = q.irtB;
+        if (targetTier) {
+          const diff = scoreQuestionDifficulty(q);
+          if (pass === 0) {
+            if (diff.difficultyTier !== targetTier) continue;
+            if (targetTier === 'MIDDLE_SCHOOL' && diff.calibratedIrtB > -0.8) continue;
+          } else if (adjacentTiers && !adjacentTiers.has(diff.difficultyTier)) {
+            // NEVER jump 2+ tiers (e.g. Middle School NEVER draws College/Graduate/Mensa!)
+            continue;
+          }
+          effectiveIrtB = diff.calibratedIrtB;
+        } else if (pass === 0 && (q.irtB < opts.irtMin || q.irtB > opts.irtMax)) {
+          continue;
+        }
 
         if (pass === 0 && reqTagSet) {
           const tags = q.narrativeTags ?? [];
@@ -2707,9 +4201,19 @@ export class ForgeEngine {
           }
         }
 
-        const isGoldItem = q.qid <= 4_964 || (q.qid >= 50_000 && q.qid < 60_000);
+        const isGoldItem =
+          q.qid <= 4_964 ||
+          (q.qid >= 50_000 && q.qid < 60_000) ||
+          (q.qid >= 1_060_000 && q.qid < 1_090_000);
         if (opts.preferGoldCurated && isGoldItem) {
           score += q.qid <= 832 || q.qid >= 50_000 ? 26 : 16;
+        }
+        if (q.qid >= 1_060_000 && q.qid < 1_070_000) {
+          // Jeopardy Signature pack boost across all 12 domains & 157 subcategories
+          score += 18;
+        }
+        if (q.visualPlate?.imageUrl || q.archetype === 'GLOBE_PIN_DROP') {
+          score += opts.preferVisualOrGlobe ? 34 : 16;
         }
 
         if (regionSet && q.regions) {
@@ -2743,7 +4247,7 @@ export class ForgeEngine {
           score += 15;
         }
 
-        score -= Math.abs(q.irtB - opts.targetB) * 16;
+        score -= Math.abs(effectiveIrtB - opts.targetB) * 16;
         score += opts.rng.nextFloat() * 14; // Crypto-random spread across top candidates!
 
         topBucket.push({ q, score });
@@ -2810,6 +4314,7 @@ export class ForgeEngine {
       'CALIBRATOR_DIAL',
       'GAUNTLET_SHATTER',
       'HERO_ARTIFACT_SYNTHESIS',
+      'GLOBE_PIN_DROP',
     ];
     for (const ak of archKeys) {
       this.byArchetype.set(ak, []);

@@ -8,6 +8,11 @@
 //  • Pinned bottom launch bar: segmented `5 · 10 · 20 · 50 Qs` + `START BRIEFING ▶`
 // ============================================================================
 
+import {
+  getAcademicTierSpec,
+  normalizeBriefingDifficultyPreset,
+  presetToAcademicTier,
+} from '../forge/QuestionDifficultyCalibration';
 import type { BriefingDifficultyPreset, DomainId, ForgeUniverseCounts } from '../forge/types';
 import type { StudioAudioEngine } from '../audio/StudioAudioEngine';
 import type { HapticsEngine } from '../audio/HapticsEngine';
@@ -33,6 +38,28 @@ export interface BriefingModalOpenOptions {
 }
 
 const BRIEFING_SHEET_STYLE_ID = 'ws-sleek-briefing-sheet-css';
+const PREFERRED_DIFFICULTY_STORAGE_KEY = 'ws_preferred_difficulty_v2';
+
+function loadPreferredDifficulty(): BriefingDifficultyPreset {
+  try {
+    if (typeof localStorage === 'undefined') return 'ADAPTIVE';
+    const raw = localStorage.getItem(PREFERRED_DIFFICULTY_STORAGE_KEY);
+    if (!raw) return 'ADAPTIVE';
+    return normalizeBriefingDifficultyPreset(raw);
+  } catch {
+    return 'ADAPTIVE';
+  }
+}
+
+function savePreferredDifficulty(preset: BriefingDifficultyPreset): void {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(PREFERRED_DIFFICULTY_STORAGE_KEY, preset);
+    }
+  } catch {
+    // Ignore storage quota / private mode restrictions
+  }
+}
 
 function escapeHtml(text: string): string {
   return String(text ?? '')
@@ -550,8 +577,8 @@ function ensureBriefingSheetStyles(): void {
     }
 
     .ws-briefing-diff-strip {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      display: flex;
+      flex-wrap: nowrap;
       align-items: center;
       gap: 2px;
       width: 100%;
@@ -559,27 +586,60 @@ function ensureBriefingSheetStyles(): void {
       border-radius: 9px;
       padding: 2px;
       border: none;
+      overflow: hidden;
     }
 
     .ws-briefing-diff-btn {
+      flex: 1 0 auto;
       min-height: 36px;
       min-width: 0;
-      padding: 0 6px;
+      padding: 0 5px;
       border: none;
       border-radius: 7px;
       background: transparent;
-      color: rgba(246, 242, 233, 0.66);
-      font-family: var(--font-mono, ui-monospace, monospace);
+      color: rgba(246, 242, 233, 0.72);
+      font-family: var(--font-sans, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
       font-size: 10.5px;
       font-weight: 600;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.01em;
       white-space: nowrap;
+      text-align: center;
       transition: background 0.14s ease, color 0.14s ease;
     }
 
+    @media (max-width: 399px) {
+      .ws-briefing-sheet .ws-sheet-footer {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+      .ws-briefing-diff-btn {
+        font-size: 10px;
+        padding: 0 3.5px;
+        letter-spacing: 0;
+      }
+    }
+
     .ws-briefing-diff-btn.is-active {
-      background: rgba(242, 207, 126, 0.18);
+      background: rgba(242, 207, 126, 0.2);
       color: var(--gold-bright, #f2cf7e);
+    }
+
+    .ws-briefing-diff-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 11px;
+      line-height: 1.25;
+      color: rgba(246, 242, 233, 0.76);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ws-briefing-diff-indicator strong {
+      color: var(--gold-bright, #f2cf7e);
+      font-weight: 700;
     }
 
     .ws-briefing-footer-main {
@@ -652,23 +712,24 @@ function ensureBriefingSheetStyles(): void {
 
     @media (min-width: 640px) {
       .ws-briefing-footer-top {
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
       }
       .ws-briefing-target-line {
-        flex: 1 1 180px;
-        width: auto;
-        justify-content: flex-start;
+        flex: 0 0 auto;
+        width: 100%;
+        justify-content: space-between;
       }
       .ws-briefing-diff-strip {
-        display: inline-flex;
-        width: auto;
+        display: flex;
+        width: 100%;
+        gap: 3px;
       }
       .ws-briefing-diff-btn {
-        min-width: 48px;
-        padding: 0 9px;
+        min-width: 56px;
+        padding: 0 10px;
+        font-size: 11px;
       }
       .ws-briefing-footer-main {
         flex-direction: row;
@@ -724,6 +785,29 @@ function ensureBriefingSheetStyles(): void {
         gap: 5px;
       }
       .ws-briefing-footer-top {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .ws-briefing-target-line {
+        flex: 0 1 200px;
+        width: auto;
+        min-width: 0;
+        justify-content: flex-start;
+      }
+      .ws-briefing-diff-strip {
+        flex: 1 1 auto;
+        width: auto;
+        max-width: 540px;
+      }
+      .ws-briefing-diff-btn {
+        min-height: 32px;
+        padding: 0 8px;
+        font-size: 10.5px;
+      }
+      .ws-briefing-diff-indicator {
         display: none;
       }
       .ws-briefing-footer-main {
@@ -774,7 +858,7 @@ export class BriefingCategoriesModal {
     let activeL1Id: string | null = opts?.initialL1SubcategoryId ?? null;
     let activeL2Id: string | null = opts?.initialL2TopicId ?? null;
     let searchQuery = opts?.initialSearchQuery ?? '';
-    let difficulty: BriefingDifficultyPreset = 'ADAPTIVE';
+    let difficulty: BriefingDifficultyPreset = loadPreferredDifficulty();
     let roundCount: BriefingRoundCount = 10;
 
     const backdrop = document.createElement('div');
@@ -1274,11 +1358,25 @@ export class BriefingCategoriesModal {
       ];
       const diffOptions: Array<{ val: BriefingDifficultyPreset; label: string }> = [
         { val: 'ADAPTIVE', label: 'Auto' },
-        { val: 'EASY', label: 'Easy' },
-        { val: 'MEDIUM', label: 'Med' },
-        { val: 'HARD', label: 'Hard' },
-        { val: 'GENIUS', label: 'Genius' },
+        { val: 'MIDDLE_SCHOOL', label: 'Mid School' },
+        { val: 'HIGH_SCHOOL', label: 'High School' },
+        { val: 'COLLEGE', label: 'College' },
+        { val: 'GRADUATE', label: 'Graduate' },
+        { val: 'MENSA', label: 'Mensa' },
       ];
+      const normalizedDiff = normalizeBriefingDifficultyPreset(difficulty);
+      const activeTier = presetToAcademicTier(normalizedDiff);
+      const tierSpec = activeTier ? getAcademicTierSpec(activeTier) : null;
+      const multStr = tierSpec
+        ? tierSpec.scoreMultiplier.toFixed(
+            Math.abs(tierSpec.scoreMultiplier * 10 - Math.round(tierSpec.scoreMultiplier * 10)) < 1e-6
+              ? 1
+              : 2,
+          )
+        : '';
+      const diffIndicatorHtml = tierSpec
+        ? `<span><strong>${escapeHtml(tierSpec.label)}</strong> · ${escapeHtml(tierSpec.subtitle)} (${multStr}x)</span><span>${tierSpec.timerSec}s</span>`
+        : `<span><strong>Auto Adaptive</strong> · Scales Live to Your Meridian Elo</span><span>18s</span>`;
 
       footerEl.innerHTML = `
         <div class="ws-briefing-footer-top">
@@ -1286,19 +1384,23 @@ export class BriefingCategoriesModal {
             <span class="ws-briefing-target-name">${escapeHtml(stripYearCommas(sel.selectionLabel))}</span>
             <span class="ws-briefing-target-qs">${formatQuestionCount(sel.poolCount)} Qs</span>
           </div>
-          <div class="ws-briefing-diff-strip" role="group" aria-label="Difficulty">
+          <div class="ws-briefing-diff-strip" role="group" aria-label="Academic difficulty tier">
             ${diffOptions
               .map(
                 (d) => `
               <button
                 type="button"
                 data-ws-allow-compact="1"
-                class="ws-briefing-diff-btn ${difficulty === d.val ? 'is-active' : ''}"
+                class="ws-briefing-diff-btn ${normalizedDiff === d.val ? 'is-active' : ''}"
                 data-diff="${d.val}"
+                aria-pressed="${normalizedDiff === d.val ? 'true' : 'false'}"
               >${d.label}</button>
             `,
               )
               .join('')}
+          </div>
+          <div class="ws-briefing-diff-indicator" id="ws-briefing-diff-indicator">
+            ${diffIndicatorHtml}
           </div>
         </div>
 
@@ -1327,7 +1429,8 @@ export class BriefingCategoriesModal {
         btn.addEventListener('click', () => {
           this.haptics.uiTap();
           this.audio.playSfx('ui_tap');
-          difficulty = btn.dataset.diff as BriefingDifficultyPreset;
+          difficulty = normalizeBriefingDifficultyPreset(btn.dataset.diff);
+          savePreferredDifficulty(difficulty);
           renderDynamicZones();
         });
       });

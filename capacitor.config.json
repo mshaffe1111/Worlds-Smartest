@@ -1,0 +1,47 @@
+{
+  "appId": "com.meridian.worldssmartest",
+  "appName": "World's Smartest",
+  "webDir": "dist",
+  "backgroundColor": "#050811",
+  "server": {
+    "androidScheme": "https",
+    "iosScheme": "capacitor",
+    "cleartext": false
+  },
+  "ios": {
+    "contentInset": "never",
+    "backgroundColor": "#050811",
+    "preferredContentMode": "mobile",
+    "allowsLinkPreview": false,
+    "scrollEnabled": false
+  },
+  "android": {
+    "backgroundColor": "#050811",
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  },
+  "plugins": {
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#050811",
+      "overlaysWebView": true
+    },
+    "SplashScreen": {
+      "launchShowDuration": 900,
+      "launchAutoHide": true,
+      "launchFadeOutDuration": 250,
+      "backgroundColor": "#050811",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": false,
+      "splashFullScreen": true,
+      "splashImmersive": true
+    },
+    "Keyboard": {
+      "resize": "none",
+      "style": "DARK",
+      "resizeOnFullScreen": false
+    }
+  }
+}

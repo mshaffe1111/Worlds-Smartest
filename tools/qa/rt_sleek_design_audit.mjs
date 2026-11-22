@@ -952,16 +952,16 @@ async function runAudit() {
         }
       }
 
-      // 13. Navigate to Hub (via fresh reload + BRIEFING quick mode from Title!)
+      // 13. Navigate to Hub (via fresh reload + CAMPAIGN mode from Title!)
       await send('Page.navigate', { url: baseUrl + '/?hub_audit=' + Date.now() });
       await sleep(1800);
       for (let i = 0; i < 15; i++) {
-        const ready = await evalJs(`!!document.querySelector('[data-title-mode="BRIEFING"]')`);
+        const ready = await evalJs(`!!document.querySelector('[data-title-mode="CAMPAIGN"], [data-title-mode="BRIEFING"]')`);
         if (ready) break;
         await sleep(200);
       }
-      const briefModeHit = await clickFirst(['[data-title-mode="BRIEFING"]']);
-      if (briefModeHit) {
+      const hubModeHit = await clickFirst([ONLY_FLOW === 'match' ? '[data-title-mode="BRIEFING"]' : '[data-title-mode="CAMPAIGN"]', '[data-title-mode="BRIEFING"]']);
+      if (hubModeHit) {
         await sleep(650);
         await dismissCinema(4);
         if (ONLY_FLOW !== 'match') {
