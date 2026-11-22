@@ -4706,7 +4706,7 @@
       "irtB": -0.95,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "In what year CE did Uri, Schwyz, and Unterwalden seal the Federal Charter—celebrated each August 1 as Switzerland's founding?",
+      "prompt": "Celebrated each August 1 as Switzerland's founding, the Federal Charter of Uri, Schwyz, and Unterwalden was sealed in what year CE?",
       "answerCorrect": "1291 CE",
       "clues": [
         "Sealed in early August shortly after the death of Habsburg King Rudolf I.",
@@ -4782,7 +4782,7 @@
       "irtB": -0.7,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "What is the summit elevation in meters of Dufourspitze in the Monte Rosa massif—the highest peak inside Switzerland?",
+      "prompt": "Towering inside the Monte Rosa massif as Switzerland's highest summit, Dufourspitze reaches what elevation in meters?",
       "answerCorrect": "4634 m",
       "clues": [
         "It stands 156 meters taller than the nearby Matterhorn on the Italian border.",
@@ -4934,7 +4934,7 @@
       "irtB": -0.75,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "In what year did male Swiss voters finally approve women's right to vote in federal elections via national referendum?",
+      "prompt": "Via a landmark national referendum, male Swiss voters finally approved federal women's suffrage in what year?",
       "answerCorrect": "1971 CE",
       "clues": [
         "Passed twelve years after a 1959 federal referendum had rejected women's suffrage.",
@@ -5010,7 +5010,7 @@
       "irtB": -0.9,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "In what year did CERN's ATLAS and CMS collaborations in Geneva announce the discovery of the Higgs boson?",
+      "prompt": "At CERN in Geneva, the ATLAS and CMS collaborations jointly announced the discovery of the Higgs boson in what year?",
       "answerCorrect": "2012 CE",
       "clues": [
         "Peter Higgs attended the emotional July 4 seminar in CERN's main auditorium.",
@@ -5086,7 +5086,7 @@
       "irtB": -0.65,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "In what year did CERN in Geneva formally release World Wide Web server and browser software into the public domain royalty-free?",
+      "prompt": "Releasing World Wide Web server and browser code royalty-free into the public domain, CERN opened the modern Web in what year?",
       "answerCorrect": "1993 CE",
       "clues": [
         "Signed four years after Tim Berners-Lee wrote his initial March 1989 hypertext memo.",
@@ -5467,7 +5467,7 @@
       "irtB": -0.65,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "In what year did Europe's powers at the Congress of Vienna formally recognize Switzerland's 'perpetual armed neutrality'?",
+      "prompt": "Gathering at the Congress of Vienna, Europe's great powers formally recognized Switzerland's 'perpetual armed neutrality' in what year?",
       "answerCorrect": "1815 CE",
       "clues": [
         "Signed in the same year Napoleon Bonaparte suffered final defeat at Waterloo.",
@@ -5543,7 +5543,7 @@
       "irtB": -0.75,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "In what year did Swiss typeface designer Max Miedinger create Neue Haas Grotesk—soon renamed Helvetica?",
+      "prompt": "Swiss typeface designer Max Miedinger crafted Neue Haas Grotesk—soon celebrated worldwide as Helvetica—in what year?",
       "answerCorrect": "1957 CE",
       "clues": [
         "Commissioned by the Haas Type Foundry in Münchenstein near Basel during the postwar design boom.",
@@ -10117,7 +10117,7 @@
       "irtB": -0.65,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Which classic British chip-shop pairing first brought together fried battered fish from Sephardic Jewish immigrants in East London with Belgian-style fried potatoes in the 1860s?",
+      "prompt": "Which iconic 1860s British takeaway pairing united battered Atlantic seafood from East London's Sephardic Jewish community with Belgian-style fried potatoes?",
       "answerCorrect": "Fish and Chips",
       "distractors": [
         {
@@ -11562,7 +11562,7 @@
       "irtB": -0.2,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "In what year did William the Conqueror triumph at Hastings and get crowned in Westminster Abbey on Christmas Day?",
+      "prompt": "Triumphing at Hastings and accepting the crown in Westminster Abbey on Christmas Day, William the Conqueror seized England in what year?",
       "answerCorrect": "1066 CE",
       "clues": [
         "Depicted scene by scene across the 70-meter embroidered Bayeux Tapestry.",
@@ -11714,7 +11714,7 @@
       "irtB": -0.45,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "In what year did the International Meridian Conference vote to adopt Greenwich in London as 0° longitude for the entire world?",
+      "prompt": "Voting to anchor global time and navigation at London's Greenwich Observatory as 0° longitude, the International Meridian Conference met in what year?",
       "answerCorrect": "1884 CE",
       "clues": [
         "Already over two-thirds of the world's shipping tonnage navigated by Royal Navy Admiralty charts.",
@@ -11943,7 +11943,7 @@
       "irtB": -0.5,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "In what year did Queen Elizabeth I rally troops at Tilbury as English fireships and Atlantic gales scattered the Spanish Armada?",
+      "prompt": "As English fireships and Atlantic gales scattered the Spanish Armada, Queen Elizabeth I rallied her troops at Tilbury in what year?",
       "answerCorrect": "1588 CE",
       "clues": [
         "Sir Francis Drake reportedly finished his game of bowls on Plymouth Hoe before sailing out.",
@@ -12019,7 +12019,7 @@
       "irtB": -0.4,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "In what year did steam locomotives carry the first passengers between Paddington and Farringdon on London's Metropolitan Railway—the world's first subway?",
+      "prompt": "Carrying the world's first underground rail passengers between Paddington and Farringdon, London's Metropolitan Railway opened in what year?",
       "answerCorrect": "1863 CE",
       "clues": [
         "Opened midway through the American Civil War, nearly forty years before New York's subway.",
@@ -13562,7 +13562,7 @@
       "irtB": -0.5,
       "irtA": 1.35,
       "archetype": "CODEX_DUAL_RING",
-      "prompt": "Match each English or British monarch with a landmark milestone of their reign.",
+      "prompt": "Lock each English or British monarch with a landmark milestone of their reign.",
       "answerCorrect": "3/3 Royal Reigns",
       "clues": [
         "King John sealed Magna Carta at Runnymede in 1215—four centuries before the Stuarts.",
@@ -13820,7 +13820,7 @@
       "irtB": -0.6,
       "irtA": 1.35,
       "archetype": "CODEX_DUAL_RING",
-      "prompt": "Match each legendary British band with the English city where they formed.",
+      "prompt": "Lock each legendary British band with the English city where they formed.",
       "answerCorrect": "3/3 Music Origins",
       "clues": [
         "Skip Glasgow—these three acts emerged from Merseyside, Kensington/West London, and Burnage in Manchester.",
@@ -13996,7 +13996,7 @@
       "irtB": 0.2,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "To preserve ancient carpentry skills across millennia, Japan's sacred Ise Grand Shrine is completely dismantled and rebuilt from fresh hinoki cypress on an adjacent plot every how many years?",
+      "prompt": "To preserve ancient carpentry across millennia, Japan's sacred Ise Grand Shrine is dismantled and rebuilt from fresh hinoki cypress on an adjacent plot every how many years?",
       "answerCorrect": "Twenty years",
       "distractors": [
         {
@@ -14086,7 +14086,7 @@
       "irtB": 0.3,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "What is the traditional Japanese art of interlocking timber carpentry that joins temple beams and furniture without nails, screws, or glue?",
+      "prompt": "Joining Japanese temple beams and fine furniture with interlocking timber joints—zero nails, screws, or glue—this traditional carpentry art goes by what name?",
       "answerCorrect": "Kigumi",
       "distractors": [
         {
@@ -16612,7 +16612,7 @@
       "irtB": 0.15,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Beginning in May 2019 upon Emperor Naruhito's accession, Japan's current imperial era 'Reiwa' ('beautiful harmony') was the first ever drawn from a native work—which 8th-century anthology?",
+      "prompt": "Begun in May 2019 with Emperor Naruhito's accession, Japan's 'Reiwa' ('beautiful harmony') era was the first drawn from a native classic—which 8th-century anthology?",
       "answerCorrect": "Man'yōshū",
       "distractors": [
         {
@@ -17064,7 +17064,7 @@
       "irtB": 0.2,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Operated across Japan's Shinkansen network since 1992, the UrEDAS early-warning system cuts overhead traction power seconds before destructive seismic S-waves arrive by detecting what faster wave?",
+      "prompt": "Running across Japan's Shinkansen network since 1992, the UrEDAS early-warning system cuts power seconds before destructive seismic S-waves arrive by detecting what faster wave?",
       "answerCorrect": "Primary P-waves",
       "distractors": [
         {
@@ -18417,7 +18417,7 @@
       "irtB": -0.1,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "In what year did the Meiji Restoration end the Tokugawa Shogunate and move Japan's imperial capital from Kyoto to renamed Tokyo?",
+      "prompt": "Ending the Tokugawa Shogunate and relocating Japan's imperial capital from Kyoto to newly renamed Tokyo, the Meiji Restoration arrived in what year?",
       "answerCorrect": "1868 CE",
       "clues": [
         "Occurred fifteen years after Commodore Perry's Black Ships steamed into Edo Bay.",
@@ -18493,7 +18493,7 @@
       "irtB": 0.25,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "In what year did Tokugawa Ieyasu win the decisive fog-shrouded Battle of Sekigahara, unifying Japan on the eve of the Edo shogunate?",
+      "prompt": "Victorious on the fog-shrouded field of Sekigahara, Tokugawa Ieyasu unified Japan on the eve of the Edo shogunate in what year?",
       "answerCorrect": "1600 CE",
       "clues": [
         "English navigator William Adams ('Miura Anjin') had landed in Kyushu just months earlier that same year.",
@@ -18721,7 +18721,7 @@
       "irtB": 0.0,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "In what year did the devastating Great Kanto Earthquake strike Tokyo and Yokohama at lunchtime on September 1?",
+      "prompt": "Striking Tokyo and Yokohama at lunchtime on September 1, the devastating Great Kanto Earthquake hit Japan in what year?",
       "answerCorrect": "1923 CE",
       "clues": [
         "September 1 is still observed annually across Japan as National Disaster Prevention Day.",
@@ -18950,7 +18950,7 @@
       "irtB": 0.3,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "In what year did Tokyo Imperial University chemist Kikunae Ikeda isolate glutamic acid from kombu broth and coin the fifth basic taste, 'umami'?",
+      "prompt": "Isolating glutamic acid from kombu broth at Tokyo Imperial University, chemist Kikunae Ikeda coined the fifth basic taste, 'umami,' in what year?",
       "answerCorrect": "1908 CE",
       "clues": [
         "One year later in 1909, he partnered to launch Ajinomoto ('Essence of Taste') seasoning.",
@@ -20074,7 +20074,7 @@
       "irtB": 0.05,
       "irtA": 1.35,
       "archetype": "CODEX_DUAL_RING",
-      "prompt": "Align each major era of Japanese history with its defining cultural or political hallmark.",
+      "prompt": "Link each major era of Japanese history with its defining cultural or political hallmark.",
       "answerCorrect": "3/3 Japanese Eras",
       "clues": [
         "Kublai Khan's two invasion fleets failed in typhoons—Japan was never occupied by the Mongol Empire.",
@@ -21306,7 +21306,7 @@
       "irtB": 0.65,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Despite debilitating illness requiring chisels strapped to his wrists, which 18th-century Minas Gerais master carved the twelve soapstone Prophets at Congonhas and Ouro Preto's baroque churches?",
+      "prompt": "With chisels strapped to his crippled wrists, which 18th-century Minas Gerais master carved Congonhas's twelve soapstone Prophets and Ouro Preto's baroque churches?",
       "answerCorrect": "Aleijadinho",
       "distractors": [
         {
@@ -22479,7 +22479,7 @@
       "irtB": 0.25,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Spanning the Paraná River along the Brazil–Paraguay border, which 14-gigawatt binational hydroelectric dam has generated more cumulative clean electricity since 1984 than any dam on Earth?",
+      "prompt": "Spanning the Paraná River along the Brazil–Paraguay border, which 14-gigawatt binational dam has generated more cumulative clean electricity since 1984 than any other?",
       "answerCorrect": "Itaipu Dam",
       "distractors": [
         {
@@ -22570,7 +22570,7 @@
       "irtB": 0.2,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Launched commercially in 2003 after the 1975 Pró-Álcool program, Brazil's 'flex-fuel' cars seamlessly adjust engine ignition to run on any blend of gasoline and ethanol fermented from what crop?",
+      "prompt": "Launched commercially in 2003 after the 1975 Pró-Álcool drive, Brazil's 'flex-fuel' cars seamlessly adjust ignition to run on gasoline blended with ethanol from what crop?",
       "answerCorrect": "Sugarcane",
       "distractors": [
         {
@@ -23113,7 +23113,7 @@
       "irtB": 0.75,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Protected through decades of work by archaeologist Niède Guidon in arid Piauí, which northeastern Brazilian national park preserves over 1,000 sandstone shelters painted with vibrant prehistoric rock art?",
+      "prompt": "Championed by archaeologist Niède Guidon in arid Piauí, which northeastern Brazilian national park protects over 1,000 sandstone shelters filled with prehistoric rock art?",
       "answerCorrect": "Serra da Capivara",
       "distractors": [
         {
@@ -23203,7 +23203,7 @@
       "irtB": 0.55,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Across ancient Amazonian river bluffs, pre-Columbian Indigenous societies engineered fertile, self-regenerating dark soils rich in charcoal, bone, and pottery shards—known in Portuguese as what?",
+      "prompt": "Along Amazonian river bluffs, pre-Columbian societies engineered self-regenerating dark soils rich in charcoal, bone, and pottery shards—known in Portuguese as what?",
       "answerCorrect": "Terra Preta",
       "distractors": [
         {
@@ -23565,7 +23565,7 @@
       "irtB": 0.05,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Originating in Minas Gerais, crisp-chewy Brazilian 'pão de queijo' cheese puffs are naturally gluten-free because they are baked not with wheat flour, but starch extracted from what root?",
+      "prompt": "Hailing from Minas Gerais, crisp-chewy Brazilian 'pão de queijo' cheese puffs are naturally gluten-free because they use not wheat flour, but starch from what root?",
       "answerCorrect": "Cassava (Manioc)",
       "distractors": [
         {
@@ -23836,7 +23836,7 @@
       "irtB": -0.1,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Debuting with six knockout goals as a seventeen-year-old in Sweden in 1958, Edson Arantes do Nascimento ('Pelé') remains the only male footballer in history to win how many FIFA World Cups?",
+      "prompt": "Bursting onto the 1958 Sweden tournament with six knockout goals at age seventeen, Pelé (Edson Arantes do Nascimento) remains the only man to win how many World Cups?",
       "answerCorrect": "Three",
       "distractors": [
         {
@@ -23926,7 +23926,7 @@
       "irtB": 0.1,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Driving a McLaren stuck in sixth gear over the final laps in pouring rain in 1991, which three-time Brazilian Formula 1 World Champion captured an unforgettable home triumph at São Paulo's Interlagos?",
+      "prompt": "Driving a McLaren stuck in sixth gear through pouring rain in 1991, which three-time Brazilian Formula 1 World Champion claimed an iconic home victory at Interlagos?",
       "answerCorrect": "Ayrton Senna",
       "distractors": [
         {
@@ -24016,7 +24016,7 @@
       "irtB": 0.45,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Invented on Copacabana Beach in 1965 by footballer Octavio de Moraes to skirt a beach ban on ball games without nets, what acrobatic Rio sport plays volleyball rules without hands or arms?",
+      "prompt": "Invented on Copacabana Beach in 1965 by Octavio de Moraes to dodge a beach ban on ball games without nets, what acrobatic Rio sport plays volleyball with no hands or arms?",
       "answerCorrect": "Footvolley (Futevôlei)",
       "distractors": [
         {
@@ -24106,7 +24106,7 @@
       "irtB": 0.35,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Opened on New Year's Eve 1896 deep inside the rainforest 1,450 km upriver from the Atlantic, Manaus's opulent pink-domed Teatro Amazonas was financed by a monopoly boom in what resource?",
+      "prompt": "Opened on New Year's Eve 1896 deep in the rainforest 1,450 km upriver from the Atlantic, Manaus's pink-domed Teatro Amazonas was financed by a boom in what resource?",
       "answerCorrect": "Natural latex rubber",
       "distractors": [
         {
@@ -24648,7 +24648,7 @@
       "irtB": 0.3,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Launched by the Central Bank of Brazil in November 2020, what free, 24/7 QR-and-alias instant payment rail surpassed cash and credit cards across over 150 million Brazilians within three years?",
+      "prompt": "Launched by Brazil's Central Bank in November 2020, what free 24/7 QR-and-alias instant payment rail surpassed cash and cards across 150 million Brazilians in three years?",
       "answerCorrect": "Pix",
       "distractors": [
         {
@@ -25191,7 +25191,7 @@
       "irtB": 0.15,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Connecting Rio's bohemian Lapa and hilltop Santa Teresa neighborhoods, Escadaria Selarón was hand-covered over twenty-three years by Chilean-born artist Jorge Selarón in 2,000+ vivid what?",
+      "prompt": "Linking Rio's bohemian Lapa and hilltop Santa Teresa neighborhoods, Escadaria Selarón was hand-covered over 23 years by Chilean artist Jorge Selarón in 2,000+ vivid what?",
       "answerCorrect": "Hand-laid global tiles",
       "distractors": [
         {
@@ -25814,7 +25814,7 @@
       "irtB": 0.65,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "Featuring João Gilberto's whispered voice and syncopated 'violão gago' guitar rhythm on a Tom Jobim / Vinícius de Moraes song, in what year did the single 'Chega de Saudade' launch Bossa Nova in Rio?",
+      "prompt": "Pairing João Gilberto's whispered voice and syncopated guitar with a Tom Jobim / Vinícius de Moraes tune, in what year did 'Chega de Saudade' launch Bossa Nova in Rio?",
       "answerCorrect": "1958 CE",
       "clues": [
         "Same euphoric year Pelé and Garrincha won Brazil's first World Cup and Juscelino Kubitschek was building Brasília.",
@@ -27455,7 +27455,7 @@
       "irtB": 0.3,
       "irtA": 1.35,
       "archetype": "CODEX_DUAL_RING",
-      "prompt": "Match each iconic Brazilian animal with its primary native habitat, skipping the Madagascar ring-tailed lemur.",
+      "prompt": "Lock each iconic Brazilian animal with its primary native habitat, skipping the Madagascar ring-tailed lemur.",
       "answerCorrect": "3/3 Native Habitats",
       "clues": [
         "Lemurs live exclusively on Madagascar; rescued golden lion tamarins thrive in Rio state's Poço das Antas reserve.",
@@ -27541,7 +27541,7 @@
       "irtB": 0.45,
       "irtA": 1.35,
       "archetype": "CODEX_DUAL_RING",
-      "prompt": "Align each UNESCO World Heritage treasure in Brazil with its state or coast.",
+      "prompt": "Link each UNESCO World Heritage treasure in Brazil with its state or coast.",
       "answerCorrect": "3/3 Heritage Wonders",
       "clues": [
         "The hyper-arid Atacama lies west of the Andes in Chile, not in Brazil.",
@@ -27627,7 +27627,7 @@
       "irtB": 0.55,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Working in 11th-century Fatimid Cairo—even feigning madness under Caliph al-Hakim—which physicist wrote the seven-volume 'Book of Optics' proving vision occurs when light enters the eye?",
+      "prompt": "Working in 11th-century Fatimid Cairo—even feigning madness under Caliph al-Hakim—which physicist wrote the seven-volume 'Book of Optics' proving light enters the eye?",
       "answerCorrect": "Ibn al-Haytham (Alhazen)",
       "distractors": [
         {
@@ -27718,7 +27718,7 @@
       "irtB": 0.85,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Chief physician at Cairo's Al-Mansuri Hospital in 1242 CE—three centuries before William Harvey—who first accurately described pulmonary blood circulation from right to left heart chambers via the lungs?",
+      "prompt": "Chief physician at Cairo's Al-Mansuri Hospital in 1242 CE—three centuries before William Harvey—who first described pulmonary blood circulation between heart and lungs?",
       "answerCorrect": "Ibn al-Nafis",
       "distractors": [
         {
@@ -28172,7 +28172,7 @@
       "irtB": 0.9,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Found by a villager in Middle Egypt in 1887, the 14th-century BCE 'Amarna Letters' show Egypt's pharaohs corresponding with Babylonian, Hittite, and Canaanite rulers in what diplomatic lingua franca?",
+      "prompt": "Unearthed in Middle Egypt in 1887, the 14th-century BCE 'Amarna Letters' show pharaohs corresponding with Babylonian, Hittite, and Canaanite kings in what lingua franca?",
       "answerCorrect": "Akkadian cuneiform",
       "distractors": [
         {
@@ -28805,7 +28805,7 @@
       "irtB": 0.45,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Begun in 1176 CE on a limestone spur of the Muqattam Hills overlooking medieval Cairo and fortified against Crusader raids, Cairo's commanding Citadel was founded by which Ayyubid sultan?",
+      "prompt": "Begun in 1176 CE on a limestone spur of Cairo's Muqattam Hills to guard against Crusader raids, the city's commanding Citadel was founded by which Ayyubid sultan?",
       "answerCorrect": "Saladin (Salah al-Din)",
       "distractors": [
         {
@@ -29076,7 +29076,7 @@
       "irtB": 0.55,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Head of the Neoplatonist school in late-4th-century Alexandria, which celebrated female mathematician and astronomer edited Ptolemy's 'Almagest' and constructed brass astrolabes and hydrometers?",
+      "prompt": "Leading Alexandria's Neoplatonist school in the late 4th century, which famed female mathematician and astronomer edited Ptolemy's 'Almagest' and built brass astrolabes?",
       "answerCorrect": "Hypatia",
       "distractors": [
         {
@@ -29348,7 +29348,7 @@
       "irtB": 0.75,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Lying in Egypt's Western Desert southwest of Fayyum, which UNESCO site—'Valley of the Whales'—preserves hundreds of 40-million-year-old Basilosaurus and Dorudon skeletons complete with tiny hind legs?",
+      "prompt": "In Egypt's Western Desert southwest of Fayyum, which UNESCO 'Valley of the Whales' preserves hundreds of 40-million-year-old Basilosaurus skeletons with tiny hind legs?",
       "answerCorrect": "Wadi al-Hitan",
       "distractors": [
         {
@@ -30162,7 +30162,7 @@
       "irtB": 0.35,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Cultivated in the rich alluvial Nile Delta since Muhammad Ali Pasha's 1820s agricultural reforms with French engineer Jumel, why is genuine 'Giza' Egyptian cotton prized above upland cotton?",
+      "prompt": "Grown in the alluvial Nile Delta since Muhammad Ali Pasha's 1820s reforms with French engineer Jumel, why is genuine 'Giza' Egyptian cotton prized over upland cotton?",
       "answerCorrect": "Extra-long staple fibers",
       "distractors": [
         {
@@ -30342,7 +30342,7 @@
       "irtB": 0.65,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Nicknamed 'Hollywood on the Nile' since Studio Misr opened in 1935, Egyptian cinema reached global auteur acclaim through which Alexandria-born director of 'Cairo Station' (1958) and 'Destiny'?",
+      "prompt": "From 'Hollywood on the Nile' (Studio Misr, 1935), Egyptian cinema won global auteur fame through which Alexandria-born director of 'Cairo Station' (1958) and 'Destiny'?",
       "answerCorrect": "Youssef Chahine",
       "distractors": [
         {
@@ -31244,7 +31244,7 @@
       "irtB": 0.7,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Nicknamed 'The King' by Apollo astronauts who orbited the Moon reciting Arabic greetings to Cairo, which Egyptian-American geologist chaired NASA's Lunar Landing Site Selection Committee?",
+      "prompt": "Nicknamed 'The King' by Apollo crews who orbited the Moon sending Arabic greetings to Cairo, which Egyptian-American geologist chaired NASA's Lunar Landing Site Committee?",
       "answerCorrect": "Farouk El-Baz",
       "distractors": [
         {
@@ -31698,7 +31698,7 @@
       "irtB": 0.3,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Carved in 196 BCE under boy-king Ptolemy V and found near Rashid in 1799, the Rosetta Stone repeats one priestly Memphis decree across Ancient Greek and which TWO distinct Egyptian scripts?",
+      "prompt": "Carved in 196 BCE under Ptolemy V and found near Rashid in 1799, the Rosetta Stone repeats one Memphis decree across Ancient Greek and which TWO distinct Egyptian scripts?",
       "answerCorrect": "Hieroglyphic & Demotic",
       "distractors": [
         {
@@ -32226,7 +32226,7 @@
       "irtB": 0.5,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "Realizing hieroglyphs combined phonetic sounds AND ideograms ('Je tiens mon affaire!'), in what year did Jean-François Champollion read his 'Lettre à M. Dacier' unlocking Egyptian script?",
+      "prompt": "Realizing hieroglyphs fused phonetic signs AND ideograms ('Je tiens mon affaire!'), in what year did Jean-François Champollion read his 'Lettre à M. Dacier' unlocking them?",
       "answerCorrect": "1822 CE",
       "clues": [
         "Twenty-three years after French troops uncovered the Rosetta Stone in 1799.",
@@ -32608,11 +32608,11 @@
       "irtB": 0.5,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "Chronicling generations of Cairene life in 'Palace Walk' and 'Children of Gebelawi,' in what year did Naguib Mahfouz become the first Arabic-language laureate of the Nobel Prize in Literature?",
+      "prompt": "Chronicling Cairene life in 'Palace Walk' and 'Children of Gebelawi,' in what year did Naguib Mahfouz become the first Arabic-language Nobel laureate in Literature?",
       "answerCorrect": "1988 CE",
       "clues": [
         "Ten years after Anwar Sadat's 1978 Peace Nobel.",
-        "Late 1980s."
+        "Narrow the dial to the closing years of the 1980s."
       ],
       "whyExplanation": "Awarded in October 1988, Gamaliya-born Naguib Mahfouz brought Cairo's alleys and coffeehouses onto the world stage of Nobel literature.",
       "calibratorExt": {
@@ -32667,7 +32667,7 @@
           "title": "THE BLUEPRINT CORE",
           "multiplier": 1.2,
           "sealed": false,
-          "clueText": "Late 1980s.",
+          "clueText": "Narrow the dial to the closing years of the 1980s.",
           "glyphHint": "scroll",
           "glyphId": "grimoire_quill",
           "glyphUrl": "/assets/glyphs/grimoire_quill.png",
@@ -34416,7 +34416,7 @@
       "irtB": 0.45,
       "irtA": 1.35,
       "archetype": "CODEX_DUAL_RING",
-      "prompt": "Match each iconic ancient Egyptian hieroglyphic amulet with the concept it symbolized.",
+      "prompt": "Lock each iconic ancient Egyptian hieroglyphic amulet with the concept it symbolized.",
       "answerCorrect": "3/3 Sacred Emblems",
       "clues": [
         "Minotaur horns belong to Aegean Crete.",
@@ -34503,7 +34503,7 @@
       "irtB": 0.75,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "At Reykjavik's white seaside Höfði House in October 1986, Reagan and Gorbachev came within a hair's breadth of abolishing all ballistic nuclear missiles before deadlocking over which U.S. program?",
+      "prompt": "At Reykjavik's seaside Höfði House in October 1986, Reagan and Gorbachev nearly abolished all ballistic nuclear missiles before deadlocking over which U.S. program?",
       "answerCorrect": "Strategic Defense Initiative",
       "distractors": [
         {
@@ -35317,7 +35317,7 @@
       "irtB": 0.95,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Because Icelandic avoids raw foreign loanwords by coining native neologisms, linguists in 1964 fused 'tala' ('number') with 'völva' (Eddic prophetess!) to create 'tölva'—the modern Icelandic word for what?",
+      "prompt": "Coined in 1964 to avoid raw loanwords, Icelandic fused 'tala' ('number') with 'völva' (Eddic prophetess) to create 'tölva'—the modern Icelandic word for what?",
       "answerCorrect": "Computer",
       "distractors": [
         {
@@ -35408,7 +35408,7 @@
       "irtB": 0.7,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Blanketing roughly 8% of Iceland's entire landmass across active subglacial calderas like Grímsvötn and Bárðarbunga, which 7,700-km² ice mass is Europe's largest glacier by volume outside Svalbard?",
+      "prompt": "Blanketing ~8% of Iceland across active subglacial calderas like Grímsvötn and Bárðarbunga, which 7,700-km² ice cap is Europe's largest glacier by volume outside Svalbard?",
       "answerCorrect": "Vatnajökull",
       "distractors": [
         {
@@ -36584,7 +36584,7 @@
       "irtB": 1.1,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Pioneered in Ísafjörður in Iceland's Westfjords by Fertram Sigurjónsson, Kerecis heals severe human burns and chronic wounds using acellular omega-3-rich tissue grafts harvested sustainably from what?",
+      "prompt": "Pioneered in Iceland's Westfjords by Fertram Sigurjónsson, Kerecis heals severe human burns and chronic wounds using omega-3-rich tissue grafts harvested sustainably from what?",
       "answerCorrect": "Wild Atlantic cod skin",
       "distractors": [
         {
@@ -37218,7 +37218,7 @@
       "irtB": 0.85,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Trained as a cellist at the Reykjavik Music Academy, which Icelandic composer won the 2020 Academy Award, Golden Globe, BAFTA, AND Emmy for her haunting cello-driven scores to 'Joker' and 'Chernobyl'?",
+      "prompt": "Trained as a cellist in Reykjavik, which Icelandic composer swept the 2020 Oscar, Golden Globe, BAFTA, AND Emmy for her haunting cello scores to 'Joker' and 'Chernobyl'?",
       "answerCorrect": "Hildur Guðnadóttir",
       "distractors": [
         {
@@ -37761,7 +37761,7 @@
       "irtB": 0.8,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Around Laugarvatn and Mývatn, bakers bury sealed metal pots of dark sweet rye dough ('rúgbrauð') inside boiling volcanic sand for twenty-four hours to steam-bake crustless loaves known as what?",
+      "prompt": "Near Laugarvatn and Mývatn, bakers bury sealed pots of sweet rye dough ('rúgbrauð') in boiling volcanic sand for 24 hours to steam-bake crustless loaves called what?",
       "answerCorrect": "Hverabrauð",
       "distractors": [
         {
@@ -39027,7 +39027,7 @@
       "irtB": 0.9,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "According to 'Íslendingabók' and volcanic 'Settlement Layer' tephra ice-core dating (~871±2), in what traditional year CE did Ingólfur Arnarson establish permanent settlement at Reykjavik?",
+      "prompt": "According to 'Íslendingabók' and volcanic tephra ice-core dating (~871±2), in what traditional year CE did Ingólfur Arnarson found permanent settlement at Reykjavik?",
       "answerCorrect": "874 CE",
       "clues": [
         "Fifty-six years BEFORE chieftains founded the national Althing parliament in 930 CE!",
@@ -39107,7 +39107,7 @@
       "answerCorrect": "1944 CE",
       "clues": [
         "Occurred eleven days after the Allied D-Day landings in Normandy during World War II.",
-        "Mid-1940s!"
+        "Dial right near the midpoint of the 1940s, as WWII entered its final stretch."
       ],
       "whyExplanation": "On June 17, 1944, following a 99.5%-turnout referendum, Iceland ended its union with the Danish crown and became an independent parliamentary republic.",
       "calibratorExt": {
@@ -39162,7 +39162,7 @@
           "title": "THE BLUEPRINT CORE",
           "multiplier": 1.2,
           "sealed": false,
-          "clueText": "Mid-1940s!",
+          "clueText": "Dial right near the midpoint of the 1940s, as WWII entered its final stretch.",
           "glyphHint": "scales",
           "glyphId": "wax_seal_scroll",
           "glyphUrl": "/assets/glyphs/wax_seal_scroll.png",
@@ -39179,7 +39179,7 @@
       "irtB": 0.8,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "In what year did Ronald Reagan and Mikhail Gorbachev meet at Reykjavik's Höfði House for the dramatic weekend summit that catalyzed end-of-Cold-War nuclear reductions?",
+      "prompt": "Meeting at Reykjavik's Höfði House for the dramatic summit that catalyzed Cold War nuclear reductions, Reagan and Gorbachev conferred in what year?",
       "answerCorrect": "1986 CE",
       "clues": [
         "One year AFTER their first fireside summit in Geneva (1985) and one year BEFORE signing the 1987 INF Treaty!",
@@ -39485,7 +39485,7 @@
       "irtB": 1.1,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "Completed in 1974 when the Skeiðarársandur glacial outwash bridges closed the final southern gap, roughly how many kilometers long is Route 1 ('Þjóðvegur 1'—Iceland's circular Ring Road)?",
+      "prompt": "Completed in 1974 when southern glacial outwash bridges closed the final gap, roughly how many kilometers long is Route 1 ('Þjóðvegur 1'—Iceland's circular Ring Road)?",
       "answerCorrect": "1322 km",
       "clues": [
         "Loops all the way around the island connecting Reykjavik, Vik, Höfn, Egilsstaðir, and Akureyri.",
@@ -39637,7 +39637,7 @@
       "irtB": 0.65,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "In what year did meltwater-explosive fine glass ash from Iceland's Eyjafjallajökull eruption ground over 100,000 commercial flights across Europe for a week in April?",
+      "prompt": "Unleashing fine volcanic glass ash that grounded over 100,000 European flights for a week in April, Iceland's Eyjafjallajökull erupted in what year?",
       "answerCorrect": "2010 CE",
       "clues": [
         "Biggest European airspace closure since World War II—two years after Iceland's 2008 banking crash.",
@@ -39789,11 +39789,11 @@
       "irtB": 1.3,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "In what year was Reykjavik-born novelist Halldór Laxness awarded the Nobel Prize in Literature?",
+      "prompt": "Reykjavik-born novelist Halldór Laxness became Iceland's sole Nobel Prize laureate in Literature in what year?",
       "answerCorrect": "1955 CE",
       "clues": [
         "Eleven years after Iceland became an independent republic in 1944.",
-        "Mid-1950s!"
+        "Pinpoint the middle of the 1950s—one year before the Suez Crisis."
       ],
       "whyExplanation": "Awarded the Nobel Prize in Literature in October 1955, Halldór Laxness brought Icelandic saga wit and rural realism to world acclaim.",
       "calibratorExt": {
@@ -39848,7 +39848,7 @@
           "title": "THE BLUEPRINT CORE",
           "multiplier": 1.2,
           "sealed": false,
-          "clueText": "Mid-1950s!",
+          "clueText": "Pinpoint the middle of the 1950s—one year before the Suez Crisis.",
           "glyphHint": "scroll",
           "glyphId": "grimoire_quill",
           "glyphUrl": "/assets/glyphs/grimoire_quill.png",
@@ -40942,7 +40942,7 @@
       "irtB": 1.05,
       "irtA": 1.35,
       "archetype": "CODEX_DUAL_RING",
-      "prompt": "Align each famous Icelandic volcano with the historical event it caused.",
+      "prompt": "Link each famous Icelandic volcano with the historical event it caused.",
       "answerCorrect": "3/3 Icelandic Eruptions",
       "clues": [
         "Pompeii was buried by Italy's Mount Vesuvius in 79 CE.",
@@ -42097,7 +42097,7 @@
       "irtB": 1.15,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Completed across the 350-meter Marina Channel mouth in 2008, Singapore's Marina Barrage serves simultaneously as a tidal flood barrier, water-sports venue, AND downtown's 15th freshwater what?",
+      "prompt": "Built across the 350-meter Marina Channel mouth in 2008, Singapore's Marina Barrage works as a tidal flood barrier, water-sports hub, AND downtown's 15th freshwater what?",
       "answerCorrect": "Drinking-water reservoir",
       "distractors": [
         {
@@ -43366,7 +43366,7 @@
       "irtB": 1.3,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Why has Singapore—sitting just 1.3° (~140 km) north of Earth's Equator—experienced virtually ZERO direct typhoon landfalls across modern meteorological history (save rare tiny 2001 Tropical Storm Vamei)?",
+      "prompt": "Sitting just 1.3° (~140 km) north of the Equator, why has Singapore recorded virtually ZERO direct typhoon landfalls in modern history (barring tiny 2001 Storm Vamei)?",
       "answerCorrect": "Near-zero Coriolis force",
       "distractors": [
         {
@@ -44453,7 +44453,7 @@
       "irtB": 1.3,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Unseeded in Huelva, Spain in December 2021—upsetting Olympic gold medalist Viktor Axelsen in round one!—who became the very first Singaporean ever crowned BWF Badminton World Champion in men's singles?",
+      "prompt": "Unseeded in Huelva in December 2021—upsetting Olympic champion Viktor Axelsen in round one—who became Singapore's first BWF Badminton World Champion in men's singles?",
       "answerCorrect": "Loh Kean Yew",
       "distractors": [
         {
@@ -44815,7 +44815,7 @@
       "irtB": 1.2,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Composed in 1958 by Minangkabau-born musician Zubir Said—whose portrait graces the reverse of every current Portrait-Series Singapore banknote!—what Malay phrase titles Singapore's national anthem?",
+      "prompt": "Composed in 1958 by Minangkabau-born Zubir Said—featured on the reverse of every Portrait-Series Singapore banknote—what Malay phrase titles Singapore's national anthem?",
       "answerCorrect": "Majulah Singapura",
       "distractors": [
         {
@@ -45902,11 +45902,11 @@
       "irtB": 1.4,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "In what year did Britain and the Netherlands sign the Treaty of London—ending Dutch claims to Singapore and drawing the maritime frontier along the Strait?",
+      "prompt": "Ending Dutch claims to Singapore and drawing the maritime frontier down the Strait, Britain and the Netherlands signed the Treaty of London in what year?",
       "answerCorrect": "1824 CE",
       "clues": [
         "Just five years after Stamford Raffles landed on Singapore in 1819!",
-        "Early 1820s."
+        "Target the opening half of the 1820s, shortly after Raffles's landing."
       ],
       "whyExplanation": "Signed on March 17, 1824, the Anglo-Dutch Treaty swapped Bencoolen for Malacca and confirmed Singapore within the British Straits sphere.",
       "calibratorExt": {
@@ -45961,7 +45961,7 @@
           "title": "THE BLUEPRINT CORE",
           "multiplier": 1.2,
           "sealed": false,
-          "clueText": "Early 1820s.",
+          "clueText": "Target the opening half of the 1820s, shortly after Raffles's landing.",
           "glyphHint": "scales",
           "glyphId": "wax_seal_scroll",
           "glyphUrl": "/assets/glyphs/wax_seal_scroll.png",
@@ -46590,7 +46590,7 @@
       "irtB": 1.5,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "Inscribed in 2015 as Singapore's first UNESCO World Heritage Site (and the world's only tropical botanic garden on the list!), in what year were the Singapore Botanic Gardens founded at their Tanglin site?",
+      "prompt": "Inscribed in 2015 as Singapore's first UNESCO World Heritage Site—the only tropical botanic garden listed—in what year were the Singapore Botanic Gardens founded at Tanglin?",
       "answerCorrect": "1859 CE",
       "clues": [
         "Exact same year Charles Darwin published 'On the Origin of Species' in London!",
@@ -46666,7 +46666,7 @@
       "irtB": 1.35,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "Purifying treated used water via microfiltration, reverse osmosis, and UV irradiation to surpass WHO drinking standards, in what year did PUB officially launch 'NEWater' to the Singapore public?",
+      "prompt": "Purifying used water via microfiltration, reverse osmosis, and UV to beat WHO standards, in what year did PUB officially launch 'NEWater' to the Singapore public?",
       "answerCorrect": "2003 CE",
       "clues": [
         "Prime Minister Goh Chok Tong famously toasted bottles of it before 60,000 spectators at the August 2002 National Day Parade ahead of the February public roll-out!",
@@ -47649,7 +47649,7 @@
       "irtB": 1.35,
       "irtA": 1.35,
       "archetype": "CODEX_DUAL_RING",
-      "prompt": "Align each first-generation Singapore leader with their signature institutional contribution.",
+      "prompt": "Link each first-generation Singapore leader with their signature institutional contribution.",
       "answerCorrect": "3/3 Founding Pillars",
       "clues": [
         "Ferdinand de Lesseps built the Suez Canal in Egypt a century earlier.",
@@ -48343,7 +48343,7 @@
       "irtB": 1.6,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "Ratified by every major spacefaring power since 1967, Article II of the Outer Space Treaty bars national sovereignty claims over the Moon and celestial bodies AND prohibits placing what in Earth orbit?",
+      "prompt": "Ratified by major space powers since 1967, the Outer Space Treaty's Article II bars national sovereignty over the Moon and celestial bodies AND prohibits putting what in orbit?",
       "answerCorrect": "Nuclear weapons or WMDs",
       "distractors": [
         {
@@ -52663,7 +52663,7 @@
       "irtB": 1.65,
       "irtA": 1.28,
       "archetype": "SIGHTLINE_LOCK",
-      "prompt": "When Magellan–Elcano chronicler Antonio Pigafetta reached Cape Verde in 1522 after keeping daily logs without missing a watch, why did shore calendars read Thursday instead of Wednesday?",
+      "prompt": "When Magellan–Elcano chronicler Antonio Pigafetta reached Cape Verde in 1522 without missing a single log entry, why did shore calendars read Thursday instead of Wednesday?",
       "answerCorrect": "Westward trip lost one day",
       "distractors": [
         {
@@ -52828,7 +52828,7 @@
       "irtB": 1.65,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "Under Article VI of the 1959 Antarctic Treaty, all land and ice shelves south of what whole parallel of South latitude fall under demilitarized, nuclear-free international scientific governance?",
+      "prompt": "Under Article VI of the 1959 Antarctic Treaty, all land and ice shelves south of what whole parallel of South latitude fall under demilitarized international science governance?",
       "answerCorrect": "60 °S",
       "clues": [
         "Sits roughly 6.5 degrees north of the Antarctic Circle (66.5°S) across the open Southern Ocean Drake Passage!",
@@ -53129,7 +53129,7 @@
       "irtB": 1.55,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "Echoing David Hilbert's 1900 Paris list a century later, how many $1-million 'Millennium Prize Problems' did the Clay Mathematics Institute announce at the Collège de France in May 2000?",
+      "prompt": "Echoing David Hilbert's 1900 Paris list a century later, how many $1-million 'Millennium Prize Problems' did the Clay Mathematics Institute unveil in Paris in May 2000?",
       "answerCorrect": "7 problems",
       "clues": [
         "Hilbert posed 23 in 1900; Clay posed a much smaller single-digit list (Poincaré, Riemann, P vs NP, Yang–Mills, Navier–Stokes, Hodge, BSD)!",
@@ -53204,7 +53204,7 @@
       "irtB": 1.6,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "Gathering 730 delegates from 44 Allied nations at New Hampshire's Mount Washington Hotel to charter the IMF and World Bank (IBRD), in what year did the Bretton Woods Monetary Conference take place?",
+      "prompt": "Uniting 730 delegates from 44 Allied nations in New Hampshire to charter the IMF and World Bank (IBRD), in what year did the Bretton Woods Monetary Conference convene?",
       "answerCorrect": "1944 CE",
       "clues": [
         "Convened in July—just weeks after D-Day while World War II was still raging!",
@@ -53284,7 +53284,7 @@
       "answerCorrect": "1648 CE",
       "clues": [
         "Exactly two hundred years BEFORE Europe's 1848 revolutions and Switzerland's 1848 Federal Constitution!",
-        "Late 1640s."
+        "Aim for the closing years of the 1640s, ending three decades of European war."
       ],
       "whyExplanation": "Signed between May and October 1648 in Münster and Osnabrück, the Peace of Westphalia established diplomatic congresses and modern sovereign non-interference norms.",
       "calibratorExt": {
@@ -53339,7 +53339,7 @@
           "title": "THE BLUEPRINT CORE",
           "multiplier": 1.2,
           "sealed": false,
-          "clueText": "Late 1640s.",
+          "clueText": "Aim for the closing years of the 1640s, ending three decades of European war.",
           "glyphHint": "scales",
           "glyphId": "diplomatic_olive",
           "glyphUrl": "/assets/glyphs/diplomatic_olive.png",
@@ -53431,7 +53431,7 @@
       "irtB": 1.55,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "Measured to sub-percent precision from cosmic microwave background acoustic peaks by ESA's Planck space observatory, how many billion years old (to one decimal place) is our observable universe?",
+      "prompt": "Measured from cosmic microwave background acoustic peaks by ESA's Planck observatory, how many billion years old (to one decimal place) is our observable universe?",
       "answerCorrect": "13.8 billion yrs",
       "clues": [
         "Note 4.55 billion years is Earth and the Solar System—the Big Bang happened roughly three times further back!",
@@ -53507,7 +53507,7 @@
       "irtB": 1.5,
       "irtA": 1.32,
       "archetype": "CALIBRATOR_DIAL",
-      "prompt": "Standardized by NIST in FIPS 180-2 to secure TLS certificates, Git commits, and Merkle ledgers worldwide, how many binary bits long is a standard 64-hexadecimal-character SHA-2 cryptographic digest?",
+      "prompt": "Standardized by NIST in FIPS 180-2 to secure TLS, Git commits, and Merkle ledgers worldwide, how many binary bits long is a 64-hex-character SHA-2 cryptographic digest?",
       "answerCorrect": "256 bits",
       "clues": [
         "Multiply 64 hexadecimal characters by 4 binary bits per hex digit!",
@@ -54997,7 +54997,7 @@
       "irtB": 1.65,
       "irtA": 1.35,
       "archetype": "CODEX_DUAL_RING",
-      "prompt": "Match each classic mathematical or statistical pitfall with its diagnostic hallmark.",
+      "prompt": "Lock each classic mathematical or statistical pitfall with its diagnostic hallmark.",
       "answerCorrect": "3/3 Deductive Traps",
       "clues": [
         "Modus Ponens ('If P then Q; P; therefore Q') is valid deductive inference, not a statistical fallacy!",
@@ -55941,7 +55941,7 @@
           "irtB": -0.55,
           "irtA": 1.28,
           "archetype": "HERO_ARTIFACT_SYNTHESIS",
-          "prompt": "Crafted around 1713 by London clockmakers George Graham and Thomas Tompion, the mechanical clockwork model of the Solar System was named after Charles Boyle, holder of which Irish peerage?",
+          "prompt": "Built around 1713 by London clockmakers George Graham and Thomas Tompion, the mechanical Solar System model took its name from Charles Boyle, holder of which Irish peerage?",
           "answerCorrect": "4th Earl of Orrery",
           "distractors": [
             {
@@ -56792,7 +56792,7 @@
           "irtB": 0.25,
           "irtA": 1.28,
           "archetype": "HERO_ARTIFACT_SYNTHESIS",
-          "prompt": "In mathematical origami, Kawasaki's Theorem states a single-vertex crease pattern folds completely flat if and only if the alternating corner angles around the vertex sum to how many degrees?",
+          "prompt": "In mathematical origami, Kawasaki's Theorem states a single-vertex crease pattern folds flat if and only if the alternating corner angles around the vertex sum to how many degrees?",
           "answerCorrect": "180 degrees",
           "distractors": [
             {
@@ -56884,7 +56884,7 @@
           "irtB": 0.4,
           "irtA": 1.28,
           "archetype": "HERO_ARTIFACT_SYNTHESIS",
-          "prompt": "Paired with Kawasaki's angle rule, Jun Maekawa's Theorem proves that at any flat-folded origami vertex, the count of Mountain folds and Valley folds always differs by what exact integer?",
+          "prompt": "Paired with Kawasaki's rule, Jun Maekawa's Theorem proves that at any flat-folded origami vertex, Mountain folds and Valley folds always differ in count by what exact integer?",
           "answerCorrect": "Two",
           "distractors": [
             {
@@ -56976,7 +56976,7 @@
           "irtB": 0.5,
           "irtA": 1.28,
           "archetype": "HERO_ARTIFACT_SYNTHESIS",
-          "prompt": "Launched by JAXA in May 2010 using diagonal origami unfolding and centrifugal spin, which Venus-bound craft became the first spacecraft in history propelled in interplanetary space by sunlight?",
+          "prompt": "Launched by JAXA in May 2010 using diagonal origami unfolding and spin, which Venus-bound craft became the first interplanetary spacecraft propelled purely by sunlight?",
           "answerCorrect": "IKAROS",
           "distractors": [
             {
@@ -57359,7 +57359,7 @@
           "irtB": 0.25,
           "irtA": 1.28,
           "archetype": "HERO_ARTIFACT_SYNTHESIS",
-          "prompt": "Buried 1,000 meters beneath Mount Ikeno in Gifu Prefecture, Japan's Super-Kamiokande observatory detects ghostly neutrinos inside a cylindrical steel tank filled with 50,000 tonnes of what?",
+          "prompt": "Buried 1,000 meters beneath Mount Ikeno in Gifu, Japan's Super-Kamiokande observatory hunts ghostly neutrinos inside a steel tank holding 50,000 tonnes of what?",
           "answerCorrect": "Ultra-pure water",
           "distractors": [
             {
@@ -57732,7 +57732,7 @@
           "irtB": 0.65,
           "irtA": 1.28,
           "archetype": "HERO_ARTIFACT_SYNTHESIS",
-          "prompt": "Discovered in northeastern Brazil by prospector Heitor Dimas Barbosa in 1989, ultra-rare 'Paraíba tourmaline' glows electric neon turquoise because its crystal lattice contains traces of which metal?",
+          "prompt": "Found in northeastern Brazil by prospector Heitor Dimas Barbosa in 1989, ultra-rare 'Paraíba tourmaline' glows electric neon turquoise thanks to lattice traces of which metal?",
           "answerCorrect": "Copper",
           "distractors": [
             {
@@ -57824,7 +57824,7 @@
           "irtB": 0.75,
           "irtA": 1.28,
           "archetype": "HERO_ARTIFACT_SYNTHESIS",
-          "prompt": "During World War II and early computing, transparent 'lasca' rock crystals mined in Minas Gerais were strategic cargo because sliced wafers vibrate at exact radio frequencies via what physical effect?",
+          "prompt": "During WWII and early computing, clear 'lasca' rock crystals from Minas Gerais were strategic cargo because sliced wafers vibrate at exact radio frequencies via what effect?",
           "answerCorrect": "Piezoelectricity",
           "distractors": [
             {
@@ -58109,7 +58109,7 @@
           "irtB": 0.7,
           "irtA": 1.28,
           "archetype": "HERO_ARTIFACT_SYNTHESIS",
-          "prompt": "Headquartered in São José dos Campos, which Brazilian national space agency pioneered open-access satellite rainforest monitoring (PRODES and real-time DETER alerts) cited as the global gold standard?",
+          "prompt": "Based in São José dos Campos, which Brazilian space agency pioneered open-access satellite rainforest monitoring (PRODES and real-time DETER alerts) as the global standard?",
           "answerCorrect": "INPE",
           "distractors": [
             {
@@ -58302,7 +58302,7 @@
           "irtB": 0.65,
           "irtA": 1.28,
           "archetype": "HERO_ARTIFACT_SYNTHESIS",
-          "prompt": "Oscar Niemeyer's 16-column Cathedral of Brasília and cooling towers achieve sweeping double-curved strength from straight steel rebar because a one-sheet hyperboloid is mathematically what kind of surface?",
+          "prompt": "Oscar Niemeyer's 16-column Cathedral of Brasília and cooling towers achieve double-curved strength from straight rebar because a one-sheet hyperboloid is what kind of surface?",
           "answerCorrect": "Doubly ruled surface",
           "distractors": [
             {
@@ -58394,7 +58394,7 @@
           "irtB": 0.4,
           "irtA": 1.28,
           "archetype": "HERO_ARTIFACT_SYNTHESIS",
-          "prompt": "Setting the tempo and tactical style of every capoeira roda, which single-wire Brazilian musical bow presses a smooth stone or coin ('dobrão') against steel tire wire amplified by a dried calabash gourd?",
+          "prompt": "Setting the tempo of every capoeira roda, which single-wire Brazilian musical bow presses a stone or coin ('dobrão') against steel wire amplified by a dried calabash gourd?",
           "answerCorrect": "Berimbau",
           "distractors": [
             {
@@ -58494,7 +58494,7 @@
           "irtB": 0.55,
           "irtA": 1.28,
           "archetype": "HERO_ARTIFACT_SYNTHESIS",
-          "prompt": "What knotted oval rope loop—meaning 'that which the sun encircles' ('shenu')—gave Thomas Young and Champollion the breakthrough clue that enclosed Rosetta hieroglyphs spelled royal names phonetically?",
+          "prompt": "What knotted oval loop—meaning 'that which the sun encircles' ('shenu')—gave Thomas Young and Champollion the breakthrough clue that enclosed Rosetta glyphs spelled royal names?",
           "answerCorrect": "Cartouche",
           "distractors": [
             {
@@ -58678,7 +58678,7 @@
           "irtB": 0.95,
           "irtA": 1.28,
           "archetype": "HERO_ARTIFACT_SYNTHESIS",
-          "prompt": "With no magnetic compass in 2560 BCE, Old Kingdom astronomers aligned Khufu's Great Pyramid within 3/60ths of a degree of true North using a slotted palm-rib sight and plumb-line pair called what?",
+          "prompt": "With no magnetic compass in 2560 BCE, Old Kingdom astronomers aligned Khufu's Great Pyramid within 3/60ths of a degree of true North using a palm-rib sight and plumb pair called what?",
           "answerCorrect": "Merkhet and Bay",
           "distractors": [
             {

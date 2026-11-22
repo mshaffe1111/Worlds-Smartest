@@ -8,8 +8,8 @@
   ],
   "totalEntities": 220230,
   "totalQuestions": 929564,
-  "totalShardBytes": 9425278,
-  "maxShardBytes": 1281320,
+  "totalShardBytes": 9414721,
+  "maxShardBytes": 1270805,
   "licenses": [
     {
       "source": "Wikidata RDF Knowledge Graph (via QLever)",
@@ -95,7 +95,7 @@
       "name": "World History",
       "entities": 15821,
       "questions": 63284,
-      "bytes": 625030,
+      "bytes": 625029,
       "files": [
         {
           "path": "domain_0.json",
@@ -149,7 +149,7 @@
       "name": "Geography & Wonders",
       "entities": 33693,
       "questions": 152665,
-      "bytes": 1052180,
+      "bytes": 1052176,
       "files": [
         {
           "path": "domain_2.json",
@@ -176,7 +176,7 @@
       "name": "Arts & Architecture",
       "entities": 21164,
       "questions": 100156,
-      "bytes": 984926,
+      "bytes": 984899,
       "files": [
         {
           "path": "domain_3.json",
@@ -201,7 +201,7 @@
       "name": "Film, Music & Pop",
       "entities": 23551,
       "questions": 97255,
-      "bytes": 918591,
+      "bytes": 918590,
       "files": [
         {
           "path": "domain_4.json",
@@ -280,7 +280,7 @@
       "name": "Nature & Biology",
       "entities": 14343,
       "questions": 57372,
-      "bytes": 718362,
+      "bytes": 718354,
       "files": [
         {
           "path": "domain_7.json",
@@ -354,7 +354,7 @@
       "name": "Myth & Literature",
       "entities": 14425,
       "questions": 65930,
-      "bytes": 641746,
+      "bytes": 641745,
       "files": [
         {
           "path": "domain_10.json",
@@ -379,7 +379,7 @@
       "name": "Logic & Math",
       "entities": 21299,
       "questions": 62194,
-      "bytes": 1820349,
+      "bytes": 1809834,
       "files": [
         {
           "path": "domain_11_0.json",
@@ -437,7 +437,14 @@
           "clue1": "This engagement took place in {year} in what is now {country}.",
           "clue2": "The conflict's name begins with \"{ans_init}\".",
           "why": "{name} ({year}) was fought during {conflict}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Which larger conflict included {name} ({year})?",
+            "Turning back to {year}, {name} unfolded as part of which wider war or campaign?",
+            "Historians file the {year} engagement known as {name} within which broader conflict?",
+            "On the military timeline of {year}, which larger struggle encompassed {name}?",
+            "Which sweeping conflict formed the backdrop for {name} in {year}?"
+          ]
         },
         {
           "id": "hb_country",
@@ -448,7 +455,14 @@
           "clue1": "It was fought during {conflict} in {year}.",
           "clue2": "The country's name starts with \"{ans_init}\".",
           "why": "{name} ({year}) took place in present-day {country}.",
-          "irtOffset": 0.1
+          "irtOffset": 0.1,
+          "stemVariants": [
+            "In which modern-day country did {name} ({year}) take place?",
+            "Walk the battlefield of {name} ({year}) today and you would stand inside which modern nation?",
+            "Within which present-day country's borders was {name} fought in {year}?",
+            "On a modern world atlas, which country contains the historic site of {name} ({year})?",
+            "Which contemporary nation encompasses the ground where {name} took place in {year}?"
+          ]
         },
         {
           "id": "hb_tf",
@@ -459,7 +473,19 @@
           "clue1": "Place {conflict} ({year}) on the map.",
           "whyTrue": "True! {name} ({year}) was fought in present-day {country}.",
           "whyFalse": "False! {name} ({year}) took place in {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{name} ({year}) took place in present-day {country}.",
+            "A modern map places the historic battlefield of {name} ({year}) inside {country}.",
+            "Military archives record that {name} ({year}) unfolded within present-day {country}.",
+            "In {year}, the clash known as {name} was fought on territory belonging to modern {country}."
+          ],
+          "falsePromptVariants": [
+            "{name} ({year}) took place in present-day {fake}.",
+            "A modern map places the historic battlefield of {name} ({year}) inside {fake}.",
+            "Military archives record that {name} ({year}) unfolded within present-day {fake}.",
+            "In {year}, the clash known as {name} was fought on territory belonging to modern {fake}."
+          ]
         },
         {
           "id": "hb_year",
@@ -473,7 +499,14 @@
           "maxClamp": 2024,
           "clue1": "It was fought in present-day {country} during {conflict}.",
           "why": "{name} took place in {year} CE during {conflict}.",
-          "irtOffset": 0.3
+          "irtOffset": 0.3,
+          "stemVariants": [
+            "In what year did {name} ({conflict}) take place?",
+            "Set the chronometer to the exact year {name} took place during {conflict}.",
+            "Which calendar year saw the clash of {name} in {conflict}?",
+            "During {conflict}, in what year was {name} fought?",
+            "Pinpoint the year on the historical ledger when {name} ({conflict}) unfolded."
+          ]
         }
       ]
     },
@@ -502,7 +535,14 @@
           "clue1": "{name} was a notable {role} born in {year}.",
           "clue2": "The realm or nation begins with \"{ans_init}\".",
           "why": "{name} (born {year}) was a {role} associated with {country}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Which country or realm was historical figure {name} (b. {year}) associated with?",
+            "Born in {year}, historical figure {name} left a lasting mark on which country or realm?",
+            "Which nation or realm claims {name} (b. {year}) among its notable historical figures?",
+            "From the archives of {year}, which country or polity is linked with {name}?",
+            "Trace the biography of {name} (born {year}) back to which country or realm?"
+          ]
         },
         {
           "id": "hf_rev",
@@ -514,7 +554,14 @@
           "clue1": "Born in {year} and known as a {role}.",
           "clue2": "Their name starts with \"{ans_init}\".",
           "why": "{name} (born {year}) was associated with {country}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these historical figures was associated with {country}?",
+            "Scan the historical roll call: which figure here belongs to the story of {country}?",
+            "Which of these notable figures from world history is linked to {country}?",
+            "Whose historical legacy is tied to {country}?",
+            "Which biographical entry from the Meridian archive connects directly to {country}?"
+          ]
         },
         {
           "id": "hf_tf",
@@ -525,7 +572,19 @@
           "clue1": "Recall the historical homeland of {name} ({role}).",
           "whyTrue": "True! {name} (born {year}) was associated with {country}.",
           "whyFalse": "False! {name} was associated with {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "Historical figure {name} (born {year}) was associated with {country}.",
+            "Historical records link {name} (born {year}) to {country}.",
+            "Born in {year}, {name} is a historical figure associated with {country}.",
+            "Biographical chronicles tie {name} (b. {year}) to the history of {country}."
+          ],
+          "falsePromptVariants": [
+            "Historical figure {name} (born {year}) was associated with {fake}.",
+            "Historical records link {name} (born {year}) to {fake}.",
+            "Born in {year}, {name} is a historical figure associated with {fake}.",
+            "Biographical chronicles tie {name} (b. {year}) to the history of {fake}."
+          ]
         },
         {
           "id": "hf_year",
@@ -539,7 +598,14 @@
           "maxClamp": 1950,
           "clue1": "{name} was a {role} associated with {country}.",
           "why": "{name} ({country}) was born in {year} CE.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "In what year was historical figure {name} ({country}) born?",
+            "Dial in the birth year of historical figure {name} ({country}).",
+            "Which year saw the birth of {name}, a notable figure of {country}?",
+            "In what calendar year was {name} ({country}) born?",
+            "Set the timeline to the birth year of {name} of {country}."
+          ]
         }
       ]
     },
@@ -564,7 +630,14 @@
           "clue1": "This historical realm was founded in {year}.",
           "clue2": "Its capital starts with \"{ans_init}\".",
           "why": "{capital} served as the capital of {name} (founded {year}).",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "What was the capital city of {name} (established {year})?",
+            "Founded in {year}, {name} governed its realm from which capital city?",
+            "Which city served as the seat of power for {name} (est. {year})?",
+            "Point to the capital from which {name} (established {year}) ruled.",
+            "In the annals of {year}, what city stood as the capital of {name}?"
+          ]
         },
         {
           "id": "he_rev",
@@ -576,7 +649,14 @@
           "clue1": "This state was established in {year}.",
           "clue2": "Its name starts with \"{ans_init}\".",
           "why": "{name} (established {year}) had {capital} as its capital.",
-          "irtOffset": 0.1
+          "irtOffset": 0.1,
+          "stemVariants": [
+            "Which historical state or empire had {capital} as its capital?",
+            "Which historic realm or empire centered its government in {capital}?",
+            "Once ruled from {capital}, which historical state or empire is this?",
+            "Whose imperial or state banner flew over the capital city of {capital}?",
+            "From {capital}, which historical polity governed its territory?"
+          ]
         },
         {
           "id": "he_tf",
@@ -587,7 +667,19 @@
           "clue1": "Think of the historic seat of power for {name} ({year}).",
           "whyTrue": "True! {capital} was the capital of {name}.",
           "whyFalse": "False! {capital} (not {fake}) was the capital of {name}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{capital} served as the capital of {name}.",
+            "Historically, {capital} stood as the capital city of {name}.",
+            "During its rule, {capital} served as the seat of government for {name}.",
+            "Chroniclers record {capital} as the ruling capital of {name}."
+          ],
+          "falsePromptVariants": [
+            "{fake} served as the capital of {name}.",
+            "Historically, {fake} stood as the capital city of {name}.",
+            "During its rule, {fake} served as the seat of government for {name}.",
+            "Chroniclers record {fake} as the ruling capital of {name}."
+          ]
         },
         {
           "id": "he_year",
@@ -601,7 +693,14 @@
           "maxClamp": 2010,
           "clue1": "{capital} served as its historical capital.",
           "why": "{name} (capital: {capital}) was established in {year} CE.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "In approximately what year was {name} established?",
+            "Estimate the founding year when {name} first emerged on the historical map.",
+            "In roughly what year was {name} established?",
+            "Dial the Meridian chronometer to the establishment year of {name}.",
+            "Around which calendar year did {name} come into existence?"
+          ]
         }
       ]
     },
@@ -628,7 +727,14 @@
           "clue1": "This historical event began or was signed in {year}.",
           "clue2": "The country begins with \"{ans_init}\".",
           "why": "{name} ({year}) was directly associated with {country}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Which country or region was directly tied to {name} ({year})?",
+            "In {year}, {name} shaped the destiny of which country or region?",
+            "Which nation or territory was directly involved in {name} ({year})?",
+            "Look back to {year}: which country or region lies at the heart of {name}?",
+            "On the diplomatic and military map of {year}, which land is tied to {name}?"
+          ]
         },
         {
           "id": "hw_rev",
@@ -640,7 +746,14 @@
           "clue1": "It dates to the year {year}.",
           "clue2": "Its name begins with \"{ans_init}\".",
           "why": "{name} ({year}) involved {country}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these historical conflicts or treaties directly involved {country}?",
+            "Which of these landmark conflicts or accords directly touched {country}?",
+            "Whose historical turning point in {country} matches one of these events?",
+            "Which war or treaty from this slate directly involved {country}?",
+            "Identify the historical event here tied directly to {country}."
+          ]
         },
         {
           "id": "hw_tf",
@@ -651,7 +764,19 @@
           "clue1": "Connect {name} ({year}) to the right nation.",
           "whyTrue": "True! {name} ({year}) involved {country}.",
           "whyFalse": "False! {name} ({year}) involved {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{name} ({year}) was directly associated with {country}.",
+            "Historical records tie {name} ({year}) directly to {country}.",
+            "In {year}, {name} directly involved {country}.",
+            "Diplomatic and military archives link {name} ({year}) with {country}."
+          ],
+          "falsePromptVariants": [
+            "{name} ({year}) was directly associated with {fake}.",
+            "Historical records tie {name} ({year}) directly to {fake}.",
+            "In {year}, {name} directly involved {fake}.",
+            "Diplomatic and military archives link {name} ({year}) with {fake}."
+          ]
         },
         {
           "id": "hw_year",
@@ -665,7 +790,14 @@
           "maxClamp": 2024,
           "clue1": "It is historically tied to {country}.",
           "why": "{name} ({country}) dates to {year} CE.",
-          "irtOffset": 0.3
+          "irtOffset": 0.3,
+          "stemVariants": [
+            "In what year did {name} ({country}) begin or occur?",
+            "Dial in the calendar year when {name} ({country}) unfolded.",
+            "Which year marks the outbreak or signing of {name} ({country})?",
+            "When did {name} ({country}) begin or take place?",
+            "Pinpoint the year {name} entered the history of {country}."
+          ]
         }
       ]
     },
@@ -693,7 +825,14 @@
           "clue1": "{name} is classified as a {category} with atomic number {anum}.",
           "clue2": "Its symbol starts with \"{ans_init}\".",
           "why": "{name} (atomic number {anum}) has the chemical symbol {symbol}.",
-          "irtOffset": -0.1
+          "irtOffset": -0.1,
+          "stemVariants": [
+            "What is the chemical symbol for the element {name}?",
+            "On the periodic table, which chemical symbol represents {name}?",
+            "Chemists abbreviate the element {name} with which official symbol?",
+            "In a molecular formula, which letter symbol stands for {name}?",
+            "Identify the standard IUPAC chemical symbol assigned to {name}."
+          ]
         },
         {
           "id": "se_name",
@@ -704,7 +843,14 @@
           "clue1": "Its atomic number is {anum} ({category}).",
           "clue2": "The element name starts with \"{ans_init}\".",
           "why": "{symbol} is the periodic table symbol for {name} (atomic number {anum}).",
-          "irtOffset": -0.05
+          "irtOffset": -0.05,
+          "stemVariants": [
+            "Which chemical element has the symbol {symbol}?",
+            "Spot '{symbol}' in a chemical formula and you are looking at which element?",
+            "Which periodic table element is denoted by the symbol {symbol}?",
+            "Decode the chemical symbol {symbol} to name its corresponding element.",
+            "On Mendeleev's chart, which element answers to the symbol {symbol}?"
+          ]
         },
         {
           "id": "se_cat",
@@ -715,7 +861,14 @@
           "clue1": "{name} has atomic number {anum}.",
           "clue2": "The group name begins with \"{ans_init}\".",
           "why": "{name} ({symbol}, atomic number {anum}) is classified as {category}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "To which periodic table group does {name} ({symbol}) belong?",
+            "Chemically, {name} ({symbol}) is classified inside which periodic table family?",
+            "Which elemental group claims {name} ({symbol}) on the periodic chart?",
+            "Place {name} ({symbol}) into its proper periodic table category.",
+            "In inorganic chemistry, which family encompasses {name} ({symbol})?"
+          ]
         },
         {
           "id": "se_tf",
@@ -726,7 +879,19 @@
           "clue1": "Check the periodic table entry for atomic number {anum}.",
           "whyTrue": "True! {name} has the symbol {symbol}.",
           "whyFalse": "False! The symbol for {name} is {symbol}, not {fake}.",
-          "irtOffset": -0.2
+          "irtOffset": -0.2,
+          "truePromptVariants": [
+            "The chemical symbol for {name} is {symbol}.",
+            "On the periodic table, {symbol} is the official chemical symbol for {name}.",
+            "Chemists represent the element {name} using the symbol {symbol}.",
+            "In standard IUPAC notation, {name} carries the symbol {symbol}."
+          ],
+          "falsePromptVariants": [
+            "The chemical symbol for {name} is {fake}.",
+            "On the periodic table, {fake} is the official chemical symbol for {name}.",
+            "Chemists represent the element {name} using the symbol {fake}.",
+            "In standard IUPAC notation, {name} carries the symbol {fake}."
+          ]
         },
         {
           "id": "se_anum",
@@ -740,7 +905,14 @@
           "maxClamp": 118,
           "clue1": "{name} belongs to the {category} group.",
           "why": "{name} ({symbol}) has atomic number {anum}.",
-          "irtOffset": 0.25
+          "irtOffset": 0.25,
+          "stemVariants": [
+            "What is the atomic number of {name} ({symbol})?",
+            "How many protons sit inside the nucleus of {name} ({symbol})?",
+            "Dial in the exact atomic number of {name} ({symbol}).",
+            "On the periodic table, what atomic number belongs to {name} ({symbol})?",
+            "Pinpoint the proton count (atomic number) of {name} ({symbol})."
+          ]
         }
       ]
     },
@@ -769,7 +941,14 @@
           "clue1": "{name} was associated with {country}.",
           "clue2": "The scientific field begins with \"{ans_init}\".",
           "why": "{name} ({country}, b. {year}) was primarily known in {field}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "What was the primary scientific field of {name} (born {year})?",
+            "Born in {year}, researcher {name} built a lasting reputation in which scientific discipline?",
+            "Which branch of science best defines the pioneering work of {name} (b. {year})?",
+            "In the annals of science, {name} (born {year}) is chiefly remembered for which field?",
+            "Which scientific domain claims {name} (born {year}) as one of its noted figures?"
+          ]
         },
         {
           "id": "ss_country",
@@ -780,7 +959,14 @@
           "clue1": "{name} was born in {year} and worked in {field}.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} ({field}, b. {year}) was associated with {country}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which country was scientist {name} ({field}) associated with?",
+            "Which nation is associated with {field} researcher {name}?",
+            "Link {name}, noted in {field}, to the country of their scientific career or heritage.",
+            "Which country claims {field} scientist {name}?",
+            "On the world map of science, which nation is tied to {name} ({field})?"
+          ]
         },
         {
           "id": "ss_rev",
@@ -792,7 +978,14 @@
           "clue1": "Born in {year} and associated with {country}.",
           "clue2": "Their name starts with \"{ans_init}\".",
           "why": "{name} ({country}, b. {year}) specialized in {field}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these scientists was renowned primarily in {field}?",
+            "Which of these scientific thinkers made their primary mark in {field}?",
+            "From this quartet of researchers, who specialized chiefly in {field}?",
+            "Spot the scientist on this slate best known for advancing {field}.",
+            "Which researcher here belongs to the intellectual lineage of {field}?"
+          ]
         },
         {
           "id": "ss_tf",
@@ -803,7 +996,19 @@
           "clue1": "Recall the scientific discipline of {name} ({country}).",
           "whyTrue": "True! {name} was a noted figure in {field}.",
           "whyFalse": "False! {name} was renowned in {field}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "Scientist {name} (born {year}) was renowned primarily in {field}.",
+            "Born in {year}, {name} earned scientific renown primarily in {field}.",
+            "Science historians classify {name} (b. {year}) primarily within {field}.",
+            "The research career of {name} (born {year}) centered chiefly on {field}."
+          ],
+          "falsePromptVariants": [
+            "Scientist {name} (born {year}) was renowned primarily in {fake}.",
+            "Born in {year}, {name} earned scientific renown primarily in {fake}.",
+            "Science historians classify {name} (b. {year}) primarily within {fake}.",
+            "The research career of {name} (born {year}) centered chiefly on {fake}."
+          ]
         },
         {
           "id": "ss_year",
@@ -817,7 +1022,14 @@
           "maxClamp": 2000,
           "clue1": "{name} worked in {field} and was associated with {country}.",
           "why": "{name} ({field}, {country}) was born in {year} CE.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "In what year was scientist {name} ({field}) born?",
+            "Set the timeline to the year {field} scientist {name} was born.",
+            "Which calendar year saw the birth of {name} ({field})?",
+            "When was {field} researcher {name} born?",
+            "Dial in the birth year recorded for {name} ({field})."
+          ]
         }
       ]
     },
@@ -846,7 +1058,14 @@
           "clue1": "It was detected by {facility} in {year}.",
           "clue2": "The method begins with \"{ans_init}\".",
           "why": "NASA confirms {name} ({year}) was discovered via {method} by {facility}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Which astronomical method discovered the exoplanet {name} ({year})?",
+            "Astronomers first detected the distant world {name} in {year} using which planet-hunting technique?",
+            "Which detection method revealed exoplanet {name} to astronomers in {year}?",
+            "How did observers confirm the existence of exoplanet {name} in {year}?",
+            "In {year}, which observational technique unlocked the discovery of {name}?"
+          ]
         },
         {
           "id": "sx_fac",
@@ -857,7 +1076,14 @@
           "clue1": "Discovered in {year} using {method}.",
           "clue2": "The facility starts with \"{ans_init}\".",
           "why": "The exoplanet {name} ({year}) was discovered by {facility}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which observatory or space mission discovered the exoplanet {name}?",
+            "Which telescope, observatory, or space mission first spotted exoplanet {name}?",
+            "Credit for detecting the extrasolar world {name} belongs to which facility or mission?",
+            "Which astronomical observatory or survey logged the discovery of {name}?",
+            "From which space mission or ground observatory was exoplanet {name} discovered?"
+          ]
         },
         {
           "id": "sx_tf",
@@ -868,7 +1094,19 @@
           "clue1": "Confirmed in {year} by {facility}.",
           "whyTrue": "True! {name} was detected via {method} ({facility}, {year}).",
           "whyFalse": "False! {name} was detected via {method}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "The exoplanet {name} was discovered using the {method} method.",
+            "Astronomers detected the exoplanet {name} via the {method} technique.",
+            "NASA's Exoplanet Archive credits the {method} method with uncovering {name}.",
+            "The discovery of extrasolar planet {name} relied on the {method} method."
+          ],
+          "falsePromptVariants": [
+            "The exoplanet {name} was discovered using the {fake} method.",
+            "Astronomers detected the exoplanet {name} via the {fake} technique.",
+            "NASA's Exoplanet Archive credits the {fake} method with uncovering {name}.",
+            "The discovery of extrasolar planet {name} relied on the {fake} method."
+          ]
         },
         {
           "id": "sx_year",
@@ -882,7 +1120,14 @@
           "maxClamp": 2025,
           "clue1": "Detected via {method} by {facility}.",
           "why": "The exoplanet {name} was discovered in {year} by {facility}.",
-          "irtOffset": 0.25
+          "irtOffset": 0.25,
+          "stemVariants": [
+            "In what year was the exoplanet {name} discovered?",
+            "Dial in the calendar year astronomers announced the discovery of exoplanet {name}.",
+            "Which year marked the confirmation of extrasolar planet {name}?",
+            "When did astronomers first discover exoplanet {name}?",
+            "Pinpoint the discovery year of the distant world {name}."
+          ]
         }
       ]
     },
@@ -910,7 +1155,14 @@
           "clue1": "{name} is cataloged as a {astro_type}.",
           "clue2": "The constellation begins with \"{ans_init}\".",
           "why": "{name} ({astro_type}) is located in the constellation {constellation}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "In which constellation is the {astro_type} {name} located?",
+            "Aim a telescope toward which constellation to locate the {astro_type} {name}?",
+            "On the celestial sphere, the {astro_type} {name} lies within which constellation?",
+            "Which star-chart constellation hosts the {astro_type} known as {name}?",
+            "Stargazers scanning the night sky find the {astro_type} {name} in which constellation?"
+          ]
         },
         {
           "id": "sa_rev",
@@ -922,7 +1174,14 @@
           "clue1": "It is classified as a {astro_type}.",
           "clue2": "Its name begins with \"{ans_init}\".",
           "why": "{name} ({astro_type}) lies in the constellation {constellation}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these celestial objects is located in the constellation {constellation}?",
+            "Which of these deep-sky objects resides inside the constellation {constellation}?",
+            "Look toward {constellation} on a star atlas to find which celestial object?",
+            "Among these astronomical targets, which lies within {constellation}?",
+            "Which celestial object here belongs to the sky region of {constellation}?"
+          ]
         },
         {
           "id": "sa_type",
@@ -933,7 +1192,14 @@
           "clue1": "Astronomers observe it in the direction of {constellation}.",
           "clue2": "The category begins with \"{ans_init}\".",
           "why": "{name} (constellation {constellation}) is a {astro_type}.",
-          "irtOffset": -0.1
+          "irtOffset": -0.1,
+          "stemVariants": [
+            "What type of celestial object is {name}, found in {constellation}?",
+            "Found in the constellation {constellation}, how do astronomers classify {name}?",
+            "Which celestial category describes {name} inside {constellation}?",
+            "When cataloged in {constellation}, {name} is identified as which kind of astronomical object?",
+            "In deep-sky catalogs for {constellation}, what class of object is {name}?"
+          ]
         },
         {
           "id": "sa_tf",
@@ -944,7 +1210,19 @@
           "clue1": "Picture the sky region containing {name}.",
           "whyTrue": "True! {name} is in the constellation {constellation}.",
           "whyFalse": "False! {name} lies in {constellation}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "The {astro_type} {name} is located in the constellation {constellation}.",
+            "Star charts place the {astro_type} {name} inside the constellation {constellation}.",
+            "Observers searching for the {astro_type} {name} look toward {constellation}.",
+            "The celestial object {name} ({astro_type}) resides in {constellation}."
+          ],
+          "falsePromptVariants": [
+            "The {astro_type} {name} is located in the constellation {fake}.",
+            "Star charts place the {astro_type} {name} inside the constellation {fake}.",
+            "Observers searching for the {astro_type} {name} look toward {fake}.",
+            "The celestial object {name} ({astro_type}) resides in {fake}."
+          ]
         }
       ]
     },
@@ -969,7 +1247,14 @@
           "clue1": "Its approximate molar mass is {mass} g/mol.",
           "clue2": "The formula starts with \"{ans_init}\".",
           "why": "{name} has the chemical formula {formula} (molar mass ~{mass} g/mol).",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "What is the chemical formula of {name}?",
+            "Write out the molecular blueprint: which chemical formula represents {name}?",
+            "In laboratory notation, which formula corresponds to {name}?",
+            "Chemists denote {name} using which exact molecular formula?",
+            "Which stoichiometric formula identifies {name}?"
+          ]
         },
         {
           "id": "sc_rev",
@@ -981,7 +1266,14 @@
           "clue1": "Its approximate molar mass is {mass} g/mol.",
           "clue2": "Its name begins with \"{ans_init}\".",
           "why": "The formula {formula} represents {name}.",
-          "irtOffset": 0.1
+          "irtOffset": 0.1,
+          "stemVariants": [
+            "Which chemical substance has the formula {formula}?",
+            "Identify the chemical compound written in lab notation as {formula}.",
+            "Which substance corresponds to the molecular formula {formula}?",
+            "Decode the formula {formula} to name this chemical compound.",
+            "In chemistry catalogs, which compound carries the formula {formula}?"
+          ]
         },
         {
           "id": "sc_tf",
@@ -992,7 +1284,19 @@
           "clue1": "Check the elemental composition of {name} (~{mass} g/mol).",
           "whyTrue": "True! {name} has the formula {formula}.",
           "whyFalse": "False! The formula of {name} is {formula}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "The chemical formula of {name} is {formula}.",
+            "In chemical notation, {formula} is the verified formula for {name}.",
+            "The molecular composition of {name} is written as {formula}.",
+            "Standard chemistry references list {formula} as the formula of {name}."
+          ],
+          "falsePromptVariants": [
+            "The chemical formula of {name} is {fake}.",
+            "In chemical notation, {fake} is the verified formula for {name}.",
+            "The molecular composition of {name} is written as {fake}.",
+            "Standard chemistry references list {fake} as the formula of {name}."
+          ]
         },
         {
           "id": "sc_mass",
@@ -1006,7 +1310,14 @@
           "maxClamp": 1500,
           "clue1": "Add the standard atomic weights of the atoms in {formula}.",
           "why": "{name} ({formula}) has a molar mass of approximately {mass} g/mol.",
-          "irtOffset": 0.4
+          "irtOffset": 0.4,
+          "stemVariants": [
+            "What is the approximate molar mass of {name} ({formula})?",
+            "Dial in the approximate molar mass (g/mol) of {name} ({formula}).",
+            "Roughly how many grams per mole does {name} ({formula}) weigh?",
+            "Estimate the molecular weight of {name} ({formula}).",
+            "Calibrate the approximate molar mass of the compound {name} ({formula})."
+          ]
         }
       ]
     },
@@ -1033,7 +1344,14 @@
           "clue1": "It launched in {year}.",
           "clue2": "The operator starts with \"{ans_init}\".",
           "why": "{name} (launched {year}) was operated by {agency}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Which space agency or operator ran the {year} mission {name}?",
+            "Launched in {year}, the mission {name} flew under which space agency or operator?",
+            "Which space organization directed the {year} flight of {name}?",
+            "Credit for operating the {year} spaceflight {name} belongs to which agency?",
+            "In {year}, which spacefarer agency or operator launched {name}?"
+          ]
         },
         {
           "id": "sm_rev",
@@ -1045,7 +1363,14 @@
           "clue1": "It launched in {year}.",
           "clue2": "Its name begins with \"{ans_init}\".",
           "why": "{name} ({year}) was operated by {agency}.",
-          "irtOffset": 0.1
+          "irtOffset": 0.1,
+          "stemVariants": [
+            "Which of these space missions or spacecraft was operated by {agency}?",
+            "Which of these space missions or craft flew under the banner of {agency}?",
+            "Inspect the launch manifest: which mission here was operated by {agency}?",
+            "Which spacecraft or spaceflight from this slate belongs to {agency}?",
+            "Identify the space mission guided by {agency}."
+          ]
         },
         {
           "id": "sm_tf",
@@ -1056,7 +1381,19 @@
           "clue1": "Recall which spacefaring organization launched {name}.",
           "whyTrue": "True! {name} ({year}) was operated by {agency}.",
           "whyFalse": "False! {name} was operated by {agency}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "The {year} space mission {name} was operated by {agency}.",
+            "Mission logs credit {agency} with operating the {year} spaceflight {name}.",
+            "In {year}, {agency} served as the operator of the space mission {name}.",
+            "The {year} mission {name} was flown by {agency}."
+          ],
+          "falsePromptVariants": [
+            "The {year} space mission {name} was operated by {fake}.",
+            "Mission logs credit {fake} with operating the {year} spaceflight {name}.",
+            "In {year}, {fake} served as the operator of the space mission {name}.",
+            "The {year} mission {name} was flown by {fake}."
+          ]
         },
         {
           "id": "sm_year",
@@ -1070,7 +1407,14 @@
           "maxClamp": 2025,
           "clue1": "It was operated by {agency}.",
           "why": "{name} ({agency}) launched in {year}.",
-          "irtOffset": 0.25
+          "irtOffset": 0.25,
+          "stemVariants": [
+            "In what year was the space mission {name} ({agency}) launched?",
+            "Set the launch clock to the year {agency} sent {name} into space.",
+            "In what calendar year did the {agency} mission {name} lift off?",
+            "Which year marked the launch of {name} ({agency})?",
+            "Pinpoint the launch year for the spaceflight {name} ({agency})."
+          ]
         }
       ]
     },
@@ -1099,7 +1443,14 @@
           "clue1": "It sits in the {region} region (population ~{pop_k},000).",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} (region: {region}) is a city in {country}.",
-          "irtOffset": -0.05
+          "irtOffset": -0.05,
+          "stemVariants": [
+            "In which country is the city of {name} located?",
+            "Spin the Meridian globe: which country is home to the city of {name}?",
+            "Travelers bound for {name} are touching down in which nation?",
+            "On a political map of the world, which country contains {name}?",
+            "Which sovereign nation encompasses the urban center of {name}?"
+          ]
         },
         {
           "id": "gc_rev",
@@ -1111,7 +1462,14 @@
           "clue1": "It lies in the {region} region.",
           "clue2": "The city's name begins with \"{ans_init}\".",
           "why": "{name} ({region}) is located in {country}.",
-          "irtOffset": 0.1
+          "irtOffset": 0.1,
+          "stemVariants": [
+            "Which of these cities is located in {country}?",
+            "Which of these cities sits within the borders of {country}?",
+            "Pack a passport for {country} and you could visit which of these cities?",
+            "On a map of {country}, which urban center appears here?",
+            "Identify the city located inside {country}."
+          ]
         },
         {
           "id": "gc_reg",
@@ -1120,10 +1478,17 @@
           "answerCol": 2,
           "distractorCol": 2,
           "preferSameCol": 1,
-          "clue1": "{name} has a population of roughly {pop_k},000.",
+          "clue1": "Population of {name}: roughly {pop_k},000.",
           "clue2": "The region name starts with \"{ans_init}\".",
           "why": "{name} is located in {region}, {country}.",
-          "irtOffset": 0.3
+          "irtOffset": 0.3,
+          "stemVariants": [
+            "In {country}, which state, province, or region contains the city of {name}?",
+            "Zoom into {country}: which state, province, or region encompasses {name}?",
+            "Within {country}, {name} belongs to which administrative region or state?",
+            "Which subnational province, state, or region of {country} contains {name}?",
+            "Locate {name} inside {country} by selecting its state or region."
+          ]
         },
         {
           "id": "gc_tf",
@@ -1134,7 +1499,19 @@
           "clue1": "Locate the {region} region on a world map.",
           "whyTrue": "True! {name} ({region}) is in {country}.",
           "whyFalse": "False! {name} is in {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "The city of {name} is located in {country}.",
+            "World atlases place the city of {name} inside {country}.",
+            "Geography records confirm that {name} is a city in {country}.",
+            "The urban center of {name} is situated within the borders of {country}."
+          ],
+          "falsePromptVariants": [
+            "The city of {name} is located in {fake}.",
+            "World atlases place the city of {name} inside {fake}.",
+            "Geography records confirm that {name} is a city in {fake}.",
+            "The urban center of {name} is situated within the borders of {fake}."
+          ]
         },
         {
           "id": "gc_pop",
@@ -1148,7 +1525,14 @@
           "maxClamp": 30000,
           "clue1": "{name} is located in {region}, {country}.",
           "why": "{name}, {country} has an approximate population of {pop_k} thousand.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "Approximately what is the population of {name}, {country}?",
+            "Dial in the approximate population of {name}, {country}.",
+            "Roughly how many residents live in {name}, {country}?",
+            "Estimate the urban population of {name} in {country}.",
+            "Calibrate the census scale for the city of {name}, {country}."
+          ]
         }
       ]
     },
@@ -1176,7 +1560,14 @@
           "clue1": "This airport is located in {country}.",
           "clue2": "The city starts with \"{ans_init}\".",
           "why": "{airport} ({iata}) serves {city}, {country}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Which city is served by {airport} (IATA code {iata})?",
+            "Spot baggage tag '{iata}' at {airport} and you have arrived in which city?",
+            "Which metropolitan city is served by {airport} ({iata})?",
+            "Travelers landing at {airport} (code {iata}) are visiting which city?",
+            "Match IATA hub {iata} ({airport}) with the city it serves."
+          ]
         },
         {
           "id": "ga_code",
@@ -1187,7 +1578,14 @@
           "clue1": "Located in {city}, {country}.",
           "clue2": "The 3-letter code begins with \"{ans_init}\".",
           "why": "{airport} ({city}, {country}) uses the IATA code {iata}.",
-          "irtOffset": 0.25
+          "irtOffset": 0.25,
+          "stemVariants": [
+            "What is the 3-letter IATA airport code for {airport} in {city}?",
+            "Check your boarding pass for {airport} in {city}: what 3-letter IATA code appears?",
+            "Which three-letter aviation code designates {airport} serving {city}?",
+            "Luggage bound for {airport} in {city} carries which 3-letter IATA tag?",
+            "Identify the official IATA airport code of {airport} ({city})."
+          ]
         },
         {
           "id": "ga_country",
@@ -1198,7 +1596,14 @@
           "clue1": "It serves the city of {city}.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{airport} ({iata}) is located in {city}, {country}.",
-          "irtOffset": -0.1
+          "irtOffset": -0.1,
+          "stemVariants": [
+            "In which country is {airport} (IATA: {iata}) located?",
+            "Clear customs at {airport} (IATA: {iata}) and you are entering which country?",
+            "Which nation hosts the aviation hub {airport} (code {iata})?",
+            "On global flight maps, {airport} (IATA: {iata}) sits in which country?",
+            "Touch down at {airport} ({iata}) inside which country?"
+          ]
         },
         {
           "id": "ga_tf",
@@ -1209,7 +1614,19 @@
           "clue1": "Recall the international hub serving {city}.",
           "whyTrue": "True! {iata} is {airport} in {city}, {country}.",
           "whyFalse": "False! {iata} ({airport}) is in {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "Airport code {iata} belongs to {airport} in {country}.",
+            "International flight rosters assign code {iata} ({airport}) to {country}.",
+            "Travelers flying into {airport} ({iata}) land inside {country}.",
+            "IATA code {iata} designates {airport}, situated in {country}."
+          ],
+          "falsePromptVariants": [
+            "Airport code {iata} belongs to an airport in {fake}.",
+            "International flight rosters assign code {iata} to an airport in {fake}.",
+            "Travelers flying into IATA code {iata} land inside {fake}.",
+            "IATA code {iata} designates an airport situated in {fake}."
+          ]
         }
       ]
     },
@@ -1236,7 +1653,14 @@
           "clue1": "Its summit reaches {elev_m} meters above sea level.",
           "clue2": "The country begins with \"{ans_init}\".",
           "why": "{name} ({elev_m} meters) is located in {country}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "In which country is the mountain peak {name} ({elev_m} m) located?",
+            "Rising {elev_m} m above sea level, the peak {name} towers over which country?",
+            "Mountaineers climbing {name} ({elev_m} m) ascend within which nation?",
+            "Which country's topography features the {elev_m}-meter summit {name}?",
+            "Locate the {elev_m}-meter mountain {name} on the world map: which country claims it?"
+          ]
         },
         {
           "id": "gm_rev",
@@ -1248,7 +1672,14 @@
           "clue1": "Its elevation is approximately {elev_m} meters.",
           "clue2": "Its name begins with \"{ans_init}\".",
           "why": "{name} ({elev_m} m) rises in {country}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these mountains or peaks is located in {country}?",
+            "Which of these peaks rises above the landscape of {country}?",
+            "Mountaineers trekking through {country} could summit which of these peaks?",
+            "Spot the mountain on this list situated inside {country}.",
+            "Which peak belongs to the highland geography of {country}?"
+          ]
         },
         {
           "id": "gm_tf",
@@ -1259,7 +1690,19 @@
           "clue1": "It stands {elev_m} meters above sea level.",
           "whyTrue": "True! {name} ({elev_m} m) is in {country}.",
           "whyFalse": "False! {name} is located in {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "The mountain peak {name} is located in {country}.",
+            "Topographic maps locate the summit {name} inside {country}.",
+            "The mountain {name} rises within the borders of {country}.",
+            "Mountaineering atlases place {name} in {country}."
+          ],
+          "falsePromptVariants": [
+            "The mountain peak {name} is located in {fake}.",
+            "Topographic maps locate the summit {name} inside {fake}.",
+            "The mountain {name} rises within the borders of {fake}.",
+            "Mountaineering atlases place {name} in {fake}."
+          ]
         },
         {
           "id": "gm_elev",
@@ -1273,7 +1716,14 @@
           "maxClamp": 9000,
           "clue1": "This peak is located in {country}.",
           "why": "{name} ({country}) has an elevation of {elev_m} meters.",
-          "irtOffset": 0.3
+          "irtOffset": 0.3,
+          "stemVariants": [
+            "Approximately how high above sea level is {name} ({country})?",
+            "Set the altimeter to the approximate summit elevation of {name} ({country}).",
+            "How tall above sea level does {name} in {country} stand?",
+            "Estimate the peak altitude of {name} ({country}).",
+            "Dial in the elevation of the summit {name} ({country})."
+          ]
         }
       ]
     },
@@ -1300,7 +1750,14 @@
           "clue1": "This waterway extends approximately {len_km} kilometers.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} ({len_km} km) flows through {country}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Which country is home to {name} ({len_km} km long)?",
+            "Winding for roughly {len_km} km, the waterway {name} flows through which country?",
+            "Which nation's landscape is carved by the {len_km}-km river {name}?",
+            "Trace the {len_km}-kilometer course of {name} to which country?",
+            "On hydrological maps, {name} ({len_km} km) is associated with which nation?"
+          ]
         },
         {
           "id": "gr_rev",
@@ -1312,7 +1769,14 @@
           "clue1": "Its length is about {len_km} km.",
           "clue2": "Its name begins with \"{ans_init}\".",
           "why": "{name} ({len_km} km) flows in {country}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these rivers flows in {country}?",
+            "Which of these waterways winds through {country}?",
+            "Follow the river basins of {country} to spot which river here?",
+            "Which river on this slate flows within {country}?",
+            "Identify the waterway belonging to the geography of {country}."
+          ]
         },
         {
           "id": "gr_tf",
@@ -1323,7 +1787,19 @@
           "clue1": "Its total length is approximately {len_km} km.",
           "whyTrue": "True! {name} flows in {country}.",
           "whyFalse": "False! {name} is in {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{name} is a river located in {country}.",
+            "Hydrological atlases chart the river {name} within {country}.",
+            "The waterway {name} flows through {country}.",
+            "Geography records place the river {name} in {country}."
+          ],
+          "falsePromptVariants": [
+            "{name} is a river located in {fake}.",
+            "Hydrological atlases chart the river {name} within {fake}.",
+            "The waterway {name} flows through {fake}.",
+            "Geography records place the river {name} in {fake}."
+          ]
         },
         {
           "id": "gr_len",
@@ -1337,7 +1813,14 @@
           "maxClamp": 7500,
           "clue1": "This river flows through {country}.",
           "why": "{name} ({country}) is approximately {len_km} km long.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "Approximately how long is {name} ({country})?",
+            "Gauge the approximate course length of {name} ({country}).",
+            "Roughly how many kilometers long does {name} ({country}) run?",
+            "Dial in the river length of {name} in {country}.",
+            "Estimate the distance from source to mouth of {name} ({country})."
+          ]
         }
       ]
     },
@@ -1365,7 +1848,14 @@
           "clue1": "{name} is classified as a {geo_type}.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} ({geo_type}) is located in {country}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "In which country is the {geo_type} {name} located?",
+            "Which nation is home to the natural feature {name} ({geo_type})?",
+            "Visit the {geo_type} known as {name} inside which country?",
+            "On a physical atlas, the {geo_type} {name} belongs to which nation?",
+            "Locate the {geo_type} {name} within which country's borders?"
+          ]
         },
         {
           "id": "gw_type",
@@ -1376,7 +1866,14 @@
           "clue1": "It is located in {country}.",
           "clue2": "The feature type starts with \"{ans_init}\".",
           "why": "{name} ({country}) is a {geo_type}.",
-          "irtOffset": -0.1
+          "irtOffset": -0.1,
+          "stemVariants": [
+            "What type of geographical feature is {name} in {country}?",
+            "Inside {country}, what kind of landform or natural feature is {name}?",
+            "How do geographers classify the natural landmark {name} in {country}?",
+            "Visit {name} in {country} and you are beholding which type of geographical feature?",
+            "Which geographic category best defines {name} ({country})?"
+          ]
         },
         {
           "id": "gw_rev",
@@ -1388,7 +1885,14 @@
           "clue1": "It is classified as a {geo_type}.",
           "clue2": "Its name begins with \"{ans_init}\".",
           "why": "{name} ({geo_type}) is located in {country}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these natural features is located in {country}?",
+            "Which of these natural wonders or landforms lies inside {country}?",
+            "Explore the wilderness of {country} to encounter which feature here?",
+            "Spot the geographic landmark on this list situated in {country}.",
+            "Which natural feature here is found within {country}?"
+          ]
         },
         {
           "id": "gw_tf",
@@ -1399,7 +1903,19 @@
           "clue1": "Picture where {name} appears on the world atlas.",
           "whyTrue": "True! {name} ({geo_type}) is in {country}.",
           "whyFalse": "False! {name} is in {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "The {geo_type} {name} is located in {country}.",
+            "Physical maps place the {geo_type} {name} inside {country}.",
+            "The natural landmark {name} ({geo_type}) is located in {country}.",
+            "Travelers find the {geo_type} {name} within {country}."
+          ],
+          "falsePromptVariants": [
+            "The {geo_type} {name} is located in {fake}.",
+            "Physical maps place the {geo_type} {name} inside {fake}.",
+            "The natural landmark {name} ({geo_type}) is located in {fake}.",
+            "Travelers find the {geo_type} {name} within {fake}."
+          ]
         }
       ]
     },
@@ -1427,7 +1943,14 @@
           "clue1": "This {medium} dates to {year}.",
           "clue2": "The artist's name begins with \"{ans_init}\".",
           "why": "{artist} created \"{title}\" ({year}, {medium}).",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Who created the {year} artwork \"{title}\"?",
+            "Completed in {year}, the work \"{title}\" bears the signature hand of which artist?",
+            "Which master creator produced \"{title}\" in {year}?",
+            "Step before \"{title}\" ({year}) in a museum gallery: whose work are you admiring?",
+            "Art historians attribute the {year} piece \"{title}\" to which creator?"
+          ]
         },
         {
           "id": "aw_rev",
@@ -1439,7 +1962,14 @@
           "clue1": "It is a {medium} dating from {year}.",
           "clue2": "Its title begins with \"{ans_init}\".",
           "why": "{artist} created the {medium} \"{title}\" in {year}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these artworks was created by {artist}?",
+            "Stroll through a retrospective of {artist}: which work here hangs on the wall?",
+            "Which of these pieces belongs to the catalog of {artist}?",
+            "Spot the artwork in this lineup created by {artist}!",
+            "Which title from this gallery slate came from the studio of {artist}?"
+          ]
         },
         {
           "id": "aw_med",
@@ -1450,7 +1980,14 @@
           "clue1": "Created by {artist} in {year}.",
           "clue2": "The medium starts with \"{ans_init}\".",
           "why": "\"{title}\" by {artist} ({year}) is a {medium}.",
-          "irtOffset": 0.1
+          "irtOffset": 0.1,
+          "stemVariants": [
+            "What artistic form or medium is \"{title}\" ({year}) by {artist}?",
+            "In what artistic medium did {artist} execute \"{title}\" ({year})?",
+            "Check the gallery placard for \"{title}\" ({year}) by {artist}: what medium is listed?",
+            "Which form or medium defines {artist}'s {year} work \"{title}\"?",
+            "Museum curators catalog \"{title}\" ({year}) by {artist} under which medium?"
+          ]
         },
         {
           "id": "aw_tf",
@@ -1461,7 +1998,19 @@
           "clue1": "Recall the master behind the {medium} \"{title}\".",
           "whyTrue": "True! {artist} created \"{title}\" in {year}.",
           "whyFalse": "False! {artist} (not {fake}) created \"{title}\".",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{artist} created the {year} artwork \"{title}\" ({medium}).",
+            "Curatorial archives credit {artist} with creating \"{title}\" ({year}, {medium}).",
+            "In {year}, {artist} produced the {medium} work \"{title}\".",
+            "Gallery records attribute \"{title}\" ({year}, {medium}) to {artist} on display."
+          ],
+          "falsePromptVariants": [
+            "{fake} created the {year} artwork \"{title}\" ({medium}).",
+            "Curatorial archives credit {fake} with creating \"{title}\" ({year}, {medium}).",
+            "In {year}, {fake} produced the {medium} work \"{title}\".",
+            "Gallery records attribute \"{title}\" ({year}, {medium}) to {fake} on display."
+          ]
         },
         {
           "id": "aw_year",
@@ -1475,7 +2024,14 @@
           "maxClamp": 2024,
           "clue1": "{artist} created this {medium}.",
           "why": "{artist} created \"{title}\" ({medium}) in {year}.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "In approximately what year did {artist} create \"{title}\"?",
+            "Date the masterpiece: around what year did {artist} create \"{title}\"?",
+            "In what year did {artist} complete the work \"{title}\"?",
+            "In roughly what calendar year did {artist} complete \"{title}\"?",
+            "Pinpoint when {artist} produced the work \"{title}\"."
+          ]
         }
       ]
     },
@@ -1504,7 +2060,14 @@
           "clue1": "This {arch_type} dates to {year}.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} ({arch_type}, {year}) is located in {country}.",
-          "irtOffset": -0.05
+          "irtOffset": -0.05,
+          "stemVariants": [
+            "In which country is the landmark {name} ({arch_type}) located?",
+            "Travel to inspect the landmark {name} ({arch_type}) in which country?",
+            "Which nation's skyline or heritage boasts the {arch_type} {name}?",
+            "Architectural guides place {name} ({arch_type}) inside which country?",
+            "In which country does the historic {arch_type} {name} stand?"
+          ]
         },
         {
           "id": "al_type",
@@ -1515,7 +2078,14 @@
           "clue1": "Built or founded in {year} in {country}.",
           "clue2": "The category starts with \"{ans_init}\".",
           "why": "{name} ({country}, {year}) is a {arch_type}.",
-          "irtOffset": 0.05
+          "irtOffset": 0.05,
+          "stemVariants": [
+            "What architectural category best describes {name} in {country}?",
+            "Standing in {country}, {name} is an example of which architectural form?",
+            "How do architectural historians classify {name} in {country}?",
+            "Which building or monument category defines {name} ({country})?",
+            "In {country}, {name} belongs to which architectural class?"
+          ]
         },
         {
           "id": "al_rev",
@@ -1527,7 +2097,14 @@
           "clue1": "It is a {arch_type} dating from {year}.",
           "clue2": "Its name starts with \"{ans_init}\".",
           "why": "{name} ({arch_type}, {year}) stands in {country}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these architectural landmarks stands in {country}?",
+            "Which of these architectural landmarks rises in {country}?",
+            "Take an architectural tour of {country} to visit which landmark here?",
+            "Spot the famed structure on this list located in {country}.",
+            "Which monument or building here belongs to {country}?"
+          ]
         },
         {
           "id": "al_tf",
@@ -1538,7 +2115,19 @@
           "clue1": "This landmark dates to {year}.",
           "whyTrue": "True! {name} ({arch_type}) is located in {country}.",
           "whyFalse": "False! {name} is in {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "The {arch_type} {name} is located in {country}.",
+            "Architectural atlases place {name} ({arch_type}) in {country}.",
+            "To see the {arch_type} {name}, travelers journey to {country}.",
+            "The landmark {name} ({arch_type}) stands within {country}."
+          ],
+          "falsePromptVariants": [
+            "The {arch_type} {name} is located in {fake}.",
+            "Architectural atlases place {name} ({arch_type}) in {fake}.",
+            "To see the {arch_type} {name}, travelers journey to {fake}.",
+            "The landmark {name} ({arch_type}) stands within {fake}."
+          ]
         },
         {
           "id": "al_year",
@@ -1552,7 +2141,14 @@
           "maxClamp": 2024,
           "clue1": "It is a {arch_type} located in {country}.",
           "why": "{name} ({country}, {arch_type}) dates to {year} CE.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "In approximately what year was {name} ({country}) built or founded?",
+            "Set the architectural timeline to the year {name} ({country}) was built or founded.",
+            "Around which calendar year was {name} in {country} erected or established?",
+            "When did construction or founding begin for {name} ({country})?",
+            "Pinpoint the approximate year {name} ({country}) was established."
+          ]
         }
       ]
     },
@@ -1581,7 +2177,14 @@
           "clue1": "{name} was born in {year}.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} ({discipline}, b. {year}) was associated with {country}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Which country was the {discipline} {name} (b. {year}) associated with?",
+            "Born in {year}, {discipline} {name} is linked to the cultural heritage of which country?",
+            "Which nation claims {name} ({discipline}, b. {year}) among its artistic figures?",
+            "Trace the artistic legacy of {name} ({discipline}, born {year}) to which country?",
+            "With which country is {discipline} {name} (b. {year}) chiefly associated?"
+          ]
         },
         {
           "id": "ac_disc",
@@ -1592,18 +2195,37 @@
           "clue1": "{name} was born in {year} ({country}).",
           "clue2": "The discipline begins with \"{ans_init}\".",
           "why": "{name} ({country}, b. {year}) was primarily a {discipline}.",
-          "irtOffset": 0.05
+          "irtOffset": 0.05,
+          "stemVariants": [
+            "What was the primary artistic discipline of {name} ({country}, b. {year})?",
+            "In the arts of {country}, {name} (b. {year}) earned renown in which discipline?",
+            "Which creative craft best identifies {name} ({country}, born {year})?",
+            "Art histories catalog {name} ({country}, b. {year}) under which discipline?",
+            "Which artistic field defined the career of {name} ({country}, b. {year})?"
+          ]
         },
         {
           "id": "ac_tf",
           "archetype": "GAUNTLET_SHATTER",
-          "truePrompt": "Artist {name} (born {year}) was primarily known as a {discipline}.",
-          "falsePrompt": "Artist {name} (born {year}) was primarily known as a {fake}.",
+          "truePrompt": "Artist {name} (born {year}) was primarily known in the field of {discipline}.",
+          "falsePrompt": "Artist {name} (born {year}) was primarily known in the field of {fake}.",
           "fakeCol": 1,
           "clue1": "{name} was associated with {country}.",
           "whyTrue": "True! {name} was renowned as a {discipline}.",
           "whyFalse": "False! {name} was primarily a {discipline}, not a {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "Artist {name} (born {year}) was primarily known in the field of {discipline}.",
+            "Art chronicles record {name} (born {year}) primarily in the discipline of {discipline}.",
+            "Born in {year}, {name} earned fame primarily in {discipline}.",
+            "Cultural archives classify {name} (b. {year}) under {discipline}."
+          ],
+          "falsePromptVariants": [
+            "Artist {name} (born {year}) was primarily known in the field of {fake}.",
+            "Art chronicles record {name} (born {year}) primarily in the discipline of {fake}.",
+            "Born in {year}, {name} earned fame primarily in {fake}.",
+            "Cultural archives classify {name} (b. {year}) under {fake}."
+          ]
         },
         {
           "id": "ac_year",
@@ -1617,7 +2239,14 @@
           "maxClamp": 2000,
           "clue1": "{name} was a {discipline} from {country}.",
           "why": "{name} ({discipline}, {country}) was born in {year}.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "In what year was the {discipline} {name} ({country}) born?",
+            "Dial in the birth year of {discipline} {name} ({country}).",
+            "Which calendar year saw the birth of {name} ({discipline}, {country})?",
+            "When was {country} {discipline} {name} born?",
+            "Pinpoint the birth year of {discipline} {name} of {country}."
+          ]
         }
       ]
     },
@@ -1645,7 +2274,14 @@
           "clue1": "This {year} film came from {country}.",
           "clue2": "The director's name starts with \"{ans_init}\".",
           "why": "{director} directed \"{title}\" ({year}, {country}).",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Who directed the {year} film \"{title}\"?",
+            "Step behind the camera of {year}: which filmmaker directed \"{title}\"?",
+            "Which director helmed the {year} feature \"{title}\"?",
+            "Roll the opening credits of \"{title}\" ({year}): whose name follows 'Directed by'?",
+            "Cinema historians credit which director with the {year} release \"{title}\"?"
+          ]
         },
         {
           "id": "pf_rev",
@@ -1657,7 +2293,14 @@
           "clue1": "Released in {year} ({country}).",
           "clue2": "Its title begins with \"{ans_init}\".",
           "why": "{director} directed \"{title}\" ({year}).",
-          "irtOffset": 0.1
+          "irtOffset": 0.1,
+          "stemVariants": [
+            "Which of these films was directed by {director}?",
+            "Which feature on this marquee belongs to the filmography of {director}?",
+            "Step into a retrospective for {director}: which film here is screening?",
+            "Which motion picture here did {director} helm?",
+            "Which of these cinema titles was helmed by {director}?"
+          ]
         },
         {
           "id": "pf_country",
@@ -1668,7 +2311,14 @@
           "clue1": "Directed by {director} in {year}.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "\"{title}\" ({year}), directed by {director}, is from {country}.",
-          "irtOffset": 0.2
+          "irtOffset": 0.2,
+          "stemVariants": [
+            "Which country produced the {year} film \"{title}\", directed by {director}?",
+            "Directed by {director} in {year}, \"{title}\" hailed from which country's film industry?",
+            "Which nation produced {director}'s {year} picture \"{title}\"?",
+            "On international festival rosters, \"{title}\" ({year}, dir. {director}) represents which country?",
+            "Which country's cinema industry produced \"{title}\" ({year}, dir. {director})?"
+          ]
         },
         {
           "id": "pf_tf",
@@ -1679,7 +2329,19 @@
           "clue1": "Recall who directed this {year} {country} film.",
           "whyTrue": "True! {director} directed \"{title}\" ({year}).",
           "whyFalse": "False! {director} (not {fake}) directed \"{title}\".",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{director} directed the {year} film \"{title}\" ({country}).",
+            "Film archives credit {director} as director of the {year} release \"{title}\" ({country}).",
+            "In {year}, {director} helmed the {country} motion picture \"{title}\".",
+            "Cinema credits list {director} as director of \"{title}\" ({year}, {country})."
+          ],
+          "falsePromptVariants": [
+            "{fake} directed the {year} film \"{title}\" ({country}).",
+            "Film archives credit {fake} as director of the {year} release \"{title}\" ({country}).",
+            "In {year}, {fake} helmed the {country} motion picture \"{title}\".",
+            "Cinema credits list {fake} as director of \"{title}\" ({year}, {country})."
+          ]
         },
         {
           "id": "pf_year",
@@ -1693,7 +2355,14 @@
           "maxClamp": 2025,
           "clue1": "{director} directed this {country} film.",
           "why": "\"{title}\" (directed by {director}) was released in {year}.",
-          "irtOffset": 0.3
+          "irtOffset": 0.3,
+          "stemVariants": [
+            "In what year was the film \"{title}\" (dir. {director}) released?",
+            "Set the marquee calendar to the release year of \"{title}\" (dir. {director}).",
+            "In which year did {director}'s film \"{title}\" premiere?",
+            "When did \"{title}\" (directed by {director}) hit theaters?",
+            "Pinpoint the theatrical release year of \"{title}\" ({director})."
+          ]
         }
       ]
     },
@@ -1718,7 +2387,14 @@
           "clue1": "This album was released in {year}.",
           "clue2": "The artist's name begins with \"{ans_init}\".",
           "why": "{artist} released the album \"{title}\" ({year}).",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Which musical artist or band released the {year} album \"{title}\"?",
+            "Drop the needle on {year}: which recording artist or band issued the album \"{title}\"?",
+            "Whose discography includes the {year} studio record \"{title}\"?",
+            "Check the record sleeve from {year}: who released \"{title}\"?",
+            "Which act brought the album \"{title}\" to listeners in {year}?"
+          ]
         },
         {
           "id": "pa_rev",
@@ -1730,7 +2406,14 @@
           "clue1": "It came out in {year}.",
           "clue2": "The album title starts with \"{ans_init}\".",
           "why": "{artist} released \"{title}\" in {year}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these albums was released by {artist}?",
+            "Flip through the vinyl catalog of {artist}: which album here belongs in it?",
+            "Which of these records was released by {artist}?",
+            "Which album on this slate was recorded by {artist}?",
+            "Which title on this list sits inside the discography of {artist}?"
+          ]
         },
         {
           "id": "pa_tf",
@@ -1741,7 +2424,19 @@
           "clue1": "Match the {year} album \"{title}\" to its performer.",
           "whyTrue": "True! {artist} released \"{title}\" in {year}.",
           "whyFalse": "False! {artist} (not {fake}) released \"{title}\".",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{artist} released the album \"{title}\" ({year}).",
+            "Music catalogs credit {artist} with the {year} album \"{title}\".",
+            "In {year}, {artist} issued the album \"{title}\".",
+            "Discography logs credit {artist} with releasing \"{title}\" in {year}."
+          ],
+          "falsePromptVariants": [
+            "{fake} released the album \"{title}\" ({year}).",
+            "Music catalogs credit {fake} with the {year} album \"{title}\".",
+            "In {year}, {fake} issued the album \"{title}\".",
+            "Discography logs credit {fake} with releasing \"{title}\" in {year}."
+          ]
         },
         {
           "id": "pa_year",
@@ -1755,7 +2450,14 @@
           "maxClamp": 2025,
           "clue1": "{artist} released this studio album.",
           "why": "{artist} released \"{title}\" in {year}.",
-          "irtOffset": 0.3
+          "irtOffset": 0.3,
+          "stemVariants": [
+            "In what year did {artist} release the album \"{title}\"?",
+            "Dial in the release year when {artist} dropped the album \"{title}\".",
+            "Which calendar year saw the debut of {artist}'s album \"{title}\"?",
+            "When did {artist} release the record \"{title}\"?",
+            "Pinpoint the year \"{title}\" by {artist} hit record shelves."
+          ]
         }
       ]
     },
@@ -1780,7 +2482,14 @@
           "clue1": "This song was released in {year}.",
           "clue2": "The performer's name starts with \"{ans_init}\".",
           "why": "{artist} performed \"{title}\" ({year}).",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Who performed the {year} song \"{title}\"?",
+            "Cue up the {year} track \"{title}\": which artist or act recorded it?",
+            "Which performer is heard on the {year} song \"{title}\"?",
+            "Spin back to {year}: who delivered the song \"{title}\"?",
+            "Whose voice or band headlines the {year} release \"{title}\"?"
+          ]
         },
         {
           "id": "ps_rev",
@@ -1792,7 +2501,14 @@
           "clue1": "Released in {year}.",
           "clue2": "The song title begins with \"{ans_init}\".",
           "why": "{artist} performed \"{title}\" ({year}).",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these songs was performed by {artist}?",
+            "Which of these tracks appears in the songbook of {artist}?",
+            "Press play on a playlist for {artist}: which song here belongs?",
+            "Which track on this slate did {artist} perform?",
+            "Which single or song on this slate was recorded by {artist}?"
+          ]
         },
         {
           "id": "ps_tf",
@@ -1803,7 +2519,19 @@
           "clue1": "Think back to the charts of {year}.",
           "whyTrue": "True! {artist} performed \"{title}\" ({year}).",
           "whyFalse": "False! {artist} (not {fake}) performed \"{title}\".",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{artist} performed the song \"{title}\" ({year}).",
+            "Recording logs credit {artist} with the {year} track \"{title}\".",
+            "In {year}, {artist} performed the song \"{title}\".",
+            "Chart archives credit {artist} with recording \"{title}\" in {year}."
+          ],
+          "falsePromptVariants": [
+            "{fake} performed the song \"{title}\" ({year}).",
+            "Recording logs credit {fake} with the {year} track \"{title}\".",
+            "In {year}, {fake} performed the song \"{title}\".",
+            "Chart archives credit {fake} with recording \"{title}\" in {year}."
+          ]
         },
         {
           "id": "ps_year",
@@ -1817,7 +2545,14 @@
           "maxClamp": 2025,
           "clue1": "{artist} performed this recorded track.",
           "why": "\"{title}\" by {artist} was released in {year}.",
-          "irtOffset": 0.3
+          "irtOffset": 0.3,
+          "stemVariants": [
+            "In what year was \"{title}\" by {artist} released?",
+            "Set the chart clock to the year {artist} released \"{title}\".",
+            "Which year saw {artist} release the song \"{title}\"?",
+            "When did \"{title}\" by {artist} first hit the airwaves?",
+            "Pinpoint the calendar year \"{title}\" ({artist}) debuted."
+          ]
         }
       ]
     },
@@ -1844,7 +2579,14 @@
           "clue1": "This series premiered in {year}.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "The TV series \"{title}\" ({year}) originated in {country}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "In which country did the television series \"{title}\" (premiered {year}) originate?",
+            "Premiering in {year}, the TV series \"{title}\" aired first in which country?",
+            "Which nation's broadcasters produced the {year} television show \"{title}\"?",
+            "Trace the broadcast origin of \"{title}\" (debuted {year}) to which country?",
+            "In {year}, which country brought the television series \"{title}\" to screens?"
+          ]
         },
         {
           "id": "pt_rev",
@@ -1856,7 +2598,14 @@
           "clue1": "It premiered in {year}.",
           "clue2": "Its title begins with \"{ans_init}\".",
           "why": "\"{title}\" ({year}) is a television series from {country}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these television series originated in {country}?",
+            "Which of these television series originated on networks in {country}?",
+            "Tune into television from {country}: which show here hails from there?",
+            "Identify the TV series produced in {country}.",
+            "Which broadcast title on this slate originated in {country}?"
+          ]
         },
         {
           "id": "pt_tf",
@@ -1867,7 +2616,19 @@
           "clue1": "It first aired in {year}.",
           "whyTrue": "True! \"{title}\" originated in {country}.",
           "whyFalse": "False! \"{title}\" originated in {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "The television series \"{title}\" ({year}) originated in {country}.",
+            "Broadcast records show the {year} TV series \"{title}\" originated in {country}.",
+            "The television program \"{title}\" ({year}) hails from {country}.",
+            "In {year}, \"{title}\" debuted as a television series from {country}."
+          ],
+          "falsePromptVariants": [
+            "The television series \"{title}\" ({year}) originated in {fake}.",
+            "Broadcast records show the {year} TV series \"{title}\" originated in {fake}.",
+            "The television program \"{title}\" ({year}) hails from {fake}.",
+            "In {year}, \"{title}\" debuted as a television series from {fake}."
+          ]
         },
         {
           "id": "pt_year",
@@ -1881,7 +2642,14 @@
           "maxClamp": 2025,
           "clue1": "This series originated in {country}.",
           "why": "\"{title}\" ({country}) premiered in {year}.",
-          "irtOffset": 0.3
+          "irtOffset": 0.3,
+          "stemVariants": [
+            "In what year did the TV series \"{title}\" ({country}) premiere?",
+            "Dial in the premiere year of the {country} television series \"{title}\".",
+            "Which calendar year marked the TV debut of \"{title}\" ({country})?",
+            "When did the television series \"{title}\" ({country}) first air?",
+            "Pinpoint the premiere year of \"{title}\" from {country}."
+          ]
         }
       ]
     },
@@ -1908,7 +2676,14 @@
           "clue1": "{name} formed in {year}.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "The musical group {name} formed in {country} in {year}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "In which country was the musical group {name} (formed {year}) founded?",
+            "Formed in {year}, the musical outfit {name} got its start in which country?",
+            "Which nation spawned the group {name} back in {year}?",
+            "Trace the musical roots of {name} (formed {year}) to which country?",
+            "In {year}, which country's music scene launched {name}?"
+          ]
         },
         {
           "id": "pb_rev",
@@ -1920,7 +2695,14 @@
           "clue1": "Formed in {year}.",
           "clue2": "The group's name starts with \"{ans_init}\".",
           "why": "{name} (formed {year}) originated in {country}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these musical groups originated in {country}?",
+            "Which of these bands or ensembles came out of {country}?",
+            "Scan the music scene of {country}: which group here formed there?",
+            "Identify the musical act that originated in {country}.",
+            "Which ensemble on this list traces its formation to {country}?"
+          ]
         },
         {
           "id": "pb_tf",
@@ -1931,7 +2713,19 @@
           "clue1": "They formed in {year}.",
           "whyTrue": "True! {name} originated in {country}.",
           "whyFalse": "False! {name} originated in {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "The musical group {name} (formed {year}) originated in {country}.",
+            "Music histories trace the group {name} (formed {year}) to {country}.",
+            "Founded in {year}, the musical act {name} hails from {country}.",
+            "The ensemble {name} ({year}) originated in {country}."
+          ],
+          "falsePromptVariants": [
+            "The musical group {name} (formed {year}) originated in {fake}.",
+            "Music histories trace the group {name} (formed {year}) to {fake}.",
+            "Founded in {year}, the musical act {name} hails from {fake}.",
+            "The ensemble {name} ({year}) originated in {fake}."
+          ]
         },
         {
           "id": "pb_year",
@@ -1945,7 +2739,14 @@
           "maxClamp": 2024,
           "clue1": "Originating in {country}.",
           "why": "{name} ({country}) formed in {year}.",
-          "irtOffset": 0.3
+          "irtOffset": 0.3,
+          "stemVariants": [
+            "In what year was the musical group {name} ({country}) formed?",
+            "Set the timeline to the year {name} ({country}) first formed.",
+            "Which calendar year saw the founding of the {country} band {name}?",
+            "When did the musical group {name} ({country}) come together?",
+            "Pinpoint when {name} ({country}) first formed."
+          ]
         }
       ]
     },
@@ -1974,7 +2775,14 @@
           "clue1": "{name} was born in {year} and represented {country}.",
           "clue2": "The sport starts with \"{ans_init}\".",
           "why": "{name} ({country}, b. {year}) competed in {sport}.",
-          "irtOffset": -0.05
+          "irtOffset": -0.05,
+          "stemVariants": [
+            "In which sport did {name} ({country}) compete?",
+            "Representing {country}, standout athlete {name} built a career in which sport?",
+            "Step into the arena for {name} ({country}): which sport did they compete in?",
+            "Which sporting discipline made {name} of {country} a competitor?",
+            "Sports archives catalog {name} ({country}) under which sport?"
+          ]
         },
         {
           "id": "spa_country",
@@ -1985,7 +2793,14 @@
           "clue1": "{name} competed in {sport} (born {year}).",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{sport} athlete {name} represented {country}.",
-          "irtOffset": 0.1
+          "irtOffset": 0.1,
+          "stemVariants": [
+            "Which country did {sport} athlete {name} (b. {year}) represent?",
+            "Born in {year}, {sport} competitor {name} represented which nation?",
+            "Which country's flag did {sport} athlete {name} (b. {year}) compete under?",
+            "On international {sport} rosters, {name} (born {year}) is linked to which country?",
+            "Link {sport} standout {name} (b. {year}) to their home nation."
+          ]
         },
         {
           "id": "spa_rev",
@@ -1997,7 +2812,14 @@
           "clue1": "Born in {year}, representing {country}.",
           "clue2": "Their name starts with \"{ans_init}\".",
           "why": "{name} ({country}) competed in {sport}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these athletes competed in {sport}?",
+            "Which of these athletes made their mark in {sport}?",
+            "Spot the competitor on this roster who starred in {sport}.",
+            "Whose career stats belong to the record books of {sport}?",
+            "Identify the athlete here known for competing in {sport}."
+          ]
         },
         {
           "id": "spa_tf",
@@ -2008,7 +2830,19 @@
           "clue1": "Recall the sport of {name} (b. {year}).",
           "whyTrue": "True! {name} ({country}) competed in {sport}.",
           "whyFalse": "False! {name} competed in {sport}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "Athlete {name} ({country}) competed in {sport}.",
+            "Athletic records list {name} ({country}) as competing in {sport}.",
+            "Competitor {name} of {country} played professionally in {sport}.",
+            "Sports archives link {name} ({country}) with {sport}."
+          ],
+          "falsePromptVariants": [
+            "Athlete {name} ({country}) competed in {fake}.",
+            "Athletic records list {name} ({country}) as competing in {fake}.",
+            "Competitor {name} of {country} played professionally in {fake}.",
+            "Sports archives link {name} ({country}) with {fake}."
+          ]
         },
         {
           "id": "spa_year",
@@ -2022,7 +2856,14 @@
           "maxClamp": 2008,
           "clue1": "Represented {country} in {sport}.",
           "why": "{name} ({country}, {sport}) was born in {year}.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "In what year was {sport} athlete {name} ({country}) born?",
+            "Dial in the birth year of {sport} competitor {name} ({country}).",
+            "Which calendar year saw the birth of {name} ({sport}, {country})?",
+            "When was {country} {sport} athlete {name} born?",
+            "Pinpoint the birth year on record for {sport} standout {name} ({country})."
+          ]
         }
       ]
     },
@@ -2051,7 +2892,14 @@
           "clue1": "Founded in {year} ({sport}).",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} ({sport}, founded {year}) is based in {country}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "In which country is the {sport} team {name} based?",
+            "Competing in {sport}, the club {name} plays its home slate in which country?",
+            "Travel to cheer on {sport} side {name} inside which nation?",
+            "Which country's {sport} leagues host the franchise {name}?",
+            "Locate the {sport} club {name} on the world sports map: which country is home?"
+          ]
         },
         {
           "id": "spc_sport",
@@ -2062,7 +2910,14 @@
           "clue1": "Based in {country} since {year}.",
           "clue2": "The sport starts with \"{ans_init}\".",
           "why": "{name} ({country}) competes in {sport}.",
-          "irtOffset": 0.05
+          "irtOffset": 0.05,
+          "stemVariants": [
+            "Which sport is played by {name} ({country}, founded {year})?",
+            "Founded in {year} in {country}, the club {name} competes in which sport?",
+            "Step inside the home ground of {name} ({country}, est. {year}): which sport is played?",
+            "Which sporting code is contested by {name} ({country}, founded {year})?",
+            "Sports directories classify {name} ({country}, {year}) under which sport?"
+          ]
         },
         {
           "id": "spc_tf",
@@ -2073,7 +2928,19 @@
           "clue1": "This club was founded in {year}.",
           "whyTrue": "True! {name} is based in {country}.",
           "whyFalse": "False! {name} is based in {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "The {sport} club {name} is based in {country}.",
+            "League directories place {sport} club {name} inside {country}.",
+            "The {sport} side {name} calls {country} home.",
+            "The {sport} franchise {name} competes in {country}."
+          ],
+          "falsePromptVariants": [
+            "The {sport} club {name} is based in {fake}.",
+            "League directories place {sport} club {name} inside {fake}.",
+            "The {sport} side {name} calls {fake} home.",
+            "The {sport} franchise {name} competes in {fake}."
+          ]
         },
         {
           "id": "spc_year",
@@ -2087,7 +2954,14 @@
           "maxClamp": 2024,
           "clue1": "Based in {country} ({sport}).",
           "why": "{name} ({country}, {sport}) was founded in {year}.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "In what year was the {sport} club {name} ({country}) founded?",
+            "Set the sports chronometer to the founding year of {sport} club {name} ({country}).",
+            "Which calendar year saw the establishment of {name} ({sport}, {country})?",
+            "When was the {country} {sport} club {name} founded?",
+            "Pinpoint the inaugural founding year of {sport} franchise {name} ({country})."
+          ]
         }
       ]
     },
@@ -2114,7 +2988,14 @@
           "clue1": "This venue holds roughly {cap} spectators.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} (capacity ~{cap}) is located in {country}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "In which country is {name} (capacity ~{cap}) located?",
+            "Seating roughly {cap} spectators, the venue {name} stands in which country?",
+            "Which nation hosts major matches inside {name} (capacity ~{cap})?",
+            "Take a seat among ~{cap} fans at {name} in which country?",
+            "On the global stadium atlas, {name} (cap. ~{cap}) lies in which country?"
+          ]
         },
         {
           "id": "sps_rev",
@@ -2126,7 +3007,14 @@
           "clue1": "Its seating capacity is approximately {cap}.",
           "clue2": "Its name begins with \"{ans_init}\".",
           "why": "{name} is located in {country}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these stadiums is located in {country}?",
+            "Which of these stadiums or arenas rises in {country}?",
+            "Match-day crowds in {country} pack the stands of which venue here?",
+            "Identify the sports arena situated inside {country}.",
+            "Spot the stadium on this list located within {country}."
+          ]
         },
         {
           "id": "sps_tf",
@@ -2137,7 +3025,19 @@
           "clue1": "This venue seats around {cap} fans.",
           "whyTrue": "True! {name} is located in {country}.",
           "whyFalse": "False! {name} is in {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{name} is a sports stadium located in {country}.",
+            "Venue guides locate the sports stadium {name} in {country}.",
+            "Spectators visit {country} to attend matches at {name}.",
+            "The arena {name} stands within the borders of {country}."
+          ],
+          "falsePromptVariants": [
+            "{name} is a sports stadium located in {fake}.",
+            "Venue guides locate the sports stadium {name} in {fake}.",
+            "Spectators visit {fake} to attend matches at {name}.",
+            "The arena {name} stands within the borders of {fake}."
+          ]
         },
         {
           "id": "sps_cap",
@@ -2151,7 +3051,14 @@
           "maxClamp": 140000,
           "clue1": "Located in {country}.",
           "why": "{name} ({country}) has an approximate capacity of {cap} seats.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "Approximately how many spectators can {name} ({country}) hold?",
+            "Estimate the approximate spectator seating capacity of {name} ({country}).",
+            "Dial in how many fans {name} in {country} can hold at capacity.",
+            "Roughly how large is the grandstand capacity of {name} ({country})?",
+            "Calibrate the seating capacity of the {country} venue {name}."
+          ]
         }
       ]
     },
@@ -2178,7 +3085,14 @@
           "clue1": "Released in {year}.",
           "clue2": "The developer starts with \"{ans_init}\".",
           "why": "{dev} developed \"{title}\" ({year}).",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Which studio developed the {year} video game \"{title}\"?",
+            "Released in {year}, the video game \"{title}\" was crafted by which development studio?",
+            "Boot up \"{title}\" ({year}): which game studio appears on the developer splash screen?",
+            "Which developer built the {year} title \"{title}\"?",
+            "Gaming archives credit which studio with developing \"{title}\" in {year}?"
+          ]
         },
         {
           "id": "svg_rev",
@@ -2190,7 +3104,14 @@
           "clue1": "First released in {year}.",
           "clue2": "The game title starts with \"{ans_init}\".",
           "why": "{dev} developed \"{title}\" ({year}).",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these video games was developed by {dev}?",
+            "Which of these video games came out of the studios of {dev}?",
+            "Browse the release catalog of {dev}: which title here belongs?",
+            "Which video game here was crafted by {dev}?",
+            "Which playable title on this slate was built by {dev}?"
+          ]
         },
         {
           "id": "svg_tf",
@@ -2201,7 +3122,19 @@
           "clue1": "Released in {year}.",
           "whyTrue": "True! {dev} developed \"{title}\" ({year}).",
           "whyFalse": "False! {dev} (not {fake}) developed \"{title}\".",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{dev} developed the video game \"{title}\" ({year}).",
+            "Gaming archives credit {dev} with developing \"{title}\" ({year}).",
+            "In {year}, studio {dev} shipped the video game \"{title}\".",
+            "Developer {dev} released \"{title}\" in {year}."
+          ],
+          "falsePromptVariants": [
+            "{fake} developed the video game \"{title}\" ({year}).",
+            "Gaming archives credit {fake} with developing \"{title}\" ({year}).",
+            "In {year}, studio {fake} shipped the video game \"{title}\".",
+            "Developer {fake} released \"{title}\" in {year}."
+          ]
         },
         {
           "id": "svg_year",
@@ -2215,7 +3148,14 @@
           "maxClamp": 2025,
           "clue1": "Developed by {dev} for video game audiences.",
           "why": "\"{title}\" ({dev}) was released in {year}.",
-          "irtOffset": 0.25
+          "irtOffset": 0.25,
+          "stemVariants": [
+            "In what year was the video game \"{title}\" ({dev}) first released?",
+            "Set the gaming timeline to the year {dev} debuted \"{title}\".",
+            "Which calendar year saw {dev} launch \"{title}\"?",
+            "When did the video game \"{title}\" ({dev}) first hit shelves?",
+            "Pinpoint the inaugural release year of \"{title}\" ({dev})."
+          ]
         }
       ]
     },
@@ -2244,7 +3184,14 @@
           "clue1": "Founded in {year} in the {industry} sector.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} ({industry}, founded {year}) is headquartered in {country}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "In which country is {name} ({industry}, founded {year}) headquartered?",
+            "Founded in {year} within {industry}, {name} operates its headquarters in which country?",
+            "Which nation is home base for {industry} firm {name} (est. {year})?",
+            "Trace the corporate headquarters of {name} ({industry}, {year}) to which country?",
+            "In the global {industry} sector, {name} (founded {year}) is headquartered in which country?"
+          ]
         },
         {
           "id": "tc_ind",
@@ -2255,7 +3202,14 @@
           "clue1": "Headquartered in {country} since {year}.",
           "clue2": "The industry begins with \"{ans_init}\".",
           "why": "{name} ({country}) operates primarily in {industry}.",
-          "irtOffset": 0.05
+          "irtOffset": 0.05,
+          "stemVariants": [
+            "What is the primary industry of {name} ({country}, founded {year})?",
+            "Headquartered in {country} since {year}, {name} competes chiefly in which industry?",
+            "Which commercial sector defines {name} ({country}, est. {year})?",
+            "Market analysts classify {name} ({country}, founded {year}) under which industry?",
+            "What core industry drives the business of {name} ({country}, {year})?"
+          ]
         },
         {
           "id": "tc_rev",
@@ -2267,7 +3221,14 @@
           "clue1": "Founded in {year} ({industry}).",
           "clue2": "The company name starts with \"{ans_init}\".",
           "why": "{name} ({industry}, {year}) is headquartered in {country}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these companies is headquartered in {country}?",
+            "Which of these technology or industrial firms maintains its headquarters in {country}?",
+            "Scan the corporate roster of {country}: which company here is based there?",
+            "Identify the enterprise headquartered within {country}.",
+            "Which business on this slate operates its headquarters from {country}?"
+          ]
         },
         {
           "id": "tc_tf",
@@ -2278,7 +3239,19 @@
           "clue1": "Founded in {year}.",
           "whyTrue": "True! {name} is headquartered in {country}.",
           "whyFalse": "False! {name} is headquartered in {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{name} ({industry}) is headquartered in {country}.",
+            "Corporate filings place {name}'s ({industry}) headquarters in {country}.",
+            "The {industry} company {name} is based in {country}.",
+            "Global business directories list {country} as headquarters for {name} ({industry})."
+          ],
+          "falsePromptVariants": [
+            "{name} ({industry}) is headquartered in {fake}.",
+            "Corporate filings place {name}'s ({industry}) headquarters in {fake}.",
+            "The {industry} company {name} is based in {fake}.",
+            "Global business directories list {fake} as headquarters for {name} ({industry})."
+          ]
         },
         {
           "id": "tc_year",
@@ -2292,7 +3265,14 @@
           "maxClamp": 2024,
           "clue1": "Headquartered in {country} ({industry}).",
           "why": "{name} ({country}, {industry}) was founded in {year}.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "In what year was {name} ({country}, {industry}) founded?",
+            "Dial in the founding year of {name} ({country}, {industry}).",
+            "Which calendar year saw the launch of {name} ({country}, {industry})?",
+            "When was {name} ({industry}, {country}) officially founded?",
+            "Pinpoint the establishment year of {name} ({country}, {industry})."
+          ]
         }
       ]
     },
@@ -2321,7 +3301,14 @@
           "clue1": "Born in {year}, known as a {role}.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} ({role}, b. {year}) was associated with {country}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Which country was {role} {name} (b. {year}) associated with?",
+            "Born in {year}, {role} {name} is associated with the technical heritage of which country?",
+            "Which nation claims {role} {name} (b. {year}) among its engineering pioneers?",
+            "Link {name} ({role}, born {year}) to their associated country.",
+            "In computing and engineering history, {role} {name} (b. {year}) is tied to which nation?"
+          ]
         },
         {
           "id": "tp_role",
@@ -2332,7 +3319,14 @@
           "clue1": "Born in {year} ({country}).",
           "clue2": "The role starts with \"{ans_init}\".",
           "why": "{name} ({country}, b. {year}) was renowned as a {role}.",
-          "irtOffset": 0.1
+          "irtOffset": 0.1,
+          "stemVariants": [
+            "Which technical role best describes {name} ({country}, b. {year})?",
+            "In {country}, {name} (b. {year}) built a career primarily in which technical role?",
+            "How do technology histories classify {name} ({country}, born {year})?",
+            "Which engineering or technical title best fits {name} ({country}, b. {year})?",
+            "For {country}, {name} (b. {year}) stands out chiefly in which technical capacity?"
+          ]
         },
         {
           "id": "tp_tf",
@@ -2343,7 +3337,19 @@
           "clue1": "Connect {name} ({role}) to their country.",
           "whyTrue": "True! {name} was associated with {country}.",
           "whyFalse": "False! {name} was associated with {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{role} {name} (born {year}) was associated with {country}.",
+            "Engineering chronicles link {role} {name} (born {year}) with {country}.",
+            "Born in {year}, {role} {name} is historically tied to {country}.",
+            "Technical biographies associate {name} ({role}, b. {year}) with {country}."
+          ],
+          "falsePromptVariants": [
+            "{role} {name} (born {year}) was associated with {fake}.",
+            "Engineering chronicles link {role} {name} (born {year}) with {fake}.",
+            "Born in {year}, {role} {name} is historically tied to {fake}.",
+            "Technical biographies associate {name} ({role}, b. {year}) with {fake}."
+          ]
         },
         {
           "id": "tp_year",
@@ -2357,7 +3363,14 @@
           "maxClamp": 2000,
           "clue1": "A {role} associated with {country}.",
           "why": "{name} ({role}, {country}) was born in {year}.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "In what year was {role} {name} ({country}) born?",
+            "Set the chronometer to the birth year of {role} {name} ({country}).",
+            "Which calendar year saw the birth of {country} {role} {name}?",
+            "When was {role} {name} ({country}) born?",
+            "Pinpoint the birth year recorded for {name} ({role}, {country})."
+          ]
         }
       ]
     },
@@ -2384,30 +3397,56 @@
           "clue1": "First launched or released in {year}.",
           "clue2": "The category starts with \"{ans_init}\".",
           "why": "{name} ({year}) is a {sw_type}.",
-          "irtOffset": -0.05
+          "irtOffset": -0.05,
+          "stemVariants": [
+            "What kind of computing technology is {name} (introduced {year})?",
+            "Introduced in {year}, {name} belongs to which category of computing technology?",
+            "Developers classify {name} (launched {year}) as what kind of software or system?",
+            "On the computing stack of {year}, what technical role does {name} fill?",
+            "How do software engineers categorize {name} (debuted {year})?"
+          ]
         },
         {
           "id": "ts_rev",
           "archetype": "SIGHTLINE_LOCK",
-          "prompt": "Which of these is a {sw_type}?",
+          "prompt": "Which of these belongs to the category of {sw_type}?",
           "answerCol": 0,
           "distractorCol": 0,
           "avoidSameCol": 1,
           "clue1": "Introduced in {year}.",
           "clue2": "Its name starts with \"{ans_init}\".",
           "why": "{name} ({year}) is classified as a {sw_type}.",
-          "irtOffset": 0.1
+          "irtOffset": 0.1,
+          "stemVariants": [
+            "Which of these belongs to the category of {sw_type}?",
+            "Which of these computing names belongs to the category of {sw_type}?",
+            "Scan the software stack: which item here is classified under {sw_type}?",
+            "Identify the computing technology listed under {sw_type}.",
+            "Which tool or platform on this slate falls into {sw_type}?"
+          ]
         },
         {
           "id": "ts_tf",
           "archetype": "GAUNTLET_SHATTER",
-          "truePrompt": "{name} (introduced {year}) is classified as a {sw_type}.",
-          "falsePrompt": "{name} (introduced {year}) is classified as a {fake}.",
+          "truePrompt": "{name} (introduced {year}) is classified under {sw_type}.",
+          "falsePrompt": "{name} (introduced {year}) is classified under {fake}.",
           "fakeCol": 1,
           "clue1": "Introduced in {year}.",
           "whyTrue": "True! {name} is a {sw_type} ({year}).",
           "whyFalse": "False! {name} is a {sw_type}, not a {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{name} (introduced {year}) is classified under {sw_type}.",
+            "Computing references categorize {name} (introduced {year}) under {sw_type}.",
+            "Introduced in {year}, {name} belongs to the {sw_type} software class.",
+            "Engineers classify {name} ({year}) in the category of {sw_type}."
+          ],
+          "falsePromptVariants": [
+            "{name} (introduced {year}) is classified under {fake}.",
+            "Computing references categorize {name} (introduced {year}) under {fake}.",
+            "Introduced in {year}, {name} belongs to the {fake} software class.",
+            "Engineers classify {name} ({year}) in the category of {fake}."
+          ]
         },
         {
           "id": "ts_year",
@@ -2421,7 +3460,14 @@
           "maxClamp": 2025,
           "clue1": "{name} is a {sw_type}.",
           "why": "{name} ({sw_type}) launched in {year}.",
-          "irtOffset": 0.25
+          "irtOffset": 0.25,
+          "stemVariants": [
+            "In what year was the {sw_type} {name} first launched?",
+            "Dial in the inaugural release year of {name} ({sw_type}).",
+            "In what calendar year did {name} ({sw_type}) first debut?",
+            "When was the {sw_type} known as {name} first introduced?",
+            "Pinpoint the launch year of {name} ({sw_type})."
+          ]
         }
       ]
     },
@@ -2449,7 +3495,14 @@
           "clue1": "{name} is classified as a {veh_type}.",
           "clue2": "The manufacturer starts with \"{ans_init}\".",
           "why": "{maker} built {name} ({veh_type}).",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Which manufacturer produced the {veh_type} {name}?",
+            "Roll onto the assembly floor: which manufacturer built the {veh_type} {name}?",
+            "Which automaker or aerospace firm produced the {veh_type} known as {name}?",
+            "Whose engineering badge belongs on the {veh_type} {name}?",
+            "Which builder stands behind the {veh_type} {name}?"
+          ]
         },
         {
           "id": "tv_type",
@@ -2460,7 +3513,14 @@
           "clue1": "{maker} manufactured this machine or vehicle.",
           "clue2": "The category begins with \"{ans_init}\".",
           "why": "{name} ({maker}) is a {veh_type}.",
-          "irtOffset": -0.05
+          "irtOffset": -0.05,
+          "stemVariants": [
+            "What type of machine or vehicle is {name}, built by {maker}?",
+            "Built by {maker}, {name} falls into which class of machine or vehicle?",
+            "How do transport catalogs classify {maker}'s {name}?",
+            "Inspect the blueprint for {name} by {maker}: what type of vehicle is it?",
+            "Which mechanical category best fits {name}, manufactured by {maker}?"
+          ]
         },
         {
           "id": "tv_rev",
@@ -2472,7 +3532,14 @@
           "clue1": "It is a {veh_type}.",
           "clue2": "Its name starts with \"{ans_init}\".",
           "why": "{maker} manufactured {name} ({veh_type}).",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these models was manufactured by {maker}?",
+            "Which of these models rolled off the production lines of {maker}?",
+            "Browse the engineering lineup of {maker}: which vehicle here belongs?",
+            "Which craft or vehicle on this list was built by {maker}?",
+            "Which model on this list carries the manufacturer stamp of {maker}?"
+          ]
         },
         {
           "id": "tv_tf",
@@ -2483,7 +3550,19 @@
           "clue1": "Match the {veh_type} {name} to its builder.",
           "whyTrue": "True! {maker} built {name} ({veh_type}).",
           "whyFalse": "False! {maker} (not {fake}) built {name} ({veh_type}).",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{maker} manufactured {name} ({veh_type}).",
+            "Production registries credit {maker} with manufacturing {name} ({veh_type}).",
+            "{maker} engineered and produced the {veh_type} {name} for service.",
+            "Manufacturer {maker} built {name} ({veh_type}) on its production line."
+          ],
+          "falsePromptVariants": [
+            "{fake} manufactured {name} ({veh_type}).",
+            "Production registries credit {fake} with manufacturing {name} ({veh_type}).",
+            "{fake} engineered and produced the {veh_type} {name} for service.",
+            "Manufacturer {fake} built {name} ({veh_type}) on its production line."
+          ]
         }
       ]
     },
@@ -2510,7 +3589,14 @@
           "clue1": "Its scientific name is {sci}.",
           "clue2": "The group begins with \"{ans_init}\".",
           "why": "The {name} ({sci}) is classified as a {group}.",
-          "irtOffset": -0.2
+          "irtOffset": -0.2,
+          "stemVariants": [
+            "To which biological group does the {name} belong?",
+            "In biological taxonomy, the {name} belongs to which major organism group?",
+            "Field naturalists classify the {name} within which biological group?",
+            "Place the {name} into its proper kingdom or vertebrate/botanical group.",
+            "Which living class or group encompasses the {name}?"
+          ]
         },
         {
           "id": "ns_sci",
@@ -2522,7 +3608,14 @@
           "clue1": "It belongs to the {group} group.",
           "clue2": "The genus name starts with \"{ans_init}\".",
           "why": "The scientific name of the {name} ({group}) is {sci}.",
-          "irtOffset": 0.55
+          "irtOffset": 0.55,
+          "stemVariants": [
+            "What is the scientific (Latin) name of the {name}?",
+            "Open Linnaeus's ledger: what Latin binomial names the {name}?",
+            "Biologists identify the {name} by which official scientific name?",
+            "Which two-part Latin scientific name corresponds to the {name}?",
+            "In taxonomy guides, the {name} is listed under which scientific name?"
+          ]
         },
         {
           "id": "ns_rev",
@@ -2534,18 +3627,37 @@
           "clue1": "It is a member of the {group} group.",
           "clue2": "Its common name starts with \"{ans_init}\".",
           "why": "\"{sci}\" is the scientific name of the {name} ({group}).",
-          "irtOffset": 0.45
+          "irtOffset": 0.45,
+          "stemVariants": [
+            "Which {group} has the scientific name \"{sci}\"?",
+            "Decode the Latin binomial \"{sci}\": which {group} bears this scientific name?",
+            "In field biology, \"{sci}\" is the scientific name of which {group}?",
+            "Which {group} is cataloged by taxonomists as \"{sci}\"?",
+            "Match the Latin name \"{sci}\" with the proper {group}."
+          ]
         },
         {
           "id": "ns_tf",
           "archetype": "GAUNTLET_SHATTER",
-          "truePrompt": "The {name} ({sci}) is classified as a {group}.",
-          "falsePrompt": "The {name} ({sci}) is classified as a {fake}.",
+          "truePrompt": "The {name} ({sci}) is classified within the {group} group.",
+          "falsePrompt": "The {name} ({sci}) is classified within the {fake} group.",
           "fakeCol": 2,
           "clue1": "Think of the biological class of the {name}.",
           "whyTrue": "True! The {name} ({sci}) is a {group}.",
           "whyFalse": "False! The {name} is a {group}, not a {fake}.",
-          "irtOffset": -0.2
+          "irtOffset": -0.2,
+          "truePromptVariants": [
+            "The {name} ({sci}) is classified within the {group} group.",
+            "Biological taxonomy places the {name} ({sci}) inside the {group} group.",
+            "Naturalists classify {name} ({sci}) within {group}.",
+            "Species registries assign {name} ({sci}) to the {group} category."
+          ],
+          "falsePromptVariants": [
+            "The {name} ({sci}) is classified within the {fake} group.",
+            "Biological taxonomy places the {name} ({sci}) inside the {fake} group.",
+            "Naturalists classify {name} ({sci}) within {fake}.",
+            "Species registries assign {name} ({sci}) to the {fake} category."
+          ]
         }
       ]
     },
@@ -2575,7 +3687,14 @@
           "clue1": "{name} is in {continent} and uses the {currency}.",
           "clue2": "Its capital starts with \"{ans_init}\".",
           "why": "The capital of {name} ({continent}) is {capital}.",
-          "irtOffset": -0.25
+          "irtOffset": -0.25,
+          "stemVariants": [
+            "What is the capital city of {name}?",
+            "Diplomatic embassies for {name} gather in which official national capital?",
+            "Point to the seat of government for the nation of {name}.",
+            "Which city serves as the national capital of {name}?",
+            "On a diplomatic map, what city is the capital of {name}?"
+          ]
         },
         {
           "id": "scn_rev",
@@ -2587,7 +3706,14 @@
           "clue1": "This nation is in {continent} (currency: {currency}).",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{capital} is the capital of {name} ({continent}).",
-          "irtOffset": -0.2
+          "irtOffset": -0.2,
+          "stemVariants": [
+            "{capital} is the national capital of which country?",
+            "Which sovereign nation governs from the capital city of {capital}?",
+            "Fly into the capital {capital} and you are at the political heart of which country?",
+            "Whose national flag flies over government halls in {capital}?",
+            "Identify the country whose official capital is {capital}."
+          ]
         },
         {
           "id": "scn_cur",
@@ -2598,7 +3724,14 @@
           "clue1": "{name} is located in {continent}.",
           "clue2": "The currency starts with \"{ans_init}\".",
           "why": "The official currency of {name} is the {currency}.",
-          "irtOffset": 0.05
+          "irtOffset": 0.05,
+          "stemVariants": [
+            "What is the official currency of {name} (capital: {capital})?",
+            "Step up to a market stall in {name} (capital: {capital}): which official currency do you spend?",
+            "Which monetary unit circulates as the official currency of {name} (capital: {capital})?",
+            "Central bankers in {name} (capital: {capital}) issue which official currency?",
+            "Name the legal tender currency of {name} (capital: {capital})."
+          ]
         },
         {
           "id": "scn_cont",
@@ -2609,7 +3742,14 @@
           "clue1": "Its capital is {capital}.",
           "clue2": "The region starts with \"{ans_init}\".",
           "why": "{name} (capital: {capital}) is in {continent}.",
-          "irtOffset": -0.35
+          "irtOffset": -0.35,
+          "stemVariants": [
+            "On which continent or world region is {name} (capital: {capital}) located?",
+            "Locate {name} (capital: {capital}) on the globe: which continent or world region hosts it?",
+            "Geopolitically, {name} (capital: {capital}) lies in which world region or continent?",
+            "Which continent or macro-region encompasses {name} (capital: {capital})?",
+            "On world atlases, {name} (capital: {capital}) sits within which continent?"
+          ]
         },
         {
           "id": "scn_tf",
@@ -2620,7 +3760,19 @@
           "clue1": "{name} is in {continent}.",
           "whyTrue": "True! {capital} is the capital of {name}.",
           "whyFalse": "False! The capital of {name} is {capital}, not {fake}.",
-          "irtOffset": -0.3
+          "irtOffset": -0.3,
+          "truePromptVariants": [
+            "{capital} is the official capital of {name}.",
+            "Diplomatic directories list {capital} as the capital city of {name}.",
+            "The government of {name} is seated in {capital}.",
+            "{capital} serves as the official national capital of {name}."
+          ],
+          "falsePromptVariants": [
+            "{fake} is the official capital of {name}.",
+            "Diplomatic directories list {fake} as the capital city of {name}.",
+            "The government of {name} is seated in {fake}.",
+            "{fake} serves as the official national capital of {name}."
+          ]
         }
       ]
     },
@@ -2647,7 +3799,14 @@
           "clue1": "This university was founded in {year}.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} (founded {year}) is located in {country}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "In which country is {name} (founded {year}) located?",
+            "Founded in {year}, the campus of {name} welcomes scholars in which country?",
+            "Which nation is home to {name} (established {year})?",
+            "Walk the academic grounds of {name} (founded {year}) in which country?",
+            "Higher-education directories place {name} (est. {year}) inside which country?"
+          ]
         },
         {
           "id": "su_rev",
@@ -2659,7 +3818,14 @@
           "clue1": "It was founded in {year}.",
           "clue2": "Its name begins with \"{ans_init}\".",
           "why": "{name} (founded {year}) is in {country}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these universities is located in {country}?",
+            "Which of these universities operates its campus inside {country}?",
+            "Scholars studying in {country} could enroll at which institution here?",
+            "Identify the university situated within {country}.",
+            "Spot the academic institution on this slate located in {country}."
+          ]
         },
         {
           "id": "su_tf",
@@ -2670,7 +3836,19 @@
           "clue1": "Founded in {year}.",
           "whyTrue": "True! {name} is located in {country}.",
           "whyFalse": "False! {name} is in {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{name} (founded {year}) is a university in {country}.",
+            "Academic registries locate {name} (founded {year}) in {country}.",
+            "Founded in {year}, {name} operates as a university in {country}.",
+            "Scholars travel to {country} to attend {name} (est. {year})."
+          ],
+          "falsePromptVariants": [
+            "{name} (founded {year}) is a university in {fake}.",
+            "Academic registries locate {name} (founded {year}) in {fake}.",
+            "Founded in {year}, {name} operates as a university in {fake}.",
+            "Scholars travel to {fake} to attend {name} (est. {year})."
+          ]
         },
         {
           "id": "su_year",
@@ -2684,7 +3862,14 @@
           "maxClamp": 2024,
           "clue1": "Located in {country}.",
           "why": "{name} ({country}) was founded in {year}.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "In what year was {name} ({country}) founded?",
+            "Dial in the founding year of {name} in {country}.",
+            "Which calendar year saw the establishment of {name} ({country})?",
+            "When did {name} ({country}) first open its academic doors?",
+            "Pinpoint the charter or founding year of {name} ({country})."
+          ]
         }
       ]
     },
@@ -2713,7 +3898,14 @@
           "clue1": "This {org_type} was founded in {year}.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} ({org_type}, {year}) is associated with {country}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "With which country is {name} ({org_type}, founded {year}) associated?",
+            "Founded in {year}, the {org_type} known as {name} is tied to which country?",
+            "Which nation is associated with {name} ({org_type}, est. {year})?",
+            "Trace the institutional home of {name} ({org_type}, {year}) to which country?",
+            "In public life, {name} ({org_type}, founded {year}) connects to which nation?"
+          ]
         },
         {
           "id": "so_type",
@@ -2724,7 +3916,14 @@
           "clue1": "Associated with {country} since {year}.",
           "clue2": "The category starts with \"{ans_init}\".",
           "why": "{name} ({country}, {year}) is a {org_type}.",
-          "irtOffset": 0.05
+          "irtOffset": 0.05,
+          "stemVariants": [
+            "What type of institution is {name} ({country}, founded {year})?",
+            "In {country} (founded {year}), {name} functions as what kind of institution?",
+            "How do reference guides classify {name} ({country}, est. {year})?",
+            "Which institutional category best fits {name} ({country}, {year})?",
+            "What sort of body or organization is {name} in {country} (founded {year})?"
+          ]
         },
         {
           "id": "so_rev",
@@ -2736,7 +3935,14 @@
           "clue1": "It is a {org_type} founded in {year}.",
           "clue2": "Its name begins with \"{ans_init}\".",
           "why": "{name} ({org_type}, {year}) is associated with {country}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these institutions is associated with {country}?",
+            "Which of these institutions is linked to {country}?",
+            "Scan the civic ledger of {country}: which organization here belongs?",
+            "Identify the institution or media outlet associated with {country}.",
+            "Which entry on this slate is tied to {country}?"
+          ]
         },
         {
           "id": "so_tf",
@@ -2747,7 +3953,19 @@
           "clue1": "Founded in {year}.",
           "whyTrue": "True! {name} ({org_type}) is associated with {country}.",
           "whyFalse": "False! {name} is associated with {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{name} ({org_type}) is associated with {country}.",
+            "Civic archives link {name} ({org_type}) with {country}.",
+            "The {org_type} known as {name} is associated with {country}.",
+            "Institutional directories place {name} ({org_type}) in {country}."
+          ],
+          "falsePromptVariants": [
+            "{name} ({org_type}) is associated with {fake}.",
+            "Civic archives link {name} ({org_type}) with {fake}.",
+            "The {org_type} known as {name} is associated with {fake}.",
+            "Institutional directories place {name} ({org_type}) in {fake}."
+          ]
         },
         {
           "id": "so_year",
@@ -2761,7 +3979,14 @@
           "maxClamp": 2024,
           "clue1": "It is a {org_type} in {country}.",
           "why": "{name} ({country}, {org_type}) was founded in {year}.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "In what year was {name} ({country}, {org_type}) founded?",
+            "Set the chronometer to the founding year of {name} ({country}, {org_type}).",
+            "Which calendar year saw the creation of {name} ({country}, {org_type})?",
+            "When was {name} ({org_type}, {country}) established?",
+            "Pinpoint the founding year of {name} ({country}, {org_type})."
+          ]
         }
       ]
     },
@@ -2790,7 +4015,14 @@
           "clue1": "Known as a {role}, born in {year}.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} ({role}, b. {year}) was associated with {country}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Which country was {role} {name} (b. {year}) associated with?",
+            "Born in {year}, {role} {name} shaped public life in which country?",
+            "Which nation's civic history claims {role} {name} (b. {year})?",
+            "Link {name} ({role}, born {year}) to their associated country.",
+            "In law, economics, or statecraft, {role} {name} (b. {year}) is tied to which nation?"
+          ]
         },
         {
           "id": "sl_role",
@@ -2801,7 +4033,14 @@
           "clue1": "Born in {year} ({country}).",
           "clue2": "The role starts with \"{ans_init}\".",
           "why": "{name} ({country}, b. {year}) was known primarily as a {role}.",
-          "irtOffset": 0.05
+          "irtOffset": 0.05,
+          "stemVariants": [
+            "Which public role best describes {name} ({country}, b. {year})?",
+            "In {country}, {name} (b. {year}) rose to prominence in which public role?",
+            "Which civic or scholarly calling defines {name} ({country}, born {year})?",
+            "Biographies of {country} catalog {name} (b. {year}) under which public role?",
+            "What primary public role is associated with {name} ({country}, b. {year})?"
+          ]
         },
         {
           "id": "sl_tf",
@@ -2812,7 +4051,19 @@
           "clue1": "Place {name} ({role}) in their nation.",
           "whyTrue": "True! {name} was associated with {country}.",
           "whyFalse": "False! {name} was associated with {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{role} {name} (born {year}) was associated with {country}.",
+            "Public-affairs records associate {role} {name} (born {year}) with {country}.",
+            "Born in {year}, {role} {name} is linked to {country}.",
+            "Historical biographies connect {name} ({role}, b. {year}) to {country}."
+          ],
+          "falsePromptVariants": [
+            "{role} {name} (born {year}) was associated with {fake}.",
+            "Public-affairs records associate {role} {name} (born {year}) with {fake}.",
+            "Born in {year}, {role} {name} is linked to {fake}.",
+            "Historical biographies connect {name} ({role}, b. {year}) to {fake}."
+          ]
         },
         {
           "id": "sl_year",
@@ -2826,7 +4077,14 @@
           "maxClamp": 2000,
           "clue1": "A {role} associated with {country}.",
           "why": "{name} ({role}, {country}) was born in {year}.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "In what year was {role} {name} ({country}) born?",
+            "Dial in the birth year of {role} {name} ({country}).",
+            "Which calendar year saw the birth of {country} {role} {name}?",
+            "When was {role} {name} ({country}) born?",
+            "Pinpoint the birth year on record for {name} ({role}, {country})."
+          ]
         }
       ]
     },
@@ -2854,7 +4112,14 @@
           "clue1": "{name} is a traditional {food_type}.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} ({food_type}) originated in {country}.",
-          "irtOffset": -0.05
+          "irtOffset": -0.05,
+          "stemVariants": [
+            "Which country is the traditional origin of {name} ({food_type})?",
+            "Sample {name} ({food_type}) at the table: which country's culinary tradition created it?",
+            "Which nation claims {name} ({food_type}) as a signature culinary specialty?",
+            "Trace the gastronomic roots of {name} ({food_type}) back to which country?",
+            "On a world food map, {name} ({food_type}) hails from which country?"
+          ]
         },
         {
           "id": "fi_type",
@@ -2865,7 +4130,14 @@
           "clue1": "It is a culinary specialty from {country}.",
           "clue2": "The category begins with \"{ans_init}\".",
           "why": "{name} ({country}) is a {food_type}.",
-          "irtOffset": 0.05
+          "irtOffset": 0.05,
+          "stemVariants": [
+            "What culinary category best describes {name} from {country}?",
+            "Order {name} in {country} and what culinary category arrives at your table?",
+            "Gastronomy guides classify {name} from {country} under which food or drink type?",
+            "Which culinary class best describes {country}'s {name}?",
+            "In {country}, {name} is traditionally served as which type of fare?"
+          ]
         },
         {
           "id": "fi_rev",
@@ -2877,7 +4149,14 @@
           "clue1": "It is classified as a {food_type}.",
           "clue2": "Its name starts with \"{ans_init}\".",
           "why": "{name} ({food_type}) originated in {country}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these culinary specialties originated in {country}?",
+            "Which of these culinary specialties originated in the kitchens of {country}?",
+            "Step into a traditional market in {country} to sample which item here?",
+            "Identify the dish or drink rooted in {country}.",
+            "Which specialty on this menu hails from {country}?"
+          ]
         },
         {
           "id": "fi_tf",
@@ -2888,7 +4167,19 @@
           "clue1": "Match {name} ({food_type}) to its culinary homeland.",
           "whyTrue": "True! {name} ({food_type}) originated in {country}.",
           "whyFalse": "False! {name} originated in {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{name} ({food_type}) traditionally originated in {country}.",
+            "Culinary atlases trace {name} ({food_type}) to {country}.",
+            "The specialty {name} ({food_type}) traditionally hails from {country}.",
+            "Food historians credit {country} with originating {name} ({food_type})."
+          ],
+          "falsePromptVariants": [
+            "{name} ({food_type}) traditionally originated in {fake}.",
+            "Culinary atlases trace {name} ({food_type}) to {fake}.",
+            "The specialty {name} ({food_type}) traditionally hails from {fake}.",
+            "Food historians credit {fake} with originating {name} ({food_type})."
+          ]
         }
       ]
     },
@@ -2917,7 +4208,14 @@
           "clue1": "This {brand_type} dates back to {year}.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} ({brand_type}, founded {year}) comes from {country}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "In which country was the {brand_type} {name} (founded {year}) established?",
+            "Established in {year}, the {brand_type} {name} traces its heritage to which country?",
+            "Which nation birthed the {brand_type} house {name} in {year}?",
+            "Follow the craft atelier of {name} ({brand_type}, {year}) back to which country?",
+            "In {year}, {name} ({brand_type}) opened its doors in which nation?"
+          ]
         },
         {
           "id": "fb_type",
@@ -2928,7 +4226,14 @@
           "clue1": "Founded in {country} in {year}.",
           "clue2": "The category begins with \"{ans_init}\".",
           "why": "{name} ({country}, {year}) is a {brand_type}.",
-          "irtOffset": 0.05
+          "irtOffset": 0.05,
+          "stemVariants": [
+            "What craft or design category best describes {name} ({country}, est. {year})?",
+            "Founded in {country} in {year}, {name} is renowned in which craft or design field?",
+            "How do style and craft directories categorize {name} ({country}, est. {year})?",
+            "Which artisan or brand category defines {name} ({country}, {year})?",
+            "What craft or luxury specialty built the reputation of {name} ({country}, est. {year})?"
+          ]
         },
         {
           "id": "fb_rev",
@@ -2940,7 +4245,14 @@
           "clue1": "A {brand_type} founded in {year}.",
           "clue2": "Its name begins with \"{ans_init}\".",
           "why": "{name} ({brand_type}, {year}) originated in {country}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these culinary or design houses originated in {country}?",
+            "Which of these heritage craft, culinary, or design houses began in {country}?",
+            "Stroll the flagship ateliers of {country} to encounter which house here?",
+            "Identify the brand or atelier rooted in {country}.",
+            "Which house on this list traces its origins to {country}?"
+          ]
         },
         {
           "id": "fb_tf",
@@ -2951,7 +4263,19 @@
           "clue1": "Established in {year}.",
           "whyTrue": "True! {name} ({brand_type}) originated in {country}.",
           "whyFalse": "False! {name} originated in {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "The {brand_type} {name} originated in {country}.",
+            "Design archives trace the {brand_type} {name} to {country}.",
+            "The heritage {brand_type} {name} was founded in {country}.",
+            "{name} ({brand_type}) has its original home in {country}."
+          ],
+          "falsePromptVariants": [
+            "The {brand_type} {name} originated in {fake}.",
+            "Design archives trace the {brand_type} {name} to {fake}.",
+            "The heritage {brand_type} {name} was founded in {fake}.",
+            "{name} ({brand_type}) has its original home in {fake}."
+          ]
         },
         {
           "id": "fb_year",
@@ -2965,7 +4289,14 @@
           "maxClamp": 2024,
           "clue1": "Established in {country} ({brand_type}).",
           "why": "{name} ({country}, {brand_type}) was founded in {year}.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "In what year was the {brand_type} {name} ({country}) founded?",
+            "Dial in the founding year of {name} ({brand_type}, {country}).",
+            "Which calendar year saw the launch of {name} ({brand_type}, {country})?",
+            "When was the {brand_type} house {name} ({country}) established?",
+            "Pinpoint the inaugural year of {name} ({brand_type}, {country})."
+          ]
         }
       ]
     },
@@ -2994,7 +4325,14 @@
           "clue1": "Born in {year}, renowned as a {craft}.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} ({craft}, b. {year}) was associated with {country}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Which country was {craft} {name} (b. {year}) associated with?",
+            "Born in {year}, {craft} figure {name} is associated with which nation's creative tradition?",
+            "Which country claims {craft} {name} (b. {year})?",
+            "Trace the craft heritage of {name} ({craft}, born {year}) to which nation?",
+            "In culinary or design circles, {craft} {name} (b. {year}) connects to which country?"
+          ]
         },
         {
           "id": "fm_craft",
@@ -3005,7 +4343,14 @@
           "clue1": "Born in {year} ({country}).",
           "clue2": "The field begins with \"{ans_init}\".",
           "why": "{name} ({country}) was renowned as a {craft}.",
-          "irtOffset": 0.05
+          "irtOffset": 0.05,
+          "stemVariants": [
+            "Which culinary or design field made {name} ({country}, b. {year}) famous?",
+            "In {country}, {name} (b. {year}) achieved acclaim in which craft or culinary arena?",
+            "Which creative calling best defines {name} ({country}, born {year})?",
+            "Design and gastronomy guides list {name} ({country}, b. {year}) under which craft?",
+            "What culinary or design specialty made {name} ({country}, b. {year}) notable?"
+          ]
         },
         {
           "id": "fm_tf",
@@ -3016,7 +4361,19 @@
           "clue1": "Match {name} ({craft}) to their country.",
           "whyTrue": "True! {name} was associated with {country}.",
           "whyFalse": "False! {name} was associated with {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{craft} {name} (born {year}) was associated with {country}.",
+            "Craft biographies associate {craft} {name} (born {year}) with {country}.",
+            "Born in {year}, {craft} figure {name} is linked to {country}.",
+            "Design and culinary records tie {name} ({craft}, b. {year}) to {country}."
+          ],
+          "falsePromptVariants": [
+            "{craft} {name} (born {year}) was associated with {fake}.",
+            "Craft biographies associate {craft} {name} (born {year}) with {fake}.",
+            "Born in {year}, {craft} figure {name} is linked to {fake}.",
+            "Design and culinary records tie {name} ({craft}, b. {year}) to {fake}."
+          ]
         },
         {
           "id": "fm_year",
@@ -3030,7 +4387,14 @@
           "maxClamp": 2000,
           "clue1": "A {craft} associated with {country}.",
           "why": "{name} ({craft}, {country}) was born in {year}.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "In what year was {craft} {name} ({country}) born?",
+            "Set the timeline to the birth year of {craft} {name} ({country}).",
+            "Which calendar year saw the birth of {country} {craft} {name}?",
+            "When was {craft} {name} ({country}) born?",
+            "Pinpoint the birth year recorded for {name} ({craft}, {country})."
+          ]
         }
       ]
     },
@@ -3058,7 +4422,14 @@
           "clue1": "Originally written in {lang} and published in {year}.",
           "clue2": "The author's name starts with \"{ans_init}\".",
           "why": "{author} wrote \"{title}\" ({year}, {lang}).",
-          "irtOffset": -0.05
+          "irtOffset": -0.05,
+          "stemVariants": [
+            "Who wrote the {year} literary work \"{title}\"?",
+            "Published in {year}, the work \"{title}\" came from the pen of which author?",
+            "Pull \"{title}\" ({year}) from the library shelf: whose name graces the spine?",
+            "Which writer authored the {year} literary work \"{title}\"?",
+            "Literary archives credit which author with \"{title}\" in {year}?"
+          ]
         },
         {
           "id": "lw_rev",
@@ -3070,7 +4441,14 @@
           "clue1": "Published in {year} (original language: {lang}).",
           "clue2": "Its title begins with \"{ans_init}\".",
           "why": "{author} wrote \"{title}\" ({year}, {lang}).",
-          "irtOffset": 0.1
+          "irtOffset": 0.1,
+          "stemVariants": [
+            "Which of these literary works was written by {author}?",
+            "Open the collected bibliography of {author}: which work here belongs inside?",
+            "Which of these titles was penned by {author}?",
+            "Which literary work on this slate did {author} write?",
+            "Which volume on this reading list is the creation of {author}?"
+          ]
         },
         {
           "id": "lw_lang",
@@ -3081,7 +4459,14 @@
           "clue1": "Written by {author} and published in {year}.",
           "clue2": "The language begins with \"{ans_init}\".",
           "why": "\"{title}\" ({year}) by {author} was originally written in {lang}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "In which language was \"{title}\" ({year}) by {author} originally written?",
+            "Before any translation, {author} originally composed \"{title}\" ({year}) in which language?",
+            "In what tongue was \"{title}\" ({year}) by {author} first written?",
+            "Check the first edition of \"{title}\" ({year}) by {author}: what was its original language?",
+            "Which literary language birthed {author}'s {year} work \"{title}\"?"
+          ]
         },
         {
           "id": "lw_tf",
@@ -3092,7 +4477,19 @@
           "clue1": "Originally published in {lang} in {year}.",
           "whyTrue": "True! {author} wrote \"{title}\" ({year}).",
           "whyFalse": "False! {author} (not {fake}) wrote \"{title}\".",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{author} wrote the {year} work \"{title}\" ({lang}).",
+            "Literary catalogs credit {author} with the {year} {lang} work \"{title}\".",
+            "In {year}, {author} penned \"{title}\" in {lang}.",
+            "Bibliographies list {author} as author of \"{title}\" ({year}, {lang})."
+          ],
+          "falsePromptVariants": [
+            "{fake} wrote the {year} work \"{title}\" ({lang}).",
+            "Literary catalogs credit {fake} with the {year} {lang} work \"{title}\".",
+            "In {year}, {fake} penned \"{title}\" in {lang}.",
+            "Bibliographies list {fake} as author of \"{title}\" ({year}, {lang})."
+          ]
         },
         {
           "id": "lw_year",
@@ -3106,7 +4503,14 @@
           "maxClamp": 2025,
           "clue1": "{author} originally wrote it in {lang}.",
           "why": "\"{title}\" ({lang}) by {author} was published in {year}.",
-          "irtOffset": 0.3
+          "irtOffset": 0.3,
+          "stemVariants": [
+            "In what year was \"{title}\" by {author} first published?",
+            "Dial in the inaugural publication year of {author}'s \"{title}\".",
+            "Which calendar year saw {author}'s \"{title}\" reach readers?",
+            "When was \"{title}\" by {author} first published?",
+            "Set the literary timeline to the debut year of \"{title}\" ({author})."
+          ]
         }
       ]
     },
@@ -3135,7 +4539,14 @@
           "clue1": "Born in {year}, renowned as a {role}.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} ({role}, b. {year}) was associated with {country}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Which country was the {role} {name} (b. {year}) associated with?",
+            "Born in {year}, {role} {name} belongs to the literary heritage of which country?",
+            "Which nation claims {role} {name} (b. {year}) among its authors or thinkers?",
+            "Trace the literary roots of {name} ({role}, born {year}) to which country?",
+            "Which country's letters or philosophy is associated with {role} {name} (b. {year})?"
+          ]
         },
         {
           "id": "la_role",
@@ -3146,7 +4557,14 @@
           "clue1": "Born in {year} ({country}).",
           "clue2": "The role starts with \"{ans_init}\".",
           "why": "{name} ({country}, b. {year}) was best known as a {role}.",
-          "irtOffset": 0.1
+          "irtOffset": 0.1,
+          "stemVariants": [
+            "Which literary or philosophical role best describes {name} ({country}, b. {year})?",
+            "In {country}, {name} (b. {year}) earned distinction in which literary or philosophical role?",
+            "Which calling in letters or thought defines {name} ({country}, born {year})?",
+            "Biographical dictionaries classify {name} ({country}, b. {year}) under which role?",
+            "What primary literary or philosophical craft describes {name} ({country}, b. {year})?"
+          ]
         },
         {
           "id": "la_tf",
@@ -3157,7 +4575,19 @@
           "clue1": "Connect {name} ({role}) to their literary tradition.",
           "whyTrue": "True! {name} was associated with {country}.",
           "whyFalse": "False! {name} was associated with {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{role} {name} (born {year}) was associated with {country}.",
+            "Literary histories link {role} {name} (born {year}) with {country}.",
+            "Born in {year}, {role} {name} is associated with {country}.",
+            "Biographical archives tie {name} ({role}, b. {year}) to {country}."
+          ],
+          "falsePromptVariants": [
+            "{role} {name} (born {year}) was associated with {fake}.",
+            "Literary histories link {role} {name} (born {year}) with {fake}.",
+            "Born in {year}, {role} {name} is associated with {fake}.",
+            "Biographical archives tie {name} ({role}, b. {year}) to {fake}."
+          ]
         },
         {
           "id": "la_year",
@@ -3171,7 +4601,14 @@
           "maxClamp": 2000,
           "clue1": "A {role} associated with {country}.",
           "why": "{name} ({role}, {country}) was born in {year}.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "In what year was the {role} {name} ({country}) born?",
+            "Set the timeline to the birth year of {role} {name} ({country}).",
+            "Which calendar year saw the birth of {country} {role} {name}?",
+            "When was {role} {name} ({country}) born?",
+            "Pinpoint the birth year of {name} ({role}, {country})."
+          ]
         }
       ]
     },
@@ -3199,7 +4636,14 @@
           "clue1": "{name} is a {mtype}.",
           "clue2": "The tradition starts with \"{ans_init}\".",
           "why": "{name} ({mtype}) belongs to {tradition}.",
-          "irtOffset": -0.05
+          "irtOffset": -0.05,
+          "stemVariants": [
+            "To which mythological tradition does {name} ({mtype}) belong?",
+            "Open the folklore compendia: {name} ({mtype}) hails from which mythological tradition?",
+            "Which ancient pantheon or mythic tradition tells tales of {name} ({mtype})?",
+            "Storytellers of which mythological tradition speak of {name} ({mtype})?",
+            "Place {name} ({mtype}) into its proper mythological heritage."
+          ]
         },
         {
           "id": "lm_rev",
@@ -3211,7 +4655,14 @@
           "clue1": "Described as a {mtype}.",
           "clue2": "Its name begins with \"{ans_init}\".",
           "why": "{name} ({mtype}) belongs to {tradition}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these figures or creatures belongs to {tradition}?",
+            "Which of these figures or beings appears in the lore of {tradition}?",
+            "Journey into {tradition}: which mythic name here belongs to its tales?",
+            "Identify the figure or creature rooted in {tradition}.",
+            "Which legendary name on this slate belongs to {tradition}?"
+          ]
         },
         {
           "id": "lm_type",
@@ -3222,7 +4673,14 @@
           "clue1": "Part of {tradition}.",
           "clue2": "The category starts with \"{ans_init}\".",
           "why": "In {tradition}, {name} is a {mtype}.",
-          "irtOffset": 0.05
+          "irtOffset": 0.05,
+          "stemVariants": [
+            "In {tradition}, what kind of being is {name}?",
+            "Within the myths of {tradition}, how is {name} classified?",
+            "In the lore of {tradition}, what sort of mythic figure or being is {name}?",
+            "Mythologists studying {tradition} categorize {name} as what kind of entity?",
+            "What role or class of being does {name} embody in {tradition}?"
+          ]
         },
         {
           "id": "lm_tf",
@@ -3233,7 +4691,19 @@
           "clue1": "Recall the mythic pantheon of {name}.",
           "whyTrue": "True! {name} belongs to {tradition}.",
           "whyFalse": "False! {name} belongs to {tradition}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "In mythology, {name} ({mtype}) belongs to {tradition}.",
+            "Comparative mythology places {name} ({mtype}) within {tradition}.",
+            "In ancient lore, {name} ({mtype}) is part of {tradition}.",
+            "Mythic archives assign {name} ({mtype}) to {tradition}."
+          ],
+          "falsePromptVariants": [
+            "In mythology, {name} ({mtype}) belongs to {fake}.",
+            "Comparative mythology places {name} ({mtype}) within {fake}.",
+            "In ancient lore, {name} ({mtype}) is part of {fake}.",
+            "Mythic archives assign {name} ({mtype}) to {fake}."
+          ]
         }
       ]
     },
@@ -3262,7 +4732,14 @@
           "clue1": "Born in {year}, renowned as a {field}.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} ({field}, b. {year}) was associated with {country}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Which country was {field} {name} (b. {year}) associated with?",
+            "Born in {year}, {field} scholar {name} is linked to the intellectual tradition of which country?",
+            "Which nation claims {field} thinker {name} (b. {year})?",
+            "Trace the mathematical legacy of {name} ({field}, born {year}) to which country?",
+            "In mathematical history, {field} figure {name} (b. {year}) is associated with which nation?"
+          ]
         },
         {
           "id": "mp_rev",
@@ -3274,7 +4751,14 @@
           "clue1": "Born in {year} ({field}).",
           "clue2": "Their name starts with \"{ans_init}\".",
           "why": "{name} ({field}, b. {year}) was associated with {country}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these mathematicians or logicians was associated with {country}?",
+            "Which of these mathematical or logical minds is linked to {country}?",
+            "Scan the mathematical heritage of {country}: which scholar here belongs?",
+            "Identify the mathematician or logician associated with {country}.",
+            "Which thinker on this slate connects to the mathematical history of {country}?"
+          ]
         },
         {
           "id": "mp_tf",
@@ -3285,7 +4769,19 @@
           "clue1": "Place {name} ({field}) in their country.",
           "whyTrue": "True! {name} was associated with {country}.",
           "whyFalse": "False! {name} was associated with {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{field} {name} (born {year}) was associated with {country}.",
+            "Mathematical histories associate {field} scholar {name} (born {year}) with {country}.",
+            "Born in {year}, {field} thinker {name} is linked to {country}.",
+            "Academic chronicles tie {name} ({field}, b. {year}) to {country}."
+          ],
+          "falsePromptVariants": [
+            "{field} {name} (born {year}) was associated with {fake}.",
+            "Mathematical histories associate {field} scholar {name} (born {year}) with {fake}.",
+            "Born in {year}, {field} thinker {name} is linked to {fake}.",
+            "Academic chronicles tie {name} ({field}, b. {year}) to {fake}."
+          ]
         },
         {
           "id": "mp_year",
@@ -3299,7 +4795,14 @@
           "maxClamp": 2000,
           "clue1": "A {field} from {country}.",
           "why": "{name} ({field}, {country}) was born in {year}.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "In what year was {field} {name} ({country}) born?",
+            "Dial in the birth year of {field} scholar {name} ({country}).",
+            "Which calendar year saw the birth of {country} {field} thinker {name}?",
+            "When was {field} figure {name} ({country}) born?",
+            "Pinpoint the birth year recorded for {name} ({field}, {country})."
+          ]
         }
       ]
     },
@@ -3335,7 +4838,14 @@
           "clue1": "Category: {cat}. Double-check the pattern carefully.",
           "clue2": "Watch out for off-by-one traps in {cat}.",
           "why": "Exact answer: {ans} ({cat}).",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "{stmt}?",
+            "Solve with precision: {stmt}?",
+            "From the Meridian logic ledger: {stmt}?",
+            "Compute the exact answer: {stmt}?",
+            "Work out this mathematical challenge: {stmt}?"
+          ]
         },
         {
           "id": "mn_tf",
@@ -3346,7 +4856,19 @@
           "clue1": "Verify the exact value for this {cat} problem.",
           "whyTrue": "True! The exact answer is {ans}.",
           "whyFalse": "False! The exact answer is {ans}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "Check this {cat} result: {stmt}? Answer: {ans}.",
+            "Verify this {cat} calculation: {stmt}? Proposed answer: {ans}.",
+            "Audit the {cat} ledger: {stmt}? Claimed value: {ans}.",
+            "Test this {cat} statement: {stmt}? Result given: {ans}."
+          ],
+          "falsePromptVariants": [
+            "Check this {cat} result: {stmt}? Answer: {fake}.",
+            "Verify this {cat} calculation: {stmt}? Proposed answer: {fake}.",
+            "Audit the {cat} ledger: {stmt}? Claimed value: {fake}.",
+            "Test this {cat} statement: {stmt}? Result given: {fake}."
+          ]
         },
         {
           "id": "mn_est",
@@ -3360,7 +4882,14 @@
           "maxClamp": 1000000,
           "clue1": "Category: {cat}. Narrow down the magnitude first.",
           "why": "Exact value: {ans} ({cat}).",
-          "irtOffset": 0.25
+          "irtOffset": 0.25,
+          "stemVariants": [
+            "Estimate the exact value: {stmt}?",
+            "Calibrate the exact mathematical value: {stmt}?",
+            "Dial in the precise figure: {stmt}?",
+            "Lock the vernier onto the answer: {stmt}?",
+            "Compute and dial the result: {stmt}?"
+          ]
         }
       ]
     },
@@ -3394,7 +4923,14 @@
           "clue1": "Category: {cat}. Work through each symbol step by step.",
           "clue2": "The answer begins with \"{ans_init}\".",
           "why": "Verified solution: {ans} ({cat}).",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "{stmt}?",
+            "Crack this logic challenge: {stmt}?",
+            "From the cipher desk: {stmt}?",
+            "Deduce the exact solution: {stmt}?",
+            "Work out the following puzzle: {stmt}?"
+          ]
         },
         {
           "id": "mw_tf",
@@ -3405,7 +4941,19 @@
           "clue1": "Check the first and last characters carefully.",
           "whyTrue": "True! The verified solution is {ans}.",
           "whyFalse": "False! The solution is {ans}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "Check this {cat} puzzle: {stmt}? Solution: {ans}.",
+            "Verify this {cat} deduction: {stmt}? Proposed solution: {ans}.",
+            "Audit the {cat} cipher: {stmt}? Claimed result: {ans}.",
+            "Test this {cat} puzzle: {stmt}? Given solution: {ans}."
+          ],
+          "falsePromptVariants": [
+            "Check this {cat} puzzle: {stmt}? Solution: {fake}.",
+            "Verify this {cat} deduction: {stmt}? Proposed solution: {fake}.",
+            "Audit the {cat} cipher: {stmt}? Claimed result: {fake}.",
+            "Test this {cat} puzzle: {stmt}? Given solution: {fake}."
+          ]
         }
       ]
     }

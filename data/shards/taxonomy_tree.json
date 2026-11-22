@@ -87,8 +87,8 @@
     "5": [
       {
         "path": "subcat_baseball.json",
-        "bytes": 287594,
-        "entities": 7798,
+        "bytes": 533921,
+        "entities": 8098,
         "questions": 34033,
         "baseQid": 1100000,
         "qidEnd": 1134032,
@@ -99,7 +99,8 @@
           "sub_bb_season_feat",
           "sub_bb_awards_hof",
           "sub_bb_world_series",
-          "sub_bb_ballpark"
+          "sub_bb_ballpark",
+          "sub_bb_signature_lore"
         ]
       },
       {
@@ -210,50 +211,80 @@
         "team",
         "hr",
         "debut",
+        "era",
         "irt"
       ],
       "poolCols": [
-        1
+        1,
+        4
       ],
       "angles": [
         {
           "id": "bbs_team",
           "archetype": "SIGHTLINE_LOCK",
-          "prompt": "With which MLB franchise did slugger {name} (MLB debut {debut}) play the most games?",
+          "prompt": "Debuting in the majors in {debut}, slugger {name} played the most games of their career in which MLB uniform?",
           "answerCol": 1,
           "distractorCol": 1,
           "clue1": "{name} launched {hr} career MLB home runs after debuting in {debut}.",
           "clue2": "The franchise name begins with \"{ans_init}\".",
           "why": "{name} (debut {debut}, {hr} career HR) played more MLB games for the {team} than any other club.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "preferSameCol": 4,
+          "stemVariants": [
+            "Debuting in the majors in {debut}, slugger {name} played the most games of their career in which MLB uniform?",
+            "Breaking into MLB in {debut}, power hitter {name} logged the plurality of their career games with which club?",
+            "Recall the {debut} debut of {name}: which MLB franchise saw this slugger play the most career games?",
+            "Across an MLB career starting in {debut}, which club was {name}'s primary baseball home?",
+            "Which MLB ballclub fielded slugger {name} (MLB debut {debut}) for more games than any other franchise?"
+          ]
         },
         {
           "id": "bbs_rev",
           "archetype": "SIGHTLINE_LOCK",
-          "prompt": "Which of these MLB power hitters played the plurality of their career games for the {team}?",
+          "prompt": "Which of these MLB power hitters wore the uniform of the {team} for the plurality of their career games?",
           "answerCol": 0,
           "distractorCol": 0,
           "avoidSameCol": 1,
           "clue1": "Debuted in {debut} and finished with {hr} career MLB home runs.",
           "clue2": "The player's name starts with \"{ans_init}\".",
           "why": "{name} ({hr} career HR, debut {debut}) played primarily for the {team}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "preferSameCol": 4,
+          "stemVariants": [
+            "Which of these MLB power hitters wore the uniform of the {team} for the plurality of their career games?",
+            "Scan the lineup card for the {team}: which of these sluggers played more games for them than any other club?",
+            "Among these MLB home-run threats, who made the {team} their primary career ballclub?",
+            "Which of these sluggers spent the largest share of their Major League career with the {team}?",
+            "Which power bat here is most closely anchored to the {team} by career games played?"
+          ]
         },
         {
           "id": "bbs_tf",
           "archetype": "GAUNTLET_SHATTER",
-          "truePrompt": "MLB slugger {name} ({hr} career HR) played more career games for the {team} than any other club.",
-          "falsePrompt": "MLB slugger {name} ({hr} career HR) played more career games for the {fake} than any other club.",
+          "truePrompt": "Slugger {name} ({hr} career home runs) logged more MLB games for the {team} than for any other franchise.",
+          "falsePrompt": "Slugger {name} ({hr} career home runs) logged more MLB games for the {fake} than for any other franchise.",
           "fakeCol": 1,
           "clue1": "Recall the primary MLB uniform worn by {name} (debut {debut}).",
           "whyTrue": "True! {name} ({hr} HR) played primarily for the {team}.",
           "whyFalse": "False! {name} played primarily for the {team}, not the {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "Slugger {name} ({hr} career home runs) logged more MLB games for the {team} than for any other franchise.",
+            "Across a {hr}-homer MLB career, {name} played primarily in the uniform of the {team}.",
+            "Baseball-Reference career logs show {name} ({hr} HR) played their most MLB games with the {team}.",
+            "Among all MLB clubs, the {team} fielded {hr}-homer slugger {name} for the most career games."
+          ],
+          "falsePromptVariants": [
+            "Slugger {name} ({hr} career home runs) logged more MLB games for the {fake} than for any other franchise.",
+            "Across a {hr}-homer MLB career, {name} played primarily in the uniform of the {fake}.",
+            "Baseball-Reference career logs show {name} ({hr} HR) played their most MLB games with the {fake}.",
+            "Among all MLB clubs, the {fake} fielded {hr}-homer slugger {name} for the most career games."
+          ]
         },
         {
           "id": "bbs_hr",
           "archetype": "CALIBRATOR_DIAL",
-          "prompt": "How many career MLB home runs did {name} ({team}) hit?",
+          "prompt": "Step into the batter's box: how many career MLB home runs did {name} ({team}) launch?",
           "exactCol": 2,
           "unit": "HR",
           "step": 0,
@@ -262,15 +293,29 @@
           "maxClamp": 800,
           "clue1": "{name} debuted in {debut} and starred primarily for the {team}.",
           "why": "{name} ({team}) hit {hr} career MLB home runs.",
-          "irtOffset": 0.25
+          "irtOffset": 0.25,
+          "stemVariants": [
+            "Step into the batter's box: how many career MLB home runs did {name} ({team}) launch?",
+            "Dial in the career home run total slugged by {name} of the {team}.",
+            "How many balls did {name} ({team}) send over Major League fences across their career?",
+            "Pinpoint {name}'s ({team}) final career MLB home run ledger.",
+            "Over a Major League career anchored with the {team}, how many homers did {name} belt?"
+          ]
         },
         {
           "id": "bbs_cdx",
           "archetype": "CODEX_DUAL_RING",
           "subjectCol": 0,
           "targetCol": 1,
-          "prompt": "Align each MLB hitter on the upper ring with their primary MLB franchise below.",
-          "irtOffset": 0.2
+          "prompt": "Pair each MLB slugger on the upper ring with the franchise where they played the most career games.",
+          "irtOffset": 0.2,
+          "stemVariants": [
+            "Pair each MLB slugger on the upper ring with the franchise where they played the most career games.",
+            "Match each Major League power hitter above to their primary MLB club below.",
+            "Align these baseball sluggers with the franchise uniform they wore most often.",
+            "Lock each MLB hitter on the top dial onto their career home club below.",
+            "Connect every big-league slugger above with their flagship MLB franchise."
+          ]
         }
       ]
     },
@@ -283,38 +328,60 @@
         "team",
         "hits",
         "rbi",
+        "era",
         "irt"
       ],
       "poolCols": [
-        1
+        1,
+        4
       ],
       "angles": [
         {
           "id": "bbh_team",
           "archetype": "SIGHTLINE_LOCK",
-          "prompt": "Which MLB club did {name} ({hits} career hits) play the most career games for?",
+          "prompt": "Piling up {hits} career MLB base hits, {name} played more games for which franchise than any other?",
           "answerCol": 1,
           "distractorCol": 1,
           "clue1": "{name} tallied {hits} hits and {rbi} RBIs in Major League Baseball.",
           "clue2": "The franchise begins with \"{ans_init}\".",
           "why": "{name} ({hits} career hits, {rbi} RBIs) played primarily for the {team}.",
-          "irtOffset": 0.05
+          "irtOffset": 0.05,
+          "preferSameCol": 4,
+          "stemVariants": [
+            "Piling up {hits} career MLB base hits, {name} played more games for which franchise than any other?",
+            "Which MLB ballclub served as the primary career home for {hits}-hit standout {name}?",
+            "Across a {hits}-hit Major League career, which club did {name} appear for most often?",
+            "Check the box scores for {name} ({hits} career hits): which MLB franchise was their main uniform?",
+            "With {hits} career MLB hits on the ledger, {name} logged their highest game total for which team?"
+          ]
         },
         {
           "id": "bbh_tf",
           "archetype": "GAUNTLET_SHATTER",
-          "truePrompt": "MLB standout {name} ({hits} career hits) played primarily for the {team}.",
-          "falsePrompt": "MLB standout {name} ({hits} career hits) played primarily for the {fake}.",
+          "truePrompt": "Racking up {hits} career hits, {name} played more MLB games for the {team} than any other club.",
+          "falsePrompt": "Racking up {hits} career hits, {name} played more MLB games for the {fake} than any other club.",
           "fakeCol": 1,
           "clue1": "{name} drove in {rbi} career runs.",
           "whyTrue": "True! {name} ({hits} hits) played primarily for the {team}.",
           "whyFalse": "False! {name} played primarily for the {team}, not the {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "Racking up {hits} career hits, {name} played more MLB games for the {team} than any other club.",
+            "MLB career records show {hits}-hit batter {name} played primarily for the {team}.",
+            "During a {hits}-hit career, {name} spent their largest share of games with the {team}.",
+            "The {team} served as the primary MLB home of {hits}-hit standout {name}."
+          ],
+          "falsePromptVariants": [
+            "Racking up {hits} career hits, {name} played more MLB games for the {fake} than any other club.",
+            "MLB career records show {hits}-hit batter {name} played primarily for the {fake}.",
+            "During a {hits}-hit career, {name} spent their largest share of games with the {fake}.",
+            "The {fake} served as the primary MLB home of {hits}-hit standout {name}."
+          ]
         },
         {
           "id": "bbh_hits",
           "archetype": "CALIBRATOR_DIAL",
-          "prompt": "How many career MLB hits did {name} ({team}) record?",
+          "prompt": "Check the career box score: how many Major League base hits did {name} ({team}) collect?",
           "exactCol": 2,
           "unit": "hits",
           "step": 0,
@@ -323,12 +390,19 @@
           "maxClamp": 4400,
           "clue1": "Primary club: {team} ({rbi} career RBIs).",
           "why": "{name} ({team}) recorded {hits} career MLB hits.",
-          "irtOffset": 0.3
+          "irtOffset": 0.3,
+          "stemVariants": [
+            "Check the career box score: how many Major League base hits did {name} ({team}) collect?",
+            "Dial in the lifetime MLB hit total posted by {name} of the {team}.",
+            "How many career hits did {name} ({team}) notch across Major League play?",
+            "Estimate the career hit ledger compiled by {name} ({team}).",
+            "Lock onto {name}'s ({team}) final Major League career hit count."
+          ]
         },
         {
           "id": "bbh_rbi",
           "archetype": "CALIBRATOR_DIAL",
-          "prompt": "How many career runs batted in (RBIs) did {name} ({team}) tally in MLB?",
+          "prompt": "How many career runs batted in (RBIs) did {name} ({team}) drive home in the majors?",
           "exactCol": 3,
           "unit": "RBIs",
           "step": 0,
@@ -337,7 +411,14 @@
           "maxClamp": 2400,
           "clue1": "{name} collected {hits} career hits (primary club: {team}).",
           "why": "{name} ({team}) drove in {rbi} career runs in MLB.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "How many career runs batted in (RBIs) did {name} ({team}) drive home in the majors?",
+            "Dial in the lifetime MLB RBI total credited to {name} of the {team}.",
+            "Across their Major League career, how many runs did {name} ({team}) plate?",
+            "Calibrate the career RBI mark tallied by {name} ({team}).",
+            "How many runners did {name} ({team}) drive in across Major League Baseball?"
+          ]
         }
       ]
     },
@@ -350,50 +431,80 @@
         "team",
         "so",
         "wins",
+        "era",
         "irt"
       ],
       "poolCols": [
-        1
+        1,
+        4
       ],
       "angles": [
         {
           "id": "bbp_team",
           "archetype": "SIGHTLINE_LOCK",
-          "prompt": "With which MLB club did pitcher {name} ({so} career strikeouts) pitch the most games?",
+          "prompt": "Fanning {so} career MLB batters, pitcher {name} took the mound most often for which franchise?",
           "answerCol": 1,
           "distractorCol": 1,
           "clue1": "{name} recorded {wins} career MLB victories and {so} strikeouts.",
           "clue2": "The club's name starts with \"{ans_init}\".",
           "why": "Pitcher {name} ({wins} wins, {so} SO) pitched more games for the {team} than any other team.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "preferSameCol": 4,
+          "stemVariants": [
+            "Fanning {so} career MLB batters, pitcher {name} took the mound most often for which franchise?",
+            "With {so} Major League strikeouts on the ledger, which club served as {name}'s primary pitching home?",
+            "Which MLB franchise saw hurler {name} ({so} career strikeouts) log the most career appearances?",
+            "Across a {so}-strikeout pitching career, {name} wore which club's uniform most frequently?",
+            "Toe the rubber with {name} ({so} career K's): which MLB ballclub was their main team?"
+          ]
         },
         {
           "id": "bbp_rev",
           "archetype": "SIGHTLINE_LOCK",
-          "prompt": "Which of these MLB pitchers logged the plurality of their career appearances with the {team}?",
+          "prompt": "Which of these MLB pitchers made the plurality of their career appearances in the uniform of the {team}?",
           "answerCol": 0,
           "distractorCol": 0,
           "avoidSameCol": 1,
           "clue1": "Finished with {wins} MLB wins and {so} strikeouts.",
           "clue2": "The pitcher's name begins with \"{ans_init}\".",
           "why": "{name} ({wins} W, {so} SO) pitched primarily for the {team}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "preferSameCol": 4,
+          "stemVariants": [
+            "Which of these MLB pitchers made the plurality of their career appearances in the uniform of the {team}?",
+            "Scan the bullpen and rotation history of the {team}: which hurler here pitched primarily for them?",
+            "Among these Major League arms, who logged more appearances for the {team} than any other club?",
+            "Which pitcher on this slate made the {team} their primary career MLB franchise?",
+            "Identify the MLB hurler whose longest career stint was with the {team}."
+          ]
         },
         {
           "id": "bbp_tf",
           "archetype": "GAUNTLET_SHATTER",
-          "truePrompt": "MLB pitcher {name} ({so} strikeouts) pitched more career games for the {team} than any other club.",
-          "falsePrompt": "MLB pitcher {name} ({so} strikeouts) pitched more career games for the {fake} than any other club.",
+          "truePrompt": "Hurler {name} ({so} career strikeouts) logged more MLB appearances for the {team} than any other club.",
+          "falsePrompt": "Hurler {name} ({so} career strikeouts) logged more MLB appearances for the {fake} than any other club.",
           "fakeCol": 1,
           "clue1": "{name} earned {wins} career MLB wins.",
           "whyTrue": "True! {name} pitched primarily for the {team}.",
           "whyFalse": "False! {name} pitched primarily for the {team}, not the {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "Hurler {name} ({so} career strikeouts) logged more MLB appearances for the {team} than any other club.",
+            "MLB pitching logs place {so}-strikeout arm {name} primarily with the {team}.",
+            "Across a {so}-K career, pitcher {name} threw more games for the {team} than any rival club.",
+            "The {team} served as the primary Major League club for {so}-strikeout pitcher {name}."
+          ],
+          "falsePromptVariants": [
+            "Hurler {name} ({so} career strikeouts) logged more MLB appearances for the {fake} than any other club.",
+            "MLB pitching logs place {so}-strikeout arm {name} primarily with the {fake}.",
+            "Across a {so}-K career, pitcher {name} threw more games for the {fake} than any rival club.",
+            "The {fake} served as the primary Major League club for {so}-strikeout pitcher {name}."
+          ]
         },
         {
           "id": "bbp_so",
           "archetype": "CALIBRATOR_DIAL",
-          "prompt": "How many career MLB strikeouts did pitcher {name} ({team}) record?",
+          "prompt": "How many career Major League strikeouts did {name} ({team}) rack up on the mound?",
           "exactCol": 2,
           "unit": "strikeouts",
           "step": 0,
@@ -402,15 +513,29 @@
           "maxClamp": 5800,
           "clue1": "Primary club: {team} ({wins} career MLB wins).",
           "why": "Pitcher {name} ({team}) recorded {so} career MLB strikeouts.",
-          "irtOffset": 0.3
+          "irtOffset": 0.3,
+          "stemVariants": [
+            "How many career Major League strikeouts did {name} ({team}) rack up on the mound?",
+            "Dial in the lifetime MLB strikeout total fanned by {name} of the {team}.",
+            "How many batters did pitcher {name} ({team}) punch out across their MLB career?",
+            "Estimate the career strikeout ledger posted by {name} ({team}).",
+            "Calibrate the career K count recorded by {name} ({team})."
+          ]
         },
         {
           "id": "bbp_cdx",
           "archetype": "CODEX_DUAL_RING",
           "subjectCol": 0,
           "targetCol": 1,
-          "prompt": "Align each MLB pitcher on the upper ring with their primary MLB franchise below.",
-          "irtOffset": 0.2
+          "prompt": "Match each MLB pitcher on the upper ring with the club where they pitched the most games.",
+          "irtOffset": 0.2,
+          "stemVariants": [
+            "Match each MLB pitcher on the upper ring with the club where they pitched the most games.",
+            "Align each Major League hurler above to their flagship MLB franchise below.",
+            "Pair these big-league arms with their primary career ballclub.",
+            "Connect every MLB pitcher on the top dial to the club they pitched for most often.",
+            "Lock each pitcher above onto their primary Major League uniform below."
+          ]
         }
       ]
     },
@@ -424,45 +549,75 @@
         "team",
         "val",
         "unit",
+        "era",
         "irt"
       ],
       "poolCols": [
         2,
-        4
+        4,
+        5
       ],
       "angles": [
         {
           "id": "bbf_plr",
           "archetype": "SIGHTLINE_LOCK",
-          "prompt": "Which MLB player posted the single-season milestone: {feat}?",
+          "prompt": "Which Major League standout authored this blistering single-season line: {feat}?",
           "answerCol": 1,
           "distractorCol": 1,
           "clue1": "Recorded while playing for the {team}.",
           "clue2": "The player's name starts with \"{ans_init}\".",
           "why": "{player} ({team}) recorded {feat}.",
-          "irtOffset": 0.1
+          "irtOffset": 0.1,
+          "preferSameCol": 5,
+          "stemVariants": [
+            "Which Major League standout authored this blistering single-season line: {feat}?",
+            "Open the single-season record book: who tore up baseball with {feat}?",
+            "Which MLB star delivered the unforgettable campaign of {feat}?",
+            "Credit for the single-season explosion {feat} belongs to which big-leaguer?",
+            "Who electrified fans across baseball by posting {feat}?"
+          ]
         },
         {
           "id": "bbf_team",
           "archetype": "SIGHTLINE_LOCK",
-          "prompt": "For which MLB team was {player} playing when recording {feat}?",
+          "prompt": "Whose uniform was {player} wearing when lighting up baseball with {feat}?",
           "answerCol": 2,
           "distractorCol": 2,
           "clue1": "Achieved by {player}.",
           "clue2": "The franchise begins with \"{ans_init}\".",
           "why": "{player} recorded {feat} with the {team}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "preferSameCol": 5,
+          "stemVariants": [
+            "Whose uniform was {player} wearing when lighting up baseball with {feat}?",
+            "Which MLB franchise benefited from {player}'s monster campaign of {feat}?",
+            "For which ballclub did {player} produce the standout line of {feat}?",
+            "On which team's roster did {player} post {feat}?",
+            "Link {player}'s historic single-season outburst ({feat}) to the right MLB club."
+          ]
         },
         {
           "id": "bbf_tf",
           "archetype": "GAUNTLET_SHATTER",
-          "truePrompt": "{player} recorded the single-season MLB mark of {feat} for the {team}.",
-          "falsePrompt": "{fake} recorded the single-season MLB mark of {feat} for the {team}.",
+          "truePrompt": "Playing for the {team}, {player} authored the single-season MLB mark of {feat}.",
+          "falsePrompt": "Playing for the {team}, {fake} authored the single-season MLB mark of {feat}.",
           "fakeCol": 1,
           "clue1": "Check the {team} single-season leaderboard.",
           "whyTrue": "True! {player} posted {feat} for the {team}.",
           "whyFalse": "False! {player} (not {fake}) posted {feat} for the {team}.",
-          "irtOffset": -0.1
+          "irtOffset": -0.1,
+          "truePromptVariants": [
+            "Playing for the {team}, {player} authored the single-season MLB mark of {feat}.",
+            "Single-season MLB ledgers credit {player} of the {team} with {feat}.",
+            "Wearing the {team} uniform, {player} delivered the campaign of {feat}.",
+            "Baseball archives record {player} posting {feat} while playing for the {team}."
+          ],
+          "falsePromptVariants": [
+            "Playing for the {team}, {fake} authored the single-season MLB mark of {feat}.",
+            "Single-season MLB ledgers credit {fake} of the {team} with {feat}.",
+            "Wearing the {team} uniform, {fake} delivered the campaign of {feat}.",
+            "Baseball archives record {fake} posting {feat} while playing for the {team}."
+          ]
         }
       ]
     },
@@ -474,45 +629,75 @@
         "honor",
         "player",
         "year",
+        "era",
         "irt"
       ],
-      "poolCols": [],
+      "poolCols": [
+        3
+      ],
       "angles": [
         {
           "id": "bba_plr",
           "archetype": "SIGHTLINE_LOCK",
-          "prompt": "Which baseball figure earned the MLB honor: {honor} ({year})?",
+          "prompt": "In {year}, which diamond luminary earned {honor}?",
           "answerCol": 1,
           "distractorCol": 1,
           "clue1": "Awarded or inducted in {year}.",
           "clue2": "Their name begins with \"{ans_init}\".",
           "why": "{player} earned {honor} in {year}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "preferSameCol": 3,
+          "stemVariants": [
+            "In {year}, which diamond luminary earned {honor}?",
+            "Turn the baseball calendar to {year}: who captured {honor}?",
+            "Whose name was etched onto baseball's roll of honor in {year} for {honor}?",
+            "Which MLB standout headlined {year} by earning {honor}?",
+            "In the baseball annals of {year}, who claimed {honor}?"
+          ]
         },
         {
           "id": "bba_tf",
           "archetype": "GAUNTLET_SHATTER",
-          "truePrompt": "In {year}, {player} earned the MLB honor: {honor}.",
-          "falsePrompt": "In {year}, {fake} earned the MLB honor: {honor}.",
+          "truePrompt": "In {year}, {player} earned {honor}.",
+          "falsePrompt": "In {year}, {fake} earned {honor}.",
           "fakeCol": 1,
           "clue1": "Think back to the {year} MLB honors.",
           "whyTrue": "True! {player} earned {honor} in {year}.",
           "whyFalse": "False! {player} (not {fake}) earned {honor} in {year}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "In {year}, {player} earned {honor}.",
+            "Baseball's official {year} honors roll credits {player} with {honor}.",
+            "In the {year} MLB record books, {player} claimed {honor}.",
+            "The {year} baseball spotlight honored {player} with {honor}."
+          ],
+          "falsePromptVariants": [
+            "In {year}, {fake} earned {honor}.",
+            "Baseball's official {year} honors roll credits {fake} with {honor}.",
+            "In the {year} MLB record books, {fake} claimed {honor}.",
+            "The {year} baseball spotlight honored {fake} with {honor}."
+          ]
         },
         {
           "id": "bba_yr",
           "archetype": "CALIBRATOR_DIAL",
-          "prompt": "In what year did {player} earn the MLB milestone: {honor}?",
+          "prompt": "In what year did {player} claim {honor}?",
           "exactCol": 2,
           "unit": "CE",
           "step": 1,
           "pad": 18,
           "minClamp": 1910,
-          "maxClamp": 2025,
-          "clue1": "Milestone: {honor} ({player}).",
+          "maxClamp": 2027,
+          "clue1": "Baseball honor: {honor} ({player}).",
           "why": "{player} earned {honor} in {year}.",
-          "irtOffset": 0.25
+          "irtOffset": 0.25,
+          "stemVariants": [
+            "In what year did {player} claim {honor}?",
+            "Set the baseball chronometer to the year {player} earned {honor}.",
+            "Which calendar year saw {player} honored with {honor}?",
+            "When did {player} capture {honor}?",
+            "Pinpoint the exact year {player} achieved {honor}."
+          ]
         }
       ]
     },
@@ -525,53 +710,90 @@
         "winner",
         "loser",
         "year",
+        "era",
         "irt"
       ],
       "poolCols": [
         1,
-        2
+        2,
+        4
       ],
       "angles": [
         {
           "id": "bbw_win",
           "archetype": "SIGHTLINE_LOCK",
-          "prompt": "Which franchise won the {series_lbl}, defeating the {loser}?",
+          "prompt": "Which franchise hoisted the World Series banner in the {series_lbl}, defeating the {loser}?",
           "answerCol": 1,
           "distractorCol": 1,
           "clue1": "They defeated the {loser} in the Fall Classic.",
           "clue2": "The champion franchise starts with \"{ans_init}\".",
           "why": "The {winner} defeated the {loser} to win the {series_lbl}.",
-          "irtOffset": -0.05
+          "irtOffset": -0.05,
+          "preferSameCol": 4,
+          "stemVariants": [
+            "Which franchise hoisted the World Series banner in the {series_lbl}, defeating the {loser}?",
+            "In the {series_lbl}, which ballclub toppled the {loser} to claim the Fall Classic crown?",
+            "Who outlasted the {loser} to win the {series_lbl}?",
+            "Which champion franchise celebrated over the {loser} at the end of the {series_lbl}?",
+            "Relive October's {series_lbl}: which club vanquished the {loser} for the title?"
+          ]
         },
         {
           "id": "bbw_lose",
           "archetype": "SIGHTLINE_LOCK",
-          "prompt": "Which team did the {winner} defeat to capture the {series_lbl}?",
+          "prompt": "Which opposing ballclub fell to the {winner} in the {series_lbl}?",
           "answerCol": 2,
           "distractorCol": 2,
           "clue1": "Runner-up in the {series_lbl} against the {winner}.",
           "clue2": "The team name starts with \"{ans_init}\".",
           "why": "The {winner} defeated the {loser} in the {series_lbl}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "preferSameCol": 4,
+          "stemVariants": [
+            "Which opposing ballclub fell to the {winner} in the {series_lbl}?",
+            "To capture the {series_lbl}, the {winner} had to get past which runner-up club?",
+            "Which league champion came up short against the {winner} in the {series_lbl}?",
+            "In the {series_lbl}, which team watched the {winner} clinch the championship?",
+            "Identify the World Series opponent defeated by the {winner} in the {series_lbl}."
+          ]
         },
         {
           "id": "bbw_tf",
           "archetype": "GAUNTLET_SHATTER",
-          "truePrompt": "The {winner} defeated the {loser} to win the {series_lbl}.",
-          "falsePrompt": "The {fake} defeated the {loser} to win the {series_lbl}.",
+          "truePrompt": "The {winner} toppled the {loser} to capture the {series_lbl}.",
+          "falsePrompt": "The {fake} toppled the {loser} to capture the {series_lbl}.",
           "fakeCol": 1,
           "clue1": "Recall the Fall Classic champion of {year}.",
           "whyTrue": "True! The {winner} won the {series_lbl} over the {loser}.",
           "whyFalse": "False! The {winner} (not the {fake}) won the {series_lbl}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "The {winner} toppled the {loser} to capture the {series_lbl}.",
+            "Fall Classic history records the {winner} defeating the {loser} in the {series_lbl}.",
+            "In the {series_lbl}, the {winner} edged past the {loser} for the championship.",
+            "October glory in the {series_lbl} belonged to the {winner} over the {loser}."
+          ],
+          "falsePromptVariants": [
+            "The {fake} toppled the {loser} to capture the {series_lbl}.",
+            "Fall Classic history records the {fake} defeating the {loser} in the {series_lbl}.",
+            "In the {series_lbl}, the {fake} edged past the {loser} for the championship.",
+            "October glory in the {series_lbl} belonged to the {fake} over the {loser}."
+          ]
         },
         {
           "id": "bbw_cdx",
           "archetype": "CODEX_DUAL_RING",
           "subjectCol": 0,
           "targetCol": 1,
-          "prompt": "Align each World Series edition on the upper ring with its championship club below.",
-          "irtOffset": 0.2
+          "prompt": "Pair each Fall Classic edition on the upper ring with the World Series champion below.",
+          "irtOffset": 0.2,
+          "stemVariants": [
+            "Pair each Fall Classic edition on the upper ring with the World Series champion below.",
+            "Align each World Series year above with the franchise that captured the crown.",
+            "Match every October championship edition on the top dial with its title club.",
+            "Connect each World Series series score above to the victorious ballclub below.",
+            "Lock each Fall Classic edition onto the champion franchise that hoisted the trophy."
+          ]
         }
       ]
     },
@@ -584,56 +806,88 @@
         "city",
         "team",
         "year",
+        "era",
         "irt"
       ],
       "poolCols": [
         1,
-        2
+        2,
+        4
       ],
       "angles": [
         {
           "id": "bbk_city",
           "archetype": "SIGHTLINE_LOCK",
-          "prompt": "In which city is (or was) the MLB ballpark {park} located?",
+          "prompt": "In which city did fans pass through the turnstiles of {park}?",
           "answerCol": 1,
           "distractorCol": 1,
-          "clue1": "Associated with the {team} (first MLB game {year}).",
+          "clue1": "First opened its gates to Major League play in {year}.",
           "clue2": "The city begins with \"{ans_init}\".",
           "why": "{park} ({team}) is in {city}.",
-          "irtOffset": -0.05
+          "irtOffset": -0.05,
+          "preferSameCol": 4,
+          "stemVariants": [
+            "In which city did fans pass through the turnstiles of {park}?",
+            "Pin {park} onto the baseball atlas: which city is (or was) its home?",
+            "Travel to watch a ballgame at {park} in which baseball city?",
+            "Which city hosted Major League crowds inside {park}?",
+            "Locate the storied diamond known as {park} in its proper city."
+          ]
         },
         {
           "id": "bbk_team",
           "archetype": "SIGHTLINE_LOCK",
-          "prompt": "Which MLB club played home games at {park}?",
+          "prompt": "Which baseball franchise called the storied diamond of {park} its home ballpark?",
           "answerCol": 2,
           "distractorCol": 2,
-          "clue1": "First hosted MLB play in {year}.",
+          "clue1": "First hosted Major League baseball in {year}.",
           "clue2": "The club begins with \"{ans_init}\".",
           "why": "The {team} played home games at {park} in {city}.",
-          "irtOffset": 0.05
+          "irtOffset": 0.05,
+          "preferSameCol": 4,
+          "stemVariants": [
+            "Which baseball franchise called the storied diamond of {park} its home ballpark?",
+            "Step onto the grass at {park}: which club took the field there as the home team?",
+            "Which franchise played its home schedule inside {park}?",
+            "Fans cheering at {park} rooted for which home ballclub?",
+            "Identify the baseball club whose home diamond was {park}."
+          ]
         },
         {
           "id": "bbk_yr",
           "archetype": "CALIBRATOR_DIAL",
-          "prompt": "In what year did {park} ({city}) first host MLB games for the {team}?",
+          "prompt": "In what year did {park} ({city}) first open its gates for the {team}?",
           "exactCol": 3,
           "unit": "CE",
           "step": 1,
           "pad": 22,
           "minClamp": 1871,
-          "maxClamp": 2025,
+          "maxClamp": 2026,
           "clue1": "Home ballpark in {city} ({team}).",
           "why": "{park} ({city}) first hosted the {team} in {year}.",
-          "irtOffset": 0.3
+          "irtOffset": 0.3,
+          "stemVariants": [
+            "In what year did {park} ({city}) first open its gates for the {team}?",
+            "Dial in the inaugural MLB season when {park} ({city}) debuted for the {team}.",
+            "Which calendar year saw the {team} play their first home game at {park} ({city})?",
+            "When did {park} in {city} first host Major League play for the {team}?",
+            "Set the ballpark timeline to the opening year of {park} ({city}, {team})."
+          ]
         },
         {
           "id": "bbk_cdx",
           "archetype": "CODEX_DUAL_RING",
           "subjectCol": 0,
           "targetCol": 2,
-          "prompt": "Align each MLB ballpark on the upper ring with its home franchise below.",
-          "irtOffset": 0.15
+          "prompt": "Pair each storied ballpark on the upper ring with the home franchise that played there.",
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Pair each storied ballpark on the upper ring with the home franchise that played there.",
+            "Align each baseball stadium above to its home ballclub below.",
+            "Match every MLB diamond on the top dial with its resident franchise.",
+            "Connect each classic ballpark above to its home club below.",
+            "Lock each ballpark name onto the franchise that called it home."
+          ]
         }
       ]
     },
@@ -656,13 +910,20 @@
         {
           "id": "shd_dyn",
           "archetype": "SIGHTLINE_LOCK",
-          "prompt": "To which royal house or dynasty did {name} (b. {year}, {country}) belong?",
+          "prompt": "To which royal house or ruling lineage did {name} (b. {year}, {country}) belong?",
           "answerCol": 1,
           "distractorCol": 1,
           "clue1": "Born in {year} and associated with {country}.",
           "clue2": "The house or dynasty starts with \"{ans_init}\".",
           "why": "{name} (b. {year}, {country}) belonged to {dynasty}.",
-          "irtOffset": 0.05
+          "irtOffset": 0.05,
+          "stemVariants": [
+            "To which royal house or ruling lineage did {name} (b. {year}, {country}) belong?",
+            "Born in {year} in {country}, {name} carried the bloodline of which royal house?",
+            "Which ruling house or noble lineage claimed {name} (b. {year}, {country})?",
+            "Trace the aristocratic pedigree of {name} ({country}, born {year}) to which royal house?",
+            "In the genealogies of {country}, {name} (b. {year}) belonged to which ruling house?"
+          ]
         },
         {
           "id": "shd_rev",
@@ -674,7 +935,14 @@
           "clue1": "Born in {year} ({country}).",
           "clue2": "Their name begins with \"{ans_init}\".",
           "why": "{name} ({year}) belonged to {dynasty}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these historical figures was a member of {dynasty}?",
+            "Scan the royal family tree of {dynasty}: which historical figure here belongs to it?",
+            "Which ruler or noble on this slate hailed from {dynasty}?",
+            "Identify the historical figure born into the lineage of {dynasty}.",
+            "Which name here carried the banner of {dynasty}?"
+          ]
         },
         {
           "id": "shd_tf",
@@ -685,7 +953,19 @@
           "clue1": "Associated with {country}.",
           "whyTrue": "True! {name} belonged to {dynasty}.",
           "whyFalse": "False! {name} belonged to {dynasty}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{name} (born {year}) belonged to {dynasty}.",
+            "Genealogical archives place {name} (born {year}) in {dynasty}.",
+            "Born in {year}, {name} was a member of {dynasty}.",
+            "Dynastic chronicles list {name} (b. {year}) within {dynasty}."
+          ],
+          "falsePromptVariants": [
+            "{name} (born {year}) belonged to {fake}.",
+            "Genealogical archives place {name} (born {year}) in {fake}.",
+            "Born in {year}, {name} was a member of {fake}.",
+            "Dynastic chronicles list {name} (b. {year}) within {fake}."
+          ]
         },
         {
           "id": "shd_yr",
@@ -699,7 +979,14 @@
           "maxClamp": 1960,
           "clue1": "Member of {dynasty} ({country}).",
           "why": "{name} ({dynasty}) was born in {year} CE.",
-          "irtOffset": 0.3
+          "irtOffset": 0.3,
+          "stemVariants": [
+            "In what year was {name} ({dynasty}, {country}) born?",
+            "Dial in the birth year of {name} ({dynasty}, {country}).",
+            "Which calendar year saw the birth of {name} of {dynasty} ({country})?",
+            "When was {name} ({dynasty}, {country}) born?",
+            "Pinpoint the birth year recorded for {name} ({dynasty}, {country})."
+          ]
         },
         {
           "id": "shd_cdx",
@@ -707,7 +994,14 @@
           "subjectCol": 0,
           "targetCol": 1,
           "prompt": "Align each historical ruler or noble with their royal house or dynasty.",
-          "irtOffset": 0.2
+          "irtOffset": 0.2,
+          "stemVariants": [
+            "Align each historical ruler or noble with their royal house or dynasty.",
+            "Match each historical ruler or noble on the top dial to their ruling dynasty below.",
+            "Pair each royal figure above with their ancestral house or dynasty.",
+            "Connect each monarch or noble to their dynastic lineage.",
+            "Lock every historical royal above onto their proper house below."
+          ]
         }
       ]
     },
@@ -735,7 +1029,14 @@
           "clue1": "Historically linked to {culture}.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} ({culture}) is located in present-day {country}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "In which modern country is the historic or archaeological site {name} located?",
+            "Excavators uncovering the ruins of {name} work inside which modern nation?",
+            "Pack a trowel for {name}: which present-day country hosts this archaeological site?",
+            "On a modern heritage atlas, {name} lies within which country?",
+            "Which contemporary country safeguards the historic site of {name}?"
+          ]
         },
         {
           "id": "sha_cul",
@@ -746,7 +1047,14 @@
           "clue1": "Located in present-day {country}.",
           "clue2": "The civilization begins with \"{ans_init}\".",
           "why": "{name} ({country}) is associated with {culture}.",
-          "irtOffset": 0.1
+          "irtOffset": 0.1,
+          "stemVariants": [
+            "Which civilization or culture is historically associated with {name} in {country}?",
+            "Standing in {country}, the site of {name} preserves the legacy of which culture or civilization?",
+            "Archaeologists in {country} link {name} to which ancient civilization or cultural period?",
+            "Which historical culture left behind the remains of {name} in {country}?",
+            "Uncover {name} in {country}: which civilization built or inhabited it?"
+          ]
         },
         {
           "id": "sha_tf",
@@ -757,7 +1065,19 @@
           "clue1": "Linked with {culture}.",
           "whyTrue": "True! {name} lies in {country}.",
           "whyFalse": "False! {name} lies in {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "The archaeological site {name} is located in present-day {country}.",
+            "Archaeological surveys locate {name} inside present-day {country}.",
+            "The heritage site of {name} lies within modern {country}.",
+            "Excavation records place {name} in {country}."
+          ],
+          "falsePromptVariants": [
+            "The archaeological site {name} is located in present-day {fake}.",
+            "Archaeological surveys locate {name} inside present-day {fake}.",
+            "The heritage site of {name} lies within modern {fake}.",
+            "Excavation records place {name} in {fake}."
+          ]
         },
         {
           "id": "sha_cdx",
@@ -765,7 +1085,14 @@
           "subjectCol": 0,
           "targetCol": 1,
           "prompt": "Align each archaeological site on the upper ring with its modern country below.",
-          "irtOffset": 0.2
+          "irtOffset": 0.2,
+          "stemVariants": [
+            "Align each archaeological site on the upper ring with its modern country below.",
+            "Pair each ancient or archaeological site above with its present-day country below.",
+            "Match each excavation site on the upper ring to its modern nation.",
+            "Align these historic ruins with the countries where they stand today.",
+            "Lock every archaeological landmark onto its modern country below."
+          ]
         }
       ]
     },
@@ -794,7 +1121,14 @@
           "clue1": "Born in {year} ({era_tag}).",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} (b. {year}) was associated with {country}.",
-          "irtOffset": 0.05
+          "irtOffset": 0.05,
+          "stemVariants": [
+            "With which country or realm was {name} (b. {year}, {era_tag}) associated?",
+            "Born in {year} ({era_tag}), {name} is linked to the history of which country or realm?",
+            "Which nation or realm claims {name} ({era_tag}, b. {year}) in its historical record?",
+            "From the ledger of {era_tag}, {name} (born {year}) connects to which country?",
+            "Trace {name} (b. {year}, {era_tag}) back to their associated realm or nation."
+          ]
         },
         {
           "id": "shf_rev",
@@ -806,7 +1140,14 @@
           "clue1": "Born in {year}.",
           "clue2": "Their name starts with \"{ans_init}\".",
           "why": "{name} (b. {year}) was associated with {country}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these historical figures ({era_tag}) was associated with {country}?",
+            "From the era of {era_tag}, which of these figures belongs to the story of {country}?",
+            "Spot the {era_tag} figure on this slate linked with {country}.",
+            "Which historical name here ({era_tag}) connects directly to {country}?",
+            "Identify the {era_tag} figure associated with {country}."
+          ]
         },
         {
           "id": "shf_tf",
@@ -817,7 +1158,19 @@
           "clue1": "Era: {era_tag}.",
           "whyTrue": "True! {name} was associated with {country}.",
           "whyFalse": "False! {name} was associated with {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "Historical figure {name} (born {year}) was associated with {country}.",
+            "Historical biographies tie {name} (born {year}) to {country}.",
+            "Born in {year}, historical figure {name} belongs to the story of {country}.",
+            "Archival records associate {name} (b. {year}) with {country}."
+          ],
+          "falsePromptVariants": [
+            "Historical figure {name} (born {year}) was associated with {fake}.",
+            "Historical biographies tie {name} (born {year}) to {fake}.",
+            "Born in {year}, historical figure {name} belongs to the story of {fake}.",
+            "Archival records associate {name} (b. {year}) with {fake}."
+          ]
         },
         {
           "id": "shf_yr",
@@ -831,7 +1184,14 @@
           "maxClamp": 1950,
           "clue1": "Associated with {country} ({era_tag}).",
           "why": "{name} ({country}) was born in {year} CE.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "In what year was historical figure {name} ({country}) born?",
+            "Dial in the birth year of {name} ({country}).",
+            "Which calendar year saw the birth of historical figure {name} ({country})?",
+            "When was {name} of {country} born?",
+            "Set the chronometer to the birth year of {name} ({country})."
+          ]
         }
       ]
     },
@@ -860,7 +1220,14 @@
           "clue1": "Discovered in {year} ({btype}).",
           "clue2": "The discoverer starts with \"{ans_init}\".",
           "why": "{name} ({btype}) was discovered by {discoverer} in {year}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Who discovered the solar system object {name} ({btype}, {year})?",
+            "Spotted in {year}, the solar system body {name} ({btype}) was discovered by whom?",
+            "Credit for finding the {year} {btype} {name} belongs to which astronomer or survey?",
+            "In {year}, who charted the solar system object {name} ({btype})?",
+            "Astronomical catalogs record which discoverer for {name} ({btype}, {year})?"
+          ]
         },
         {
           "id": "ssb_rev",
@@ -872,7 +1239,14 @@
           "clue1": "Discovered in {year} ({btype}).",
           "clue2": "Its name begins with \"{ans_init}\".",
           "why": "{discoverer} discovered {name} in {year}.",
-          "irtOffset": 0.2
+          "irtOffset": 0.2,
+          "stemVariants": [
+            "Which of these solar system objects was discovered by {discoverer}?",
+            "Which of these solar system bodies was discovered by {discoverer}?",
+            "Scan the observing log of {discoverer}: which object here did they uncover?",
+            "Identify the minor planet, comet, or moon credited to {discoverer}.",
+            "Which solar system discovery on this list belongs to {discoverer}?"
+          ]
         },
         {
           "id": "ssb_tf",
@@ -883,7 +1257,19 @@
           "clue1": "Cataloged under {btype}.",
           "whyTrue": "True! {discoverer} discovered {name} ({year}).",
           "whyFalse": "False! {name} was discovered by {discoverer}, not {fake}.",
-          "irtOffset": -0.1
+          "irtOffset": -0.1,
+          "truePromptVariants": [
+            "Solar system object {name} ({year}) was discovered by {discoverer}.",
+            "Astronomical logs credit {discoverer} with finding {name} in {year}.",
+            "In {year}, {discoverer} uncovered the solar system body {name}.",
+            "The {year} discovery of {name} is attributed to {discoverer}."
+          ],
+          "falsePromptVariants": [
+            "Solar system object {name} ({year}) was discovered by {fake}.",
+            "Astronomical logs credit {fake} with finding {name} in {year}.",
+            "In {year}, {fake} uncovered the solar system body {name}.",
+            "The {year} discovery of {name} is attributed to {fake}."
+          ]
         },
         {
           "id": "ssb_yr",
@@ -897,7 +1283,14 @@
           "maxClamp": 2025,
           "clue1": "Discovered by {discoverer}.",
           "why": "{name} was discovered by {discoverer} in {year}.",
-          "irtOffset": 0.3
+          "irtOffset": 0.3,
+          "stemVariants": [
+            "In what year was {name} ({btype}) discovered by {discoverer}?",
+            "Dial in the discovery year when {discoverer} spotted {name} ({btype}).",
+            "Which calendar year saw {discoverer} find the {btype} {name}?",
+            "When did {discoverer} discover {name} ({btype})?",
+            "Pinpoint the year {name} ({btype}) was discovered by {discoverer}."
+          ]
         }
       ]
     },
@@ -926,7 +1319,14 @@
           "clue1": "Born in {year}; educated at {alma}.",
           "clue2": "The prize begins with \"{ans_init}\".",
           "why": "{name} ({alma}) received the {award}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Which major scientific prize was awarded to {name} (educated at {alma})?",
+            "An alumnus of {alma}, researcher {name} earned which prestigious scientific prize?",
+            "Which major science honor crowns the career of {name} (educated at {alma})?",
+            "From {alma} to global acclaim: which scientific award did {name} win?",
+            "Identify the landmark scientific prize bestowed upon {name} ({alma})."
+          ]
         },
         {
           "id": "ssl_alma",
@@ -937,7 +1337,14 @@
           "clue1": "Born in {year}; recipient of the {award}.",
           "clue2": "The institution starts with \"{ans_init}\".",
           "why": "{name} ({award}) studied at {alma}.",
-          "irtOffset": 0.2
+          "irtOffset": 0.2,
+          "stemVariants": [
+            "At which university or institution did scientist {name} ({award}) study?",
+            "Before winning the honors of {award}, scientist {name} studied at which institution?",
+            "Which university counts {award} laureate {name} among its alumni?",
+            "Trace the academic training of {name} ({award}) to which alma mater?",
+            "Where did {award} honoree {name} pursue university study?"
+          ]
         },
         {
           "id": "ssl_tf",
@@ -948,7 +1355,19 @@
           "clue1": "Recipient of the {award}.",
           "whyTrue": "True! {name} studied at {alma}.",
           "whyFalse": "False! {name} studied at {alma}, not {fake}.",
-          "irtOffset": -0.1
+          "irtOffset": -0.1,
+          "truePromptVariants": [
+            "Scientist {name} (b. {year}) studied at {alma}.",
+            "Academic biographies record that scientist {name} (b. {year}) studied at {alma}.",
+            "Born in {year}, researcher {name} counts {alma} as an alma mater.",
+            "{name} (b. {year}) pursued scientific study at {alma}."
+          ],
+          "falsePromptVariants": [
+            "Scientist {name} (b. {year}) studied at {fake}.",
+            "Academic biographies record that scientist {name} (b. {year}) studied at {fake}.",
+            "Born in {year}, researcher {name} counts {fake} as an alma mater.",
+            "{name} (b. {year}) pursued scientific study at {fake}."
+          ]
         },
         {
           "id": "ssl_cdx",
@@ -956,7 +1375,14 @@
           "subjectCol": 0,
           "targetCol": 2,
           "prompt": "Align each scientist on the upper ring with their alma mater below.",
-          "irtOffset": 0.25
+          "irtOffset": 0.25,
+          "stemVariants": [
+            "Align each scientist on the upper ring with their alma mater below.",
+            "Match each celebrated scientist above with their university alma mater below.",
+            "Pair each laureate on the upper ring with the institution where they studied.",
+            "Connect these scientific pioneers to their academic homes.",
+            "Lock every researcher above onto their proper alma mater below."
+          ]
         }
       ]
     },
@@ -982,7 +1408,14 @@
           "clue1": "Orbital period: ~{orb_days} days; distance: ~{dist_ly} light-years.",
           "clue2": "The star designation begins with \"{ans_init}\".",
           "why": "Exoplanet {name} orbits host star {host} (~{dist_ly} ly from Earth).",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which host star is orbited by the confirmed exoplanet {name} (~{dist_ly} light-years away)?",
+            "Lying roughly {dist_ly} light-years from Earth, exoplanet {name} circles which host star?",
+            "Astronomers tracking exoplanet {name} (~{dist_ly} ly away) measure orbits around which star?",
+            "Which parent star anchors the planetary system of {name} (~{dist_ly} light-years distant)?",
+            "About {dist_ly} light-years out, {name} orbits which stellar host?"
+          ]
         },
         {
           "id": "sxd_orb",
@@ -996,7 +1429,14 @@
           "maxClamp": 5000,
           "clue1": "Located roughly {dist_ly} light-years from Earth.",
           "why": "NASA records {name}'s orbital period as approximately {orb_days} Earth days.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "Approximately how many Earth days does exoplanet {name} take to orbit its star?",
+            "Dial in the approximate orbital period (in Earth days) of exoplanet {name}.",
+            "Roughly how long is a single year on exoplanet {name}, measured in Earth days?",
+            "Estimate how many Earth days {name} needs to complete one orbit around its star.",
+            "Calibrate the orbital period of the extrasolar world {name} in Earth days."
+          ]
         },
         {
           "id": "sxd_dist",
@@ -1010,7 +1450,14 @@
           "maxClamp": 6000,
           "clue1": "Orbital period: ~{orb_days} days.",
           "why": "{name} lies approximately {dist_ly} light-years from Earth.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "Approximately how many light-years from Earth is the exoplanet {name}?",
+            "Measure the cosmic gulf: roughly how many light-years away is exoplanet {name}?",
+            "Dial in the approximate distance in light-years from Earth to {name}.",
+            "How many light-years separate Earth from the exoplanet {name}?",
+            "Estimate the stellar distance to exoplanet {name} in light-years."
+          ]
         }
       ]
     },
@@ -1037,7 +1484,14 @@
           "clue1": "Its population is roughly {pop_k},000.",
           "clue2": "The U.S. state starts with \"{ans_init}\".",
           "why": "{name} is located in the U.S. state of {state}.",
-          "irtOffset": -0.05
+          "irtOffset": -0.05,
+          "stemVariants": [
+            "In which U.S. state is the city of {name} (pop. ~{pop_k},000) located?",
+            "Home to roughly {pop_k},000 residents, the U.S. city of {name} sits inside which state?",
+            "Cross into which American state to visit the city of {name} (pop. ~{pop_k},000)?",
+            "On a U.S. road atlas, which state contains {name} (pop. ~{pop_k},000)?",
+            "Which U.S. state encompasses the city of {name} (~{pop_k},000 people)?"
+          ]
         },
         {
           "id": "sgu_rev",
@@ -1049,7 +1503,14 @@
           "clue1": "Population: approximately {pop_k},000.",
           "clue2": "The city begins with \"{ans_init}\".",
           "why": "{name} (pop. ~{pop_k},000) is in {state}.",
-          "irtOffset": 0.1
+          "irtOffset": 0.1,
+          "stemVariants": [
+            "Which of these American cities is located in {state}?",
+            "Which of these U.S. cities sits inside the borders of {state}?",
+            "Take a road trip across {state} to pass through which city here?",
+            "Identify the American city located within {state}.",
+            "Spot the city on this list belonging to {state}."
+          ]
         },
         {
           "id": "sgu_tf",
@@ -1060,7 +1521,19 @@
           "clue1": "Population: ~{pop_k},000.",
           "whyTrue": "True! {name} is in {state}.",
           "whyFalse": "False! {name} is in {state}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "The American city of {name} is located in {state}.",
+            "U.S. Census maps place the city of {name} inside {state}.",
+            "Travelers find the American city of {name} in {state}.",
+            "{name} is a municipality located within {state}."
+          ],
+          "falsePromptVariants": [
+            "The American city of {name} is located in {fake}.",
+            "U.S. Census maps place the city of {name} inside {fake}.",
+            "Travelers find the American city of {name} in {fake}.",
+            "{name} is a municipality located within {fake}."
+          ]
         },
         {
           "id": "sgu_pop",
@@ -1074,7 +1547,14 @@
           "maxClamp": 9000,
           "clue1": "Located in {state}.",
           "why": "{name}, {state} has a population of roughly {pop_k} thousand.",
-          "irtOffset": 0.3
+          "irtOffset": 0.3,
+          "stemVariants": [
+            "Approximately what is the population of {name}, {state}?",
+            "Dial in the approximate resident population of {name}, {state}.",
+            "Roughly how many people live in {name}, {state}?",
+            "Estimate the census population of {name} in {state}.",
+            "Calibrate the population gauge for {name}, {state}."
+          ]
         },
         {
           "id": "sgu_cdx",
@@ -1082,7 +1562,14 @@
           "subjectCol": 0,
           "targetCol": 1,
           "prompt": "Align each American city on the upper ring with its U.S. state below.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Align each American city on the upper ring with its U.S. state below.",
+            "Pair each U.S. city on the top ring with its home state below.",
+            "Match these American municipalities to their proper states.",
+            "Align each U.S. city above with the state that contains it.",
+            "Lock every American city onto its corresponding state below."
+          ]
         }
       ]
     },
@@ -1114,7 +1601,14 @@
           "clue1": "Located in {cont} (population ~{pop_k},000).",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} ({region}) is in {country}.",
-          "irtOffset": 0.1
+          "irtOffset": 0.1,
+          "stemVariants": [
+            "In which country is the city of {name} located?",
+            "Locate the city of {name} on the world atlas: which nation encompasses it?",
+            "Travelers arriving in {name} are landing in which country?",
+            "Which sovereign country is home to the city of {name}?",
+            "Locate {name} across the Meridian globe: which country claims it?"
+          ]
         },
         {
           "id": "sgc_reg",
@@ -1125,8 +1619,15 @@
           "preferSameCol": 1,
           "clue1": "Population: roughly {pop_k},000.",
           "clue2": "The region starts with \"{ans_init}\".",
-          "why": "{name} lies in {region}, {country}.",
-          "irtOffset": 0.25
+          "why": "{name} is situated in {region}, {country}.",
+          "irtOffset": 0.25,
+          "stemVariants": [
+            "Within {country}, which state, province, or region contains {name}?",
+            "Zoom into {country}: which province, state, or region contains {name}?",
+            "Inside {country}, {name} sits within which administrative region?",
+            "Which subnational division of {country} encompasses the city of {name}?",
+            "Locate {name} inside {country} by naming its region or province."
+          ]
         },
         {
           "id": "sgc_tf",
@@ -1137,7 +1638,19 @@
           "clue1": "Continent: {cont}.",
           "whyTrue": "True! {name} is in {country}.",
           "whyFalse": "False! {name} is in {country}, not {fake}.",
-          "irtOffset": -0.1
+          "irtOffset": -0.1,
+          "truePromptVariants": [
+            "{name} ({region}) is a city in {country}.",
+            "World gazetteers locate {name} ({region}) inside {country}.",
+            "The city of {name} in {region} lies within {country}.",
+            "Geography records place {name} ({region}) in {country}."
+          ],
+          "falsePromptVariants": [
+            "{name} ({region}) is a city in {fake}.",
+            "World gazetteers locate {name} ({region}) inside {fake}.",
+            "The city of {name} in {region} lies within {fake}.",
+            "Geography records place {name} ({region}) in {fake}."
+          ]
         },
         {
           "id": "sgc_pop",
@@ -1151,7 +1664,14 @@
           "maxClamp": 5000,
           "clue1": "Region: {region}, {country}.",
           "why": "{name}, {country} has an approximate population of {pop_k} thousand.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "Approximately what is the population of {name}, {country}?",
+            "Estimate the approximate population of {name}, {country}.",
+            "Roughly how many inhabitants live in {name} ({country})?",
+            "Dial in the population scale for {name}, {country}.",
+            "Calibrate the urban population of {name} in {country}."
+          ]
         }
       ]
     },
@@ -1180,7 +1700,14 @@
           "clue1": "Created by {artist} in {year}.",
           "clue2": "The museum begins with \"{ans_init}\".",
           "why": "\"{title}\" ({year}) by {artist} is in the collection of {museum}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which museum or gallery houses \"{title}\" ({year}) by {artist}?",
+            "To view {artist}'s {year} canvas \"{title}\" in person, buy a ticket to which museum?",
+            "Which renowned gallery or museum holds \"{title}\" ({year}) by {artist}?",
+            "Curators at which museum safeguard {artist}'s {year} work \"{title}\"?",
+            "Where on the global museum map hangs \"{title}\" ({year}, {artist})?"
+          ]
         },
         {
           "id": "sam_art",
@@ -1191,7 +1718,14 @@
           "clue1": "Housed in {museum} ({year}).",
           "clue2": "The artist's name begins with \"{ans_init}\".",
           "why": "{artist} painted \"{title}\" ({year}, {museum}).",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Who painted \"{title}\" ({year}), held at {museum}?",
+            "Hanging at {museum}, the {year} painting \"{title}\" is the handiwork of which master?",
+            "Step up to \"{title}\" ({year}) inside {museum}: which painter created it?",
+            "Which artist painted \"{title}\" in {year}, now preserved at {museum}?",
+            "Check the placard at {museum} beside \"{title}\" ({year}): who is the painter?"
+          ]
         },
         {
           "id": "sam_tf",
@@ -1202,7 +1736,19 @@
           "clue1": "Painted by {artist} in {year}.",
           "whyTrue": "True! \"{title}\" is held at {museum}.",
           "whyFalse": "False! \"{title}\" is held at {museum}, not {fake}.",
-          "irtOffset": -0.1
+          "irtOffset": -0.1,
+          "truePromptVariants": [
+            "\"{title}\" ({year}) by {artist} is housed in {museum}.",
+            "Visitors to {museum} can see \"{title}\" ({year}) by {artist}.",
+            "The {year} painting \"{title}\" by {artist} resides in the collection of {museum}.",
+            "{museum} holds {artist}'s {year} work \"{title}\"."
+          ],
+          "falsePromptVariants": [
+            "\"{title}\" ({year}) by {artist} is housed in {fake}.",
+            "Visitors to {fake} can see \"{title}\" ({year}) by {artist}.",
+            "The {year} painting \"{title}\" by {artist} resides in the collection of {fake}.",
+            "{fake} holds {artist}'s {year} work \"{title}\"."
+          ]
         },
         {
           "id": "sam_cdx",
@@ -1210,7 +1756,14 @@
           "subjectCol": 0,
           "targetCol": 2,
           "prompt": "Align each famous painting on the upper ring with the museum that houses it.",
-          "irtOffset": 0.25
+          "irtOffset": 0.25,
+          "stemVariants": [
+            "Align each famous painting on the upper ring with the museum that houses it.",
+            "Pair each museum masterwork on the upper ring with the institution holding it.",
+            "Match every famed canvas above to its museum home below.",
+            "Align these gallery masterpieces with the museums where they hang.",
+            "Lock each painting onto the gallery that curates it."
+          ]
         }
       ]
     },
@@ -1239,7 +1792,14 @@
           "clue1": "Composed in {year} ({form}).",
           "clue2": "The composer starts with \"{ans_init}\".",
           "why": "{composer} composed \"{title}\" ({year}).",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Which composer wrote \"{title}\" ({form}, {year})?",
+            "Take your seat in the concert hall: who composed \"{title}\" ({form}, {year})?",
+            "Which classical master penned the {year} {form} \"{title}\"?",
+            "Check the {year} score for \"{title}\" ({form}): which composer's name is on the cover?",
+            "Musical archives attribute \"{title}\" ({form}, {year}) to which composer?"
+          ]
         },
         {
           "id": "sac_rev",
@@ -1251,7 +1811,14 @@
           "clue1": "Dates from {year} ({form}).",
           "clue2": "Its title starts with \"{ans_init}\".",
           "why": "{composer} wrote \"{title}\" ({year}).",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these musical works was composed by {composer}?",
+            "Attend an all-{composer} concert evening: which work here belongs on the program?",
+            "Which of these classical scores was written by {composer}?",
+            "Identify the musical work composed by {composer}.",
+            "Which title from this repertoire belongs to {composer}?"
+          ]
         },
         {
           "id": "sac_tf",
@@ -1262,7 +1829,19 @@
           "clue1": "Form: {form} ({year}).",
           "whyTrue": "True! {composer} composed \"{title}\".",
           "whyFalse": "False! \"{title}\" was composed by {composer}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "The musical work \"{title}\" ({year}) was composed by {composer}.",
+            "Concert catalogs credit {composer} with the {year} work \"{title}\".",
+            "In {year}, {composer} wrote the musical piece \"{title}\".",
+            "The {year} score \"{title}\" comes from the pen of {composer}."
+          ],
+          "falsePromptVariants": [
+            "The musical work \"{title}\" ({year}) was composed by {fake}.",
+            "Concert catalogs credit {fake} with the {year} work \"{title}\".",
+            "In {year}, {fake} wrote the musical piece \"{title}\".",
+            "The {year} score \"{title}\" comes from the pen of {fake}."
+          ]
         },
         {
           "id": "sac_yr",
@@ -1276,7 +1855,14 @@
           "maxClamp": 2024,
           "clue1": "Form: {form} by {composer}.",
           "why": "\"{title}\" by {composer} dates to {year}.",
-          "irtOffset": 0.3
+          "irtOffset": 0.3,
+          "stemVariants": [
+            "In approximately what year did {composer} compose or premiere \"{title}\"?",
+            "Dial in the year {composer} composed or premiered \"{title}\".",
+            "Around which calendar year did {composer}'s \"{title}\" debut?",
+            "When did {composer} write or premiere \"{title}\"?",
+            "Pinpoint the premiere or composition year of \"{title}\" by {composer}."
+          ]
         }
       ]
     },
@@ -1305,7 +1891,14 @@
           "clue1": "Built in {country} around {year}.",
           "clue2": "The architectural style starts with \"{ans_init}\".",
           "why": "{name} ({country}, {year}) exemplifies {style}.",
-          "irtOffset": 0.1
+          "irtOffset": 0.1,
+          "stemVariants": [
+            "Which architectural style characterizes {name} ({country}, {year})?",
+            "Study the facade of {name} ({country}, {year}): which architectural style defines it?",
+            "Built in {country} ({year}), {name} exemplifies which architectural movement or style?",
+            "Architectural historians place {name} ({country}, {year}) within which style?",
+            "Which design idiom characterizes {name} ({country}, {year})?"
+          ]
         },
         {
           "id": "sas_cnt",
@@ -1316,7 +1909,14 @@
           "clue1": "Completed or founded around {year}.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} ({style}) stands in {country}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "In which country does the architectural landmark {name} ({year}) stand?",
+            "Travel to admire the {year} architectural landmark {name} in which country?",
+            "Which nation's heritage preserves {name} ({year})?",
+            "On an architectural map of the world, {name} ({year}) stands in which country?",
+            "Locate the {year} structure {name} inside which country?"
+          ]
         },
         {
           "id": "sas_tf",
@@ -1327,7 +1927,19 @@
           "clue1": "Completed around {year}.",
           "whyTrue": "True! {name} exemplifies {style}.",
           "whyFalse": "False! {name} exemplifies {style}, not {fake}.",
-          "irtOffset": -0.1
+          "irtOffset": -0.1,
+          "truePromptVariants": [
+            "Landmark {name} ({country}) is built in the style of {style}.",
+            "Architectural surveys classify {name} ({country}) under {style}.",
+            "In {country}, the landmark {name} is an exemplar of {style} architecture.",
+            "{name} ({country}) is a noted exemplar of {style}."
+          ],
+          "falsePromptVariants": [
+            "Landmark {name} ({country}) is built in the style of {fake}.",
+            "Architectural surveys classify {name} ({country}) under {fake}.",
+            "In {country}, the landmark {name} is an exemplar of {fake} architecture.",
+            "{name} ({country}) is a noted exemplar of {fake}."
+          ]
         },
         {
           "id": "sas_cdx",
@@ -1335,7 +1947,14 @@
           "subjectCol": 0,
           "targetCol": 1,
           "prompt": "Align each architectural landmark with its primary architectural style.",
-          "irtOffset": 0.2
+          "irtOffset": 0.2,
+          "stemVariants": [
+            "Align each architectural landmark with its primary architectural style.",
+            "Match each landmark on the upper ring to its signature architectural style below.",
+            "Pair these iconic structures with the architectural movements they embody.",
+            "Align each building above with its design style below.",
+            "Lock every architectural landmark onto its corresponding style."
+          ]
         }
       ]
     },
@@ -1362,7 +1981,14 @@
           "clue1": "Born in {year}.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "Actor {name} (b. {year}) is from {country}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Which country is screen actor {name} (b. {year}) from?",
+            "Born in {year}, screen performer {name} hails from which country?",
+            "Which nation claims screen actor {name} (b. {year})?",
+            "Check the film bio of {name} (born {year}): which country is home?",
+            "Which country's screen legacy includes {name} (b. {year})?"
+          ]
         },
         {
           "id": "spa_rev",
@@ -1374,7 +2000,14 @@
           "clue1": "Born in {year}.",
           "clue2": "Their name starts with \"{ans_init}\".",
           "why": "{name} (b. {year}) is from {country}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these screen actors was born in or represents {country}?",
+            "Which of these screen actors hails from or represents {country}?",
+            "Spot the cinema performer on this list linked to {country}.",
+            "Identify the actor born in or associated with {country}.",
+            "Which screen talent here connects to {country}?"
+          ]
         },
         {
           "id": "spa_tf",
@@ -1385,7 +2018,19 @@
           "clue1": "Born in {year}.",
           "whyTrue": "True! {name} is from {country}.",
           "whyFalse": "False! {name} is from {country}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "Screen actor {name} (born {year}) is associated with {country}.",
+            "Cinema biographies associate screen actor {name} (born {year}) with {country}.",
+            "Born in {year}, film performer {name} hails from {country}.",
+            "Screen archives link actor {name} (b. {year}) to {country}."
+          ],
+          "falsePromptVariants": [
+            "Screen actor {name} (born {year}) is associated with {fake}.",
+            "Cinema biographies associate screen actor {name} (born {year}) with {fake}.",
+            "Born in {year}, film performer {name} hails from {fake}.",
+            "Screen archives link actor {name} (b. {year}) to {fake}."
+          ]
         },
         {
           "id": "spa_yr",
@@ -1399,7 +2044,14 @@
           "maxClamp": 2010,
           "clue1": "Actor from {country}.",
           "why": "{name} ({country}) was born in {year}.",
-          "irtOffset": 0.3
+          "irtOffset": 0.3,
+          "stemVariants": [
+            "In what year was screen actor {name} ({country}) born?",
+            "Dial in the birth year of screen actor {name} ({country}).",
+            "Which calendar year saw the birth of screen performer {name} ({country})?",
+            "When was actor {name} ({country}) born?",
+            "Pinpoint the birth year recorded for {name} ({country})."
+          ]
         }
       ]
     },
@@ -1431,7 +2083,14 @@
           "clue1": "Represented {country} ({sport_tag}, b. {year}).",
           "clue2": "The position starts with \"{ans_init}\".",
           "why": "{name} ({country}, {sport_tag}) played {pos}.",
-          "irtOffset": 0.05
+          "irtOffset": 0.05,
+          "stemVariants": [
+            "Which primary position did {sport_tag} standout {name} ({country}, b. {year}) play?",
+            "Competing in {sport_tag} ({country}, b. {year}), {name} starred at which primary position?",
+            "Check the lineup card for {sport_tag} player {name} ({country}, born {year}): what position did they play?",
+            "In {sport_tag}, which role on the field or court belonged to {name} ({country}, b. {year})?",
+            "Identify the primary playing position of {sport_tag} standout {name} ({country}, b. {year})."
+          ]
         },
         {
           "id": "spp_cnt",
@@ -1442,7 +2101,14 @@
           "clue1": "Played {pos} ({sport_tag}, b. {year}).",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} ({pos}) represented {country}.",
-          "irtOffset": 0.05
+          "irtOffset": 0.05,
+          "stemVariants": [
+            "Which country did {sport_tag} {pos} {name} (b. {year}) represent?",
+            "Born in {year}, {sport_tag} {pos} {name} represented which country?",
+            "Which nation's colors did {sport_tag} {pos} {name} (b. {year}) wear?",
+            "Link {sport_tag} {pos} {name} (born {year}) to their home country.",
+            "On international {sport_tag} rosters, {pos} {name} (b. {year}) hails from which nation?"
+          ]
         },
         {
           "id": "spp_tf",
@@ -1453,7 +2119,19 @@
           "clue1": "Born in {year} ({country}).",
           "whyTrue": "True! {name} played {pos}.",
           "whyFalse": "False! {name} played {pos}, not {fake}.",
-          "irtOffset": -0.1
+          "irtOffset": -0.1,
+          "truePromptVariants": [
+            "In {sport_tag}, {name} ({country}) played primarily at {pos}.",
+            "Pro {sport_tag} logs list {name} ({country}) primarily at {pos}.",
+            "Representing {country} in {sport_tag}, {name} played mainly as {pos}.",
+            "Scouting records place {sport_tag} player {name} ({country}) at {pos}."
+          ],
+          "falsePromptVariants": [
+            "In {sport_tag}, {name} ({country}) played primarily at {fake}.",
+            "Pro {sport_tag} logs list {name} ({country}) primarily at {fake}.",
+            "Representing {country} in {sport_tag}, {name} played mainly as {fake}.",
+            "Scouting records place {sport_tag} player {name} ({country}) at {fake}."
+          ]
         },
         {
           "id": "spp_yr",
@@ -1467,7 +2145,14 @@
           "maxClamp": 2008,
           "clue1": "{pos} representing {country}.",
           "why": "{name} ({country}, {pos}) was born in {year}.",
-          "irtOffset": 0.3
+          "irtOffset": 0.3,
+          "stemVariants": [
+            "In what year was {sport_tag} {pos} {name} ({country}) born?",
+            "Dial in the birth year of {sport_tag} {pos} {name} ({country}).",
+            "Which calendar year saw the birth of {name} ({sport_tag}, {pos}, {country})?",
+            "When was {country} {sport_tag} {pos} {name} born?",
+            "Pinpoint the birth year recorded for {sport_tag} {pos} {name} ({country})."
+          ]
         }
       ]
     },
@@ -1496,7 +2181,14 @@
           "clue1": "Developed by {dev} ({year}).",
           "clue2": "The genre starts with \"{ans_init}\".",
           "why": "\"{title}\" ({year}, {dev}) belongs to the {genre} genre.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Which genre best classifies the {year} video game \"{title}\" ({dev})?",
+            "Released by {dev} in {year}, \"{title}\" belongs to which video game genre?",
+            "Pick up the controller for \"{title}\" ({year}, {dev}): what genre defines its gameplay?",
+            "Gaming encyclopedias file {dev}'s {year} release \"{title}\" under which genre?",
+            "Which interactive genre describes \"{title}\" ({year}) by {dev}?"
+          ]
         },
         {
           "id": "svg_dev2",
@@ -1507,7 +2199,14 @@
           "clue1": "Genre: {genre}; released in {year}.",
           "clue2": "The studio begins with \"{ans_init}\".",
           "why": "{dev} developed \"{title}\" ({year}).",
-          "irtOffset": 0.1
+          "irtOffset": 0.1,
+          "stemVariants": [
+            "Which studio developed \"{title}\" ({genre}, {year})?",
+            "Shipped in {year} in the {genre} arena, \"{title}\" was built by which studio?",
+            "Which game developer created the {year} {genre} title \"{title}\"?",
+            "Credit for the {year} {genre} release \"{title}\" belongs to which development house?",
+            "Identify the studio behind \"{title}\" ({genre}, {year})."
+          ]
         },
         {
           "id": "svg_tf2",
@@ -1518,7 +2217,19 @@
           "clue1": "Developed by {dev} ({year}).",
           "whyTrue": "True! \"{title}\" is classified under {genre}.",
           "whyFalse": "False! \"{title}\" is classified under {genre}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "The {year} video game \"{title}\" ({dev}) belongs to the {genre} genre.",
+            "Game catalogs classify {dev}'s {year} title \"{title}\" under {genre}.",
+            "Released in {year} by {dev}, \"{title}\" is categorized in the {genre} genre.",
+            "Players know \"{title}\" ({year}, {dev}) as part of the {genre} genre."
+          ],
+          "falsePromptVariants": [
+            "The {year} video game \"{title}\" ({dev}) belongs to the {fake} genre.",
+            "Game catalogs classify {dev}'s {year} title \"{title}\" under {fake}.",
+            "Released in {year} by {dev}, \"{title}\" is categorized in the {fake} genre.",
+            "Players know \"{title}\" ({year}, {dev}) as part of the {fake} genre."
+          ]
         },
         {
           "id": "svg_cdx",
@@ -1526,7 +2237,14 @@
           "subjectCol": 0,
           "targetCol": 2,
           "prompt": "Align each video game title on the upper ring with its development studio below.",
-          "irtOffset": 0.2
+          "irtOffset": 0.2,
+          "stemVariants": [
+            "Align each video game title on the upper ring with its development studio below.",
+            "Match each video game title above with the studio that developed it.",
+            "Pair every game on the upper ring to its development house below.",
+            "Align these playable classics with their creator studios.",
+            "Lock each video game onto the developer that built it."
+          ]
         }
       ]
     },
@@ -1555,7 +2273,14 @@
           "clue1": "Introduced in {year} ({vclass}).",
           "clue2": "The manufacturer starts with \"{ans_init}\".",
           "why": "{maker} built {name} ({year}).",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Which manufacturer built {name} ({vclass}, introduced {year})?",
+            "Introduced in {year}, the {vclass} model {name} was engineered by which manufacturer?",
+            "Step onto the hangar or factory floor of {year}: who built {name} ({vclass})?",
+            "Which aerospace or vehicle maker produced {name} ({vclass}, {year})?",
+            "Which company manufactured the {vclass} {name} (introduced {year})?"
+          ]
         },
         {
           "id": "sta_tf",
@@ -1566,7 +2291,19 @@
           "clue1": "Introduced around {year}.",
           "whyTrue": "True! {maker} built {name} ({year}).",
           "whyFalse": "False! {maker} (not {fake}) built {name} ({year}).",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{maker} built {name} ({vclass}, {year}).",
+            "Engineering registries credit {maker} with building {name} ({vclass}, {year}).",
+            "In {year}, {maker} debuted the {vclass} {name} for service.",
+            "Manufacturer {maker} produced the {year} {vclass} {name} on its line."
+          ],
+          "falsePromptVariants": [
+            "{fake} built {name} ({vclass}, {year}).",
+            "Engineering registries credit {fake} with building {name} ({vclass}, {year}).",
+            "In {year}, {fake} debuted the {vclass} {name} for service.",
+            "Manufacturer {fake} produced the {year} {vclass} {name} on its line."
+          ]
         },
         {
           "id": "sta_yr",
@@ -1580,7 +2317,14 @@
           "maxClamp": 2025,
           "clue1": "Built by {maker} ({vclass}).",
           "why": "{name} ({maker}) debuted in {year}.",
-          "irtOffset": 0.25
+          "irtOffset": 0.25,
+          "stemVariants": [
+            "In what year did {name} ({maker}, {vclass}) make its debut or first flight?",
+            "Dial in the debut or first-flight year of {name} ({maker}, {vclass}).",
+            "Which calendar year saw {maker} debut the {vclass} {name}?",
+            "When did {maker}'s {vclass} {name} first launch or fly?",
+            "Set the engineering chronometer to the debut year of {name} ({maker}, {vclass})."
+          ]
         },
         {
           "id": "sta_cdx",
@@ -1588,7 +2332,14 @@
           "subjectCol": 0,
           "targetCol": 1,
           "prompt": "Align each aircraft or vehicle model with its manufacturer.",
-          "irtOffset": 0.2
+          "irtOffset": 0.2,
+          "stemVariants": [
+            "Align each aircraft or vehicle model with its manufacturer.",
+            "Pair each aircraft or vehicle on the upper ring with its manufacturer below.",
+            "Match every engineering model above to the company that built it.",
+            "Align these machines with their original makers.",
+            "Lock each craft or vehicle onto its proper manufacturer."
+          ]
         }
       ]
     },
@@ -1617,7 +2368,14 @@
           "clue1": "Introduced in {year} ({kind}).",
           "clue2": "The creator begins with \"{ans_init}\".",
           "why": "{ext_or_dev} developed {name} ({year}).",
-          "irtOffset": 0.1
+          "irtOffset": 0.1,
+          "stemVariants": [
+            "Which organization or creator developed {name} ({kind}, {year})?",
+            "Introduced in {year}, the {kind} standard {name} was created by which organization or developer?",
+            "Who authored or launched {name} ({kind}) back in {year}?",
+            "Trace the {year} {kind} specification {name} to its original creator or organization.",
+            "Computing histories credit whom with creating {name} ({kind}, {year})?"
+          ]
         },
         {
           "id": "stf_tf",
@@ -1628,7 +2386,19 @@
           "clue1": "Category: {kind}.",
           "whyTrue": "True! {ext_or_dev} created {name} ({year}).",
           "whyFalse": "False! {ext_or_dev} (not {fake}) created {name} ({year}).",
-          "irtOffset": -0.1
+          "irtOffset": -0.1,
+          "truePromptVariants": [
+            "{ext_or_dev} created computing technology {name} ({year}).",
+            "Technical archives credit {ext_or_dev} with creating {name} in {year}.",
+            "In {year}, {ext_or_dev} introduced the computing standard {name} to developers.",
+            "Records list {ext_or_dev} as developer of {name} ({year})."
+          ],
+          "falsePromptVariants": [
+            "{fake} created computing technology {name} ({year}).",
+            "Technical archives credit {fake} with creating {name} in {year}.",
+            "In {year}, {fake} introduced the computing standard {name} to developers.",
+            "Records list {fake} as developer of {name} ({year})."
+          ]
         },
         {
           "id": "stf_yr",
@@ -1642,7 +2412,14 @@
           "maxClamp": 2025,
           "clue1": "{ext_or_dev} created this {kind}.",
           "why": "{name} ({ext_or_dev}) debuted in {year}.",
-          "irtOffset": 0.25
+          "irtOffset": 0.25,
+          "stemVariants": [
+            "In what year was {name} ({kind}, {ext_or_dev}) introduced?",
+            "Dial in the launch year when {ext_or_dev} introduced {name} ({kind}).",
+            "Which calendar year saw the debut of {name} ({kind}, {ext_or_dev})?",
+            "When was {name} ({kind}) from {ext_or_dev} first introduced?",
+            "Pinpoint the release year of {name} ({kind}, {ext_or_dev})."
+          ]
         }
       ]
     },
@@ -1671,7 +2448,14 @@
           "clue1": "Biological group: {group}.",
           "clue2": "The conservation tier begins with \"{ans_init}\".",
           "why": "The {name} ({sci}) is listed as {status} on the IUCN Red List.",
-          "irtOffset": 0.25
+          "irtOffset": 0.25,
+          "stemVariants": [
+            "What IUCN Red List conservation status is assigned to the {name} ({sci})?",
+            "Check the global IUCN Red List: what conservation status applies to the {name} ({sci})?",
+            "Biologists assessing the {name} ({sci}) assign it which IUCN Red List tier?",
+            "Under IUCN conservation criteria, how is the {name} ({sci}) currently classified?",
+            "Identify the official IUCN Red List risk level for the {name} ({sci})."
+          ]
         },
         {
           "id": "sni_sci",
@@ -1683,7 +2467,14 @@
           "clue1": "IUCN status: {status} ({group}).",
           "clue2": "The genus starts with \"{ans_init}\".",
           "why": "The {name} has the scientific name {sci}.",
-          "irtOffset": 0.45
+          "irtOffset": 0.45,
+          "stemVariants": [
+            "What is the scientific binomial name of the {name} ({group})?",
+            "In taxonomy guides for {group}, what Latin binomial identifies the {name}?",
+            "Which scientific name corresponds to the {name} ({group})?",
+            "Field biologists studying {group} catalog the {name} under which Latin name?",
+            "Match the {name} ({group}) to its official binomial scientific name."
+          ]
         },
         {
           "id": "sni_tf",
@@ -1694,7 +2485,19 @@
           "clue1": "Biological group: {group}.",
           "whyTrue": "True! The {name} is assessed as {status}.",
           "whyFalse": "False! The {name} is assessed as {status}, not {fake}.",
-          "irtOffset": 0.05
+          "irtOffset": 0.05,
+          "truePromptVariants": [
+            "On the IUCN Red List, the {name} ({sci}) is assessed as {status}.",
+            "IUCN conservation data places the {name} ({sci}) in the {status} tier.",
+            "Wildlife assessments currently list the {name} ({sci}) as {status}.",
+            "The {name} ({sci}) holds an IUCN Red List designation of {status}."
+          ],
+          "falsePromptVariants": [
+            "On the IUCN Red List, the {name} ({sci}) is assessed as {fake}.",
+            "IUCN conservation data places the {name} ({sci}) in the {fake} tier.",
+            "Wildlife assessments currently list the {name} ({sci}) as {fake}.",
+            "The {name} ({sci}) holds an IUCN Red List designation of {fake}."
+          ]
         },
         {
           "id": "sni_cdx",
@@ -1702,7 +2505,14 @@
           "subjectCol": 0,
           "targetCol": 1,
           "prompt": "Align each organism's common name with its scientific Latin binomial.",
-          "irtOffset": 0.35
+          "irtOffset": 0.35,
+          "stemVariants": [
+            "Align each organism's common name with its scientific Latin binomial.",
+            "Match each species' common name above with its Latin scientific binomial below.",
+            "Pair every organism on the top dial to its official scientific name.",
+            "Align these wildlife entries with their taxonomic Latin names.",
+            "Lock each common species name onto its proper binomial below."
+          ]
         }
       ]
     },
@@ -1730,7 +2540,14 @@
           "clue1": "Recognized under {animal}.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "The {name} ({animal}) originated in {country}.",
-          "irtOffset": 0.05
+          "irtOffset": 0.05,
+          "stemVariants": [
+            "In which country did the {name} ({animal}) originate?",
+            "Trace the lineage of the {name} ({animal}): which country developed this breed?",
+            "Which nation is the traditional homeland of the {name} ({animal})?",
+            "Breed registries trace the {name} ({animal}) back to which country?",
+            "From which country does the {name} ({animal}) originate?"
+          ]
         },
         {
           "id": "snb_rev",
@@ -1742,7 +2559,14 @@
           "clue1": "Breed group: {animal}.",
           "clue2": "Its name begins with \"{ans_init}\".",
           "why": "The {name} originated in {country}.",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which of these breeds ({animal}) originated in {country}?",
+            "Which of these {animal} breeds traces its roots to {country}?",
+            "Scan the breed heritage of {country}: which {animal} here originated there?",
+            "Identify the {animal} breed developed in {country}.",
+            "Which {animal} breed on this slate hails from {country}?"
+          ]
         },
         {
           "id": "snb_tf",
@@ -1753,7 +2577,19 @@
           "clue1": "Breed classification: {animal}.",
           "whyTrue": "True! The {name} originated in {country}.",
           "whyFalse": "False! The {name} originated in {country}, not {fake}.",
-          "irtOffset": -0.1
+          "irtOffset": -0.1,
+          "truePromptVariants": [
+            "The {name} ({animal}) originated in {country}.",
+            "Breed histories place the origin of the {name} ({animal}) in {country}.",
+            "The {name} ({animal}) was originally bred in {country}.",
+            "Livestock and kennel registries trace the {name} ({animal}) to {country}."
+          ],
+          "falsePromptVariants": [
+            "The {name} ({animal}) originated in {fake}.",
+            "Breed histories place the origin of the {name} ({animal}) in {fake}.",
+            "The {name} ({animal}) was originally bred in {fake}.",
+            "Livestock and kennel registries trace the {name} ({animal}) to {fake}."
+          ]
         }
       ]
     },
@@ -1783,7 +2619,14 @@
           "clue1": "Political figure in {country} (b. {year}).",
           "clue2": "The party begins with \"{ans_init}\".",
           "why": "{name} ({country}) was affiliated with {party}.",
-          "irtOffset": 0.1
+          "irtOffset": 0.1,
+          "stemVariants": [
+            "With which political party was {name} ({country}, b. {year}) affiliated?",
+            "Active in {country} (b. {year}), political figure {name} aligned with which party?",
+            "On the ballot of {country}, {name} (born {year}) represented which political party?",
+            "Which political party claims {name} ({country}, b. {year}) among its leaders or members?",
+            "Link {name} ({country}, b. {year}) to their primary political party."
+          ]
         },
         {
           "id": "ssp_cnt",
@@ -1794,7 +2637,14 @@
           "clue1": "Political figure born in {year}.",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} ({party}) served in {country}.",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "In which country's politics did {name} (b. {year}) serve?",
+            "Born in {year}, statesman or politician {name} served in the political arena of which nation?",
+            "Which country's legislative or executive history features {name} (b. {year})?",
+            "Trace the political career of {name} (born {year}) to which country?",
+            "In which nation's public affairs did {name} (b. {year}) hold office or influence?"
+          ]
         },
         {
           "id": "ssp_tf",
@@ -1805,7 +2655,19 @@
           "clue1": "Born in {year} ({country}).",
           "whyTrue": "True! {name} belonged to {party}.",
           "whyFalse": "False! {name} belonged to {party}, not {fake}.",
-          "irtOffset": -0.1
+          "irtOffset": -0.1,
+          "truePromptVariants": [
+            "Political figure {name} ({country}) was affiliated with {party}.",
+            "Political archives in {country} link {name} to {party}.",
+            "In {country}, {name} served under the banner of {party}.",
+            "Electoral histories associate {name} ({country}) with {party}."
+          ],
+          "falsePromptVariants": [
+            "Political figure {name} ({country}) was affiliated with {fake}.",
+            "Political archives in {country} link {name} to {fake}.",
+            "In {country}, {name} served under the banner of {fake}.",
+            "Electoral histories associate {name} ({country}) with {fake}."
+          ]
         },
         {
           "id": "ssp_yr",
@@ -1819,7 +2681,14 @@
           "maxClamp": 2000,
           "clue1": "Served in {country} ({party}).",
           "why": "{name} ({country}) was born in {year}.",
-          "irtOffset": 0.3
+          "irtOffset": 0.3,
+          "stemVariants": [
+            "In what year was political figure {name} ({country}, {party}) born?",
+            "Dial in the birth year of {country} political figure {name} ({party}).",
+            "Which calendar year saw the birth of {name} ({country}, {party})?",
+            "When was {name} ({party}, {country}) born?",
+            "Pinpoint the birth year on record for {name} ({country}, {party})."
+          ]
         }
       ]
     },
@@ -1848,7 +2717,14 @@
           "clue1": "Dated {year} ({ltype}).",
           "clue2": "The country starts with \"{ans_init}\".",
           "why": "{name} ({year}) belongs to {country}.",
-          "irtOffset": 0.05
+          "irtOffset": 0.05,
+          "stemVariants": [
+            "With which jurisdiction or country is {name} ({ltype}, {year}) associated?",
+            "Enacted or decided in {year}, {name} ({ltype}) belongs to which nation's legal history?",
+            "Which country's courts or legislature produced {name} ({ltype}, {year})?",
+            "Legal scholars tie the {year} {ltype} known as {name} to which jurisdiction?",
+            "In {year}, {name} ({ltype}) shaped law within which country?"
+          ]
         },
         {
           "id": "sslw_tf",
@@ -1859,7 +2735,19 @@
           "clue1": "Year: {year}.",
           "whyTrue": "True! {name} ({year}) belongs to {country}.",
           "whyFalse": "False! {name} belongs to {country}, not {fake}.",
-          "irtOffset": -0.1
+          "irtOffset": -0.1,
+          "truePromptVariants": [
+            "{name} ({ltype}, {year}) is associated with {country}.",
+            "Legal annals place {name} ({ltype}, {year}) within the jurisdiction of {country}.",
+            "The {year} {ltype} {name} belongs to the legal history of {country}.",
+            "Jurisprudence archives connect {name} ({ltype}, {year}) with {country}."
+          ],
+          "falsePromptVariants": [
+            "{name} ({ltype}, {year}) is associated with {fake}.",
+            "Legal annals place {name} ({ltype}, {year}) within the jurisdiction of {fake}.",
+            "The {year} {ltype} {name} belongs to the legal history of {fake}.",
+            "Jurisprudence archives connect {name} ({ltype}, {year}) with {fake}."
+          ]
         },
         {
           "id": "sslw_yr",
@@ -1873,7 +2761,14 @@
           "maxClamp": 2025,
           "clue1": "Jurisdiction: {country} ({ltype}).",
           "why": "{name} ({country}) dates to {year}.",
-          "irtOffset": 0.3
+          "irtOffset": 0.3,
+          "stemVariants": [
+            "In what year was {name} ({country}, {ltype}) enacted or decided?",
+            "Set the legal timeline to the year {name} ({country}, {ltype}) was enacted or ruled.",
+            "Which calendar year marked the enactment or decision of {name} ({country}, {ltype})?",
+            "When did {country} pass or decide {name} ({ltype})?",
+            "Pinpoint the landmark year of {name} ({country}, {ltype})."
+          ]
         }
       ]
     },
@@ -1901,7 +2796,14 @@
           "clue1": "Established in {country} in {year}.",
           "clue2": "The founder's name starts with \"{ans_init}\".",
           "why": "{founder} founded {name} ({country}, {year}).",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Who founded {name} ({country}, est. {year})?",
+            "Established in {country} in {year}, the heritage house {name} was founded by whom?",
+            "Which visionary founder launched {name} in {country} back in {year}?",
+            "Trace the {year} birth of {country}'s {name} to its original founder.",
+            "Whose entrepreneurial name stands behind the {year} founding of {name} ({country})?"
+          ]
         },
         {
           "id": "sfa_rev",
@@ -1913,7 +2815,14 @@
           "clue1": "Originating in {country} ({year}).",
           "clue2": "The house begins with \"{ans_init}\".",
           "why": "{founder} founded {name} ({year}, {country}).",
-          "irtOffset": 0.15
+          "irtOffset": 0.15,
+          "stemVariants": [
+            "Which heritage house or company was founded by {founder} in {year}?",
+            "In {year}, {founder} laid the cornerstone of which heritage house or company?",
+            "Which enterprise on this list traces its {year} founding to {founder}?",
+            "Step back to {year}: which brand or house did {founder} establish?",
+            "Identify the house created by {founder} in {year}."
+          ]
         },
         {
           "id": "sfa_tf",
@@ -1924,7 +2833,19 @@
           "clue1": "Established in {year} in {country}.",
           "whyTrue": "True! {founder} founded {name} ({year}).",
           "whyFalse": "False! {founder} (not {fake}) founded {name} ({year}).",
-          "irtOffset": -0.1
+          "irtOffset": -0.1,
+          "truePromptVariants": [
+            "{founder} founded {name} ({country}, {year}).",
+            "Corporate histories credit {founder} with establishing {name} ({country}, {year}).",
+            "In {year}, {founder} launched {name} in {country}.",
+            "Founding records list {founder} as creator of {name} ({country}, est. {year})."
+          ],
+          "falsePromptVariants": [
+            "{fake} founded {name} ({country}, {year}).",
+            "Corporate histories credit {fake} with establishing {name} ({country}, {year}).",
+            "In {year}, {fake} launched {name} in {country}.",
+            "Founding records list {fake} as creator of {name} ({country}, est. {year})."
+          ]
         },
         {
           "id": "sfa_cdx",
@@ -1932,7 +2853,14 @@
           "subjectCol": 0,
           "targetCol": 1,
           "prompt": "Align each heritage brand or house with its founder.",
-          "irtOffset": 0.25
+          "irtOffset": 0.25,
+          "stemVariants": [
+            "Align each heritage brand or house with its founder.",
+            "Pair each heritage brand or atelier above with its original founder below.",
+            "Match every craft or luxury house on the top ring to who founded it.",
+            "Align these storied houses with their visionary founders.",
+            "Lock each heritage house onto its proper founder below."
+          ]
         }
       ]
     },
@@ -1960,7 +2888,14 @@
           "clue1": "Culinary specialty from {country}.",
           "clue2": "The ingredient starts with \"{ans_init}\".",
           "why": "{name} ({country}) traditionally features {ingred}.",
-          "irtOffset": 0.1
+          "irtOffset": 0.1,
+          "stemVariants": [
+            "Which key ingredient is traditionally featured in {name} ({country})?",
+            "Step into a traditional {country} kitchen preparing {name}: which signature ingredient is central?",
+            "Which key ingredient gives {country}'s {name} its classic character?",
+            "Check the authentic recipe for {name} ({country}): which ingredient stands at its heart?",
+            "Culinary guides highlight which essential ingredient inside {name} from {country}?"
+          ]
         },
         {
           "id": "sfi_cnt",
@@ -1971,7 +2906,14 @@
           "clue1": "Traditionally prepared with {ingred}.",
           "clue2": "The country begins with \"{ans_init}\".",
           "why": "{name} (featuring {ingred}) comes from {country}.",
-          "irtOffset": 0.05
+          "irtOffset": 0.05,
+          "stemVariants": [
+            "From which country does {name} (made with {ingred}) originate?",
+            "Prepared traditionally with {ingred}, {name} hails from which country's culinary heritage?",
+            "Which nation claims {name} (crafted with {ingred}) as a traditional specialty?",
+            "Trace {name}, featuring {ingred}, back to its country of origin.",
+            "On the global gastronomy map, {name} (made with {ingred}) belongs to which country?"
+          ]
         },
         {
           "id": "sfi_tf",
@@ -1982,7 +2924,19 @@
           "clue1": "Specialty of {country}.",
           "whyTrue": "True! {name} features {ingred}.",
           "whyFalse": "False! {name} features {ingred}, not {fake}.",
-          "irtOffset": -0.1
+          "irtOffset": -0.1,
+          "truePromptVariants": [
+            "{name} ({country}) traditionally features {ingred}.",
+            "Traditional {country} recipes for {name} highlight {ingred}.",
+            "In {country}, authentic {name} is made with {ingred}.",
+            "Culinary references list {ingred} as a signature component of {name} ({country})."
+          ],
+          "falsePromptVariants": [
+            "{name} ({country}) traditionally features {fake}.",
+            "Traditional {country} recipes for {name} highlight {fake}.",
+            "In {country}, authentic {name} is made with {fake}.",
+            "Culinary references list {fake} as a signature component of {name} ({country})."
+          ]
         }
       ]
     },
@@ -2010,7 +2964,14 @@
           "clue1": "{creator} created this literary character.",
           "clue2": "The work's title starts with \"{ans_init}\".",
           "why": "{name} (by {creator}) appears in \"{work}\".",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "In which work does the character {name} (created by {creator}) appear?",
+            "Created by {creator}, the fictional figure {name} steps off the pages of which work?",
+            "In which story or work by {creator} do readers meet {name}?",
+            "Open {creator}'s catalog: which work features the character {name}?",
+            "Which title by {creator} introduces the character {name}?"
+          ]
         },
         {
           "id": "slc_crt",
@@ -2021,7 +2982,14 @@
           "clue1": "Appears in \"{work}\".",
           "clue2": "The creator's name starts with \"{ans_init}\".",
           "why": "{creator} created {name} (\"{work}\").",
-          "irtOffset": 0.05
+          "irtOffset": 0.05,
+          "stemVariants": [
+            "Who created the character {name} (featured in \"{work}\")?",
+            "Appearing in \"{work}\", the character {name} sprang from the imagination of which creator?",
+            "Which author or creator brought {name} to life inside \"{work}\"?",
+            "Credit for inventing the character {name} (from \"{work}\") belongs to whom?",
+            "Who wrote or created the character {name} of \"{work}\"?"
+          ]
         },
         {
           "id": "slc_tf",
@@ -2032,7 +3000,19 @@
           "clue1": "Work: \"{work}\".",
           "whyTrue": "True! {creator} created {name} (\"{work}\").",
           "whyFalse": "False! {creator} (not {fake}) created {name} (\"{work}\").",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{creator} created the character {name} (featured in \"{work}\").",
+            "Literary archives credit {creator} with inventing {name} for \"{work}\".",
+            "The character {name} in \"{work}\" is a creation of {creator}.",
+            "{creator} brought the character {name} to life in \"{work}\"."
+          ],
+          "falsePromptVariants": [
+            "{fake} created the character {name} (featured in \"{work}\").",
+            "Literary archives credit {fake} with inventing {name} for \"{work}\".",
+            "The character {name} in \"{work}\" is a creation of {fake}.",
+            "{fake} brought the character {name} to life in \"{work}\"."
+          ]
         },
         {
           "id": "slc_cdx",
@@ -2040,7 +3020,14 @@
           "subjectCol": 0,
           "targetCol": 2,
           "prompt": "Align each character on the upper ring with their creator below.",
-          "irtOffset": 0.2
+          "irtOffset": 0.2,
+          "stemVariants": [
+            "Align each character on the upper ring with their creator below.",
+            "Match each literary or fictional character above to the creator who imagined them.",
+            "Pair every character on the upper ring with their author or creator below.",
+            "Align these storied characters with the writers who gave them life.",
+            "Lock each fictional figure onto their creator below."
+          ]
         }
       ]
     },
@@ -2069,7 +3056,14 @@
           "clue1": "Published in {year} ({genre}).",
           "clue2": "The author starts with \"{ans_init}\".",
           "why": "{author} wrote \"{title}\" ({year}, {genre}).",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "Who wrote \"{title}\" ({genre}, {year})?",
+            "Published in {year} within {genre}, \"{title}\" was written by which author?",
+            "Pull the {year} {genre} title \"{title}\" off the shelf: who penned it?",
+            "Which writer authored \"{title}\" ({genre}, {year})?",
+            "Literary catalogs credit whom with the {year} {genre} work \"{title}\"?"
+          ]
         },
         {
           "id": "slg_gnr",
@@ -2080,7 +3074,14 @@
           "clue1": "Written by {author} ({year}).",
           "clue2": "The genre begins with \"{ans_init}\".",
           "why": "\"{title}\" by {author} belongs to {genre}.",
-          "irtOffset": 0.1
+          "irtOffset": 0.1,
+          "stemVariants": [
+            "Which literary genre best describes \"{title}\" ({year}) by {author}?",
+            "Written by {author} in {year}, \"{title}\" sits on which genre shelf?",
+            "Critics and booksellers file {author}'s {year} work \"{title}\" under which genre?",
+            "Which literary genre best characterizes \"{title}\" ({year}) by {author}?",
+            "How do readers classify {author}'s {year} book \"{title}\"?"
+          ]
         },
         {
           "id": "slg_tf",
@@ -2091,7 +3092,19 @@
           "clue1": "Published in {year}.",
           "whyTrue": "True! {author} wrote \"{title}\".",
           "whyFalse": "False! {author} (not {fake}) wrote \"{title}\" ({year}).",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "{author} wrote \"{title}\" ({year}, {genre}).",
+            "Publishing records credit {author} with the {year} {genre} work \"{title}\".",
+            "In {year}, {author} published the {genre} book \"{title}\".",
+            "Literary catalogs attribute \"{title}\" ({year}, {genre}) to {author} on record."
+          ],
+          "falsePromptVariants": [
+            "{fake} wrote \"{title}\" ({year}, {genre}).",
+            "Publishing records credit {fake} with the {year} {genre} work \"{title}\".",
+            "In {year}, {fake} published the {genre} book \"{title}\".",
+            "Literary catalogs attribute \"{title}\" ({year}, {genre}) to {fake} on record."
+          ]
         },
         {
           "id": "slg_yr",
@@ -2105,7 +3118,14 @@
           "maxClamp": 2025,
           "clue1": "Written by {author} ({genre}).",
           "why": "\"{title}\" ({author}) was published in {year}.",
-          "irtOffset": 0.3
+          "irtOffset": 0.3,
+          "stemVariants": [
+            "In what year was \"{title}\" ({genre}) by {author} published?",
+            "Dial in the publication year of {author}'s {genre} work \"{title}\".",
+            "Which calendar year saw {author} publish \"{title}\" ({genre})?",
+            "When did \"{title}\" ({genre}) by {author} first appear in print?",
+            "Set the literary timeline to the year {author} debuted \"{title}\" ({genre})."
+          ]
         }
       ]
     },
@@ -2141,7 +3161,14 @@
           "clue1": "Topic: {topic}. Verify sign and parity carefully.",
           "clue2": "Eliminate off-by-one traps before locking.",
           "why": "Exact verified result: {ans} ({topic}).",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "{stmt}?",
+            "Compute with precision: {stmt}?",
+            "From the specialist math vault: {stmt}?",
+            "Solve the exact quantitative problem: {stmt}?",
+            "Work out this exact figure: {stmt}?"
+          ]
         },
         {
           "id": "smsn_tf",
@@ -2152,7 +3179,19 @@
           "clue1": "Check the exact arithmetic for {topic}.",
           "whyTrue": "True! The exact result is {ans}.",
           "whyFalse": "False! The exact result is {ans}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "Verify ({topic}): {stmt}? Result: {ans}.",
+            "Audit ({topic}): {stmt}? Proposed answer: {ans}.",
+            "Check the {topic} ledger: {stmt}? Stated result: {ans}.",
+            "Verify this {topic} equation: {stmt}? Claimed value: {ans}."
+          ],
+          "falsePromptVariants": [
+            "Verify ({topic}): {stmt}? Result: {fake}.",
+            "Audit ({topic}): {stmt}? Proposed answer: {fake}.",
+            "Check the {topic} ledger: {stmt}? Stated result: {fake}.",
+            "Verify this {topic} equation: {stmt}? Claimed value: {fake}."
+          ]
         },
         {
           "id": "smsn_est",
@@ -2166,7 +3205,14 @@
           "maxClamp": 1000000,
           "clue1": "Topic: {topic}.",
           "why": "Exact value: {ans} ({topic}).",
-          "irtOffset": 0.25
+          "irtOffset": 0.25,
+          "stemVariants": [
+            "Dial the exact value: {stmt}?",
+            "Calibrate the exact mathematical figure: {stmt}?",
+            "Lock the vernier dial onto the result: {stmt}?",
+            "Estimate and dial the precise value: {stmt}?",
+            "Compute the exact numeric answer: {stmt}?"
+          ]
         }
       ]
     },
@@ -2200,7 +3246,14 @@
           "clue1": "Topic: {topic}. Simplify completely.",
           "clue2": "The verified answer starts with \"{ans_init}\".",
           "why": "Exact verified answer: {ans} ({topic}).",
-          "irtOffset": 0.0
+          "irtOffset": 0.0,
+          "stemVariants": [
+            "{stmt}?",
+            "Decode this specialist puzzle: {stmt}?",
+            "From the cipher and logic desk: {stmt}?",
+            "Deduce the exact solution: {stmt}?",
+            "Work through this symbolic challenge: {stmt}?"
+          ]
         },
         {
           "id": "smsw_tf",
@@ -2211,7 +3264,61 @@
           "clue1": "Check numerator/denominator or cipher shift carefully.",
           "whyTrue": "True! The verified solution is {ans}.",
           "whyFalse": "False! The verified solution is {ans}, not {fake}.",
-          "irtOffset": -0.15
+          "irtOffset": -0.15,
+          "truePromptVariants": [
+            "Verify ({topic}): {stmt}? Solution: {ans}.",
+            "Audit ({topic}): {stmt}? Proposed solution: {ans}.",
+            "Check the {topic} deduction: {stmt}? Stated answer: {ans}.",
+            "Verify this {topic} cipher: {stmt}? Claimed result: {ans}."
+          ],
+          "falsePromptVariants": [
+            "Verify ({topic}): {stmt}? Solution: {fake}.",
+            "Audit ({topic}): {stmt}? Proposed solution: {fake}.",
+            "Check the {topic} deduction: {stmt}? Stated answer: {fake}.",
+            "Verify this {topic} cipher: {stmt}? Claimed result: {fake}."
+          ]
+        }
+      ]
+    },
+    "sub_bb_signature_lore": {
+      "l0Domain": 5,
+      "l1Category": "Baseball",
+      "glyphHint": "star",
+      "cols": [
+        "slug",
+        "theme",
+        "prompt",
+        "answer",
+        "d1",
+        "d2",
+        "d3",
+        "clue1",
+        "clue2",
+        "why",
+        "irt"
+      ],
+      "poolCols": [
+        1
+      ],
+      "angles": [
+        {
+          "id": "bbsl_lore",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "{prompt}",
+          "stemVariants": [
+            "{prompt}"
+          ],
+          "answerCol": 3,
+          "distractorCol": 3,
+          "inlineDistCols": [
+            4,
+            5,
+            6
+          ],
+          "clue1": "{clue1}",
+          "clue2": "{clue2}",
+          "why": "{why}",
+          "irtOffset": 0.0
         }
       ]
     }
@@ -4693,6 +5800,46 @@
               ],
               "shardRules": [
                 {
+                  "type": "sub_bb_signature_lore",
+                  "filterCol": 1,
+                  "filterValues": [
+                    "IMMORTALS"
+                  ],
+                  "allowedAngleIds": [
+                    "bbsl_lore"
+                  ]
+                },
+                {
+                  "type": "sub_bb_signature_lore",
+                  "filterCol": 1,
+                  "filterValues": [
+                    "OCTOBER_DRAMA"
+                  ],
+                  "allowedAngleIds": [
+                    "bbsl_lore"
+                  ]
+                },
+                {
+                  "type": "sub_bb_signature_lore",
+                  "filterCol": 1,
+                  "filterValues": [
+                    "RECORDS_FEATS"
+                  ],
+                  "allowedAngleIds": [
+                    "bbsl_lore"
+                  ]
+                },
+                {
+                  "type": "sub_bb_signature_lore",
+                  "filterCol": 1,
+                  "filterValues": [
+                    "DIAMOND_CULTURE"
+                  ],
+                  "allowedAngleIds": [
+                    "bbsl_lore"
+                  ]
+                },
+                {
                   "type": "sub_bb_slugger"
                 },
                 {
@@ -4750,22 +5897,26 @@
                 ],
                 [
                   1119025,
-                  1129524
+                  1129149
                 ],
                 [
-                  1129525,
-                  1131684
+                  1129150,
+                  1131309
                 ],
                 [
-                  1131685,
-                  1133196
+                  1131310,
+                  1132821
                 ],
                 [
-                  1133197,
-                  1133680
+                  1132822,
+                  1133305
                 ],
                 [
-                  1133681,
+                  1133306,
+                  1133657
+                ],
+                [
+                  1133658,
                   1134032
                 ]
               ]
@@ -5133,8 +6284,8 @@
                   615126
                 ],
                 [
-                  1133681,
-                  1134032
+                  1133306,
+                  1133657
                 ]
               ]
             }
@@ -5327,6 +6478,26 @@
               ],
               "shardRules": [
                 {
+                  "type": "sub_bb_signature_lore",
+                  "filterCol": 1,
+                  "filterValues": [
+                    "OCTOBER_DRAMA"
+                  ],
+                  "allowedAngleIds": [
+                    "bbsl_lore"
+                  ]
+                },
+                {
+                  "type": "sub_bb_signature_lore",
+                  "filterCol": 1,
+                  "filterValues": [
+                    "IMMORTALS"
+                  ],
+                  "allowedAngleIds": [
+                    "bbsl_lore"
+                  ]
+                },
+                {
                   "type": "sub_bb_world_series"
                 },
                 {
@@ -5336,20 +6507,24 @@
                   "type": "sub_bb_season_feat"
                 }
               ],
-              "questionCount": 4156,
-              "verifiedCount": 4156,
+              "questionCount": 4531,
+              "verifiedCount": 4531,
               "qidRanges": [
                 [
-                  1133197,
-                  1133680
+                  1132822,
+                  1133305
                 ],
                 [
-                  1131685,
-                  1133196
+                  1131310,
+                  1132821
                 ],
                 [
-                  1129525,
-                  1131684
+                  1129150,
+                  1131309
+                ],
+                [
+                  1133658,
+                  1134032
                 ]
               ]
             },

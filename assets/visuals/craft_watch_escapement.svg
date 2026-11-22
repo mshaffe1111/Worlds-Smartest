@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" width="480" height="300">
+  <defs>
+    <radialGradient id="bgObsidian" cx="50%" cy="46%" r="64%">
+      <stop offset="0%" stop-color="#0e1a33"/>
+      <stop offset="58%" stop-color="#091021"/>
+      <stop offset="100%" stop-color="#070b16"/>
+    </radialGradient>
+    <linearGradient id="goldStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f7e4ad"/>
+      <stop offset="50%" stop-color="#e5c16c"/>
+      <stop offset="100%" stop-color="#b68a35"/>
+    </linearGradient>
+    <linearGradient id="cyanStroke" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7ce2ff"/>
+      <stop offset="50%" stop-color="#4cc9f0"/>
+      <stop offset="100%" stop-color="#2894c8"/>
+    </linearGradient>
+    <radialGradient id="turfGrad" cx="50%" cy="82%" r="72%">
+      <stop offset="0%" stop-color="#112b31" stop-opacity="0.92"/>
+      <stop offset="65%" stop-color="#0b1d27" stop-opacity="0.88"/>
+      <stop offset="100%" stop-color="#07121d" stop-opacity="0.82"/>
+    </radialGradient>
+    <pattern id="bpGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#182b4d" stroke-width="0.6"/>
+      <path d="M 80 0 L 0 0 0 80" fill="none" stroke="#233d6b" stroke-width="0.9"/>
+    </pattern>
+    <filter id="glowCyan" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="2.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="glowGold" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="1.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+  </defs>
+  <rect x="0" y="0" width="480" height="300" fill="url(#bgObsidian)"/>
+  <rect x="14" y="14" width="452" height="272" fill="url(#bpGrid)" opacity="0.65"/>
+
+  <!-- Outer Horological Blueprint Frame -->
+  <rect x="8" y="8" width="464" height="284" rx="6" fill="none" stroke="url(#goldStroke)" stroke-width="1.3" stroke-opacity="0.78"/>
+  <rect x="14" y="14" width="452" height="272" rx="3" fill="none" stroke="#4cc9f0" stroke-width="0.65" stroke-opacity="0.34"/>
+  <g>
+    <line x1="40" y1="14" x2="40" y2="19.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="40" y1="286" x2="40" y2="281.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="60" y1="14" x2="60" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="60" y1="286" x2="60" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="80" y1="14" x2="80" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="80" y1="286" x2="80" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="100" y1="14" x2="100" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="100" y1="286" x2="100" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="120" y1="14" x2="120" y2="19.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="120" y1="286" x2="120" y2="281.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="140" y1="14" x2="140" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="140" y1="286" x2="140" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="160" y1="14" x2="160" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="160" y1="286" x2="160" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="180" y1="14" x2="180" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="180" y1="286" x2="180" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="200" y1="14" x2="200" y2="19.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="200" y1="286" x2="200" y2="281.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="220" y1="14" x2="220" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="220" y1="286" x2="220" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="240" y1="14" x2="240" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="240" y1="286" x2="240" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="260" y1="14" x2="260" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="260" y1="286" x2="260" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="280" y1="14" x2="280" y2="19.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="280" y1="286" x2="280" y2="281.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="300" y1="14" x2="300" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="300" y1="286" x2="300" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="320" y1="14" x2="320" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="320" y1="286" x2="320" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="340" y1="14" x2="340" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="340" y1="286" x2="340" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="360" y1="14" x2="360" y2="19.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="360" y1="286" x2="360" y2="281.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="380" y1="14" x2="380" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="380" y1="286" x2="380" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="400" y1="14" x2="400" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="400" y1="286" x2="400" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="420" y1="14" x2="420" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="420" y1="286" x2="420" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="440" y1="14" x2="440" y2="19.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="440" y1="286" x2="440" y2="281.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+  </g>
+  <!-- Corner Registration Reticles -->
+  <path d="M 14 28 L 14 14 L 28 14 M 452 14 L 466 14 L 466 28 M 14 272 L 14 286 L 28 286 M 452 286 L 466 286 L 466 272" fill="none" stroke="#e5c16c" stroke-width="1.8"/>
+  <!-- Main Blueprint Geometry -->
+  <g>
+    <!-- 15-Tooth Escape Wheel -->
+    <polygon points="184.0,152.0 203.4,160.1 204.5,165.5 182.1,163.7 180.7,167.5 195.2,182.7 193.9,188.1 174.2,177.4 171.4,180.2 178.4,200.1 175.1,204.5 161.5,186.7 157.7,188.1 156.1,209.1 151.2,211.8 146.0,190.0 142.0,189.8 132.0,208.3 126.5,208.7 130.5,186.7 127.0,184.9 110.3,197.7 105.1,195.9 117.8,177.4 115.3,174.3 94.8,179.2 90.8,175.4 109.9,163.7 108.8,159.9 88.1,156.0 86.0,151.0 108.2,148.0 108.8,144.1 91.5,132.2 91.6,126.6 113.1,133.0 115.3,129.7 104.3,111.7 106.6,106.7 123.7,121.3 127.0,119.1 124.3,98.2 128.5,94.6 138.1,114.8 142.0,114.2 148.0,94.0 153.3,92.4 153.9,114.8 157.7,115.9 171.4,99.9 176.9,100.6 168.3,121.3 171.4,123.8 190.4,114.7 195.1,117.6 178.9,133.0 180.7,136.5 201.8,136.0 204.9,140.6 183.8,148.0" fill="#10213b" stroke="url(#goldStroke)" stroke-width="1.6" filter="url(#glowGold)"/>
+    <circle cx="146.0" cy="152.0" r="24" fill="#091326" stroke="#e5c16c" stroke-width="1.2"/>
+    <circle cx="146.0" cy="152.0" r="5.5" fill="#4cc9f0"/>
+    <!-- Jeweled Anchor Pallet Fork (Glowing Cyan) -->
+    <path d="M 192 106 L 222 114 L 246 152 L 222 190 L 192 198 L 198 184 L 220 176 L 236 152 L 220 128 L 198 120 Z" fill="#102a4a" stroke="#4cc9f0" stroke-width="1.8" filter="url(#glowCyan)"/>
+    <line x1="246" y1="152" x2="294" y2="152" stroke="#4cc9f0" stroke-width="3.2" filter="url(#glowCyan)"/>
+    <circle cx="246" cy="152" r="4.5" fill="#e5c16c"/>
+    <!-- Oscillating Balance Wheel & Spiral Hairspring -->
+    <circle cx="344.0" cy="152.0" r="64" fill="none" stroke="url(#goldStroke)" stroke-width="4.2"/>
+    <circle cx="344.0" cy="152.0" r="56" fill="none" stroke="#e5c16c" stroke-opacity="0.45" stroke-width="1.0"/>
+    <line x1="288.0" y1="152.0" x2="400.0" y2="152.0" stroke="#e5c16c" stroke-opacity="0.55" stroke-width="2.2"/>
+    <polyline points="350.0,152.0 349.6,155.2 347.4,157.9 344.0,159.3 340.1,158.7 336.9,156.1 335.4,152.0 336.2,147.5 339.3,143.8 344.0,142.1 349.2,143.1 353.3,146.6 355.2,152.0 354.1,157.8 350.0,162.5 344.0,164.5 337.5,163.2 332.4,158.7 330.2,152.0 331.7,144.9 336.7,139.3 344.0,136.9 351.8,138.5 357.8,144.0 360.4,152.0 358.6,160.4 352.6,167.0 344.0,169.7 334.9,167.7 327.9,161.3 325.0,152.0 327.2,142.3 334.1,134.8 344.0,131.7 354.4,134.0 362.3,141.4 365.6,152.0 363.1,163.0 355.2,171.5 344.0,174.9 332.3,172.2 323.4,163.9 319.8,152.0 322.7,139.7 331.5,130.3 344.0,126.5 357.0,129.5 366.8,138.8 370.8,152.0 367.6,165.6 357.8,176.0 344.0,180.1 329.7,176.7 318.9,166.5 314.6,152.0 318.2,137.1 328.9,125.8 344.0,121.3 359.6,125.0 371.3,136.2 376.0,152.0 372.1,168.2 360.4,180.5 344.0,185.3 327.1,181.2 314.4,169.1 309.4,152.0 313.7,134.5 326.3,121.3 344.0,116.1 362.2,120.5 375.8,133.6 381.2,152.0 376.6,170.8 363.0,185.0 344.0,190.5 324.5,185.7 309.9,171.7 304.2,152.0 309.2,131.9 323.7,116.8 344.0,110.9 364.8,116.0 380.3,131.0 386.4,152.0 381.1,173.4 365.6,189.5 344.0,195.7 321.9,190.2 305.4,174.3" fill="none" stroke="#4cc9f0" stroke-width="1.4" filter="url(#glowCyan)"/>
+    <circle cx="344.0" cy="152.0" r="5" fill="#e5c16c"/>
+    <text x="240" y="42" fill="#f4e6be" font-family="'Consolas',monospace" font-size="9" font-weight="bold" text-anchor="middle">15-TOOTH WHEEL · RUBY PALLET FORK · 28,800 VPH</text>
+    <text x="146" y="240" fill="#7ce2ff" font-family="'Consolas',monospace" font-size="8.2" text-anchor="middle">IMPULSE GEAR</text>
+    <text x="344" y="240" fill="#f4e6be" font-family="'Consolas',monospace" font-size="8.2" text-anchor="middle">ISOCHRONOUS OSCILLATOR</text>
+  </g>
+  <!-- Plate Catalog Footer Stamps (Zero Spoiler) -->
+  <g font-family="'Consolas','Courier New',monospace" font-size="8.5" letter-spacing="1.2">
+    <text x="24" y="278" fill="#e5c16c" fill-opacity="0.82">PLATE · HR-01</text>
+    <text x="456" y="278" fill="#4cc9f0" fill-opacity="0.78" text-anchor="end">HOROLOGICAL CALIBRE</text>
+  </g>
+</svg>

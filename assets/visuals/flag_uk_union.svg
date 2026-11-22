@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" width="480" height="300">
+  <defs>
+    <radialGradient id="bgObsidian" cx="50%" cy="46%" r="64%">
+      <stop offset="0%" stop-color="#0e1a33"/>
+      <stop offset="58%" stop-color="#091021"/>
+      <stop offset="100%" stop-color="#070b16"/>
+    </radialGradient>
+    <linearGradient id="goldStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f7e4ad"/>
+      <stop offset="50%" stop-color="#e5c16c"/>
+      <stop offset="100%" stop-color="#b68a35"/>
+    </linearGradient>
+    <linearGradient id="cyanStroke" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7ce2ff"/>
+      <stop offset="50%" stop-color="#4cc9f0"/>
+      <stop offset="100%" stop-color="#2894c8"/>
+    </linearGradient>
+    <radialGradient id="turfGrad" cx="50%" cy="82%" r="72%">
+      <stop offset="0%" stop-color="#112b31" stop-opacity="0.92"/>
+      <stop offset="65%" stop-color="#0b1d27" stop-opacity="0.88"/>
+      <stop offset="100%" stop-color="#07121d" stop-opacity="0.82"/>
+    </radialGradient>
+    <pattern id="bpGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#182b4d" stroke-width="0.6"/>
+      <path d="M 80 0 L 0 0 0 80" fill="none" stroke="#233d6b" stroke-width="0.9"/>
+    </pattern>
+    <filter id="glowCyan" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="2.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="glowGold" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="1.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+  </defs>
+  <rect x="0" y="0" width="480" height="300" fill="url(#bgObsidian)"/>
+  <rect x="14" y="14" width="452" height="272" fill="url(#bpGrid)" opacity="0.65"/>
+
+  <!-- Outer Horological Blueprint Frame -->
+  <rect x="8" y="8" width="464" height="284" rx="6" fill="none" stroke="url(#goldStroke)" stroke-width="1.3" stroke-opacity="0.78"/>
+  <rect x="14" y="14" width="452" height="272" rx="3" fill="none" stroke="#4cc9f0" stroke-width="0.65" stroke-opacity="0.34"/>
+  <g>
+    <line x1="40" y1="14" x2="40" y2="19.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="40" y1="286" x2="40" y2="281.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="60" y1="14" x2="60" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="60" y1="286" x2="60" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="80" y1="14" x2="80" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="80" y1="286" x2="80" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="100" y1="14" x2="100" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="100" y1="286" x2="100" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="120" y1="14" x2="120" y2="19.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="120" y1="286" x2="120" y2="281.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="140" y1="14" x2="140" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="140" y1="286" x2="140" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="160" y1="14" x2="160" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="160" y1="286" x2="160" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="180" y1="14" x2="180" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="180" y1="286" x2="180" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="200" y1="14" x2="200" y2="19.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="200" y1="286" x2="200" y2="281.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="220" y1="14" x2="220" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="220" y1="286" x2="220" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="240" y1="14" x2="240" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="240" y1="286" x2="240" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="260" y1="14" x2="260" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="260" y1="286" x2="260" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="280" y1="14" x2="280" y2="19.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="280" y1="286" x2="280" y2="281.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="300" y1="14" x2="300" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="300" y1="286" x2="300" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="320" y1="14" x2="320" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="320" y1="286" x2="320" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="340" y1="14" x2="340" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="340" y1="286" x2="340" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="360" y1="14" x2="360" y2="19.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="360" y1="286" x2="360" y2="281.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="380" y1="14" x2="380" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="380" y1="286" x2="380" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="400" y1="14" x2="400" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="400" y1="286" x2="400" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="420" y1="14" x2="420" y2="16.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="420" y1="286" x2="420" y2="283.5" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="440" y1="14" x2="440" y2="19.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+    <line x1="440" y1="286" x2="440" y2="281.0" stroke="#e5c16c" stroke-opacity="0.32" stroke-width="0.7"/>
+  </g>
+  <!-- Corner Registration Reticles -->
+  <path d="M 14 28 L 14 14 L 28 14 M 452 14 L 466 14 L 466 28 M 14 272 L 14 286 L 28 286 M 452 286 L 466 286 L 466 272" fill="none" stroke="#e5c16c" stroke-width="1.8"/>
+  <!-- Main Blueprint Geometry -->
+  <g>
+    <clipPath id="clipUnion"><rect x="74" y="64" width="332" height="166"/></clipPath>
+    <rect x="74" y="64" width="332" height="166" fill="#0b1a33" stroke="url(#goldStroke)" stroke-width="2.0"/>
+    <g clip-path="url(#clipUnion)">
+      <!-- Broad Diagonal Saltire (St Andrew) -->
+      <line x1="74" y1="64" x2="406" y2="230" stroke="#e5c16c" stroke-opacity="0.38" stroke-width="28"/>
+      <line x1="406" y1="64" x2="74" y2="230" stroke="#e5c16c" stroke-opacity="0.38" stroke-width="28"/>
+      <!-- Counterchanged Pinwheeling Narrow Saltire (Offset asymmetrically!) -->
+      <line x1="74" y1="69" x2="240" y2="152" stroke="#4cc9f0" stroke-width="8" filter="url(#glowCyan)"/>
+      <line x1="240" y1="142" x2="406" y2="225" stroke="#4cc9f0" stroke-width="8" filter="url(#glowCyan)"/>
+      <line x1="406" y1="69" x2="240" y2="152" stroke="#4cc9f0" stroke-width="8" filter="url(#glowCyan)"/>
+      <line x1="240" y1="142" x2="74" y2="225" stroke="#4cc9f0" stroke-width="8" filter="url(#glowCyan)"/>
+      <!-- Fimbriated Central Upright Cross -->
+      <rect x="215" y="64" width="50" height="166" fill="#0a162b" stroke="#e5c16c" stroke-width="1.3"/>
+      <rect x="74" y="122" width="332" height="50" fill="#0a162b" stroke="#e5c16c" stroke-width="1.3"/>
+      <rect x="224" y="64" width="32" height="166" fill="#e5c16c" fill-opacity="0.28" stroke="#e5c16c" stroke-width="1.6"/>
+      <rect x="74" y="131" width="332" height="32" fill="#e5c16c" fill-opacity="0.28" stroke="#e5c16c" stroke-width="1.6"/>
+    </g>
+    <rect x="74" y="64" width="332" height="166" fill="none" stroke="url(#goldStroke)" stroke-width="2.0"/>
+    <text x="240" y="48" fill="#f4e6be" font-family="'Consolas',monospace" font-size="8.8" font-weight="bold" text-anchor="middle">RATIO 1 : 2 · COUNTERCHANGED ASYMMETRIC SALTIRES</text>
+    <text x="240" y="250" fill="#7ce2ff" font-family="'Consolas',monospace" font-size="8.5" text-anchor="middle">SUPERIMPOSITION OF 3 HERALDIC CROSSES · 1801</text>
+  </g>
+  <!-- Plate Catalog Footer Stamps (Zero Spoiler) -->
+  <g font-family="'Consolas','Courier New',monospace" font-size="8.5" letter-spacing="1.2">
+    <text x="24" y="278" fill="#e5c16c" fill-opacity="0.82">PLATE · FL-03</text>
+    <text x="456" y="278" fill="#4cc9f0" fill-opacity="0.78" text-anchor="end">HERALDIC SUPERPOSITION</text>
+  </g>
+</svg>
