@@ -1,0 +1,3413 @@
+{
+  "schemaVersion": "WS_SHARD_V1",
+  "generatedAt": "2026-11-22T00:57:05Z",
+  "baseUrlRelative": "shards/",
+  "qidRange": [
+    60000,
+    989563
+  ],
+  "totalEntities": 220230,
+  "totalQuestions": 929564,
+  "totalShardBytes": 9425278,
+  "maxShardBytes": 1281320,
+  "licenses": [
+    {
+      "source": "Wikidata RDF Knowledge Graph (via QLever)",
+      "license": "CC0-1.0 (Public Domain Dedication)",
+      "url": "https://www.wikidata.org/wiki/Wikidata:Licensing"
+    },
+    {
+      "source": "GeoNames Geographical Database (cities15000, countryInfo, admin1)",
+      "license": "CC-BY-4.0",
+      "url": "https://www.geonames.org/"
+    },
+    {
+      "source": "OurAirports Worldwide Airport Directory",
+      "license": "CC0-1.0 / Public Domain",
+      "url": "https://ourairports.com/data/"
+    },
+    {
+      "source": "NASA Exoplanet Archive (pscomppars)",
+      "license": "Public Domain (US Government / NASA)",
+      "url": "https://exoplanetarchive.ipac.caltech.edu/"
+    },
+    {
+      "source": "PubChem Periodic Table of Elements",
+      "license": "Public Domain (NIH / US Government)",
+      "url": "https://pubchem.ncbi.nlm.nih.gov/"
+    },
+    {
+      "source": "National Gallery of Art Open Data Program",
+      "license": "CC0-1.0 (Public Domain Dedication)",
+      "url": "https://github.com/NationalGalleryOfArt/opendata"
+    },
+    {
+      "source": "World's Smartest Programmatically Verified Logic & Math Bank",
+      "license": "MIT / Original",
+      "url": "internal"
+    }
+  ],
+  "decoderSpec": {
+    "hashFn": "fnv1a_32",
+    "trueFalseBitExpr": "(fnv1a_32('TF:' + str(qid)) & 1) == 0",
+    "distractorWindowRadius": 60,
+    "calibratorOffsets": [
+      0.24,
+      0.34,
+      0.66,
+      0.76
+    ],
+    "adaptiveStepBrackets": [
+      [
+        30,
+        1
+      ],
+      [
+        100,
+        5
+      ],
+      [
+        300,
+        10
+      ],
+      [
+        1000,
+        25
+      ],
+      [
+        3000,
+        50
+      ],
+      [
+        10000,
+        100
+      ],
+      [
+        50000,
+        250
+      ]
+    ]
+  },
+  "domains": [
+    {
+      "l0Domain": 0,
+      "key": "HISTORY",
+      "name": "World History",
+      "entities": 15821,
+      "questions": 63284,
+      "bytes": 625030,
+      "files": [
+        {
+          "path": "domain_0.json",
+          "bytes": 625029,
+          "entities": 15821,
+          "questions": 63284,
+          "baseQid": 60000,
+          "qidEnd": 123283,
+          "irtMin": -1.5,
+          "irtMax": 1.83,
+          "types": [
+            "hist_battle",
+            "hist_figure",
+            "hist_empire",
+            "hist_war"
+          ]
+        }
+      ]
+    },
+    {
+      "l0Domain": 1,
+      "key": "SCIENCE",
+      "name": "Science & Space",
+      "entities": 18258,
+      "questions": 79767,
+      "bytes": 624833,
+      "files": [
+        {
+          "path": "domain_1.json",
+          "bytes": 624833,
+          "entities": 18258,
+          "questions": 79767,
+          "baseQid": 123284,
+          "qidEnd": 203050,
+          "irtMin": -1.5,
+          "irtMax": 2.4,
+          "types": [
+            "sci_element",
+            "sci_scientist",
+            "sci_exoplanet",
+            "sci_astro",
+            "sci_chemical",
+            "sci_space"
+          ]
+        }
+      ]
+    },
+    {
+      "l0Domain": 2,
+      "key": "GEOGRAPHY",
+      "name": "Geography & Wonders",
+      "entities": 33693,
+      "questions": 152665,
+      "bytes": 1052180,
+      "files": [
+        {
+          "path": "domain_2.json",
+          "bytes": 1052176,
+          "entities": 33693,
+          "questions": 152665,
+          "baseQid": 203051,
+          "qidEnd": 355715,
+          "irtMin": -1.5,
+          "irtMax": 1.44,
+          "types": [
+            "geo_city",
+            "geo_airport",
+            "geo_mountain",
+            "geo_river",
+            "geo_wonder"
+          ]
+        }
+      ]
+    },
+    {
+      "l0Domain": 3,
+      "key": "ARTS",
+      "name": "Arts & Architecture",
+      "entities": 21164,
+      "questions": 100156,
+      "bytes": 984926,
+      "files": [
+        {
+          "path": "domain_3.json",
+          "bytes": 984899,
+          "entities": 21164,
+          "questions": 100156,
+          "baseQid": 355716,
+          "qidEnd": 455871,
+          "irtMin": -1.5,
+          "irtMax": 2.06,
+          "types": [
+            "art_work",
+            "art_landmark",
+            "art_creator"
+          ]
+        }
+      ]
+    },
+    {
+      "l0Domain": 4,
+      "key": "POP",
+      "name": "Film, Music & Pop",
+      "entities": 23551,
+      "questions": 97255,
+      "bytes": 918591,
+      "files": [
+        {
+          "path": "domain_4.json",
+          "bytes": 918590,
+          "entities": 23551,
+          "questions": 97255,
+          "baseQid": 455872,
+          "qidEnd": 553126,
+          "irtMin": -1.5,
+          "irtMax": 1.48,
+          "types": [
+            "pop_film",
+            "pop_album",
+            "pop_song",
+            "pop_tv",
+            "pop_band"
+          ]
+        }
+      ]
+    },
+    {
+      "l0Domain": 5,
+      "key": "SPORTS",
+      "name": "Sports & Games",
+      "entities": 17888,
+      "questions": 79632,
+      "bytes": 634410,
+      "files": [
+        {
+          "path": "domain_5.json",
+          "bytes": 634410,
+          "entities": 17888,
+          "questions": 79632,
+          "baseQid": 553127,
+          "qidEnd": 632758,
+          "irtMin": -1.5,
+          "irtMax": 1.69,
+          "types": [
+            "sport_athlete",
+            "sport_club",
+            "sport_stadium",
+            "sport_videogame"
+          ]
+        }
+      ]
+    },
+    {
+      "l0Domain": 6,
+      "key": "TECH",
+      "name": "Tech & Computing",
+      "entities": 13732,
+      "questions": 56976,
+      "bytes": 446728,
+      "files": [
+        {
+          "path": "domain_6.json",
+          "bytes": 446728,
+          "entities": 13732,
+          "questions": 56976,
+          "baseQid": 632759,
+          "qidEnd": 689734,
+          "irtMin": -1.5,
+          "irtMax": 1.64,
+          "types": [
+            "tech_company",
+            "tech_pioneer",
+            "tech_software",
+            "tech_vehicle"
+          ]
+        }
+      ]
+    },
+    {
+      "l0Domain": 7,
+      "key": "NATURE",
+      "name": "Nature & Biology",
+      "entities": 14343,
+      "questions": 57372,
+      "bytes": 718362,
+      "files": [
+        {
+          "path": "domain_7.json",
+          "bytes": 718354,
+          "entities": 14343,
+          "questions": 57372,
+          "baseQid": 689735,
+          "qidEnd": 747106,
+          "irtMin": -1.5,
+          "irtMax": 1.83,
+          "types": [
+            "nat_species"
+          ]
+        }
+      ]
+    },
+    {
+      "l0Domain": 8,
+      "key": "SOCIETY",
+      "name": "World Affairs & Law",
+      "entities": 15976,
+      "questions": 68828,
+      "bytes": 624400,
+      "files": [
+        {
+          "path": "domain_8.json",
+          "bytes": 624400,
+          "entities": 15976,
+          "questions": 68828,
+          "baseQid": 747107,
+          "qidEnd": 815934,
+          "irtMin": -1.5,
+          "irtMax": 1.39,
+          "types": [
+            "soc_country",
+            "soc_university",
+            "soc_org",
+            "soc_leader"
+          ]
+        }
+      ]
+    },
+    {
+      "l0Domain": 9,
+      "key": "FOOD",
+      "name": "Food, Craft & Design",
+      "entities": 10080,
+      "questions": 45505,
+      "bytes": 333723,
+      "files": [
+        {
+          "path": "domain_9.json",
+          "bytes": 333723,
+          "entities": 10080,
+          "questions": 45505,
+          "baseQid": 815935,
+          "qidEnd": 861439,
+          "irtMin": -1.5,
+          "irtMax": 2.55,
+          "types": [
+            "food_item",
+            "food_brand",
+            "food_maker"
+          ]
+        }
+      ]
+    },
+    {
+      "l0Domain": 10,
+      "key": "MYTH",
+      "name": "Myth & Literature",
+      "entities": 14425,
+      "questions": 65930,
+      "bytes": 641746,
+      "files": [
+        {
+          "path": "domain_10.json",
+          "bytes": 641745,
+          "entities": 14425,
+          "questions": 65930,
+          "baseQid": 861440,
+          "qidEnd": 927369,
+          "irtMin": -1.5,
+          "irtMax": 2.06,
+          "types": [
+            "lit_work",
+            "lit_author",
+            "lit_myth"
+          ]
+        }
+      ]
+    },
+    {
+      "l0Domain": 11,
+      "key": "LOGIC",
+      "name": "Logic & Math",
+      "entities": 21299,
+      "questions": 62194,
+      "bytes": 1820349,
+      "files": [
+        {
+          "path": "domain_11_0.json",
+          "bytes": 1270805,
+          "entities": 16499,
+          "questions": 52594,
+          "baseQid": 927370,
+          "qidEnd": 979963,
+          "irtMin": -1.5,
+          "irtMax": 2.45,
+          "types": [
+            "math_person",
+            "math_num"
+          ]
+        },
+        {
+          "path": "domain_11_1.json",
+          "bytes": 539029,
+          "entities": 4800,
+          "questions": 9600,
+          "baseQid": 979964,
+          "qidEnd": 989563,
+          "irtMin": -0.8,
+          "irtMax": 2.15,
+          "types": [
+            "math_word"
+          ]
+        }
+      ]
+    }
+  ],
+  "types": {
+    "hist_battle": {
+      "l0Domain": 0,
+      "l1Category": "Military History",
+      "glyphHint": "shield",
+      "cols": [
+        "name",
+        "conflict",
+        "year",
+        "country",
+        "irt"
+      ],
+      "poolCols": [
+        1,
+        3
+      ],
+      "angles": [
+        {
+          "id": "hb_conflict",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which larger conflict included {name} ({year})?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "This engagement took place in {year} in what is now {country}.",
+          "clue2": "The conflict's name begins with \"{ans_init}\".",
+          "why": "{name} ({year}) was fought during {conflict}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "hb_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "In which modern-day country did {name} ({year}) take place?",
+          "answerCol": 3,
+          "distractorCol": 3,
+          "clue1": "It was fought during {conflict} in {year}.",
+          "clue2": "The country's name starts with \"{ans_init}\".",
+          "why": "{name} ({year}) took place in present-day {country}.",
+          "irtOffset": 0.1
+        },
+        {
+          "id": "hb_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "{name} ({year}) took place in present-day {country}.",
+          "falsePrompt": "{name} ({year}) took place in present-day {fake}.",
+          "fakeCol": 3,
+          "clue1": "Place {conflict} ({year}) on the map.",
+          "whyTrue": "True! {name} ({year}) was fought in present-day {country}.",
+          "whyFalse": "False! {name} ({year}) took place in {country}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "hb_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year did {name} ({conflict}) take place?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 45,
+          "minClamp": 100,
+          "maxClamp": 2024,
+          "clue1": "It was fought in present-day {country} during {conflict}.",
+          "why": "{name} took place in {year} CE during {conflict}.",
+          "irtOffset": 0.3
+        }
+      ]
+    },
+    "hist_figure": {
+      "l0Domain": 0,
+      "l1Category": "Historical Figures",
+      "glyphHint": "crown",
+      "cols": [
+        "name",
+        "role",
+        "year",
+        "country",
+        "irt"
+      ],
+      "poolCols": [
+        1,
+        3
+      ],
+      "angles": [
+        {
+          "id": "hf_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which country or realm was historical figure {name} (b. {year}) associated with?",
+          "answerCol": 3,
+          "distractorCol": 3,
+          "clue1": "{name} was a notable {role} born in {year}.",
+          "clue2": "The realm or nation begins with \"{ans_init}\".",
+          "why": "{name} (born {year}) was a {role} associated with {country}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "hf_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these historical figures was associated with {country}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 3,
+          "clue1": "Born in {year} and known as a {role}.",
+          "clue2": "Their name starts with \"{ans_init}\".",
+          "why": "{name} (born {year}) was associated with {country}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "hf_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "Historical figure {name} (born {year}) was associated with {country}.",
+          "falsePrompt": "Historical figure {name} (born {year}) was associated with {fake}.",
+          "fakeCol": 3,
+          "clue1": "Recall the historical homeland of {name} ({role}).",
+          "whyTrue": "True! {name} (born {year}) was associated with {country}.",
+          "whyFalse": "False! {name} was associated with {country}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "hf_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year was historical figure {name} ({country}) born?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 55,
+          "minClamp": 100,
+          "maxClamp": 1950,
+          "clue1": "{name} was a {role} associated with {country}.",
+          "why": "{name} ({country}) was born in {year} CE.",
+          "irtOffset": 0.35
+        }
+      ]
+    },
+    "hist_empire": {
+      "l0Domain": 0,
+      "l1Category": "Empires & States",
+      "glyphHint": "crown",
+      "cols": [
+        "name",
+        "capital",
+        "year",
+        "irt"
+      ],
+      "poolCols": [],
+      "angles": [
+        {
+          "id": "he_cap",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "What was the capital city of {name} (established {year})?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "This historical realm was founded in {year}.",
+          "clue2": "Its capital starts with \"{ans_init}\".",
+          "why": "{capital} served as the capital of {name} (founded {year}).",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "he_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which historical state or empire had {capital} as its capital?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 1,
+          "clue1": "This state was established in {year}.",
+          "clue2": "Its name starts with \"{ans_init}\".",
+          "why": "{name} (established {year}) had {capital} as its capital.",
+          "irtOffset": 0.1
+        },
+        {
+          "id": "he_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "{capital} served as the capital of {name}.",
+          "falsePrompt": "{fake} served as the capital of {name}.",
+          "fakeCol": 1,
+          "clue1": "Think of the historic seat of power for {name} ({year}).",
+          "whyTrue": "True! {capital} was the capital of {name}.",
+          "whyFalse": "False! {capital} (not {fake}) was the capital of {name}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "he_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In approximately what year was {name} established?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 70,
+          "minClamp": 100,
+          "maxClamp": 2010,
+          "clue1": "{capital} served as its historical capital.",
+          "why": "{name} (capital: {capital}) was established in {year} CE.",
+          "irtOffset": 0.35
+        }
+      ]
+    },
+    "hist_war": {
+      "l0Domain": 0,
+      "l1Category": "Wars & Treaties",
+      "glyphHint": "scales",
+      "cols": [
+        "name",
+        "year",
+        "country",
+        "irt"
+      ],
+      "poolCols": [
+        2
+      ],
+      "angles": [
+        {
+          "id": "hw_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which country or region was directly tied to {name} ({year})?",
+          "answerCol": 2,
+          "distractorCol": 2,
+          "clue1": "This historical event began or was signed in {year}.",
+          "clue2": "The country begins with \"{ans_init}\".",
+          "why": "{name} ({year}) was directly associated with {country}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "hw_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these historical conflicts or treaties directly involved {country}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 2,
+          "clue1": "It dates to the year {year}.",
+          "clue2": "Its name begins with \"{ans_init}\".",
+          "why": "{name} ({year}) involved {country}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "hw_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "{name} ({year}) was directly associated with {country}.",
+          "falsePrompt": "{name} ({year}) was directly associated with {fake}.",
+          "fakeCol": 2,
+          "clue1": "Connect {name} ({year}) to the right nation.",
+          "whyTrue": "True! {name} ({year}) involved {country}.",
+          "whyFalse": "False! {name} ({year}) involved {country}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "hw_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year did {name} ({country}) begin or occur?",
+          "exactCol": 1,
+          "unit": "CE",
+          "step": 1,
+          "pad": 45,
+          "minClamp": 100,
+          "maxClamp": 2024,
+          "clue1": "It is historically tied to {country}.",
+          "why": "{name} ({country}) dates to {year} CE.",
+          "irtOffset": 0.3
+        }
+      ]
+    },
+    "sci_element": {
+      "l0Domain": 1,
+      "l1Category": "Chemistry",
+      "glyphHint": "atom",
+      "cols": [
+        "name",
+        "symbol",
+        "anum",
+        "category",
+        "irt"
+      ],
+      "poolCols": [
+        3
+      ],
+      "angles": [
+        {
+          "id": "se_sym",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "What is the chemical symbol for the element {name}?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "{name} is classified as a {category} with atomic number {anum}.",
+          "clue2": "Its symbol starts with \"{ans_init}\".",
+          "why": "{name} (atomic number {anum}) has the chemical symbol {symbol}.",
+          "irtOffset": -0.1
+        },
+        {
+          "id": "se_name",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which chemical element has the symbol {symbol}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "clue1": "Its atomic number is {anum} ({category}).",
+          "clue2": "The element name starts with \"{ans_init}\".",
+          "why": "{symbol} is the periodic table symbol for {name} (atomic number {anum}).",
+          "irtOffset": -0.05
+        },
+        {
+          "id": "se_cat",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "To which periodic table group does {name} ({symbol}) belong?",
+          "answerCol": 3,
+          "distractorCol": 3,
+          "clue1": "{name} has atomic number {anum}.",
+          "clue2": "The group name begins with \"{ans_init}\".",
+          "why": "{name} ({symbol}, atomic number {anum}) is classified as {category}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "se_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "The chemical symbol for {name} is {symbol}.",
+          "falsePrompt": "The chemical symbol for {name} is {fake}.",
+          "fakeCol": 1,
+          "clue1": "Check the periodic table entry for atomic number {anum}.",
+          "whyTrue": "True! {name} has the symbol {symbol}.",
+          "whyFalse": "False! The symbol for {name} is {symbol}, not {fake}.",
+          "irtOffset": -0.2
+        },
+        {
+          "id": "se_anum",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "What is the atomic number of {name} ({symbol})?",
+          "exactCol": 2,
+          "unit": "protons",
+          "step": 1,
+          "pad": 18,
+          "minClamp": 1,
+          "maxClamp": 118,
+          "clue1": "{name} belongs to the {category} group.",
+          "why": "{name} ({symbol}) has atomic number {anum}.",
+          "irtOffset": 0.25
+        }
+      ]
+    },
+    "sci_scientist": {
+      "l0Domain": 1,
+      "l1Category": "History of Science",
+      "glyphHint": "atom",
+      "cols": [
+        "name",
+        "field",
+        "year",
+        "country",
+        "irt"
+      ],
+      "poolCols": [
+        1,
+        3
+      ],
+      "angles": [
+        {
+          "id": "ss_field",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "What was the primary scientific field of {name} (born {year})?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "{name} was associated with {country}.",
+          "clue2": "The scientific field begins with \"{ans_init}\".",
+          "why": "{name} ({country}, b. {year}) was primarily known in {field}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "ss_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which country was scientist {name} ({field}) associated with?",
+          "answerCol": 3,
+          "distractorCol": 3,
+          "clue1": "{name} was born in {year} and worked in {field}.",
+          "clue2": "The country starts with \"{ans_init}\".",
+          "why": "{name} ({field}, b. {year}) was associated with {country}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "ss_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these scientists was renowned primarily in {field}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 1,
+          "clue1": "Born in {year} and associated with {country}.",
+          "clue2": "Their name starts with \"{ans_init}\".",
+          "why": "{name} ({country}, b. {year}) specialized in {field}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "ss_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "Scientist {name} (born {year}) was renowned primarily in {field}.",
+          "falsePrompt": "Scientist {name} (born {year}) was renowned primarily in {fake}.",
+          "fakeCol": 1,
+          "clue1": "Recall the scientific discipline of {name} ({country}).",
+          "whyTrue": "True! {name} was a noted figure in {field}.",
+          "whyFalse": "False! {name} was renowned in {field}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "ss_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year was scientist {name} ({field}) born?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 45,
+          "minClamp": 1400,
+          "maxClamp": 2000,
+          "clue1": "{name} worked in {field} and was associated with {country}.",
+          "why": "{name} ({field}, {country}) was born in {year} CE.",
+          "irtOffset": 0.35
+        }
+      ]
+    },
+    "sci_exoplanet": {
+      "l0Domain": 1,
+      "l1Category": "Exoplanets & Space",
+      "glyphHint": "orbit",
+      "cols": [
+        "name",
+        "method",
+        "year",
+        "facility",
+        "irt"
+      ],
+      "poolCols": [
+        1,
+        3
+      ],
+      "angles": [
+        {
+          "id": "sx_method",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which astronomical method discovered the exoplanet {name} ({year})?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "It was detected by {facility} in {year}.",
+          "clue2": "The method begins with \"{ans_init}\".",
+          "why": "NASA confirms {name} ({year}) was discovered via {method} by {facility}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "sx_fac",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which observatory or space mission discovered the exoplanet {name}?",
+          "answerCol": 3,
+          "distractorCol": 3,
+          "clue1": "Discovered in {year} using {method}.",
+          "clue2": "The facility starts with \"{ans_init}\".",
+          "why": "The exoplanet {name} ({year}) was discovered by {facility}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "sx_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "The exoplanet {name} was discovered using the {method} method.",
+          "falsePrompt": "The exoplanet {name} was discovered using the {fake} method.",
+          "fakeCol": 1,
+          "clue1": "Confirmed in {year} by {facility}.",
+          "whyTrue": "True! {name} was detected via {method} ({facility}, {year}).",
+          "whyFalse": "False! {name} was detected via {method}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "sx_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year was the exoplanet {name} discovered?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 10,
+          "minClamp": 1988,
+          "maxClamp": 2025,
+          "clue1": "Detected via {method} by {facility}.",
+          "why": "The exoplanet {name} was discovered in {year} by {facility}.",
+          "irtOffset": 0.25
+        }
+      ]
+    },
+    "sci_astro": {
+      "l0Domain": 1,
+      "l1Category": "Astronomy",
+      "glyphHint": "orbit",
+      "cols": [
+        "name",
+        "astro_type",
+        "constellation",
+        "irt"
+      ],
+      "poolCols": [
+        1,
+        2
+      ],
+      "angles": [
+        {
+          "id": "sa_con",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "In which constellation is the {astro_type} {name} located?",
+          "answerCol": 2,
+          "distractorCol": 2,
+          "clue1": "{name} is cataloged as a {astro_type}.",
+          "clue2": "The constellation begins with \"{ans_init}\".",
+          "why": "{name} ({astro_type}) is located in the constellation {constellation}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "sa_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these celestial objects is located in the constellation {constellation}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 2,
+          "clue1": "It is classified as a {astro_type}.",
+          "clue2": "Its name begins with \"{ans_init}\".",
+          "why": "{name} ({astro_type}) lies in the constellation {constellation}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "sa_type",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "What type of celestial object is {name}, found in {constellation}?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "Astronomers observe it in the direction of {constellation}.",
+          "clue2": "The category begins with \"{ans_init}\".",
+          "why": "{name} (constellation {constellation}) is a {astro_type}.",
+          "irtOffset": -0.1
+        },
+        {
+          "id": "sa_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "The {astro_type} {name} is located in the constellation {constellation}.",
+          "falsePrompt": "The {astro_type} {name} is located in the constellation {fake}.",
+          "fakeCol": 2,
+          "clue1": "Picture the sky region containing {name}.",
+          "whyTrue": "True! {name} is in the constellation {constellation}.",
+          "whyFalse": "False! {name} lies in {constellation}, not {fake}.",
+          "irtOffset": -0.15
+        }
+      ]
+    },
+    "sci_chemical": {
+      "l0Domain": 1,
+      "l1Category": "Chemistry & Materials",
+      "glyphHint": "atom",
+      "cols": [
+        "name",
+        "formula",
+        "mass",
+        "irt"
+      ],
+      "poolCols": [],
+      "angles": [
+        {
+          "id": "sc_form",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "What is the chemical formula of {name}?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "Its approximate molar mass is {mass} g/mol.",
+          "clue2": "The formula starts with \"{ans_init}\".",
+          "why": "{name} has the chemical formula {formula} (molar mass ~{mass} g/mol).",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "sc_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which chemical substance has the formula {formula}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 1,
+          "clue1": "Its approximate molar mass is {mass} g/mol.",
+          "clue2": "Its name begins with \"{ans_init}\".",
+          "why": "The formula {formula} represents {name}.",
+          "irtOffset": 0.1
+        },
+        {
+          "id": "sc_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "The chemical formula of {name} is {formula}.",
+          "falsePrompt": "The chemical formula of {name} is {fake}.",
+          "fakeCol": 1,
+          "clue1": "Check the elemental composition of {name} (~{mass} g/mol).",
+          "whyTrue": "True! {name} has the formula {formula}.",
+          "whyFalse": "False! The formula of {name} is {formula}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "sc_mass",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "What is the approximate molar mass of {name} ({formula})?",
+          "exactCol": 2,
+          "unit": "g/mol",
+          "step": 0,
+          "pad": 0,
+          "minClamp": 2,
+          "maxClamp": 1500,
+          "clue1": "Add the standard atomic weights of the atoms in {formula}.",
+          "why": "{name} ({formula}) has a molar mass of approximately {mass} g/mol.",
+          "irtOffset": 0.4
+        }
+      ]
+    },
+    "sci_space": {
+      "l0Domain": 1,
+      "l1Category": "Space Exploration",
+      "glyphHint": "orbit",
+      "cols": [
+        "name",
+        "agency",
+        "year",
+        "irt"
+      ],
+      "poolCols": [
+        1
+      ],
+      "angles": [
+        {
+          "id": "sm_ag",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which space agency or operator ran the {year} mission {name}?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "It launched in {year}.",
+          "clue2": "The operator starts with \"{ans_init}\".",
+          "why": "{name} (launched {year}) was operated by {agency}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "sm_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these space missions or spacecraft was operated by {agency}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 1,
+          "clue1": "It launched in {year}.",
+          "clue2": "Its name begins with \"{ans_init}\".",
+          "why": "{name} ({year}) was operated by {agency}.",
+          "irtOffset": 0.1
+        },
+        {
+          "id": "sm_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "The {year} space mission {name} was operated by {agency}.",
+          "falsePrompt": "The {year} space mission {name} was operated by {fake}.",
+          "fakeCol": 1,
+          "clue1": "Recall which spacefaring organization launched {name}.",
+          "whyTrue": "True! {name} ({year}) was operated by {agency}.",
+          "whyFalse": "False! {name} was operated by {agency}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "sm_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year was the space mission {name} ({agency}) launched?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 15,
+          "minClamp": 1957,
+          "maxClamp": 2025,
+          "clue1": "It was operated by {agency}.",
+          "why": "{name} ({agency}) launched in {year}.",
+          "irtOffset": 0.25
+        }
+      ]
+    },
+    "geo_city": {
+      "l0Domain": 2,
+      "l1Category": "World Cities",
+      "glyphHint": "compass",
+      "cols": [
+        "name",
+        "country",
+        "region",
+        "pop_k",
+        "irt"
+      ],
+      "poolCols": [
+        1,
+        2
+      ],
+      "angles": [
+        {
+          "id": "gc_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "In which country is the city of {name} located?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "It sits in the {region} region (population ~{pop_k},000).",
+          "clue2": "The country starts with \"{ans_init}\".",
+          "why": "{name} (region: {region}) is a city in {country}.",
+          "irtOffset": -0.05
+        },
+        {
+          "id": "gc_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these cities is located in {country}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 1,
+          "clue1": "It lies in the {region} region.",
+          "clue2": "The city's name begins with \"{ans_init}\".",
+          "why": "{name} ({region}) is located in {country}.",
+          "irtOffset": 0.1
+        },
+        {
+          "id": "gc_reg",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "In {country}, which state, province, or region contains the city of {name}?",
+          "answerCol": 2,
+          "distractorCol": 2,
+          "preferSameCol": 1,
+          "clue1": "{name} has a population of roughly {pop_k},000.",
+          "clue2": "The region name starts with \"{ans_init}\".",
+          "why": "{name} is located in {region}, {country}.",
+          "irtOffset": 0.3
+        },
+        {
+          "id": "gc_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "The city of {name} is located in {country}.",
+          "falsePrompt": "The city of {name} is located in {fake}.",
+          "fakeCol": 1,
+          "clue1": "Locate the {region} region on a world map.",
+          "whyTrue": "True! {name} ({region}) is in {country}.",
+          "whyFalse": "False! {name} is in {country}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "gc_pop",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "Approximately what is the population of {name}, {country}?",
+          "exactCol": 3,
+          "unit": "thousand",
+          "step": 0,
+          "pad": 0,
+          "minClamp": 10,
+          "maxClamp": 30000,
+          "clue1": "{name} is located in {region}, {country}.",
+          "why": "{name}, {country} has an approximate population of {pop_k} thousand.",
+          "irtOffset": 0.35
+        }
+      ]
+    },
+    "geo_airport": {
+      "l0Domain": 2,
+      "l1Category": "World Aviation & Hubs",
+      "glyphHint": "compass",
+      "cols": [
+        "iata",
+        "city",
+        "airport",
+        "country",
+        "irt"
+      ],
+      "poolCols": [
+        3
+      ],
+      "angles": [
+        {
+          "id": "ga_city",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which city is served by {airport} (IATA code {iata})?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "This airport is located in {country}.",
+          "clue2": "The city starts with \"{ans_init}\".",
+          "why": "{airport} ({iata}) serves {city}, {country}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "ga_code",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "What is the 3-letter IATA airport code for {airport} in {city}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "clue1": "Located in {city}, {country}.",
+          "clue2": "The 3-letter code begins with \"{ans_init}\".",
+          "why": "{airport} ({city}, {country}) uses the IATA code {iata}.",
+          "irtOffset": 0.25
+        },
+        {
+          "id": "ga_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "In which country is {airport} (IATA: {iata}) located?",
+          "answerCol": 3,
+          "distractorCol": 3,
+          "clue1": "It serves the city of {city}.",
+          "clue2": "The country starts with \"{ans_init}\".",
+          "why": "{airport} ({iata}) is located in {city}, {country}.",
+          "irtOffset": -0.1
+        },
+        {
+          "id": "ga_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "Airport code {iata} belongs to {airport} in {country}.",
+          "falsePrompt": "Airport code {iata} belongs to an airport in {fake}.",
+          "fakeCol": 3,
+          "clue1": "Recall the international hub serving {city}.",
+          "whyTrue": "True! {iata} is {airport} in {city}, {country}.",
+          "whyFalse": "False! {iata} ({airport}) is in {country}, not {fake}.",
+          "irtOffset": -0.15
+        }
+      ]
+    },
+    "geo_mountain": {
+      "l0Domain": 2,
+      "l1Category": "Peaks & Ranges",
+      "glyphHint": "compass",
+      "cols": [
+        "name",
+        "country",
+        "elev_m",
+        "irt"
+      ],
+      "poolCols": [
+        1
+      ],
+      "angles": [
+        {
+          "id": "gm_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "In which country is the mountain peak {name} ({elev_m} m) located?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "Its summit reaches {elev_m} meters above sea level.",
+          "clue2": "The country begins with \"{ans_init}\".",
+          "why": "{name} ({elev_m} meters) is located in {country}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "gm_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these mountains or peaks is located in {country}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 1,
+          "clue1": "Its elevation is approximately {elev_m} meters.",
+          "clue2": "Its name begins with \"{ans_init}\".",
+          "why": "{name} ({elev_m} m) rises in {country}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "gm_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "The mountain peak {name} is located in {country}.",
+          "falsePrompt": "The mountain peak {name} is located in {fake}.",
+          "fakeCol": 1,
+          "clue1": "It stands {elev_m} meters above sea level.",
+          "whyTrue": "True! {name} ({elev_m} m) is in {country}.",
+          "whyFalse": "False! {name} is located in {country}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "gm_elev",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "Approximately how high above sea level is {name} ({country})?",
+          "exactCol": 2,
+          "unit": "meters",
+          "step": 50,
+          "pad": 1200,
+          "minClamp": 200,
+          "maxClamp": 9000,
+          "clue1": "This peak is located in {country}.",
+          "why": "{name} ({country}) has an elevation of {elev_m} meters.",
+          "irtOffset": 0.3
+        }
+      ]
+    },
+    "geo_river": {
+      "l0Domain": 2,
+      "l1Category": "Rivers & Waterways",
+      "glyphHint": "compass",
+      "cols": [
+        "name",
+        "country",
+        "len_km",
+        "irt"
+      ],
+      "poolCols": [
+        1
+      ],
+      "angles": [
+        {
+          "id": "gr_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which country is home to {name} ({len_km} km long)?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "This waterway extends approximately {len_km} kilometers.",
+          "clue2": "The country starts with \"{ans_init}\".",
+          "why": "{name} ({len_km} km) flows through {country}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "gr_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these rivers flows in {country}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 1,
+          "clue1": "Its length is about {len_km} km.",
+          "clue2": "Its name begins with \"{ans_init}\".",
+          "why": "{name} ({len_km} km) flows in {country}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "gr_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "{name} is a river located in {country}.",
+          "falsePrompt": "{name} is a river located in {fake}.",
+          "fakeCol": 1,
+          "clue1": "Its total length is approximately {len_km} km.",
+          "whyTrue": "True! {name} flows in {country}.",
+          "whyFalse": "False! {name} is in {country}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "gr_len",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "Approximately how long is {name} ({country})?",
+          "exactCol": 2,
+          "unit": "km",
+          "step": 0,
+          "pad": 0,
+          "minClamp": 20,
+          "maxClamp": 7500,
+          "clue1": "This river flows through {country}.",
+          "why": "{name} ({country}) is approximately {len_km} km long.",
+          "irtOffset": 0.35
+        }
+      ]
+    },
+    "geo_wonder": {
+      "l0Domain": 2,
+      "l1Category": "Natural Wonders",
+      "glyphHint": "compass",
+      "cols": [
+        "name",
+        "geo_type",
+        "country",
+        "irt"
+      ],
+      "poolCols": [
+        1,
+        2
+      ],
+      "angles": [
+        {
+          "id": "gw_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "In which country is the {geo_type} {name} located?",
+          "answerCol": 2,
+          "distractorCol": 2,
+          "clue1": "{name} is classified as a {geo_type}.",
+          "clue2": "The country starts with \"{ans_init}\".",
+          "why": "{name} ({geo_type}) is located in {country}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "gw_type",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "What type of geographical feature is {name} in {country}?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "It is located in {country}.",
+          "clue2": "The feature type starts with \"{ans_init}\".",
+          "why": "{name} ({country}) is a {geo_type}.",
+          "irtOffset": -0.1
+        },
+        {
+          "id": "gw_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these natural features is located in {country}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 2,
+          "clue1": "It is classified as a {geo_type}.",
+          "clue2": "Its name begins with \"{ans_init}\".",
+          "why": "{name} ({geo_type}) is located in {country}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "gw_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "The {geo_type} {name} is located in {country}.",
+          "falsePrompt": "The {geo_type} {name} is located in {fake}.",
+          "fakeCol": 2,
+          "clue1": "Picture where {name} appears on the world atlas.",
+          "whyTrue": "True! {name} ({geo_type}) is in {country}.",
+          "whyFalse": "False! {name} is in {country}, not {fake}.",
+          "irtOffset": -0.15
+        }
+      ]
+    },
+    "art_work": {
+      "l0Domain": 3,
+      "l1Category": "Fine Arts",
+      "glyphHint": "palette",
+      "cols": [
+        "title",
+        "artist",
+        "year",
+        "medium",
+        "irt"
+      ],
+      "poolCols": [
+        3
+      ],
+      "angles": [
+        {
+          "id": "aw_artist",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Who created the {year} artwork \"{title}\"?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "This {medium} dates to {year}.",
+          "clue2": "The artist's name begins with \"{ans_init}\".",
+          "why": "{artist} created \"{title}\" ({year}, {medium}).",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "aw_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these artworks was created by {artist}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 1,
+          "clue1": "It is a {medium} dating from {year}.",
+          "clue2": "Its title begins with \"{ans_init}\".",
+          "why": "{artist} created the {medium} \"{title}\" in {year}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "aw_med",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "What artistic form or medium is \"{title}\" ({year}) by {artist}?",
+          "answerCol": 3,
+          "distractorCol": 3,
+          "clue1": "Created by {artist} in {year}.",
+          "clue2": "The medium starts with \"{ans_init}\".",
+          "why": "\"{title}\" by {artist} ({year}) is a {medium}.",
+          "irtOffset": 0.1
+        },
+        {
+          "id": "aw_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "{artist} created the {year} artwork \"{title}\" ({medium}).",
+          "falsePrompt": "{fake} created the {year} artwork \"{title}\" ({medium}).",
+          "fakeCol": 1,
+          "clue1": "Recall the master behind the {medium} \"{title}\".",
+          "whyTrue": "True! {artist} created \"{title}\" in {year}.",
+          "whyFalse": "False! {artist} (not {fake}) created \"{title}\".",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "aw_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In approximately what year did {artist} create \"{title}\"?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 40,
+          "minClamp": 1200,
+          "maxClamp": 2024,
+          "clue1": "{artist} created this {medium}.",
+          "why": "{artist} created \"{title}\" ({medium}) in {year}.",
+          "irtOffset": 0.35
+        }
+      ]
+    },
+    "art_landmark": {
+      "l0Domain": 3,
+      "l1Category": "Architecture & Landmarks",
+      "glyphHint": "column",
+      "cols": [
+        "name",
+        "arch_type",
+        "year",
+        "country",
+        "irt"
+      ],
+      "poolCols": [
+        1,
+        3
+      ],
+      "angles": [
+        {
+          "id": "al_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "In which country is the landmark {name} ({arch_type}) located?",
+          "answerCol": 3,
+          "distractorCol": 3,
+          "clue1": "This {arch_type} dates to {year}.",
+          "clue2": "The country starts with \"{ans_init}\".",
+          "why": "{name} ({arch_type}, {year}) is located in {country}.",
+          "irtOffset": -0.05
+        },
+        {
+          "id": "al_type",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "What architectural category best describes {name} in {country}?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "Built or founded in {year} in {country}.",
+          "clue2": "The category starts with \"{ans_init}\".",
+          "why": "{name} ({country}, {year}) is a {arch_type}.",
+          "irtOffset": 0.05
+        },
+        {
+          "id": "al_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these architectural landmarks stands in {country}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 3,
+          "clue1": "It is a {arch_type} dating from {year}.",
+          "clue2": "Its name starts with \"{ans_init}\".",
+          "why": "{name} ({arch_type}, {year}) stands in {country}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "al_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "The {arch_type} {name} is located in {country}.",
+          "falsePrompt": "The {arch_type} {name} is located in {fake}.",
+          "fakeCol": 3,
+          "clue1": "This landmark dates to {year}.",
+          "whyTrue": "True! {name} ({arch_type}) is located in {country}.",
+          "whyFalse": "False! {name} is in {country}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "al_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In approximately what year was {name} ({country}) built or founded?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 55,
+          "minClamp": 500,
+          "maxClamp": 2024,
+          "clue1": "It is a {arch_type} located in {country}.",
+          "why": "{name} ({country}, {arch_type}) dates to {year} CE.",
+          "irtOffset": 0.35
+        }
+      ]
+    },
+    "art_creator": {
+      "l0Domain": 3,
+      "l1Category": "Masters of Art",
+      "glyphHint": "palette",
+      "cols": [
+        "name",
+        "discipline",
+        "year",
+        "country",
+        "irt"
+      ],
+      "poolCols": [
+        1,
+        3
+      ],
+      "angles": [
+        {
+          "id": "ac_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which country was the {discipline} {name} (b. {year}) associated with?",
+          "answerCol": 3,
+          "distractorCol": 3,
+          "clue1": "{name} was born in {year}.",
+          "clue2": "The country starts with \"{ans_init}\".",
+          "why": "{name} ({discipline}, b. {year}) was associated with {country}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "ac_disc",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "What was the primary artistic discipline of {name} ({country}, b. {year})?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "{name} was born in {year} ({country}).",
+          "clue2": "The discipline begins with \"{ans_init}\".",
+          "why": "{name} ({country}, b. {year}) was primarily a {discipline}.",
+          "irtOffset": 0.05
+        },
+        {
+          "id": "ac_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "Artist {name} (born {year}) was primarily known as a {discipline}.",
+          "falsePrompt": "Artist {name} (born {year}) was primarily known as a {fake}.",
+          "fakeCol": 1,
+          "clue1": "{name} was associated with {country}.",
+          "whyTrue": "True! {name} was renowned as a {discipline}.",
+          "whyFalse": "False! {name} was primarily a {discipline}, not a {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "ac_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year was the {discipline} {name} ({country}) born?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 45,
+          "minClamp": 1250,
+          "maxClamp": 2000,
+          "clue1": "{name} was a {discipline} from {country}.",
+          "why": "{name} ({discipline}, {country}) was born in {year}.",
+          "irtOffset": 0.35
+        }
+      ]
+    },
+    "pop_film": {
+      "l0Domain": 4,
+      "l1Category": "Cinema",
+      "glyphHint": "film",
+      "cols": [
+        "title",
+        "director",
+        "year",
+        "country",
+        "irt"
+      ],
+      "poolCols": [
+        3
+      ],
+      "angles": [
+        {
+          "id": "pf_dir",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Who directed the {year} film \"{title}\"?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "This {year} film came from {country}.",
+          "clue2": "The director's name starts with \"{ans_init}\".",
+          "why": "{director} directed \"{title}\" ({year}, {country}).",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "pf_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these films was directed by {director}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 1,
+          "clue1": "Released in {year} ({country}).",
+          "clue2": "Its title begins with \"{ans_init}\".",
+          "why": "{director} directed \"{title}\" ({year}).",
+          "irtOffset": 0.1
+        },
+        {
+          "id": "pf_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which country produced the {year} film \"{title}\", directed by {director}?",
+          "answerCol": 3,
+          "distractorCol": 3,
+          "clue1": "Directed by {director} in {year}.",
+          "clue2": "The country starts with \"{ans_init}\".",
+          "why": "\"{title}\" ({year}), directed by {director}, is from {country}.",
+          "irtOffset": 0.2
+        },
+        {
+          "id": "pf_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "{director} directed the {year} film \"{title}\" ({country}).",
+          "falsePrompt": "{fake} directed the {year} film \"{title}\" ({country}).",
+          "fakeCol": 1,
+          "clue1": "Recall who directed this {year} {country} film.",
+          "whyTrue": "True! {director} directed \"{title}\" ({year}).",
+          "whyFalse": "False! {director} (not {fake}) directed \"{title}\".",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "pf_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year was the film \"{title}\" (dir. {director}) released?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 22,
+          "minClamp": 1910,
+          "maxClamp": 2025,
+          "clue1": "{director} directed this {country} film.",
+          "why": "\"{title}\" (directed by {director}) was released in {year}.",
+          "irtOffset": 0.3
+        }
+      ]
+    },
+    "pop_album": {
+      "l0Domain": 4,
+      "l1Category": "Recorded Music",
+      "glyphHint": "music",
+      "cols": [
+        "title",
+        "artist",
+        "year",
+        "irt"
+      ],
+      "poolCols": [],
+      "angles": [
+        {
+          "id": "pa_art",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which musical artist or band released the {year} album \"{title}\"?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "This album was released in {year}.",
+          "clue2": "The artist's name begins with \"{ans_init}\".",
+          "why": "{artist} released the album \"{title}\" ({year}).",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "pa_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these albums was released by {artist}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 1,
+          "clue1": "It came out in {year}.",
+          "clue2": "The album title starts with \"{ans_init}\".",
+          "why": "{artist} released \"{title}\" in {year}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "pa_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "{artist} released the album \"{title}\" ({year}).",
+          "falsePrompt": "{fake} released the album \"{title}\" ({year}).",
+          "fakeCol": 1,
+          "clue1": "Match the {year} album \"{title}\" to its performer.",
+          "whyTrue": "True! {artist} released \"{title}\" in {year}.",
+          "whyFalse": "False! {artist} (not {fake}) released \"{title}\".",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "pa_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year did {artist} release the album \"{title}\"?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 18,
+          "minClamp": 1950,
+          "maxClamp": 2025,
+          "clue1": "{artist} released this studio album.",
+          "why": "{artist} released \"{title}\" in {year}.",
+          "irtOffset": 0.3
+        }
+      ]
+    },
+    "pop_song": {
+      "l0Domain": 4,
+      "l1Category": "Hit Songs",
+      "glyphHint": "music",
+      "cols": [
+        "title",
+        "artist",
+        "year",
+        "irt"
+      ],
+      "poolCols": [],
+      "angles": [
+        {
+          "id": "ps_art",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Who performed the {year} song \"{title}\"?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "This song was released in {year}.",
+          "clue2": "The performer's name starts with \"{ans_init}\".",
+          "why": "{artist} performed \"{title}\" ({year}).",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "ps_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these songs was performed by {artist}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 1,
+          "clue1": "Released in {year}.",
+          "clue2": "The song title begins with \"{ans_init}\".",
+          "why": "{artist} performed \"{title}\" ({year}).",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "ps_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "{artist} performed the song \"{title}\" ({year}).",
+          "falsePrompt": "{fake} performed the song \"{title}\" ({year}).",
+          "fakeCol": 1,
+          "clue1": "Think back to the charts of {year}.",
+          "whyTrue": "True! {artist} performed \"{title}\" ({year}).",
+          "whyFalse": "False! {artist} (not {fake}) performed \"{title}\".",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "ps_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year was \"{title}\" by {artist} released?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 18,
+          "minClamp": 1950,
+          "maxClamp": 2025,
+          "clue1": "{artist} performed this recorded track.",
+          "why": "\"{title}\" by {artist} was released in {year}.",
+          "irtOffset": 0.3
+        }
+      ]
+    },
+    "pop_tv": {
+      "l0Domain": 4,
+      "l1Category": "Television",
+      "glyphHint": "film",
+      "cols": [
+        "title",
+        "country",
+        "year",
+        "irt"
+      ],
+      "poolCols": [
+        1
+      ],
+      "angles": [
+        {
+          "id": "pt_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "In which country did the television series \"{title}\" (premiered {year}) originate?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "This series premiered in {year}.",
+          "clue2": "The country starts with \"{ans_init}\".",
+          "why": "The TV series \"{title}\" ({year}) originated in {country}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "pt_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these television series originated in {country}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 1,
+          "clue1": "It premiered in {year}.",
+          "clue2": "Its title begins with \"{ans_init}\".",
+          "why": "\"{title}\" ({year}) is a television series from {country}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "pt_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "The television series \"{title}\" ({year}) originated in {country}.",
+          "falsePrompt": "The television series \"{title}\" ({year}) originated in {fake}.",
+          "fakeCol": 1,
+          "clue1": "It first aired in {year}.",
+          "whyTrue": "True! \"{title}\" originated in {country}.",
+          "whyFalse": "False! \"{title}\" originated in {country}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "pt_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year did the TV series \"{title}\" ({country}) premiere?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 18,
+          "minClamp": 1948,
+          "maxClamp": 2025,
+          "clue1": "This series originated in {country}.",
+          "why": "\"{title}\" ({country}) premiered in {year}.",
+          "irtOffset": 0.3
+        }
+      ]
+    },
+    "pop_band": {
+      "l0Domain": 4,
+      "l1Category": "Bands & Groups",
+      "glyphHint": "music",
+      "cols": [
+        "name",
+        "country",
+        "year",
+        "irt"
+      ],
+      "poolCols": [
+        1
+      ],
+      "angles": [
+        {
+          "id": "pb_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "In which country was the musical group {name} (formed {year}) founded?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "{name} formed in {year}.",
+          "clue2": "The country starts with \"{ans_init}\".",
+          "why": "The musical group {name} formed in {country} in {year}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "pb_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these musical groups originated in {country}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 1,
+          "clue1": "Formed in {year}.",
+          "clue2": "The group's name starts with \"{ans_init}\".",
+          "why": "{name} (formed {year}) originated in {country}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "pb_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "The musical group {name} (formed {year}) originated in {country}.",
+          "falsePrompt": "The musical group {name} (formed {year}) originated in {fake}.",
+          "fakeCol": 1,
+          "clue1": "They formed in {year}.",
+          "whyTrue": "True! {name} originated in {country}.",
+          "whyFalse": "False! {name} originated in {country}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "pb_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year was the musical group {name} ({country}) formed?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 18,
+          "minClamp": 1950,
+          "maxClamp": 2024,
+          "clue1": "Originating in {country}.",
+          "why": "{name} ({country}) formed in {year}.",
+          "irtOffset": 0.3
+        }
+      ]
+    },
+    "sport_athlete": {
+      "l0Domain": 5,
+      "l1Category": "Athletes & Champions",
+      "glyphHint": "trophy",
+      "cols": [
+        "name",
+        "sport",
+        "year",
+        "country",
+        "irt"
+      ],
+      "poolCols": [
+        1,
+        3
+      ],
+      "angles": [
+        {
+          "id": "spa_sport",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "In which sport did {name} ({country}) compete?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "{name} was born in {year} and represented {country}.",
+          "clue2": "The sport starts with \"{ans_init}\".",
+          "why": "{name} ({country}, b. {year}) competed in {sport}.",
+          "irtOffset": -0.05
+        },
+        {
+          "id": "spa_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which country did {sport} athlete {name} (b. {year}) represent?",
+          "answerCol": 3,
+          "distractorCol": 3,
+          "clue1": "{name} competed in {sport} (born {year}).",
+          "clue2": "The country starts with \"{ans_init}\".",
+          "why": "{sport} athlete {name} represented {country}.",
+          "irtOffset": 0.1
+        },
+        {
+          "id": "spa_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these athletes competed in {sport}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 1,
+          "clue1": "Born in {year}, representing {country}.",
+          "clue2": "Their name starts with \"{ans_init}\".",
+          "why": "{name} ({country}) competed in {sport}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "spa_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "Athlete {name} ({country}) competed in {sport}.",
+          "falsePrompt": "Athlete {name} ({country}) competed in {fake}.",
+          "fakeCol": 1,
+          "clue1": "Recall the sport of {name} (b. {year}).",
+          "whyTrue": "True! {name} ({country}) competed in {sport}.",
+          "whyFalse": "False! {name} competed in {sport}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "spa_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year was {sport} athlete {name} ({country}) born?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 22,
+          "minClamp": 1870,
+          "maxClamp": 2008,
+          "clue1": "Represented {country} in {sport}.",
+          "why": "{name} ({country}, {sport}) was born in {year}.",
+          "irtOffset": 0.35
+        }
+      ]
+    },
+    "sport_club": {
+      "l0Domain": 5,
+      "l1Category": "Clubs & Franchises",
+      "glyphHint": "trophy",
+      "cols": [
+        "name",
+        "country",
+        "year",
+        "sport",
+        "irt"
+      ],
+      "poolCols": [
+        1,
+        3
+      ],
+      "angles": [
+        {
+          "id": "spc_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "In which country is the {sport} team {name} based?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "Founded in {year} ({sport}).",
+          "clue2": "The country starts with \"{ans_init}\".",
+          "why": "{name} ({sport}, founded {year}) is based in {country}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "spc_sport",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which sport is played by {name} ({country}, founded {year})?",
+          "answerCol": 3,
+          "distractorCol": 3,
+          "clue1": "Based in {country} since {year}.",
+          "clue2": "The sport starts with \"{ans_init}\".",
+          "why": "{name} ({country}) competes in {sport}.",
+          "irtOffset": 0.05
+        },
+        {
+          "id": "spc_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "The {sport} club {name} is based in {country}.",
+          "falsePrompt": "The {sport} club {name} is based in {fake}.",
+          "fakeCol": 1,
+          "clue1": "This club was founded in {year}.",
+          "whyTrue": "True! {name} is based in {country}.",
+          "whyFalse": "False! {name} is based in {country}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "spc_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year was the {sport} club {name} ({country}) founded?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 35,
+          "minClamp": 1850,
+          "maxClamp": 2024,
+          "clue1": "Based in {country} ({sport}).",
+          "why": "{name} ({country}, {sport}) was founded in {year}.",
+          "irtOffset": 0.35
+        }
+      ]
+    },
+    "sport_stadium": {
+      "l0Domain": 5,
+      "l1Category": "Arenas & Stadiums",
+      "glyphHint": "trophy",
+      "cols": [
+        "name",
+        "country",
+        "cap",
+        "irt"
+      ],
+      "poolCols": [
+        1
+      ],
+      "angles": [
+        {
+          "id": "sps_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "In which country is {name} (capacity ~{cap}) located?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "This venue holds roughly {cap} spectators.",
+          "clue2": "The country starts with \"{ans_init}\".",
+          "why": "{name} (capacity ~{cap}) is located in {country}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "sps_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these stadiums is located in {country}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 1,
+          "clue1": "Its seating capacity is approximately {cap}.",
+          "clue2": "Its name begins with \"{ans_init}\".",
+          "why": "{name} is located in {country}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "sps_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "{name} is a sports stadium located in {country}.",
+          "falsePrompt": "{name} is a sports stadium located in {fake}.",
+          "fakeCol": 1,
+          "clue1": "This venue seats around {cap} fans.",
+          "whyTrue": "True! {name} is located in {country}.",
+          "whyFalse": "False! {name} is in {country}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "sps_cap",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "Approximately how many spectators can {name} ({country}) hold?",
+          "exactCol": 2,
+          "unit": "seats",
+          "step": 1000,
+          "pad": 22000,
+          "minClamp": 4000,
+          "maxClamp": 140000,
+          "clue1": "Located in {country}.",
+          "why": "{name} ({country}) has an approximate capacity of {cap} seats.",
+          "irtOffset": 0.35
+        }
+      ]
+    },
+    "sport_videogame": {
+      "l0Domain": 5,
+      "l1Category": "Video Games",
+      "glyphHint": "trophy",
+      "cols": [
+        "title",
+        "dev",
+        "year",
+        "irt"
+      ],
+      "poolCols": [
+        1
+      ],
+      "angles": [
+        {
+          "id": "svg_dev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which studio developed the {year} video game \"{title}\"?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "Released in {year}.",
+          "clue2": "The developer starts with \"{ans_init}\".",
+          "why": "{dev} developed \"{title}\" ({year}).",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "svg_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these video games was developed by {dev}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 1,
+          "clue1": "First released in {year}.",
+          "clue2": "The game title starts with \"{ans_init}\".",
+          "why": "{dev} developed \"{title}\" ({year}).",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "svg_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "{dev} developed the video game \"{title}\" ({year}).",
+          "falsePrompt": "{fake} developed the video game \"{title}\" ({year}).",
+          "fakeCol": 1,
+          "clue1": "Released in {year}.",
+          "whyTrue": "True! {dev} developed \"{title}\" ({year}).",
+          "whyFalse": "False! {dev} (not {fake}) developed \"{title}\".",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "svg_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year was the video game \"{title}\" ({dev}) first released?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 12,
+          "minClamp": 1970,
+          "maxClamp": 2025,
+          "clue1": "Developed by {dev} for video game audiences.",
+          "why": "\"{title}\" ({dev}) was released in {year}.",
+          "irtOffset": 0.25
+        }
+      ]
+    },
+    "tech_company": {
+      "l0Domain": 6,
+      "l1Category": "Industry & Tech Giants",
+      "glyphHint": "chip",
+      "cols": [
+        "name",
+        "industry",
+        "year",
+        "country",
+        "irt"
+      ],
+      "poolCols": [
+        1,
+        3
+      ],
+      "angles": [
+        {
+          "id": "tc_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "In which country is {name} ({industry}, founded {year}) headquartered?",
+          "answerCol": 3,
+          "distractorCol": 3,
+          "clue1": "Founded in {year} in the {industry} sector.",
+          "clue2": "The country starts with \"{ans_init}\".",
+          "why": "{name} ({industry}, founded {year}) is headquartered in {country}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "tc_ind",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "What is the primary industry of {name} ({country}, founded {year})?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "Headquartered in {country} since {year}.",
+          "clue2": "The industry begins with \"{ans_init}\".",
+          "why": "{name} ({country}) operates primarily in {industry}.",
+          "irtOffset": 0.05
+        },
+        {
+          "id": "tc_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these companies is headquartered in {country}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 3,
+          "clue1": "Founded in {year} ({industry}).",
+          "clue2": "The company name starts with \"{ans_init}\".",
+          "why": "{name} ({industry}, {year}) is headquartered in {country}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "tc_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "{name} ({industry}) is headquartered in {country}.",
+          "falsePrompt": "{name} ({industry}) is headquartered in {fake}.",
+          "fakeCol": 3,
+          "clue1": "Founded in {year}.",
+          "whyTrue": "True! {name} is headquartered in {country}.",
+          "whyFalse": "False! {name} is headquartered in {country}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "tc_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year was {name} ({country}, {industry}) founded?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 32,
+          "minClamp": 1800,
+          "maxClamp": 2024,
+          "clue1": "Headquartered in {country} ({industry}).",
+          "why": "{name} ({country}, {industry}) was founded in {year}.",
+          "irtOffset": 0.35
+        }
+      ]
+    },
+    "tech_pioneer": {
+      "l0Domain": 6,
+      "l1Category": "Inventors & Engineers",
+      "glyphHint": "chip",
+      "cols": [
+        "name",
+        "role",
+        "year",
+        "country",
+        "irt"
+      ],
+      "poolCols": [
+        1,
+        3
+      ],
+      "angles": [
+        {
+          "id": "tp_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which country was {role} {name} (b. {year}) associated with?",
+          "answerCol": 3,
+          "distractorCol": 3,
+          "clue1": "Born in {year}, known as a {role}.",
+          "clue2": "The country starts with \"{ans_init}\".",
+          "why": "{name} ({role}, b. {year}) was associated with {country}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "tp_role",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which technical role best describes {name} ({country}, b. {year})?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "Born in {year} ({country}).",
+          "clue2": "The role starts with \"{ans_init}\".",
+          "why": "{name} ({country}, b. {year}) was renowned as a {role}.",
+          "irtOffset": 0.1
+        },
+        {
+          "id": "tp_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "{role} {name} (born {year}) was associated with {country}.",
+          "falsePrompt": "{role} {name} (born {year}) was associated with {fake}.",
+          "fakeCol": 3,
+          "clue1": "Connect {name} ({role}) to their country.",
+          "whyTrue": "True! {name} was associated with {country}.",
+          "whyFalse": "False! {name} was associated with {country}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "tp_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year was {role} {name} ({country}) born?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 40,
+          "minClamp": 1650,
+          "maxClamp": 2000,
+          "clue1": "A {role} associated with {country}.",
+          "why": "{name} ({role}, {country}) was born in {year}.",
+          "irtOffset": 0.35
+        }
+      ]
+    },
+    "tech_software": {
+      "l0Domain": 6,
+      "l1Category": "Computing & Software",
+      "glyphHint": "chip",
+      "cols": [
+        "name",
+        "sw_type",
+        "year",
+        "irt"
+      ],
+      "poolCols": [
+        1
+      ],
+      "angles": [
+        {
+          "id": "ts_type",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "What kind of computing technology is {name} (introduced {year})?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "First launched or released in {year}.",
+          "clue2": "The category starts with \"{ans_init}\".",
+          "why": "{name} ({year}) is a {sw_type}.",
+          "irtOffset": -0.05
+        },
+        {
+          "id": "ts_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these is a {sw_type}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 1,
+          "clue1": "Introduced in {year}.",
+          "clue2": "Its name starts with \"{ans_init}\".",
+          "why": "{name} ({year}) is classified as a {sw_type}.",
+          "irtOffset": 0.1
+        },
+        {
+          "id": "ts_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "{name} (introduced {year}) is classified as a {sw_type}.",
+          "falsePrompt": "{name} (introduced {year}) is classified as a {fake}.",
+          "fakeCol": 1,
+          "clue1": "Introduced in {year}.",
+          "whyTrue": "True! {name} is a {sw_type} ({year}).",
+          "whyFalse": "False! {name} is a {sw_type}, not a {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "ts_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year was the {sw_type} {name} first launched?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 14,
+          "minClamp": 1950,
+          "maxClamp": 2025,
+          "clue1": "{name} is a {sw_type}.",
+          "why": "{name} ({sw_type}) launched in {year}.",
+          "irtOffset": 0.25
+        }
+      ]
+    },
+    "tech_vehicle": {
+      "l0Domain": 6,
+      "l1Category": "Engineering & Machines",
+      "glyphHint": "chip",
+      "cols": [
+        "name",
+        "maker",
+        "veh_type",
+        "irt"
+      ],
+      "poolCols": [
+        1,
+        2
+      ],
+      "angles": [
+        {
+          "id": "tv_maker",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which manufacturer produced the {veh_type} {name}?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "{name} is classified as a {veh_type}.",
+          "clue2": "The manufacturer starts with \"{ans_init}\".",
+          "why": "{maker} built {name} ({veh_type}).",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "tv_type",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "What type of machine or vehicle is {name}, built by {maker}?",
+          "answerCol": 2,
+          "distractorCol": 2,
+          "clue1": "{maker} manufactured this machine or vehicle.",
+          "clue2": "The category begins with \"{ans_init}\".",
+          "why": "{name} ({maker}) is a {veh_type}.",
+          "irtOffset": -0.05
+        },
+        {
+          "id": "tv_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these models was manufactured by {maker}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 1,
+          "clue1": "It is a {veh_type}.",
+          "clue2": "Its name starts with \"{ans_init}\".",
+          "why": "{maker} manufactured {name} ({veh_type}).",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "tv_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "{maker} manufactured {name} ({veh_type}).",
+          "falsePrompt": "{fake} manufactured {name} ({veh_type}).",
+          "fakeCol": 1,
+          "clue1": "Match the {veh_type} {name} to its builder.",
+          "whyTrue": "True! {maker} built {name} ({veh_type}).",
+          "whyFalse": "False! {maker} (not {fake}) built {name} ({veh_type}).",
+          "irtOffset": -0.15
+        }
+      ]
+    },
+    "nat_species": {
+      "l0Domain": 7,
+      "l1Category": "Wildlife & Botany",
+      "glyphHint": "leaf",
+      "cols": [
+        "name",
+        "sci",
+        "group",
+        "irt"
+      ],
+      "poolCols": [
+        2
+      ],
+      "angles": [
+        {
+          "id": "ns_grp",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "To which biological group does the {name} belong?",
+          "answerCol": 2,
+          "distractorCol": 2,
+          "clue1": "Its scientific name is {sci}.",
+          "clue2": "The group begins with \"{ans_init}\".",
+          "why": "The {name} ({sci}) is classified as a {group}.",
+          "irtOffset": -0.2
+        },
+        {
+          "id": "ns_sci",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "What is the scientific (Latin) name of the {name}?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "preferSameCol": 2,
+          "clue1": "It belongs to the {group} group.",
+          "clue2": "The genus name starts with \"{ans_init}\".",
+          "why": "The scientific name of the {name} ({group}) is {sci}.",
+          "irtOffset": 0.55
+        },
+        {
+          "id": "ns_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which {group} has the scientific name \"{sci}\"?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "preferSameCol": 2,
+          "clue1": "It is a member of the {group} group.",
+          "clue2": "Its common name starts with \"{ans_init}\".",
+          "why": "\"{sci}\" is the scientific name of the {name} ({group}).",
+          "irtOffset": 0.45
+        },
+        {
+          "id": "ns_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "The {name} ({sci}) is classified as a {group}.",
+          "falsePrompt": "The {name} ({sci}) is classified as a {fake}.",
+          "fakeCol": 2,
+          "clue1": "Think of the biological class of the {name}.",
+          "whyTrue": "True! The {name} ({sci}) is a {group}.",
+          "whyFalse": "False! The {name} is a {group}, not a {fake}.",
+          "irtOffset": -0.2
+        }
+      ]
+    },
+    "soc_country": {
+      "l0Domain": 8,
+      "l1Category": "Nations & Capitals",
+      "glyphHint": "scales",
+      "cols": [
+        "name",
+        "capital",
+        "continent",
+        "currency",
+        "irt"
+      ],
+      "poolCols": [
+        2,
+        3
+      ],
+      "angles": [
+        {
+          "id": "scn_cap",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "What is the capital city of {name}?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "preferSameCol": 2,
+          "clue1": "{name} is in {continent} and uses the {currency}.",
+          "clue2": "Its capital starts with \"{ans_init}\".",
+          "why": "The capital of {name} ({continent}) is {capital}.",
+          "irtOffset": -0.25
+        },
+        {
+          "id": "scn_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "{capital} is the national capital of which country?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "preferSameCol": 2,
+          "clue1": "This nation is in {continent} (currency: {currency}).",
+          "clue2": "The country starts with \"{ans_init}\".",
+          "why": "{capital} is the capital of {name} ({continent}).",
+          "irtOffset": -0.2
+        },
+        {
+          "id": "scn_cur",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "What is the official currency of {name} (capital: {capital})?",
+          "answerCol": 3,
+          "distractorCol": 3,
+          "clue1": "{name} is located in {continent}.",
+          "clue2": "The currency starts with \"{ans_init}\".",
+          "why": "The official currency of {name} is the {currency}.",
+          "irtOffset": 0.05
+        },
+        {
+          "id": "scn_cont",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "On which continent or world region is {name} (capital: {capital}) located?",
+          "answerCol": 2,
+          "distractorCol": 2,
+          "clue1": "Its capital is {capital}.",
+          "clue2": "The region starts with \"{ans_init}\".",
+          "why": "{name} (capital: {capital}) is in {continent}.",
+          "irtOffset": -0.35
+        },
+        {
+          "id": "scn_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "{capital} is the official capital of {name}.",
+          "falsePrompt": "{fake} is the official capital of {name}.",
+          "fakeCol": 1,
+          "clue1": "{name} is in {continent}.",
+          "whyTrue": "True! {capital} is the capital of {name}.",
+          "whyFalse": "False! The capital of {name} is {capital}, not {fake}.",
+          "irtOffset": -0.3
+        }
+      ]
+    },
+    "soc_university": {
+      "l0Domain": 8,
+      "l1Category": "Universities & Institutions",
+      "glyphHint": "scales",
+      "cols": [
+        "name",
+        "country",
+        "year",
+        "irt"
+      ],
+      "poolCols": [
+        1
+      ],
+      "angles": [
+        {
+          "id": "su_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "In which country is {name} (founded {year}) located?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "This university was founded in {year}.",
+          "clue2": "The country starts with \"{ans_init}\".",
+          "why": "{name} (founded {year}) is located in {country}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "su_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these universities is located in {country}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 1,
+          "clue1": "It was founded in {year}.",
+          "clue2": "Its name begins with \"{ans_init}\".",
+          "why": "{name} (founded {year}) is in {country}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "su_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "{name} (founded {year}) is a university in {country}.",
+          "falsePrompt": "{name} (founded {year}) is a university in {fake}.",
+          "fakeCol": 1,
+          "clue1": "Founded in {year}.",
+          "whyTrue": "True! {name} is located in {country}.",
+          "whyFalse": "False! {name} is in {country}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "su_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year was {name} ({country}) founded?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 55,
+          "minClamp": 850,
+          "maxClamp": 2024,
+          "clue1": "Located in {country}.",
+          "why": "{name} ({country}) was founded in {year}.",
+          "irtOffset": 0.35
+        }
+      ]
+    },
+    "soc_org": {
+      "l0Domain": 8,
+      "l1Category": "Institutions & Media",
+      "glyphHint": "scales",
+      "cols": [
+        "name",
+        "org_type",
+        "year",
+        "country",
+        "irt"
+      ],
+      "poolCols": [
+        1,
+        3
+      ],
+      "angles": [
+        {
+          "id": "so_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "With which country is {name} ({org_type}, founded {year}) associated?",
+          "answerCol": 3,
+          "distractorCol": 3,
+          "clue1": "This {org_type} was founded in {year}.",
+          "clue2": "The country starts with \"{ans_init}\".",
+          "why": "{name} ({org_type}, {year}) is associated with {country}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "so_type",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "What type of institution is {name} ({country}, founded {year})?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "Associated with {country} since {year}.",
+          "clue2": "The category starts with \"{ans_init}\".",
+          "why": "{name} ({country}, {year}) is a {org_type}.",
+          "irtOffset": 0.05
+        },
+        {
+          "id": "so_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these institutions is associated with {country}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 3,
+          "clue1": "It is a {org_type} founded in {year}.",
+          "clue2": "Its name begins with \"{ans_init}\".",
+          "why": "{name} ({org_type}, {year}) is associated with {country}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "so_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "{name} ({org_type}) is associated with {country}.",
+          "falsePrompt": "{name} ({org_type}) is associated with {fake}.",
+          "fakeCol": 3,
+          "clue1": "Founded in {year}.",
+          "whyTrue": "True! {name} ({org_type}) is associated with {country}.",
+          "whyFalse": "False! {name} is associated with {country}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "so_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year was {name} ({country}, {org_type}) founded?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 35,
+          "minClamp": 1600,
+          "maxClamp": 2024,
+          "clue1": "It is a {org_type} in {country}.",
+          "why": "{name} ({country}, {org_type}) was founded in {year}.",
+          "irtOffset": 0.35
+        }
+      ]
+    },
+    "soc_leader": {
+      "l0Domain": 8,
+      "l1Category": "Law, Economics & Society",
+      "glyphHint": "scales",
+      "cols": [
+        "name",
+        "role",
+        "year",
+        "country",
+        "irt"
+      ],
+      "poolCols": [
+        1,
+        3
+      ],
+      "angles": [
+        {
+          "id": "sl_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which country was {role} {name} (b. {year}) associated with?",
+          "answerCol": 3,
+          "distractorCol": 3,
+          "clue1": "Known as a {role}, born in {year}.",
+          "clue2": "The country starts with \"{ans_init}\".",
+          "why": "{name} ({role}, b. {year}) was associated with {country}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "sl_role",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which public role best describes {name} ({country}, b. {year})?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "Born in {year} ({country}).",
+          "clue2": "The role starts with \"{ans_init}\".",
+          "why": "{name} ({country}, b. {year}) was known primarily as a {role}.",
+          "irtOffset": 0.05
+        },
+        {
+          "id": "sl_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "{role} {name} (born {year}) was associated with {country}.",
+          "falsePrompt": "{role} {name} (born {year}) was associated with {fake}.",
+          "fakeCol": 3,
+          "clue1": "Place {name} ({role}) in their nation.",
+          "whyTrue": "True! {name} was associated with {country}.",
+          "whyFalse": "False! {name} was associated with {country}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "sl_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year was {role} {name} ({country}) born?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 38,
+          "minClamp": 1650,
+          "maxClamp": 2000,
+          "clue1": "A {role} associated with {country}.",
+          "why": "{name} ({role}, {country}) was born in {year}.",
+          "irtOffset": 0.35
+        }
+      ]
+    },
+    "food_item": {
+      "l0Domain": 9,
+      "l1Category": "World Cuisine & Drinks",
+      "glyphHint": "cup",
+      "cols": [
+        "name",
+        "food_type",
+        "country",
+        "irt"
+      ],
+      "poolCols": [
+        1,
+        2
+      ],
+      "angles": [
+        {
+          "id": "fi_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which country is the traditional origin of {name} ({food_type})?",
+          "answerCol": 2,
+          "distractorCol": 2,
+          "clue1": "{name} is a traditional {food_type}.",
+          "clue2": "The country starts with \"{ans_init}\".",
+          "why": "{name} ({food_type}) originated in {country}.",
+          "irtOffset": -0.05
+        },
+        {
+          "id": "fi_type",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "What culinary category best describes {name} from {country}?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "It is a culinary specialty from {country}.",
+          "clue2": "The category begins with \"{ans_init}\".",
+          "why": "{name} ({country}) is a {food_type}.",
+          "irtOffset": 0.05
+        },
+        {
+          "id": "fi_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these culinary specialties originated in {country}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 2,
+          "clue1": "It is classified as a {food_type}.",
+          "clue2": "Its name starts with \"{ans_init}\".",
+          "why": "{name} ({food_type}) originated in {country}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "fi_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "{name} ({food_type}) traditionally originated in {country}.",
+          "falsePrompt": "{name} ({food_type}) traditionally originated in {fake}.",
+          "fakeCol": 2,
+          "clue1": "Match {name} ({food_type}) to its culinary homeland.",
+          "whyTrue": "True! {name} ({food_type}) originated in {country}.",
+          "whyFalse": "False! {name} originated in {country}, not {fake}.",
+          "irtOffset": -0.15
+        }
+      ]
+    },
+    "food_brand": {
+      "l0Domain": 9,
+      "l1Category": "Craft, Fashion & Houses",
+      "glyphHint": "cup",
+      "cols": [
+        "name",
+        "brand_type",
+        "year",
+        "country",
+        "irt"
+      ],
+      "poolCols": [
+        1,
+        3
+      ],
+      "angles": [
+        {
+          "id": "fb_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "In which country was the {brand_type} {name} (founded {year}) established?",
+          "answerCol": 3,
+          "distractorCol": 3,
+          "clue1": "This {brand_type} dates back to {year}.",
+          "clue2": "The country starts with \"{ans_init}\".",
+          "why": "{name} ({brand_type}, founded {year}) comes from {country}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "fb_type",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "What craft or design category best describes {name} ({country}, est. {year})?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "Founded in {country} in {year}.",
+          "clue2": "The category begins with \"{ans_init}\".",
+          "why": "{name} ({country}, {year}) is a {brand_type}.",
+          "irtOffset": 0.05
+        },
+        {
+          "id": "fb_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these culinary or design houses originated in {country}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 3,
+          "clue1": "A {brand_type} founded in {year}.",
+          "clue2": "Its name begins with \"{ans_init}\".",
+          "why": "{name} ({brand_type}, {year}) originated in {country}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "fb_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "The {brand_type} {name} originated in {country}.",
+          "falsePrompt": "The {brand_type} {name} originated in {fake}.",
+          "fakeCol": 3,
+          "clue1": "Established in {year}.",
+          "whyTrue": "True! {name} ({brand_type}) originated in {country}.",
+          "whyFalse": "False! {name} originated in {country}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "fb_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year was the {brand_type} {name} ({country}) founded?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 35,
+          "minClamp": 1600,
+          "maxClamp": 2024,
+          "clue1": "Established in {country} ({brand_type}).",
+          "why": "{name} ({country}, {brand_type}) was founded in {year}.",
+          "irtOffset": 0.35
+        }
+      ]
+    },
+    "food_maker": {
+      "l0Domain": 9,
+      "l1Category": "Chefs & Designers",
+      "glyphHint": "cup",
+      "cols": [
+        "name",
+        "craft",
+        "year",
+        "country",
+        "irt"
+      ],
+      "poolCols": [
+        1,
+        3
+      ],
+      "angles": [
+        {
+          "id": "fm_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which country was {craft} {name} (b. {year}) associated with?",
+          "answerCol": 3,
+          "distractorCol": 3,
+          "clue1": "Born in {year}, renowned as a {craft}.",
+          "clue2": "The country starts with \"{ans_init}\".",
+          "why": "{name} ({craft}, b. {year}) was associated with {country}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "fm_craft",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which culinary or design field made {name} ({country}, b. {year}) famous?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "Born in {year} ({country}).",
+          "clue2": "The field begins with \"{ans_init}\".",
+          "why": "{name} ({country}) was renowned as a {craft}.",
+          "irtOffset": 0.05
+        },
+        {
+          "id": "fm_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "{craft} {name} (born {year}) was associated with {country}.",
+          "falsePrompt": "{craft} {name} (born {year}) was associated with {fake}.",
+          "fakeCol": 3,
+          "clue1": "Match {name} ({craft}) to their country.",
+          "whyTrue": "True! {name} was associated with {country}.",
+          "whyFalse": "False! {name} was associated with {country}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "fm_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year was {craft} {name} ({country}) born?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 32,
+          "minClamp": 1750,
+          "maxClamp": 2000,
+          "clue1": "A {craft} associated with {country}.",
+          "why": "{name} ({craft}, {country}) was born in {year}.",
+          "irtOffset": 0.35
+        }
+      ]
+    },
+    "lit_work": {
+      "l0Domain": 10,
+      "l1Category": "Classic & Modern Literature",
+      "glyphHint": "book",
+      "cols": [
+        "title",
+        "author",
+        "year",
+        "lang",
+        "irt"
+      ],
+      "poolCols": [
+        3
+      ],
+      "angles": [
+        {
+          "id": "lw_auth",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Who wrote the {year} literary work \"{title}\"?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "Originally written in {lang} and published in {year}.",
+          "clue2": "The author's name starts with \"{ans_init}\".",
+          "why": "{author} wrote \"{title}\" ({year}, {lang}).",
+          "irtOffset": -0.05
+        },
+        {
+          "id": "lw_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these literary works was written by {author}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 1,
+          "clue1": "Published in {year} (original language: {lang}).",
+          "clue2": "Its title begins with \"{ans_init}\".",
+          "why": "{author} wrote \"{title}\" ({year}, {lang}).",
+          "irtOffset": 0.1
+        },
+        {
+          "id": "lw_lang",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "In which language was \"{title}\" ({year}) by {author} originally written?",
+          "answerCol": 3,
+          "distractorCol": 3,
+          "clue1": "Written by {author} and published in {year}.",
+          "clue2": "The language begins with \"{ans_init}\".",
+          "why": "\"{title}\" ({year}) by {author} was originally written in {lang}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "lw_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "{author} wrote the {year} work \"{title}\" ({lang}).",
+          "falsePrompt": "{fake} wrote the {year} work \"{title}\" ({lang}).",
+          "fakeCol": 1,
+          "clue1": "Originally published in {lang} in {year}.",
+          "whyTrue": "True! {author} wrote \"{title}\" ({year}).",
+          "whyFalse": "False! {author} (not {fake}) wrote \"{title}\".",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "lw_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year was \"{title}\" by {author} first published?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 35,
+          "minClamp": 1000,
+          "maxClamp": 2025,
+          "clue1": "{author} originally wrote it in {lang}.",
+          "why": "\"{title}\" ({lang}) by {author} was published in {year}.",
+          "irtOffset": 0.3
+        }
+      ]
+    },
+    "lit_author": {
+      "l0Domain": 10,
+      "l1Category": "Authors & Philosophers",
+      "glyphHint": "book",
+      "cols": [
+        "name",
+        "role",
+        "year",
+        "country",
+        "irt"
+      ],
+      "poolCols": [
+        1,
+        3
+      ],
+      "angles": [
+        {
+          "id": "la_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which country was the {role} {name} (b. {year}) associated with?",
+          "answerCol": 3,
+          "distractorCol": 3,
+          "clue1": "Born in {year}, renowned as a {role}.",
+          "clue2": "The country starts with \"{ans_init}\".",
+          "why": "{name} ({role}, b. {year}) was associated with {country}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "la_role",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which literary or philosophical role best describes {name} ({country}, b. {year})?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "Born in {year} ({country}).",
+          "clue2": "The role starts with \"{ans_init}\".",
+          "why": "{name} ({country}, b. {year}) was best known as a {role}.",
+          "irtOffset": 0.1
+        },
+        {
+          "id": "la_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "{role} {name} (born {year}) was associated with {country}.",
+          "falsePrompt": "{role} {name} (born {year}) was associated with {fake}.",
+          "fakeCol": 3,
+          "clue1": "Connect {name} ({role}) to their literary tradition.",
+          "whyTrue": "True! {name} was associated with {country}.",
+          "whyFalse": "False! {name} was associated with {country}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "la_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year was the {role} {name} ({country}) born?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 42,
+          "minClamp": 1200,
+          "maxClamp": 2000,
+          "clue1": "A {role} associated with {country}.",
+          "why": "{name} ({role}, {country}) was born in {year}.",
+          "irtOffset": 0.35
+        }
+      ]
+    },
+    "lit_myth": {
+      "l0Domain": 10,
+      "l1Category": "Mythology & Legend",
+      "glyphHint": "book",
+      "cols": [
+        "name",
+        "tradition",
+        "mtype",
+        "irt"
+      ],
+      "poolCols": [
+        1,
+        2
+      ],
+      "angles": [
+        {
+          "id": "lm_trad",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "To which mythological tradition does {name} ({mtype}) belong?",
+          "answerCol": 1,
+          "distractorCol": 1,
+          "clue1": "{name} is a {mtype}.",
+          "clue2": "The tradition starts with \"{ans_init}\".",
+          "why": "{name} ({mtype}) belongs to {tradition}.",
+          "irtOffset": -0.05
+        },
+        {
+          "id": "lm_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these figures or creatures belongs to {tradition}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 1,
+          "clue1": "Described as a {mtype}.",
+          "clue2": "Its name begins with \"{ans_init}\".",
+          "why": "{name} ({mtype}) belongs to {tradition}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "lm_type",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "In {tradition}, what kind of being is {name}?",
+          "answerCol": 2,
+          "distractorCol": 2,
+          "clue1": "Part of {tradition}.",
+          "clue2": "The category starts with \"{ans_init}\".",
+          "why": "In {tradition}, {name} is a {mtype}.",
+          "irtOffset": 0.05
+        },
+        {
+          "id": "lm_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "In mythology, {name} ({mtype}) belongs to {tradition}.",
+          "falsePrompt": "In mythology, {name} ({mtype}) belongs to {fake}.",
+          "fakeCol": 1,
+          "clue1": "Recall the mythic pantheon of {name}.",
+          "whyTrue": "True! {name} belongs to {tradition}.",
+          "whyFalse": "False! {name} belongs to {tradition}, not {fake}.",
+          "irtOffset": -0.15
+        }
+      ]
+    },
+    "math_person": {
+      "l0Domain": 11,
+      "l1Category": "History of Mathematics",
+      "glyphHint": "sigma",
+      "cols": [
+        "name",
+        "field",
+        "year",
+        "country",
+        "irt"
+      ],
+      "poolCols": [
+        1,
+        3
+      ],
+      "angles": [
+        {
+          "id": "mp_country",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which country was {field} {name} (b. {year}) associated with?",
+          "answerCol": 3,
+          "distractorCol": 3,
+          "clue1": "Born in {year}, renowned as a {field}.",
+          "clue2": "The country starts with \"{ans_init}\".",
+          "why": "{name} ({field}, b. {year}) was associated with {country}.",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "mp_rev",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "Which of these mathematicians or logicians was associated with {country}?",
+          "answerCol": 0,
+          "distractorCol": 0,
+          "avoidSameCol": 3,
+          "clue1": "Born in {year} ({field}).",
+          "clue2": "Their name starts with \"{ans_init}\".",
+          "why": "{name} ({field}, b. {year}) was associated with {country}.",
+          "irtOffset": 0.15
+        },
+        {
+          "id": "mp_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "{field} {name} (born {year}) was associated with {country}.",
+          "falsePrompt": "{field} {name} (born {year}) was associated with {fake}.",
+          "fakeCol": 3,
+          "clue1": "Place {name} ({field}) in their country.",
+          "whyTrue": "True! {name} was associated with {country}.",
+          "whyFalse": "False! {name} was associated with {country}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "mp_year",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "In what year was {field} {name} ({country}) born?",
+          "exactCol": 2,
+          "unit": "CE",
+          "step": 1,
+          "pad": 45,
+          "minClamp": 1400,
+          "maxClamp": 2000,
+          "clue1": "A {field} from {country}.",
+          "why": "{name} ({field}, {country}) was born in {year}.",
+          "irtOffset": 0.35
+        }
+      ]
+    },
+    "math_num": {
+      "l0Domain": 11,
+      "l1Category": "Math & Logic Brainteasers",
+      "glyphHint": "sigma",
+      "cols": [
+        "stmt",
+        "ans",
+        "d1",
+        "d2",
+        "d3",
+        "cat",
+        "unit",
+        "irt"
+      ],
+      "poolCols": [
+        5,
+        6
+      ],
+      "angles": [
+        {
+          "id": "mn_mc",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "{stmt}?",
+          "answerCol": 1,
+          "inlineDistCols": [
+            2,
+            3,
+            4
+          ],
+          "clue1": "Category: {cat}. Double-check the pattern carefully.",
+          "clue2": "Watch out for off-by-one traps in {cat}.",
+          "why": "Exact answer: {ans} ({cat}).",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "mn_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "Check this {cat} result: {stmt}? Answer: {ans}.",
+          "falsePrompt": "Check this {cat} result: {stmt}? Answer: {fake}.",
+          "inlineFakeCol": 2,
+          "clue1": "Verify the exact value for this {cat} problem.",
+          "whyTrue": "True! The exact answer is {ans}.",
+          "whyFalse": "False! The exact answer is {ans}, not {fake}.",
+          "irtOffset": -0.15
+        },
+        {
+          "id": "mn_est",
+          "archetype": "CALIBRATOR_DIAL",
+          "prompt": "Estimate the exact value: {stmt}?",
+          "exactCol": 1,
+          "unitCol": 6,
+          "step": 0,
+          "pad": 0,
+          "minClamp": -1000,
+          "maxClamp": 1000000,
+          "clue1": "Category: {cat}. Narrow down the magnitude first.",
+          "why": "Exact value: {ans} ({cat}).",
+          "irtOffset": 0.25
+        }
+      ]
+    },
+    "math_word": {
+      "l0Domain": 11,
+      "l1Category": "Ciphers, Bases & Logic",
+      "glyphHint": "sigma",
+      "cols": [
+        "stmt",
+        "ans",
+        "d1",
+        "d2",
+        "d3",
+        "cat",
+        "irt"
+      ],
+      "poolCols": [
+        5
+      ],
+      "angles": [
+        {
+          "id": "mw_mc",
+          "archetype": "SIGHTLINE_LOCK",
+          "prompt": "{stmt}?",
+          "answerCol": 1,
+          "inlineDistCols": [
+            2,
+            3,
+            4
+          ],
+          "clue1": "Category: {cat}. Work through each symbol step by step.",
+          "clue2": "The answer begins with \"{ans_init}\".",
+          "why": "Verified solution: {ans} ({cat}).",
+          "irtOffset": 0.0
+        },
+        {
+          "id": "mw_tf",
+          "archetype": "GAUNTLET_SHATTER",
+          "truePrompt": "Check this {cat} puzzle: {stmt}? Solution: {ans}.",
+          "falsePrompt": "Check this {cat} puzzle: {stmt}? Solution: {fake}.",
+          "inlineFakeCol": 2,
+          "clue1": "Check the first and last characters carefully.",
+          "whyTrue": "True! The verified solution is {ans}.",
+          "whyFalse": "False! The solution is {ans}, not {fake}.",
+          "irtOffset": -0.15
+        }
+      ]
+    }
+  }
+}
