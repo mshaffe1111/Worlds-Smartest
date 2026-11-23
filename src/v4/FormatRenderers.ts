@@ -742,9 +742,9 @@ export class FormatQuestionStageRenderer {
           </div>
         </div>
         <div class="ws4-action-footer">
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:nowrap;min-width:0;">
             <span class="ws4-pill ws4-pill-gold" data-ws4-match-count>0 / 4 Paired</span>
-            <button type="button" class="ws4-btn ws4-btn-ghost ws4-btn-sm" data-ws4-match-clear>Clear Links</button>
+            <button type="button" class="ws4-btn ws4-btn-ghost ws4-btn-sm" data-ws4-match-clear>Clear</button>
           </div>
           <button type="button" class="ws4-btn ws4-btn-gold ws4-btn-lg" data-ws4-match-lock disabled>
             <span>LOCK 4 MATCHES</span>
@@ -1144,7 +1144,7 @@ export class FormatQuestionStageRenderer {
         </div>
         <div class="ws4-sort-list" data-ws4-sort-list></div>
         <div class="ws4-action-footer">
-          <span class="ws4-pill">Drag cards or tap up/down to swap</span>
+          <span class="ws4-pill">Drag or tap ▲ / ▼</span>
           <button type="button" class="ws4-btn ws4-btn-gold ws4-btn-lg" data-ws4-sort-lock>
             <span>LOCK ORDER</span>
           </button>

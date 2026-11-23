@@ -351,10 +351,10 @@ interface WheelSliceVisualSpec {
 const WHEEL_SLICES_V4: readonly WheelSliceVisualSpec[] = [
   { outcome: 'DOUBLE_POT', shortLabel: '2X NEXT TILE', colorHex: '#f5c451', textHex: '#181002' },
   { outcome: 'FREE_WEDGE_SHARD', shortLabel: 'FREE WEDGE', colorHex: '#b47cff', textHex: '#140826' },
-  { outcome: 'STEAL_RIVAL_POINTS', shortLabel: 'STEAL +300', colorHex: '#f26498', textHex: '#210510' },
+  { outcome: 'STEAL_RIVAL_POINTS', shortLabel: 'STEAL +250', colorHex: '#f26498', textHex: '#210510' },
   { outcome: 'RECHARGE_LIFELINES', shortLabel: 'REFILL LIFE', colorHex: '#34d993', textHex: '#041f13' },
   { outcome: 'SHATTER_ALL_LOCKS', shortLabel: 'CRACK LOCKS', colorHex: '#46a8ff', textHex: '#04172b' },
-  { outcome: 'HOT_SEAT_ALL_IN', shortLabel: 'HOT SEAT 3X', colorHex: '#ff9347', textHex: '#240f02' },
+  { outcome: 'HOT_SEAT_ALL_IN', shortLabel: 'ALL-IN 2X', colorHex: '#ff9347', textHex: '#240f02' },
 ];
 
 // ============================================================================
@@ -1243,7 +1243,9 @@ export class GameShowStageUI {
       const y2 = cy + r * Math.sin(a2);
       const tx = cx + r * 0.62 * Math.cos(am);
       const ty = cy + r * 0.62 * Math.sin(am);
-      const labelRot = midDeg + 90;
+      // Keep bottom-half slice labels right-side-up so every wedge reads effortlessly
+      const rawRot = midDeg + 90;
+      const labelRot = midDeg > 15 && midDeg < 165 ? rawRot + 180 : rawRot;
 
       const d = `M ${cx} ${cy} L ${x1.toFixed(1)} ${y1.toFixed(1)} A ${r} ${r} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)} Z`;
 
