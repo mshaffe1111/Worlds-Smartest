@@ -1,11 +1,13 @@
 // ============================================================================
-// WORLD'S SMARTEST — The Briefing Room 3-Level Drill-Down Sheet (2026 Mobile-First)
+// WORLD'S SMARTEST v4.0 — Single Topic & Subcategory Picker (Mobile-First)
 //  • Full-height frameless dark-velvet sheet (zero NinePatch / zero nested boxes)
 //  • Sticky 48px header (`← Back` · Title · `✕`), minimal breadcrumb text trail,
 //    and sleek underline search (`Search 157 topics, e.g. Baseball...`)
 //  • 3-Level Drill-Down: All Domains -> L0 Domain -> L1 Category -> L2 Specialist Topic
-//  • Clean frameless hairline list rows (mobile) / flush 2-col hairline grid (desktop)
-//  • Pinned bottom launch bar: segmented `5 · 10 · 20 · 50 Qs` + `START BRIEFING ▶`
+//  • Clean topic tags & personal accuracy badges (zero raw DB row counters!)
+//  • Persistent v4 Game-Show Toggles: Format (`Variety Mix` | `Classic 4-Choice`)
+//    & Clock Pace (`Standard 28s` | `Relaxed Untimed`)
+//  • Pinned bottom launch bar: difficulty presets + segmented `5 · 10 · 20 · 50` + CTA
 // ============================================================================
 
 import {
@@ -17,6 +19,12 @@ import type { BriefingDifficultyPreset, DomainId, ForgeUniverseCounts } from '..
 import type { StudioAudioEngine } from '../audio/StudioAudioEngine';
 import type { HapticsEngine } from '../audio/HapticsEngine';
 import {
+  WEDGE_CATALOG_V4,
+  domainToWedgeColor,
+  type BriefingFormatModeV4,
+  type TimerPaceModeV4,
+} from '../v4/contracts';
+import {
   buildNormalizedTaxonomyTree,
   countTaxonomyNodes,
   prefetchExternalTaxonomyJson,
@@ -27,18 +35,131 @@ import {
   type TaxonomyL0Domain,
 } from './BriefingTaxonomyAdapter';
 
-export type BriefingLaunchSpec = BriefingDrillLaunchSpec;
+export interface BriefingStartConfig extends BriefingDrillLaunchSpec {
+  formatMode: BriefingFormatModeV4;
+  timerPace: TimerPaceModeV4;
+}
+
+export type BriefingLaunchSpec = BriefingStartConfig;
 
 export interface BriefingModalOpenOptions {
   initialL0DomainId?: DomainId | null;
   initialL1SubcategoryId?: string | null;
   initialL2TopicId?: string | null;
   initialSearchQuery?: string;
+  initialFormatMode?: BriefingFormatModeV4;
+  initialTimerPace?: TimerPaceModeV4;
   forgeInstance?: unknown;
 }
 
 const BRIEFING_SHEET_STYLE_ID = 'ws-sleek-briefing-sheet-css';
 const PREFERRED_DIFFICULTY_STORAGE_KEY = 'ws_preferred_difficulty_v2';
+const PREFERRED_FORMAT_MODE_STORAGE_KEY = 'ws_briefing_format_mode_v4';
+const PREFERRED_TIMER_PACE_STORAGE_KEY = 'ws_briefing_timer_pace_v4';
+const CAREER_ANALYTICS_STORAGE_KEY = 'ws_career_analytics_v1';
+
+export function normalizeBriefingFormatMode(raw?: string | null): BriefingFormatModeV4 {
+  return raw === 'CLASSIC_4_ONLY' ? 'CLASSIC_4_ONLY' : 'VARIETY_MIX';
+}
+
+export function normalizeTimerPaceMode(raw?: string | null): TimerPaceModeV4 {
+  return raw === 'RELAXED_UNTIMED' ? 'RELAXED_UNTIMED' : 'STANDARD';
+}
+
+export function loadPreferredBriefingFormatMode(): BriefingFormatModeV4 {
+  try {
+    if (typeof localStorage === 'undefined') return 'VARIETY_MIX';
+    return normalizeBriefingFormatMode(localStorage.getItem(PREFERRED_FORMAT_MODE_STORAGE_KEY));
+  } catch {
+    return 'VARIETY_MIX';
+  }
+}
+
+export function savePreferredBriefingFormatMode(mode: BriefingFormatModeV4): void {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(PREFERRED_FORMAT_MODE_STORAGE_KEY, mode);
+    }
+  } catch {
+    // Ignore storage quota / private mode restrictions
+  }
+}
+
+export function loadPreferredTimerPaceMode(): TimerPaceModeV4 {
+  try {
+    if (typeof localStorage === 'undefined') return 'STANDARD';
+    return normalizeTimerPaceMode(localStorage.getItem(PREFERRED_TIMER_PACE_STORAGE_KEY));
+  } catch {
+    return 'STANDARD';
+  }
+}
+
+export function savePreferredTimerPaceMode(pace: TimerPaceModeV4): void {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(PREFERRED_TIMER_PACE_STORAGE_KEY, pace);
+    }
+  } catch {
+    // Ignore storage quota / private mode restrictions
+  }
+}
+
+interface PersonalTopicAccuracyLookup {
+  domainAccPct: Record<number, { pct: number; total: number }>;
+  subcatAccPct: Record<string, { pct: number; total: number }>;
+}
+
+function readPersonalTopicAccuracyLookup(): PersonalTopicAccuracyLookup {
+  const domainAccPct: Record<number, { pct: number; total: number }> = {};
+  const subcatAccPct: Record<string, { pct: number; total: number }> = {};
+  try {
+    if (typeof localStorage === 'undefined') return { domainAccPct, subcatAccPct };
+    const raw = localStorage.getItem(CAREER_ANALYTICS_STORAGE_KEY);
+    if (!raw) return { domainAccPct, subcatAccPct };
+    const parsed = JSON.parse(raw) as {
+      byDomain?: Array<{ right?: number; wrong?: number }>;
+      events?: Array<{ subcatLabel?: string; correct?: boolean }>;
+    } | null;
+    if (!parsed || typeof parsed !== 'object') return { domainAccPct, subcatAccPct };
+
+    if (Array.isArray(parsed.byDomain)) {
+      parsed.byDomain.forEach((entry, idx) => {
+        const right = Math.max(0, Math.floor(Number(entry?.right) || 0));
+        const wrong = Math.max(0, Math.floor(Number(entry?.wrong) || 0));
+        const total = right + wrong;
+        if (total > 0) {
+          domainAccPct[idx] = { pct: Math.round((right / total) * 100), total };
+        }
+      });
+    }
+
+    if (Array.isArray(parsed.events)) {
+      const accum = new Map<string, { right: number; total: number }>();
+      for (const ev of parsed.events) {
+        const key = typeof ev?.subcatLabel === 'string' ? ev.subcatLabel.trim().toLowerCase() : '';
+        if (!key) continue;
+        const rec = accum.get(key) ?? { right: 0, total: 0 };
+        rec.total += 1;
+        if (ev.correct) rec.right += 1;
+        accum.set(key, rec);
+      }
+      for (const [key, rec] of accum.entries()) {
+        if (rec.total > 0) {
+          subcatAccPct[key] = { pct: Math.round((rec.right / rec.total) * 100), total: rec.total };
+        }
+      }
+    }
+  } catch {
+    // Ignore storage read issues cleanly
+  }
+  return { domainAccPct, subcatAccPct };
+}
+
+function accuracyToneClass(pct: number): string {
+  if (pct >= 75) return 'is-acc-strong';
+  if (pct >= 50) return 'is-acc-steady';
+  return 'is-acc-weak';
+}
 
 function loadPreferredDifficulty(): BriefingDifficultyPreset {
   try {
@@ -67,10 +188,6 @@ function escapeHtml(text: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
-}
-
-function formatQuestionCount(n: number): string {
-  return Math.max(0, Math.round(n)).toLocaleString('en-US');
 }
 
 function ensureBriefingSheetStyles(): void {
@@ -468,13 +585,37 @@ function ensureBriefingSheetStyles(): void {
       margin-left: 6px;
     }
 
-    .ws-briefing-row-count {
+    .ws-briefing-row-count,
+    .ws-briefing-row-badge {
       font-family: var(--font-mono, ui-monospace, monospace);
-      font-size: 11.5px;
+      font-size: 11px;
       font-weight: 600;
       font-variant-numeric: tabular-nums;
       color: rgba(242, 207, 126, 0.88);
       white-space: nowrap;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.055);
+    }
+
+    .ws-briefing-row-badge.is-acc-strong {
+      color: #67ebb8;
+      background: rgba(57, 212, 154, 0.14);
+    }
+
+    .ws-briefing-row-badge.is-acc-steady {
+      color: var(--gold-bright, #f2cf7e);
+      background: rgba(242, 207, 126, 0.14);
+    }
+
+    .ws-briefing-row-badge.is-acc-weak {
+      color: #ff9aa6;
+      background: rgba(224, 82, 99, 0.15);
+    }
+
+    .ws-briefing-row-badge.is-topic-tag {
+      color: rgba(246, 242, 233, 0.74);
+      background: rgba(255, 255, 255, 0.055);
     }
 
     .ws-briefing-row-chevron {
@@ -642,6 +783,79 @@ function ensureBriefingSheetStyles(): void {
       font-weight: 700;
     }
 
+    .ws-briefing-v4-toggles {
+      display: grid;
+      grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.82fr);
+      gap: 6px;
+      width: 100%;
+    }
+
+    .ws-briefing-toggle-rail {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2px;
+      padding: 2px;
+      border-radius: 9px;
+      background: rgba(255, 255, 255, 0.045);
+      border: none;
+      min-width: 0;
+    }
+
+    .ws-briefing-toggle-btn {
+      min-height: 36px;
+      min-width: 0;
+      padding: 0 6px;
+      border: none;
+      border-radius: 7px;
+      background: transparent;
+      color: rgba(246, 242, 233, 0.72);
+      font-family: var(--font-sans, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: center;
+      transition: background 0.14s ease, color 0.14s ease;
+    }
+
+    .ws-briefing-toggle-btn:hover {
+      color: var(--ivory-primary, #f6f2e9);
+    }
+
+    .ws-briefing-toggle-btn.is-active {
+      background: rgba(242, 207, 126, 0.2);
+      color: var(--gold-bright, #f2cf7e);
+    }
+
+    .ws-briefing-toggle-btn.is-pace-active {
+      background: rgba(86, 212, 245, 0.18);
+      color: #8ee5ff;
+    }
+
+    @media (max-width: 399px) {
+      .ws-briefing-v4-toggles {
+        gap: 4px;
+      }
+      .ws-briefing-toggle-btn {
+        font-size: 10px;
+        padding: 0 4px;
+        letter-spacing: 0;
+      }
+    }
+
+    @media (min-width: 640px) {
+      .ws-briefing-v4-toggles {
+        grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+        gap: 8px;
+      }
+      .ws-briefing-toggle-btn {
+        font-size: 11.5px;
+        padding: 0 10px;
+      }
+    }
+
     .ws-briefing-footer-main {
       display: flex;
       flex-direction: column;
@@ -786,25 +1000,27 @@ function ensureBriefingSheetStyles(): void {
       }
       .ws-briefing-footer-top {
         display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
       }
       .ws-briefing-target-line {
-        flex: 0 1 200px;
-        width: auto;
-        min-width: 0;
-        justify-content: flex-start;
+        display: none;
       }
       .ws-briefing-diff-strip {
-        flex: 1 1 auto;
-        width: auto;
-        max-width: 540px;
+        width: 100%;
       }
       .ws-briefing-diff-btn {
-        min-height: 32px;
+        min-height: 28px;
         padding: 0 8px;
+        font-size: 10.5px;
+      }
+      .ws-briefing-v4-toggles {
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+        gap: 6px;
+      }
+      .ws-briefing-toggle-btn {
+        min-height: 28px;
         font-size: 10.5px;
       }
       .ws-briefing-diff-indicator {
@@ -846,7 +1062,7 @@ export class BriefingCategoriesModal {
 
   public open(
     counts: ForgeUniverseCounts,
-    onLaunch: (spec: BriefingDrillLaunchSpec) => void,
+    onLaunch: (spec: BriefingStartConfig) => void,
     onClose?: () => void,
     opts?: BriefingModalOpenOptions,
   ): void {
@@ -859,7 +1075,43 @@ export class BriefingCategoriesModal {
     let activeL2Id: string | null = opts?.initialL2TopicId ?? null;
     let searchQuery = opts?.initialSearchQuery ?? '';
     let difficulty: BriefingDifficultyPreset = loadPreferredDifficulty();
+    let formatMode: BriefingFormatModeV4 = opts?.initialFormatMode
+      ? normalizeBriefingFormatMode(opts.initialFormatMode)
+      : loadPreferredBriefingFormatMode();
+    let timerPace: TimerPaceModeV4 = opts?.initialTimerPace
+      ? normalizeTimerPaceMode(opts.initialTimerPace)
+      : loadPreferredTimerPaceMode();
     let roundCount: BriefingRoundCount = 10;
+    const personalAcc = readPersonalTopicAccuracyLookup();
+
+    const renderDomainBadgeHtml = (domainId: DomainId, fallbackTag: string): string => {
+      const stat = personalAcc.domainAccPct[domainId];
+      if (stat && stat.total > 0) {
+        return `<span class="ws-briefing-row-badge ${accuracyToneClass(stat.pct)}">${stat.pct}% Acc</span>`;
+      }
+      return `<span class="ws-briefing-row-badge is-topic-tag">${escapeHtml(fallbackTag)}</span>`;
+    };
+
+    const renderTopicBadgeHtml = (
+      labelCandidates: readonly string[],
+      fallbackTag: string,
+    ): string => {
+      let totalRight = 0;
+      let totalAns = 0;
+      for (const rawLbl of labelCandidates) {
+        const key = rawLbl.trim().toLowerCase();
+        const rec = personalAcc.subcatAccPct[key];
+        if (rec && rec.total > 0) {
+          totalRight += Math.round((rec.pct / 100) * rec.total);
+          totalAns += rec.total;
+        }
+      }
+      if (totalAns > 0) {
+        const pct = Math.round((totalRight / totalAns) * 100);
+        return `<span class="ws-briefing-row-badge ${accuracyToneClass(pct)}">${pct}% Acc</span>`;
+      }
+      return `<span class="ws-briefing-row-badge is-topic-tag">${escapeHtml(fallbackTag)}</span>`;
+    };
 
     const backdrop = document.createElement('div');
     backdrop.className = 'ws-modal-backdrop ws-briefing-modal ws-velvet-backdrop';
@@ -867,7 +1119,7 @@ export class BriefingCategoriesModal {
     backdrop.setAttribute('aria-modal', 'true');
     backdrop.setAttribute('aria-label', 'The Briefing Room 3-Level Category & Subcategory Picker');
 
-    const getCurrentSelection = (): BriefingDrillLaunchSpec & { poolCount: number } => {
+    const getCurrentSelection = (): BriefingStartConfig => {
       const domNode =
         activeL0 !== null ? tree.find((d) => d.domainId === activeL0) ?? null : null;
       const l1Node =
@@ -894,7 +1146,8 @@ export class BriefingCategoriesModal {
           topicKeywords: l2Node.keywords,
           difficulty,
           count: roundCount,
-          poolCount: l2Node.verifiedCount,
+          formatMode,
+          timerPace,
         };
       }
       if (domNode && l1Node) {
@@ -907,7 +1160,8 @@ export class BriefingCategoriesModal {
           selectionLabel: sameAsL0 ? `${domNode.name} › ${l1Node.name}` : `${domNode.shortName} › ${l1Node.name}`,
           difficulty,
           count: roundCount,
-          poolCount: l1Node.verifiedCount,
+          formatMode,
+          timerPace,
         };
       }
       if (domNode) {
@@ -917,20 +1171,17 @@ export class BriefingCategoriesModal {
           selectionLabel: domNode.name,
           difficulty,
           count: roundCount,
-          poolCount: domNode.verifiedCount,
+          formatMode,
+          timerPace,
         };
       }
-      const playableTotal = Math.max(
-        1000129,
-        counts.totalPlayableCount,
-        countTaxonomyNodes(tree).totalVerified,
-      );
       return {
         domains: [],
         selectionLabel: 'Global Mix (All 12 Domains)',
         difficulty,
         count: roundCount,
-        poolCount: playableTotal,
+        formatMode,
+        timerPace,
       };
     };
 
@@ -1020,7 +1271,6 @@ export class BriefingCategoriesModal {
 
     const renderDynamicZones = () => {
       const totals = countTaxonomyNodes(tree);
-      const playableTotal = Math.max(1000129, counts.totalPlayableCount, totals.totalVerified);
       searchInput.placeholder = `Search ${totals.l2Count} topics, e.g. Baseball...`;
       searchClearBtn.style.display = searchQuery.length > 0 ? 'inline-flex' : 'none';
 
@@ -1160,6 +1410,11 @@ export class BriefingCategoriesModal {
                     (h.kind === 'L2' ? activeL2Id === h.l2Id : activeL2Id === null);
                   const title = stripYearCommas(h.l2Name ?? h.l1Name);
                   const crumb = stripYearCommas(h.breadcrumb);
+                  const wedgeLabel = WEDGE_CATALOG_V4[domainToWedgeColor(h.domainId)].shortLabel;
+                  const hitBadgeHtml = renderTopicBadgeHtml(
+                    [h.l2Name ?? '', h.l1Name],
+                    wedgeLabel,
+                  );
                   return `
                     <button
                       type="button"
@@ -1174,7 +1429,7 @@ export class BriefingCategoriesModal {
                         <div class="ws-briefing-row-sub">${escapeHtml(crumb)}</div>
                       </div>
                       <div class="ws-briefing-row-meta">
-                        <span class="ws-briefing-row-count">${formatQuestionCount(h.verifiedCount)} Qs</span>
+                        ${hitBadgeHtml}
                         <span class="ws-briefing-row-chevron" aria-hidden="true">›</span>
                       </div>
                     </button>
@@ -1201,7 +1456,7 @@ export class BriefingCategoriesModal {
         // L0: 12 Sovereign Domains
         resultsEl.innerHTML = `
           <div class="ws-briefing-section-label">
-            ${totals.l0Count} Domains · ${totals.l2Count} Topics · ${formatQuestionCount(playableTotal)} Playable Qs
+            ${totals.l0Count} Domains · ${totals.l1Count} Categories · ${totals.l2Count} Specialist Topics
           </div>
           <div class="ws-sheet-list">
             ${tree
@@ -1210,6 +1465,14 @@ export class BriefingCategoriesModal {
                   .slice(0, 3)
                   .map((s) => stripYearCommas(s.name))
                   .join(' · ');
+                const domainTopicTotal = d.subcategories.reduce(
+                  (sum, c) => sum + c.topics.length,
+                  0,
+                );
+                const badgeHtml = renderDomainBadgeHtml(
+                  d.domainId,
+                  `${domainTopicTotal} Topics`,
+                );
                 return `
                   <button type="button" class="ws-sheet-row" data-pick-l0="${d.domainId}">
                     <img class="ws-briefing-row-icon" src="${escapeHtml(d.medallionUrl)}" alt="" />
@@ -1218,7 +1481,7 @@ export class BriefingCategoriesModal {
                       <div class="ws-briefing-row-sub">${escapeHtml(subPreview)}</div>
                     </div>
                     <div class="ws-briefing-row-meta">
-                      <span class="ws-briefing-row-count">${formatQuestionCount(d.verifiedCount)} Qs</span>
+                      ${badgeHtml}
                       <span class="ws-briefing-row-chevron" aria-hidden="true">›</span>
                     </div>
                   </button>
@@ -1241,9 +1504,12 @@ export class BriefingCategoriesModal {
         });
       } else if (!l1Node) {
         // L1: Categories inside selected L0 Domain (e.g. Sports & Games -> Sports)
+        const domAcc = personalAcc.domainAccPct[domNode.domainId];
+        const domAccSuffix =
+          domAcc && domAcc.total > 0 ? ` · ${domAcc.pct}% Your Avg` : '';
         resultsEl.innerHTML = `
           <div class="ws-briefing-section-label">
-            ${escapeHtml(stripYearCommas(domNode.name))} · ${domNode.subcategories.length} Categories · ${formatQuestionCount(domNode.verifiedCount)} Qs
+            ${escapeHtml(stripYearCommas(domNode.name))} · ${domNode.subcategories.length} Categories${escapeHtml(domAccSuffix)}
           </div>
           <div class="ws-sheet-list">
             ${domNode.subcategories
@@ -1252,6 +1518,11 @@ export class BriefingCategoriesModal {
                   .slice(0, 4)
                   .map((t) => stripYearCommas(t.name))
                   .join(' · ');
+                const fallbackTag = `${c1.topics.length} ${c1.topics.length === 1 ? 'Topic' : 'Topics'}`;
+                const l1BadgeHtml = renderTopicBadgeHtml(
+                  [c1.name, ...c1.topics.map((t) => t.name)],
+                  fallbackTag,
+                );
                 return `
                   <button type="button" class="ws-sheet-row" data-pick-l1="${escapeHtml(c1.id)}">
                     <img class="ws-briefing-row-icon" src="${escapeHtml(domNode.medallionUrl)}" alt="" />
@@ -1260,7 +1531,7 @@ export class BriefingCategoriesModal {
                       <div class="ws-briefing-row-sub">${escapeHtml(leafPreview)}</div>
                     </div>
                     <div class="ws-briefing-row-meta">
-                      <span class="ws-briefing-row-count">${formatQuestionCount(c1.verifiedCount)} Qs</span>
+                      ${l1BadgeHtml}
                       <span class="ws-briefing-row-chevron" aria-hidden="true">›</span>
                     </div>
                   </button>
@@ -1281,7 +1552,11 @@ export class BriefingCategoriesModal {
           });
         });
       } else {
-        // L2: Specialist Topics inside selected L1 Category (e.g. Sports -> Baseball 34,283 Qs)
+        // L2: Specialist Topics inside selected L1 Category (e.g. Sports -> Baseball)
+        const allL1BadgeHtml = renderTopicBadgeHtml(
+          [l1Node.name, ...l1Node.topics.map((t) => t.name)],
+          'Full Mix',
+        );
         resultsEl.innerHTML = `
           <div class="ws-briefing-section-label">
             ${escapeHtml(stripYearCommas(l1Node.name))} · ${l1Node.topics.length} Specialist Topics
@@ -1298,7 +1573,7 @@ export class BriefingCategoriesModal {
                 <div class="ws-briefing-row-sub">Full category mix across ${l1Node.topics.length} topics</div>
               </div>
               <div class="ws-briefing-row-meta">
-                <span class="ws-briefing-row-count">${formatQuestionCount(l1Node.verifiedCount)} Qs</span>
+                ${allL1BadgeHtml}
                 <span class="ws-briefing-row-check" aria-hidden="true">${activeL2Id === null ? '✓' : ''}</span>
               </div>
             </button>
@@ -1308,6 +1583,7 @@ export class BriefingCategoriesModal {
                 const kwSub = t2.keywords?.length
                   ? t2.keywords.slice(0, 4).map(stripYearCommas).join(' · ')
                   : `${stripYearCommas(domNode.shortName)} › ${stripYearCommas(l1Node.name)}`;
+                const l2BadgeHtml = renderTopicBadgeHtml([t2.name], 'Focused');
                 return `
                   <button
                     type="button"
@@ -1320,7 +1596,7 @@ export class BriefingCategoriesModal {
                       <div class="ws-briefing-row-sub">${escapeHtml(kwSub)}</div>
                     </div>
                     <div class="ws-briefing-row-meta">
-                      <span class="ws-briefing-row-count">${formatQuestionCount(t2.verifiedCount)} Qs</span>
+                      ${l2BadgeHtml}
                       <span class="ws-briefing-row-check" aria-hidden="true">${isSelected ? '✓' : ''}</span>
                     </div>
                   </button>
@@ -1374,15 +1650,59 @@ export class BriefingCategoriesModal {
               : 2,
           )
         : '';
+      const formatTag = formatMode === 'VARIETY_MIX' ? 'Variety Mix' : 'Classic 4-Choice';
+      const paceTag = timerPace === 'RELAXED_UNTIMED' ? 'Untimed' : '28s Clock';
+      const formatDetail =
+        formatMode === 'VARIETY_MIX'
+          ? 'Match-4, Sort-4, Imposter, Pinpoint, Escalator & 4-Choice'
+          : 'Pure 4-Choice Trivia';
       const diffIndicatorHtml = tierSpec
-        ? `<span><strong>${escapeHtml(tierSpec.label)}</strong> · ${escapeHtml(tierSpec.subtitle)} (${multStr}x)</span><span>${tierSpec.timerSec}s</span>`
-        : `<span><strong>Auto Adaptive</strong> · Scales Live to Your Meridian Elo</span><span>18s</span>`;
+        ? `<span><strong>${escapeHtml(tierSpec.label)}</strong> · ${escapeHtml(tierSpec.subtitle)} (${multStr}x) · ${escapeHtml(formatDetail)}</span> <span>${paceTag}</span>`
+        : `<span><strong>Auto Adaptive</strong> · ${escapeHtml(formatDetail)}</span> <span>${paceTag}</span>`;
 
       footerEl.innerHTML = `
         <div class="ws-briefing-footer-top">
           <div class="ws-briefing-target-line">
             <span class="ws-briefing-target-name">${escapeHtml(stripYearCommas(sel.selectionLabel))}</span>
-            <span class="ws-briefing-target-qs">${formatQuestionCount(sel.poolCount)} Qs</span>
+            <span class="ws-briefing-target-qs">${escapeHtml(formatTag)} · ${escapeHtml(paceTag)}</span>
+          </div>
+          <div class="ws-briefing-v4-toggles" id="ws-briefing-v4-toggles">
+            <div class="ws-briefing-toggle-rail" role="group" aria-label="Question format mode">
+              <button
+                type="button"
+                data-ws-allow-compact="1"
+                class="ws-briefing-toggle-btn ${formatMode === 'VARIETY_MIX' ? 'is-active' : ''}"
+                data-format-mode="VARIETY_MIX"
+                aria-pressed="${formatMode === 'VARIETY_MIX' ? 'true' : 'false'}"
+                title="Mixes Match-4, Sort-4, Imposter, Pinpoint, Escalator, and 4-Choice"
+              >Variety Mix</button>
+              <button
+                type="button"
+                data-ws-allow-compact="1"
+                class="ws-briefing-toggle-btn ${formatMode === 'CLASSIC_4_ONLY' ? 'is-active' : ''}"
+                data-format-mode="CLASSIC_4_ONLY"
+                aria-pressed="${formatMode === 'CLASSIC_4_ONLY' ? 'true' : 'false'}"
+                title="Pure classic 4-choice trivia questions only"
+              >Classic 4-Choice</button>
+            </div>
+            <div class="ws-briefing-toggle-rail" role="group" aria-label="Timer pace mode">
+              <button
+                type="button"
+                data-ws-allow-compact="1"
+                class="ws-briefing-toggle-btn ${timerPace === 'STANDARD' ? 'is-pace-active' : ''}"
+                data-timer-pace="STANDARD"
+                aria-pressed="${timerPace === 'STANDARD' ? 'true' : 'false'}"
+                title="Generous 28-second game-show clock"
+              >28s Clock</button>
+              <button
+                type="button"
+                data-ws-allow-compact="1"
+                class="ws-briefing-toggle-btn ${timerPace === 'RELAXED_UNTIMED' ? 'is-pace-active' : ''}"
+                data-timer-pace="RELAXED_UNTIMED"
+                aria-pressed="${timerPace === 'RELAXED_UNTIMED' ? 'true' : 'false'}"
+                title="Relaxed mode with zero timer pressure"
+              >Untimed</button>
+            </div>
           </div>
           <div class="ws-briefing-diff-strip" role="group" aria-label="Academic difficulty tier">
             ${diffOptions
@@ -1425,6 +1745,26 @@ export class BriefingCategoriesModal {
         </div>
       `;
 
+      footerEl.querySelectorAll<HTMLButtonElement>('[data-format-mode]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          this.haptics.uiTap();
+          this.audio.playSfx('ui_tap');
+          formatMode = normalizeBriefingFormatMode(btn.dataset.formatMode);
+          savePreferredBriefingFormatMode(formatMode);
+          renderDynamicZones();
+        });
+      });
+
+      footerEl.querySelectorAll<HTMLButtonElement>('[data-timer-pace]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          this.haptics.uiTap();
+          this.audio.playSfx('ui_tap');
+          timerPace = normalizeTimerPaceMode(btn.dataset.timerPace);
+          savePreferredTimerPaceMode(timerPace);
+          renderDynamicZones();
+        });
+      });
+
       footerEl.querySelectorAll<HTMLButtonElement>('[data-diff]').forEach((btn) => {
         btn.addEventListener('click', () => {
           this.haptics.uiTap();
@@ -1447,7 +1787,7 @@ export class BriefingCategoriesModal {
       footerEl.querySelector('#ws-cat-launch')?.addEventListener('click', () => {
         this.haptics.sightlineSnap();
         this.audio.playSfx('sightline_snap');
-        const { poolCount: _ignoredPoolCount, ...launchSpec } = getCurrentSelection();
+        const launchSpec = getCurrentSelection();
         this.close();
         onLaunch(launchSpec);
       });

@@ -1,8 +1,7 @@
 // ============================================================================
-// WORLD'S SMARTEST — Meta-Progression, Career Analytics, Hall of Honours,
-// 3D Intel Observatory & Prism Atelier (`src/meta`)
-// Implements `docs/PITCH_BIBLE.md` §2.1, §4, §5.2 & §7.1 + Wave-3 `#166` & `#168`
-// (100% Zero Pay-to-Win · Deterministic Return Stack · Live Portrait/Landscape)
+// WORLD'S SMARTEST v4.0 — Meta-Progression, Career Analytics, Hall of Honours,
+// 3D Trophy Gallery & Stage Atelier (`src/meta`)
+// (Deterministic Return Stack · Live Portrait/Landscape · 100 Trophies & 48 Rewards)
 // ============================================================================
 
 export * from './DiplomaticPassportBook';
@@ -30,6 +29,7 @@ import type {
 } from '../narrative';
 import type { StudioAudioEngine } from '../audio/StudioAudioEngine';
 import type { HapticsEngine } from '../audio/HapticsEngine';
+import type { PlayerStatProfileForHost } from '../v4/contracts';
 
 import {
   DiplomaticPassportBook,
@@ -118,14 +118,14 @@ interface MetaNavStackEntry {
 
 /**
  * Unified coordinator uniting all 6 Meta-Progression & Prestige pillars:
- *  1. `DiplomaticPassportBook` (Meridian Passport 2.0)
- *  2. `IntelObservatoryView` (360° 3D Trophy & Relic Study + Intel Flash Recall Quiz)
- *  3. `PrismAtelierView` (12 Zero-Pay-to-Win Prestige PBR Material Finishes)
- *  4. `FactionLeagueView` (World Council Factions & Async Seasonal Cup)
- *  5. `CareerAnalyticsDashboardView` (5 High-DPI Right/Wrong & ELO Trajectory Graphs)
- *  6. `HallOfHonoursView` (64 Trophies & Medals + 32 Equippable Unlockables + 24K Toasts)
+ *  1. `DiplomaticPassportBook` (World Tour Passport)
+ *  2. `IntelObservatoryView` (360° 3D Trophy Gallery + Study Review Deck)
+ *  3. `PrismAtelierView` (16 Equippable Stage & 3D Metallic Finishes)
+ *  4. `FactionLeagueView` (League Houses & Rival Trials)
+ *  5. `CareerAnalyticsDashboardView` (Strengths, Weak Spots, Format Mastery & 12-Domain Radar)
+ *  6. `HallOfHonoursView` (100 Trophies & Medals + 48 Equippable Unlockables + 24K Toasts)
  *
- * Enforces `#168` Deterministic Sub-Navigation Return Stack + Browser/Hardware Back Guard!
+ * Enforces deterministic sub-navigation return stack + Browser/Hardware Back Guard!
  */
 export class MetaProgressionSuite {
   public readonly passportBook: DiplomaticPassportBook;
@@ -291,6 +291,7 @@ export class MetaProgressionSuite {
         initialDomainId: f.domainId,
         initialSubcatLabel: f.subcatLabel,
         initialArchetype: f.archetype,
+        initialQuestionFormat: f.questionFormat ?? null,
         initialPeelTier: f.peelTier,
         initialOutcome: f.outcome,
         initialSpeedBucket: f.speedBucket,
@@ -523,6 +524,7 @@ export class MetaProgressionSuite {
       | 'initialDomainId'
       | 'initialSubcatLabel'
       | 'initialArchetype'
+      | 'initialQuestionFormat'
       | 'initialPeelTier'
       | 'initialOutcome'
       | 'initialSpeedBucket'
@@ -609,8 +611,8 @@ export class MetaProgressionSuite {
   }
 
   /**
-   * Returns live dynamic catalog totals (88 Honours, 44 Unlockables = 16 Finishes + 17 Titles + 11 Themes)
-   * so HUD / Vault badges automatically scale with every future expansion pack!
+   * Returns live dynamic catalog totals (100 Honours, 48 Unlockables = 16 Finishes + 19 Titles + 13 Themes)
+   * so HUD / Vault badges automatically scale with every expansion pack!
    */
   public getCatalogTotals(): {
     honours: number;
@@ -630,7 +632,7 @@ export class MetaProgressionSuite {
 
   /**
    * Records a resolved question into `CareerAnalyticsStore` (`ws_career_analytics_v1`)
-   * and evaluates all 64 Trophies & Medals live!
+   * and evaluates all 100 Trophies & Medals live!
    */
   public recordQuestionOutcome(input: QuestionAnalyticsInput): HonourProgressItem[] {
     this.analyticsStore.recordQuestionOutcome(input);
@@ -638,7 +640,7 @@ export class MetaProgressionSuite {
   }
 
   /**
-   * Records a completed match/session into `CareerAnalyticsStore` and evaluates all 64 Honours!
+   * Records a completed match/session into `CareerAnalyticsStore` and evaluates all 100 Honours!
    */
   public recordMatchCompleted(input: MatchCompletedAnalyticsInput): HonourProgressItem[] {
     this.analyticsStore.recordMatchCompleted(input);
@@ -646,7 +648,7 @@ export class MetaProgressionSuite {
   }
 
   /**
-   * Records a narrative, forensic, or bluff feat and evaluates all 64 Honours!
+   * Records a show-floor, format, board, or story feat and evaluates all 100 Honours!
    */
   public recordSpecialFeat(
     kind: SpecialFeatKind,
@@ -658,6 +660,14 @@ export class MetaProgressionSuite {
 
   public getAnalyticsSnapshot(): CareerAnalyticsState {
     return this.analyticsStore.getSnapshot();
+  }
+
+  /**
+   * Returns the live strongest/weakest/most-played domain profile consumed by
+   * Host Max Sterling and v4 AI Challengers.
+   */
+  public getPlayerStatProfileForHost(): PlayerStatProfileForHost {
+    return this.analyticsStore.getPlayerStatProfileForHost();
   }
 
   /**

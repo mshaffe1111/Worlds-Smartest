@@ -1,12 +1,12 @@
 // ============================================================================
-// WORLD'S SMARTEST — Hall of Honours & Unlockables View (`#166` §2.2 & `v3.0`)
-//  • Browses & filters all dynamic Trophies & Medals (88 across 5 Rarity Tiers)
+// WORLD'S SMARTEST v4.0 — Hall of Honours & Unlockables View
+//  • Browses & filters all dynamic Trophies & Medals (100 across 5 Rarity Tiers)
 //    with exact `tabular-nums` progress bars (`12 / 50`) & `./assets/medals/*.png`
-//  • Direct 1-Click Equip Studio for all 44 Gameplay Unlockables:
-//      - 16 PBR 3D Veritas Prism Material Finishes
-//      - 17 Diplomatic Broadcast Titles (synced to HUD & Passport)
-//      - 11 Chrono-Ring & HUD Accent Themes
-//  • Interactive `◆ 3D TROPHY SHOWCASE` toggle (`stage3d.showChampionshipTrophy`)
+//  • Direct 1-Click Equip Studio for all 48 Gameplay Unlockables:
+//      - 16 Stage & 3D Trophy Finishes
+//      - 19 Broadcast Show Titles (synced to HUD & Passport)
+//      - 13 Stage & Crown HUD Accent Themes
+//  • Interactive `◈ 3D` Trophy Showcase toggle (`stage3d.showChampionshipTrophy`)
 //  • Deep-link aspect pre-filtering from Career Stats (`initialAspectFilter`)
 // ============================================================================
 
@@ -377,10 +377,10 @@ export class HallOfHonoursView {
           ${(
             [
               ['ALL', 'All Aspects'],
-              ['PRISM_OVERCLOCK', 'Prism & Overclock'],
+              ['PRISM_OVERCLOCK', 'Formats & Wagers'],
               ['STREAK_SPEED', 'Streak & Speed'],
-              ['CAMPAIGN_LORE', 'Campaign & Lore'],
-              ['MODES_TRIALS', 'Modes & Trials'],
+              ['CAMPAIGN_LORE', 'World Tour & Rivals'],
+              ['MODES_TRIALS', 'Modes & Boards'],
               ['DOMAINS_POLYMATH', '12 Domains'],
             ] as const
           )
@@ -462,10 +462,10 @@ export class HallOfHonoursView {
     ).length;
 
     return `
-      <!-- 1. PBR 3D Prism Finishes (Dynamic Total) -->
+      <!-- 1. Stage & 3D Trophy Finishes (Dynamic Total) -->
       <div class="ws-meta-section" style="padding-top:0;">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
-          <h3 class="ws-meta-section-title">1. 3D Prism Finishes (${finishStatuses.filter((f) => f.unlocked).length}/${totalFinishes})</h3>
+          <h3 class="ws-meta-section-title">1. Stage &amp; 3D Trophy Finishes (${finishStatuses.filter((f) => f.unlocked).length}/${totalFinishes})</h3>
           ${
             this.callbacks.onNavigateSection
               ? `<button type="button" class="ws-meta-inline-link" data-suite-nav="ATELIER">◈ 3D Atelier ›</button>`
@@ -497,9 +497,9 @@ export class HallOfHonoursView {
         </div>
       </div>
 
-      <!-- 2. Diplomatic Broadcast Titles (Dynamic Total) -->
+      <!-- 2. Broadcast Show Titles (Dynamic Total) -->
       <div class="ws-meta-section">
-        <h3 class="ws-meta-section-title">2. Diplomatic Broadcast Titles (${unlockedTitlesCount}/${totalTitles})</h3>
+        <h3 class="ws-meta-section-title">2. Broadcast Show Titles (${unlockedTitlesCount}/${totalTitles})</h3>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:0 20px;">
           ${BROADCAST_TITLES_CATALOG.map((bt) => {
             const isUnl = bt.order === 1 || unlockedTitles.includes(bt.title);
@@ -529,9 +529,9 @@ export class HallOfHonoursView {
         </div>
       </div>
 
-      <!-- 3. Chrono-Ring & HUD Accent Themes (Dynamic Total) -->
+      <!-- 3. Stage & Crown HUD Themes (Dynamic Total) -->
       <div class="ws-meta-section" style="border-bottom:none;">
-        <h3 class="ws-meta-section-title">3. Chrono-Ring &amp; HUD Accent Themes (${unlockedThemeIds.length}/${totalThemes})</h3>
+        <h3 class="ws-meta-section-title">3. Stage &amp; Crown HUD Themes (${unlockedThemeIds.length}/${totalThemes})</h3>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:0 20px;">
           ${HUD_ACCENT_THEMES.map((th) => {
             const isUnl = unlockedThemeIds.includes(th.id);

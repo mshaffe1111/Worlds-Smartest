@@ -16,6 +16,7 @@ import {
   type EndingId,
   type PassportSystem,
 } from '../narrative';
+import type { PlayerStatProfileForHost, QuestionFormatV4 } from '../v4/contracts';
 
 export type AnalyticsGameMode =
   | 'PROLOGUE'
@@ -72,7 +73,20 @@ export type SpecialFeatKind =
   | 'CLUE_LADDER_STEP1_SNIPE'
   | 'MIND_GAMBIT_USED'
   | 'SECOND_WIND_SAVED'
-  | 'FINALE_CATEGORY_WIN';
+  | 'FINALE_CATEGORY_WIN'
+  // v4.0 Game-Show Formats, Gimmick Board, Challengers & World Tour Feats
+  | 'MATCH4_CLEAN_SWEEP'
+  | 'SORT4_PERFECT'
+  | 'IMPOSTER_CAUGHT'
+  | 'PINPOINT_BULLSEYE'
+  | 'WEDGE_EARNED'
+  | 'SIX_WEDGE_CROWN'
+  | 'PADLOCK_SHATTERED'
+  | 'POWER_PLAY_WIN'
+  | 'POWER_PLAY_HIGH_ROLLER'
+  | 'CHALLENGER_TRAP_SURVIVED'
+  | 'WORLD_TOUR_TIER_CLEARED'
+  | 'WORLD_SMARTEST_CHAMPION';
 
 export type AnalyticsSpeedBucketIndex = 0 | 1 | 2 | 3 | 4;
 
@@ -85,6 +99,8 @@ export interface QuestionAnalyticsInput {
   mode?: AnalyticsGameMode | string;
   hubId?: string;
   archetype?: AnalyticsArchetype | string;
+  /** Optional v4.0 7-format game-show question format */
+  questionFormat?: QuestionFormatV4;
   difficultyTier?: AnalyticsDifficultyTier | string;
   subcatLabel?: string;
   speedBucketIdx?: AnalyticsSpeedBucketIndex;
@@ -101,6 +117,14 @@ export interface QuestionAnalyticsInput {
   bluffCalled?: boolean;
   bluffEchoCancelled?: boolean;
   bullseye?: boolean;
+  /** True when Match-4 4/4 clean sweep, Sort-4 perfect order, or Pinpoint Bullseye */
+  isBullseyeOrSweep?: boolean;
+  /** Optional Power Play wager amount when answering a Power Play tile */
+  powerPlayWager?: number;
+  /** Optional count of adjacent padlocks shattered on this turn */
+  padlocksBroken?: number;
+  /** True when surviving a Challenger forced weak-spot or frozen-column turn */
+  survivedChallengerTrap?: boolean;
   firstTryCodex?: boolean;
   responseTimeMs?: number;
   pointsDelta?: number;
@@ -117,6 +141,7 @@ export interface QuestionAnalyticsEvent {
   mode: AnalyticsGameMode;
   hubId: string;
   archetype: AnalyticsArchetype;
+  questionFormat?: QuestionFormatV4;
   correct: boolean;
   peelTier: 1 | 2 | 3;
   overclockCharge01: number;
@@ -212,6 +237,14 @@ export interface MatchCompletedAnalyticsInput {
   secondWindTriggered?: boolean;
   /** True when the Finale Category Picker final question was solved */
   finaleCategoryWon?: boolean;
+  /** Optional v4.0 Trivial Crown wedges earned in this board */
+  earnedWedgesCount?: number;
+  /** Optional v4.0 flag when player completed all 6 color wedges on one board */
+  completedSixWedgeCrown?: boolean;
+  /** Optional v4.0 highest World Tour tier cleared (1..8) */
+  worldTourTierCleared?: number;
+  /** Optional v4.0 flag when winning Tier 8 1.4B World's Smartest Grand Finale */
+  wonWorldSmartestFinale?: boolean;
 }
 
 export interface SpecialFeatCounters {
@@ -256,6 +289,19 @@ export interface SpecialFeatCounters {
   mindGambitsActivated: number;
   secondWindSaves: number;
   finaleCategoryWins: number;
+  // v4.0 Expansion Counters (7 Formats, Gimmick Board, Challengers & 8-Tier World Tour)
+  match4CleanSweeps: number;
+  sort4PerfectRuns: number;
+  imposterCatches: number;
+  pinpointBullseyes: number;
+  wedgesEarnedTotal: number;
+  full6WedgeCrowns: number;
+  padlocksShattered: number;
+  powerPlayWins: number;
+  powerPlayBigWagerWins: number;
+  challengerTrapSurvivals: number;
+  worldTourTiersCleared: number;
+  worldSmartestChampionWon: boolean;
 }
 
 export interface OverclockConvictionStats {
@@ -288,6 +334,7 @@ export interface CareerAnalyticsState {
   uniqueSolvedCount: number;
   byDomain: DomainAnalyticsCounter[]; // length 12
   byArchetype: Record<AnalyticsArchetype, RightWrongCounter>;
+  byFormat: Record<QuestionFormatV4, RightWrongCounter>;
   byPeelTier: Record<'1' | '2' | '3', RightWrongCounter>;
   byMode: Record<AnalyticsGameMode, ModeAnalyticsCounter>;
   /** 5 Speed Buckets: [0]=<3s, [1]=3-6s, [2]=6-10s, [3]=10-15s, [4]=15s+ */
@@ -305,10 +352,22 @@ export interface CareerAnalyticsState {
   events: QuestionAnalyticsEvent[];
 }
 
+export type CareerAnalyticsSnapshot = CareerAnalyticsState;
+
 const ANALYTICS_STORAGE_KEY = 'ws_career_analytics_v1';
 const MAX_RING_EVENTS = 2000;
 const MAX_SESSIONS = 140;
 const MAX_STORED_UNIQUE_QIDS = 2500;
+
+export const ALL_V4_QUESTION_FORMATS: readonly QuestionFormatV4[] = [
+  'MULTIPLE_CHOICE',
+  'MATCH_4',
+  'SORT_4',
+  'MULTI_STRIKE',
+  'PINPOINT_DIAL',
+  'CLUE_ESCALATOR',
+  'VISUAL_SPOTTER',
+];
 
 export const ALL_ANALYTICS_ARCHETYPES: readonly AnalyticsArchetype[] = [
   'SIGHTLINE_LOCK',
@@ -341,6 +400,7 @@ export interface AnalyticsFilterState {
   domainId: DomainId | null;
   subcatLabel: string | null;
   archetype: AnalyticsArchetype | null;
+  questionFormat?: QuestionFormatV4 | null;
   peelTier: 1 | 2 | 3 | null;
   outcome: AnalyticsOutcomeFilter;
   speedBucket: AnalyticsSpeedBucketIndex | null;
@@ -407,6 +467,7 @@ export interface FilteredAnalyticsView {
   subcategories: SubcategoryBreakdownRow[];
   eloSeries: AnalyticsEloPoint[];
   byArchetype: Record<AnalyticsArchetype, RightWrongCounter>;
+  byFormat: Record<QuestionFormatV4, RightWrongCounter>;
   byPeelTier: Record<'1' | '2' | '3', RightWrongCounter>;
   speedBuckets: [
     RightWrongCounter,
@@ -433,11 +494,54 @@ export function createDefaultAnalyticsFilter(
     domainId: null,
     subcatLabel: null,
     archetype: null,
+    questionFormat: null,
     peelTier: null,
     outcome: 'ALL',
     speedBucket: null,
     bucketKey: null,
   };
+}
+
+export function normalizeQuestionFormatV4(raw?: string | null): QuestionFormatV4 | null {
+  if (!raw || typeof raw !== 'string') return null;
+  const up = raw.trim().toUpperCase();
+  if (
+    up === 'MULTIPLE_CHOICE' ||
+    up === 'MATCH_4' ||
+    up === 'SORT_4' ||
+    up === 'MULTI_STRIKE' ||
+    up === 'PINPOINT_DIAL' ||
+    up === 'CLUE_ESCALATOR' ||
+    up === 'VISUAL_SPOTTER'
+  ) {
+    return up;
+  }
+  return null;
+}
+
+export function inferQuestionFormatFromEvent(
+  ev: Pick<QuestionAnalyticsEvent, 'questionFormat' | 'archetype' | 'clueLadderStep'>,
+): QuestionFormatV4 {
+  const explicit = normalizeQuestionFormatV4(ev.questionFormat);
+  if (explicit) return explicit;
+  if (ev.clueLadderStep === 1 || ev.clueLadderStep === 2 || ev.clueLadderStep === 3) {
+    return 'CLUE_ESCALATOR';
+  }
+  switch (ev.archetype) {
+    case 'CALIBRATOR_DIAL':
+      return 'PINPOINT_DIAL';
+    case 'GLOBE_PIN_DROP':
+      return 'VISUAL_SPOTTER';
+    case 'CODEX_DUAL_RING':
+      return 'MATCH_4';
+    case 'GAUNTLET_SHATTER':
+      return 'MULTI_STRIKE';
+    case 'HERO_ARTIFACT_SYNTHESIS':
+      return 'CLUE_ESCALATOR';
+    case 'SIGHTLINE_LOCK':
+    default:
+      return 'MULTIPLE_CHOICE';
+  }
 }
 
 export function computeSpeedBucketIdx(responseTimeMs: number): AnalyticsSpeedBucketIndex {
@@ -556,6 +660,7 @@ export function normalizeAnalyticsEvent(
     mode,
     hubId: typeof raw.hubId === 'string' && raw.hubId.trim() ? raw.hubId.trim() : 'ch',
     archetype,
+    questionFormat: normalizeQuestionFormatV4(raw.questionFormat) ?? undefined,
     correct: Boolean(raw.correct),
     peelTier,
     overclockCharge01: Number(ocCharge.toFixed(2)),
@@ -646,6 +751,18 @@ function normalizeArchetype(raw?: string): AnalyticsArchetype {
   return 'SIGHTLINE_LOCK';
 }
 
+function emptyFormatMap(): Record<QuestionFormatV4, RightWrongCounter> {
+  return {
+    MULTIPLE_CHOICE: { right: 0, wrong: 0 },
+    MATCH_4: { right: 0, wrong: 0 },
+    SORT_4: { right: 0, wrong: 0 },
+    MULTI_STRIKE: { right: 0, wrong: 0 },
+    PINPOINT_DIAL: { right: 0, wrong: 0 },
+    CLUE_ESCALATOR: { right: 0, wrong: 0 },
+    VISUAL_SPOTTER: { right: 0, wrong: 0 },
+  };
+}
+
 function createDefaultState(): CareerAnalyticsState {
   const byDomain: DomainAnalyticsCounter[] = Array.from({ length: 12 }, () => ({
     right: 0,
@@ -663,6 +780,8 @@ function createDefaultState(): CareerAnalyticsState {
     HERO_ARTIFACT_SYNTHESIS: { right: 0, wrong: 0 },
     GLOBE_PIN_DROP: { right: 0, wrong: 0 },
   };
+
+  const byFormat = emptyFormatMap();
 
   const byPeelTier: Record<'1' | '2' | '3', RightWrongCounter> = {
     '1': { right: 0, wrong: 0 },
@@ -692,6 +811,7 @@ function createDefaultState(): CareerAnalyticsState {
     uniqueSolvedCount: 0,
     byDomain,
     byArchetype,
+    byFormat,
     byPeelTier,
     byMode,
     speedBuckets: [
@@ -753,6 +873,18 @@ function createDefaultState(): CareerAnalyticsState {
       mindGambitsActivated: 0,
       secondWindSaves: 0,
       finaleCategoryWins: 0,
+      match4CleanSweeps: 0,
+      sort4PerfectRuns: 0,
+      imposterCatches: 0,
+      pinpointBullseyes: 0,
+      wedgesEarnedTotal: 0,
+      full6WedgeCrowns: 0,
+      padlocksShattered: 0,
+      powerPlayWins: 0,
+      powerPlayBigWagerWins: 0,
+      challengerTrapSurvivals: 0,
+      worldTourTiersCleared: 0,
+      worldSmartestChampionWon: false,
     },
     dailyBuckets: {},
     sessions: [],
@@ -797,6 +929,19 @@ export class CareerAnalyticsStore {
           const src = parsed.byArchetype[arch];
           if (src) {
             byArchetype[arch] = {
+              right: Math.max(0, Math.floor(Number(src.right) || 0)),
+              wrong: Math.max(0, Math.floor(Number(src.wrong) || 0)),
+            };
+          }
+        }
+      }
+
+      const byFormat = emptyFormatMap();
+      if (parsed.byFormat && typeof parsed.byFormat === 'object') {
+        for (const fmt of ALL_V4_QUESTION_FORMATS) {
+          const src = parsed.byFormat[fmt];
+          if (src) {
+            byFormat[fmt] = {
               right: Math.max(0, Math.floor(Number(src.right) || 0)),
               wrong: Math.max(0, Math.floor(Number(src.wrong) || 0)),
             };
@@ -860,6 +1005,7 @@ export class CareerAnalyticsStore {
         uniqueSolvedCount: Math.max(0, Math.floor(Number(parsed.uniqueSolvedCount) || 0)),
         byDomain,
         byArchetype,
+        byFormat,
         byPeelTier,
         byMode,
         speedBuckets,
@@ -906,6 +1052,18 @@ export class CareerAnalyticsStore {
           mindGambitsActivated: Math.max(0, Math.floor(Number(parsed.feats?.mindGambitsActivated) || 0)),
           secondWindSaves: Math.max(0, Math.floor(Number(parsed.feats?.secondWindSaves) || 0)),
           finaleCategoryWins: Math.max(0, Math.floor(Number(parsed.feats?.finaleCategoryWins) || 0)),
+          match4CleanSweeps: Math.max(0, Math.floor(Number(parsed.feats?.match4CleanSweeps) || 0)),
+          sort4PerfectRuns: Math.max(0, Math.floor(Number(parsed.feats?.sort4PerfectRuns) || 0)),
+          imposterCatches: Math.max(0, Math.floor(Number(parsed.feats?.imposterCatches) || 0)),
+          pinpointBullseyes: Math.max(0, Math.floor(Number(parsed.feats?.pinpointBullseyes) || 0)),
+          wedgesEarnedTotal: Math.max(0, Math.floor(Number(parsed.feats?.wedgesEarnedTotal) || 0)),
+          full6WedgeCrowns: Math.max(0, Math.floor(Number(parsed.feats?.full6WedgeCrowns) || 0)),
+          padlocksShattered: Math.max(0, Math.floor(Number(parsed.feats?.padlocksShattered) || 0)),
+          powerPlayWins: Math.max(0, Math.floor(Number(parsed.feats?.powerPlayWins) || 0)),
+          powerPlayBigWagerWins: Math.max(0, Math.floor(Number(parsed.feats?.powerPlayBigWagerWins) || 0)),
+          challengerTrapSurvivals: Math.max(0, Math.floor(Number(parsed.feats?.challengerTrapSurvivals) || 0)),
+          worldTourTiersCleared: Math.max(0, Math.floor(Number(parsed.feats?.worldTourTiersCleared) || 0)),
+          worldSmartestChampionWon: Boolean(parsed.feats?.worldSmartestChampionWon),
         },
         dailyBuckets:
           parsed.dailyBuckets && typeof parsed.dailyBuckets === 'object'
@@ -1066,6 +1224,15 @@ export class CareerAnalyticsStore {
         HERO_ARTIFACT_SYNTHESIS: { ...this.state.byArchetype.HERO_ARTIFACT_SYNTHESIS },
         GLOBE_PIN_DROP: { ...this.state.byArchetype.GLOBE_PIN_DROP },
       },
+      byFormat: {
+        MULTIPLE_CHOICE: { ...this.state.byFormat.MULTIPLE_CHOICE },
+        MATCH_4: { ...this.state.byFormat.MATCH_4 },
+        SORT_4: { ...this.state.byFormat.SORT_4 },
+        MULTI_STRIKE: { ...this.state.byFormat.MULTI_STRIKE },
+        PINPOINT_DIAL: { ...this.state.byFormat.PINPOINT_DIAL },
+        CLUE_ESCALATOR: { ...this.state.byFormat.CLUE_ESCALATOR },
+        VISUAL_SPOTTER: { ...this.state.byFormat.VISUAL_SPOTTER },
+      },
       byPeelTier: {
         '1': { ...this.state.byPeelTier['1'] },
         '2': { ...this.state.byPeelTier['2'] },
@@ -1106,6 +1273,14 @@ export class CareerAnalyticsStore {
     const domainId = clamp(Math.floor(Number(input.domainId) || 0), 0, 11) as DomainId;
     const mode = normalizeMode(input.mode);
     const archetype = normalizeArchetype(input.archetype);
+    const explicitFormat = normalizeQuestionFormatV4(input.questionFormat);
+    const effectiveFormat =
+      explicitFormat ??
+      inferQuestionFormatFromEvent({
+        questionFormat: explicitFormat ?? undefined,
+        archetype,
+        clueLadderStep: input.clueLadderStep,
+      });
     const peelTier: 1 | 2 | 3 =
       input.peelTier === 2 ? 2 : input.peelTier === 3 ? 3 : 1;
     const ocCharge = clamp(Number(input.overclockCharge01) || 0, 0, 1);
@@ -1147,12 +1322,13 @@ export class CareerAnalyticsStore {
       mode,
       hubId: input.hubId ?? 'ch',
       archetype,
+      questionFormat: explicitFormat ?? undefined,
       correct: Boolean(input.correct),
       peelTier,
       overclockCharge01: Number(ocCharge.toFixed(2)),
       backfired,
       bluffCalled: Boolean(input.bluffCalled),
-      bullseye: Boolean(input.bullseye),
+      bullseye: Boolean(input.bullseye || input.isBullseyeOrSweep),
       responseTimeMs: respMs,
       pointsDelta: pts,
       eloAfter,
@@ -1196,6 +1372,18 @@ export class CareerAnalyticsStore {
     if (ev.correct && input.finaleCategoryPicked) {
       this.state.feats.finaleCategoryWins += 1;
     }
+    if (typeof input.padlocksBroken === 'number' && input.padlocksBroken > 0) {
+      this.state.feats.padlocksShattered += Math.floor(input.padlocksBroken);
+    }
+    if (ev.correct && input.survivedChallengerTrap) {
+      this.state.feats.challengerTrapSurvivals += 1;
+    }
+    if (ev.correct && typeof input.powerPlayWager === 'number' && input.powerPlayWager > 0) {
+      this.state.feats.powerPlayWins += 1;
+      if (input.powerPlayWager >= 400) {
+        this.state.feats.powerPlayBigWagerWins += 1;
+      }
+    }
 
     const domBucket = this.state.byDomain[domainId];
     domBucket.totalResponseMs += respMs;
@@ -1230,10 +1418,23 @@ export class CareerAnalyticsStore {
 
       domBucket.right += 1;
       this.state.byArchetype[archetype].right += 1;
+      this.state.byFormat[effectiveFormat].right += 1;
       this.state.byPeelTier[tierKey].right += 1;
       this.state.byMode[mode].right += 1;
       this.state.speedBuckets[speedIdx].right += 1;
 
+      if (effectiveFormat === 'MATCH_4' && (ev.bullseye || input.isBullseyeOrSweep)) {
+        this.state.feats.match4CleanSweeps += 1;
+      }
+      if (effectiveFormat === 'SORT_4' && (ev.bullseye || input.isBullseyeOrSweep)) {
+        this.state.feats.sort4PerfectRuns += 1;
+      }
+      if (effectiveFormat === 'MULTI_STRIKE') {
+        this.state.feats.imposterCatches += 1;
+      }
+      if (effectiveFormat === 'PINPOINT_DIAL' && (ev.bullseye || input.isBullseyeOrSweep)) {
+        this.state.feats.pinpointBullseyes += 1;
+      }
       if (ev.bullseye && archetype === 'CALIBRATOR_DIAL') {
         this.state.feats.calibratorBullseyes += 1;
       }
@@ -1283,6 +1484,7 @@ export class CareerAnalyticsStore {
 
       domBucket.wrong += 1;
       this.state.byArchetype[archetype].wrong += 1;
+      this.state.byFormat[effectiveFormat].wrong += 1;
       this.state.byPeelTier[tierKey].wrong += 1;
       this.state.byMode[mode].wrong += 1;
       this.state.speedBuckets[speedIdx].wrong += 1;
@@ -1436,6 +1638,30 @@ export class CareerAnalyticsStore {
     if (input.finaleCategoryWon) {
       this.state.feats.finaleCategoryWins += 1;
     }
+    if (typeof input.earnedWedgesCount === 'number' && input.earnedWedgesCount > 0) {
+      this.state.feats.wedgesEarnedTotal += Math.floor(input.earnedWedgesCount);
+      if (input.earnedWedgesCount >= 6) {
+        this.state.feats.full6WedgeCrowns += 1;
+      }
+    }
+    if (input.completedSixWedgeCrown && !(input.earnedWedgesCount && input.earnedWedgesCount >= 6)) {
+      this.state.feats.full6WedgeCrowns += 1;
+    }
+    if (typeof input.worldTourTierCleared === 'number' && input.worldTourTierCleared > 0) {
+      this.state.feats.worldTourTiersCleared = Math.max(
+        this.state.feats.worldTourTiersCleared,
+        Math.min(8, Math.floor(input.worldTourTierCleared)),
+      );
+      if (input.worldTourTierCleared >= 8) {
+        this.state.feats.worldSmartestChampionWon = true;
+        this.state.feats.campaignCompleted = true;
+      }
+    }
+    if (input.wonWorldSmartestFinale) {
+      this.state.feats.worldSmartestChampionWon = true;
+      this.state.feats.worldTourTiersCleared = 8;
+      this.state.feats.campaignCompleted = true;
+    }
 
     this.state.sessions.push({
       ts,
@@ -1556,9 +1782,59 @@ export class CareerAnalyticsStore {
       case 'FINALE_CATEGORY_WIN':
         this.state.feats.finaleCategoryWins += 1;
         break;
+      case 'MATCH4_CLEAN_SWEEP':
+        this.state.feats.match4CleanSweeps += 1;
+        break;
+      case 'SORT4_PERFECT':
+        this.state.feats.sort4PerfectRuns += 1;
+        break;
+      case 'IMPOSTER_CAUGHT':
+        this.state.feats.imposterCatches += 1;
+        break;
+      case 'PINPOINT_BULLSEYE':
+        this.state.feats.pinpointBullseyes += 1;
+        break;
+      case 'WEDGE_EARNED':
+        this.state.feats.wedgesEarnedTotal += 1;
+        break;
+      case 'SIX_WEDGE_CROWN':
+        this.state.feats.full6WedgeCrowns += 1;
+        this.state.feats.wedgesEarnedTotal = Math.max(this.state.feats.wedgesEarnedTotal, 6);
+        break;
+      case 'PADLOCK_SHATTERED':
+        this.state.feats.padlocksShattered += 1;
+        break;
+      case 'POWER_PLAY_WIN':
+        this.state.feats.powerPlayWins += 1;
+        break;
+      case 'POWER_PLAY_HIGH_ROLLER':
+        this.state.feats.powerPlayWins += 1;
+        this.state.feats.powerPlayBigWagerWins += 1;
+        break;
+      case 'CHALLENGER_TRAP_SURVIVED':
+        this.state.feats.challengerTrapSurvivals += 1;
+        break;
+      case 'WORLD_TOUR_TIER_CLEARED':
+        if (detail?.depth) {
+          this.state.feats.worldTourTiersCleared = Math.max(
+            this.state.feats.worldTourTiersCleared,
+            Math.min(8, Math.floor(detail.depth)),
+          );
+        } else {
+          this.state.feats.worldTourTiersCleared = Math.min(
+            8,
+            this.state.feats.worldTourTiersCleared + 1,
+          );
+        }
+        break;
+      case 'WORLD_SMARTEST_CHAMPION':
+        this.state.feats.worldSmartestChampionWon = true;
+        this.state.feats.worldTourTiersCleared = 8;
+        this.state.feats.campaignCompleted = true;
+        break;
     }
 
-    if (detail?.depth) {
+    if (detail?.depth && kind !== 'WORLD_TOUR_TIER_CLEARED') {
       this.state.feats.maxEndlessDepth = Math.max(
         this.state.feats.maxEndlessDepth,
         Math.floor(detail.depth),
@@ -1575,6 +1851,13 @@ export class CareerAnalyticsStore {
   public reloadFromStorage(): CareerAnalyticsState {
     this.state = this.load();
     return this.getSnapshot();
+  }
+
+  /**
+   * Builds a live Host/Challenger stat profile from this store's current snapshot.
+   */
+  public getPlayerStatProfileForHost(): PlayerStatProfileForHost {
+    return buildPlayerStatProfileForHost(this.getSnapshot());
   }
 }
 
@@ -1805,6 +2088,36 @@ function buildEloSeriesFromEvents(events: readonly QuestionAnalyticsEvent[]): An
   return out;
 }
 
+function cloneOrInferFormatMapFromSnap(
+  snap: Partial<CareerAnalyticsState> | null | undefined,
+): Record<QuestionFormatV4, RightWrongCounter> {
+  const out = emptyFormatMap();
+  let hasExplicit = false;
+  if (snap?.byFormat && typeof snap.byFormat === 'object') {
+    for (const fmt of ALL_V4_QUESTION_FORMATS) {
+      const c = snap.byFormat[fmt];
+      if (c && (c.right > 0 || c.wrong > 0)) {
+        out[fmt] = { right: Math.max(0, c.right), wrong: Math.max(0, c.wrong) };
+        hasExplicit = true;
+      }
+    }
+  }
+  if (!hasExplicit && snap?.byArchetype) {
+    const add = (fmt: QuestionFormatV4, src?: RightWrongCounter) => {
+      if (!src) return;
+      out[fmt].right += Math.max(0, src.right || 0);
+      out[fmt].wrong += Math.max(0, src.wrong || 0);
+    };
+    add('MULTIPLE_CHOICE', snap.byArchetype.SIGHTLINE_LOCK);
+    add('MATCH_4', snap.byArchetype.CODEX_DUAL_RING);
+    add('PINPOINT_DIAL', snap.byArchetype.CALIBRATOR_DIAL);
+    add('MULTI_STRIKE', snap.byArchetype.GAUNTLET_SHATTER);
+    add('CLUE_ESCALATOR', snap.byArchetype.HERO_ARTIFACT_SYNTHESIS);
+    add('VISUAL_SPOTTER', snap.byArchetype.GLOBE_PIN_DROP);
+  }
+  return out;
+}
+
 /**
  * Pure, deterministic multi-dimensional cross-filtering engine for `CareerAnalyticsDashboardView`.
  * Recomputes Top KPIs, Graph 1 bars, Graph 2 12-Domain Radar + Subcategories, Graph 3 ELO Curve,
@@ -1829,6 +2142,7 @@ export function computeFilteredAnalyticsView(
       rawFilter.archetype && ALL_ANALYTICS_ARCHETYPES.includes(rawFilter.archetype)
         ? rawFilter.archetype
         : null,
+    questionFormat: normalizeQuestionFormatV4(rawFilter.questionFormat),
     peelTier:
       rawFilter.peelTier === 1 || rawFilter.peelTier === 2 || rawFilter.peelTier === 3
         ? rawFilter.peelTier
@@ -1861,6 +2175,7 @@ export function computeFilteredAnalyticsView(
     (filter.domainId !== null ? 1 : 0) +
     (filter.subcatLabel !== null ? 1 : 0) +
     (filter.archetype !== null ? 1 : 0) +
+    (filter.questionFormat !== null && filter.questionFormat !== undefined ? 1 : 0) +
     (filter.peelTier !== null ? 1 : 0) +
     (filter.outcome !== 'ALL' ? 1 : 0) +
     (filter.speedBucket !== null ? 1 : 0) +
@@ -1963,6 +2278,7 @@ export function computeFilteredAnalyticsView(
           HERO_ARTIFACT_SYNTHESIS: { ...snap.byArchetype.HERO_ARTIFACT_SYNTHESIS },
           GLOBE_PIN_DROP: { ...snap.byArchetype.GLOBE_PIN_DROP },
         },
+        byFormat: cloneOrInferFormatMapFromSnap(snap),
         byPeelTier: {
           '1': { ...snap.byPeelTier['1'] },
           '2': { ...snap.byPeelTier['2'] },
@@ -1985,6 +2301,7 @@ export function computeFilteredAnalyticsView(
       filter.domainId !== null &&
       filter.subcatLabel === null &&
       filter.archetype === null &&
+      !filter.questionFormat &&
       filter.peelTier === null &&
       filter.outcome === 'ALL' &&
       filter.speedBucket === null &&
@@ -2041,6 +2358,7 @@ export function computeFilteredAnalyticsView(
           { label: domMeta.shortName, elo: dom.lastElo },
         ],
         byArchetype: emptyArchetypeMap(),
+        byFormat: emptyFormatMap(),
         byPeelTier: emptyPeelTierMap(),
         speedBuckets: emptySpeedBuckets(),
         outcomeCounts: {
@@ -2073,7 +2391,15 @@ export function computeFilteredAnalyticsView(
 
   const matches = (
     item: IndexedAnalyticsEvent,
-    skip?: 'domain' | 'subcat' | 'archetype' | 'peelTier' | 'outcome' | 'speedBucket' | 'bucketKey',
+    skip?:
+      | 'domain'
+      | 'subcat'
+      | 'archetype'
+      | 'questionFormat'
+      | 'peelTier'
+      | 'outcome'
+      | 'speedBucket'
+      | 'bucketKey',
   ): boolean => {
     const { ev, eventKey } = item;
     if (skip !== 'domain' && filter.domainId !== null && ev.domainId !== filter.domainId) {
@@ -2088,6 +2414,13 @@ export function computeFilteredAnalyticsView(
       return false;
     }
     if (skip !== 'archetype' && filter.archetype !== null && ev.archetype !== filter.archetype) {
+      return false;
+    }
+    if (
+      skip !== 'questionFormat' &&
+      filter.questionFormat &&
+      inferQuestionFormatFromEvent(ev) !== filter.questionFormat
+    ) {
       return false;
     }
     if (skip !== 'peelTier' && filter.peelTier !== null && ev.peelTier !== filter.peelTier) {
@@ -2183,6 +2516,18 @@ export function computeFilteredAnalyticsView(
     else byArchetype[ev.archetype].wrong += 1;
   }
 
+  // v4.0 Format Mastery counters (matches all filters except questionFormat)
+  const byFormat = emptyFormatMap();
+  const formatItems =
+    !filter.questionFormat
+      ? filteredItems
+      : rangeItems.filter((it) => matches(it, 'questionFormat'));
+  for (const { ev } of formatItems) {
+    const fmt = inferQuestionFormatFromEvent(ev);
+    if (ev.correct) byFormat[fmt].right += 1;
+    else byFormat[fmt].wrong += 1;
+  }
+
   // Graph 4A: 3 Hint-Tier counters (matches all filters except peelTier)
   const byPeelTier = emptyPeelTierMap();
   const peelItems =
@@ -2227,6 +2572,7 @@ export function computeFilteredAnalyticsView(
     subcategories,
     eloSeries,
     byArchetype,
+    byFormat,
     byPeelTier,
     speedBuckets,
     outcomeCounts: {
@@ -2237,5 +2583,172 @@ export function computeFilteredAnalyticsView(
     },
     ledgerEvents: [...filteredEvents].reverse(),
     usingLegacyAggregateFallback: false,
+  };
+}
+
+function readPersistedAnalyticsSnapshotFallback(): CareerAnalyticsSnapshot {
+  try {
+    if (typeof localStorage === 'undefined') return createDefaultState();
+    const raw = localStorage.getItem(ANALYTICS_STORAGE_KEY);
+    if (!raw) return createDefaultState();
+    const parsed = JSON.parse(raw) as Partial<CareerAnalyticsState> | null;
+    if (!parsed || typeof parsed !== 'object') return createDefaultState();
+    const defaults = createDefaultState();
+    const byDomain =
+      Array.isArray(parsed.byDomain) && parsed.byDomain.length === 12
+        ? parsed.byDomain.map((d) => ({
+            right: Math.max(0, Math.floor(Number(d?.right) || 0)),
+            wrong: Math.max(0, Math.floor(Number(d?.wrong) || 0)),
+            totalResponseMs: Math.max(0, Math.floor(Number(d?.totalResponseMs) || 0)),
+            peakElo: clamp(Math.round(Number(d?.peakElo) || 1200), 600, 2600),
+            lastElo: clamp(Math.round(Number(d?.lastElo) || 1200), 600, 2600),
+          }))
+        : defaults.byDomain;
+    return {
+      ...defaults,
+      totalRight: Math.max(0, Math.floor(Number(parsed.totalRight) || 0)),
+      totalWrong: Math.max(0, Math.floor(Number(parsed.totalWrong) || 0)),
+      bestStreak: Math.max(0, Math.floor(Number(parsed.bestStreak) || 0)),
+      byDomain,
+      byFormat: cloneOrInferFormatMapFromSnap(parsed),
+    };
+  } catch {
+    return createDefaultState();
+  }
+}
+
+/**
+ * Builds the live `PlayerStatProfileForHost` summary consumed by Host Max Sterling
+ * and AI Challengers to roast comfort categories and force weak-spot tiles onto the board!
+ */
+export function buildPlayerStatProfileForHost(
+  snap?: CareerAnalyticsSnapshot,
+): PlayerStatProfileForHost {
+  const source = snap ?? readPersistedAnalyticsSnapshotFallback();
+  const byDomain = Array.isArray(source.byDomain) ? source.byDomain : [];
+
+  let domainRightSum = 0;
+  let domainWrongSum = 0;
+  const played: Array<{
+    domainId: DomainId;
+    name: string;
+    right: number;
+    wrong: number;
+    attempts: number;
+    accRatio: number;
+    accPct: number;
+    lastElo: number;
+  }> = [];
+
+  for (let i = 0; i < 12; i++) {
+    const entry = byDomain[i];
+    const right = Math.max(0, Math.floor(Number(entry?.right) || 0));
+    const wrong = Math.max(0, Math.floor(Number(entry?.wrong) || 0));
+    const attempts = right + wrong;
+    domainRightSum += right;
+    domainWrongSum += wrong;
+    if (attempts > 0) {
+      const domId = i as DomainId;
+      const meta = getSovereignDomainMeta(domId);
+      const accRatio = right / attempts;
+      played.push({
+        domainId: domId,
+        name: meta.name,
+        right,
+        wrong,
+        attempts,
+        accRatio,
+        accPct: Math.round(accRatio * 100),
+        lastElo: Math.round(Number(entry?.lastElo) || 1200),
+      });
+    }
+  }
+
+  const rawRight = Math.max(0, Math.floor(Number(source.totalRight) || 0));
+  const rawWrong = Math.max(0, Math.floor(Number(source.totalWrong) || 0));
+  const totalRight = rawRight + rawWrong > 0 ? rawRight : domainRightSum;
+  const totalWrong = rawRight + rawWrong > 0 ? rawWrong : domainWrongSum;
+  const totalAnswered = totalRight + totalWrong;
+  const overallAccuracyPct =
+    totalAnswered > 0 ? Math.round((totalRight / totalAnswered) * 100) : 0;
+  const bestStreak = Math.max(0, Math.floor(Number(source.bestStreak) || 0));
+
+  if (played.length === 0) {
+    return {
+      totalAnswered,
+      overallAccuracyPct,
+      bestStreak,
+      strongestDomainId: null,
+      strongestDomainName: null,
+      strongestAccuracyPct: 0,
+      weakestDomainId: null,
+      weakestDomainName: null,
+      weakestAccuracyPct: 0,
+      mostPlayedDomainId: null,
+      mostPlayedDomainName: null,
+    };
+  }
+
+  const mostPlayed = [...played].sort(
+    (a, b) =>
+      b.attempts - a.attempts ||
+      b.right - a.right ||
+      a.domainId - b.domainId,
+  )[0];
+
+  if (played.length === 1) {
+    const solo = played[0];
+    const isStrength = solo.accPct >= 50;
+    return {
+      totalAnswered,
+      overallAccuracyPct,
+      bestStreak,
+      strongestDomainId: isStrength ? solo.domainId : null,
+      strongestDomainName: isStrength ? solo.name : null,
+      strongestAccuracyPct: isStrength ? solo.accPct : 0,
+      weakestDomainId: isStrength ? null : solo.domainId,
+      weakestDomainName: isStrength ? null : solo.name,
+      weakestAccuracyPct: isStrength ? 0 : solo.accPct,
+      mostPlayedDomainId: mostPlayed.domainId,
+      mostPlayedDomainName: mostPlayed.name,
+    };
+  }
+
+  const multiSample = played.filter((d) => d.attempts >= 2);
+  const strongPool = multiSample.length > 0 ? multiSample : played;
+  const strongest = [...strongPool].sort(
+    (a, b) =>
+      b.accRatio - a.accRatio ||
+      b.attempts - a.attempts ||
+      b.lastElo - a.lastElo ||
+      a.domainId - b.domainId,
+  )[0];
+
+  const remainingMulti = multiSample.filter((d) => d.domainId !== strongest.domainId);
+  const weakPool =
+    remainingMulti.length > 0
+      ? remainingMulti
+      : played.filter((d) => d.domainId !== strongest.domainId);
+  const weakest = [...weakPool].sort(
+    (a, b) =>
+      a.accRatio - b.accRatio ||
+      b.wrong - a.wrong ||
+      b.attempts - a.attempts ||
+      a.lastElo - b.lastElo ||
+      a.domainId - b.domainId,
+  )[0];
+
+  return {
+    totalAnswered,
+    overallAccuracyPct,
+    bestStreak,
+    strongestDomainId: strongest.domainId,
+    strongestDomainName: strongest.name,
+    strongestAccuracyPct: strongest.accPct,
+    weakestDomainId: weakest.domainId,
+    weakestDomainName: weakest.name,
+    weakestAccuracyPct: weakest.accPct,
+    mostPlayedDomainId: mostPlayed.domainId,
+    mostPlayedDomainName: mostPlayed.name,
   };
 }
