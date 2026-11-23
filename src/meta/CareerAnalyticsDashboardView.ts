@@ -26,10 +26,13 @@ import type { StudioAudioEngine } from '../audio/StudioAudioEngine';
 import type { HapticsEngine } from '../audio/HapticsEngine';
 import {
   ALL_ANALYTICS_ARCHETYPES,
+  ALL_V4_QUESTION_FORMATS,
   SPEED_BUCKET_LABELS,
+  buildPlayerStatProfileForHost,
   computeFilteredAnalyticsView,
   computeSpeedBucketIdx,
   createDefaultAnalyticsFilter,
+  inferQuestionFormatFromEvent,
   isDoubleDownEvent,
   type AnalyticsArchetype,
   type AnalyticsBarBucketPoint,
@@ -42,6 +45,7 @@ import {
   type FilteredAnalyticsView,
   type QuestionAnalyticsEvent,
 } from './CareerAnalyticsStore';
+import type { QuestionFormatV4 } from '../v4/contracts';
 import type { HonourAspectCategory } from './HallOfHonoursSystem';
 import type { SpacedRepetitionEngine } from './SpacedRepetitionEngine';
 import {
@@ -59,6 +63,7 @@ export interface PracticeSliceRequest {
   subcatLabel: string | null;
   outcome: AnalyticsOutcomeFilter;
   archetype?: AnalyticsArchetype | null;
+  questionFormat?: QuestionFormatV4 | null;
   peelTier?: 1 | 2 | 3 | null;
   speedBucket?: AnalyticsSpeedBucketIndex | null;
 }
@@ -95,6 +100,7 @@ export interface CareerAnalyticsOpenOptions extends CareerAnalyticsDashboardCall
   initialDomainId?: DomainId | number | null;
   initialSubcatLabel?: string | null;
   initialArchetype?: AnalyticsArchetype | null;
+  initialQuestionFormat?: QuestionFormatV4 | null;
   initialPeelTier?: 1 | 2 | 3 | null;
   initialOutcome?: AnalyticsOutcomeFilter;
   initialSpeedBucket?: AnalyticsSpeedBucketIndex | null;
@@ -102,12 +108,22 @@ export interface CareerAnalyticsOpenOptions extends CareerAnalyticsDashboardCall
 }
 
 const ARCHETYPE_SHORT_LABELS: Record<AnalyticsArchetype, string> = {
-  SIGHTLINE_LOCK: 'Sightline Prism',
-  CODEX_DUAL_RING: 'Codex Dual-Ring',
+  SIGHTLINE_LOCK: 'Classic 4-Choice',
+  CODEX_DUAL_RING: 'Dual-Ring Match',
   CALIBRATOR_DIAL: 'Calibrator Dial',
-  GAUNTLET_SHATTER: 'Gauntlet Shatter',
-  HERO_ARTIFACT_SYNTHESIS: 'Boss Relic Synth',
+  GAUNTLET_SHATTER: 'Rapid Shatter',
+  HERO_ARTIFACT_SYNTHESIS: 'Finale Chain',
   GLOBE_PIN_DROP: 'Globe Pin-Drop',
+};
+
+const FORMAT_MASTERY_LABELS: Record<QuestionFormatV4, string> = {
+  MULTIPLE_CHOICE: '4-Choice',
+  MATCH_4: 'Match-4',
+  SORT_4: 'Sort-4',
+  MULTI_STRIKE: 'Multi-Strike',
+  PINPOINT_DIAL: 'Pinpoint',
+  CLUE_ESCALATOR: '3-Clue',
+  VISUAL_SPOTTER: 'Visual',
 };
 
 const PEEL_TIER_LABELS: Record<'1' | '2' | '3', string> = {
@@ -147,6 +163,7 @@ function inferRelatedHonourAspect(filter: AnalyticsFilterState): HonourAspectCat
   if (filter.speedBucket !== null) return 'STREAK_SPEED';
   if (
     filter.archetype !== null ||
+    Boolean(filter.questionFormat) ||
     filter.peelTier !== null ||
     filter.outcome === 'DOUBLE_DOWN'
   ) {
@@ -161,6 +178,7 @@ function buildFilterContextLabel(filter: AnalyticsFilterState): string | null {
     parts.push(getSovereignDomainMeta(filter.domainId).name);
   }
   if (filter.subcatLabel) parts.push(filter.subcatLabel);
+  if (filter.questionFormat) parts.push(FORMAT_MASTERY_LABELS[filter.questionFormat]);
   if (filter.archetype) parts.push(ARCHETYPE_SHORT_LABELS[filter.archetype]);
   if (filter.peelTier !== null) parts.push(PEEL_TIER_LABELS[String(filter.peelTier) as '1' | '2' | '3']);
   if (filter.outcome !== 'ALL') parts.push(OUTCOME_LABELS[filter.outcome]);
@@ -530,6 +548,10 @@ export class CareerAnalyticsDashboardView {
               ? null
               : this.filter.subcatLabel,
       archetype: partial.archetype !== undefined ? partial.archetype : this.filter.archetype,
+      questionFormat:
+        partial.questionFormat !== undefined
+          ? partial.questionFormat
+          : this.filter.questionFormat ?? null,
       peelTier: partial.peelTier !== undefined ? partial.peelTier : this.filter.peelTier,
       outcome: partial.outcome ?? this.filter.outcome,
       speedBucket: partial.speedBucket !== undefined ? partial.speedBucket : this.filter.speedBucket,
@@ -559,6 +581,7 @@ export class CareerAnalyticsDashboardView {
       domainId,
       subcatLabel: domainId !== null ? options.initialSubcatLabel?.trim() || null : null,
       archetype: options.initialArchetype ?? null,
+      questionFormat: options.initialQuestionFormat ?? null,
       peelTier: options.initialPeelTier ?? null,
       outcome: options.initialOutcome ?? 'ALL',
       speedBucket: options.initialSpeedBucket ?? null,
@@ -576,7 +599,7 @@ export class CareerAnalyticsDashboardView {
     backdrop.className = 'ws-meta-backdrop';
     backdrop.setAttribute('role', 'dialog');
     backdrop.setAttribute('aria-modal', 'true');
-    backdrop.setAttribute('aria-label', 'Career Stats & Linked Telemetry Graphs');
+    backdrop.setAttribute('aria-label', 'Career Stats — Strengths, Weak Spots & Domain Radar');
     backdrop.addEventListener('click', (ev) => {
       if (ev.target === backdrop) {
         this.handleClose();
@@ -692,6 +715,9 @@ export class CareerAnalyticsDashboardView {
     }
     if (this.filter.archetype) {
       chips.push({ key: 'archetype', label: ARCHETYPE_SHORT_LABELS[this.filter.archetype] });
+    }
+    if (this.filter.questionFormat) {
+      chips.push({ key: 'format', label: FORMAT_MASTERY_LABELS[this.filter.questionFormat] });
     }
     if (this.filter.peelTier !== null) {
       chips.push({
@@ -873,9 +899,30 @@ export class CareerAnalyticsDashboardView {
     const ddWinPctStr = kpis.doubleDownWinPct !== null ? `${kpis.doubleDownWinPct}%` : '—';
     const hasDomFilter = this.filter.domainId !== null;
     const hasArchFilter = this.filter.archetype !== null;
+    const hasFormatFilter = Boolean(this.filter.questionFormat);
     const hasPeelFilter = this.filter.peelTier !== null;
 
     const sliceSubtitle = buildFilterContextLabel(this.filter);
+    const hostProfile = buildPlayerStatProfileForHost(snap);
+    const strengthWeakHtml =
+      hostProfile.strongestDomainId !== null || hostProfile.weakestDomainId !== null
+        ? `<div id="ws-stats-strength-weak-strip" class="ws-meta-hscroll" style="padding:2px 0 4px;" aria-label="Strengths and Weak Spots">
+            ${
+              hostProfile.strongestDomainId !== null && hostProfile.strongestDomainName
+                ? `<button type="button" class="ws-meta-chip" data-quick-dom="${hostProfile.strongestDomainId}" style="color:#67ebb8;">
+                    ✦ Strongest: ${escapeMetaHtml(hostProfile.strongestDomainName)} (${hostProfile.strongestAccuracyPct}%)
+                  </button>`
+                : ''
+            }
+            ${
+              hostProfile.weakestDomainId !== null && hostProfile.weakestDomainName
+                ? `<button type="button" class="ws-meta-chip" data-quick-dom="${hostProfile.weakestDomainId}" style="color:#ff9aa6;">
+                    ◆ Weak Spot: ${escapeMetaHtml(hostProfile.weakestDomainName)} (${hostProfile.weakestAccuracyPct}%)
+                  </button>`
+                : ''
+            }
+          </div>`
+        : '';
 
     host.innerHTML = `
       <div class="ws-meta-shell" data-stats-filtered="${view.hasActiveDimensionFilter ? 'true' : 'false'}">
@@ -884,7 +931,7 @@ export class CareerAnalyticsDashboardView {
             <button type="button" class="ws-meta-back-btn" id="ws-stats-back" data-meta-back="true" aria-label="Back">← Back</button>
             <div class="ws-meta-topbar-titles">
               <h2 class="ws-meta-title">CAREER STATS</h2>
-              <div class="ws-meta-eyebrow">${escapeMetaHtml(challengerName)} · ${escapeMetaHtml(sliceSubtitle ?? 'Linked Interactive Telemetry')}</div>
+              <div class="ws-meta-eyebrow">${escapeMetaHtml(challengerName)} · ${escapeMetaHtml(sliceSubtitle ?? 'Strengths, Weak Spots & Domain Radar')}</div>
             </div>
           </div>
           <div class="ws-meta-topbar-right">
@@ -999,6 +1046,7 @@ export class CareerAnalyticsDashboardView {
                 ${hasDomFilter ? 'Tap active domain again to show all 12' : 'Tap any spoke or domain row to drill down'}
               </span>
             </div>
+            ${strengthWeakHtml}
 
             <div class="ws-meta-two-col" style="align-items:center;">
               <div>
@@ -1039,9 +1087,9 @@ export class CareerAnalyticsDashboardView {
             ${this.renderSubcategoryBreakdown(view)}
           </div>
 
-          <!-- Graph 3: Filtered IRT ELO & Double-Down Conviction Telemetry -->
+          <!-- Graph 3: Filtered Rating Trajectory & Double-Down Record -->
           <div class="ws-meta-section" id="ws-stats-section-3">
-            <h3 class="ws-meta-section-title">3. IRT ELO &amp; Conviction Telemetry${this.filter.domainId !== null ? ` · ${escapeMetaHtml(getSovereignDomainMeta(this.filter.domainId).shortName)}` : ''}</h3>
+            <h3 class="ws-meta-section-title">3. Skill Rating &amp; Double-Down Record${this.filter.domainId !== null ? ` · ${escapeMetaHtml(getSovereignDomainMeta(this.filter.domainId).shortName)}` : ''}</h3>
             <div class="ws-meta-two-col" style="align-items:center;">
               <div>
                 ${buildEloTrajectorySvg(view.eloSeries)}
@@ -1068,11 +1116,44 @@ export class CareerAnalyticsDashboardView {
             </div>
           </div>
 
-          <!-- Graph 4: 6-Morph & Hint-Tier Matrix + Clickable Speed Histogram -->
+          <!-- Graph 4: Format Mastery Strip + Mode Matrix & Speed Histogram -->
           <div class="ws-meta-section" id="ws-stats-section-4">
+            <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;">
+              <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px;">
+                <h3 class="ws-meta-section-title">Format Mastery Strip (7 Game-Show Formats)</h3>
+                <span style="font-family:var(--font-mono);font-size:10.5px;color:#a5afc2;">
+                  ${hasFormatFilter ? 'Tap active format to clear' : 'Tap any format to cross-filter'}
+                </span>
+              </div>
+              <div id="ws-stats-format-strip" class="ws-meta-hscroll" role="group" aria-label="Filter by Question Format">
+                ${ALL_V4_QUESTION_FORMATS.map((fmt) => {
+                  const fc = view.byFormat[fmt];
+                  const isAct = this.filter.questionFormat === fmt;
+                  const isDim = hasFormatFilter && !isAct;
+                  const pct = pctStr(fc.right, fc.wrong);
+                  return `
+                    <button
+                      type="button"
+                      class="ws-meta-chip ${isAct ? 'is-active' : ''}"
+                      data-format-filter="${fmt}"
+                      data-format-right="${fc.right}"
+                      data-format-wrong="${fc.wrong}"
+                      aria-pressed="${isAct}"
+                      style="${isDim ? 'opacity:0.45;' : ''}display:inline-flex;align-items:center;gap:6px;"
+                    >
+                      <span>${escapeMetaHtml(FORMAT_MASTERY_LABELS[fmt])}</span>
+                      <span style="font-family:var(--font-mono);font-size:10.5px;color:${isAct ? 'var(--gold-bright)' : '#c8c2b6'};">
+                        ${fc.right}R·${fc.wrong}W${pct !== '—' ? ` (${pct})` : ''}
+                      </span>
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
             <div class="ws-meta-two-col">
               <div style="display:flex;flex-direction:column;gap:8px;">
-                <h3 class="ws-meta-section-title">4A. 6-Morph &amp; Hint-Tier Matrix</h3>
+                <h3 class="ws-meta-section-title">4A. Mode &amp; Lifeline Matrix</h3>
                 <div>
                   ${ALL_ANALYTICS_ARCHETYPES.map((arch) => {
                     const c = view.byArchetype[arch];
@@ -1161,6 +1242,10 @@ export class CareerAnalyticsDashboardView {
                         const dd = isDoubleDownEvent(ev);
                         const effMult = (mult * (dd ? 2 : 1)).toFixed(1);
                         const speedIdx = ev.speedBucketIdx ?? computeSpeedBucketIdx(ev.responseTimeMs);
+                        const fmtKey = inferQuestionFormatFromEvent(ev);
+                        const modeOrFmtLabel = ev.questionFormat
+                          ? FORMAT_MASTERY_LABELS[fmtKey]
+                          : ARCHETYPE_SHORT_LABELS[ev.archetype];
                         const cleanPrompt = ev.promptSnippet ? sanitizeMetaCopy(ev.promptSnippet) : '';
                         const cleanSubcat = ev.subcatLabel ? sanitizeMetaCopy(ev.subcatLabel) : '';
                         return `
@@ -1169,6 +1254,7 @@ export class CareerAnalyticsDashboardView {
                             data-ledger-domain="${ev.domainId}"
                             data-ledger-correct="${ev.correct ? 'true' : 'false'}"
                             data-ledger-arch="${ev.archetype}"
+                            data-ledger-format="${fmtKey}"
                             data-ledger-peel="${ev.peelTier}"
                             data-ledger-speed="${speedIdx}"
                             data-ledger-date="${escapeMetaHtml(ev.dateKey)}"
@@ -1182,7 +1268,7 @@ export class CareerAnalyticsDashboardView {
                                 <img src="./${escapeMetaHtml(dom.medallionUrl)}" alt="" style="width:16px;height:16px;object-fit:contain;flex-shrink:0;"/>
                                 <span style="color:var(--ivory-primary);font-weight:600;">${escapeMetaHtml(dom.shortName)}</span>
                                 ${cleanSubcat ? `<span style="color:${dom.accentHex};">· ${escapeMetaHtml(cleanSubcat)}</span>` : ''}
-                                <span style="color:#a5afc2;">· ${escapeMetaHtml(ARCHETYPE_SHORT_LABELS[ev.archetype])} · ${PEEL_TIER_SHORT_TAGS[ev.peelTier]}${dd ? ' · 2x' : ''}</span>
+                                <span style="color:#a5afc2;">· ${escapeMetaHtml(modeOrFmtLabel)} · ${PEEL_TIER_SHORT_TAGS[ev.peelTier]}${dd ? ' · 2x' : ''}</span>
                               </span>
                               <span style="color:#c8c2b6;white-space:nowrap;">
                                 ${(ev.responseTimeMs / 1000).toFixed(1)}s · ${effMult}x · <strong style="color:${ev.correct ? 'var(--gold-bright)' : '#a5afc2'};">+${ev.pointsDelta.toLocaleString('en-US')} PTS</strong>
@@ -1260,6 +1346,7 @@ export class CareerAnalyticsDashboardView {
         else if (key === 'subcat') this.setFilter({ subcatLabel: null });
         else if (key === 'outcome') this.setFilter({ outcome: 'ALL' });
         else if (key === 'archetype') this.setFilter({ archetype: null });
+        else if (key === 'format') this.setFilter({ questionFormat: null });
         else if (key === 'peel') this.setFilter({ peelTier: null });
         else if (key === 'speed') this.setFilter({ speedBucket: null });
         else if (key === 'bucket') this.setFilter({ bucketKey: null });
@@ -1284,6 +1371,7 @@ export class CareerAnalyticsDashboardView {
         subcatLabel: this.filter.subcatLabel,
         outcome: this.filter.outcome,
         archetype: this.filter.archetype,
+        questionFormat: this.filter.questionFormat ?? null,
         peelTier: this.filter.peelTier,
         speedBucket: this.filter.speedBucket,
       });
@@ -1356,6 +1444,34 @@ export class CareerAnalyticsDashboardView {
           this.filter.subcatLabel !== null &&
           this.filter.subcatLabel.toLowerCase() === lbl.toLowerCase();
         this.setFilter({ subcatLabel: isSame ? null : lbl });
+      });
+    });
+
+    // Graph 2: Clickable Strengths & Weak Spots quick-jump chips (toggle!)
+    host.querySelectorAll<HTMLButtonElement>('[data-quick-dom]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const idx = Number(btn.dataset.quickDom);
+        if (!Number.isFinite(idx) || idx < 0 || idx > 11) return;
+        const domId = idx as DomainId;
+        this.deps.haptics?.spinTick();
+        this.deps.audio?.playSfx('spin_tick');
+        this.setFilter({
+          domainId: this.filter.domainId === domId ? null : domId,
+          subcatLabel: null,
+        });
+      });
+    });
+
+    // Graph 4: Clickable Format Mastery Strip pills (toggle!)
+    host.querySelectorAll<HTMLButtonElement>('[data-format-filter]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const fmt = btn.dataset.formatFilter as QuestionFormatV4 | undefined;
+        if (!fmt) return;
+        this.deps.haptics?.spinTick();
+        this.deps.audio?.playSfx('spin_tick');
+        this.setFilter({
+          questionFormat: this.filter.questionFormat === fmt ? null : fmt,
+        });
       });
     });
 

@@ -1,15 +1,19 @@
 // ============================================================================
-// WORLD'S SMARTEST — Hall of Honours System (`#166` §2.2 + `v2.0` Expansion)
-//  • Modular Pack Registry: Core 64 + v2.0 Expansion (+20) = 84 Trophies & Medals
-//    across 5 Rarity Tiers (Initiate Bronze -> Mythic Celestial Diamond 0.1%)
-//  • 44 Equippable Gameplay Unlockables (100% Zero Pay-to-Win):
-//      - 16 PBR 3D Veritas Prism Material Finishes (`PrismAtelierView`)
-//      - 17 Diplomatic Broadcast Titles (`PassportSystem` + HUD)
-//      - 11 Chrono-Ring & HUD Accent Themes (`localStorage` + CSS vars)
+// WORLD'S SMARTEST v4.0 — Hall of Honours System
+//  • Modular Pack Registry: Core 64 + v2.0 (+20) + v3.0 (+4) + v4.0 (+12)
+//    = 100 Trophies & Medals across 5 Rarity Tiers (Bronze -> Mythic 0.1%)
+//  • 48 Equippable Gameplay Unlockables:
+//      - 16 Stage & 3D Trophy Finishes (`PrismAtelierView`)
+//      - 19 Broadcast Show Titles (`PassportSystem` + HUD)
+//      - 13 Stage & Crown HUD Accent Themes (`localStorage` + CSS vars)
 // ============================================================================
 
 import type { InkBlackboard, PassportStateSnapshot, PassportSystem } from '../narrative';
-import type { CareerAnalyticsState, CareerAnalyticsStore } from './CareerAnalyticsStore';
+import {
+  ALL_V4_QUESTION_FORMATS,
+  type CareerAnalyticsState,
+  type CareerAnalyticsStore,
+} from './CareerAnalyticsStore';
 import {
   PRISM_ATELIER_FINISHES,
   grantAtelierFinishUnlock,
@@ -51,7 +55,9 @@ export type HudAccentThemeId =
   | 'MYTHIC_PRISMATIC_DIAMOND'
   | 'BLUEPRINT_SAPPHIRE_DRAFT'
   | 'CARTOGRAPHER_MERCATOR_GOLD'
-  | 'MENSA_OBSIDIAN_ULTRAVIOLET';
+  | 'MENSA_OBSIDIAN_ULTRAVIOLET'
+  | 'STUDIO_SPOTLIGHT_GOLD'
+  | 'SIX_WEDGE_PRISM_CROWN';
 
 export interface HudAccentThemeSpec {
   id: HudAccentThemeId;
@@ -168,48 +174,54 @@ export const RARITY_TIER_META: Record<
 };
 
 /**
- * Equippable Diplomatic Broadcast Titles (Core 12 + v2.0 Expansion +5 = 17 Total).
+ * Equippable Broadcast Show Titles (Core 12 + v2.0 (+5) + v4.0 (+2) = 19 Total).
  */
 export const BROADCAST_TITLES_V1_CORE: readonly BroadcastTitleSpec[] = [
-  { id: 'bt_01', order: 1, title: 'MERIDIAN CANDIDATE', unlockRequirement: 'Default Geneva Summons Title' },
-  { id: 'bt_02', order: 2, title: 'GENEVA CHARTER INITIATE', unlockRequirement: 'Tier 1: First Sightline Lock' },
-  { id: 'bt_03', order: 3, title: 'COLD INSTINCT SPECIALIST', unlockRequirement: 'Tier 2: 10 Unpeeled 3.0x Tier-1 Locks' },
-  { id: 'bt_04', order: 4, title: 'CONVICTION HIGH-ROLLER', unlockRequirement: 'Tier 2: First 6.0x Max Overclock Win' },
-  { id: 'bt_05', order: 5, title: 'FORENSIC TELL READER', unlockRequirement: 'Tier 2: Catch a Rival Bluff (CALL BLUFF)' },
-  { id: 'bt_06', order: 6, title: 'ARCHIVE VAULT DELVER', unlockRequirement: 'Tier 2: Reach Archive Descent Depth 15' },
-  { id: 'bt_07', order: 7, title: 'CONSUL OF THE TWELVE', unlockRequirement: 'Tier 3: Reach 1,500 ELO in Any Domain' },
-  { id: 'bt_08', order: 8, title: 'BLACK SALON SHARK', unlockRequirement: 'Tier 3: Win a 3D Kinetic Ghost Duel' },
-  { id: 'bt_09', order: 9, title: 'RELIC ARCHIVIST SUPREME', unlockRequirement: 'Tier 3: Unlock 4 Country Boss Relics' },
-  { id: 'bt_10', order: 10, title: 'FIRST CITIZEN ARBITER', unlockRequirement: 'Tier 4: Complete The Meridian Circuit Campaign' },
-  { id: 'bt_11', order: 11, title: 'UNPEELED SOVEREIGN', unlockRequirement: 'Tier 5 Mythic: Win a Boss Showdown with 0 Peels' },
-  { id: 'bt_12', order: 12, title: 'POLYMATH SUPREME', unlockRequirement: 'Tier 5 Mythic: 1,850+ ELO Across All 12 Domains' },
+  { id: 'bt_01', order: 1, title: 'MERIDIAN CANDIDATE', unlockRequirement: 'Default Opening Broadcast Title' },
+  { id: 'bt_02', order: 2, title: 'GENEVA CHARTER INITIATE', unlockRequirement: 'Tier 1: Lock your first correct answer' },
+  { id: 'bt_03', order: 3, title: 'COLD INSTINCT SPECIALIST', unlockRequirement: 'Tier 2: Answer 10 questions cleanly with zero lifelines' },
+  { id: 'bt_04', order: 4, title: 'CONVICTION HIGH-ROLLER', unlockRequirement: 'Tier 2: Win a full-stakes 2× Double Down wager' },
+  { id: 'bt_05', order: 5, title: 'FORENSIC TELL READER', unlockRequirement: 'Tier 2: Catch a live rival bluff on stage' },
+  { id: 'bt_06', order: 6, title: 'ARCHIVE VAULT DELVER', unlockRequirement: 'Tier 2: Survive to Round 15 in Endless Mode' },
+  { id: 'bt_07', order: 7, title: 'CONSUL OF THE TWELVE', unlockRequirement: 'Tier 3: Reach 1500 Skill Rating in any domain' },
+  { id: 'bt_08', order: 8, title: 'BLACK SALON SHARK', unlockRequirement: 'Tier 3: Win a Head-to-Head Rival Trial' },
+  { id: 'bt_09', order: 9, title: 'RELIC ARCHIVIST SUPREME', unlockRequirement: 'Tier 3: Collect 4 Regional Championship trophies' },
+  { id: 'bt_10', order: 10, title: 'FIRST CITIZEN ARBITER', unlockRequirement: 'Tier 4: Complete the World Tour Campaign' },
+  { id: 'bt_11', order: 11, title: 'UNPEELED SOVEREIGN', unlockRequirement: 'Tier 5 Mythic: Win a Boss Showdown with zero lifelines' },
+  { id: 'bt_12', order: 12, title: 'POLYMATH SUPREME', unlockRequirement: 'Tier 5 Mythic: Reach 1850+ Skill Rating across all 12 domains' },
 ];
 
 export const BROADCAST_TITLES_V2_EXPANSION: readonly BroadcastTitleSpec[] = [
-  { id: 'bt_13', order: 13, title: 'VARSITY SCHOLAR', unlockRequirement: 'Tier 1 v2.0: Varsity Letterman (High School ≥ 80%)' },
-  { id: 'bt_14', order: 14, title: "DEAN'S LIST FELLOW", unlockRequirement: 'Tier 2 v2.0: Dean’s List Summa Cum Laude (College ≥ 85%)' },
-  { id: 'bt_15', order: 15, title: 'ROYAL CARTOGRAPHER', unlockRequirement: 'Tier 3 v2.0: Royal Cartographer (5 Globe Pin-Drop Wins)' },
-  { id: 'bt_16', order: 16, title: 'MENSA GRANDMASTER', unlockRequirement: 'Tier 4 v2.0: Mensa 99th-Percentile Laureate (Mensa ≥ 80%)' },
-  { id: 'bt_17', order: 17, title: 'SOVEREIGN OMNISCIENT', unlockRequirement: 'Tier 5 Mythic v2.0: Omniscient Mensa Polymath (#84)' },
+  { id: 'bt_13', order: 13, title: 'VARSITY SCHOLAR', unlockRequirement: 'Tier 1: Score 80%+ on a High School round' },
+  { id: 'bt_14', order: 14, title: "DEAN'S LIST FELLOW", unlockRequirement: 'Tier 2: Score 85%+ on a College round' },
+  { id: 'bt_15', order: 15, title: 'ROYAL CARTOGRAPHER', unlockRequirement: 'Tier 3: Win 5 World Map Pin-Drop challenges' },
+  { id: 'bt_16', order: 16, title: 'MENSA GRANDMASTER', unlockRequirement: 'Tier 4: Score 80%+ on a Mensa round' },
+  { id: 'bt_17', order: 17, title: 'SOVEREIGN OMNISCIENT', unlockRequirement: 'Tier 5 Mythic: Complete Omniscient Mensa Polymath (#84)' },
+];
+
+export const BROADCAST_TITLES_V4_EXPANSION: readonly BroadcastTitleSpec[] = [
+  { id: 'bt_18', order: 18, title: 'POWER PLAY HIGH ROLLER', unlockRequirement: 'Tier 3: Win 3 Power Play wagers on the show board (#95)' },
+  { id: 'bt_19', order: 19, title: "WORLD'S SMARTEST CHAMPION", unlockRequirement: 'Tier 5 Mythic: Win the Tier 8 1.4 Billion Global Finale (#99)' },
 ];
 
 export const BROADCAST_TITLES_CATALOG: readonly BroadcastTitleSpec[] = [
   ...BROADCAST_TITLES_V1_CORE,
   ...BROADCAST_TITLES_V2_EXPANSION,
+  ...BROADCAST_TITLES_V4_EXPANSION,
 ];
 
 /**
- * Equippable Chrono-Ring & HUD Accent Themes (Core 8 + v2.0 Expansion +3 = 11 Total).
+ * Equippable Stage & Crown HUD Accent Themes (Core 8 + v2.0 (+3) + v4.0 (+2) = 13 Total).
  */
 export const HUD_ACCENT_THEMES_V1_CORE: readonly HudAccentThemeSpec[] = [
   {
     id: 'GENEVA_CHAMPAGNE_24K',
     order: 1,
-    name: 'Geneva 24K Champagne Gold',
+    name: 'Studio 24K Champagne Gold',
     primaryHex: '#f2cf7e',
     secondaryHex: '#d8af57',
     ringGlowRgba: 'rgba(242, 207, 126, 0.36)',
-    unlockRequirement: 'Default Geneva Issue',
+    unlockRequirement: 'Default Broadcast Stage Theme',
   },
   {
     id: 'SOVEREIGN_PLATINUM_IVORY',
@@ -218,61 +230,61 @@ export const HUD_ACCENT_THEMES_V1_CORE: readonly HudAccentThemeSpec[] = [
     primaryHex: '#eae6dc',
     secondaryHex: '#b8c4d4',
     ringGlowRgba: 'rgba(234, 230, 220, 0.34)',
-    unlockRequirement: 'Tier 1: Stamp Diplomatic Passport',
+    unlockRequirement: 'Tier 1: Set your Contestant Name or Passport',
   },
   {
     id: 'HORIZON_ELECTRIC_CYAN',
     order: 3,
-    name: 'Horizon Telemetry Cyan',
+    name: 'Horizon Studio Cyan',
     primaryHex: '#64e6ff',
     secondaryHex: '#35a7db',
     ringGlowRgba: 'rgba(100, 230, 255, 0.36)',
-    unlockRequirement: 'Tier 1: Pledge World Council Faction',
+    unlockRequirement: 'Tier 1: Pledge a League House',
   },
   {
     id: 'AGORA_BOTANICAL_EMERALD',
     order: 4,
-    name: 'Agora Emerald Commons',
+    name: 'Emerald Winner Spotlight',
     primaryHex: '#52eba8',
     secondaryHex: '#28b87a',
     ringGlowRgba: 'rgba(82, 235, 168, 0.35)',
-    unlockRequirement: 'Tier 2: 25 Lifetime Correct Answers',
+    unlockRequirement: 'Tier 2: Reach 25 lifetime correct answers',
   },
   {
     id: 'TOKYO_VERMILION_EMBER',
     order: 5,
-    name: 'Shinkansen Vermilion & Gold',
+    name: 'Tokyo Prime-Time Vermilion',
     primaryHex: '#ff9d5c',
     secondaryHex: '#e05263',
     ringGlowRgba: 'rgba(255, 157, 92, 0.36)',
-    unlockRequirement: 'Tier 2: Clear Act I (London & Tokyo)',
+    unlockRequirement: 'Tier 2: Clear both London & Tokyo Tour Stops',
   },
   {
     id: 'CAIRO_SOLAR_AMBER',
     order: 6,
-    name: 'Meridian Zero Solar Amber',
+    name: 'Cairo Pavilion Solar Amber',
     primaryHex: '#ffcf56',
     secondaryHex: '#d98a2b',
     ringGlowRgba: 'rgba(255, 207, 86, 0.38)',
-    unlockRequirement: 'Tier 3: Reach Archive Depth 50',
+    unlockRequirement: 'Tier 3: Reach Round 50 in Endless Mode',
   },
   {
     id: 'REYKJAVIK_BOREALIS_VIOLET',
     order: 7,
-    name: 'Caldera Borealis Violet-Teal',
+    name: 'Borealis Stage Violet-Teal',
     primaryHex: '#b494ff',
     secondaryHex: '#5ce1e6',
     ringGlowRgba: 'rgba(180, 148, 255, 0.38)',
-    unlockRequirement: 'Tier 4: 1,750+ ELO Across 6 Domains',
+    unlockRequirement: 'Tier 4: Reach 1750+ Skill Rating across 6 domains',
   },
   {
     id: 'MYTHIC_PRISMATIC_DIAMOND',
     order: 8,
-    name: 'Mythic Celestial White-Diamond',
+    name: 'Mythic Celestial Diamond',
     primaryHex: '#fff8e7',
     secondaryHex: '#9ef2ff',
     ringGlowRgba: 'rgba(255, 248, 231, 0.44)',
-    unlockRequirement: 'Tier 5 Mythic: Lightning Savant (10× <3s Streak)',
+    unlockRequirement: 'Tier 5 Mythic: Lightning Buzzer Savant (10 straight under 3s)',
   },
 ];
 
@@ -280,20 +292,20 @@ export const HUD_ACCENT_THEMES_V2_EXPANSION: readonly HudAccentThemeSpec[] = [
   {
     id: 'BLUEPRINT_SAPPHIRE_DRAFT',
     order: 9,
-    name: 'Sapphire Blueprint Draft',
+    name: 'Sapphire Visual Stage',
     primaryHex: '#5ce1ff',
     secondaryHex: '#2589c7',
     ringGlowRgba: 'rgba(92, 225, 255, 0.38)',
-    unlockRequirement: 'Tier 1 v2.0: Sapphire Lens Analyst (#74)',
+    unlockRequirement: 'Tier 1: Solve your first Visual Spotter diagram (#74)',
   },
   {
     id: 'CARTOGRAPHER_MERCATOR_GOLD',
     order: 10,
-    name: 'Cartographer Mercator Gold',
+    name: 'World Atlas Mercator Gold',
     primaryHex: '#f5cb6e',
     secondaryHex: '#39d49a',
     ringGlowRgba: 'rgba(245, 203, 110, 0.40)',
-    unlockRequirement: 'Tier 2 v2.0: Geodesic Sharpshooter (≤ 300 km Bullseye, #71)',
+    unlockRequirement: 'Tier 2: Map Bullseye within 300 km (#71)',
   },
   {
     id: 'MENSA_OBSIDIAN_ULTRAVIOLET',
@@ -302,13 +314,35 @@ export const HUD_ACCENT_THEMES_V2_EXPANSION: readonly HudAccentThemeSpec[] = [
     primaryHex: '#d0a8ff',
     secondaryHex: '#64e6ff',
     ringGlowRgba: 'rgba(208, 168, 255, 0.42)',
-    unlockRequirement: 'Tier 3 v2.0: Doctoral Defense (Graduate ≥ 80%, #68)',
+    unlockRequirement: 'Tier 3: Score 80%+ on a Graduate round (#68)',
+  },
+];
+
+export const HUD_ACCENT_THEMES_V4_EXPANSION: readonly HudAccentThemeSpec[] = [
+  {
+    id: 'STUDIO_SPOTLIGHT_GOLD',
+    order: 12,
+    name: 'Prime-Time Spotlight Gold',
+    primaryHex: '#ffd866',
+    secondaryHex: '#f59f2a',
+    ringGlowRgba: 'rgba(255, 216, 102, 0.44)',
+    unlockRequirement: 'Tier 2: Land 3 Pinpoint Dial Bullseyes (#93)',
+  },
+  {
+    id: 'SIX_WEDGE_PRISM_CROWN',
+    order: 13,
+    name: 'Six-Wedge Championship Crown',
+    primaryHex: '#67f0b8',
+    secondaryHex: '#f5c451',
+    ringGlowRgba: 'rgba(103, 240, 184, 0.44)',
+    unlockRequirement: 'Tier 4: Collect all 6 Trivial Wedges on one board (#97)',
   },
 ];
 
 export const HUD_ACCENT_THEMES: readonly HudAccentThemeSpec[] = [
   ...HUD_ACCENT_THEMES_V1_CORE,
   ...HUD_ACCENT_THEMES_V2_EXPANSION,
+  ...HUD_ACCENT_THEMES_V4_EXPANSION,
 ];
 
 export function getUnlockedHudThemeIds(): HudAccentThemeId[] {
@@ -634,15 +668,16 @@ function readV2StoresTelemetry(analytics: CareerAnalyticsState): HonourV2StoresT
 }
 
 /**
- * Core v1.0 64 Trophies & Medals (`14 + 14 + 14 + 12 + 10 = 64` across 5 Rarity Tiers).
+ * Core 64 Trophies & Medals (`14 + 14 + 14 + 12 + 10 = 64` across 5 Rarity Tiers).
+ * All medal IDs remain stable for full save compatibility; copy uses crisp game-show language.
  */
 export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   // ================= TIER 1 — EASY (Initiate Bronze, 14) =================
   {
     id: 't1_first_lock',
     number: 1,
-    title: 'First Sightline Lock',
-    description: 'Solve your first Veritas Prism question in any mode.',
+    title: 'First Answer Locked',
+    description: 'Lock your first correct answer in any game mode.',
     tier: 'TIER_1_EASY',
     aspect: 'PRISM_OVERCLOCK',
     emblemKey: 'medal_tier1_bronze',
@@ -653,8 +688,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't1_first_peel',
     number: 2,
-    title: 'Horological Curiosity',
-    description: 'Peel open the Brass Crown to solve a question using the Clue or Blueprint Core.',
+    title: 'Lifeline Tactician',
+    description: 'Use a Clue or 50/50 lifeline to crack a tough question.',
     tier: 'TIER_1_EASY',
     aspect: 'PRISM_OVERCLOCK',
     emblemKey: 'medal_tier1_bronze',
@@ -664,8 +699,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't1_first_overclock',
     number: 3,
-    title: 'Conviction Spark',
-    description: 'Hold-to-Overclock and win your first confidence wager.',
+    title: 'Double Down Debut',
+    description: 'Win your first 2× Double Down wager.',
     tier: 'TIER_1_EASY',
     aspect: 'PRISM_OVERCLOCK',
     emblemKey: 'medal_tier1_bronze',
@@ -675,8 +710,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't1_passport_stamp',
     number: 4,
-    title: 'Credentials Registered',
-    description: 'Register your Challenger Name or stamp your Meridian Diplomatic Passport.',
+    title: 'Contestant Badge Signed',
+    description: 'Set your Contestant Name or stamp your World Tour Passport.',
     tier: 'TIER_1_EASY',
     aspect: 'CAMPAIGN_LORE',
     emblemKey: 'medal_tier1_bronze',
@@ -687,20 +722,20 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't1_geneva_cleared',
     number: 5,
-    title: 'Vetting Chamber Cleared',
-    description: 'Complete Julian Vance’s 4-Question Geneva Vetting Prologue.',
+    title: 'Opening Audition Cleared',
+    description: 'Complete the 4-question opening tryout round.',
     tier: 'TIER_1_EASY',
     aspect: 'CAMPAIGN_LORE',
     emblemKey: 'medal_tier1_bronze',
     target: 1,
     measure: (c) => (c.analytics.feats.prologueCleared || c.passport.visas.ch?.cleared ? 1 : 0),
-    reward: { prismFinishId: 'DAMASCUS_STEEL_AMBER', rewardLabel: 'Prism Finish: Damascus Steel & Amber' },
+    reward: { prismFinishId: 'DAMASCUS_STEEL_AMBER', rewardLabel: 'Stage Finish: Damascus Steel & Amber' },
   },
   {
     id: 't1_first_daily',
     number: 6,
-    title: 'World Broadcast Debut',
-    description: 'Complete your first synchronized 00:00 UTC Daily Global Feed.',
+    title: 'Daily Show Debut',
+    description: 'Complete your first synchronized 00:00 UTC Daily Global Challenge.',
     tier: 'TIER_1_EASY',
     aspect: 'MODES_TRIALS',
     emblemKey: 'medal_tier1_bronze',
@@ -710,8 +745,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't1_first_briefing',
     number: 7,
-    title: 'Briefing Room Calibrated',
-    description: 'Solve 5 calibration questions in Nadia’s Briefing Room.',
+    title: 'Topic Picker Warmup',
+    description: 'Clear 5 questions in Single Topic practice mode.',
     tier: 'TIER_1_EASY',
     aspect: 'MODES_TRIALS',
     emblemKey: 'medal_tier1_bronze',
@@ -721,8 +756,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't1_first_endless',
     number: 8,
-    title: 'First Extraction Airlock',
-    description: 'Reach Depth 5 (First Airlock) or solve 5 Prisms in The Archive Descent.',
+    title: 'First Survival Checkpoint',
+    description: 'Reach Round 5 or clear 5 questions in Endless Mode.',
     tier: 'TIER_1_EASY',
     aspect: 'MODES_TRIALS',
     emblemKey: 'medal_tier1_bronze',
@@ -732,8 +767,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't1_first_trials',
     number: 9,
-    title: 'Kinetic Ghost Contender',
-    description: 'Solve 5 Prisms in World Council Async Ghost Trials.',
+    title: 'Rival Arena Contender',
+    description: 'Clear 5 questions in Head-to-Head Rival Trials.',
     tier: 'TIER_1_EASY',
     aspect: 'MODES_TRIALS',
     emblemKey: 'medal_tier1_bronze',
@@ -743,8 +778,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't1_backstage_1',
     number: 10,
-    title: 'Behind the Obsidian Glass',
-    description: 'Conduct your first Backstage Interrogation conversation.',
+    title: 'Green Room Scout',
+    description: 'Complete your first Backstage rival interview.',
     tier: 'TIER_1_EASY',
     aspect: 'CAMPAIGN_LORE',
     emblemKey: 'medal_tier1_bronze',
@@ -754,8 +789,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't1_uv_scan_1',
     number: 11,
-    title: 'Blacklight Forensics',
-    description: 'Scan a Relic under UV light inside the 3D Intel Observatory.',
+    title: 'Trophy Case Inspector',
+    description: 'Inspect a trophy under UV light inside the 3D Gallery.',
     tier: 'TIER_1_EASY',
     aspect: 'CAMPAIGN_LORE',
     emblemKey: 'medal_tier1_bronze',
@@ -765,8 +800,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't1_atelier_equip',
     number: 12,
-    title: 'Bespoke Horologist',
-    description: 'Equip a custom material finish inside the Prism Atelier.',
+    title: 'Stage Stylist',
+    description: 'Equip a custom metallic finish in the Trophy Atelier.',
     tier: 'TIER_1_EASY',
     aspect: 'PRISM_OVERCLOCK',
     emblemKey: 'medal_tier1_bronze',
@@ -776,20 +811,20 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't1_faction_pledge',
     number: 13,
-    title: 'Council Allegiance',
-    description: 'Pledge allegiance to Sovereign, Horizon, or Agora.',
+    title: 'League House Pledge',
+    description: 'Choose your banner house: Sovereign, Horizon, or Agora.',
     tier: 'TIER_1_EASY',
     aspect: 'MODES_TRIALS',
     emblemKey: 'medal_tier1_bronze',
     target: 1,
     measure: (c) => (c.analytics.feats.factionPledged || c.blackboard?.pledgedFaction ? 1 : 0),
-    reward: { hudThemeId: 'HORIZON_ELECTRIC_CYAN', rewardLabel: 'HUD Theme: Horizon Telemetry Cyan' },
+    reward: { hudThemeId: 'HORIZON_ELECTRIC_CYAN', rewardLabel: 'HUD Theme: Horizon Studio Cyan' },
   },
   {
     id: 't1_bookmark_1',
     number: 14,
-    title: 'Archivist of Epiphanies',
-    description: 'Bookmark an “Aha!” Intel Flash debrief to your Observatory study.',
+    title: 'Aha! Moment Collector',
+    description: 'Bookmark a favorite fact debrief to your personal study deck.',
     tier: 'TIER_1_EASY',
     aspect: 'DOMAINS_POLYMATH',
     emblemKey: 'medal_tier1_bronze',
@@ -801,8 +836,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't2_streak_5',
     number: 15,
-    title: 'Quintuple Resonance',
-    description: 'Achieve a 5-question consecutive correct streak.',
+    title: 'Five in a Row',
+    description: 'Answer 5 questions correctly in a row.',
     tier: 'TIER_2_MEDIUM',
     aspect: 'STREAK_SPEED',
     emblemKey: 'medal_tier2_sterling',
@@ -812,20 +847,20 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't2_streak_10',
     number: 16,
-    title: 'Decade of Precision',
-    description: 'Achieve a 10-question consecutive correct streak.',
+    title: 'Ten-Question Hot Streak',
+    description: 'Answer 10 questions correctly in a row.',
     tier: 'TIER_2_MEDIUM',
     aspect: 'STREAK_SPEED',
     emblemKey: 'trophy_streak_chronometer',
     target: 10,
     measure: (c) => c.analytics.bestStreak,
-    reward: { prismFinishId: 'STERLING_CHRONOMETER_RHODIUM', rewardLabel: 'Prism Finish: Vallée de Joux Rhodium & Sterling' },
+    reward: { prismFinishId: 'STERLING_CHRONOMETER_RHODIUM', rewardLabel: 'Stage Finish: Rhodium & Sterling' },
   },
   {
     id: 't2_max6x_1',
     number: 17,
-    title: 'Maximum 6.0x Conviction',
-    description: 'Lock and win a full-charge 6.0x Tier-1 Cold Instinct Overclock.',
+    title: 'Full-Stakes High Roller',
+    description: 'Win a full-conviction 2× Double Down wager with zero lifelines used.',
     tier: 'TIER_2_MEDIUM',
     aspect: 'PRISM_OVERCLOCK',
     emblemKey: 'trophy_overclock_roulette',
@@ -836,8 +871,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't2_bluff_echo_1',
     number: 18,
-    title: 'Bluff Echo Vent',
-    description: 'Safely flick-cancel an active Overclock charge to bait your Rival.',
+    title: 'Cool-Headed Fakeout',
+    description: 'Cancel a live Double Down wager before locking in to bait a rival.',
     tier: 'TIER_2_MEDIUM',
     aspect: 'PRISM_OVERCLOCK',
     emblemKey: 'medal_tier2_sterling',
@@ -847,8 +882,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't2_call_bluff_1',
     number: 19,
-    title: 'Human Tell Reader',
-    description: 'Spot a physical character tell and catch a Rival Bluff (CALL BLUFF).',
+    title: 'Bluff Buster',
+    description: 'Spot a rival tell and catch a live stage bluff.',
     tier: 'TIER_2_MEDIUM',
     aspect: 'CAMPAIGN_LORE',
     emblemKey: 'medal_tier2_sterling',
@@ -857,14 +892,14 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
     reward: {
       prismFinishId: 'BLACK_SALON_CRIMSON_OBSIDIAN',
       broadcastTitle: 'FORENSIC TELL READER',
-      rewardLabel: 'Finish: Black Salon Crimson + Title: FORENSIC TELL READER',
+      rewardLabel: 'Stage Finish: Crimson Obsidian + Title: FORENSIC TELL READER',
     },
   },
   {
     id: 't2_perfect_match',
     number: 20,
-    title: 'Flawless Five',
-    description: 'Complete any 5+ question match with 100% accuracy.',
+    title: 'Clean Sweep Five',
+    description: 'Finish any 5+ question round with 100% accuracy.',
     tier: 'TIER_2_MEDIUM',
     aspect: 'STREAK_SPEED',
     emblemKey: 'medal_tier2_sterling',
@@ -874,8 +909,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't2_act1_cleared',
     number: 21,
-    title: 'Dual-Track Envoy',
-    description: 'Earn both London (GB) and Tokyo (JP) Act I Diplomatic Visas.',
+    title: 'International Qualifier',
+    description: 'Clear both London and Tokyo international tour stops.',
     tier: 'TIER_2_MEDIUM',
     aspect: 'CAMPAIGN_LORE',
     emblemKey: 'medal_tier2_sterling',
@@ -884,14 +919,14 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
     reward: {
       prismFinishId: 'KYOTO_URUSHI_KINTSUGI',
       hudThemeId: 'TOKYO_VERMILION_EMBER',
-      rewardLabel: 'Finish: Kyoto Kintsugi + Theme: Vermilion Ember',
+      rewardLabel: 'Stage Finish: Kyoto Kintsugi + Theme: Tokyo Vermilion',
     },
   },
   {
     id: 't2_archive_15',
     number: 22,
-    title: 'Diplomatic Vaults Delver',
-    description: 'Reach Depth 15 in Endless Archive Descent.',
+    title: 'Endless Runner XV',
+    description: 'Survive to Round 15 in Endless Mode.',
     tier: 'TIER_2_MEDIUM',
     aspect: 'MODES_TRIALS',
     emblemKey: 'medal_tier2_sterling',
@@ -902,41 +937,45 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't2_calibrator_bullseye',
     number: 23,
-    title: 'Pinhole Astrolabe',
-    description: 'Hit a 3.5x Pinhole Bullseye on the 3D Calibrator Dial.',
+    title: 'Dead-Center Dial',
+    description: 'Hit an exact bullseye on an Estimation or Pinpoint Dial.',
     tier: 'TIER_2_MEDIUM',
     aspect: 'PRISM_OVERCLOCK',
     emblemKey: 'medal_tier2_sterling',
     target: 1,
-    measure: (c) => c.analytics.feats.calibratorBullseyes,
+    measure: (c) => Math.max(c.analytics.feats.calibratorBullseyes, c.analytics.feats.pinpointBullseyes ?? 0),
   },
   {
     id: 't2_codex_first_try',
     number: 24,
-    title: 'Cryptex Synchronizer',
-    description: 'Align and lock a 3D Codex Dual-Ring at unpeeled Tier 1.',
+    title: 'First-Try Pairing',
+    description: 'Lock a clean first-try match pair with zero lifelines used.',
     tier: 'TIER_2_MEDIUM',
     aspect: 'PRISM_OVERCLOCK',
     emblemKey: 'medal_tier2_sterling',
     target: 1,
-    measure: (c) => c.analytics.feats.codexFirstTryLocks,
+    measure: (c) => Math.max(c.analytics.feats.codexFirstTryLocks, c.analytics.feats.match4CleanSweeps ?? 0),
   },
   {
     id: 't2_gauntlet_10',
     number: 25,
-    title: 'Kinetic Plate Shatterer',
-    description: 'Shatter 10 Gauntlet Veritas Plates accurately.',
+    title: 'Rapid-Fire Finisher',
+    description: 'Clear 10 Rapid-Fire or Multi-Strike questions accurately.',
     tier: 'TIER_2_MEDIUM',
     aspect: 'PRISM_OVERCLOCK',
     emblemKey: 'medal_tier2_sterling',
     target: 10,
-    measure: (c) => c.analytics.byArchetype.GAUNTLET_SHATTER.right,
+    measure: (c) =>
+      Math.max(
+        c.analytics.byArchetype.GAUNTLET_SHATTER.right,
+        c.analytics.byFormat?.MULTI_STRIKE?.right ?? 0,
+      ),
   },
   {
     id: 't2_cold_instinct_10',
     number: 26,
-    title: 'Cold Instinct X',
-    description: 'Solve 10 questions sealed at 3.0x Tier-1 Cold Instinct.',
+    title: 'Pure Knowledge X',
+    description: 'Clear 10 questions cleanly with zero lifelines used.',
     tier: 'TIER_2_MEDIUM',
     aspect: 'PRISM_OVERCLOCK',
     emblemKey: 'medal_tier2_sterling',
@@ -947,20 +986,20 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't2_correct_25',
     number: 27,
-    title: 'Quarter-Century Scholar',
+    title: 'Quarter-Century Quizzer',
     description: 'Reach 25 lifetime correct answers across all modes.',
     tier: 'TIER_2_MEDIUM',
     aspect: 'DOMAINS_POLYMATH',
     emblemKey: 'medal_tier2_sterling',
     target: 25,
     measure: (c) => c.analytics.totalRight,
-    reward: { hudThemeId: 'AGORA_BOTANICAL_EMERALD', rewardLabel: 'HUD Theme: Agora Emerald Commons' },
+    reward: { hudThemeId: 'AGORA_BOTANICAL_EMERALD', rewardLabel: 'HUD Theme: Emerald Winner Spotlight' },
   },
   {
     id: 't2_clues_4',
     number: 28,
-    title: 'Red Thread Investigator',
-    description: 'Uncover 4 Conspiracy Evidence Clues on the Dossier Board.',
+    title: 'Case File Sleuth',
+    description: 'Uncover 4 secret backstage clues on the Evidence Board.',
     tier: 'TIER_2_MEDIUM',
     aspect: 'CAMPAIGN_LORE',
     emblemKey: 'medal_tier2_sterling',
@@ -972,32 +1011,32 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't3_streak_20',
     number: 29,
-    title: 'Twentyfold Harmonic',
-    description: 'Achieve a 20-question consecutive correct streak.',
+    title: 'Twenty-Question Heater',
+    description: 'Answer 20 questions correctly in a row.',
     tier: 'TIER_3_HARD',
     aspect: 'STREAK_SPEED',
     emblemKey: 'trophy_streak_chronometer',
     target: 20,
     measure: (c) => c.analytics.bestStreak,
-    reward: { prismFinishId: 'CONSUL_MALACHITE_VERDIGRIS', rewardLabel: 'Prism Finish: Consul Malachite & Bronze' },
+    reward: { prismFinishId: 'CONSUL_MALACHITE_VERDIGRIS', rewardLabel: 'Stage Finish: Malachite & Bronze' },
   },
   {
     id: 't3_triple_6x_match',
     number: 30,
-    title: 'Triple Turbine Surge',
-    description: 'Land 3× 6.0x Max Overclocks inside a single match.',
+    title: 'Triple Double-Down Surge',
+    description: 'Win 3 full-stakes Double Down wagers inside a single match.',
     tier: 'TIER_3_HARD',
     aspect: 'PRISM_OVERCLOCK',
     emblemKey: 'trophy_overclock_roulette',
     target: 1,
     measure: (c) => (c.analytics.feats.max3x6xInSingleMatch ? 1 : 0),
-    reward: { prismFinishId: 'SOLAR_OCULUS_WHITE_GOLD', rewardLabel: 'Prism Finish: Solar Oculus 18K White-Gold' },
+    reward: { prismFinishId: 'SOLAR_OCULUS_WHITE_GOLD', rewardLabel: 'Stage Finish: Solar White-Gold' },
   },
   {
     id: 't3_flawless_boss',
     number: 31,
-    title: 'Untouched Sovereign',
-    description: 'Defeat a 3-Phase Country Boss Showdown with 0 Prism Shields lost.',
+    title: 'Untouched Champion',
+    description: 'Win a Boss Showdown without losing a single shield.',
     tier: 'TIER_3_HARD',
     aspect: 'CAMPAIGN_LORE',
     emblemKey: 'medal_tier3_gold',
@@ -1007,7 +1046,7 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't3_correct_100',
     number: 32,
-    title: 'Centurion Initiate',
+    title: 'Century Club',
     description: 'Reach 100 lifetime correct answers.',
     tier: 'TIER_3_HARD',
     aspect: 'DOMAINS_POLYMATH',
@@ -1018,8 +1057,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't3_domain_elo_1500',
     number: 33,
-    title: 'Consul of Mastery',
-    description: 'Climb to 1,500 IRT ELO in any knowledge domain.',
+    title: 'Domain Specialist',
+    description: 'Reach 1500 Skill Rating in any trivia domain.',
     tier: 'TIER_3_HARD',
     aspect: 'DOMAINS_POLYMATH',
     emblemKey: 'trophy_polymath_globe',
@@ -1030,8 +1069,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't3_relics_4',
     number: 34,
-    title: 'Curator of Four Capitals',
-    description: 'Recover 4 Tier-3 Country Boss Relics for your Observatory.',
+    title: 'Four-City Trophy Holder',
+    description: 'Collect 4 Regional Championship trophies for your Gallery.',
     tier: 'TIER_3_HARD',
     aspect: 'CAMPAIGN_LORE',
     emblemKey: 'medal_tier3_gold',
@@ -1042,20 +1081,20 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't3_archive_50',
     number: 35,
-    title: 'Subterranean Consul',
-    description: 'Survive to Depth 50 in Endless Archive Descent.',
+    title: 'Endless Marathon L',
+    description: 'Survive to Round 50 in Endless Mode.',
     tier: 'TIER_3_HARD',
     aspect: 'MODES_TRIALS',
     emblemKey: 'medal_tier3_gold',
     target: 50,
     measure: (c) => c.analytics.feats.maxEndlessDepth,
-    reward: { hudThemeId: 'CAIRO_SOLAR_AMBER', rewardLabel: 'HUD Theme: Meridian Zero Solar Amber' },
+    reward: { hudThemeId: 'CAIRO_SOLAR_AMBER', rewardLabel: 'HUD Theme: Cairo Pavilion Solar Amber' },
   },
   {
     id: 't3_ghost_win_1',
     number: 36,
-    title: 'Phantom Victor',
-    description: 'Defeat a Recorded 3D Kinetic Ghost in World Council Trials.',
+    title: 'Duel Victor',
+    description: 'Defeat a recorded Challenger in Head-to-Head Rival Trials.',
     tier: 'TIER_3_HARD',
     aspect: 'MODES_TRIALS',
     emblemKey: 'medal_tier3_gold',
@@ -1066,7 +1105,7 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't3_fast_under3s_15',
     number: 37,
-    title: 'Reflex Chronometer',
+    title: 'Lightning Buzzer',
     description: 'Lock 15 correct answers in under 3.0 seconds each.',
     tier: 'TIER_3_HARD',
     aspect: 'STREAK_SPEED',
@@ -1077,20 +1116,20 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't3_all_12_domains_1',
     number: 38,
-    title: 'Renaissance Passport',
-    description: 'Solve at least 1 question across all 12 Sovereign Domains.',
+    title: 'All-Twelve Polymath',
+    description: 'Answer at least 1 question correctly in all 12 trivia domains.',
     tier: 'TIER_3_HARD',
     aspect: 'DOMAINS_POLYMATH',
     emblemKey: 'trophy_polymath_globe',
     target: 12,
     measure: (c) => c.analytics.byDomain.filter((d) => d.right >= 1).length,
-    reward: { prismFinishId: 'IMPERIAL_EMERALD_BRASS', rewardLabel: 'Prism Finish: Imperial Emerald & Brass' },
+    reward: { prismFinishId: 'IMPERIAL_EMERALD_BRASS', rewardLabel: 'Stage Finish: Imperial Emerald & Brass' },
   },
   {
     id: 't3_daily_5',
     number: 39,
-    title: 'Global Feed Correspondent',
-    description: 'Complete 5 Daily Global Feed World Broadcasts.',
+    title: 'Daily Show Regular',
+    description: 'Complete 5 Daily Global Challenges.',
     tier: 'TIER_3_HARD',
     aspect: 'MODES_TRIALS',
     emblemKey: 'medal_tier3_gold',
@@ -1100,8 +1139,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't3_hero_synth_3',
     number: 40,
-    title: 'Relic Synthesis Adept',
-    description: 'Solve 3 chained Hero Artifact Synthesis steps.',
+    title: 'Finale Chain Master',
+    description: 'Clear 3 multi-step Championship Finale chain clues.',
     tier: 'TIER_3_HARD',
     aspect: 'PRISM_OVERCLOCK',
     emblemKey: 'medal_tier3_gold',
@@ -1111,8 +1150,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't3_backstage_6',
     number: 41,
-    title: 'Grand Inquisitor',
-    description: 'Complete 6 Backstage Interrogations across the global circuit.',
+    title: 'Studio Insider',
+    description: 'Complete 6 Backstage rival interviews across the World Tour.',
     tier: 'TIER_3_HARD',
     aspect: 'CAMPAIGN_LORE',
     emblemKey: 'medal_tier3_gold',
@@ -1122,14 +1161,14 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't3_visas_5',
     number: 42,
-    title: 'Plenipotentiary Envoy',
-    description: 'Stamp 5 Country Diplomatic Visas into your Meridian Passport.',
+    title: 'World Tour Globetrotter',
+    description: 'Earn 5 International Tour Stamps in your Passport.',
     tier: 'TIER_3_HARD',
     aspect: 'CAMPAIGN_LORE',
     emblemKey: 'medal_tier3_gold',
     target: 5,
-    measure: (c) => clearedVisasCount(c.passport),
-    reward: { prismFinishId: 'PHARAONIC_LAPIS_ELECTRUM', rewardLabel: 'Prism Finish: Pharaonic Lapis & Electrum' },
+    measure: (c) => Math.max(clearedVisasCount(c.passport), c.analytics.feats.worldTourTiersCleared ?? 0),
+    reward: { prismFinishId: 'PHARAONIC_LAPIS_ELECTRUM', rewardLabel: 'Stage Finish: Pharaonic Lapis & Electrum' },
   },
 
   // ================= TIER 4 — VERY RARE (Arbiter Smoked Sapphire, 12) =================
@@ -1137,19 +1176,19 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
     id: 't4_streak_35',
     number: 43,
     title: 'Thirty-Five Unbroken',
-    description: 'Achieve a 35-question consecutive correct streak.',
+    description: 'Answer 35 questions correctly in a row.',
     tier: 'TIER_4_VERY_RARE',
     aspect: 'STREAK_SPEED',
     emblemKey: 'trophy_streak_chronometer',
     target: 35,
     measure: (c) => c.analytics.bestStreak,
-    reward: { prismFinishId: 'ARBITER_SMOKED_SAPPHIRE_PLATINUM', rewardLabel: 'Prism Finish: Arbiter Smoked Sapphire' },
+    reward: { prismFinishId: 'ARBITER_SMOKED_SAPPHIRE_PLATINUM', rewardLabel: 'Stage Finish: Smoked Sapphire & Platinum' },
   },
   {
     id: 't4_soren_coin_defeat',
     number: 44,
-    title: 'Dead Coin Counterplay',
-    description: 'Read Soren Kael’s coin tell & defeat him (or catch 3 Rival Bluffs).',
+    title: 'Master Bluff Hunter',
+    description: 'Read Soren Kael’s coin tell and beat him, or catch 3 live rival bluffs.',
     tier: 'TIER_4_VERY_RARE',
     aspect: 'CAMPAIGN_LORE',
     emblemKey: 'medal_tier4_sapphire',
@@ -1159,14 +1198,15 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't4_campaign_complete',
     number: 45,
-    title: 'Champion of The Meridian',
-    description: 'Complete The Meridian Circuit Campaign at The Apex Forum.',
+    title: 'World Tour Finisher',
+    description: 'Complete the World Tour Campaign Finale.',
     tier: 'TIER_4_VERY_RARE',
     aspect: 'CAMPAIGN_LORE',
     emblemKey: 'medal_tier4_sapphire',
     target: 1,
     measure: (c) =>
       c.analytics.feats.campaignCompleted ||
+      c.analytics.feats.worldSmartestChampionWon ||
       c.passport.visas.global?.cleared ||
       (c.blackboard?.achievedEndings.length ?? 0) > 0
         ? 1
@@ -1176,8 +1216,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't4_all_8_relics_24_latches',
     number: 46,
-    title: 'Master of Twenty-Four Latches',
-    description: 'Recover all 8 Tier-3 Relics and actuate all 24 mechanical latches.',
+    title: 'Grand Vault Curator',
+    description: 'Collect all 8 Championship trophies and unlock all 24 display latches.',
     tier: 'TIER_4_VERY_RARE',
     aspect: 'CAMPAIGN_LORE',
     emblemKey: 'medal_tier4_sapphire',
@@ -1190,8 +1230,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't4_correct_500_acc80',
     number: 47,
-    title: 'High Arbiter Laureate',
-    description: 'Reach 500 lifetime correct answers while maintaining ≥ 80% accuracy.',
+    title: 'High Accuracy Laureate',
+    description: 'Reach 500 lifetime correct answers while holding 80%+ accuracy.',
     tier: 'TIER_4_VERY_RARE',
     aspect: 'DOMAINS_POLYMATH',
     emblemKey: 'medal_tier4_sapphire',
@@ -1205,20 +1245,20 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't4_six_domains_1750',
     number: 48,
-    title: 'Hexagonal Savant',
-    description: 'Reach 1,750+ ELO across at least 6 knowledge domains.',
+    title: 'Six-Domain Ace',
+    description: 'Reach 1750+ Skill Rating across at least 6 trivia domains.',
     tier: 'TIER_4_VERY_RARE',
     aspect: 'DOMAINS_POLYMATH',
     emblemKey: 'trophy_polymath_globe',
     target: 6,
     measure: (c) => countDomainsAboveElo(c, 1750),
-    reward: { hudThemeId: 'REYKJAVIK_BOREALIS_VIOLET', rewardLabel: 'HUD Theme: Caldera Borealis Violet-Teal' },
+    reward: { hudThemeId: 'REYKJAVIK_BOREALIS_VIOLET', rewardLabel: 'HUD Theme: Borealis Stage Violet-Teal' },
   },
   {
     id: 't4_archive_100',
     number: 49,
-    title: 'Abyssal Vault Walker',
-    description: 'Reach Depth 100 in Endless Archive Descent.',
+    title: 'Centurion of Endless',
+    description: 'Survive to Round 100 in Endless Mode.',
     tier: 'TIER_4_VERY_RARE',
     aspect: 'MODES_TRIALS',
     emblemKey: 'medal_tier4_sapphire',
@@ -1228,8 +1268,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't4_black_salon_champ',
     number: 50,
-    title: 'Sovereign of the Black Salon',
-    description: 'Win a High-Stakes Underground Black Salon Knockout match.',
+    title: 'High-Stakes Knockout Champion',
+    description: 'Win an underground High-Stakes Knockout match.',
     tier: 'TIER_4_VERY_RARE',
     aspect: 'MODES_TRIALS',
     emblemKey: 'medal_tier4_sapphire',
@@ -1239,8 +1279,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't4_overclock_wins_50',
     number: 51,
-    title: 'Fiftyfold Overclocker',
-    description: 'Win 50 Hold-to-Overclock confidence wagers.',
+    title: 'Fiftyfold High Roller',
+    description: 'Win 50 2× Double Down wagers.',
     tier: 'TIER_4_VERY_RARE',
     aspect: 'PRISM_OVERCLOCK',
     emblemKey: 'trophy_overclock_roulette',
@@ -1250,8 +1290,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't4_cold_instinct_100',
     number: 52,
-    title: 'Hundredfold Cold Instinct',
-    description: 'Solve 100 Prisms sealed at 3.0x Tier-1 Cold Instinct.',
+    title: 'Hundredfold Pure Instinct',
+    description: 'Clear 100 questions cleanly with zero lifelines used.',
     tier: 'TIER_4_VERY_RARE',
     aspect: 'PRISM_OVERCLOCK',
     emblemKey: 'medal_tier4_sapphire',
@@ -1261,33 +1301,33 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't4_clues_12',
     number: 53,
-    title: 'Conspiracy Unmasked',
-    description: 'Pin all 12 Classified Clues onto the Conspiracy Dossier Board.',
+    title: 'Mystery Unmasked',
+    description: 'Collect all 12 Backstage Clues on the Evidence Board.',
     tier: 'TIER_4_VERY_RARE',
     aspect: 'CAMPAIGN_LORE',
     emblemKey: 'medal_tier4_sapphire',
     target: 12,
     measure: (c) => c.blackboard?.unlockedEvidenceClues.length ?? 0,
-    reward: { prismFinishId: 'AURORA_DICHROIC_TITANIUM', rewardLabel: 'Prism Finish: Aurora Dichroic Titanium' },
+    reward: { prismFinishId: 'AURORA_DICHROIC_TITANIUM', rewardLabel: 'Stage Finish: Aurora Dichroic Titanium' },
   },
   {
     id: 't4_bullseyes_10',
     number: 54,
-    title: 'Master Astrolabist',
-    description: 'Land 10 Pinhole Bullseyes on the 3D Calibrator Dial.',
+    title: 'Master Pinpoint Ace',
+    description: 'Land 10 exact bullseyes on Estimation or Pinpoint Dials.',
     tier: 'TIER_4_VERY_RARE',
     aspect: 'PRISM_OVERCLOCK',
     emblemKey: 'medal_tier4_sapphire',
     target: 10,
-    measure: (c) => c.analytics.feats.calibratorBullseyes,
+    measure: (c) => Math.max(c.analytics.feats.calibratorBullseyes, c.analytics.feats.pinpointBullseyes ?? 0),
   },
 
   // ================= TIER 5 — EXTREMELY RARE (Mythic Celestial Diamond 0.1%, 10) =================
   {
     id: 't5_unpeeled_sovereign',
     number: 55,
-    title: 'The Unpeeled Sovereign',
-    description: 'Win a 3-Phase Country Boss Showdown with 0 Peels — 100% Pure Crown!',
+    title: 'No-Lifeline Sovereign',
+    description: 'Win a Boss Showdown with zero lifelines used — 100% pure knowledge!',
     tier: 'TIER_5_MYTHIC',
     aspect: 'PRISM_OVERCLOCK',
     emblemKey: 'medal_tier5_mythic',
@@ -1302,8 +1342,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't5_horological_perfection',
     number: 56,
-    title: 'Horological Perfection',
-    description: 'Achieve 50 consecutive correct answers without a single miss.',
+    title: 'Fiftyfold Perfection',
+    description: 'Answer 50 consecutive questions without a single miss.',
     tier: 'TIER_5_MYTHIC',
     aspect: 'STREAK_SPEED',
     emblemKey: 'trophy_streak_chronometer',
@@ -1315,7 +1355,7 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
     id: 't5_polymath_supreme',
     number: 57,
     title: 'Polymath Supreme',
-    description: 'Reach 1,850+ Genius IRT ELO across ALL 12 Sovereign Domains.',
+    description: 'Reach 1850+ Genius Skill Rating across ALL 12 trivia domains.',
     tier: 'TIER_5_MYTHIC',
     aspect: 'DOMAINS_POLYMATH',
     emblemKey: 'trophy_polymath_globe',
@@ -1326,8 +1366,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't5_6x_russian_roulette',
     number: 58,
-    title: '6.0x Russian Roulette',
-    description: 'Win 5 consecutive 6.0x Max Overclocks in a row without Backfire.',
+    title: 'Five-Straight All-In',
+    description: 'Win 5 consecutive full-stakes Double Down wagers without a miss.',
     tier: 'TIER_5_MYTHIC',
     aspect: 'PRISM_OVERCLOCK',
     emblemKey: 'trophy_overclock_roulette',
@@ -1337,20 +1377,20 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't5_lightning_savant',
     number: 59,
-    title: 'Lightning Savant',
+    title: 'Lightning Buzzer Savant',
     description: 'Lock 10 consecutive correct answers each in under 3.0 seconds.',
     tier: 'TIER_5_MYTHIC',
     aspect: 'STREAK_SPEED',
     emblemKey: 'medal_tier5_mythic',
     target: 10,
     measure: (c) => c.analytics.bestFastUnder3sStreak,
-    reward: { hudThemeId: 'MYTHIC_PRISMATIC_DIAMOND', rewardLabel: 'Mythic HUD Theme: Celestial White-Diamond' },
+    reward: { hudThemeId: 'MYTHIC_PRISMATIC_DIAMOND', rewardLabel: 'Mythic HUD Theme: Celestial Diamond' },
   },
   {
     id: 't5_architect_succession',
     number: 60,
-    title: "The Architect's Succession",
-    description: 'Uncover all 12 Conspiracy Clues and unlock the Secret 4th Ending.',
+    title: 'Secret Finale Unlocked',
+    description: 'Uncover all 12 Backstage Clues and unlock the Secret 4th Ending.',
     tier: 'TIER_5_MYTHIC',
     aspect: 'CAMPAIGN_LORE',
     emblemKey: 'medal_tier5_mythic',
@@ -1368,8 +1408,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't5_meridian_leviathan',
     number: 61,
-    title: 'Meridian Zero Leviathan',
-    description: 'Descend to Depth 200 inside The Ledger’s Meridian Zero Core.',
+    title: 'Endless Legend CC',
+    description: 'Survive all the way to Round 200 in Endless Mode.',
     tier: 'TIER_5_MYTHIC',
     aspect: 'MODES_TRIALS',
     emblemKey: 'medal_tier5_mythic',
@@ -1379,8 +1419,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't5_fourfold_destiny',
     number: 62,
-    title: 'Fourfold Destiny',
-    description: 'Unlock all 4 Championship Endings across New Circuit+ replays.',
+    title: 'Fourfold Ending Master',
+    description: 'Unlock all 4 World Tour endings across replays.',
     tier: 'TIER_5_MYTHIC',
     aspect: 'CAMPAIGN_LORE',
     emblemKey: 'medal_tier5_mythic',
@@ -1396,8 +1436,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't5_centurion_million',
     number: 63,
-    title: 'Centurion of the Million',
-    description: 'Solve 1,000 unique verified Question IDs from THE FORGE.',
+    title: 'One Thousand Unique Facts',
+    description: 'Answer 1,000 unique verified trivia questions correctly.',
     tier: 'TIER_5_MYTHIC',
     aspect: 'DOMAINS_POLYMATH',
     emblemKey: 'trophy_polymath_globe',
@@ -1407,8 +1447,8 @@ export const HONOURS_V1_CORE: readonly HonourDefinition[] = [
   {
     id: 't5_grand_completionist',
     number: 64,
-    title: 'Grand Sovereign Completionist',
-    description: 'Unlock all 63 other Core Trophies & Medals (#1–#63) in the Hall of Honours.',
+    title: 'Core Hall Completionist',
+    description: 'Unlock all 63 Core Trophies & Medals (#1–#63) in the Hall of Honours.',
     tier: 'TIER_5_MYTHIC',
     aspect: 'DOMAINS_POLYMATH',
     emblemKey: 'medal_tier5_mythic',
@@ -1497,13 +1537,13 @@ export const HONOURS_V2_EXPANSION: readonly HonourDefinition[] = [
     },
   },
 
-  // ---------- 4 3D Globe Pin-Drop Trophies (#70..#73) ----------
+  // ---------- 4 World Map Pin-Drop Trophies (#70..#73) ----------
   {
     id: 'v2_globe_first_pin',
     number: 70,
     packId: 'v2.0',
-    title: 'First Meridian Pinpoint',
-    description: 'Solve your first interactive 3D Globe Pin-Drop coordinate challenge.',
+    title: 'First Map Pinpoint',
+    description: 'Win your first World Map Pin-Drop geography challenge.',
     tier: 'TIER_1_EASY',
     aspect: 'PRISM_OVERCLOCK',
     emblemKey: 'trophy_polymath_globe',
@@ -1514,8 +1554,8 @@ export const HONOURS_V2_EXPANSION: readonly HonourDefinition[] = [
     id: 'v2_globe_bullseye_300',
     number: 71,
     packId: 'v2.0',
-    title: 'Geodesic Sharpshooter',
-    description: 'Drop a 3D Globe Pin within 300 km of the target for a Bullseye Pinpoint.',
+    title: 'Map Bullseye Sharpshooter',
+    description: 'Drop a Map Pin within 300 km of the target for a Bullseye Pinpoint.',
     tier: 'TIER_2_MEDIUM',
     aspect: 'PRISM_OVERCLOCK',
     emblemKey: 'trophy_polymath_globe',
@@ -1523,7 +1563,7 @@ export const HONOURS_V2_EXPANSION: readonly HonourDefinition[] = [
     measure: (c) => c.analytics.feats.globeBullseyes300Km ?? 0,
     reward: {
       hudThemeId: 'CARTOGRAPHER_MERCATOR_GOLD',
-      rewardLabel: 'HUD Theme: Cartographer Mercator Gold',
+      rewardLabel: 'HUD Theme: World Atlas Mercator Gold',
     },
   },
   {
@@ -1531,7 +1571,7 @@ export const HONOURS_V2_EXPANSION: readonly HonourDefinition[] = [
     number: 72,
     packId: 'v2.0',
     title: 'Royal Cartographer',
-    description: 'Win 5 interactive 3D Globe Pin-Drop challenges across the world circuit.',
+    description: 'Win 5 World Map Pin-Drop challenges across the world tour.',
     tier: 'TIER_3_HARD',
     aspect: 'DOMAINS_POLYMATH',
     emblemKey: 'trophy_polymath_globe',
@@ -1543,8 +1583,8 @@ export const HONOURS_V2_EXPANSION: readonly HonourDefinition[] = [
     id: 'v2_globe_zero_lat_surveyor',
     number: 73,
     packId: 'v2.0',
-    title: 'Zero-Latitude Grand Surveyor',
-    description: 'Land a No-Peel (Tier 1) 3D Globe Pin-Drop Bullseye within 120 km.',
+    title: 'No-Lifeline Grand Surveyor',
+    description: 'Land a zero-lifeline World Map Pin-Drop Bullseye within 120 km.',
     tier: 'TIER_4_VERY_RARE',
     aspect: 'PRISM_OVERCLOCK',
     emblemKey: 'medal_tier4_sapphire',
@@ -1552,34 +1592,42 @@ export const HONOURS_V2_EXPANSION: readonly HonourDefinition[] = [
     measure: (c) => c.analytics.feats.globeNoPeel120Km ?? 0,
   },
 
-  // ---------- 3 Visual Blueprint & All-Domain Jeopardy Trophies (#74..#76) ----------
+  // ---------- 3 Visual Spotter & All-Domain Trophies (#74..#76) ----------
   {
     id: 'v2_visual_sapphire_analyst',
     number: 74,
     packId: 'v2.0',
-    title: 'Sapphire Lens Analyst',
-    description: 'Solve your first Visual Sapphire Blueprint hologram question.',
+    title: 'Visual Spotter Debut',
+    description: 'Solve your first illustrated Visual Spotter diagram question.',
     tier: 'TIER_1_EASY',
     aspect: 'PRISM_OVERCLOCK',
     emblemKey: 'medal_tier1_bronze',
     target: 1,
-    measure: (c) => c.analytics.feats.visualBlueprintsSolved ?? 0,
+    measure: (c) =>
+      Math.max(
+        c.analytics.feats.visualBlueprintsSolved ?? 0,
+        c.analytics.byFormat?.VISUAL_SPOTTER?.right ?? 0,
+      ),
     reward: {
       hudThemeId: 'BLUEPRINT_SAPPHIRE_DRAFT',
-      rewardLabel: 'HUD Theme: Sapphire Blueprint Draft',
+      rewardLabel: 'HUD Theme: Sapphire Visual Stage',
     },
   },
   {
     id: 'v2_visual_master_architect',
     number: 75,
     packId: 'v2.0',
-    title: 'Master Blueprint Architect',
-    description: 'Solve 10 Visual Sapphire Blueprint questions across sports, science & monuments.',
+    title: 'Master Visual Analyst',
+    description: 'Solve 10 Visual Spotter questions across science, sports & landmarks.',
     tier: 'TIER_3_HARD',
     aspect: 'PRISM_OVERCLOCK',
     emblemKey: 'medal_tier3_gold',
     target: 10,
-    measure: (c) => c.analytics.feats.visualBlueprintsSolved ?? 0,
+    measure: (c) =>
+      Math.max(
+        c.analytics.feats.visualBlueprintsSolved ?? 0,
+        c.analytics.byFormat?.VISUAL_SPOTTER?.right ?? 0,
+      ),
     reward: {
       prismFinishId: 'SAPPHIRE_BLUEPRINT_CYANOTYPE',
       rewardLabel: '3D Finish: Sapphire Blueprint Cyanotype',
@@ -1589,8 +1637,8 @@ export const HONOURS_V2_EXPANSION: readonly HonourDefinition[] = [
     id: 'v2_jeopardy_lateral_virtuoso',
     number: 76,
     packId: 'v2.0',
-    title: 'Two-Step Lateral Virtuoso',
-    description: 'Lock 25 unpeeled Tier-1 (3.0x) Cold Instinct answers spanning at least 6 domains.',
+    title: 'Six-Domain Cold Streak',
+    description: 'Clear 25 questions with zero lifelines spanning at least 6 domains.',
     tier: 'TIER_3_HARD',
     aspect: 'DOMAINS_POLYMATH',
     emblemKey: 'medal_tier3_gold',
@@ -1619,7 +1667,7 @@ export const HONOURS_V2_EXPANSION: readonly HonourDefinition[] = [
     id: 'v2_duel_ghost_breaker',
     number: 78,
     packId: 'v2.0',
-    title: 'Ghost Split Breaker',
+    title: 'Duel Split Breaker',
     description: 'Defeat a Challenger Ghost in a Head-to-Head 1v1 Duel.',
     tier: 'TIER_2_MEDIUM',
     aspect: 'MODES_TRIALS',
@@ -1644,13 +1692,13 @@ export const HONOURS_V2_EXPANSION: readonly HonourDefinition[] = [
     measure: (c) => c.v2Stores.duelPlayerWins,
   },
 
-  // ---------- 5 Leitner SRS, Quality Curation & Offline Vault Trophies (#80..#84) ----------
+  // ---------- 5 Study Deck, Curation & Offline Travel Trophies (#80..#84) ----------
   {
     id: 'v2_srs_vault_initiate',
     number: 80,
     packId: 'v2.0',
-    title: 'Memory Vault Initiate',
-    description: 'Complete your first Spaced-Repetition review in the 5-Box Leitner Mastery Deck.',
+    title: 'Study Deck Initiate',
+    description: 'Complete your first review in the 5-Box Spaced-Repetition Study Deck.',
     tier: 'TIER_1_EASY',
     aspect: 'DOMAINS_POLYMATH',
     emblemKey: 'medal_tier1_bronze',
@@ -1661,8 +1709,8 @@ export const HONOURS_V2_EXPANSION: readonly HonourDefinition[] = [
     id: 'v2_srs_box5_polymath',
     number: 81,
     packId: 'v2.0',
-    title: 'Leitner Box-5 Polymath',
-    description: 'Promote 5 cards to Box 5 Mastered inside the Spaced-Repetition Mastery Deck.',
+    title: 'Box-5 Mastery Polymath',
+    description: 'Promote 5 missed cards to Box 5 Mastered in your Study Deck.',
     tier: 'TIER_3_HARD',
     aspect: 'DOMAINS_POLYMATH',
     emblemKey: 'medal_tier3_gold',
@@ -1678,7 +1726,7 @@ export const HONOURS_V2_EXPANSION: readonly HonourDefinition[] = [
     number: 82,
     packId: 'v2.0',
     title: 'Editorial Arbiter',
-    description: 'Submit 5 question quality ratings (Upvote or Flag) to curate THE FORGE.',
+    description: 'Submit 5 question quality ratings (Upvote or Flag) to help curate trivia.',
     tier: 'TIER_2_MEDIUM',
     aspect: 'CAMPAIGN_LORE',
     emblemKey: 'medal_tier2_sterling',
@@ -1689,8 +1737,8 @@ export const HONOURS_V2_EXPANSION: readonly HonourDefinition[] = [
     id: 'v2_jetsetter_offline_vault',
     number: 83,
     packId: 'v2.0',
-    title: 'Jet-Setter Offline Vault',
-    description: 'Cache an Airplane-Mode Offline Pack inside your Meridian Vault.',
+    title: 'Offline Travel Pack',
+    description: 'Save an Offline Pack so you can play anywhere without Wi-Fi.',
     tier: 'TIER_1_EASY',
     aspect: 'MODES_TRIALS',
     emblemKey: 'medal_tier1_bronze',
@@ -1702,7 +1750,7 @@ export const HONOURS_V2_EXPANSION: readonly HonourDefinition[] = [
     number: 84,
     packId: 'v2.0',
     title: 'Omniscient Mensa Polymath',
-    description: 'Win across all 12 Sovereign Domains, score 80%+ in Mensa tier, and master a Leitner Box-5 card.',
+    description: 'Win across all 12 trivia domains, score 80%+ in Mensa tier, and master a Box-5 review card.',
     tier: 'TIER_5_MYTHIC',
     aspect: 'DOMAINS_POLYMATH',
     emblemKey: 'medal_tier5_mythic',
@@ -1726,7 +1774,7 @@ export const HONOURS_V3_EXPANSION: readonly HonourDefinition[] = [
     number: 85,
     packId: 'v3.0',
     title: 'First-Clue Sharpshooter',
-    description: 'Solve a 3-Step Clue Ladder question on Step 1 (500 PTS Genius Lead) without extra clues.',
+    description: 'Solve a 3-Clue Escalator question on Clue 1 (3× payout) without extra clues.',
     tier: 'TIER_1_EASY',
     aspect: 'PRISM_OVERCLOCK',
     emblemKey: 'medal_tier1_bronze',
@@ -1738,7 +1786,7 @@ export const HONOURS_V3_EXPANSION: readonly HonourDefinition[] = [
     number: 86,
     packId: 'v3.0',
     title: 'Apex Clue Sniper',
-    description: 'Land 5 First-Clue Snipes on Step 1 of the Clue Ladder across any game modes.',
+    description: 'Land 5 Clue-1 solves on 3-Clue Escalator questions in any game mode.',
     tier: 'TIER_3_HARD',
     aspect: 'STREAK_SPEED',
     emblemKey: 'trophy_streak_chronometer',
@@ -1749,8 +1797,8 @@ export const HONOURS_V3_EXPANSION: readonly HonourDefinition[] = [
     id: 'v3_mind_gambit_tactician',
     number: 87,
     packId: 'v3.0',
-    title: 'Tactical Gambit Debut',
-    description: 'Equip and activate a Tactical Mind Gambit (Second Wind, Specialist Swap, or Surge) in a live round.',
+    title: 'Power-Up Tactician',
+    description: 'Activate a Tactical Mind Gambit (Second Wind, Swap, or Surge) in a live match.',
     tier: 'TIER_1_EASY',
     aspect: 'MODES_TRIALS',
     emblemKey: 'medal_tier1_bronze',
@@ -1762,8 +1810,8 @@ export const HONOURS_V3_EXPANSION: readonly HonourDefinition[] = [
     id: 'v3_mind_gambit_grandmaster',
     number: 88,
     packId: 'v3.0',
-    title: 'Grandmaster of Mind Gambits',
-    description: 'Activate 5 Tactical Mind Gambits or win 3 Finale Category Picker showdowns.',
+    title: 'Grandmaster of Gambits',
+    description: 'Activate 5 Tactical Gambits or win 3 Finale Category Picker showdowns.',
     tier: 'TIER_3_HARD',
     aspect: 'DOMAINS_POLYMATH',
     emblemKey: 'medal_tier3_gold',
@@ -1776,18 +1824,213 @@ export const HONOURS_V3_EXPANSION: readonly HonourDefinition[] = [
   },
 ];
 
+/**
+ * World's Smartest v4.0 Show Floor, 7-Format & World Tour Expansion (+12 Honours: #89..#100)
+ * Bringing the Hall of Honours to 100 Trophies & Medals and 48 Equippable Unlockables!
+ */
+export const HONOURS_V4_EXPANSION: readonly HonourDefinition[] = [
+  {
+    id: 'v4_match4_clean_sweep',
+    number: 89,
+    packId: 'v4.0',
+    title: 'Match-4 Clean Sweep',
+    description: 'Pair all 4 clues without a single mismatch in a Match-4 round.',
+    tier: 'TIER_1_EASY',
+    aspect: 'PRISM_OVERCLOCK',
+    emblemKey: 'medal_tier1_bronze',
+    target: 1,
+    measure: (c) =>
+      Math.max(
+        c.analytics.feats.match4CleanSweeps ?? 0,
+        c.analytics.byFormat?.MATCH_4?.right ?? 0,
+      ),
+  },
+  {
+    id: 'v4_match4_virtuoso',
+    number: 90,
+    packId: 'v4.0',
+    title: 'Grand Match-4 Virtuoso',
+    description: 'Pull off 5 spotless Match-4 Clean Sweeps across any mode.',
+    tier: 'TIER_3_HARD',
+    aspect: 'PRISM_OVERCLOCK',
+    emblemKey: 'medal_tier3_gold',
+    target: 5,
+    measure: (c) => c.analytics.feats.match4CleanSweeps ?? 0,
+  },
+  {
+    id: 'v4_sort4_timeline_master',
+    number: 91,
+    packId: 'v4.0',
+    title: 'Timeline Sort-4 Master',
+    description: 'Place all 4 cards in exact chronological or ranked order on 3 Sort-4 rounds.',
+    tier: 'TIER_2_MEDIUM',
+    aspect: 'PRISM_OVERCLOCK',
+    emblemKey: 'medal_tier2_sterling',
+    target: 3,
+    measure: (c) =>
+      Math.max(
+        c.analytics.feats.sort4PerfectRuns ?? 0,
+        c.analytics.byFormat?.SORT_4?.right ?? 0,
+      ),
+  },
+  {
+    id: 'v4_imposter_detective',
+    number: 92,
+    packId: 'v4.0',
+    title: 'Imposter Detective',
+    description: 'Expose the hidden imposter or sweep every true clue across 3 Multi-Strike rounds.',
+    tier: 'TIER_2_MEDIUM',
+    aspect: 'PRISM_OVERCLOCK',
+    emblemKey: 'medal_tier2_sterling',
+    target: 3,
+    measure: (c) =>
+      Math.max(
+        c.analytics.feats.imposterCatches ?? 0,
+        c.analytics.byFormat?.MULTI_STRIKE?.right ?? 0,
+      ),
+  },
+  {
+    id: 'v4_pinpoint_bullseye',
+    number: 93,
+    packId: 'v4.0',
+    title: 'Pinpoint Bullseye',
+    description: 'Hit 3 exact 2× bullseyes on the Pinpoint Dial.',
+    tier: 'TIER_2_MEDIUM',
+    aspect: 'STREAK_SPEED',
+    emblemKey: 'trophy_streak_chronometer',
+    target: 3,
+    measure: (c) =>
+      Math.max(
+        c.analytics.feats.pinpointBullseyes ?? 0,
+        c.analytics.feats.calibratorBullseyes ?? 0,
+      ),
+    reward: {
+      hudThemeId: 'STUDIO_SPOTLIGHT_GOLD',
+      rewardLabel: 'Stage Theme: Prime-Time Spotlight Gold',
+    },
+  },
+  {
+    id: 'v4_padlock_breaker',
+    number: 94,
+    packId: 'v4.0',
+    title: 'Padlock Breaker',
+    description: 'Shatter 5 locked vault tiles by solving adjacent clues on the show board.',
+    tier: 'TIER_1_EASY',
+    aspect: 'MODES_TRIALS',
+    emblemKey: 'medal_tier1_bronze',
+    target: 5,
+    measure: (c) => c.analytics.feats.padlocksShattered ?? 0,
+  },
+  {
+    id: 'v4_power_play_high_roller',
+    number: 95,
+    packId: 'v4.0',
+    title: 'Power Play High Roller',
+    description: 'Win 3 high-stakes Power Play wagers on the game-show board.',
+    tier: 'TIER_3_HARD',
+    aspect: 'PRISM_OVERCLOCK',
+    emblemKey: 'trophy_overclock_roulette',
+    target: 3,
+    measure: (c) =>
+      Math.max(
+        c.analytics.feats.powerPlayBigWagerWins ?? 0,
+        c.analytics.feats.powerPlayWins ?? 0,
+      ),
+    reward: {
+      broadcastTitle: 'POWER PLAY HIGH ROLLER',
+      rewardLabel: 'Title: POWER PLAY HIGH ROLLER',
+    },
+  },
+  {
+    id: 'v4_challenger_trap_survivor',
+    number: 96,
+    packId: 'v4.0',
+    title: 'Trap Breaker',
+    description: 'Survive and win 3 Challenger weak-spot forced turns or frozen-column ambushes.',
+    tier: 'TIER_3_HARD',
+    aspect: 'CAMPAIGN_LORE',
+    emblemKey: 'medal_tier3_gold',
+    target: 3,
+    measure: (c) => c.analytics.feats.challengerTrapSurvivals ?? 0,
+  },
+  {
+    id: 'v4_six_wedge_crown',
+    number: 97,
+    packId: 'v4.0',
+    title: 'Six-Wedge Trivial Crown',
+    description: 'Collect all 6 colored category wedges on a single championship show board.',
+    tier: 'TIER_4_VERY_RARE',
+    aspect: 'DOMAINS_POLYMATH',
+    emblemKey: 'trophy_polymath_globe',
+    target: 1,
+    measure: (c) => c.analytics.feats.full6WedgeCrowns ?? 0,
+    reward: {
+      hudThemeId: 'SIX_WEDGE_PRISM_CROWN',
+      rewardLabel: 'Crown Theme: Six-Wedge Championship Crown',
+    },
+  },
+  {
+    id: 'v4_seven_format_showstopper',
+    number: 98,
+    packId: 'v4.0',
+    title: 'Seven-Format Showstopper',
+    description: 'Win at least one question in all 7 formats (4-Choice, Match-4, Sort-4, Multi-Strike, Pinpoint, 3-Clue, Visual).',
+    tier: 'TIER_4_VERY_RARE',
+    aspect: 'DOMAINS_POLYMATH',
+    emblemKey: 'medal_tier4_sapphire',
+    target: 7,
+    measure: (c) =>
+      ALL_V4_QUESTION_FORMATS.filter((fmt) => (c.analytics.byFormat?.[fmt]?.right ?? 0) >= 1).length,
+  },
+  {
+    id: 'v4_worlds_smartest_champion',
+    number: 99,
+    packId: 'v4.0',
+    title: "1.4 Billion World's Smartest Champion",
+    description: 'Win the Tier 8 Global Finale in front of 1.4 billion viewers to claim the $10,000,000 crown.',
+    tier: 'TIER_5_MYTHIC',
+    aspect: 'CAMPAIGN_LORE',
+    emblemKey: 'medal_tier5_mythic',
+    target: 1,
+    measure: (c) =>
+      c.analytics.feats.worldSmartestChampionWon ||
+      (c.analytics.feats.worldTourTiersCleared ?? 0) >= 8 ||
+      c.analytics.feats.campaignCompleted ||
+      c.passport.visas.global?.cleared
+        ? 1
+        : 0,
+    reward: {
+      broadcastTitle: "WORLD'S SMARTEST CHAMPION",
+      rewardLabel: "Mythic Title: WORLD'S SMARTEST CHAMPION",
+    },
+  },
+  {
+    id: 'v4_centennial_hall_legend',
+    number: 100,
+    packId: 'v4.0',
+    title: 'Centennial Hall Legend',
+    description: 'Unlock 75 total Trophies & Medals across the 100-Trophy Hall of Honours.',
+    tier: 'TIER_5_MYTHIC',
+    aspect: 'DOMAINS_POLYMATH',
+    emblemKey: 'medal_tier5_mythic',
+    target: 75,
+    measure: () => 0, // Evaluated dynamically over all other 99 Honours (#1..#99)!
+  },
+];
+
 export const HONOURS_EXPANSION_PACKS: ReadonlyArray<{
   packId: string;
   label: string;
   honours: readonly HonourDefinition[];
 }> = [
-  { packId: 'v1.0', label: 'Core Meridian Circuit', honours: HONOURS_V1_CORE },
-  { packId: 'v2.0', label: 'Commercial v2.0 Expansion', honours: HONOURS_V2_EXPANSION },
-  { packId: 'v3.0', label: 'Gameplay v3.0 Clue Ladder & Mind Gambits', honours: HONOURS_V3_EXPANSION },
+  { packId: 'v1.0', label: 'Core Show Floor Honours', honours: HONOURS_V1_CORE },
+  { packId: 'v2.0', label: 'Difficulty Ladder, Atlas & Duels Expansion', honours: HONOURS_V2_EXPANSION },
+  { packId: 'v3.0', label: 'Clue Escalator & Tactical Gambits Expansion', honours: HONOURS_V3_EXPANSION },
+  { packId: 'v4.0', label: "World's Smartest v4.0 7-Format & Gimmick Board Expansion", honours: HONOURS_V4_EXPANSION },
 ];
 
 /**
- * Unified Hall of Honours Catalog (dynamically composed from Core + Expansion Packs = 88 Total).
+ * Unified Hall of Honours Catalog (dynamically composed from Core + Expansion Packs = 100 Total).
  */
 export const HALL_OF_HONOURS_CATALOG: readonly HonourDefinition[] = HONOURS_EXPANSION_PACKS.flatMap(
   (pack) => pack.honours,
@@ -1887,8 +2130,8 @@ export class HallOfHonoursSystem {
   }
 
   /**
-   * Evaluates all Trophies & Medals across Core + Expansion Packs, grants any newly
-   * earned Zero-Pay-to-Win Unlockables, and returns ONLY newly unlocked Honours.
+   * Evaluates all 100 Trophies & Medals across Core + Expansion Packs, grants any newly
+   * earned Stage, Title, and Theme Unlockables, and returns ONLY newly unlocked Honours.
    */
   public evaluateAndUnlock(silentBoot = false): HonourProgressItem[] {
     const ctx = this.buildEvaluationContext();
@@ -1897,12 +2140,18 @@ export class HallOfHonoursSystem {
     const nowIso = new Date().toISOString();
     let dirty = false;
 
-    // Pass 1: All honours except Core Completionist (#64)
+    // Pass 1: All honours except Core Completionist (#64) and Centennial Legend (#100)
     let unlockedCore63 = 0;
+    let unlockedNonLegend99 = 0;
     let compDef: HonourDefinition | null = null;
+    let centennialDef: HonourDefinition | null = null;
     for (const def of HALL_OF_HONOURS_CATALOG) {
       if (def.id === 't5_grand_completionist') {
         compDef = def;
+        continue;
+      }
+      if (def.id === 'v4_centennial_hall_legend') {
+        centennialDef = def;
         continue;
       }
       const rawCurr = Math.max(0, Math.floor(def.measure(ctx)));
@@ -1912,6 +2161,7 @@ export class HallOfHonoursSystem {
         if (def.number >= 1 && def.number <= 63) {
           unlockedCore63 += 1;
         }
+        unlockedNonLegend99 += 1;
         if (!already) {
           this.unlockedTimestamps[def.id] = nowIso;
           this.applyRewardGrant(def);
@@ -1926,16 +2176,32 @@ export class HallOfHonoursSystem {
       }
     }
 
-    // Pass 2: Honour #64 (Grand Sovereign Completionist: all 63 Core Honours unlocked)
+    // Pass 2: Honour #64 (Core Hall Completionist: all 63 Core Honours unlocked)
     if (compDef) {
       const compAlready = Boolean(this.unlockedTimestamps[compDef.id]);
       if (compAlready || unlockedCore63 >= compDef.target) {
+        unlockedNonLegend99 += 1;
         if (!compAlready) {
           this.unlockedTimestamps[compDef.id] = nowIso;
           this.applyRewardGrant(compDef);
           dirty = true;
           if (!silentBoot) {
             newlyUnlocked.push(this.buildProgressItem(compDef, compDef.target));
+          }
+        }
+      }
+    }
+
+    // Pass 3: Honour #100 (Centennial Hall Legend: 75+ total Honours unlocked)
+    if (centennialDef) {
+      const centAlready = Boolean(this.unlockedTimestamps[centennialDef.id]);
+      if (centAlready || unlockedNonLegend99 >= centennialDef.target) {
+        if (!centAlready) {
+          this.unlockedTimestamps[centennialDef.id] = nowIso;
+          this.applyRewardGrant(centennialDef);
+          dirty = true;
+          if (!silentBoot) {
+            newlyUnlocked.push(this.buildProgressItem(centennialDef, centennialDef.target));
           }
         }
       }
@@ -1967,22 +2233,35 @@ export class HallOfHonoursSystem {
     const ctx = this.buildEvaluationContext();
 
     let unlockedCore63 = 0;
+    let unlockedNonLegend99 = 0;
     const items: HonourProgressItem[] = [];
     for (const def of HALL_OF_HONOURS_CATALOG) {
-      if (def.id === 't5_grand_completionist') {
+      if (def.id === 't5_grand_completionist' || def.id === 'v4_centennial_hall_legend') {
         items.push(this.buildProgressItem(def, 0)); // placeholder updated right after pass
         continue;
       }
       const item = this.buildProgressItem(def, def.measure(ctx));
-      if (item.unlocked && def.number >= 1 && def.number <= 63) {
-        unlockedCore63 += 1;
+      if (item.unlocked) {
+        unlockedNonLegend99 += 1;
+        if (def.number >= 1 && def.number <= 63) {
+          unlockedCore63 += 1;
+        }
       }
       items.push(item);
     }
 
     const compIdx = items.findIndex((it) => it.def.id === 't5_grand_completionist');
     if (compIdx >= 0) {
-      items[compIdx] = this.buildProgressItem(items[compIdx].def, unlockedCore63);
+      const compItem = this.buildProgressItem(items[compIdx].def, unlockedCore63);
+      items[compIdx] = compItem;
+      if (compItem.unlocked) {
+        unlockedNonLegend99 += 1;
+      }
+    }
+
+    const centIdx = items.findIndex((it) => it.def.id === 'v4_centennial_hall_legend');
+    if (centIdx >= 0) {
+      items[centIdx] = this.buildProgressItem(items[centIdx].def, unlockedNonLegend99);
     }
     return items;
   }
