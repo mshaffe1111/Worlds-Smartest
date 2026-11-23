@@ -53,6 +53,7 @@ export interface DiplomaticPassportCallbacks {
   onRenameChallenger?: (newName: string) => void;
   onPassportStamped?: () => void;
   onInspectRelicInObservatory?: (relicOrTrophy: HeroRelicId | 'championship_trophy') => void;
+  onOpenDomainAnalytics?: (domainId: DomainId) => void;
   onNavigateSection?: (section: MetaSuiteSectionId) => void;
   onBack?: () => void;
   canGoBack?: boolean;
@@ -1661,6 +1662,193 @@ export function ensureMetaStylesInjected(): void {
         font-size: 10px;
       }
     }
+
+    /* =====================================================================
+       v3.0 LINKED CAREER ANALYTICS CROSS-FILTERING & DRILL-DOWN CONTROLS
+       (Zero 4-sided nested boxes, >= 44px touch targets, 0px overflow)
+       ===================================================================== */
+    .ws-stats-outcome-strip {
+      padding: 2px 0 10px;
+      gap: 6px;
+    }
+
+    .ws-stats-outcome-pill {
+      min-height: 44px;
+      padding: 0 13px;
+    }
+
+    .ws-stats-filter-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      min-width: 0;
+    }
+
+    .ws-stats-filter-bar.is-filtered {
+      box-shadow: inset 3px 0 0 var(--gold-bright, #f2cf7e);
+      padding-left: 12px;
+      background: rgba(242, 207, 126, 0.045);
+    }
+
+    .ws-stats-filter-chips-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .ws-stats-slice-summary {
+      font-family: var(--font-mono, monospace);
+      font-size: 11px;
+      color: #c8c2b6;
+      line-height: 1.38;
+    }
+
+    .ws-stats-filter-chip {
+      min-height: 44px;
+      padding: 0 13px;
+      border-radius: 999px;
+      border: none;
+      background: rgba(232, 197, 116, 0.18);
+      box-shadow: inset 0 -2px 0 var(--gold-bright, #f2cf7e);
+      color: var(--gold-bright, #f2cf7e);
+      font-family: var(--font-sans, Inter, sans-serif);
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.14s ease;
+    }
+
+    .ws-stats-filter-chip:hover {
+      background: rgba(232, 197, 116, 0.28);
+    }
+
+    .ws-stats-reset-btn {
+      min-height: 44px;
+      padding: 0 13px;
+      border-radius: 999px;
+      border: none;
+      background: rgba(224, 82, 99, 0.2);
+      color: #ff99a5;
+      font-family: var(--font-mono, monospace);
+      font-size: 11px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.14s ease;
+    }
+
+    .ws-stats-reset-btn:hover {
+      background: rgba(224, 82, 99, 0.32);
+    }
+
+    .ws-stats-linked-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ws-stats-action-cta {
+      min-height: 44px;
+      padding: 8px 16px;
+    }
+
+    .ws-stats-action-btn {
+      min-height: 44px;
+      padding: 8px 13px;
+    }
+
+    .ws-stats-row-btn {
+      width: 100%;
+      min-height: 44px;
+      text-align: left;
+      padding: 8px 6px;
+      gap: 8px;
+      border: none;
+      color: var(--ivory-primary, #f6f2e9);
+      font-family: var(--font-sans, Inter, sans-serif);
+    }
+
+    .ws-stats-row-btn.is-dimmed {
+      opacity: 0.48;
+    }
+
+    .ws-stats-row-btn.is-dimmed:hover {
+      opacity: 0.88;
+    }
+
+    .ws-stats-subcat-panel {
+      margin-top: 10px;
+      padding: 10px 0 2px 12px;
+      box-shadow: inset 3px 0 0 rgba(86, 212, 245, 0.55);
+    }
+
+    .ws-stats-peel-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+      padding-top: 6px;
+    }
+
+    .ws-stats-peel-btn {
+      min-height: 44px;
+      padding: 8px 7px;
+      border-radius: 10px;
+      border: none;
+      background: rgba(255, 255, 255, 0.048);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 3px;
+      cursor: pointer;
+      text-align: left;
+      min-width: 0;
+      transition: background 0.14s ease, opacity 0.14s ease;
+    }
+
+    .ws-stats-peel-btn:hover {
+      background: rgba(255, 255, 255, 0.095);
+    }
+
+    .ws-stats-peel-btn.is-active {
+      background: rgba(232, 197, 116, 0.16);
+      box-shadow: inset 0 -2px 0 var(--gold-bright, #f2cf7e);
+    }
+
+    .ws-stats-peel-btn.is-dimmed {
+      opacity: 0.48;
+    }
+
+    .ws-srs-domain-chip {
+      min-height: 44px;
+      padding: 0 12px;
+    }
+
+    @media (max-width: 400px) {
+      .ws-stats-peel-grid {
+        gap: 4px;
+      }
+      .ws-stats-peel-btn {
+        padding: 7px 5px;
+      }
+      .ws-stats-action-cta,
+      .ws-stats-action-btn {
+        font-size: 11.5px;
+        padding: 8px 12px;
+      }
+    }
   `;
   document.head.appendChild(style);
 }
@@ -1989,6 +2177,10 @@ export class DiplomaticPassportBook {
     }
   }
 
+  public getActiveTab(): PassportTabId {
+    return this.activeTab;
+  }
+
   public setActiveTab(tab: PassportTabId): void {
     this.activeTab = tab;
     this.rerender();
@@ -2195,7 +2387,7 @@ export class DiplomaticPassportBook {
                 value="${escapeMetaHtml(challengerName)}"
               />
               <button type="button" class="ws-meta-btn-gold" id="ws-passport2-save-name">
-                ✒ Stamp
+                ✦ Stamp
               </button>
             </div>
             ${
@@ -2247,7 +2439,7 @@ export class DiplomaticPassportBook {
               </div>
             </div>
             <button type="button" class="ws-meta-inline-link" id="ws-passport2-restamp">
-              ✒ Re-Stamp
+              ✦ Re-Stamp
             </button>
           </div>
 
@@ -2407,6 +2599,13 @@ export class DiplomaticPassportBook {
               <div style="font-size:11.5px;color:var(--ivory-muted);margin-top:2px;">
                 ${escapeMetaHtml(focused.rankTitle)} · Mastery ${focused.masteryPct}% · <strong style="color:var(--cyan-clue);">${escapeMetaHtml(focusedMeta.factionAffinity)}</strong>
               </div>
+              ${
+                this.callbacks.onOpenDomainAnalytics
+                  ? `<button type="button" class="ws-meta-inline-link" data-passport-focused-stats="${this.focusedDomainId}" style="margin-top:4px;min-height:44px;padding:0 4px;">
+                      ▸ Drill Into ${escapeMetaHtml(focused.shortName)} Career Stats
+                    </button>`
+                  : ''
+              }
             </div>
           </div>
 
@@ -2416,21 +2615,35 @@ export class DiplomaticPassportBook {
           </div>
         </div>
 
-        <!-- Right: Hairline 12-Domain ELO List -->
+        <!-- Right: Hairline 12-Domain ELO List (Clickable -> Career Stats drilled to exact domain!) -->
         <div style="display:flex;flex-direction:column;">
-          <div class="ws-meta-section-title" style="margin-bottom:6px;">Domain ELO &amp; Mastery</div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:6px;">
+            <div class="ws-meta-section-title">Domain ELO &amp; Mastery</div>
+            ${
+              this.callbacks.onOpenDomainAnalytics
+                ? `<span style="font-family:var(--font-mono);font-size:10.5px;color:#a5afc2;">Tap any domain for Career Stats</span>`
+                : ''
+            }
+          </div>
           ${domainSkills
             .map((s, idx) => {
               const meta = SOVEREIGN_DOMAINS[idx];
               const isFoc = idx === this.focusedDomainId;
               return `
-                <button type="button" class="ws-meta-row is-interactive ${isFoc ? 'is-focused' : ''}" data-focus-domain="${idx}" style="width:100%;text-align:left;">
+                <button
+                  type="button"
+                  class="ws-meta-row is-interactive ws-stats-row-btn ${isFoc ? 'is-focused' : ''}"
+                  data-passport-domain-stats="${idx}"
+                  data-focus-domain="${idx}"
+                  aria-label="Open Career Stats for ${escapeMetaHtml(meta.name)}"
+                >
                   <span style="display:inline-flex;align-items:center;gap:9px;min-width:0;">
                     <img src="./${escapeMetaHtml(meta.medallionUrl)}" alt="" style="width:24px;height:24px;object-fit:contain;flex-shrink:0;" />
                     <span style="font-size:12.5px;font-weight:600;color:var(--ivory-primary);">${escapeMetaHtml(s.shortName)}</span>
                   </span>
-                  <span style="font-family:var(--font-mono);font-size:11.5px;font-weight:700;color:${meta.accentHex};flex-shrink:0;">
-                    ${s.elo} <span style="color:var(--ivory-dim);font-weight:500;">· ${s.masteryPct}%</span>
+                  <span style="font-family:var(--font-mono);font-size:11.5px;font-weight:700;color:${meta.accentHex};flex-shrink:0;display:inline-flex;align-items:center;gap:7px;">
+                    <span>${s.elo} <span style="color:#a5afc2;font-weight:500;">· ${s.masteryPct}%</span></span>
+                    ${this.callbacks.onOpenDomainAnalytics ? `<span style="color:var(--gold-bright);font-size:11px;">Stats ▸</span>` : ''}
                   </span>
                 </button>
               `;
@@ -2651,8 +2864,24 @@ export class DiplomaticPassportBook {
       this.rerender();
     };
 
-    host.querySelectorAll<HTMLElement>('[data-focus-domain]').forEach((el) => {
-      el.addEventListener('click', () => selectDomain(el.dataset.focusDomain));
+    const openDomainStats = (idxRaw: string | undefined) => {
+      const idx = Number(idxRaw);
+      if (!Number.isFinite(idx) || idx < 0 || idx > 11) return;
+      this.focusedDomainId = idx as DomainId;
+      this.deps.haptics?.uiTap();
+      this.deps.audio?.playSfx('ui_tap');
+      if (this.callbacks.onOpenDomainAnalytics) {
+        this.callbacks.onOpenDomainAnalytics(idx as DomainId);
+      } else {
+        this.rerender();
+      }
+    };
+
+    host.querySelectorAll<HTMLElement>('[data-passport-domain-stats]').forEach((el) => {
+      el.addEventListener('click', () => openDomainStats(el.dataset.passportDomainStats));
+    });
+    host.querySelectorAll<HTMLElement>('[data-passport-focused-stats]').forEach((el) => {
+      el.addEventListener('click', () => openDomainStats(el.dataset.passportFocusedStats));
     });
     host.querySelectorAll<SVGElement>('[data-radar-domain]').forEach((el) => {
       el.addEventListener('click', () => selectDomain(el.getAttribute('data-radar-domain') ?? undefined));

@@ -42,6 +42,16 @@ export interface ScoringModifierOptions {
   difficultyTierMultiplier?: number;
   /** When true, automatically applies `question.difficultyMultiplier` from its calibrated academic tier */
   applyQuestionDifficultyMultiplier?: boolean;
+  /** Optional Clue Ladder snipe bonus (+200 Step 1, +75 Step 2, +0 Step 3) added on correct lock */
+  clueLadderBonusPoints?: number;
+  /** Optional flat Mind Gambit bonus points (e.g. +250 First-Clue Bounty) added on correct lock */
+  gambitFlatBonusPoints?: number;
+  /** Optional Hot-Streak Surge combo multiplier bonus (e.g. +1.0x per 2 consecutive right answers) */
+  streakComboMultiplierBonus?: number;
+  /** Optional Vault Jackpot final-question multiplier (e.g. 2.5x) */
+  finaleJackpotMultiplier?: number;
+  /** When true (e.g. Vault Jackpot Gambit on final question), Double-Down miss incurs ZERO penalty */
+  zeroDoubleDownPenalty?: boolean;
 }
 
 export interface ScoredQuestionResult {
@@ -79,6 +89,10 @@ export interface ScoredQuestionResult {
   difficultyTier?: AcademicDifficultyTier;
   /** Academic difficulty score multiplier applied on this question (1.0..2.0) */
   difficultyMultiplier?: number;
+  /** Optional Clue Ladder bonus points earned on this question */
+  clueLadderBonus?: number;
+  /** Optional Mind Gambit bonus points earned on this question */
+  gambitBonus?: number;
 }
 
 export const BASE_PRISM_POINTS = 1000;
@@ -273,19 +287,54 @@ export function evaluatePrismAnswer(
           const cleanExact = formatCleanTriviaNumber(cal.exactVal, cal.unit, question.prompt);
           correctAnswerDisplay = `${cleanExact}${cal.unit ? ` ${cal.unit}` : ''}`.trim();
           const est = submission.calibratorEstimate ?? cal.initialEstimate;
+          const span = Math.max(cal.step, cal.maxVal - cal.minVal);
           let margin: number;
           if (submission.calibratorConeId) {
             const coneSpec = cal.toleranceCones.find((c) => c.id === submission.calibratorConeId);
             margin = coneSpec
               ? coneSpec.margin
-              : Math.max(cal.step, (cal.maxVal - cal.minVal) * 0.15);
+              : Math.max(cal.step, span * 0.15);
             tierMultiplier = coneSpec
               ? coneSpec.multiplier
               : getCalibratorConeMultiplier(submission.calibratorConeId);
           } else {
             const pct = clamp(submission.calibratorTolerancePct ?? 0.15, 0.02, 0.35);
-            margin = Math.max(cal.step, (cal.maxVal - cal.minVal) * pct);
+            margin = Math.max(cal.step, span * pct);
             tierMultiplier = getCalibratorConeMultiplier(undefined, pct);
+          }
+
+          // Forgiving tolerance cones on MIDDLE_SCHOOL & HIGH_SCHOOL while mathematically
+          // guaranteeing 0% untouched `initialEstimate` auto-win!
+          if (
+            question.difficultyTier === 'MIDDLE_SCHOOL' ||
+            question.difficultyTier === 'HIGH_SCHOOL'
+          ) {
+            const isMid = question.difficultyTier === 'MIDDLE_SCHOOL';
+            const coneId = submission.calibratorConeId;
+            const forgivingFloorPct =
+              coneId === 'PINHOLE'
+                ? isMid
+                  ? 0.035
+                  : 0.025
+                : coneId === 'SHARP'
+                  ? isMid
+                    ? 0.11
+                    : 0.085
+                  : isMid
+                    ? 0.24
+                    : 0.2;
+            const floorMargin = Math.max(
+              cal.step,
+              Math.round((span * forgivingFloorPct) / cal.step) * cal.step,
+            );
+            let widened = Math.max(margin, floorMargin);
+            const untouchedDist = Math.abs(cal.initialEstimate - cal.exactVal);
+            if (untouchedDist > margin + 1e-6) {
+              // Strictly stay below untouched initialEstimate distance so untouched dial NEVER auto-wins!
+              const safeCeil = Math.max(margin, untouchedDist - Math.max(cal.step * 0.5, 0.25));
+              widened = Math.min(widened, safeCeil);
+            }
+            margin = widened;
           }
 
           const error = Math.abs(est - cal.exactVal);
@@ -294,7 +343,7 @@ export function evaluatePrismAnswer(
             partialCreditRatio = 1.0;
             bullseye =
               submission.calibratorConeId === 'PINHOLE' ||
-              error <= Math.max(cal.step, (cal.maxVal - cal.minVal) * 0.03);
+              error <= Math.max(cal.step, span * 0.03);
           }
           // Apply peel clue penalty on secondary morphs (Tier 2 = 0.78x, Tier 3 = 0.55x) — eliminates free-peel exploit (#284)!
           if (submission.peelTier > 1) {
@@ -430,6 +479,9 @@ export function evaluatePrismAnswer(
   if (appliedDifficultyMultiplier > 1) {
     perkMultiplier *= appliedDifficultyMultiplier;
   }
+  if (modifiers?.streakComboMultiplierBonus && modifiers.streakComboMultiplierBonus > 0) {
+    perkMultiplier += modifiers.streakComboMultiplierBonus;
+  }
   perkMultiplier = round2(perkMultiplier);
 
   const streakAfter = correct ? currentStreak + 1 : 0;
@@ -438,14 +490,27 @@ export function evaluatePrismAnswer(
       ? Math.min(streakAfter - 1, MAX_STREAK_STEPS) * STREAK_STEP_POINTS
       : 0;
   const speedBonus = correct ? rawSpeedBonus : 0;
+  const clueLadderBonus =
+    correct && modifiers?.clueLadderBonusPoints && modifiers.clueLadderBonusPoints > 0
+      ? Math.round(modifiers.clueLadderBonusPoints)
+      : 0;
+  const gambitBonus =
+    correct && modifiers?.gambitFlatBonusPoints && modifiers.gambitFlatBonusPoints > 0
+      ? Math.round(modifiers.gambitFlatBonusPoints)
+      : 0;
 
   let pointsEarned = 0;
   if (correct) {
     const coreScore = Math.round(
       basePoints * tierMultiplier * perkMultiplier * overclockMultiplier
     );
-    pointsEarned = Math.max(basePoints, coreScore + speedBonus + streakBonus);
-    if (submission.doubleOrNothingActive) {
+    pointsEarned = Math.max(
+      basePoints,
+      coreScore + speedBonus + streakBonus + clueLadderBonus + gambitBonus
+    );
+    if (modifiers?.finaleJackpotMultiplier && modifiers.finaleJackpotMultiplier > 1) {
+      pointsEarned = Math.round(pointsEarned * modifiers.finaleJackpotMultiplier);
+    } else if (submission.doubleOrNothingActive) {
       pointsEarned = Math.round(pointsEarned * 2.0);
     }
   }
@@ -478,6 +543,8 @@ export function evaluatePrismAnswer(
     ...(globeAccuracyTier !== undefined ? { globeAccuracyTier } : {}),
     ...(question.difficultyTier ? { difficultyTier: question.difficultyTier } : {}),
     difficultyMultiplier: correct ? round2(appliedDifficultyMultiplier) : 1,
+    ...(clueLadderBonus > 0 ? { clueLadderBonus } : {}),
+    ...(gambitBonus > 0 ? { gambitBonus } : {}),
   };
 }
 
@@ -556,7 +623,12 @@ export class ScoringEngine {
     } else {
       this.streak = 0;
       // Optional Double-or-Nothing only ever risks optional excess points ABOVE permanentBankedFloor!
-      if (submission.doubleOrNothingActive && this.matchScore > this.permanentBankedFloor) {
+      // Skipped cleanly when `zeroDoubleDownPenalty` (e.g. Vault Jackpot Gambit) is active.
+      if (
+        submission.doubleOrNothingActive &&
+        !modifiers?.zeroDoubleDownPenalty &&
+        this.matchScore > this.permanentBankedFloor
+      ) {
         this.matchScore = Math.max(this.permanentBankedFloor, this.matchScore - 800);
       }
     }

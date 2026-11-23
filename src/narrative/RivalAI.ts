@@ -215,6 +215,10 @@ export interface RivalQuestionContext {
   irtB: number;
   archetype: string;
   timeTotalSec: number;
+  /** Optional campaign hub code (`'ch'`, `'gb'`, `'jp'`, ...) for early-stage calibration */
+  hubId?: string;
+  /** Optional academic tier (`'MIDDLE_SCHOOL'` .. `'MENSA'`) for gentle early-stage calibration */
+  difficultyTier?: string;
 }
 
 export interface RivalAIConfig {
@@ -222,6 +226,8 @@ export interface RivalAIConfig {
   customName?: string;
   customRole?: string;
   seed?: number;
+  /** Optional campaign hub code (`'ch'` & `'gb'` enforce gentle 35%–45% accuracy, slower locks, 0 tempo steals) */
+  hubId?: string;
   accuracyOverride?: number;
   tempoStealActive?: boolean;
   tempoStealImmune?: boolean;
@@ -314,6 +320,7 @@ export class RivalAI {
   private bluffBaitedByPlayer = false;
   private resolved = false;
   private lastElapsedSec = 0;
+  private currentQuestionEarlyStage = false;
 
   constructor(config: RivalAIConfig) {
     this.cfg = config;
@@ -379,59 +386,111 @@ export class RivalAI {
         this.cfg.grudgeDomainId === null ||
         q.domainId === this.cfg.grudgeDomainId);
     const isGauntlet = q.archetype === 'GAUNTLET_SHATTER';
+    const normHub = String(q.hubId ?? this.cfg.hubId ?? '').trim().toLowerCase();
+    const isGeneva = normHub === 'ch' || normHub === 'geneva';
+    const isLondon = normHub === 'gb' || normHub === 'uk' || normHub === 'london';
+    const isLateHub =
+      normHub === 'br' ||
+      normHub === 'eg' ||
+      normHub === 'is' ||
+      normHub === 'sg' ||
+      normHub === 'global';
+    const isEarlyStage =
+      !this.cfg.isFinaleVsVance &&
+      !isLateHub &&
+      (isGeneva ||
+        isLondon ||
+        q.difficultyTier === 'MIDDLE_SCHOOL' ||
+        q.irtB < -0.25);
+    this.currentQuestionEarlyStage = isEarlyStage;
 
-    // Lock time calculation
+    // Lock time calculation (gentle & un-rushed on Stage 1 Geneva & Stage 2 London / irtB < -0.25)
     let targetLockSec = this.profile.baseLockSec + (roll1 - 0.5) * 2.8;
     if (isStrongDomain || isGrudgeHit) targetLockSec *= 0.84;
     if (isWeakDomain) targetLockSec *= 1.18;
     if (this.profile.id === 'soren' && this.cfg.analogStaticJammed) {
       targetLockSec += 3.8; // Jammed earpiece slows Soren dramatically!
     }
-    this.lockAtSec = clamp(
-      targetLockSec,
-      isGauntlet ? 2.0 : 3.2,
-      Math.max(3.6, q.timeTotalSec - 1.6)
-    );
+    if (isEarlyStage) {
+      const slowScale = isGeneva ? 1.65 : isLondon ? 1.48 : 1.38;
+      const minEarlyLock = isGauntlet ? 4.6 : isGeneva ? 12.0 : 10.5;
+      targetLockSec = Math.max(targetLockSec * slowScale, minEarlyLock);
+    }
+    const maxAllowedLock = Math.max(3.6, q.timeTotalSec - (isEarlyStage ? 2.2 : 1.6));
+    const minAllowedLock = isGauntlet
+      ? isEarlyStage
+        ? Math.min(4.4, maxAllowedLock)
+        : 2.0
+      : isEarlyStage
+        ? Math.min(9.5, maxAllowedLock)
+        : 3.2;
+    this.lockAtSec = clamp(targetLockSec, minAllowedLock, maxAllowedLock);
 
     // Peel plan
     const canPeel = !isGauntlet && !this.cfg.analogStaticJammed;
     const peelProb = clamp(
-      this.profile.peelRate + (isWeakDomain ? 0.18 : 0) + clamp(q.irtB, -1.5, 2.5) * 0.08,
+      this.profile.peelRate +
+        (isWeakDomain ? 0.18 : 0) +
+        (isEarlyStage ? 0.12 : 0) +
+        clamp(q.irtB, -1.5, 2.5) * 0.08,
       0.08,
       0.82
     );
     this.plannedPeelTier = canPeel && roll2 < peelProb ? 2 : 1;
     this.peelAtSec =
       this.plannedPeelTier === 2
-        ? clamp(this.lockAtSec * 0.44, 1.4, Math.max(1.8, this.lockAtSec - 1.6))
+        ? clamp(this.lockAtSec * 0.48, 1.8, Math.max(2.2, this.lockAtSec - 1.8))
         : null;
 
     // Accuracy & Deterministic Bluff Decision
-    let acc = this.cfg.accuracyOverride ?? this.profile.baseAccuracy;
-    if (isStrongDomain) acc += 0.07;
-    if (isWeakDomain) acc -= 0.14;
-    if (this.plannedPeelTier === 2) acc += 0.08;
-    if (isGrudgeHit) acc += 0.08;
-    acc -= clamp(q.irtB, -1.5, 2.5) * 0.06;
-    if (this.profile.id === 'soren' && this.cfg.analogStaticJammed) {
-      acc -= 0.18; // Live Signal Jammer neutralizes Soren's earpiece!
+    let acc: number;
+    if (this.cfg.accuracyOverride !== undefined) {
+      acc = this.cfg.accuracyOverride;
+    } else if (isEarlyStage) {
+      // Gentle Stage 1–2 calibration (35%–45% accuracy) so new players feel triumphant momentum!
+      const earlyBase = isGeneva ? 0.36 : isLondon ? 0.42 : 0.4;
+      acc = earlyBase;
+      if (isStrongDomain) acc += 0.04;
+      if (isWeakDomain) acc -= 0.05;
+      if (this.plannedPeelTier === 2) acc += 0.03;
+      if (this.profile.id === 'soren' && this.cfg.analogStaticJammed) acc -= 0.05;
+      acc = clamp(acc, 0.35, 0.45);
+    } else {
+      acc = this.profile.baseAccuracy;
+      if (isStrongDomain) acc += 0.07;
+      if (isWeakDomain) acc -= 0.14;
+      if (this.plannedPeelTier === 2) acc += 0.08;
+      if (isGrudgeHit) acc += 0.08;
+      acc -= clamp(q.irtB, -1.5, 2.5) * 0.06;
+      if (this.profile.id === 'soren' && this.cfg.analogStaticJammed) {
+        acc -= 0.18; // Live Signal Jammer neutralizes Soren's earpiece!
+      }
+      acc = clamp(acc, 0.34, 0.92);
     }
 
-    const knowsAnswer = roll3 < clamp(acc, 0.34, 0.92);
+    const knowsAnswer = roll3 < acc;
 
     // Will rival Overclock genuinely or Bluff Overclock?
     const ocRoll = this.rng();
+    const effectiveOverclockRate = isEarlyStage
+      ? isGeneva
+        ? 0.0
+        : this.profile.overclockRate * 0.22
+      : this.profile.overclockRate;
+    const allowEarlyBluff = !isEarlyStage || Boolean(this.cfg.bluffWagerDuels);
+
     if (isGauntlet) {
       this.plannedOverclock = false;
       this.plannedIsBluff = false;
       this.plannedCorrect = knowsAnswer;
-    } else if (knowsAnswer && ocRoll < this.profile.overclockRate) {
+    } else if (knowsAnswer && ocRoll < effectiveOverclockRate) {
       // Genuine high-confidence Overclock — triggers GENUINE tell!
       this.plannedOverclock = true;
       this.plannedIsBluff = false;
       this.plannedCorrect = true;
     } else if (
       !knowsAnswer &&
+      allowEarlyBluff &&
       (this.cfg.bluffWagerDuels || isWeakDomain || this.cfg.isFinaleVsVance) &&
       ocRoll < this.profile.bluffRateOnWeak
     ) {
@@ -509,8 +568,11 @@ export class RivalAI {
         this.tellPillText = `${this.profile.shortName} committed a hesitant lock.`;
       }
 
-      // Tempo Steal fires the exact instant Rival locks!
-      if (this.cfg.tempoStealActive && !this.tempoStealFired) {
+      // Tempo Steal fires the exact instant Rival locks — strictly disabled on early Stages 1–2 (`ch`/`gb` / irtB < -0.25)!
+      const normCfgHub = String(this.cfg.hubId ?? '').trim().toLowerCase();
+      const earlyHubNoTempoSteal =
+        this.currentQuestionEarlyStage || normCfgHub === 'ch' || normCfgHub === 'gb';
+      if (this.cfg.tempoStealActive && !this.tempoStealFired && !earlyHubNoTempoSteal) {
         this.tempoStealFired = true;
         if (this.cfg.tempoStealImmune) {
           tempoStealBlocked = true;
@@ -637,8 +699,12 @@ export class RivalAI {
         this.plannedOverclock && !this.plannedIsBluff
           ? 1.0 + this.plannedOverclockCharge * 0.75
           : 1.0;
-      const scale = this.cfg.isFinaleVsVance ? 0.82 : 0.74;
-      points = Math.round(base * tierMult * ocMult * scale + 140);
+      const scale = this.cfg.isFinaleVsVance
+        ? 0.82
+        : this.currentQuestionEarlyStage
+          ? 0.62
+          : 0.74;
+      points = Math.round(base * tierMult * ocMult * scale + (this.currentQuestionEarlyStage ? 80 : 140));
     }
 
     // Per Pitch Bible §3.1: Player Overclock Backfire gifts Rival tactical momentum (+250)
@@ -674,6 +740,36 @@ export class RivalAI {
       totalRivalScore: this.score,
       expression: this.expression,
       hud: this.getHUDState(),
+    };
+  }
+
+  /**
+   * Live readout for the `BLUFF_RADAR` ("Rival Tell Scanner") Mind Gambit:
+   * reveals clearly whether the Rival's active wager is Genuine or a Bluff (+500 Steal)!
+   */
+  public getBluffRadarReadout(): {
+    activeWager: boolean;
+    verdict: 'BLUFF' | 'GENUINE' | 'NONE';
+    label: string;
+  } {
+    if (this.resolved || !this.plannedOverclock || this.status === 'HIDDEN') {
+      return {
+        activeWager: false,
+        verdict: 'NONE',
+        label: `Tell Scanner: ${this.profile.shortName} has not staked a Double-Down wager.`,
+      };
+    }
+    if (this.plannedIsBluff) {
+      return {
+        activeWager: true,
+        verdict: 'BLUFF',
+        label: `TELL SCANNER: BLUFF DETECTED — Call ${this.profile.shortName}'s Bluff for +500 Steal!`,
+      };
+    }
+    return {
+      activeWager: true,
+      verdict: 'GENUINE',
+      label: `TELL SCANNER: GENUINE WAGER — ${this.profile.shortName} knows this one.`,
     };
   }
 

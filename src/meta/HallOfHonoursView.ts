@@ -1,12 +1,13 @@
 // ============================================================================
-// WORLD'S SMARTEST — Hall of Honours & 32 Unlockables View (`#166` §2.2 & `#168`)
-//  • Browses & filters all 64 Trophies & Medals (Tier 1 Bronze -> Tier 5 Mythic 0.1%)
+// WORLD'S SMARTEST — Hall of Honours & Unlockables View (`#166` §2.2 & `v3.0`)
+//  • Browses & filters all dynamic Trophies & Medals (88 across 5 Rarity Tiers)
 //    with exact `tabular-nums` progress bars (`12 / 50`) & `./assets/medals/*.png`
-//  • Direct 1-Click Equip Studio for all 32 Gameplay Unlockables:
-//      - 12 PBR 3D Veritas Prism Material Finishes
-//      - 12 Diplomatic Broadcast Titles (synced to HUD & Passport)
-//      - 8 Chrono-Ring & HUD Accent Themes
-//  • Interactive `🏆 3D TROPHY SHOWCASE` toggle (`stage3d.showChampionshipTrophy`)
+//  • Direct 1-Click Equip Studio for all 44 Gameplay Unlockables:
+//      - 16 PBR 3D Veritas Prism Material Finishes
+//      - 17 Diplomatic Broadcast Titles (synced to HUD & Passport)
+//      - 11 Chrono-Ring & HUD Accent Themes
+//  • Interactive `◆ 3D TROPHY SHOWCASE` toggle (`stage3d.showChampionshipTrophy`)
+//  • Deep-link aspect pre-filtering from Career Stats (`initialAspectFilter`)
 // ============================================================================
 
 import type { Stage3DDirector } from '../stage3d';
@@ -73,6 +74,8 @@ export interface HallOfHonoursViewCallbacks {
 export interface HallOfHonoursOpenOptions extends HallOfHonoursViewCallbacks {
   initialTab?: HonoursSubTab;
   initialTierFilter?: HonourRarityTier | 'ALL';
+  initialAspectFilter?: HonourAspectCategory | 'ALL';
+  initialContextLabel?: string | null;
 }
 
 export class HallOfHonoursView {
@@ -85,6 +88,7 @@ export class HallOfHonoursView {
   private activeTab: HonoursSubTab = 'TROPHIES_64';
   private tierFilter: HonourRarityTier | 'ALL' = 'ALL';
   private aspectFilter: HonourAspectCategory | 'ALL' = 'ALL';
+  private contextLabel: string | null = null;
   private trophy3DDockActive = false;
   private trophyReqToken = 0;
 
@@ -102,7 +106,8 @@ export class HallOfHonoursView {
     this.callbacks = options;
     this.activeTab = options.initialTab ?? 'TROPHIES_64';
     this.tierFilter = options.initialTierFilter ?? 'ALL';
-    this.aspectFilter = 'ALL';
+    this.aspectFilter = options.initialAspectFilter ?? 'ALL';
+    this.contextLabel = options.initialContextLabel?.trim() || null;
     this.trophy3DDockActive = false;
     this.deps.honoursSystem.evaluateAndUnlock(true);
 
@@ -131,6 +136,8 @@ export class HallOfHonoursView {
     this.callbacks = options;
     this.activeTab = options.initialTab ?? 'TROPHIES_64';
     this.tierFilter = options.initialTierFilter ?? 'ALL';
+    this.aspectFilter = options.initialAspectFilter ?? 'ALL';
+    this.contextLabel = options.initialContextLabel?.trim() || null;
     this.deps.honoursSystem.evaluateAndUnlock(true);
     this.mountedContainer = container;
     this.renderInto(container, false);
@@ -328,9 +335,23 @@ export class HallOfHonoursView {
       return true;
     });
 
+    const hasActivePreFilter = this.tierFilter !== 'ALL' || this.aspectFilter !== 'ALL';
+
     return `
       <!-- Single-Line Horizontal Scrollable Tier & Aspect Filters (Zero Boxed Filter Cards!) -->
-      <div class="ws-meta-section" style="padding-top:0;gap:7px;">
+      <div class="ws-meta-section" style="padding-top:0;gap:7px;" data-honours-active-aspect="${this.aspectFilter}" data-honours-active-tier="${this.tierFilter}">
+        ${
+          hasActivePreFilter || this.contextLabel
+            ? `<div id="ws-honours-context-bar" class="ws-meta-note" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:6px 0 6px 12px;">
+                <span style="font-family:var(--font-mono);font-size:11px;color:var(--ivory-primary);">
+                  ◆ ${this.contextLabel ? `Related to ${escapeMetaHtml(this.contextLabel)} · ` : ''}Showing <strong>${filtered.length}</strong> of ${allHonours.length} Trophies
+                </span>
+                <button type="button" class="ws-meta-inline-link" id="ws-honours-clear-filters" style="min-height:44px;padding:0 8px;">
+                  ✕ Show All ${allHonours.length}
+                </button>
+              </div>`
+            : ''
+        }
         <div class="ws-meta-hscroll" aria-label="Filter by Rarity Tier">
           ${(
             [
@@ -384,7 +405,7 @@ export class HallOfHonoursView {
                 ? '✓ EARNED'
                 : `${Math.round(item.current)} / ${Math.round(item.target)}`;
               return `
-                <div style="display:flex;gap:11px;align-items:flex-start;padding:12px 4px;border-bottom:1px solid rgba(255,255,255,0.07);${item.unlocked ? `box-shadow:inset 3px 0 0 ${tm.colorHex};padding-left:10px;background:rgba(255,255,255,0.02);` : ''}">
+                <div data-trophy-id="${escapeMetaHtml(item.def.id)}" style="display:flex;gap:11px;align-items:flex-start;padding:12px 4px;border-bottom:1px solid rgba(255,255,255,0.07);${item.unlocked ? `box-shadow:inset 3px 0 0 ${tm.colorHex};padding-left:10px;background:rgba(255,255,255,0.02);` : ''}">
                   <img
                     src="${escapeMetaHtml(item.emblemPngUrl)}"
                     data-fallback-src="${escapeMetaHtml(item.emblemFallbackDataUri)}"
@@ -603,11 +624,21 @@ export class HallOfHonoursView {
       });
     });
 
+    host.querySelector('#ws-honours-clear-filters')?.addEventListener('click', () => {
+      this.tierFilter = 'ALL';
+      this.aspectFilter = 'ALL';
+      this.contextLabel = null;
+      this.deps.haptics?.uiTap();
+      this.deps.audio?.playSfx('ui_tap');
+      this.rerender();
+    });
+
     host.querySelectorAll<HTMLButtonElement>('[data-aspect-filter]').forEach((btn) => {
       btn.addEventListener('click', () => {
         const af = btn.dataset.aspectFilter as HonourAspectCategory | 'ALL' | undefined;
         if (!af) return;
         this.aspectFilter = af;
+        if (af === 'ALL') this.contextLabel = null;
         this.deps.haptics?.uiTap();
         this.deps.audio?.playSfx('ui_tap');
         this.rerender();

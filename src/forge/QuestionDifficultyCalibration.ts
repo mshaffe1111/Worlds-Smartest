@@ -1,17 +1,18 @@
 // ============================================================================
 // WORLD'S SMARTEST — 6-FACTOR QUESTION DIFFICULTY CALIBRATION ENGINE
 // Strict 5-Tier Academic / IQ Placement:
-//   1. MIDDLE_SCHOOL ("Middle School" · 0–22  · irtB -1.85..-0.85 · 24s · 1.00x)
-//   2. HIGH_SCHOOL   ("High School"   · 23–44 · irtB -0.85..-0.15 · 20s · 1.15x)
-//   3. COLLEGE       ("College"       · 45–66 · irtB -0.15..+0.65 · 18s · 1.35x)
-//   4. GRADUATE      ("Graduate"      · 67–84 · irtB +0.65..+1.45 · 16s · 1.60x)
-//   5. MENSA         ("Mensa"         · 85–100· irtB +1.45..+2.85 · 14s · 2.00x)
+//   1. MIDDLE_SCHOOL ("Middle School" · 0–22  · irtB -1.85..-0.85 · 28s · 1.00x)
+//   2. HIGH_SCHOOL   ("High School"   · 23–44 · irtB -0.85..-0.15 · 24s · 1.15x)
+//   3. COLLEGE       ("College"       · 45–66 · irtB -0.15..+0.65 · 20s · 1.35x)
+//   4. GRADUATE      ("Graduate"      · 67–84 · irtB +0.65..+1.45 · 17s · 1.60x)
+//   5. MENSA         ("Mensa"         · 85–100· irtB +1.45..+2.85 · 15s · 2.00x)
 // ============================================================================
 
 import type {
   AcademicDifficultyTier,
   Archetype3D,
   BriefingDifficultyPreset,
+  CampaignHubCode,
   RawQuestionRecord,
 } from './types';
 
@@ -68,7 +69,7 @@ export const ACADEMIC_DIFFICULTY_TIERS: ReadonlyArray<AcademicDifficultyTierSpec
     scoreMax: 22,
     irtMin: -1.85,
     irtMax: -0.85,
-    timerSec: 24,
+    timerSec: 28,
     scoreMultiplier: 1.0,
     shardRankMin01: 0.0,
     shardRankMax01: 0.16,
@@ -85,7 +86,7 @@ export const ACADEMIC_DIFFICULTY_TIERS: ReadonlyArray<AcademicDifficultyTierSpec
     scoreMax: 44,
     irtMin: -0.85,
     irtMax: -0.15,
-    timerSec: 20,
+    timerSec: 24,
     scoreMultiplier: 1.15,
     shardRankMin01: 0.08,
     shardRankMax01: 0.44,
@@ -107,7 +108,7 @@ export const ACADEMIC_DIFFICULTY_TIERS: ReadonlyArray<AcademicDifficultyTierSpec
     scoreMax: 66,
     irtMin: -0.15,
     irtMax: 0.65,
-    timerSec: 18,
+    timerSec: 20,
     scoreMultiplier: 1.35,
     shardRankMin01: 0.24,
     shardRankMax01: 0.72,
@@ -130,7 +131,7 @@ export const ACADEMIC_DIFFICULTY_TIERS: ReadonlyArray<AcademicDifficultyTierSpec
     scoreMax: 84,
     irtMin: 0.65,
     irtMax: 1.45,
-    timerSec: 16,
+    timerSec: 17,
     scoreMultiplier: 1.6,
     shardRankMin01: 0.5,
     shardRankMax01: 0.92,
@@ -153,7 +154,7 @@ export const ACADEMIC_DIFFICULTY_TIERS: ReadonlyArray<AcademicDifficultyTierSpec
     scoreMax: 100,
     irtMin: 1.45,
     irtMax: 2.85,
-    timerSec: 14,
+    timerSec: 15,
     scoreMultiplier: 2.0,
     shardRankMin01: 0.75,
     shardRankMax01: 1.0,
@@ -295,6 +296,185 @@ export function getAdjacentAcademicTiers(tier: AcademicDifficultyTier): Academic
     out.push(ACADEMIC_DIFFICULTY_TIERS[idx + 1].id);
   }
   return out;
+}
+
+/**
+ * Shifts an `AcademicDifficultyTier` down or up by `tierShift` steps (e.g., `-1` or `-2`
+ * for Retry Mercy / "Scout's Advantage"), clamped strictly within `MIDDLE_SCHOOL..MENSA`.
+ */
+export function shiftAcademicDifficultyTier(
+  tier: AcademicDifficultyTier,
+  tierShift: number,
+): AcademicDifficultyTier {
+  const baseRank = ACADEMIC_DIFFICULTY_BY_ID[tier]?.rank ?? 0;
+  const delta = Number.isFinite(tierShift) ? Math.trunc(tierShift) : 0;
+  const shiftedRank = clamp(baseRank + delta, 0, ACADEMIC_DIFFICULTY_TIERS.length - 1);
+  return ACADEMIC_DIFFICULTY_TIERS[shiftedRank].id;
+}
+
+/**
+ * Strict 8-City Campaign Progressive Difficulty Ramp (`MIDDLE_SCHOOL` -> `MENSA`):
+ *   - `ch` (Stage 1 — Geneva): `MIDDLE_SCHOOL`
+ *   - `gb` (Stage 2 — London): Rounds 0–1 `MIDDLE_SCHOOL`, Rounds 2–4 `HIGH_SCHOOL`
+ *   - `jp` (Stage 3 — Tokyo): `HIGH_SCHOOL`
+ *   - `br` (Stage 4 — Rio) & `eg` (Stage 5 — Cairo): `COLLEGE`
+ *   - `is` (Stage 6 — Reykjavik) & `sg` (Stage 7 — Singapore): `GRADUATE`
+ *   - `global` (Stage 8 — Apex Finale): `MENSA`
+ * Supports optional `mercyTierShift` (`-1` or `-2` when retrying a failed mission).
+ */
+export function resolveCampaignAcademicTier(
+  hub: CampaignHubCode | string,
+  roundIndex = 0,
+  mercyTierShift = 0,
+): AcademicDifficultyTier {
+  const norm = String(hub ?? 'ch').trim().toLowerCase();
+  const rIdx = Number.isFinite(roundIndex) ? Math.max(0, Math.trunc(roundIndex)) : 0;
+
+  let baseTier: AcademicDifficultyTier;
+  if (norm === 'ch' || norm === 'geneva') {
+    baseTier = 'MIDDLE_SCHOOL';
+  } else if (norm === 'gb' || norm === 'uk' || norm === 'london') {
+    baseTier = rIdx <= 1 ? 'MIDDLE_SCHOOL' : 'HIGH_SCHOOL';
+  } else if (norm === 'jp' || norm === 'tokyo') {
+    baseTier = 'HIGH_SCHOOL';
+  } else if (
+    norm === 'br' ||
+    norm === 'rio' ||
+    norm === 'rio de janeiro' ||
+    norm === 'eg' ||
+    norm === 'cairo'
+  ) {
+    baseTier = 'COLLEGE';
+  } else if (
+    norm === 'is' ||
+    norm === 'reykjavik' ||
+    norm === 'sg' ||
+    norm === 'singapore'
+  ) {
+    baseTier = 'GRADUATE';
+  } else if (norm === 'global' || norm === 'apex' || norm === 'apex forum') {
+    baseTier = 'MENSA';
+  } else {
+    baseTier = 'MIDDLE_SCHOOL';
+  }
+
+  return mercyTierShift !== 0
+    ? shiftAcademicDifficultyTier(baseTier, mercyTierShift)
+    : baseTier;
+}
+
+export type DifficultyCandidateInput =
+  | Pick<
+      RawQuestionRecord,
+      | 'irtB'
+      | 'archetype'
+      | 'prompt'
+      | 'answerCorrect'
+      | 'distractors'
+      | 'calibratorExt'
+      | 'gauntletExt'
+      | 'globePin'
+      | 'shardRowRank01'
+      | 'l0Domain'
+    >
+  | QuestionDifficultyAssessment;
+
+export interface DifficultyMatchOptions {
+  /** When true (Pass 1 fallback), allows at most ONE immediately adjacent tier (NEVER jumps 2+ tiers). */
+  allowAdjacent?: boolean;
+  /** Optional normalized shard table row rank [0..1] for shard items. */
+  shardRowRank01?: number;
+  /** Optional mercy shift (`-1` or `-2`) applied to the target tier before matching. */
+  mercyTierShift?: number;
+  /** Optional precomputed assessment to skip re-scoring inside tight query loops. */
+  assessment?: QuestionDifficultyAssessment;
+  /** Rejects `CODEX_DUAL_RING` on `MIDDLE_SCHOOL` (always) & `HIGH_SCHOOL` (strict pass). Defaults to true. */
+  enforceMorphBounds?: boolean;
+}
+
+function isAssessmentObject(
+  input: DifficultyCandidateInput,
+): input is QuestionDifficultyAssessment {
+  return (
+    typeof input === 'object' &&
+    input !== null &&
+    'difficultyTier' in input &&
+    'calibratedIrtB' in input &&
+    'difficultyScore' in input
+  );
+}
+
+/**
+ * Strict academic difficulty predicate shared by Campaign (`ch`..`global`), Briefing Room,
+ * and Finale Category Picker so early stages NEVER leak College/Graduate/Mensa questions
+ * and late stages preserve genuine high-IQ prestige.
+ */
+export function doesCandidateMatchDifficultyPreset(
+  candidate: DifficultyCandidateInput,
+  preset?: BriefingDifficultyPreset | AcademicDifficultyTier | string | null,
+  options: DifficultyMatchOptions = {},
+): boolean {
+  const baseTier = presetToAcademicTier(preset);
+  if (!baseTier) {
+    // Dynamic modes (`ADAPTIVE` / `PROGRESSIVE`) match via slot IRT curves instead of a fixed tier gate.
+    return true;
+  }
+
+  const targetTier = options.mercyTierShift
+    ? shiftAcademicDifficultyTier(baseTier, options.mercyTierShift)
+    : baseTier;
+
+  const allowAdjacent = Boolean(options.allowAdjacent);
+  const enforceMorphBounds = options.enforceMorphBounds !== false;
+
+  if (enforceMorphBounds && !isAssessmentObject(candidate)) {
+    const arch = candidate.archetype ?? 'SIGHTLINE_LOCK';
+    if (targetTier === 'MIDDLE_SCHOOL' && arch === 'CODEX_DUAL_RING') {
+      return false;
+    }
+    if (targetTier === 'HIGH_SCHOOL' && !allowAdjacent && arch === 'CODEX_DUAL_RING') {
+      return false;
+    }
+  }
+
+  const assessment =
+    options.assessment ??
+    (isAssessmentObject(candidate)
+      ? candidate
+      : scoreQuestionDifficulty(candidate, { shardRowRank01: options.shardRowRank01 }));
+
+  if (!allowAdjacent) {
+    if (assessment.difficultyTier !== targetTier) {
+      return false;
+    }
+    if (targetTier === 'MIDDLE_SCHOOL') {
+      // Pure Middle School gate: accessible everyday knowledge, zero specialist academic jargon leaks.
+      if (assessment.calibratedIrtB > -0.8) return false;
+      if (assessment.breakdown.lexiconDelta > 0) return false;
+    }
+    if (targetTier === 'MENSA' && assessment.difficultyScore < 85) {
+      return false;
+    }
+    return true;
+  }
+
+  const adjacent = getAdjacentAcademicTiers(targetTier);
+  if (!adjacent.includes(assessment.difficultyTier)) {
+    return false;
+  }
+  // Safety rails even during adjacent fallback: Middle School stays strictly in accessible High School band!
+  if (targetTier === 'MIDDLE_SCHOOL') {
+    if (assessment.difficultyScore > 36 || assessment.calibratedIrtB > -0.25) {
+      return false;
+    }
+    if (assessment.breakdown.lexiconDelta > 0) {
+      return false;
+    }
+  }
+  if (targetTier === 'MENSA' && assessment.difficultyScore < 67) {
+    return false;
+  }
+  return true;
 }
 
 /** Piecewise linear mapping of `irtB` (`-1.85..+2.85`) aligned cleanly to our 5 tier score boundaries (`0, 22, 44, 66, 84, 100`). */

@@ -607,8 +607,8 @@ async function inspectQuestionState(page) {
       idx: Number(el.dataset.facetIdx),
       text: (el.querySelector('.ws-facet-text')?.textContent || el.textContent || '').replace(/\\s+/g, ' ').trim(),
       sightline: el.classList.contains('is-sightline'),
-      shattered: el.classList.contains('is-shattered'),
-      disabled: Boolean(el.disabled),
+      shattered: el.classList.contains('is-shattered') || el.classList.contains('is-mulligan-eliminated'),
+      disabled: Boolean(el.disabled || el.classList.contains('is-mulligan-eliminated')),
     }));
     const hasCal = Boolean(document.querySelector('#ws-cal-slider'));
     const hasCodex = Boolean(document.querySelector('[data-codex-subj]'));
@@ -650,6 +650,9 @@ async function inspectQuestionState(page) {
       hasCutscene: Boolean(document.querySelector('#ws-mc-skip')),
       hasStoryContinue: Boolean(document.querySelector('#ws-story-continue')),
       hasStoryChoices: Boolean(document.querySelector('[data-story-choice]')),
+      hasRoundReady: Boolean(document.querySelector('#ws-btn-start-round-questions')),
+      hasFinalePicker: Boolean(document.querySelector('.ws-finale-topic-btn')),
+      secondWindSaved: Boolean(document.querySelector('#ws-second-wind-banner')),
     };
   })()`);
 }
@@ -657,7 +660,7 @@ async function inspectQuestionState(page) {
 async function dismissInterstitials(page) {
   for (let i = 0; i < 20; i++) {
     const st = await inspectQuestionState(page);
-    if (st.hasQuestion && !st.hasBossBanner && !st.hasCutscene) return st;
+    if (st.hasQuestion && !st.hasBossBanner && !st.hasCutscene && !st.hasRoundReady && !st.hasFinalePicker) return st;
     if (st.hasCutscene) {
       await page.eval(`document.querySelector('#ws-mc-skip')?.click()`);
       await sleep(120);
@@ -666,6 +669,16 @@ async function dismissInterstitials(page) {
     if (st.hasBossBanner) {
       await page.eval(`document.querySelector('#ws-boss-engage')?.click()`);
       await sleep(150);
+      continue;
+    }
+    if (st.hasRoundReady) {
+      await page.eval(`document.querySelector('#ws-btn-start-round-questions')?.click()`);
+      await sleep(220);
+      continue;
+    }
+    if (st.hasFinalePicker) {
+      await page.eval(`document.querySelector('.ws-finale-topic-btn')?.click()`);
+      await sleep(220);
       continue;
     }
     if (st.hasStoryChoices) {
@@ -689,6 +702,9 @@ async function waitForSubmissionOutcome(page, beforePrompt, beforeDomainLabel, t
     const st = await inspectQuestionState(page);
     if (st.revealed) {
       return { submitted: true, reason: 'REVEALED', state: st };
+    }
+    if (st.secondWindSaved && st.facets.some((f) => f.shattered)) {
+      return { submitted: true, reason: 'SECOND_WIND_MULLIGAN', state: st };
     }
     if (st.hasQuestion && (st.prompt !== beforePrompt || st.domainLabel !== beforeDomainLabel)) {
       return { submitted: true, reason: 'ADVANCED_STEP', state: st };
@@ -715,7 +731,7 @@ async function advancePastRevealAndWait(page, prevPrompt, prevDomainLabel) {
     while (Date.now() < deadline) {
       await sleep(40);
       const cur = await inspectQuestionState(page);
-      if (cur.hasSummary || cur.hasBossBanner || cur.hasCutscene || cur.hasStoryContinue) {
+      if (cur.hasSummary || cur.hasBossBanner || cur.hasCutscene || cur.hasStoryContinue || cur.hasRoundReady || cur.hasFinalePicker) {
         await dismissInterstitials(page);
         return;
       }
@@ -1404,22 +1420,38 @@ async function launchBriefingMarathon(page, count = 50) {
   await sleep(100);
   await page.clickSelectorSafe('#ws-cat-launch', 10000);
   await page.waitFor(
-    `Boolean(document.querySelector('.ws-question-prompt'))`,
+    `Boolean(document.querySelector('#ws-btn-start-round-questions') || document.querySelector('.ws-question-prompt'))`,
     15000,
     `Briefing ${count}-Q start`,
   );
-}
-
-async function launchDailyBroadcast(page) {
-  await clickUntilTargetAppears(page, '[data-title-mode="DAILY"]', '.ws-question-prompt, #ws-launch-daily');
-  const alreadyPlaying = await page.eval(`Boolean(document.querySelector('.ws-question-prompt'))`);
-  if (!alreadyPlaying) {
-    await page.clickSelectorSafe('#ws-launch-daily', 10000);
+  if (await page.eval(`Boolean(document.querySelector('#ws-btn-start-round-questions'))`)) {
+    await page.clickSelectorSafe('#ws-btn-start-round-questions', 8000);
   }
   await page.waitFor(
     `Boolean(document.querySelector('.ws-question-prompt'))`,
     15000,
+    `Briefing ${count}-Q live question`,
+  );
+}
+
+async function launchDailyBroadcast(page) {
+  await clickUntilTargetAppears(page, '[data-title-mode="DAILY"]', '.ws-question-prompt, #ws-launch-daily, #ws-btn-start-round-questions');
+  const hasLaunchDaily = await page.eval(`Boolean(document.querySelector('#ws-launch-daily'))`);
+  if (hasLaunchDaily) {
+    await page.clickSelectorSafe('#ws-launch-daily', 10000);
+  }
+  await page.waitFor(
+    `Boolean(document.querySelector('#ws-btn-start-round-questions') || document.querySelector('.ws-question-prompt'))`,
+    15000,
     'Daily Broadcast start',
+  );
+  if (await page.eval(`Boolean(document.querySelector('#ws-btn-start-round-questions'))`)) {
+    await page.clickSelectorSafe('#ws-btn-start-round-questions', 8000);
+  }
+  await page.waitFor(
+    `Boolean(document.querySelector('.ws-question-prompt'))`,
+    15000,
+    'Daily Broadcast live question',
   );
 }
 

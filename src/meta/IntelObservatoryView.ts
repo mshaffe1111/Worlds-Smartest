@@ -42,7 +42,20 @@ import {
   type SrsReviewCard,
 } from './SpacedRepetitionEngine';
 
-export type ObservatoryTabId = 'RELICS_3D' | 'INTEL_FLASHES' | 'SELF_QUIZ';
+export type ObservatoryTabId = 'RELICS_3D' | 'INTEL_FLASHES' | 'SELF_QUIZ' | 'MASTERY';
+
+function normalizeObservatoryTab(tab?: ObservatoryTabId): 'RELICS_3D' | 'INTEL_FLASHES' | 'SELF_QUIZ' {
+  if (tab === 'MASTERY' || tab === 'SELF_QUIZ') return 'SELF_QUIZ';
+  if (tab === 'INTEL_FLASHES') return 'INTEL_FLASHES';
+  return 'RELICS_3D';
+}
+
+function normalizeOptionalDomain(raw?: DomainId | number | null): DomainId | 'ALL' {
+  if (raw === undefined || raw === null) return 'ALL';
+  const n = Math.floor(Number(raw));
+  if (!Number.isFinite(n) || n < 0 || n > 11) return 'ALL';
+  return n as DomainId;
+}
 
 export type SrsDeckFilter = 'DUE' | 'ALL' | 'MASTERED';
 
@@ -85,6 +98,7 @@ export interface IntelObservatoryCallbacks {
 export interface IntelObservatoryOpenOptions extends IntelObservatoryCallbacks {
   initialTab?: ObservatoryTabId;
   initialArtifactId?: ShowcaseArtifactId;
+  initialDomainId?: DomainId | number | null;
 }
 
 interface FlashCardItem extends IntelBookmark {
@@ -493,7 +507,7 @@ export class IntelObservatoryView {
   private detachEscape: (() => void) | null = null;
   private callbacks: IntelObservatoryCallbacks = {};
 
-  private activeTab: ObservatoryTabId = 'RELICS_3D';
+  private activeTab: 'RELICS_3D' | 'INTEL_FLASHES' | 'SELF_QUIZ' = 'RELICS_3D';
   private selectedArtifactId: ShowcaseArtifactId = 'championship_trophy';
   private uvBlacklightActive = false;
   private relicLatchesOpen = false;
@@ -503,6 +517,7 @@ export class IntelObservatoryView {
   // Intel Flash Vault & 5-Box Leitner Mastery Deck State
   private searchQuery = '';
   private domainFilter: DomainId | 'ALL' = 'ALL';
+  private srsDomainFilter: DomainId | 'ALL' = 'ALL';
   private includeSeedExemplars = true;
 
   private srsFilter: SrsDeckFilter = 'DUE';
@@ -531,8 +546,11 @@ export class IntelObservatoryView {
   public open(options: IntelObservatoryOpenOptions = {}): void {
     this.close();
     this.callbacks = options;
-    this.activeTab = options.initialTab ?? 'RELICS_3D';
+    this.activeTab = normalizeObservatoryTab(options.initialTab);
     this.selectedArtifactId = options.initialArtifactId ?? 'championship_trophy';
+    const initDomain = normalizeOptionalDomain(options.initialDomainId);
+    this.domainFilter = initDomain;
+    this.srsDomainFilter = initDomain;
     this.uvBlacklightActive = false;
     this.resetSrsRunnerTurn(true);
     this.syncSrsBookmarksAndDefaultFilter();
@@ -574,8 +592,11 @@ export class IntelObservatoryView {
   public mount(container: HTMLElement, options: IntelObservatoryOpenOptions = {}): void {
     this.unmount();
     this.callbacks = options;
-    this.activeTab = options.initialTab ?? 'RELICS_3D';
+    this.activeTab = normalizeObservatoryTab(options.initialTab);
     this.selectedArtifactId = options.initialArtifactId ?? 'championship_trophy';
+    const initDomain = normalizeOptionalDomain(options.initialDomainId);
+    this.domainFilter = initDomain;
+    this.srsDomainFilter = initDomain;
     this.mountedContainer = container;
     this.resetSrsRunnerTurn(true);
     this.syncSrsBookmarksAndDefaultFilter();
@@ -598,9 +619,48 @@ export class IntelObservatoryView {
     }
   }
 
+  private getScopedSrsSummary(nowMs: number = Date.now()): {
+    totalCards: number;
+    dueCount: number;
+    masteredCount: number;
+    boxCounts: [number, number, number, number, number];
+    retentionPct: number;
+  } {
+    if (this.srsDomainFilter === 'ALL') {
+      const full = this.srs.getDeckSummary(nowMs);
+      return {
+        totalCards: full.totalCards,
+        dueCount: full.dueCount,
+        masteredCount: full.masteredCount,
+        boxCounts: full.boxCounts,
+        retentionPct: full.retentionPct,
+      };
+    }
+    const cards = this.srs.getAllCards().filter((c) => c.domainId === this.srsDomainFilter);
+    const boxCounts: [number, number, number, number, number] = [0, 0, 0, 0, 0];
+    let dueCount = 0;
+    let totalReviews = 0;
+    let correctReviews = 0;
+    for (const c of cards) {
+      boxCounts[c.box - 1] += 1;
+      if (c.nextReviewAtMs <= nowMs) dueCount += 1;
+      totalReviews += c.totalReviews;
+      correctReviews += c.correctReviews;
+    }
+    const totalCards = cards.length;
+    const masteredCount = boxCounts[4];
+    const retentionPct =
+      totalReviews > 0
+        ? Math.round((correctReviews / totalReviews) * 100)
+        : totalCards > 0
+          ? Math.round(((totalCards - boxCounts[0]) / totalCards) * 100)
+          : 0;
+    return { totalCards, dueCount, masteredCount, boxCounts, retentionPct };
+  }
+
   private syncSrsBookmarksAndDefaultFilter(): void {
     this.srs.syncFromPassportBookmarks(this.deps.passport.getSnapshot().bookmarks);
-    const summary = this.srs.getDeckSummary();
+    const summary = this.getScopedSrsSummary();
     if (summary.dueCount > 0) {
       this.srsFilter = 'DUE';
     } else if (summary.totalCards > 0) {
@@ -618,6 +678,9 @@ export class IntelObservatoryView {
       base = this.srs.getMasteredCards();
     } else {
       base = this.srs.getAllCards();
+    }
+    if (this.srsDomainFilter !== 'ALL') {
+      base = base.filter((c) => c.domainId === this.srsDomainFilter);
     }
     if (this.srsBoxFilter !== null) {
       return base.filter((c) => c.box === this.srsBoxFilter);
@@ -914,7 +977,7 @@ export class IntelObservatoryView {
           ? `
             <div style="display:flex;gap:8px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.07);">
               <button type="button" class="ws-meta-chip ${this.uvBlacklightActive ? 'is-active' : ''}" id="ws-obs-uv-scan">✦ UV</button>
-              <button type="button" class="ws-meta-chip ${this.relicLatchesOpen ? 'is-active' : ''}" id="ws-obs-latch-toggle">⚙ Latches</button>
+              <button type="button" class="ws-meta-chip ${this.relicLatchesOpen ? 'is-active' : ''}" id="ws-obs-latch-toggle">◆ Latches</button>
             </div>
           `
           : ''
@@ -996,7 +1059,7 @@ export class IntelObservatoryView {
                   ? `
                     <div style="display:flex;flex-direction:column;gap:4px;padding-top:4px;">
                       <div style="font-family:var(--font-mono);font-size:10px;font-weight:700;color:var(--gold-bright);letter-spacing:0.06em;">
-                        ⚙ UNSEALED MECHANICAL LATCHES
+                        ◆ UNSEALED MECHANICAL LATCHES
                       </div>
                       ${w2.latches
                         .map(
@@ -1054,7 +1117,7 @@ export class IntelObservatoryView {
             value="${escapeMetaHtml(this.searchQuery)}"
           />
           <button type="button" class="ws-meta-btn-gold" id="ws-obs-launch-quiz">
-            Mastery Deck ▶
+            Mastery Deck ▸
           </button>
         </div>
 
@@ -1127,21 +1190,71 @@ export class IntelObservatoryView {
   }
 
   private renderSelfQuizMode(): string {
-    const summary = this.srs.getDeckSummary();
+    const fullSummary = this.srs.getDeckSummary();
+    const summary = this.getScopedSrsSummary();
     const allCards = this.srs.getAllCards();
     const filteredQueue = this.getFilteredSrsCards();
     const maxBoxCount = Math.max(1, ...summary.boxCounts);
     const boxes: readonly LeitnerBox[] = [1, 2, 3, 4, 5];
+    const activeDomMeta =
+      this.srsDomainFilter !== 'ALL' ? getSovereignDomainMeta(this.srsDomainFilter) : null;
+
+    const domainBannerHtml = activeDomMeta
+      ? `
+        <div
+          id="ws-srs-domain-banner"
+          class="ws-meta-note"
+          data-srs-domain-banner="${activeDomMeta.id}"
+          style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;box-shadow:inset 3px 0 0 ${activeDomMeta.accentHex};padding:6px 0 6px 12px;"
+        >
+          <span style="display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:11px;color:var(--ivory-primary);">
+            <img src="./${escapeMetaHtml(activeDomMeta.medallionUrl)}" alt="" style="width:18px;height:18px;object-fit:contain;" />
+            <span>Filtered Domain: <strong style="color:${activeDomMeta.accentHex};">${escapeMetaHtml(activeDomMeta.name)}</strong> (${summary.totalCards} cards)</span>
+          </span>
+          <button type="button" class="ws-meta-inline-link" data-srs-domain="ALL" style="min-height:44px;padding:0 8px;">
+            ✕ All Domains (${fullSummary.totalCards})
+          </button>
+        </div>
+      `
+      : '';
+
+    const domainStripHtml = `
+      <div class="ws-meta-hscroll" aria-label="Filter Mastery Deck by Domain" style="padding:2px 0 6px;">
+        <button
+          type="button"
+          class="ws-meta-chip ws-srs-domain-chip ${this.srsDomainFilter === 'ALL' ? 'is-active' : ''}"
+          data-srs-domain="ALL"
+        >
+          All Domains (${fullSummary.totalCards})
+        </button>
+        ${SOVEREIGN_DOMAINS.map((dom) => {
+          const domCnt = allCards.filter((c) => c.domainId === dom.id).length;
+          const isAct = this.srsDomainFilter === dom.id;
+          return `
+            <button
+              type="button"
+              class="ws-meta-chip ws-srs-domain-chip ${isAct ? 'is-active' : ''}"
+              data-srs-domain="${dom.id}"
+            >
+              <img src="./${escapeMetaHtml(dom.medallionUrl)}" alt="" style="width:16px;height:16px;object-fit:contain;" />
+              <span>${escapeMetaHtml(dom.shortName)}${domCnt > 0 ? ` (${domCnt})` : ''}</span>
+            </button>
+          `;
+        }).join('')}
+      </div>
+    `;
 
     const headerStatsAndBarsHtml = `
+      ${domainBannerHtml}
+
       <!-- Frameless 4-KPI Leitner Mastery Strip -->
-      <div class="ws-meta-kpi-strip is-four-col" id="ws-srs-kpi-strip">
+      <div class="ws-meta-kpi-strip is-four-col" id="ws-srs-kpi-strip" data-srs-active-domain="${this.srsDomainFilter}">
         <div class="ws-meta-kpi-cell" data-srs-kpi="due">
           <span class="ws-meta-kpi-lbl">Due Now</span>
           <span class="ws-meta-kpi-val" id="ws-srs-due-count" style="color:${summary.dueCount > 0 ? 'var(--gold-bright)' : 'var(--emerald-win)'};">${summary.dueCount}</span>
         </div>
         <div class="ws-meta-kpi-cell" data-srs-kpi="total">
-          <span class="ws-meta-kpi-lbl">Deck Cards</span>
+          <span class="ws-meta-kpi-lbl">${activeDomMeta ? `${escapeMetaHtml(activeDomMeta.shortName)} Cards` : 'Deck Cards'}</span>
           <span class="ws-meta-kpi-val" id="ws-srs-total-count">${summary.totalCards}</span>
         </div>
         <div class="ws-meta-kpi-cell" data-srs-kpi="retention">
@@ -1156,8 +1269,10 @@ export class IntelObservatoryView {
 
       <!-- 5-Box Leitner Mastery Bars (Zero Nested Boxes) -->
       <div class="ws-meta-section" style="padding-top:10px;padding-bottom:10px;gap:8px;">
+        ${domainStripHtml}
+
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
-          <h3 class="ws-meta-section-title">5-Box Leitner Mastery Deck</h3>
+          <h3 class="ws-meta-section-title">5-Box Leitner Mastery Deck${activeDomMeta ? ` · ${escapeMetaHtml(activeDomMeta.shortName)}` : ''}</h3>
           <span style="font-family:var(--font-mono);font-size:10px;color:#a5afc2;">
             ${this.srsBoxFilter ? `Filtered: Box ${this.srsBoxFilter} (tap to clear)` : 'Box 1 Immediate → Box 5 Mastered (21d)'}
           </span>
@@ -1206,7 +1321,7 @@ export class IntelObservatoryView {
           ${
             this.callbacks.onLaunchLivePrismReview && filteredQueue.length > 0
               ? `<button type="button" class="ws-meta-chip" id="ws-srs-launch-3d" style="color:var(--cyan-clue);">
-                  3D Review ▶
+                  3D Review ▸
                 </button>`
               : ''
           }
@@ -1214,13 +1329,31 @@ export class IntelObservatoryView {
       </div>
     `;
 
-    // Empty Deck Onboarding State
+    // Empty Deck or Empty Domain-Filtered State
     if (summary.totalCards === 0) {
+      if (activeDomMeta && fullSummary.totalCards > 0) {
+        return `
+          ${headerStatsAndBarsHtml}
+          <div class="ws-meta-section" style="text-align:center;padding:24px 8px;border-bottom:none;gap:12px;">
+            <div style="font-family:var(--font-display);font-size:15px;font-weight:700;color:${activeDomMeta.accentHex};">
+              No Missed or Saved Cards in ${escapeMetaHtml(activeDomMeta.name)} Yet
+            </div>
+            <p style="margin:0 auto;max-width:440px;font-size:12.5px;color:var(--ivory-muted);line-height:1.48;">
+              Every missed ${escapeMetaHtml(activeDomMeta.shortName)} question automatically enters Box 1 here. You currently have <strong>${fullSummary.totalCards}</strong> cards across other domains.
+            </p>
+            <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;padding-top:4px;">
+              <button type="button" class="ws-meta-btn-gold" data-srs-domain="ALL">
+                Show All Domains (${fullSummary.totalCards}) ▸
+              </button>
+            </div>
+          </div>
+        `;
+      }
       return `
         ${headerStatsAndBarsHtml}
         <div class="ws-meta-section" style="text-align:center;padding:24px 8px;border-bottom:none;gap:12px;">
           <div style="font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--gold-bright);">
-            Your Leitner Mastery Deck Is Ready
+            ${activeDomMeta ? `No ${escapeMetaHtml(activeDomMeta.shortName)} Cards Captured Yet` : 'Your Leitner Mastery Deck Is Ready'}
           </div>
           <p style="margin:0 auto;max-width:440px;font-size:12.5px;color:var(--ivory-muted);line-height:1.48;">
             Every missed question automatically enters <strong>Box 1 (Immediate Review)</strong>, and every Saved Intel Flash enters <strong>Box 2 (24h)</strong>. Promote cards across 5 spaced intervals to lock facts into permanent memory.
@@ -1263,7 +1396,7 @@ export class IntelObservatoryView {
           </p>
           <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
             <button type="button" class="ws-meta-btn-gold" id="ws-obs-reset-quiz-filter">
-              Practice All Deck Cards (${summary.totalCards}) ▶
+              Practice All Deck Cards (${summary.totalCards}) ▸
             </button>
           </div>
         </div>
@@ -1397,7 +1530,7 @@ export class IntelObservatoryView {
               : `<span style="font-family:var(--font-mono);font-size:10.5px;color:#a5afc2;">Session: ${this.quizCorrectCount}/${this.quizAttemptedCount} · Streak ${this.quizStreak}</span>`
           }
           <button type="button" class="ws-meta-btn-gold" id="ws-obs-quiz-next">
-            ${this.srsFilter === 'DUE' ? 'Next Due Card ▶' : 'Next Card ▶'}
+            ${this.srsFilter === 'DUE' ? 'Next Due Card ▸' : 'Next Card ▸'}
           </button>
         </div>
       </div>
@@ -1421,8 +1554,10 @@ export class IntelObservatoryView {
 
     host.querySelectorAll<HTMLButtonElement>('[data-obs-tab]').forEach((btn) => {
       btn.addEventListener('click', () => {
-        const nextTab = btn.dataset.obsTab as ObservatoryTabId | undefined;
-        if (!nextTab || nextTab === this.activeTab) return;
+        const rawTab = btn.dataset.obsTab as ObservatoryTabId | undefined;
+        if (!rawTab) return;
+        const nextTab = normalizeObservatoryTab(rawTab);
+        if (nextTab === this.activeTab) return;
         this.deps.haptics?.uiTap();
         this.deps.audio?.playSfx('ui_tap');
         if (nextTab !== 'RELICS_3D') {
@@ -1567,6 +1702,19 @@ export class IntelObservatoryView {
     });
 
     // 5-Box Leitner Spaced-Repetition Mastery Deck Events
+    host.querySelectorAll<HTMLButtonElement>('[data-srs-domain]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const raw = btn.dataset.srsDomain;
+        this.srsDomainFilter = raw === 'ALL' ? 'ALL' : normalizeOptionalDomain(Number(raw));
+        this.srsBoxFilter = null;
+        this.resetSrsRunnerTurn(true);
+        this.syncSrsBookmarksAndDefaultFilter();
+        this.deps.haptics?.uiTap();
+        this.deps.audio?.playSfx('ui_tap');
+        this.rerender();
+      });
+    });
+
     host.querySelectorAll<HTMLButtonElement>('[data-srs-box]').forEach((btn) => {
       btn.addEventListener('click', () => {
         const boxNum = Number(btn.dataset.srsBox) as LeitnerBox;

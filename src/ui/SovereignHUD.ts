@@ -125,6 +125,76 @@ export interface StoryDialogueViewState {
   secondaryActionLabel?: string;
 }
 
+export interface MindGambitCardView {
+  id: string;
+  title: string;
+  tagline: string;
+  description: string;
+  unlocked: boolean;
+  unlockRequirement?: string;
+}
+
+export interface RoundReadyViewState {
+  chyronTitle: string;
+  chyronSub: string;
+  roundTitle: string;
+  roundSubtitle?: string;
+  difficultyLabel: string;
+  difficultyTierKey?: 'middle-school' | 'high-school' | 'college' | 'graduate' | 'mensa';
+  questionCount: number;
+  timerPerQuestionSec: number;
+  isPrologueStep?: boolean;
+  prologueQuestionNumber?: number;
+  prologueMechanicTitle?: string;
+  prologueMechanicTip?: string;
+  scoutsAdvantageBadge?: string | null;
+  gambits?: MindGambitCardView[];
+  selectedGambitId?: string | null;
+  startButtonLabel?: string;
+}
+
+export interface FinaleCategoryOptionView {
+  domainId: number;
+  title: string;
+  subtitle: string;
+  medallionUrl: string;
+  isStrongest?: boolean;
+}
+
+export interface FinaleCategoryPickerViewState {
+  chyronTitle: string;
+  chyronSub: string;
+  headline?: string;
+  subheadline?: string;
+  jackpotNote?: string;
+  options: FinaleCategoryOptionView[];
+}
+
+export interface ClueLadderStepView {
+  step: 1 | 2 | 3;
+  points: number;
+  label: string;
+  text: string;
+}
+
+export interface ClueLadderViewState {
+  activeStep: 1 | 2 | 3;
+  steps: [ClueLadderStepView, ClueLadderStepView, ClueLadderStepView];
+  nextRevealInSec?: number | null;
+}
+
+export interface ActiveGambitHudState {
+  id: string;
+  title: string;
+  statusText: string;
+  canUseSwapTopic?: boolean;
+  swapTopicUsed?: boolean;
+  secondWindReady?: boolean;
+  bluffRadarLabel?: string | null;
+  comboBonusLabel?: string | null;
+  scoutsAdvantageLabel?: string | null;
+}
+
 export interface GameplayQuestionViewState {
   modeLabel: string;
   chyronTitle: string;
@@ -148,6 +218,13 @@ export interface GameplayQuestionViewState {
   question: PrismQuestion;
   remainingTimeSec: number;
   totalTimeSec: number;
+  readingGraceRemainingSec?: number;
+  doubleDownActive?: boolean;
+  clueLadder?: ClueLadderViewState | null;
+  activeGambit?: ActiveGambitHudState | null;
+  secondWindBanner?: string | null;
+  isFinaleQuestion?: boolean;
+  scoutsAdvantageActive?: boolean;
   heroStepIndex?: 0 | 1 | 2;
   selectedFacetIndex: number;
   peelTier: 1 | 2 | 3;
@@ -179,6 +256,10 @@ export interface GameplayQuestionViewState {
     tierMultiplier: number;
     overclockMultiplier: number;
     speedBonus: number;
+    ladderBonusPoints?: number;
+    ladderSnipeLabel?: string | null;
+    gambitBonusPoints?: number;
+    gambitBonusLabel?: string | null;
     correctFacetIndex?: number;
     selectedFacetIndex?: number;
     correctDisplay: string;
@@ -277,6 +358,12 @@ export interface SovereignHUDActions {
   onReturnToHub: () => void;
   onTopBarBack?: () => void;
   onVaultDrawerToggle?: (open: boolean) => void;
+  onRulesModalToggle?: (open: boolean) => void;
+
+  // v3.0 Pre-Round Ready, Mind Gambits & Finale Category Picker Actions
+  onSelectRoundGambit?: (gambitId: string) => void;
+  onStartRoundQuestions?: () => void;
+  onSelectFinaleCategory?: (domainId: number) => void;
 
   // Title Showcase Actions (#137 P1 #7a + v2.0 Instant Prism & Incoming Duel)
   onTitleEnterMeridian: () => void;
@@ -327,6 +414,9 @@ export interface SovereignHUDActions {
   onSelectFacet: (facetIndex: number) => void;
   onSelectGlobeAnchor?: (lat: number, lon: number, anchorIndex: number) => void;
   onTriggerPeel: () => void;
+  onToggleDoubleDown?: () => void;
+  onRevealNextClueStep?: () => void;
+  onUseSwapTopicGambit?: () => void;
   onTriggerCouncilVeto: () => void;
   onUpdateCalibrator: (estimate: number, cone: CalibratorConeId) => void;
   onUpdateCodexRing: (subjectIdx: 0 | 1 | 2, delta: number) => void;
@@ -566,7 +656,8 @@ type HudIconName =
   | 'share'
   | 'pin'
   | 'layers'
-  | 'wifi';
+  | 'wifi'
+  | 'scissors';
 
 const HUD_ICON_PATHS: Record<HudIconName, string> = {
   audioOn:
@@ -621,6 +712,8 @@ const HUD_ICON_PATHS: Record<HudIconName, string> = {
     '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
   wifi:
     '<path d="M12 20h.01"/><path d="M2 8.82a15 15 0 0 1 20 0"/><path d="M5 12.859a10 10 0 0 1 14 0"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/>',
+  scissors:
+    '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/>',
 };
 
 function hudIcon(name: HudIconName, size = 15): string {
@@ -646,6 +739,7 @@ export class SovereignHUD {
   private fallbackWindowCleanup: (() => void) | null = null;
   private vaultOpen = false;
   private visualLightboxEl: HTMLElement | null = null;
+  private rulesModalEl: HTMLElement | null = null;
   private vaultStatus: VaultLiveStatus = {
     srsDueCount: 0,
     srsTotalCount: 0,
@@ -653,7 +747,7 @@ export class SovereignHUD {
     swReady: false,
     offlinePacksReady: [],
     offlineDownloadingLabel: null,
-    honoursTotal: 84,
+    honoursTotal: 88,
     honoursUnlocked: 0,
     atelierFinishesTotal: 16,
   };
@@ -706,6 +800,104 @@ export class SovereignHUD {
     if (this.visualLightboxEl) {
       this.visualLightboxEl.remove();
       this.visualLightboxEl = null;
+    }
+  }
+
+  public isRulesModalOpen(): boolean {
+    return this.rulesModalEl !== null;
+  }
+
+  public openRulesModal(): void {
+    if (this.rulesModalEl) return;
+    this.closeVaultDrawer();
+    this.closeVisualLightbox();
+
+    const backdrop = document.createElement('div');
+    backdrop.id = 'ws-rules-modal';
+    backdrop.className = 'ws-rules-modal-backdrop';
+    backdrop.setAttribute('role', 'dialog');
+    backdrop.setAttribute('aria-modal', 'true');
+    backdrop.setAttribute('aria-label', 'How to Play — 3 Simple Rules');
+    backdrop.innerHTML = `
+      <div class="ws-rules-modal-card">
+        <div class="ws-rules-modal-header">
+          <div>
+            <div style="font-family:var(--font-mono);font-size:10.5px;font-weight:700;letter-spacing:0.12em;color:var(--cyan-clue);">QUICK GUIDE · TIMER PAUSED</div>
+            <h2 class="ws-rules-modal-title">HOW TO PLAY (3 SIMPLE RULES)</h2>
+          </div>
+          <button type="button" class="ws-topbar-icon-btn" id="ws-rules-close-x" aria-label="Close How to Play">✕</button>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div class="ws-rules-step-row">
+            <span class="ws-rules-step-num">1</span>
+            <div class="ws-rules-step-body">
+              <div class="ws-rules-step-title">Pick &amp; Lock (+300 PTS)</div>
+              <div class="ws-rules-step-desc">
+                Tap an answer (A–D), drop a pin on the 3D Globe, or slide to the closest year — then click <strong>LOCK ANSWER</strong>. Every question starts with a calm 2-second reading grace before the clock ticks!
+              </div>
+            </div>
+          </div>
+
+          <div class="ws-rules-step-row">
+            <span class="ws-rules-step-num">2</span>
+            <div class="ws-rules-step-body">
+              <div class="ws-rules-step-title">Hint (2× pts) &amp; 50/50 (1× pts)</div>
+              <div class="ws-rules-step-desc">
+                Stuck? Tap <strong>◆ Hint</strong> for an extra clue (2× points), or tap <strong>50/50</strong> to cross out two wrong choices and reveal a final clue (1× points).
+              </div>
+            </div>
+          </div>
+
+          <div class="ws-rules-step-row">
+            <span class="ws-rules-step-num">3</span>
+            <div class="ws-rules-step-body">
+              <div class="ws-rules-step-title">2× Double Down (+600 / -300)</div>
+              <div class="ws-rules-step-desc">
+                Sure you know it? Tap <strong>✦ 2× Double Down</strong> before locking to double your points — just be careful, a wrong wager subtracts points!
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size:11.5px;line-height:1.4;color:#d6dde9;padding:7px 11px;border-radius:8px;background:rgba(242,207,126,0.09);box-shadow:inset 3px 0 0 var(--gold-bright);">
+          <strong style="color:var(--gold-bright);">Pro Extras:</strong> Lock early on <strong>Clue Ladders</strong> (500 → 350 → 200 pts) for a Genius Snipe bonus, and equip a <strong>Mind Gambit</strong> (Second Wind mulligan, Swap Topic, or Hot-Streak Surge) before every round!
+        </div>
+
+        <div class="ws-rules-modal-footer">
+          <button type="button" class="ws-btn-gold" id="ws-rules-got-it">Got It ▶</button>
+        </div>
+      </div>
+    `;
+
+    backdrop.addEventListener('click', (ev) => {
+      if (ev.target === backdrop) {
+        this.haptics.uiTap();
+        this.audio.playSfx('ui_tap');
+        this.closeRulesModal();
+      }
+    });
+    backdrop.querySelector('#ws-rules-close-x')?.addEventListener('click', () => {
+      this.haptics.uiTap();
+      this.audio.playSfx('ui_tap');
+      this.closeRulesModal();
+    });
+    backdrop.querySelector('#ws-rules-got-it')?.addEventListener('click', () => {
+      this.haptics.uiTap();
+      this.audio.playSfx('ui_tap');
+      this.closeRulesModal();
+    });
+
+    document.body.appendChild(backdrop);
+    this.rulesModalEl = backdrop;
+    this.actions.onRulesModalToggle?.(true);
+  }
+
+  public closeRulesModal(): void {
+    if (this.rulesModalEl) {
+      this.rulesModalEl.remove();
+      this.rulesModalEl = null;
+      this.actions.onRulesModalToggle?.(false);
     }
   }
 
@@ -824,6 +1016,14 @@ export class SovereignHUD {
           </div>
         </div>
         <div class="ws-topbar-right">
+          <button
+            type="button"
+            class="ws-topbar-rules-btn"
+            id="ws-topbar-rules-btn"
+            aria-haspopup="dialog"
+            aria-label="How to Play Rules"
+            title="How to Play (3 Simple Rules)"
+          >? Rules</button>
           <button
             type="button"
             class="ws-topbar-icon-btn ${audioActive ? 'is-active' : 'is-muted'}"
@@ -1035,6 +1235,16 @@ export class SovereignHUD {
       }
     });
 
+    this.root.querySelector('#ws-topbar-rules-btn')?.addEventListener('click', () => {
+      this.haptics.uiTap();
+      this.audio.playSfx('ui_tap');
+      if (this.isRulesModalOpen()) {
+        this.closeRulesModal();
+      } else {
+        this.openRulesModal();
+      }
+    });
+
     this.root.querySelector('#ws-util-audio')?.addEventListener('click', () => {
       this.haptics.uiTap();
       if (this.actions.onToggleMasterAudio) {
@@ -1167,7 +1377,7 @@ export class SovereignHUD {
 
       <div class="ws-title-showcase">
         <header class="ws-title-hero" aria-label="World's Smartest">
-          <div class="ws-title-eyebrow">SPIN · PEEL · OVERCLOCK</div>
+          <div class="ws-title-eyebrow">PICK · HINT · 2× DOUBLE DOWN</div>
           <h1 class="ws-title-wordmark">WORLD'S SMARTEST</h1>
         </header>
 
@@ -1364,10 +1574,10 @@ export class SovereignHUD {
 
             <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
               <span style="font-size:11.5px;color:var(--ivory-muted);">
-                4-Question Vetting Screening · Teaches Spin, Peel, Overclock & Calibrator
+                4-Question Warmup · Pick &amp; Lock, Hint &amp; 50/50, 2× Double Down &amp; Closest Year
               </span>
               <button type="button" class="ws-btn-gold" id="ws-begin-vetting">
-                STAMP IDENTITY & BEGIN SCREENING ▶
+                STAMP IDENTITY &amp; PREPARE ▶
               </button>
             </div>
           </div>
@@ -2286,7 +2496,227 @@ export class SovereignHUD {
   }
 
   // ==========================================================================
-  // 4. THREE-ZONE LIVE GAMEPLAY HUD ("SPIN. PEEL. OVERCLOCK.")
+  // 3B. V3.0 CENTERED PRE-ROUND READINESS GATE (ZERO STORY AMBUSH!) &
+  //     FINAL QUESTION CATEGORY PICKER (FINAL JEOPARDY! MOMENT)
+  // ==========================================================================
+
+  public renderRoundReady(vm: RoundReadyViewState): void {
+    this.cancelOverclockHold(true);
+    this.closeVisualLightbox();
+
+    const diffKey = vm.difficultyTierKey ?? 'middle-school';
+    const startLabel = vm.startButtonLabel || '▶ START QUESTIONS';
+    const gambits = vm.gambits ?? [];
+    let selectedGambitId =
+      vm.selectedGambitId ??
+      gambits.find((g) => g.unlocked)?.id ??
+      gambits[0]?.id ??
+      null;
+
+    const eyebrowText = vm.isPrologueStep
+      ? `WARMUP · QUESTION ${vm.prologueQuestionNumber ?? 1} OF ${vm.questionCount} · ${vm.timerPerQuestionSec}s`
+      : `READY TO PLAY · ${vm.questionCount} QUESTIONS · ${vm.timerPerQuestionSec}s PER QUESTION`;
+
+    const gambitsHtml =
+      !vm.isPrologueStep && gambits.length > 0
+        ? `
+          <div style="display:flex;flex-direction:column;gap:6px;width:100%;">
+            <div style="font-family:var(--font-mono);font-size:10.5px;font-weight:700;letter-spacing:0.1em;color:var(--cyan-clue);text-align:center;">
+              CHOOSE YOUR MIND GAMBIT (1 FREE PER ROUND)
+            </div>
+            <div class="ws-gambit-grid" role="radiogroup" aria-label="Choose Tactical Mind Gambit">
+              ${gambits
+                .map((g) => {
+                  const isSel = selectedGambitId === g.id && g.unlocked;
+                  return `
+                    <button
+                      type="button"
+                      class="ws-gambit-card ${isSel ? 'is-selected' : ''} ${g.unlocked ? '' : 'is-locked'}"
+                      data-gambit-id="${escapeHtml(g.id)}"
+                      role="radio"
+                      aria-checked="${isSel ? 'true' : 'false'}"
+                      ${g.unlocked ? '' : 'disabled'}
+                    >
+                      <span class="ws-gambit-name">${isSel ? '✦ ' : '◆ '}${escapeHtml(g.title)}</span>
+                      <span class="ws-gambit-desc">${escapeHtml(g.unlocked ? g.description : g.unlockRequirement || g.description)}</span>
+                      <span class="ws-gambit-tag">${g.unlocked ? (isSel ? 'EQUIPPED' : escapeHtml(g.tagline || 'SELECT')) : 'LOCKED'}</span>
+                    </button>
+                  `;
+                })
+                .join('')}
+            </div>
+          </div>
+        `
+        : '';
+
+    const prologueSpotlightHtml =
+      vm.isPrologueStep && (vm.prologueMechanicTitle || vm.prologueMechanicTip)
+        ? `
+          <div style="width:100%;padding:10px 14px;border-radius:10px;background:rgba(86,212,245,0.10);box-shadow:inset 3px 0 0 var(--cyan-clue);text-align:left;">
+            <div style="font-family:var(--font-mono);font-size:10.5px;font-weight:800;letter-spacing:0.08em;color:var(--cyan-clue);">
+              NEW SKILL · ${escapeHtml((vm.prologueMechanicTitle || 'PICK & LOCK').toUpperCase())}
+            </div>
+            <div style="font-size:12.5px;line-height:1.38;color:var(--ivory-primary);margin-top:3px;">
+              ${escapeHtml(cleanNarrativeCopy(vm.prologueMechanicTip || 'Take your time — this warmup is 100% un-failable and gives you 35 seconds!'))}
+            </div>
+          </div>
+        `
+        : '';
+
+    this.root.innerHTML = `
+      ${this.renderTopBarHtml(vm.chyronTitle, vm.chyronSub, true, false, false)}
+
+      <div class="ws-round-ready-stage">
+        <section class="ws-round-ready-card ws-interactive" id="ws-round-ready-card" aria-label="Round Readiness">
+          <div class="ws-round-ready-meta">
+            <span class="ws-difficulty-tier-badge is-${diffKey}">${escapeHtml(vm.difficultyLabel.toUpperCase())}</span>
+            <span class="ws-round-ready-eyebrow">${escapeHtml(eyebrowText)}</span>
+          </div>
+
+          <h2 class="ws-round-ready-title">${escapeHtml(cleanNarrativeCopy(vm.roundTitle))}</h2>
+          ${
+            vm.roundSubtitle
+              ? `<p class="ws-round-ready-sub">${escapeHtml(cleanNarrativeCopy(vm.roundSubtitle))}</p>`
+              : ''
+          }
+
+          ${
+            vm.scoutsAdvantageBadge
+              ? `<div class="ws-scouts-advantage-pill" id="ws-scouts-advantage-pill">${escapeHtml(vm.scoutsAdvantageBadge)}</div>`
+              : ''
+          }
+
+          ${prologueSpotlightHtml}
+
+          ${gambitsHtml}
+
+          <div class="ws-round-ready-rules-mini" aria-label="Quick Rules">
+            <div><strong>1. Pick &amp; Lock (+300 pts):</strong> Tap an answer and click Lock Answer.</div>
+            <div><strong>2. Hint (2×) &amp; 50/50 (1×):</strong> Stuck? Reveal a clue or cross out two wrong choices.</div>
+            <div><strong>3. 2× Double Down (+600 / -300):</strong> Confident? Toggle 2× before locking!</div>
+          </div>
+
+          <div class="ws-round-ready-actions">
+            <button type="button" class="ws-btn-gold" id="ws-btn-start-round-questions">
+              ${escapeHtml(startLabel)}
+            </button>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:10.5px;color:#b8c2d4;">
+            No timer is ticking · 2s Reading Grace on every question
+          </div>
+        </section>
+      </div>
+    `;
+
+    this.bindTopBarEvents();
+
+    this.root.querySelectorAll<HTMLButtonElement>('[data-gambit-id]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        if (btn.disabled) return;
+        const gid = btn.dataset.gambitId;
+        if (!gid) return;
+        selectedGambitId = gid;
+        this.haptics.uiTap();
+        this.audio.playSfx('ui_tap');
+        this.root.querySelectorAll<HTMLButtonElement>('[data-gambit-id]').forEach((other) => {
+          const isMatch = other.dataset.gambitId === gid;
+          other.classList.toggle('is-selected', isMatch);
+          other.setAttribute('aria-checked', isMatch ? 'true' : 'false');
+          const tagSpan = other.querySelector<HTMLElement>('.ws-gambit-tag');
+          const gMatch = gambits.find((item) => item.id === other.dataset.gambitId);
+          if (tagSpan && !other.disabled) {
+            tagSpan.textContent = isMatch ? 'EQUIPPED' : (gMatch?.tagline || 'SELECT');
+          }
+          const nameSpan = other.querySelector<HTMLElement>('.ws-gambit-name');
+          if (nameSpan && gMatch) {
+            nameSpan.textContent = `${isMatch ? '✦ ' : '◆ '}${gMatch.title}`;
+          }
+        });
+        this.actions.onSelectRoundGambit?.(gid);
+      });
+    });
+
+    this.root.querySelector('#ws-btn-start-round-questions')?.addEventListener('click', () => {
+      this.haptics.sightlineSnap();
+      this.audio.playSfx('sightline_snap');
+      this.actions.onStartRoundQuestions?.();
+    });
+  }
+
+  public renderFinaleCategoryPicker(vm: FinaleCategoryPickerViewState): void {
+    this.cancelOverclockHold(true);
+    this.closeVisualLightbox();
+
+    this.root.innerHTML = `
+      ${this.renderTopBarHtml(vm.chyronTitle, vm.chyronSub, true, false, false)}
+
+      <div class="ws-round-ready-stage">
+        <section class="ws-finale-picker-card ws-interactive" id="ws-finale-category-picker" aria-label="Choose Final Question Category">
+          <div style="font-family:var(--font-mono);font-size:10.5px;font-weight:800;letter-spacing:0.14em;color:var(--gold-bright);text-align:center;">
+            ✦ ROUND FINALE · 1 QUESTION REMAINING
+          </div>
+          <h2 style="margin:0;font-family:var(--font-display);font-size:clamp(18px,2.8vw,24px);font-weight:800;color:var(--ivory-primary);text-align:center;line-height:1.18;">
+            ${escapeHtml(vm.headline || 'Pick Your Finale Topic')}
+          </h2>
+          ${
+            vm.subheadline
+              ? `<div style="font-size:12.5px;color:var(--ivory-muted);text-align:center;line-height:1.36;">${escapeHtml(vm.subheadline)}</div>`
+              : ''
+          }
+          ${
+            vm.jackpotNote
+              ? `<div class="ws-scouts-advantage-pill">${escapeHtml(vm.jackpotNote)}</div>`
+              : ''
+          }
+
+          <div class="ws-finale-topic-grid">
+            ${vm.options
+              .slice(0, 3)
+              .map(
+                (opt) => `
+              <button
+                type="button"
+                class="ws-finale-topic-btn"
+                data-finale-domain-id="${opt.domainId}"
+              >
+                <img class="ws-finale-topic-icon" src="${escapeHtml(opt.medallionUrl)}" alt="" />
+                <div class="ws-finale-topic-copy">
+                  <div class="ws-finale-topic-title">${escapeHtml(opt.title)}</div>
+                  <div class="ws-finale-topic-sub">${escapeHtml(opt.subtitle)}</div>
+                  ${
+                    opt.isStrongest
+                      ? `<div style="font-family:var(--font-mono);font-size:10px;font-weight:700;color:var(--emerald-win);margin-top:2px;">✦ YOUR STRONGEST</div>`
+                      : ''
+                  }
+                </div>
+              </button>
+            `,
+              )
+              .join('')}
+          </div>
+
+          <div style="font-family:var(--font-mono);font-size:10.5px;color:var(--ivory-muted);text-align:center;">
+            No timer is ticking · Tap your preferred category to mount the Final Question
+          </div>
+        </section>
+      </div>
+    `;
+
+    this.bindTopBarEvents();
+
+    this.root.querySelectorAll<HTMLButtonElement>('[data-finale-domain-id]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const domainId = Number(btn.dataset.finaleDomainId);
+        if (Number.isNaN(domainId)) return;
+        this.haptics.sightlineSnap();
+        this.audio.playSfx('sightline_snap');
+        this.actions.onSelectFinaleCategory?.(domainId);
+      });
+    });
+  }
+
+  // ==========================================================================
+  // 4. V3.0 CENTERED LIVE GAMEPLAY HUD ("PICK · HINT · 2× DOUBLE DOWN")
   // ==========================================================================
 
   private resolveActiveTierMultiplier(vm: GameplayQuestionViewState): number {
@@ -2329,32 +2759,35 @@ export class SovereignHUD {
     const diffBadge = resolveQuestionDifficultyBadge(q);
 
     const tierMult = this.resolveActiveTierMultiplier(vm);
-    const tierShort = `${tierMult.toFixed(1)}x`;
-    const tierDetail =
-      q.archetype === 'CALIBRATOR_DIAL'
+    const tierShort = vm.clueLadder
+      ? `${vm.clueLadder.steps[vm.clueLadder.activeStep - 1]?.points ?? 200} PTS`
+      : `${tierMult.toFixed(1)}×`;
+    const tierDetail = vm.clueLadder
+      ? ` CLUE ${vm.clueLadder.activeStep}/3`
+      : q.archetype === 'CALIBRATOR_DIAL'
         ? vm.peelTier === 1
           ? ` ${vm.calibratorCone}`
           : vm.peelTier === 2
-            ? ` ${vm.calibratorCone} · CLUE`
-            : ` ${vm.calibratorCone} · BLUEPRINT`
+            ? ` ${vm.calibratorCone} · HINT`
+            : ` ${vm.calibratorCone} · CLUE`
         : q.archetype === 'GLOBE_PIN_DROP'
           ? vm.peelTier === 1
-            ? ' PINPOINT'
+            ? ' PIN'
             : vm.peelTier === 2
-              ? ' REGION'
-              : ' BLUEPRINT'
+              ? ' HINT'
+              : ' CLUE'
           : vm.peelTier === 1
-            ? ' INSTINCT'
+            ? ' BASE'
             : vm.peelTier === 2
-              ? ' CLUE'
-              : ' BLUEPRINT';
+              ? ' HINT'
+              : ' 50/50';
 
     const leakedMirrorHint =
       vm.isPrologueQuestion &&
       !vm.revealed &&
       vm.peelTier === 1 &&
       vm.coachHint &&
-      vm.coachHint.includes('MIRROR GLIMPSE')
+      (vm.coachHint.includes('MIRROR GLIMPSE') || vm.coachHint.includes('MARGIN NOTE'))
         ? cleanNarrativeCopy(vm.coachHint)
         : null;
     const clueText =
@@ -2375,7 +2808,8 @@ export class SovereignHUD {
     const remSec = Math.max(0, vm.remainingTimeSec ?? totalSec);
     const chronoFrac = Math.max(0, Math.min(1, remSec / totalSec));
     const dashOffset = ((1 - chronoFrac) * 59.7).toFixed(2);
-    const chronoUrgent = !vm.revealed && remSec <= 5.0 && remSec > 0;
+    const graceSec = !vm.revealed ? Math.max(0, vm.readingGraceRemainingSec ?? 0) : 0;
+    const chronoUrgent = !vm.revealed && graceSec <= 0.05 && remSec <= 5.0 && remSec > 0;
 
     // Only show floating coach pill during Prologue Q1..Q4 before lock, docked low above dock (#203 §3.3)
     const showCoachPill = Boolean(vm.isPrologueQuestion && vm.coachHint && !vm.revealed);
@@ -2389,6 +2823,109 @@ export class SovereignHUD {
     const pinnedActionsHtml = vm.revealed
       ? this.renderRevealPinnedButtonsHtml(vm, vm.revealed, isFinalQuestion)
       : this.renderLiveActionRowHtml(vm, q.archetype, tierMult, facets);
+
+    const isGlobeInteractive = q.archetype === 'GLOBE_PIN_DROP';
+    const activeGambit = vm.activeGambit ?? null;
+    const hasLiveStrip = Boolean(
+      !vm.revealed &&
+        (activeGambit || vm.streak >= 2 || vm.scoutsAdvantageActive || vm.isFinaleQuestion),
+    );
+    const liveGambitStripHtml = hasLiveStrip
+      ? `
+        <div class="ws-live-gambit-strip" id="ws-live-gambit-strip">
+          ${
+            vm.isFinaleQuestion
+              ? `<span class="ws-combo-streak-pill" style="color:var(--gold-bright);">✦ FINAL QUESTION</span>`
+              : ''
+          }
+          ${
+            vm.scoutsAdvantageActive || activeGambit?.scoutsAdvantageLabel
+              ? `<span class="ws-scouts-advantage-pill" style="padding:2px 8px;font-size:10px;">${escapeHtml(activeGambit?.scoutsAdvantageLabel || "✦ SCOUT'S ADVANTAGE")}</span>`
+              : ''
+          }
+          ${
+            activeGambit
+              ? `<span class="ws-gambit-status-pill">${escapeHtml(activeGambit.statusText || `◆ ${activeGambit.title}`)}</span>`
+              : ''
+          }
+          ${
+            activeGambit?.bluffRadarLabel
+              ? `<span class="ws-gambit-status-pill" id="ws-gambit-bluff-radar" style="color:var(--gold-bright);">${escapeHtml(activeGambit.bluffRadarLabel)}</span>`
+              : activeGambit?.id === 'BLUFF_RADAR'
+                ? `<span class="ws-gambit-status-pill" id="ws-gambit-bluff-radar" style="color:var(--gold-bright);display:none;"></span>`
+                : ''
+          }
+          ${
+            activeGambit?.canUseSwapTopic && !activeGambit.swapTopicUsed && !vm.revealed
+              ? `<button type="button" class="ws-gambit-use-btn" id="ws-btn-swap-topic" title="Swap this question for your strongest topic (1 use per round)">↻ Swap Topic</button>`
+              : ''
+          }
+          ${
+            vm.streak >= 2 || activeGambit?.comboBonusLabel
+              ? `<span class="ws-combo-streak-pill ${vm.streak >= 4 ? 'is-blazing' : ''}" id="ws-combo-streak-pill">${escapeHtml(activeGambit?.comboBonusLabel || `✦ STREAK ×${vm.streak}`)}</span>`
+              : ''
+          }
+        </div>
+      `
+      : '';
+
+    const clueLadder = vm.clueLadder ?? null;
+    const ladderActivePromptText = clueLadder
+      ? sanitizeHudDisplayText(
+          clueLadder.steps[clueLadder.activeStep - 1]?.text || promptText,
+          q,
+        )
+      : promptText;
+    const promptOrClueLadderHtml = clueLadder
+      ? `
+        <div class="ws-clue-ladder" id="ws-clue-ladder" aria-label="Progressive Clue Ladder">
+          <p class="ws-question-prompt" style="margin:0 0 6px;">${escapeHtml(ladderActivePromptText)}</p>
+          ${clueLadder.steps
+            .map((st) => {
+              const isUnlocked = st.step <= clueLadder.activeStep || Boolean(vm.revealed);
+              const isCurrent = st.step === clueLadder.activeStep && !vm.revealed;
+              const isShownAsHeadline = st.step === clueLadder.activeStep;
+              const cls = isCurrent
+                ? 'ws-clue-step is-active'
+                : isUnlocked
+                  ? 'ws-clue-step'
+                  : 'ws-clue-step is-locked';
+              const stepBody = isCurrent
+                ? `✦ ${escapeHtml(st.label)} · Active Clue — Lock now for ${st.points} pts!`
+                : isShownAsHeadline
+                  ? `✓ ${escapeHtml(st.label)} · Full Question Shown Above`
+                  : isUnlocked
+                    ? escapeHtml(sanitizeHudDisplayText(st.text, q))
+                    : `${escapeHtml(st.label)} · Locked`;
+              return `
+                <div class="${cls}" data-clue-step="${st.step}">
+                  <span class="ws-clue-pts-badge">${st.points} PTS</span>
+                  <span style="min-width:0;flex:1 1 auto;">${stepBody}</span>
+                </div>
+              `;
+            })
+            .join('')}
+          ${
+            !vm.revealed && clueLadder.activeStep < 3
+              ? `
+                <button type="button" class="ws-clue-reveal-next-btn" id="ws-btn-clue-reveal-next">
+                  Reveal Next Clue ▾ ${
+                    typeof clueLadder.nextRevealInSec === 'number' && clueLadder.nextRevealInSec > 0
+                      ? `<span id="ws-clue-next-countdown">(${Math.ceil(clueLadder.nextRevealInSec)}s)</span>`
+                      : ''
+                  }
+                </button>
+              `
+              : ''
+          }
+        </div>
+      `
+      : `<p class="ws-question-prompt">${escapeHtml(promptText)}</p>`;
+
+    const secondWindHtml =
+      vm.secondWindBanner && !vm.revealed
+        ? `<div class="ws-scouts-advantage-pill" id="ws-second-wind-banner" role="status" style="width:100%;justify-content:center;">${escapeHtml(vm.secondWindBanner)}</div>`
+        : '';
 
     const duelSplit = vm.duelLiveSplit ?? null;
     const duelTotal = duelSplit ? Math.max(1, duelSplit.playerScore + duelSplit.challengerScore) : 1;
@@ -2421,7 +2958,7 @@ export class SovereignHUD {
         false,
       )}
 
-      <div class="ws-gameplay-layout">
+      <div class="ws-gameplay-layout ${isGlobeInteractive ? 'is-globe-interactive' : ''}">
         <!-- ZONE 1: Single Wrapper (Preserves Strict 3-Row Grid!) for Telemetry Ribbon + Optional Live 1v1 Ghost Split Bar -->
         <div class="ws-gameplay-zone1" style="display:flex;flex-direction:column;gap:4px;min-width:0;">
           <section class="ws-stage-story-strip" aria-label="Match Scoreboard and Live Character Tell">
@@ -2488,13 +3025,13 @@ export class SovereignHUD {
           }
         </div>
 
-        <!-- ZONE 2: Center Unobstructed 3D Veritas Prism Spotlight Plane -->
+        <!-- ZONE 2: Center Unobstructed 3D Spotlight Plane (Upper-Center Globe Window on Globe Pin-Drop) -->
         <section class="ws-spotlight-plane" aria-hidden="true">
           ${showCoachPill ? `<div class="ws-coach-pill">${escapeHtml(cleanNarrativeCopy(vm.coachHint))}</div>` : ''}
         </section>
 
-        <!-- ZONE 3: Sleek 2026 Frameless Bottom Question Dock (ZERO NinePatch / ZERO Covered A-D) -->
-        <section class="ws-broadcast-dock ${vm.revealed ? 'is-revealed' : ''}" aria-label="Veritas Prism Controls">
+        <!-- ZONE 3: Centered v3.0 Question & Answer Stage (ZERO Far-Right / ZERO Bottom Pinning!) -->
+        <section class="ws-broadcast-dock ${vm.revealed ? 'is-revealed' : ''}" aria-label="Question and Answer Stage">
           <div class="ws-dock-scroll-region">
             <div class="ws-dock-meta-row">
               <div class="ws-domain-badge">
@@ -2518,6 +3055,11 @@ export class SovereignHUD {
               </div>
 
               <div class="ws-tier-chrono-group">
+                <span
+                  class="ws-reading-grace-pill"
+                  id="ws-reading-grace-pill"
+                  style="${graceSec > 0.05 ? '' : 'display:none;'}"
+                >READ CLUE · ${Math.max(1, Math.ceil(graceSec))}s</span>
                 <span class="ws-tier-pill tier-${vm.peelTier}" id="ws-tier-badge" title="${tierShort}${tierDetail}">${tierShort}<span class="ws-tier-detail">${tierDetail}</span></span>
                 <div class="ws-chrono-ring ${chronoUrgent ? 'is-urgent' : ''}" id="ws-chrono-box">
                   <svg width="16" height="16" viewBox="0 0 24 24">
@@ -2540,11 +3082,13 @@ export class SovereignHUD {
               </div>
             </div>
 
-            <p class="ws-question-prompt">${escapeHtml(promptText)}</p>
+            ${liveGambitStripHtml}
+            ${secondWindHtml}
+            ${promptOrClueLadderHtml}
 
             ${
               clueText
-                ? `<div class="ws-clue-drawer"><strong>${vm.peelTier === 3 ? 'BLUEPRINT:' : vm.peelTier === 2 ? 'CLUE:' : 'LEAKED INTEL (3.0× KEPT):'}</strong> ${escapeHtml(sanitizeHudDisplayText(clueText, q))}</div>`
+                ? `<div class="ws-clue-drawer"><strong>${vm.peelTier === 3 ? 'FINAL CLUE:' : vm.peelTier === 2 ? 'HINT:' : 'MARGIN NOTE (FULL PTS KEPT):'}</strong> ${escapeHtml(sanitizeHudDisplayText(clueText, q))}</div>`
                 : ''
             }
 
@@ -2844,13 +3388,51 @@ export class SovereignHUD {
     `;
   }
 
-  private getConciseOverclockIdleLabel(tierMult: number): string {
-    const tierStr = tierMult.toFixed(1);
-    const maxStr = (tierMult * 2.0).toFixed(1);
-    const narrow = typeof window !== 'undefined' && window.innerWidth < 460;
-    return narrow
-      ? `LOCK ${tierStr}× · HOLD ${maxStr}×`
-      : `TAP: LOCK (${tierStr}×) · HOLD: OVERCLOCK`;
+  private resolveLockPreviewPoints(tierMult: number, vm?: GameplayQuestionViewState): number {
+    if (vm?.clueLadder) {
+      const st = vm.clueLadder.steps[vm.clueLadder.activeStep - 1];
+      if (st) return st.points;
+    }
+    return Math.max(100, Math.round(tierMult * 100));
+  }
+
+  private getPlainEnglishLockLabel(
+    tierMult: number,
+    doubleDownActive = false,
+    vm?: GameplayQuestionViewState,
+  ): string {
+    const basePts = this.resolveLockPreviewPoints(tierMult, vm);
+    if (doubleDownActive) {
+      return `✦ LOCK 2× WAGER · +${(basePts * 2).toLocaleString('en-US')} PTS`;
+    }
+    return `✓ LOCK ANSWER · +${basePts.toLocaleString('en-US')} PTS`;
+  }
+
+  /** Surgically updates the 2× Double Down toggle and Lock Answer label without rebuilding DOM. */
+  public syncDoubleDownDom(vm: GameplayQuestionViewState): void {
+    const tierMult = this.resolveActiveTierMultiplier(vm);
+    const basePts = this.resolveLockPreviewPoints(tierMult, vm);
+    const isDouble = Boolean(vm.doubleDownActive);
+    const ddBtn = this.root.querySelector<HTMLButtonElement>('#ws-btn-double-down');
+    if (ddBtn) {
+      ddBtn.classList.toggle('is-active', isDouble);
+      ddBtn.setAttribute('aria-pressed', isDouble ? 'true' : 'false');
+      ddBtn.textContent = isDouble
+        ? `✦ 2× ACTIVE (+${basePts * 2}/-${basePts})`
+        : '✦ 2× Double Down';
+    }
+    const ocBtn = this.root.querySelector<HTMLButtonElement>('#ws-btn-overclock');
+    if (ocBtn) {
+      ocBtn.classList.toggle('is-wager-active', isDouble);
+    }
+    const labelEl = this.root.querySelector<HTMLElement>('#ws-overclock-label');
+    const globeUnpinned =
+      vm.question.archetype === 'GLOBE_PIN_DROP' && !vm.selectedGlobeCoords;
+    if (labelEl) {
+      labelEl.textContent = globeUnpinned
+        ? 'DROP PIN ON GLOBE TO LOCK'
+        : this.getPlainEnglishLockLabel(tierMult, isDouble, vm);
+    }
   }
 
   private renderLiveActionRowHtml(
@@ -2863,47 +3445,39 @@ export class SovereignHUD {
       return '';
     }
 
-    const baseUnpeeledMult =
-      archetype === 'CALIBRATOR_DIAL'
-        ? vm.question.calibrator?.toleranceCones.find((c) => c.id === vm.calibratorCone)
-            ?.multiplier ??
-          (vm.calibratorCone === 'PINHOLE' ? 3.5 : vm.calibratorCone === 'WIDE' ? 1.5 : 2.5)
-        : archetype === 'GLOBE_PIN_DROP'
-          ? 3.5
-          : 3.0;
-    const isScaledPeel =
-      archetype === 'CALIBRATOR_DIAL' ||
-      archetype === 'CODEX_DUAL_RING' ||
-      archetype === 'GLOBE_PIN_DROP';
-    const nextT2Mult = isScaledPeel
-      ? Math.round(baseUnpeeledMult * 0.78 * 100) / 100
-      : 2.0;
-    const nextT3Mult = isScaledPeel
-      ? Math.round(baseUnpeeledMult * 0.55 * 100) / 100
-      : 1.2;
-
-    let peelLabel = '✓ OPEN';
-    let peelTitle = `All clue tiers revealed (${nextT3Mult.toFixed(1)}×)`;
+    const isFourChoice =
+      archetype === 'SIGHTLINE_LOCK' || archetype === 'HERO_ARTIFACT_SYNTHESIS';
+    let peelLabel = isFourChoice ? '✓ 50/50 Used (1×)' : '✓ Hints Used (1×)';
+    let peelTitle = 'All hints revealed for this question';
     let peelDisabled = true;
+
     if (vm.peelSealedByJammer) {
-      peelLabel = '◈ SEALED';
-      peelTitle = 'Peel sealed by jammer';
+      peelLabel = '◆ Hints Sealed';
+      peelTitle = 'Hints sealed by rival signal jammer';
       peelDisabled = true;
     } else if (vm.freeCoopCueAvailable && vm.peelTier === 1) {
-      peelLabel = `✦ CUE · ${baseUnpeeledMult.toFixed(1)}×`;
-      peelTitle = `Free Nadia Cue (Keep ${baseUnpeeledMult.toFixed(1)}×)`;
+      peelLabel = '✦ Free Hint (3×)';
+      peelTitle = 'Use free co-op clue while keeping full 3× points';
       peelDisabled = false;
     } else if (vm.peelTier === 1) {
-      peelLabel = `▼ PEEL · ${nextT2Mult.toFixed(1)}×`;
-      peelTitle = `Peel Brass Crown for Clue (${baseUnpeeledMult.toFixed(1)}× → ${nextT2Mult.toFixed(1)}×)`;
+      peelLabel = '◆ Hint (2× pts)';
+      peelTitle = 'Show a helpful extra clue (2× points)';
       peelDisabled = false;
     } else if (vm.peelTier === 2) {
-      peelLabel = `▼ PEEL · ${nextT3Mult.toFixed(1)}×`;
-      peelTitle = isScaledPeel
-        ? `Peel Blueprint Clue (${nextT2Mult.toFixed(1)}× → ${nextT3Mult.toFixed(1)}×)`
-        : 'Peel Blueprint & Shatter 2 Decoys (2.0× → 1.2×)';
+      peelLabel = isFourChoice
+        ? `${hudIcon('scissors', 13)} 50/50 (1× pts)`
+        : '◆ Final Clue (1× pts)';
+      peelTitle = isFourChoice
+        ? 'Cross out 2 wrong answers and reveal final clue (1× points)'
+        : 'Reveal the final narrowing clue (1× points)';
       peelDisabled = false;
     }
+
+    const basePts = this.resolveLockPreviewPoints(tierMult, vm);
+    const isDouble = Boolean(vm.doubleDownActive);
+    const doubleDownLabel = isDouble
+      ? `✦ 2× ACTIVE (+${basePts * 2}/-${basePts})`
+      : '✦ 2× Double Down';
 
     const globeUnpinned = archetype === 'GLOBE_PIN_DROP' && !vm.selectedGlobeCoords;
     const armedSlot =
@@ -2913,24 +3487,34 @@ export class SovereignHUD {
           : 'UNPINNED'
         : (facets[vm.selectedFacetIndex]?.slotLabel ?? 'A');
     const idleLabel = globeUnpinned
-      ? 'DROP PIN ON GLOBE TO ARM'
-      : this.getConciseOverclockIdleLabel(tierMult);
+      ? 'DROP PIN ON GLOBE TO LOCK'
+      : this.getPlainEnglishLockLabel(tierMult, isDouble, vm);
 
     return `
-      <div class="ws-action-row ${vm.councilVetoAvailable ? 'has-veto' : ''}">
-        <button type="button" class="ws-peel-btn" id="ws-btn-peel" title="${escapeHtml(peelTitle)}" ${peelDisabled ? 'disabled' : ''}>
+      <div class="ws-action-row ws-action-row-v3 ${vm.councilVetoAvailable ? 'has-veto' : ''}">
+        <button type="button" class="ws-peel-btn ws-hint-btn" id="ws-btn-peel" title="${escapeHtml(peelTitle)}" ${peelDisabled ? 'disabled' : ''}>
           ${peelLabel}
         </button>
 
         ${
           vm.councilVetoAvailable
-            ? `<button type="button" class="ws-peel-btn" id="ws-btn-veto" title="Veto Domain" style="color:var(--gold-bright);">⟳ VETO</button>`
+            ? `<button type="button" class="ws-peel-btn ws-hint-btn" id="ws-btn-veto" title="Swap this category once" style="color:var(--gold-bright);">↻ Veto</button>`
             : ''
         }
 
         <button
           type="button"
-          class="ws-overclock-bar"
+          class="ws-wager-toggle-btn ${isDouble ? 'is-active' : ''}"
+          id="ws-btn-double-down"
+          aria-pressed="${isDouble ? 'true' : 'false'}"
+          title="Double your points (+${basePts * 2}) if right, lose -${basePts} if wrong"
+        >
+          ${escapeHtml(doubleDownLabel)}
+        </button>
+
+        <button
+          type="button"
+          class="ws-overclock-bar ws-lock-answer-btn ${isDouble ? 'is-wager-active' : ''}"
           id="ws-btn-overclock"
           data-armed-slot="${escapeHtml(armedSlot)}"
           ${globeUnpinned ? 'disabled' : ''}
@@ -2957,9 +3541,9 @@ export class SovereignHUD {
     const statusLabel = rev.correct
       ? rev.bullseye
         ? `BULLSEYE! +${rev.earnedPoints.toLocaleString('en-US')} PTS${globeDistTag}`
-        : `GOLD RESONANCE! +${rev.earnedPoints.toLocaleString('en-US')} PTS${globeDistTag}`
+        : `CORRECT! +${rev.earnedPoints.toLocaleString('en-US')} PTS${globeDistTag}`
       : rev.backfired
-        ? `BACKFIRE! ANSWER: ${cleanCorrect}${globeDistTag}`
+        ? `2× WAGER MISSED · ANSWER: ${cleanCorrect}${globeDistTag}`
         : `ANSWER: ${cleanCorrect}${globeDistTag}`;
 
     return `
@@ -2967,6 +3551,16 @@ export class SovereignHUD {
         <div style="flex:1 1 100%;min-width:0;">
           <div class="ws-intel-flash-title" style="color:${rev.correct ? 'var(--emerald-win)' : '#ff8e9b'};display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
             <span>${escapeHtml(statusLabel)}</span>
+            ${
+              rev.ladderSnipeLabel
+                ? `<span style="font-family:var(--font-mono);font-size:10px;color:var(--gold-bright);padding:1px 7px;border-radius:999px;background:rgba(242,207,126,0.18);">${escapeHtml(rev.ladderSnipeLabel)}</span>`
+                : ''
+            }
+            ${
+              rev.gambitBonusLabel
+                ? `<span style="font-family:var(--font-mono);font-size:10px;color:var(--cyan-clue);padding:1px 7px;border-radius:999px;background:rgba(86,212,245,0.16);">${escapeHtml(rev.gambitBonusLabel)}</span>`
+                : ''
+            }
             ${
               rev.feedbackToast
                 ? `<span id="ws-q-feedback-toast" style="font-family:var(--font-mono);font-size:10px;color:var(--gold-bright);padding:1px 6px;border-radius:999px;background:rgba(242,207,126,0.16);">${escapeHtml(rev.feedbackToast)}</span>`
@@ -3049,13 +3643,14 @@ export class SovereignHUD {
     `;
   }
 
-  /** Surgically updates Globe Pin-Drop readout & arms Overclock without rebuilding DOM. */
+  /** Surgically updates Globe Pin-Drop readout & arms Lock Answer without rebuilding DOM. */
   public updateGlobeSelectionDom(
     lat: number,
     lon: number,
     anchorIdx: number | null,
     tierMult: number,
     anchorLabel?: string,
+    doubleDownActive = false,
   ): void {
     const statusEl = this.root.querySelector<HTMLElement>('#ws-globe-coord-status span');
     if (statusEl) {
@@ -3078,7 +3673,7 @@ export class SovereignHUD {
     }
     const labelEl = this.root.querySelector<HTMLElement>('#ws-overclock-label');
     if (labelEl) {
-      labelEl.textContent = this.getConciseOverclockIdleLabel(tierMult);
+      labelEl.textContent = this.getPlainEnglishLockLabel(tierMult, doubleDownActive);
     }
   }
 
@@ -3226,9 +3821,30 @@ export class SovereignHUD {
       });
     });
 
-    // Peel Crown Button
+    // Hint / 50-50 Button
     this.root.querySelector('#ws-btn-peel')?.addEventListener('click', () => {
       this.actions.onTriggerPeel();
+    });
+
+    // Explicit 2× Double Down Wager Toggle (v3.0 Mandate #4)
+    this.root.querySelector('#ws-btn-double-down')?.addEventListener('click', () => {
+      this.haptics.sightlineSnap();
+      this.audio.playSfx('ui_tap');
+      this.actions.onToggleDoubleDown?.();
+    });
+
+    // Clue Ladder — Reveal Next Clue Button (v3.0 Mandate #7)
+    this.root.querySelector('#ws-btn-clue-reveal-next')?.addEventListener('click', () => {
+      this.haptics.uiTap();
+      this.audio.playSfx('shutter_peel');
+      this.actions.onRevealNextClueStep?.();
+    });
+
+    // Mind Gambit — ↻ Swap Topic Button (v3.0 Mandate #7)
+    this.root.querySelector('#ws-btn-swap-topic')?.addEventListener('click', () => {
+      this.haptics.sightlineSnap();
+      this.audio.playSfx('shutter_peel');
+      this.actions.onUseSwapTopicGambit?.();
     });
 
     // Council Veto Button
@@ -3238,8 +3854,9 @@ export class SovereignHUD {
       this.actions.onTriggerCouncilVeto();
     });
 
-    // Hold-to-Overclock / Tap Safe Lock + Slide Sideways to Cancel (Bluff Echo)
-    // + Unbreakable Native `click` Fallback (100% submission reliability!)
+    // Lock Answer (1-Tap Safe Lock / 2× Double Down Toggle + Hold-to-Wager backward compatibility!)
+    // Pass `labelEl: null` to OverclockGestureController so it NEVER overwrites our plain-English
+    // label with legacy "HOLD 6.0x" or OS color emojis!
     const overclockBtn = this.root.querySelector<HTMLButtonElement>('#ws-btn-overclock');
     const fillEl = this.root.querySelector<HTMLElement>('#ws-overclock-fill');
     const labelEl = this.root.querySelector<HTMLElement>('#ws-overclock-label');
@@ -3252,18 +3869,15 @@ export class SovereignHUD {
         this.unbindOverclockBtn = this.overclockController.bindButton({
           buttonEl: overclockBtn,
           fillEl,
-          labelEl,
+          labelEl: null,
         });
-        // Keep single-line concise mobile-first idle label
         if (labelEl) {
           labelEl.textContent = globeUnpinned
-            ? 'DROP PIN ON GLOBE TO ARM'
-            : this.getConciseOverclockIdleLabel(tierMult);
+            ? 'DROP PIN ON GLOBE TO LOCK'
+            : this.getPlainEnglishLockLabel(tierMult, Boolean(vm.doubleDownActive), vm);
         }
       } else {
-        this.bindFallbackOverclockButton(overclockBtn, fillEl, labelEl, tierMult);
-        // Native `click` safety net for fallback mode (OverclockGestureController has its own
-        // authoritative `handleClickSafetyNet` synced with `ventedPointerId` & `lastHandledReleaseMs`)
+        this.bindFallbackOverclockButton(overclockBtn, fillEl, labelEl, tierMult, vm);
         overclockBtn.addEventListener('click', (ev) => {
           if (overclockBtn.disabled) return;
           const now = performance.now();
@@ -3325,6 +3939,7 @@ export class SovereignHUD {
     fillEl: HTMLElement | null,
     labelEl: HTMLElement | null,
     tierMult: number,
+    vm?: GameplayQuestionViewState,
   ): void {
     const clearWindowListeners = () => {
       if (this.fallbackWindowCleanup) {
@@ -3347,7 +3962,11 @@ export class SovereignHUD {
         this.cancelOverclockHold();
         if (fillEl) fillEl.style.width = '0%';
         if (labelEl) {
-          labelEl.textContent = `BLUFF VENTED — ${this.getConciseOverclockIdleLabel(tierMult)}`;
+          labelEl.textContent = this.getPlainEnglishLockLabel(
+            tierMult,
+            Boolean(vm?.doubleDownActive),
+            vm,
+          );
         }
         this.haptics.uiTap();
         this.actions.onOverclockBluffCancel();
@@ -3412,7 +4031,7 @@ export class SovereignHUD {
           const liveMult = (tierMult * (1 + charge)).toFixed(2);
           if (fillEl) fillEl.style.width = `${(charge * 100).toFixed(1)}%`;
           if (labelEl) {
-            labelEl.textContent = `OVERCLOCK ${liveMult}× — RELEASE · SLIDE ↔ CANCEL`;
+            labelEl.textContent = `✦ 2× WAGER (${liveMult}×) — RELEASE TO LOCK`;
           }
         }
         this.overclockHoldRaf = requestAnimationFrame(stepHold);
@@ -3425,6 +4044,8 @@ export class SovereignHUD {
   public updateLiveTelemetry(params: {
     remainingSec: number;
     totalSec: number;
+    readingGraceSec?: number;
+    clueLadderNextSec?: number | null;
     selectedFacetIndex?: number;
     rivalStatus?: string;
     rivalName?: string;
@@ -3439,12 +4060,42 @@ export class SovereignHUD {
     const chronoText = this.root.querySelector<HTMLElement>('#ws-chrono-text');
     const chronoBox = this.root.querySelector<HTMLElement>('#ws-chrono-box');
     const chronoArc = this.root.querySelector<SVGCircleElement>('#ws-chrono-arc');
+    const gracePill = this.root.querySelector<HTMLElement>('#ws-reading-grace-pill');
+    const clueCountdown = this.root.querySelector<HTMLElement>('#ws-clue-next-countdown');
+    const inGrace = (params.readingGraceSec ?? 0) > 0.05;
+
+    if (gracePill) {
+      if (inGrace) {
+        gracePill.style.display = '';
+        const secInt = Math.max(1, Math.ceil(params.readingGraceSec!));
+        const nextText = `READ CLUE · ${secInt}s`;
+        if (gracePill.textContent !== nextText) {
+          gracePill.textContent = nextText;
+        }
+      } else {
+        gracePill.style.display = 'none';
+      }
+    }
+
+    if (clueCountdown) {
+      if (typeof params.clueLadderNextSec === 'number' && params.clueLadderNextSec > 0) {
+        const nextTxt = `(${Math.ceil(params.clueLadderNextSec)}s)`;
+        if (clueCountdown.textContent !== nextTxt) {
+          clueCountdown.textContent = nextTxt;
+        }
+      } else {
+        clueCountdown.textContent = '';
+      }
+    }
 
     if (chronoText) {
       chronoText.textContent = `${Math.max(0, params.remainingSec).toFixed(1)}s`;
     }
     if (chronoBox) {
-      chronoBox.classList.toggle('is-urgent', params.remainingSec <= 5.0 && params.remainingSec > 0);
+      chronoBox.classList.toggle(
+        'is-urgent',
+        !inGrace && params.remainingSec <= 5.0 && params.remainingSec > 0,
+      );
     }
     if (chronoArc && params.totalSec > 0) {
       const frac = Math.max(0, Math.min(1, params.remainingSec / params.totalSec));
@@ -3648,6 +4299,10 @@ export class SovereignHUD {
                     : ''
                 }
               </div>
+            </div>
+
+            <div class="ws-scouts-advantage-pill" style="width:100%;justify-content:center;">
+              ✦ SCOUT&apos;S ADVANTAGE READY ON RETRY: Easier Questions + +6s Timer + Free Second Wind
             </div>
 
             <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:10px;padding-top:8px;border-top:1px solid rgba(224,82,99,0.22);">

@@ -102,8 +102,8 @@ export const CANONICAL_ACT_CUTSCENES: Readonly<Record<string, LegacyCutsceneSpec
   act0_invitation: {
     id: 'act0_invitation',
     act_index: 0,
-    title: 'ACT 0 · THE BLACK-GLASS SUMMONS',
-    location: 'Geneva, Switzerland · 23:42 CET',
+    title: 'ACT 0 · THE LAST PUZZLE OF DR. MARA SATO',
+    location: 'Lake Geneva, Switzerland · Dr. Mara Sato’s Study',
     image: './assets/cutscenes/act0_invitation.jpg',
     weather_fx: 'alpine_snow',
     ken_burns: { start_scale: 1.04, end_scale: 1.14, pan_x: 0.03, pan_y: -0.02 },
@@ -114,7 +114,7 @@ export const CANONICAL_ACT_CUTSCENES: Readonly<Record<string, LegacyCutsceneSpec
         speaker_name: 'Julian Vance',
         expression: 'neutral',
         voice_clip: './assets/voice/cutscene_act0_1.mp3',
-        text: 'Midnight over Lake Geneva. Four hundred thousand minds entered the cipher—only one unlocked the door.',
+        text: 'Three weeks ago, legendary puzzle-maker Dr. Mara Sato passed away—leaving one final riddle tucked inside Sunday papers and public archives. Four hundred thousand people tried it, and your 2:14 AM answer earned a seat on Lake Geneva.',
       },
       {
         id: 'cutscene_act0_2',
@@ -122,22 +122,22 @@ export const CANONICAL_ACT_CUTSCENES: Readonly<Record<string, LegacyCutsceneSpec
         speaker_name: 'Julian Vance',
         expression: 'intense',
         voice_clip: './assets/voice/cutscene_act0_2.mp3',
-        text: 'Eight cities. Forty rounds. One hundred million dollars—and the lone human veto key over The Ledger.',
+        text: "I'm Julian Vance, Mara's longtime co-creator. Rather than hand her hundred-million-dollar Meridian Archive to a committee, she built an eight-city tournament—betting everything on one agile, curious mind.",
       },
       {
         id: 'cutscene_act0_3',
         speaker: 'teo',
         speaker_name: "Mateo 'Teo' Rojas",
-        expression: 'intense',
+        expression: 'neutral',
         voice_clip: './assets/voice/cutscene_act0_3.mp3',
-        text: "Don't trust the cameras, rookie. The last person who won this chair vanished in 2019.",
+        text: "Relax, the Geneva warmup is the fun part. I'm Teo—audio engineer and official espresso smuggler. Mara built these first four questions just to see how you think—though... weird. Her private terminal just woke up the second you walked in.",
       },
     ],
   },
   act1_london_leak: {
     id: 'act1_london_leak',
     act_index: 1,
-    title: 'ACT I · GLASS OVER ASHES',
+    title: 'ACT I · MARA’S MISSING CHAPTER',
     location: 'London, United Kingdom · The Sovereign Rotunda',
     image: './assets/cutscenes/act1_london_leak.jpg',
     weather_fx: 'london_rain',
@@ -149,7 +149,7 @@ export const CANONICAL_ACT_CUTSCENES: Readonly<Record<string, LegacyCutsceneSpec
         speaker_name: 'Nadia Al-Mansoor',
         expression: 'neutral',
         voice_clip: './assets/voice/cutscene_act1_1.mp3',
-        text: 'Welcome to London. Every answer in this rotunda goes live to two billion screens.',
+        text: "Welcome to London. I'm Nadia Al-Mansoor. Mara Sato designed this rotunda with a glass floor so nothing stays buried—though the board seems awfully nervous about what's underneath.",
       },
       {
         id: 'cutscene_act1_2',
@@ -157,7 +157,7 @@ export const CANONICAL_ACT_CUTSCENES: Readonly<Record<string, LegacyCutsceneSpec
         speaker_name: 'Chancellor Ingrid Lindqvist',
         expression: 'neutral',
         voice_clip: './assets/voice/cutscene_act1_2.mp3',
-        text: 'The Council prefers predictable champions. Step outside the corridor, and we can discuss your future.',
+        text: "A charming warmup in Geneva, truly. Yet Mara's archive holds diplomatic secrets too delicate for chance. Join me in the corridor—let us speak like adults.",
       },
       {
         id: 'cutscene_act1_3',
@@ -165,15 +165,15 @@ export const CANONICAL_ACT_CUTSCENES: Readonly<Record<string, LegacyCutsceneSpec
         speaker_name: "Mateo 'Teo' Rojas",
         expression: 'intense',
         voice_clip: './assets/voice/cutscene_act1_3.mp3',
-        text: "I pulled the hidden signal logs. Someone fed encrypted answers straight into a contender's earpiece.",
+        text: "Hey—while everyone was clinking champagne glasses, I checked the 2019 build logs. Mara ran a secret dress rehearsal seven years ago, and somebody scrubbed the winner's name.",
       },
     ],
   },
   act2_tokyo_confrontation: {
     id: 'act2_tokyo_confrontation',
     act_index: 2,
-    title: 'ACT II · SEVENTY FLOORS IN NEON RAIN',
-    location: 'Tokyo, Japan · The Shinkansen Sky Pavilion',
+    title: 'ACT II · ODDS IN THE NEON RAIN',
+    location: 'Tokyo, Japan · The Horizon Sky Pavilion',
     image: './assets/cutscenes/act2_tokyo_confrontation.jpg',
     weather_fx: 'neon_rain',
     ken_burns: { start_scale: 1.06, end_scale: 1.15, pan_x: 0.03, pan_y: 0.02 },
@@ -184,7 +184,7 @@ export const CANONICAL_ACT_CUTSCENES: Readonly<Record<string, LegacyCutsceneSpec
         speaker_name: "Soren 'Echo' Kael",
         expression: 'smirk',
         voice_clip: './assets/voice/cutscene_act2_1.mp3',
-        text: 'Seventy floors above Shibuya, friend—where every heartbeat trades like a futures contract.',
+        text: "Seventy floors above Shibuya, friend—welcome to my neighborhood. I'm Soren Kael, card counter turned probability trader, and Mara invited me strictly to give the board heartburn.",
       },
       {
         id: 'cutscene_act2_2',
@@ -192,7 +192,7 @@ export const CANONICAL_ACT_CUTSCENES: Readonly<Record<string, LegacyCutsceneSpec
         speaker_name: "Soren 'Echo' Kael",
         expression: 'smirk',
         voice_clip: './assets/voice/cutscene_act2_2.mp3',
-        text: "Think you're playing a quiz show? Half the syndicate already bet your streak breaks tonight.",
+        text: 'Word from London is you actually read the footnotes. Careful up here—half the trading floor already has side bets on whether your streak survives tonight.',
       },
       {
         id: 'cutscene_act2_3',
@@ -200,14 +200,14 @@ export const CANONICAL_ACT_CUTSCENES: Readonly<Record<string, LegacyCutsceneSpec
         speaker_name: 'Julian Vance',
         expression: 'intense',
         voice_clip: './assets/voice/cutscene_act2_3.mp3',
-        text: 'Soren Kael reads probabilities like oxygen. Outthink the house—or become its cautionary tale.',
+        text: 'Soren Kael counts cards faster than most people blink. Keep your cool, read his silver coin, and remember why Mara put you in that chair.',
       },
     ],
   },
   act3_cairo_vault: {
     id: 'act3_cairo_vault',
     act_index: 3,
-    title: 'ACT III · MERIDIAN ZERO',
+    title: 'ACT III · TRIAL ZERO',
     location: 'Giza Plateau, Egypt · 38 Meters Below the Solar Hall',
     image: './assets/cutscenes/act3_cairo_vault.jpg',
     weather_fx: 'desert_dust',
@@ -219,7 +219,7 @@ export const CANONICAL_ACT_CUTSCENES: Readonly<Record<string, LegacyCutsceneSpec
         speaker_name: "Mateo 'Teo' Rojas",
         expression: 'intense',
         voice_clip: './assets/voice/cutscene_act3_1.mp3',
-        text: "We cracked the Cairo vault. Trial Zero wasn't a rehearsal—it was a cover-up.",
+        text: "Okay, deep breath—we're inside Mara's sealed Cairo vault. Trial Zero wasn't a test run. It was the first time someone beat Lindqvist's board fair and square.",
       },
       {
         id: 'cutscene_act3_2',
@@ -227,7 +227,7 @@ export const CANONICAL_ACT_CUTSCENES: Readonly<Record<string, LegacyCutsceneSpec
         speaker_name: 'Nadia Al-Mansoor',
         expression: 'shocked',
         voice_clip: './assets/voice/cutscene_act3_2.mp3',
-        text: "That signature on the dossier... that's Tariq. My brother didn't walk away. They erased him.",
+        text: "That handwriting in Mara's ledger... that's Tariq. My brother won her 2019 prototype—and the week he refused to sell out, the board made him vanish from the record.",
       },
       {
         id: 'cutscene_act3_3',
@@ -235,15 +235,15 @@ export const CANONICAL_ACT_CUTSCENES: Readonly<Record<string, LegacyCutsceneSpec
         speaker_name: 'Julian Vance',
         expression: 'intense',
         voice_clip: './assets/voice/cutscene_act3_3.mp3',
-        text: 'Careful what ghosts you exhume in the desert. The Council is already listening.',
+        text: "Mara hid this room for seven years waiting for someone sharp enough to find it. Read the whole page before you judge me—Lindqvist's lawyers are already landing.",
       },
     ],
   },
   act4_singapore_betrayal: {
     id: 'act4_singapore_betrayal',
     act_index: 4,
-    title: 'ACT IV · THE KNIFE ON THE SKY-BRIDGE',
-    location: 'Singapore · 90 Floors Above The Ledger Core',
+    title: 'ACT IV · THE BOARD’S COUNTER-MOVE',
+    location: 'Singapore · 90 Floors Above the Meridian Archive',
     image: './assets/cutscenes/act4_singapore_betrayal.jpg',
     weather_fx: 'uv_storm',
     ken_burns: { start_scale: 1.04, end_scale: 1.15, pan_x: 0.02, pan_y: -0.02 },
@@ -254,7 +254,7 @@ export const CANONICAL_ACT_CUTSCENES: Readonly<Record<string, LegacyCutsceneSpec
         speaker_name: 'Tariq Al-Mansoor',
         expression: 'neutral',
         voice_clip: './assets/voice/cutscene_act4_1.mp3',
-        text: 'I stayed in the shadows in Reykjavik so you could carry the ledger key onto the world stage.',
+        text: 'Mara and Julian kept me off the grid in Reykjavik for seven winters so we could build a contest too public to rig. Now you carry her final key to the stage.',
       },
       {
         id: 'cutscene_act4_2',
@@ -262,7 +262,7 @@ export const CANONICAL_ACT_CUTSCENES: Readonly<Record<string, LegacyCutsceneSpec
         speaker_name: 'Chancellor Ingrid Lindqvist',
         expression: 'neutral',
         voice_clip: './assets/voice/cutscene_act4_2.mp3',
-        text: 'Enough theater. Cut their feed and lock the vault—no outsider dictates terms to the World Council.',
+        text: "Enough charming detective work. Invoke Article Nine and seal the archive—Dr. Sato's whim will not hand global stewardship to an amateur.",
       },
       {
         id: 'cutscene_act4_3',
@@ -270,14 +270,14 @@ export const CANONICAL_ACT_CUTSCENES: Readonly<Record<string, LegacyCutsceneSpec
         speaker_name: "Soren 'Echo' Kael",
         expression: 'smirk',
         voice_clip: './assets/voice/cutscene_act4_3.mp3',
-        text: "Plot twist, friend. Even a gambler knows when the house is burning down. I'm betting on you.",
+        text: "Plot twist, friend. Even a card shark knows when the house is dealing from the bottom of the deck. Consider my chips all-in on you.",
       },
     ],
   },
   act5_apex_finale: {
     id: 'act5_apex_finale',
     act_index: 5,
-    title: 'ACT V · THE APEX FORUM',
+    title: 'ACT V · MARA’S FINAL TABLE',
     location: 'International Waters · Two Billion Live Witnesses',
     image: './assets/cutscenes/act5_apex_finale.jpg',
     weather_fx: 'ocean_mist',
@@ -289,7 +289,7 @@ export const CANONICAL_ACT_CUTSCENES: Readonly<Record<string, LegacyCutsceneSpec
         speaker_name: 'Julian Vance',
         expression: 'intense',
         voice_clip: './assets/voice/cutscene_act5_1.mp3',
-        text: 'The Apex Forum. Two billion witnesses watching every breath. No lifelines left to hide behind.',
+        text: 'The Apex Forum. Two billion witnesses watching live, exactly as Mara drafted on a napkin seven years ago. No committees, no back rooms—just the questions.',
       },
       {
         id: 'cutscene_act5_2',
@@ -297,7 +297,7 @@ export const CANONICAL_ACT_CUTSCENES: Readonly<Record<string, LegacyCutsceneSpec
         speaker_name: 'Nadia Al-Mansoor',
         expression: 'neutral',
         voice_clip: './assets/voice/cutscene_act5_2.mp3',
-        text: 'For Tariq—and for everyone they tried to silence. Beat them clean, in front of the whole world.',
+        text: 'For Tariq, for Mara, and for everyone who stayed up until two in the morning chasing a good clue. Beat Julian clean—in front of the whole world.',
       },
       {
         id: 'cutscene_act5_3',
@@ -305,7 +305,7 @@ export const CANONICAL_ACT_CUTSCENES: Readonly<Record<string, LegacyCutsceneSpec
         speaker_name: 'Julian Vance',
         expression: 'intense',
         voice_clip: './assets/voice/cutscene_act5_3.mp3',
-        text: 'Take the crown, claim the veto key—and decide who the sharpest mind on Earth answers to.',
+        text: "Take the chair across from me, claim Mara's veto key, and decide what the sharpest mind on Earth leaves behind.",
       },
     ],
   },
@@ -1257,13 +1257,13 @@ export class MotionCinemaDirector {
           <div class="ws-mc-summons-slab">
             <canvas id="ws-mc-seal-canvas" width="92" height="92" style="width:76px;height:76px;display:block;"></canvas>
             <div style="font-family:var(--font-mono);font-size:10.5px;letter-spacing:0.18em;color:var(--gold-bright);">
-              MERIDIAN PROTOCOL 00 // ENCRYPTED DIPLOMATIC SUMMONS
+              ESTATE OF DR. MARA SATO · LAKE GENEVA INVITATION
             </div>
             <div id="ws-mc-cipher-line" style="font-family:var(--font-display);font-weight:800;font-size:clamp(16px,2.3vw,23px);letter-spacing:0.08em;color:var(--ivory-primary);line-height:1.3;">
-              0x9F4A · DECRYPTING GENEVA SEAL...
+              02:14 AM · VERIFYING SUNDAY CIPHER...
             </div>
             <div style="font-family:var(--font-mono);font-size:11px;color:var(--cyan-clue);letter-spacing:0.08em;">
-              PSYCHOMETRIC RESONANCE: 99.4% · CANDIDATE: ${escapeHtml(displayPlayerName.toUpperCase())}
+              QUALIFIER SOLVED · SEAT RESERVED FOR ${escapeHtml(displayPlayerName.toUpperCase())}
             </div>
           </div>
         </div>
@@ -1541,7 +1541,7 @@ export class MotionCinemaDirector {
     if (showSummonsColdOpen && summonsEl && cipherLineEl) {
       this.audio.playSfx('passport_stamp');
       this.haptics.sightlineSnap();
-      const targetPhrase = '“YOU SOLVED WHAT 400,000 COULDN’T.”';
+      const targetPhrase = '“THE LAST PUZZLE OF DR. MARA SATO.”';
       const hexGlyphs = '0123456789ABCDEF#◊∆§';
       let step = 0;
       const totalSteps = 16;

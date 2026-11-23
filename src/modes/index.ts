@@ -4,6 +4,8 @@
 // ============================================================================
 
 export * from './ScoringEngine';
+export * from './ClueLadderEngine';
+export * from './MindGambitsEngine';
 export * from './DailyGlobalFeed';
 export * from './BriefingCategoriesMode';
 export * from './ArchiveDescentEndless';

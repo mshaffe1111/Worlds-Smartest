@@ -10,7 +10,12 @@
 // ============================================================================
 
 import { forgeEngine } from '../forge';
-import type { DomainId, EndingId, PassportSystem } from '../narrative';
+import {
+  getSovereignDomainMeta,
+  type DomainId,
+  type EndingId,
+  type PassportSystem,
+} from '../narrative';
 
 export type AnalyticsGameMode =
   | 'PROLOGUE'
@@ -63,7 +68,15 @@ export type SpecialFeatKind =
   | 'DUEL_CHALLENGE_PLAYED'
   | 'DUEL_GHOST_BEATEN'
   | 'SRS_REVIEW_COMPLETED'
-  | 'OFFLINE_PACK_CACHED';
+  | 'OFFLINE_PACK_CACHED'
+  | 'CLUE_LADDER_STEP1_SNIPE'
+  | 'MIND_GAMBIT_USED'
+  | 'SECOND_WIND_SAVED'
+  | 'FINALE_CATEGORY_WIN';
+
+export type AnalyticsSpeedBucketIndex = 0 | 1 | 2 | 3 | 4;
+
+export type AnalyticsOutcomeFilter = 'ALL' | 'RIGHT' | 'WRONG' | 'DOUBLE_DOWN';
 
 export interface QuestionAnalyticsInput {
   ts?: number;
@@ -73,6 +86,12 @@ export interface QuestionAnalyticsInput {
   hubId?: string;
   archetype?: AnalyticsArchetype | string;
   difficultyTier?: AnalyticsDifficultyTier | string;
+  subcatLabel?: string;
+  speedBucketIdx?: AnalyticsSpeedBucketIndex;
+  clueLadderStep?: 1 | 2 | 3;
+  mindGambitId?: string;
+  mindGambitTriggered?: boolean;
+  finaleCategoryPicked?: boolean;
   globeDistanceKm?: number;
   hasVisualPlate?: boolean;
   correct: boolean;
@@ -109,6 +128,11 @@ export interface QuestionAnalyticsEvent {
   eloAfter: number;
   promptSnippet?: string;
   answerLabel?: string;
+  subcatLabel?: string;
+  difficultyTier?: string;
+  speedBucketIdx?: AnalyticsSpeedBucketIndex;
+  clueLadderStep?: 1 | 2 | 3;
+  mindGambitId?: string;
 }
 
 export interface RightWrongCounter {
@@ -182,6 +206,12 @@ export interface MatchCompletedAnalyticsInput {
   difficultyPreset?: AnalyticsDifficultyTier | string;
   /** Alias for `difficultyPreset` */
   difficultyTier?: AnalyticsDifficultyTier | string;
+  /** Optional v3.0 Tactical Mind Gambit used during the match */
+  mindGambitUsed?: string;
+  /** True when Second Wind mulligan saved a wrong answer in this match */
+  secondWindTriggered?: boolean;
+  /** True when the Finale Category Picker final question was solved */
+  finaleCategoryWon?: boolean;
 }
 
 export interface SpecialFeatCounters {
@@ -221,6 +251,11 @@ export interface SpecialFeatCounters {
   duelGhostWins: number;
   srsReviewsCompleted: number;
   offlinePacksCached: number;
+  // v3.0 Expansion Counters (Clue Ladder Step-1 Snipes & Tactical Mind Gambits)
+  clueLadderStep1Snipes: number;
+  mindGambitsActivated: number;
+  secondWindSaves: number;
+  finaleCategoryWins: number;
 }
 
 export interface OverclockConvictionStats {
@@ -300,6 +335,248 @@ export const SPEED_BUCKET_LABELS: readonly [string, string, string, string, stri
   '10–15s',
   '15s+',
 ];
+
+export interface AnalyticsFilterState {
+  range: AnalyticsTimeRange;
+  domainId: DomainId | null;
+  subcatLabel: string | null;
+  archetype: AnalyticsArchetype | null;
+  peelTier: 1 | 2 | 3 | null;
+  outcome: AnalyticsOutcomeFilter;
+  speedBucket: AnalyticsSpeedBucketIndex | null;
+  bucketKey: string | null;
+}
+
+export interface SubcategoryBreakdownRow {
+  subcatLabel: string;
+  right: number;
+  wrong: number;
+  total: number;
+  accuracyPct: number;
+  avgResponseMs: number;
+}
+
+export interface AnalyticsBarBucketPoint {
+  bucketKey: string;
+  label: string;
+  sublabel: string;
+  right: number;
+  wrong: number;
+  rollingAccPct: number;
+  isSelected: boolean;
+}
+
+export interface AnalyticsEloPoint {
+  label: string;
+  elo: number;
+  ts?: number;
+  correct?: boolean;
+}
+
+export interface FilteredAnalyticsKpis {
+  totalRight: number;
+  totalWrong: number;
+  totalAnswered: number;
+  accuracyPct: number | null;
+  avgResponseMs: number;
+  totalPointsEarned: number;
+  currentStreak: number;
+  bestStreak: number;
+  eloLatest: number;
+  eloPeak: number;
+  doubleDownCount: number;
+  doubleDownWins: number;
+  doubleDownMisses: number;
+  doubleDownWinPct: number | null;
+  safeLockWins: number;
+  safeLockMisses: number;
+  max6xWins: number;
+  backfires: number;
+  bestConsecutiveMax6xWins: number;
+}
+
+export interface FilteredAnalyticsView {
+  filter: AnalyticsFilterState;
+  hasActiveDimensionFilter: boolean;
+  activeFilterCount: number;
+  rangeTotalCount: number;
+  filteredEvents: QuestionAnalyticsEvent[];
+  kpis: FilteredAnalyticsKpis;
+  barSeries: AnalyticsBarBucketPoint[];
+  byDomain: DomainAnalyticsCounter[];
+  subcategories: SubcategoryBreakdownRow[];
+  eloSeries: AnalyticsEloPoint[];
+  byArchetype: Record<AnalyticsArchetype, RightWrongCounter>;
+  byPeelTier: Record<'1' | '2' | '3', RightWrongCounter>;
+  speedBuckets: [
+    RightWrongCounter,
+    RightWrongCounter,
+    RightWrongCounter,
+    RightWrongCounter,
+    RightWrongCounter,
+  ];
+  outcomeCounts: {
+    all: number;
+    right: number;
+    wrong: number;
+    doubleDown: number;
+  };
+  ledgerEvents: QuestionAnalyticsEvent[];
+  usingLegacyAggregateFallback: boolean;
+}
+
+export function createDefaultAnalyticsFilter(
+  range: AnalyticsTimeRange = 'ALL_TIME',
+): AnalyticsFilterState {
+  return {
+    range,
+    domainId: null,
+    subcatLabel: null,
+    archetype: null,
+    peelTier: null,
+    outcome: 'ALL',
+    speedBucket: null,
+    bucketKey: null,
+  };
+}
+
+export function computeSpeedBucketIdx(responseTimeMs: number): AnalyticsSpeedBucketIndex {
+  const ms = Number.isFinite(responseTimeMs) ? responseTimeMs : 5200;
+  if (ms < 3000) return 0;
+  if (ms < 6000) return 1;
+  if (ms < 10000) return 2;
+  if (ms < 15000) return 3;
+  return 4;
+}
+
+export function isDoubleDownEvent(
+  ev: Pick<QuestionAnalyticsEvent, 'overclockCharge01' | 'backfired'>,
+): boolean {
+  return (Number(ev.overclockCharge01) || 0) >= 0.08 || Boolean(ev.backfired);
+}
+
+const DOMAIN_FALLBACK_SUBCATS: Record<
+  DomainId,
+  { core: string; dial: string; myth: string; globe: string }
+> = {
+  0: { core: 'World Civilizations', dial: 'Historical Dates', myth: 'History Myths', globe: 'Historic Sites' },
+  1: { core: 'Physics & Space', dial: 'Scientific Milestones', myth: 'Science Myths', globe: 'Observatories & Labs' },
+  2: { core: 'World Capitals', dial: 'Geographic Extremes', myth: 'Geography Myths', globe: 'Atlas Pinpoints' },
+  3: { core: 'Fine Arts & Literature', dial: 'Cultural Eras', myth: 'Art & Lit Myths', globe: 'Cultural Landmarks' },
+  4: { core: 'Cinema & Music', dial: 'Pop Culture Years', myth: 'Entertainment Myths', globe: 'Film & Music Capitals' },
+  5: { core: 'Championship Sports', dial: 'Sports Records', myth: 'Sports Myths', globe: 'Iconic Venues' },
+  6: { core: 'Computing & Innovation', dial: 'Tech Breakthroughs', myth: 'Tech Myths', globe: 'Tech Hubs' },
+  7: { core: 'Biology & Ecology', dial: 'Natural Milestones', myth: 'Nature Myths', globe: 'Biomes & Habitats' },
+  8: { core: 'Global Politics & Law', dial: 'Treaty Timelines', myth: 'Civic Myths', globe: 'Diplomatic Capitals' },
+  9: { core: 'Culinary & Craft', dial: 'Design Heritage', myth: 'Food & Design Myths', globe: 'Regional Origins' },
+  10: { core: 'Philosophy & Myth', dial: 'Classical Antiquity', myth: 'Mythology Facts', globe: 'Ancient Temples' },
+  11: { core: 'Logic & Economics', dial: 'Quantitative Estimates', myth: 'Logic Paradoxes', globe: 'Financial Centers' },
+};
+
+function inferDifficultyFromElo(elo: number): AnalyticsDifficultyTier {
+  if (elo < 1120) return 'MIDDLE_SCHOOL';
+  if (elo < 1260) return 'HIGH_SCHOOL';
+  if (elo < 1440) return 'COLLEGE';
+  if (elo < 1650) return 'GRADUATE';
+  return 'MENSA';
+}
+
+function sanitizeSubcatText(raw?: string): string | null {
+  if (typeof raw !== 'string') return null;
+  const trimmed = raw.trim().replace(/\s+/g, ' ').slice(0, 44);
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function synthesizeSubcatFallback(
+  domainId: DomainId,
+  archetype: AnalyticsArchetype,
+  promptSnippet?: string,
+): string {
+  const snippet = (promptSnippet ?? '').toLowerCase();
+  if (snippet) {
+    if (domainId === 1) {
+      if (/\b(planet|star|orbit|galaxy|nasa|moon|mars|apollo|telescope|space)\b/.test(snippet)) return 'Astronomy & Space';
+      if (/\b(element|atom|molecule|chemical|periodic|acid|metal|oxygen|carbon)\b/.test(snippet)) return 'Chemistry';
+      if (/\b(dna|cell|gene|species|brain|heart|blood|organ|vaccine)\b/.test(snippet)) return 'Biology & Medicine';
+      if (/\b(quantum|light|gravity|energy|relativity|particle|electron|cern)\b/.test(snippet)) return 'Physics';
+    } else if (domainId === 0) {
+      if (/\b(war|battle|treaty|empire|king|queen|dynasty|roman|greek|egypt)\b/.test(snippet)) return 'Empires & Conflict';
+      if (/\b(revolution|constitution|president|independence|congress|charter)\b/.test(snippet)) return 'Modern History';
+    } else if (domainId === 5) {
+      if (/\b(baseball|mlb|home run|pitcher|world series|fenway|wrigley)\b/.test(snippet)) return 'Baseball';
+      if (/\b(olympic|marathon|medal|sprint|swim|gymnast)\b/.test(snippet)) return 'Olympics';
+      if (/\b(world cup|fifa|soccer|football|goal|striker)\b/.test(snippet)) return 'World Football';
+      if (/\b(nba|basketball|tennis|wimbledon|chess|grandmaster)\b/.test(snippet)) return 'Court & Board Sports';
+    }
+  }
+  const map = DOMAIN_FALLBACK_SUBCATS[domainId] ?? DOMAIN_FALLBACK_SUBCATS[0];
+  if (archetype === 'CALIBRATOR_DIAL') return map.dial;
+  if (archetype === 'GAUNTLET_SHATTER') return map.myth;
+  if (archetype === 'GLOBE_PIN_DROP') return map.globe;
+  return map.core;
+}
+
+export function normalizeAnalyticsEvent(
+  raw: Partial<QuestionAnalyticsEvent>,
+): QuestionAnalyticsEvent {
+  const ts = Number.isFinite(Number(raw.ts)) && Number(raw.ts) > 0 ? Math.floor(Number(raw.ts)) : Date.now();
+  const dateKey =
+    typeof raw.dateKey === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(raw.dateKey.trim())
+      ? raw.dateKey.trim()
+      : toUtcDateKey(ts);
+  const domainId = clamp(Math.floor(Number(raw.domainId) || 0), 0, 11) as DomainId;
+  const mode = normalizeMode(raw.mode);
+  const archetype = normalizeArchetype(raw.archetype);
+  const peelTier: 1 | 2 | 3 = raw.peelTier === 2 ? 2 : raw.peelTier === 3 ? 3 : 1;
+  const ocCharge = clamp(Number(raw.overclockCharge01) || 0, 0, 1);
+  const respMs = clamp(Math.round(Number(raw.responseTimeMs) || 5200), 150, 60000);
+  const speedBucketIdx: AnalyticsSpeedBucketIndex =
+    typeof raw.speedBucketIdx === 'number' &&
+    Number.isInteger(raw.speedBucketIdx) &&
+    raw.speedBucketIdx >= 0 &&
+    raw.speedBucketIdx <= 4
+      ? (raw.speedBucketIdx as AnalyticsSpeedBucketIndex)
+      : computeSpeedBucketIdx(respMs);
+  const eloAfter = clamp(Math.round(Number(raw.eloAfter) || 1200), 600, 2600);
+  const rawPrompt = typeof raw.promptSnippet === 'string' ? raw.promptSnippet.trim().slice(0, 96) : '';
+  const rawAnswer = typeof raw.answerLabel === 'string' ? raw.answerLabel.trim().slice(0, 48) : '';
+  const subcatLabel =
+    sanitizeSubcatText(raw.subcatLabel) ?? synthesizeSubcatFallback(domainId, archetype, rawPrompt);
+  const difficultyTier =
+    normalizeDifficultyTier(raw.difficultyTier) ?? inferDifficultyFromElo(eloAfter);
+  const domMeta = getSovereignDomainMeta(domainId);
+  const promptSnippet =
+    rawPrompt || (rawAnswer ? `${subcatLabel}: ${rawAnswer}` : `${domMeta.shortName} · ${subcatLabel}`);
+
+  return {
+    ts,
+    dateKey,
+    qid: Math.max(0, Math.floor(Number(raw.qid) || 0)),
+    domainId,
+    mode,
+    hubId: typeof raw.hubId === 'string' && raw.hubId.trim() ? raw.hubId.trim() : 'ch',
+    archetype,
+    correct: Boolean(raw.correct),
+    peelTier,
+    overclockCharge01: Number(ocCharge.toFixed(2)),
+    backfired: Boolean(raw.backfired),
+    bluffCalled: Boolean(raw.bluffCalled),
+    bullseye: Boolean(raw.bullseye),
+    responseTimeMs: respMs,
+    pointsDelta: Math.max(0, Math.round(Number(raw.pointsDelta) || 0)),
+    eloAfter,
+    promptSnippet,
+    answerLabel: rawAnswer || undefined,
+    subcatLabel,
+    difficultyTier,
+    speedBucketIdx,
+    clueLadderStep:
+      raw.clueLadderStep === 1 || raw.clueLadderStep === 2 || raw.clueLadderStep === 3
+        ? raw.clueLadderStep
+        : undefined,
+    mindGambitId: typeof raw.mindGambitId === 'string' && raw.mindGambitId ? raw.mindGambitId : undefined,
+  };
+}
 
 function clamp(v: number, min: number, max: number): number {
   if (!Number.isFinite(v)) return min;
@@ -472,6 +749,10 @@ function createDefaultState(): CareerAnalyticsState {
       duelGhostWins: 0,
       srsReviewsCompleted: 0,
       offlinePacksCached: 0,
+      clueLadderStep1Snipes: 0,
+      mindGambitsActivated: 0,
+      secondWindSaves: 0,
+      finaleCategoryWins: 0,
     },
     dailyBuckets: {},
     sessions: [],
@@ -621,13 +902,21 @@ export class CareerAnalyticsStore {
           duelGhostWins: Math.max(0, Math.floor(Number(parsed.feats?.duelGhostWins) || 0)),
           srsReviewsCompleted: Math.max(0, Math.floor(Number(parsed.feats?.srsReviewsCompleted) || 0)),
           offlinePacksCached: Math.max(0, Math.floor(Number(parsed.feats?.offlinePacksCached) || 0)),
+          clueLadderStep1Snipes: Math.max(0, Math.floor(Number(parsed.feats?.clueLadderStep1Snipes) || 0)),
+          mindGambitsActivated: Math.max(0, Math.floor(Number(parsed.feats?.mindGambitsActivated) || 0)),
+          secondWindSaves: Math.max(0, Math.floor(Number(parsed.feats?.secondWindSaves) || 0)),
+          finaleCategoryWins: Math.max(0, Math.floor(Number(parsed.feats?.finaleCategoryWins) || 0)),
         },
         dailyBuckets:
           parsed.dailyBuckets && typeof parsed.dailyBuckets === 'object'
             ? parsed.dailyBuckets
             : {},
         sessions: Array.isArray(parsed.sessions) ? parsed.sessions.slice(-MAX_SESSIONS) : [],
-        events: Array.isArray(parsed.events) ? parsed.events.slice(-MAX_RING_EVENTS) : [],
+        events: Array.isArray(parsed.events)
+          ? parsed.events
+              .slice(-MAX_RING_EVENTS)
+              .map((ev) => normalizeAnalyticsEvent(ev))
+          : [],
       };
     } catch {
       return defaults;
@@ -658,6 +947,25 @@ export class CareerAnalyticsStore {
    * if the user already played rounds prior to Wave-3 Analytics installation!
    */
   public syncAndBackfillFromProfile(passport: PassportSystem): void {
+    // Sync if external storage was seeded/updated (e.g. multi-tab or save restore)
+    try {
+      if (typeof localStorage !== 'undefined') {
+        const raw = localStorage.getItem(ANALYTICS_STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw) as Partial<CareerAnalyticsState> | null;
+          if (
+            parsed &&
+            Array.isArray(parsed.events) &&
+            parsed.events.length > this.state.events.length
+          ) {
+            this.state = this.load();
+          }
+        }
+      }
+    } catch {
+      // Ignore storage inspection issues
+    }
+
     const pSnap = passport.getSnapshot();
     const skill = forgeEngine.getSkillSnapshot();
     let dirty = false;
@@ -805,6 +1113,13 @@ export class CareerAnalyticsStore {
     const isMax6x = ocCharge >= 0.88 && peelTier === 1;
     const backfired = Boolean(input.backfired) || (!input.correct && wasOverclocked);
     const respMs = clamp(Math.round(Number(input.responseTimeMs) || 5200), 150, 60000);
+    const speedIdx: AnalyticsSpeedBucketIndex =
+      typeof input.speedBucketIdx === 'number' &&
+      Number.isInteger(input.speedBucketIdx) &&
+      input.speedBucketIdx >= 0 &&
+      input.speedBucketIdx <= 4
+        ? input.speedBucketIdx
+        : computeSpeedBucketIdx(respMs);
     const pts = Math.max(0, Math.round(Number(input.pointsDelta) || 0));
 
     const skillSnap = forgeEngine.getSkillSnapshot();
@@ -813,6 +1128,16 @@ export class CareerAnalyticsStore {
       600,
       2600,
     );
+    const difficultyTier =
+      normalizeDifficultyTier(input.difficultyTier) ?? inferDifficultyFromElo(eloAfter);
+    const rawPrompt = input.promptSnippet?.trim().slice(0, 96);
+    const subcatLabel =
+      sanitizeSubcatText(input.subcatLabel) ??
+      synthesizeSubcatFallback(domainId, archetype, rawPrompt);
+    const domMeta = getSovereignDomainMeta(domainId);
+    const promptSnippet =
+      rawPrompt ||
+      (input.answerLabel ? `${subcatLabel}: ${input.answerLabel.slice(0, 44)}` : `${domMeta.shortName} · ${subcatLabel}`);
 
     const ev: QuestionAnalyticsEvent = {
       ts,
@@ -831,8 +1156,16 @@ export class CareerAnalyticsStore {
       responseTimeMs: respMs,
       pointsDelta: pts,
       eloAfter,
-      promptSnippet: input.promptSnippet?.slice(0, 90),
-      answerLabel: input.answerLabel?.slice(0, 44),
+      promptSnippet,
+      answerLabel: input.answerLabel?.slice(0, 48),
+      subcatLabel,
+      difficultyTier,
+      speedBucketIdx: speedIdx,
+      clueLadderStep:
+        input.clueLadderStep === 1 || input.clueLadderStep === 2 || input.clueLadderStep === 3
+          ? input.clueLadderStep
+          : undefined,
+      mindGambitId: input.mindGambitId?.trim() || undefined,
     };
 
     this.state.events.push(ev);
@@ -854,10 +1187,15 @@ export class CareerAnalyticsStore {
     if (input.bluffCalled) {
       this.state.feats.rivalBluffsCaught += 1;
     }
-
-    // Speed Bucket index
-    const speedIdx =
-      respMs < 3000 ? 0 : respMs < 6000 ? 1 : respMs < 10000 ? 2 : respMs < 15000 ? 3 : 4;
+    if (ev.correct && input.clueLadderStep === 1) {
+      this.state.feats.clueLadderStep1Snipes += 1;
+    }
+    if (input.mindGambitTriggered) {
+      this.state.feats.mindGambitsActivated += 1;
+    }
+    if (ev.correct && input.finaleCategoryPicked) {
+      this.state.feats.finaleCategoryWins += 1;
+    }
 
     const domBucket = this.state.byDomain[domainId];
     domBucket.totalResponseMs += respMs;
@@ -1089,6 +1427,15 @@ export class CareerAnalyticsStore {
           (this.state.feats.difficultyRoundsCleared[diffTier] ?? 0) + 1;
       }
     }
+    if (input.mindGambitUsed) {
+      this.state.feats.mindGambitsActivated += 1;
+    }
+    if (input.secondWindTriggered) {
+      this.state.feats.secondWindSaves += 1;
+    }
+    if (input.finaleCategoryWon) {
+      this.state.feats.finaleCategoryWins += 1;
+    }
 
     this.state.sessions.push({
       ts,
@@ -1196,6 +1543,19 @@ export class CareerAnalyticsStore {
       case 'OFFLINE_PACK_CACHED':
         this.state.feats.offlinePacksCached += 1;
         break;
+      case 'CLUE_LADDER_STEP1_SNIPE':
+        this.state.feats.clueLadderStep1Snipes += 1;
+        break;
+      case 'MIND_GAMBIT_USED':
+        this.state.feats.mindGambitsActivated += 1;
+        break;
+      case 'SECOND_WIND_SAVED':
+        this.state.feats.secondWindSaves += 1;
+        this.state.feats.mindGambitsActivated += 1;
+        break;
+      case 'FINALE_CATEGORY_WIN':
+        this.state.feats.finaleCategoryWins += 1;
+        break;
     }
 
     if (detail?.depth) {
@@ -1208,4 +1568,674 @@ export class CareerAnalyticsStore {
     this.save();
     return this.getSnapshot();
   }
+
+  /**
+   * Reloads persisted analytics state from `localStorage` if externally seeded or updated.
+   */
+  public reloadFromStorage(): CareerAnalyticsState {
+    this.state = this.load();
+    return this.getSnapshot();
+  }
+}
+
+interface IndexedAnalyticsEvent {
+  ev: QuestionAnalyticsEvent;
+  eventKey: string;
+}
+
+function emptyArchetypeMap(): Record<AnalyticsArchetype, RightWrongCounter> {
+  return {
+    SIGHTLINE_LOCK: { right: 0, wrong: 0 },
+    CODEX_DUAL_RING: { right: 0, wrong: 0 },
+    CALIBRATOR_DIAL: { right: 0, wrong: 0 },
+    GAUNTLET_SHATTER: { right: 0, wrong: 0 },
+    HERO_ARTIFACT_SYNTHESIS: { right: 0, wrong: 0 },
+    GLOBE_PIN_DROP: { right: 0, wrong: 0 },
+  };
+}
+
+function emptyPeelTierMap(): Record<'1' | '2' | '3', RightWrongCounter> {
+  return {
+    '1': { right: 0, wrong: 0 },
+    '2': { right: 0, wrong: 0 },
+    '3': { right: 0, wrong: 0 },
+  };
+}
+
+function emptySpeedBuckets(): [
+  RightWrongCounter,
+  RightWrongCounter,
+  RightWrongCounter,
+  RightWrongCounter,
+  RightWrongCounter,
+] {
+  return [
+    { right: 0, wrong: 0 },
+    { right: 0, wrong: 0 },
+    { right: 0, wrong: 0 },
+    { right: 0, wrong: 0 },
+    { right: 0, wrong: 0 },
+  ];
+}
+
+function createEmptyDomainCounters(snap: CareerAnalyticsState): DomainAnalyticsCounter[] {
+  return Array.from({ length: 12 }, (_, idx) => ({
+    right: 0,
+    wrong: 0,
+    totalResponseMs: 0,
+    peakElo: snap.byDomain[idx]?.peakElo ?? 1200,
+    lastElo: snap.byDomain[idx]?.lastElo ?? 1200,
+  }));
+}
+
+function computeKpisFromEvents(
+  events: readonly QuestionAnalyticsEvent[],
+  fallbackElo: number,
+  fallbackPeakElo: number,
+): FilteredAnalyticsKpis {
+  let totalRight = 0;
+  let totalWrong = 0;
+  let totalResponseMs = 0;
+  let totalPointsEarned = 0;
+  let runningStreak = 0;
+  let bestStreak = 0;
+  let eloPeak = events.length > 0 ? 0 : fallbackPeakElo;
+  let eloLatest = fallbackElo;
+
+  let doubleDownCount = 0;
+  let doubleDownWins = 0;
+  let doubleDownMisses = 0;
+  let safeLockWins = 0;
+  let safeLockMisses = 0;
+  let max6xWins = 0;
+  let backfires = 0;
+  let currMax6xStreak = 0;
+  let bestConsecutiveMax6xWins = 0;
+
+  for (const ev of events) {
+    totalResponseMs += ev.responseTimeMs;
+    totalPointsEarned += ev.pointsDelta;
+    eloLatest = ev.eloAfter;
+    eloPeak = Math.max(eloPeak, ev.eloAfter);
+
+    const dd = isDoubleDownEvent(ev);
+    const isMax6x = ev.overclockCharge01 >= 0.88 && ev.peelTier === 1;
+    if (dd) doubleDownCount += 1;
+
+    if (ev.correct) {
+      totalRight += 1;
+      runningStreak += 1;
+      bestStreak = Math.max(bestStreak, runningStreak);
+      if (dd) {
+        doubleDownWins += 1;
+        if (isMax6x) {
+          max6xWins += 1;
+          currMax6xStreak += 1;
+          bestConsecutiveMax6xWins = Math.max(bestConsecutiveMax6xWins, currMax6xStreak);
+        }
+      } else {
+        safeLockWins += 1;
+      }
+    } else {
+      totalWrong += 1;
+      runningStreak = 0;
+      if (dd) {
+        doubleDownMisses += 1;
+        currMax6xStreak = 0;
+      } else {
+        safeLockMisses += 1;
+      }
+      if (ev.backfired) {
+        backfires += 1;
+        currMax6xStreak = 0;
+      }
+    }
+  }
+
+  const totalAnswered = totalRight + totalWrong;
+  const accuracyPct = totalAnswered > 0 ? Number(((totalRight / totalAnswered) * 100).toFixed(1)) : null;
+  const avgResponseMs = totalAnswered > 0 ? Math.round(totalResponseMs / totalAnswered) : 0;
+  const ddTot = doubleDownWins + doubleDownMisses;
+  const doubleDownWinPct = ddTot > 0 ? Math.round((doubleDownWins / ddTot) * 100) : null;
+
+  return {
+    totalRight,
+    totalWrong,
+    totalAnswered,
+    accuracyPct,
+    avgResponseMs,
+    totalPointsEarned,
+    currentStreak: runningStreak,
+    bestStreak,
+    eloLatest,
+    eloPeak: events.length > 0 ? eloPeak : fallbackPeakElo,
+    doubleDownCount,
+    doubleDownWins,
+    doubleDownMisses,
+    doubleDownWinPct,
+    safeLockWins,
+    safeLockMisses,
+    max6xWins,
+    backfires,
+    bestConsecutiveMax6xWins,
+  };
+}
+
+function buildBarSeriesFromIndexed(
+  items: readonly IndexedAnalyticsEvent[],
+  range: AnalyticsTimeRange,
+  selectedBucketKey: string | null,
+): AnalyticsBarBucketPoint[] {
+  if (items.length === 0) return [];
+
+  if (range === 'LAST_25') {
+    let runR = 0;
+    let runTot = 0;
+    return items.map(({ ev, eventKey }, idx) => {
+      runTot += 1;
+      if (ev.correct) runR += 1;
+      const dom = getSovereignDomainMeta(ev.domainId);
+      return {
+        bucketKey: eventKey,
+        label: `Q${idx + 1}`,
+        sublabel: `${dom.shortName} · ${(ev.responseTimeMs / 1000).toFixed(1)}s · ${ev.correct ? `+${ev.pointsDelta.toLocaleString('en-US')} PTS` : 'MISS'}`,
+        right: ev.correct ? 1 : 0,
+        wrong: ev.correct ? 0 : 1,
+        rollingAccPct: Math.round((runR / runTot) * 100),
+        isSelected: selectedBucketKey === eventKey,
+      };
+    });
+  }
+
+  const dayMap = new Map<
+    string,
+    { right: number; wrong: number; points: number }
+  >();
+  for (const { ev } of items) {
+    const dk = ev.dateKey;
+    const entry = dayMap.get(dk) ?? { right: 0, wrong: 0, points: 0 };
+    if (ev.correct) entry.right += 1;
+    else entry.wrong += 1;
+    entry.points += ev.pointsDelta;
+    dayMap.set(dk, entry);
+  }
+
+  const maxDays = range === 'DAYS_7' ? 7 : range === 'DAYS_30' ? 30 : 365;
+  const sortedKeys = Array.from(dayMap.keys()).sort().slice(-maxDays);
+  let cumR = 0;
+  let cumTot = 0;
+  return sortedKeys.map((dk) => {
+    const b = dayMap.get(dk)!;
+    cumR += b.right;
+    cumTot += b.right + b.wrong;
+    const dayTot = b.right + b.wrong;
+    const dayAcc = dayTot > 0 ? Math.round((b.right / dayTot) * 100) : 0;
+    return {
+      bucketKey: dk,
+      label: dk.slice(5),
+      sublabel: `${dk}: ${b.right} Right · ${b.wrong} Wrong (${dayAcc}%) · +${b.points.toLocaleString('en-US')} PTS`,
+      right: b.right,
+      wrong: b.wrong,
+      rollingAccPct: cumTot > 0 ? Math.round((cumR / cumTot) * 100) : dayAcc,
+      isSelected: selectedBucketKey === dk,
+    };
+  });
+}
+
+function buildEloSeriesFromEvents(events: readonly QuestionAnalyticsEvent[]): AnalyticsEloPoint[] {
+  if (events.length === 0) return [];
+  if (events.length === 1) {
+    const only = events[0];
+    return [
+      { label: 'Base', elo: 1200 },
+      { label: 'Q1', elo: only.eloAfter, ts: only.ts, correct: only.correct },
+    ];
+  }
+  const maxPts = 28;
+  const step = Math.max(1, Math.floor(events.length / maxPts));
+  const out: AnalyticsEloPoint[] = [];
+  for (let i = 0; i < events.length; i += step) {
+    const ev = events[i];
+    out.push({ label: `Q${i + 1}`, elo: ev.eloAfter, ts: ev.ts, correct: ev.correct });
+  }
+  const last = events[events.length - 1];
+  if (out[out.length - 1]?.ts !== last.ts || out[out.length - 1]?.elo !== last.eloAfter) {
+    out.push({ label: 'Now', elo: last.eloAfter, ts: last.ts, correct: last.correct });
+  }
+  return out;
+}
+
+/**
+ * Pure, deterministic multi-dimensional cross-filtering engine for `CareerAnalyticsDashboardView`.
+ * Recomputes Top KPIs, Graph 1 bars, Graph 2 12-Domain Radar + Subcategories, Graph 3 ELO Curve,
+ * Graph 4A Morphs & Hint Tiers, Graph 4B 5-Bucket Speed Histogram, and Section 5 Question Ledger
+ * from one unified `AnalyticsFilterState`!
+ */
+export function computeFilteredAnalyticsView(
+  snap: CareerAnalyticsState,
+  rawFilter: Partial<AnalyticsFilterState> = {},
+  nowMs: number = Date.now(),
+): FilteredAnalyticsView {
+  const filter: AnalyticsFilterState = {
+    range: rawFilter.range ?? 'ALL_TIME',
+    domainId:
+      rawFilter.domainId !== undefined &&
+      rawFilter.domainId !== null &&
+      Number.isFinite(Number(rawFilter.domainId))
+        ? (clamp(Math.floor(Number(rawFilter.domainId)), 0, 11) as DomainId)
+        : null,
+    subcatLabel: sanitizeSubcatText(rawFilter.subcatLabel ?? undefined),
+    archetype:
+      rawFilter.archetype && ALL_ANALYTICS_ARCHETYPES.includes(rawFilter.archetype)
+        ? rawFilter.archetype
+        : null,
+    peelTier:
+      rawFilter.peelTier === 1 || rawFilter.peelTier === 2 || rawFilter.peelTier === 3
+        ? rawFilter.peelTier
+        : null,
+    outcome:
+      rawFilter.outcome === 'RIGHT' ||
+      rawFilter.outcome === 'WRONG' ||
+      rawFilter.outcome === 'DOUBLE_DOWN'
+        ? rawFilter.outcome
+        : 'ALL',
+    speedBucket:
+      rawFilter.speedBucket !== undefined &&
+      rawFilter.speedBucket !== null &&
+      Number.isInteger(rawFilter.speedBucket) &&
+      rawFilter.speedBucket >= 0 &&
+      rawFilter.speedBucket <= 4
+        ? (rawFilter.speedBucket as AnalyticsSpeedBucketIndex)
+        : null,
+    bucketKey:
+      typeof rawFilter.bucketKey === 'string' && rawFilter.bucketKey.trim().length > 0
+        ? rawFilter.bucketKey.trim()
+        : null,
+  };
+
+  if (filter.domainId === null) {
+    filter.subcatLabel = null;
+  }
+
+  const activeFilterCount =
+    (filter.domainId !== null ? 1 : 0) +
+    (filter.subcatLabel !== null ? 1 : 0) +
+    (filter.archetype !== null ? 1 : 0) +
+    (filter.peelTier !== null ? 1 : 0) +
+    (filter.outcome !== 'ALL' ? 1 : 0) +
+    (filter.speedBucket !== null ? 1 : 0) +
+    (filter.bucketKey !== null ? 1 : 0);
+  const hasActiveDimensionFilter = activeFilterCount > 0;
+
+  // Normalize all events (synthesizing backward-compatible fallbacks for pre-existing events)
+  const normalizedAll: IndexedAnalyticsEvent[] = (snap.events ?? []).map((rawEv, idx) => {
+    const ev = normalizeAnalyticsEvent(rawEv);
+    return {
+      ev,
+      eventKey: `ev:${ev.ts}:${ev.qid}:${idx}`,
+    };
+  });
+
+  // Legacy aggregate fallback when store was backfilled without granular events
+  if (normalizedAll.length === 0 && snap.totalRight + snap.totalWrong > 0) {
+    const legacyTotal = snap.totalRight + snap.totalWrong;
+    if (!hasActiveDimensionFilter) {
+      const legacyBarSeries: AnalyticsBarBucketPoint[] = [];
+      const maxDays = filter.range === 'DAYS_7' ? 7 : filter.range === 'DAYS_30' ? 30 : 365;
+      const sortedKeys = Object.keys(snap.dailyBuckets).sort().slice(-maxDays);
+      if (sortedKeys.length > 0 && filter.range !== 'LAST_25') {
+        let cumR = 0;
+        let cumTot = 0;
+        for (const dk of sortedKeys) {
+          const b = snap.dailyBuckets[dk];
+          cumR += b.right;
+          cumTot += b.right + b.wrong;
+          const dayTot = b.right + b.wrong;
+          const dayAcc = dayTot > 0 ? Math.round((b.right / dayTot) * 100) : 0;
+          legacyBarSeries.push({
+            bucketKey: dk,
+            label: dk.slice(5),
+            sublabel: `${dk}: ${b.right} Right · ${b.wrong} Wrong (${dayAcc}%)`,
+            right: b.right,
+            wrong: b.wrong,
+            rollingAccPct: cumTot > 0 ? Math.round((cumR / cumTot) * 100) : dayAcc,
+            isSelected: false,
+          });
+        }
+      } else {
+        legacyBarSeries.push({
+          bucketKey: 'legacy_career',
+          label: 'Career',
+          sublabel: `${snap.totalRight}R / ${snap.totalWrong}W`,
+          right: snap.totalRight,
+          wrong: snap.totalWrong,
+          rollingAccPct: Math.round((snap.totalRight / legacyTotal) * 100),
+          isSelected: false,
+        });
+      }
+
+      const legacyElo: AnalyticsEloPoint[] = [{ label: 'Start', elo: 1200 }];
+      if (snap.sessions.length > 0) {
+        for (const s of snap.sessions.slice(-24)) {
+          legacyElo.push({ label: s.mode.slice(0, 4), elo: s.eloAfter, ts: s.ts });
+        }
+      } else {
+        legacyElo.push({ label: 'Now', elo: snap.globalEloLatest });
+      }
+
+      const ocTot = snap.overclock.overclockWins + snap.overclock.overclockMisses;
+      return {
+        filter,
+        hasActiveDimensionFilter: false,
+        activeFilterCount: 0,
+        rangeTotalCount: legacyTotal,
+        filteredEvents: [],
+        kpis: {
+          totalRight: snap.totalRight,
+          totalWrong: snap.totalWrong,
+          totalAnswered: legacyTotal,
+          accuracyPct: Number(((snap.totalRight / legacyTotal) * 100).toFixed(1)),
+          avgResponseMs: Math.round(snap.totalResponseMs / legacyTotal),
+          totalPointsEarned: snap.totalPointsEarned,
+          currentStreak: snap.currentStreak,
+          bestStreak: snap.bestStreak,
+          eloLatest: snap.globalEloLatest,
+          eloPeak: snap.globalEloPeak,
+          doubleDownCount: ocTot,
+          doubleDownWins: snap.overclock.overclockWins,
+          doubleDownMisses: snap.overclock.overclockMisses,
+          doubleDownWinPct: ocTot > 0 ? Math.round((snap.overclock.overclockWins / ocTot) * 100) : null,
+          safeLockWins: snap.overclock.safeLockWins,
+          safeLockMisses: snap.overclock.safeLockMisses,
+          max6xWins: snap.overclock.max6xWins,
+          backfires: snap.overclock.backfires,
+          bestConsecutiveMax6xWins: snap.overclock.bestConsecutiveMax6xWins,
+        },
+        barSeries: legacyBarSeries,
+        byDomain: snap.byDomain.map((d) => ({ ...d })),
+        subcategories: [],
+        eloSeries: legacyElo,
+        byArchetype: {
+          SIGHTLINE_LOCK: { ...snap.byArchetype.SIGHTLINE_LOCK },
+          CODEX_DUAL_RING: { ...snap.byArchetype.CODEX_DUAL_RING },
+          CALIBRATOR_DIAL: { ...snap.byArchetype.CALIBRATOR_DIAL },
+          GAUNTLET_SHATTER: { ...snap.byArchetype.GAUNTLET_SHATTER },
+          HERO_ARTIFACT_SYNTHESIS: { ...snap.byArchetype.HERO_ARTIFACT_SYNTHESIS },
+          GLOBE_PIN_DROP: { ...snap.byArchetype.GLOBE_PIN_DROP },
+        },
+        byPeelTier: {
+          '1': { ...snap.byPeelTier['1'] },
+          '2': { ...snap.byPeelTier['2'] },
+          '3': { ...snap.byPeelTier['3'] },
+        },
+        speedBuckets: snap.speedBuckets.map((b) => ({ ...b })) as CareerAnalyticsState['speedBuckets'],
+        outcomeCounts: {
+          all: legacyTotal,
+          right: snap.totalRight,
+          wrong: snap.totalWrong,
+          doubleDown: ocTot,
+        },
+        ledgerEvents: [],
+        usingLegacyAggregateFallback: true,
+      };
+    }
+
+    // Legacy aggregate profile with domain-only filter selected
+    if (
+      filter.domainId !== null &&
+      filter.subcatLabel === null &&
+      filter.archetype === null &&
+      filter.peelTier === null &&
+      filter.outcome === 'ALL' &&
+      filter.speedBucket === null &&
+      filter.bucketKey === null
+    ) {
+      const dom = snap.byDomain[filter.domainId];
+      const domTot = dom.right + dom.wrong;
+      const domMeta = getSovereignDomainMeta(filter.domainId);
+      return {
+        filter,
+        hasActiveDimensionFilter: true,
+        activeFilterCount: 1,
+        rangeTotalCount: legacyTotal,
+        filteredEvents: [],
+        kpis: {
+          totalRight: dom.right,
+          totalWrong: dom.wrong,
+          totalAnswered: domTot,
+          accuracyPct: domTot > 0 ? Number(((dom.right / domTot) * 100).toFixed(1)) : null,
+          avgResponseMs: domTot > 0 ? Math.round(dom.totalResponseMs / domTot) : 0,
+          totalPointsEarned: 0,
+          currentStreak: 0,
+          bestStreak: 0,
+          eloLatest: dom.lastElo,
+          eloPeak: dom.peakElo,
+          doubleDownCount: 0,
+          doubleDownWins: 0,
+          doubleDownMisses: 0,
+          doubleDownWinPct: null,
+          safeLockWins: 0,
+          safeLockMisses: 0,
+          max6xWins: 0,
+          backfires: 0,
+          bestConsecutiveMax6xWins: 0,
+        },
+        barSeries:
+          domTot > 0
+            ? [
+                {
+                  bucketKey: `dom_${filter.domainId}`,
+                  label: domMeta.shortName,
+                  sublabel: `${domMeta.name}: ${dom.right}R · ${dom.wrong}W`,
+                  right: dom.right,
+                  wrong: dom.wrong,
+                  rollingAccPct: Math.round((dom.right / domTot) * 100),
+                  isSelected: false,
+                },
+              ]
+            : [],
+        byDomain: snap.byDomain.map((d) => ({ ...d })),
+        subcategories: [],
+        eloSeries: [
+          { label: 'Base', elo: 1200 },
+          { label: domMeta.shortName, elo: dom.lastElo },
+        ],
+        byArchetype: emptyArchetypeMap(),
+        byPeelTier: emptyPeelTierMap(),
+        speedBuckets: emptySpeedBuckets(),
+        outcomeCounts: {
+          all: domTot,
+          right: dom.right,
+          wrong: dom.wrong,
+          doubleDown: 0,
+        },
+        ledgerEvents: [],
+        usingLegacyAggregateFallback: true,
+      };
+    }
+  }
+
+  // Apply Time Range first
+  let rangeItems: IndexedAnalyticsEvent[];
+  if (filter.range === 'LAST_25') {
+    rangeItems = normalizedAll.slice(-25);
+  } else if (filter.range === 'DAYS_7') {
+    const cutoffKey = toUtcDateKey(nowMs - 6 * 86_400_000);
+    rangeItems = normalizedAll.filter((it) => it.ev.dateKey >= cutoffKey);
+  } else if (filter.range === 'DAYS_30') {
+    const cutoffKey = toUtcDateKey(nowMs - 29 * 86_400_000);
+    rangeItems = normalizedAll.filter((it) => it.ev.dateKey >= cutoffKey);
+  } else {
+    rangeItems = normalizedAll;
+  }
+
+  const subcatNorm = filter.subcatLabel ? filter.subcatLabel.toLowerCase() : null;
+
+  const matches = (
+    item: IndexedAnalyticsEvent,
+    skip?: 'domain' | 'subcat' | 'archetype' | 'peelTier' | 'outcome' | 'speedBucket' | 'bucketKey',
+  ): boolean => {
+    const { ev, eventKey } = item;
+    if (skip !== 'domain' && filter.domainId !== null && ev.domainId !== filter.domainId) {
+      return false;
+    }
+    if (
+      skip !== 'domain' &&
+      skip !== 'subcat' &&
+      subcatNorm !== null &&
+      (ev.subcatLabel ?? '').toLowerCase() !== subcatNorm
+    ) {
+      return false;
+    }
+    if (skip !== 'archetype' && filter.archetype !== null && ev.archetype !== filter.archetype) {
+      return false;
+    }
+    if (skip !== 'peelTier' && filter.peelTier !== null && ev.peelTier !== filter.peelTier) {
+      return false;
+    }
+    if (skip !== 'outcome' && filter.outcome !== 'ALL') {
+      if (filter.outcome === 'RIGHT' && !ev.correct) return false;
+      if (filter.outcome === 'WRONG' && ev.correct) return false;
+      if (filter.outcome === 'DOUBLE_DOWN' && !isDoubleDownEvent(ev)) return false;
+    }
+    if (skip !== 'speedBucket' && filter.speedBucket !== null) {
+      const sb = ev.speedBucketIdx ?? computeSpeedBucketIdx(ev.responseTimeMs);
+      if (sb !== filter.speedBucket) return false;
+    }
+    if (skip !== 'bucketKey' && filter.bucketKey !== null) {
+      if (filter.range === 'LAST_25') {
+        if (eventKey !== filter.bucketKey) return false;
+      } else {
+        if (ev.dateKey !== filter.bucketKey) return false;
+      }
+    }
+    return true;
+  };
+
+  const filteredItems = rangeItems.filter((it) => matches(it));
+  const filteredEvents = filteredItems.map((it) => it.ev);
+
+  const fallbackElo =
+    filter.domainId !== null
+      ? snap.byDomain[filter.domainId]?.lastElo ?? snap.globalEloLatest
+      : snap.globalEloLatest;
+  const fallbackPeak =
+    filter.domainId !== null
+      ? snap.byDomain[filter.domainId]?.peakElo ?? snap.globalEloPeak
+      : snap.globalEloPeak;
+  const kpis = computeKpisFromEvents(filteredEvents, fallbackElo, fallbackPeak);
+
+  // Graph 1: barSeries (matches all filters except bucketKey)
+  const barItems = filter.bucketKey === null ? filteredItems : rangeItems.filter((it) => matches(it, 'bucketKey'));
+  const barSeries = buildBarSeriesFromIndexed(barItems, filter.range, filter.bucketKey);
+
+  // Graph 2: 12-Domain counters (matches all filters except domain/subcat)
+  const byDomain = createEmptyDomainCounters(snap);
+  const domItems = filter.domainId === null ? filteredItems : rangeItems.filter((it) => matches(it, 'domain'));
+  for (const { ev } of domItems) {
+    const dc = byDomain[ev.domainId];
+    if (ev.correct) dc.right += 1;
+    else dc.wrong += 1;
+    dc.totalResponseMs += ev.responseTimeMs;
+  }
+
+  // Graph 2 Subcategory Breakdown (when a domain is selected, matches all filters except subcat)
+  const subcategories: SubcategoryBreakdownRow[] = [];
+  if (filter.domainId !== null) {
+    const subItems =
+      filter.subcatLabel === null ? filteredItems : rangeItems.filter((it) => matches(it, 'subcat'));
+    const subMap = new Map<
+      string,
+      { label: string; right: number; wrong: number; totalMs: number }
+    >();
+    for (const { ev } of subItems) {
+      const lbl = ev.subcatLabel ?? synthesizeSubcatFallback(ev.domainId, ev.archetype, ev.promptSnippet);
+      const key = lbl.toLowerCase();
+      const rec = subMap.get(key) ?? { label: lbl, right: 0, wrong: 0, totalMs: 0 };
+      if (ev.correct) rec.right += 1;
+      else rec.wrong += 1;
+      rec.totalMs += ev.responseTimeMs;
+      subMap.set(key, rec);
+    }
+    for (const rec of subMap.values()) {
+      const total = rec.right + rec.wrong;
+      subcategories.push({
+        subcatLabel: rec.label,
+        right: rec.right,
+        wrong: rec.wrong,
+        total,
+        accuracyPct: total > 0 ? Math.round((rec.right / total) * 100) : 0,
+        avgResponseMs: total > 0 ? Math.round(rec.totalMs / total) : 0,
+      });
+    }
+    subcategories.sort((a, b) => b.total - a.total || a.subcatLabel.localeCompare(b.subcatLabel));
+  }
+
+  // Graph 3: ELO Trajectory strictly from filteredEvents
+  const eloSeries = buildEloSeriesFromEvents(filteredEvents);
+
+  // Graph 4A: 6-Morph counters (matches all filters except archetype)
+  const byArchetype = emptyArchetypeMap();
+  const archItems =
+    filter.archetype === null ? filteredItems : rangeItems.filter((it) => matches(it, 'archetype'));
+  for (const { ev } of archItems) {
+    if (ev.correct) byArchetype[ev.archetype].right += 1;
+    else byArchetype[ev.archetype].wrong += 1;
+  }
+
+  // Graph 4A: 3 Hint-Tier counters (matches all filters except peelTier)
+  const byPeelTier = emptyPeelTierMap();
+  const peelItems =
+    filter.peelTier === null ? filteredItems : rangeItems.filter((it) => matches(it, 'peelTier'));
+  for (const { ev } of peelItems) {
+    const tk = String(ev.peelTier) as '1' | '2' | '3';
+    if (ev.correct) byPeelTier[tk].right += 1;
+    else byPeelTier[tk].wrong += 1;
+  }
+
+  // Graph 4B: 5-Bucket Speed Histogram (matches all filters except speedBucket)
+  const speedBuckets = emptySpeedBuckets();
+  const speedItems =
+    filter.speedBucket === null ? filteredItems : rangeItems.filter((it) => matches(it, 'speedBucket'));
+  for (const { ev } of speedItems) {
+    const sb = ev.speedBucketIdx ?? computeSpeedBucketIdx(ev.responseTimeMs);
+    if (ev.correct) speedBuckets[sb].right += 1;
+    else speedBuckets[sb].wrong += 1;
+  }
+
+  // Outcome counts (matches all filters except outcome, so KPI outcome pills show exact slice counts)
+  const outcomeItems =
+    filter.outcome === 'ALL' ? filteredItems : rangeItems.filter((it) => matches(it, 'outcome'));
+  let outRight = 0;
+  let outWrong = 0;
+  let outDd = 0;
+  for (const { ev } of outcomeItems) {
+    if (ev.correct) outRight += 1;
+    else outWrong += 1;
+    if (isDoubleDownEvent(ev)) outDd += 1;
+  }
+
+  return {
+    filter,
+    hasActiveDimensionFilter,
+    activeFilterCount,
+    rangeTotalCount: rangeItems.length,
+    filteredEvents,
+    kpis,
+    barSeries,
+    byDomain,
+    subcategories,
+    eloSeries,
+    byArchetype,
+    byPeelTier,
+    speedBuckets,
+    outcomeCounts: {
+      all: outcomeItems.length,
+      right: outRight,
+      wrong: outWrong,
+      doubleDown: outDd,
+    },
+    ledgerEvents: [...filteredEvents].reverse(),
+    usingLegacyAggregateFallback: false,
+  };
 }

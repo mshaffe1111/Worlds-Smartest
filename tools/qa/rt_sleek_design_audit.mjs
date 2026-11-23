@@ -930,7 +930,15 @@ async function runAudit() {
           }
         }
 
-        // 12. If in Geneva Vetting Gameplay Live, snap Gameplay Live + Peel + Reveal right here!
+        // 12. If on v3.0 Round-Ready gate, audit it cleanly and start questions!
+        const hasVettingReady = await evalJs(`!!document.querySelector('#ws-btn-start-round-questions')`);
+        if (hasVettingReady) {
+          await snapAndAudit(vp, step++, 'round_ready');
+          await clickFirst(['#ws-btn-start-round-questions']);
+          await sleep(750);
+        }
+
+        // If in Geneva Vetting Gameplay Live, snap Gameplay Live + Peel + Reveal right here!
         const inVettingGameplay = await evalJs(`document.querySelectorAll('[data-facet-idx]').length >= 2`);
         if (inVettingGameplay) {
           await snapAndAudit(vp, step++, 'gameplay_live');
@@ -996,6 +1004,13 @@ async function runAudit() {
         if (launched) {
           await sleep(800);
           await dismissCinema(4);
+          // v3.0 Pre-Round Readiness gate -> audit + start questions
+          const hasBriefingReady = await evalJs(`!!document.querySelector('#ws-btn-start-round-questions')`);
+          if (hasBriefingReady) {
+            await snapAndAudit(vp, step++, 'briefing_round_ready');
+            await clickFirst(['#ws-btn-start-round-questions']);
+            await sleep(750);
+          }
           const inBriefingGameplay = await evalJs(`document.querySelectorAll('[data-facet-idx]').length >= 2`);
           if (inBriefingGameplay) {
             await snapAndAudit(vp, step++, 'briefing_gameplay_live');

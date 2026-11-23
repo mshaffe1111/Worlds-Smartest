@@ -133,7 +133,7 @@ const GENEVA_SUMMONS_SLIDES: readonly PrologueCutsceneSlide[] = [
     portraitUrl: getPortraitUrl('vance', 'neutral'),
     voiceUrl: 'assets/voice/cutscene_act0_1.mp3',
     subtitle:
-      'Midnight over Lake Geneva. Four hundred thousand minds entered the cipher—only one unlocked the door.',
+      'Three weeks ago, legendary puzzle-maker Dr. Mara Sato passed away—leaving one final riddle tucked inside Sunday papers and public archives. Four hundred thousand people tried it, and your 2:14 AM answer earned a seat on Lake Geneva.',
   },
   {
     id: 'cutscene_act0_2',
@@ -143,48 +143,43 @@ const GENEVA_SUMMONS_SLIDES: readonly PrologueCutsceneSlide[] = [
     portraitUrl: getPortraitUrl('vance', 'intense'),
     voiceUrl: 'assets/voice/cutscene_act0_2.mp3',
     subtitle:
-      'Eight cities. Forty rounds. One hundred million dollars—and the lone human veto key over The Ledger.',
+      "I'm Julian Vance, Mara's longtime co-creator. Rather than hand her hundred-million-dollar Meridian Archive to a committee, she built an eight-city tournament—betting everything on one agile, curious mind.",
   },
   {
     id: 'cutscene_act0_3',
     speakerId: 'teo',
     speakerName: 'Mateo "Teo" Rojas',
-    expression: 'intense',
-    portraitUrl: getPortraitUrl('teo', 'intense'),
+    expression: 'neutral',
+    portraitUrl: getPortraitUrl('teo', 'neutral'),
     voiceUrl: 'assets/voice/cutscene_act0_3.mp3',
     subtitle:
-      "Don't trust the cameras, rookie. The last person who won this chair vanished in 2019.",
+      "Relax, the Geneva warmup is the fun part. I'm Teo—audio engineer and official espresso smuggler. Mara built these first four questions just to see how you think—though... weird. Her private terminal just woke up the second you walked in.",
   },
 ];
 
 /**
- * 4 Handcrafted Gold-Seed Geneva Vetting Questions teaching 1 tactile verb per question!
+ * 4 Joyful, Confidence-Building Middle-School Warmup Questions teaching 1 clear mechanic per question!
  */
 const GENEVA_VETTING_QUESTIONS: readonly PrologueQuestionCard[] = [
   {
     questionIndex: 1,
     qid: 1,
-    domainId: 2, // Geography (Geneva / Alpine host flavor)
+    domainId: 2, // Geography
     archetype: 'SIGHTLINE_LOCK',
     prompt:
-      'Which humanitarian organization was founded in Geneva in 1863 after Henry Dunant witnessed the Battle of Solferino?',
-    answerCorrect: 'International Red Cross',
-    facets: [
-      'League of Nations',
-      'International Red Cross',
-      'Doctors Without Borders',
-      'World Health Organization',
-    ],
+      "Built for the 1889 World's Fair, which iron landmark towers over Paris along the River Seine?",
+    answerCorrect: 'Eiffel Tower',
+    facets: ['Big Ben', 'Eiffel Tower', 'Colosseum', 'Brandenburg Gate'],
     correctFacetIndex: 1,
     clues: [
-      'Its emblem inverts the white-and-red colors of the Swiss national flag.',
-      'Inspired by Dunant’s book "A Memory of Solferino" to protect wounded soldiers.',
+      "Named after French engineer Gustave Eiffel, it was the world's tallest structure for 41 years.",
+      'Its famous iron lattice rises above the Champ de Mars in the heart of Paris.',
     ],
     whyExplanation:
-      'Henry Dunant co-founded the International Committee of the Red Cross in Geneva in 1863, inspiring the first Geneva Convention.',
-    timeTotalSec: 25,
+      "Gustave Eiffel's wrought-iron tower opened for the 1889 Paris World's Fair and was originally meant to stand for just twenty years.",
+    timeTotalSec: 35,
     coachPrompt:
-      'SPIN & SAFE-LOCK — Drag the 3D Prism (or tap A–D) to align your answer in the Gold Sightline Beam, then TAP LOCK (3.0x)!',
+      'STEP 1: PICK & LOCK — Tap your answer below and click LOCK ANSWER (+300 pts)!',
     taughtVerb: 'SPIN',
     stageLightingMode: 'INTERVIEW',
     peelEnabled: false,
@@ -193,53 +188,48 @@ const GENEVA_VETTING_QUESTIONS: readonly PrologueQuestionCard[] = [
   {
     questionIndex: 2,
     qid: 2,
-    domainId: 0, // History / Diplomacy
+    domainId: 1, // Science & Nature
     archetype: 'SIGHTLINE_LOCK',
     prompt:
-      'Which ancient trilingual stele—carved in 196 BCE and rediscovered in 1799—unlocked the decipherment of Egyptian hieroglyphs?',
-    answerCorrect: 'The Rosetta Stone',
-    facets: [
-      'Code of Hammurabi',
-      'Behistun Inscription',
-      'The Rosetta Stone',
-      'Cyrus Cylinder',
-    ],
+      'Famous for its dazzling icy rings, which giant planet is the sixth from the Sun?',
+    answerCorrect: 'Saturn',
+    facets: ['Mars', 'Venus', 'Saturn', 'Mercury'],
     correctFacetIndex: 2,
     clues: [
-      'Carries the same royal decree of Ptolemy V in Hieroglyphic, Demotic, and Ancient Greek.',
-      'Cracked by Jean-François Champollion in 1822 using royal cartouche names.',
+      'Its sparkling rings are made of billions of chunks of ice and rock—and it is less dense than water.',
+      'Named for the Roman god of agriculture, and orbited by the giant moon Titan.',
     ],
     whyExplanation:
-      'Because Ancient Greek was known to scholars, Jean-François Champollion used the Rosetta Stone in 1822 to crack Egyptian hieroglyphs.',
-    timeTotalSec: 24,
+      'Saturn is the sixth planet from the Sun; its sprawling icy rings span roughly 282,000 kilometers yet are often thinner than a city block.',
+    timeTotalSec: 35,
     coachPrompt:
-      'DEPTH PEEL — Pull down the top Brass Crown (or tap PEEL CROWN) to open obsidian shutters for a 2.0x Holographic Clue!',
+      'STEP 2: USE A HINT — Tap HINT (2x) if you ever want an extra clue, or 50/50 to cross out two wrong choices!',
     taughtVerb: 'PEEL',
     stageLightingMode: 'INTERVIEW',
     peelEnabled: true,
     overclockHighlighted: false,
     leakedHintText:
-      'MIRROR GLIMPSE: "...Ptolemaic granodiorite stele cracked by Champollion via Greek cartouches..."',
+      'MARA\'S MARGIN NOTE (02:14 AM): "...sixth planet from the Sun, ringed in ice—and ask Julian why 2019\'s winner never got his trophy..."',
   },
   {
     questionIndex: 3,
     qid: 3,
-    domainId: 1, // Science
+    domainId: 3, // Arts & Culture
     archetype: 'SIGHTLINE_LOCK',
     prompt:
-      'Which chemical element—liquid at room temperature and historically named hydrargyrum ("liquid silver")—has atomic symbol Hg?',
-    answerCorrect: 'Mercury',
-    facets: ['Gallium', 'Mercury', 'Bromine', 'Cesium'],
+      'Painted by Leonardo da Vinci and displayed in the Louvre, which portrait is famous for her mysterious smile?',
+    answerCorrect: 'Mona Lisa',
+    facets: ['Starry Night', 'Mona Lisa', 'Girl with a Pearl Earring', 'The Scream'],
     correctFacetIndex: 1,
     clues: [
-      'Used in classic Torricelli barometers to measure atmospheric pressure.',
-      'Named after the fleet-footed Roman messenger god; atomic number 80.',
+      'Leonardo da Vinci painted it on a poplar wood panel in Florence during the early 1500s.',
+      'In Italian it is known as La Gioconda—drawn after Lisa Gherardini.',
     ],
     whyExplanation:
-      'Mercury (Hg, atomic number 80) and bromine are the only two elements on the periodic table that are liquid at standard room temperature.',
-    timeTotalSec: 22,
+      'Leonardo da Vinci painted the Mona Lisa in the early 1500s using soft smoky sfumato shading that makes her smile seem to shift as you move.',
+    timeTotalSec: 35,
     coachPrompt:
-      'HOLD TO OVERCLOCK — PRESS & HOLD the Gold Lock Bar (0.3s–1.0s) to wager conviction up to 6.0x! Slide sideways to cancel.',
+      "STEP 3: 2x DOUBLE DOWN — When you're sure you know it, tap 2x DOUBLE DOWN to double your points to +600!",
     taughtVerb: 'OVERCLOCK',
     stageLightingMode: 'TWIST_FRACTURE',
     peelEnabled: true,
@@ -250,11 +240,10 @@ const GENEVA_VETTING_QUESTIONS: readonly PrologueQuestionCard[] = [
     qid: 4,
     domainId: 6, // Tech & Space
     archetype: 'CALIBRATOR_DIAL',
-    prompt:
-      'In what year did Apollo 11 commander Neil Armstrong first step onto the Moon’s Sea of Tranquility?',
+    prompt: 'In what year did Neil Armstrong and Apollo 11 first walk on the Moon?',
     answerCorrect: '1969 CE',
     clues: [
-      'Occurred near the end of the 1960s Space Race, fulfilling JFK’s decade-end pledge.',
+      'Occurred at the close of the 1960s Space Race, fulfilling JFK’s decade-end pledge.',
       'July 20, 1969 — Eagle landed at Tranquility Base.',
     ],
     calibratorSpec: {
@@ -265,10 +254,10 @@ const GENEVA_VETTING_QUESTIONS: readonly PrologueQuestionCard[] = [
       unit: 'CE',
     },
     whyExplanation:
-      'Apollo 11 landed on the Moon on July 20, 1969, watched live by an estimated 650 million television viewers worldwide.',
-    timeTotalSec: 24,
+      'Apollo 11 landed on the Moon on July 20, 1969, watched live on television by an estimated 650 million people around the globe.',
+    timeTotalSec: 35,
     coachPrompt:
-      'MERIDIAN ASTROLABE — Aim the Estimate Needle to the year and pick your Tolerance Cone: Wide Safe (1.5x) vs Pinhole Bullseye (3.5x)!',
+      'STEP 4: CLOSEST YEAR — Drag the slider (or tap -1 / +1) to 1969. Even a close guess scores points!',
     taughtVerb: 'CALIBRATE',
     stageLightingMode: 'BROADCAST',
     peelEnabled: false,
@@ -279,24 +268,25 @@ const GENEVA_VETTING_QUESTIONS: readonly PrologueQuestionCard[] = [
 const MIRROR_LEAK_OPTIONS: readonly PrologueChoiceOption<MirrorLeakOptionId>[] = [
   {
     id: 'EXPLOIT_LEAK',
-    label: 'Exploit the Leaked Glimpse',
+    label: "Read Mara's Margin Note",
     subtext:
-      "Read Teo's reflected tablet clue across the polished table while keeping your 3.0x multiplier.",
-    impactBadge: '+Ambition · -18 Integrity · Reveals Hint!',
+      'Study the timestamped hint Dr. Sato left on her studio monitor—keeping your full 300-point bonus intact.',
+    impactBadge: '+Curiosity · Reveals Mara’s Clue · Bold Move',
     tone: 'crimson',
   },
   {
     id: 'FLAG_BREACH',
-    label: 'Flag the Security Breach to Vance',
-    subtext: 'Signal Julian Vance immediately that the observation mirror is leaking telemetry.',
-    impactBadge: '+18 Council Favor · +15 Integrity',
+    label: 'Point It Out to Julian',
+    subtext:
+      "Call Julian over immediately so Chancellor Lindqvist's board can't claim you took an unfair shortcut.",
+    impactBadge: '+18 Board Favor · +15 Integrity',
     tone: 'gold',
   },
   {
     id: 'SOLVE_CLEAN',
-    label: 'Ignore It & Solve Cleanly',
-    subtext: 'Avert your eyes from the mirror and crack the Veritas Prism on your own merit.',
-    impactBadge: '+20 Integrity · Vance & Teo Respect',
+    label: 'Leave It Untouched & Solve Clean',
+    subtext: "Close the monitor yourself and solve Mara's puzzle purely on your own wits.",
+    impactBadge: '+20 Integrity · Julian & Teo Respect',
     tone: 'cyan',
   },
 ];
@@ -304,22 +294,25 @@ const MIRROR_LEAK_OPTIONS: readonly PrologueChoiceOption<MirrorLeakOptionId>[] =
 const MANIFESTO_OPTIONS: readonly PrologueChoiceOption<ManifestoOptionId>[] = [
   {
     id: 'MANIFESTO_COUNCIL',
-    label: 'The World Council',
-    subtext: '"Civilization endures through treaty law, accountability, and shared order."',
-    impactBadge: '+15 Council Favor · +5 Integrity · Sovereign Nod',
+    label: 'Trusted Institutions',
+    subtext:
+      '"Shared archives endure when guarded by steady stewardship, treaty law, and accountability."',
+    impactBadge: '+15 Board Favor · +5 Integrity · Sovereign Nod',
     tone: 'gold',
   },
   {
     id: 'MANIFESTO_PUBLIC',
-    label: 'The Global Public',
-    subtext: '"Two billion citizens deserve unredacted truth—never locked behind closed doors."',
+    label: 'Everyone — Open to the World',
+    subtext:
+      '"Mara hid her qualifier in Sunday newspapers for a reason. Truth belongs in open daylight."',
     impactBadge: '+15 Public Trust · +10 Integrity · Agora Nod',
     tone: 'cyan',
   },
   {
     id: 'MANIFESTO_SELF',
-    label: 'Only Myself',
-    subtext: '"Committees compromise; crowds panic. One independent mind holds the line."',
+    label: 'An Independent Mind',
+    subtext:
+      '"Committees hedge and crowds panic. One sharp, unbought steward keeps the record honest."',
     impactBadge: '+Ambition · -10 Integrity · Horizon Nod',
     tone: 'crimson',
   },
@@ -328,18 +321,18 @@ const MANIFESTO_OPTIONS: readonly PrologueChoiceOption<ManifestoOptionId>[] = [
 const FLIGHT_FORK_OPTIONS: readonly PrologueChoiceOption<FlightForkDestination>[] = [
   {
     id: 'GB',
-    label: 'London First · The Sovereign Rotunda',
+    label: 'Fly to London · The Sovereign Rotunda',
     subtext:
-      'Debut against prodigy Nadia Al-Mansoor above sealed "TRIAL 00 — 2019" glass-floor vaults.',
-    impactBadge: 'SOVEREIGN TRACK · Classical History, Arts & Law',
+      'Meet sharp acoustic engineer Nadia Al-Mansoor—and a sealed 2019 archive drawer beneath the glass floor.',
+    impactBadge: 'LONDON · History, Arts & Mystery · Easy+',
     tone: 'gold',
   },
   {
     id: 'JP',
-    label: 'Tokyo First · Horizon Sky Pavilion',
+    label: 'Fly to Tokyo · Horizon Sky Pavilion',
     subtext:
-      '70 floors above neon rain against wildcard poker shark Soren "Echo" Kael and covert telemetry.',
-    impactBadge: 'HORIZON TRACK · High-Velocity Tech, Science & Logic',
+      '70 floors above Shibuya against witty probability trader Soren "Echo" Kael—and a curious signal anomaly.',
+    impactBadge: 'TOKYO · Science, Logic & Tech · Medium',
     tone: 'cyan',
   },
 ];
@@ -605,7 +598,7 @@ export class PrologueDirector {
       qCard.domainId,
       correct,
       peelTierUsed,
-      -0.9,
+      -1.45,
       qCard.qid
     );
     if (!this.recordedForgeQids.has(qCard.qid)) {
@@ -614,7 +607,7 @@ export class PrologueDirector {
         qid: qCard.qid,
         l0Domain: qCard.domainId,
         archetype: qCard.archetype,
-        irtB: -0.9,
+        irtB: -1.45,
         irtA: 1.2,
         correct,
         peelTier: peelTierUsed,
@@ -735,12 +728,12 @@ export class PrologueDirector {
           cutsceneSlides: [...GENEVA_SUMMONS_SLIDES],
           speakerId: 'vance',
           speakerName: 'Julian Vance',
-          speakerRole: 'Chief Adjudicator · The Meridian',
+          speakerRole: 'Host & Co-Creator · The Meridian',
           expression: 'neutral',
           portraitUrl: getPortraitUrl('vance', 'neutral'),
           voiceUrl: 'assets/voice/cutscene_act0_1.mp3',
           dialogueText: GENEVA_SUMMONS_SLIDES[0].subtitle,
-          tellHint: 'Encrypted black-glass diplomatic summons — Geneva, 23:42 CET.',
+          tellHint: 'Lake Geneva · Dr. Mara Sato’s private study, three weeks after her will was read.',
           requiresNameAndOriginInput: false,
           currentChallengerName: hasName ? name : '',
           hasRegisteredName: hasName,
@@ -759,13 +752,14 @@ export class PrologueDirector {
           stageLightingMode: 'INTERVIEW',
           speakerId: 'vance',
           speakerName: 'Julian Vance',
-          speakerRole: 'Chief Adjudicator · The Meridian',
+          speakerRole: 'Host & Co-Creator · The Meridian',
           expression: 'neutral',
           portraitUrl: getPortraitUrl('vance', 'neutral'),
           voiceUrl: 'assets/voice/vance_intro_1.mp3',
-          dialogueText: "You solved what 400,000 couldn't. Take a seat.",
+          dialogueText:
+            "Welcome to Dr. Mara Sato's study. You solved her Sunday cipher from home—so grab a chair, take a breath, and let's start easy.",
           tellHint:
-            'Vance adjusts his left brass cufflink—a dossier marked "99.4% ANOMALY MATCH" rests beneath his hand.',
+            'Julian smiles over two steaming espressos—though his thumb briefly brushes his left brass cufflink beside a 2019 notebook.',
           requiresNameAndOriginInput: false,
           currentChallengerName: hasName ? name : '',
           hasRegisteredName: hasName,
@@ -784,14 +778,14 @@ export class PrologueDirector {
           stageLightingMode: 'INTERVIEW',
           speakerId: 'vance',
           speakerName: 'Julian Vance',
-          speakerRole: 'Chief Adjudicator · The Meridian',
+          speakerRole: 'Host & Co-Creator · The Meridian',
           expression: 'intense',
           portraitUrl: getPortraitUrl('vance', 'intense'),
           voiceUrl: 'assets/voice/vance_intro_3.mp3',
           dialogueText:
-            'Before London, before Tokyo, before two billion viewers... tell me who you really are.',
+            'Before London, before Tokyo, before the board tries to box you into a biography—tell me your name, and how you like to think.',
           tellHint:
-            'Faint silhouettes shift behind the one-way obsidian mirror as your Meridian Diplomatic Passport awaits engraving.',
+            'Dr. Sato’s brass engraving press rests beside a fresh Meridian Passport, waiting for your signature.',
           requiresNameAndOriginInput: true,
           currentChallengerName: hasName ? name : '',
           hasRegisteredName: hasName,
@@ -810,14 +804,14 @@ export class PrologueDirector {
           stageLightingMode: 'INTERVIEW',
           speakerId: 'vance',
           speakerName: 'Julian Vance',
-          speakerRole: 'Chief Adjudicator · The Meridian',
+          speakerRole: 'Host & Co-Creator · The Meridian',
           expression: 'neutral',
           portraitUrl: getPortraitUrl('vance', 'neutral'),
           voiceUrl: 'assets/voice/vance_intro_2.mp3',
           dialogueText: this.passport.interpolateText(
             ORIGIN_DEFINITIONS[this.selectedOrigin].vanceReaction
           ),
-          tellHint: 'The Veritas Prism rises from the brushed-steel table — Question 1 of 4.',
+          tellHint: 'Warmup 1 of 4 — Tap your answer below and click LOCK ANSWER.',
           requiresNameAndOriginInput: false,
           currentChallengerName: name,
           hasRegisteredName: hasName,
@@ -835,14 +829,15 @@ export class PrologueDirector {
           venueGlbUrl: 'assets/aaa_models/vetting_chamber_room.glb',
           stageLightingMode: 'INTERVIEW',
           speakerId: 'teo',
-          speakerName: 'One-Way Obsidian Mirror // Teo’s Tablet',
-          speakerRole: 'Observation Deck Reflection',
-          expression: 'intense',
-          portraitUrl: getPortraitUrl('teo', 'intense'),
+          speakerName: 'Mateo "Teo" Rojas',
+          speakerRole: 'Lead Audio Engineer · Mara Sato Studio',
+          expression: 'neutral',
+          portraitUrl: getPortraitUrl('teo', 'neutral'),
           voiceUrl: 'assets/voice/teo_whisper.mp3',
           dialogueText:
-            'A shadow shifts behind the one-way glass—rogue producer Teo’s glowing tablet reflects a partial Question 2 clue across your steel table!',
-          tellHint: 'Vance has not looked up from his pocket astrolabe yet. Nobody knows you saw it.',
+            "Whoa—hang on. Mara's desk monitor just flashed an old margin note from the night she died, right next to Question Two. Looks like she left a clue... and a timestamp.",
+          tellHint:
+            'Julian is pouring coffee across the study. On the glass monitor beside you, Mara’s handwritten note glows faintly.',
           requiresNameAndOriginInput: false,
           currentChallengerName: name,
           hasRegisteredName: hasName,
@@ -862,7 +857,7 @@ export class PrologueDirector {
           stageLightingMode: 'INTERVIEW',
           speakerId: 'vance',
           speakerName: 'Julian Vance',
-          speakerRole: 'Chief Adjudicator · The Meridian',
+          speakerRole: 'Host & Co-Creator · The Meridian',
           expression: this.mirrorChoice === 'FLAGGED' ? 'intense' : 'neutral',
           portraitUrl: getPortraitUrl(
             'vance',
@@ -874,14 +869,14 @@ export class PrologueDirector {
               : 'assets/voice/vance_peel.mp3',
           dialogueText:
             this.mirrorChoice === 'FLAGGED'
-              ? `Sharp eyes, ${name}. Security will seal the glass. Now—let's test surgical deduction.`
+              ? `Well spotted, ${name}. Mara hated shortcuts almost as much as she loved leaving breadcrumbs in the margins. Let's keep going.`
               : this.mirrorChoice === 'EXPLOITED'
-                ? `Ambitious instincts, ${name}. Remember: every shortcut leaves a trace in the glass.`
-                : `Unflinching focus, ${name}. Pull the Brass Crown if you wish to trade multiplier for a Holographic Clue.`,
+                ? `Curious instincts, ${name}. Mara wrote that note for someone observant—just remember, Lindqvist's board watches every log.`
+                : `Classy move, ${name}. Whenever a question gets tricky later, tap Hint or 50/50—no shame in checking the clues.`,
           tellHint:
             this.mirrorChoice === 'CLEAN'
-              ? 'Vance taps his silver stylus twice beside his right ear—quiet respect.'
-              : 'Question 2 of 4 — Depth Peel & Clue Core.',
+              ? 'Julian taps his silver pen twice beside his right ear—genuinely delighted.'
+              : 'Warmup 2 of 4 — Try Hint (2x) or 50/50 anytime you want an extra clue.',
           requiresNameAndOriginInput: false,
           currentChallengerName: name,
           hasRegisteredName: hasName,
@@ -900,13 +895,13 @@ export class PrologueDirector {
           stageLightingMode: 'TWIST_FRACTURE',
           speakerId: 'vance',
           speakerName: 'Julian Vance',
-          speakerRole: 'Chief Adjudicator · The Meridian',
+          speakerRole: 'Host & Co-Creator · The Meridian',
           expression: 'intense',
           portraitUrl: getPortraitUrl('vance', 'intense'),
           voiceUrl: 'assets/voice/vance_manifesto.mp3',
-          dialogueText: `Overhead shutters lock! Tell me, ${name}: when you hold the sharpest mind on Earth, who does it answer to—the World Council, the global public, or only yourself?`,
+          dialogueText: `Between us, ${name}—if you win Mara's archive and a hundred million dollars, who should knowledge answer to? Institutions, the public, or one independent mind?`,
           tellHint:
-            'Broadcast spotlights flare into Twist Fracture crimson—recording your oath onto the Charter.',
+            'The study lamps dim to warm amber as Mara’s brass charter recorder clicks softly to life.',
           requiresNameAndOriginInput: false,
           currentChallengerName: name,
           hasRegisteredName: hasName,
@@ -926,12 +921,12 @@ export class PrologueDirector {
           stageLightingMode: 'TWIST_FRACTURE',
           speakerId: 'vance',
           speakerName: 'Julian Vance',
-          speakerRole: 'Chief Adjudicator · The Meridian',
+          speakerRole: 'Host & Co-Creator · The Meridian',
           expression: 'intense',
           portraitUrl: getPortraitUrl('vance', 'intense'),
           voiceUrl: 'assets/voice/vance_overclock_charge.mp3',
-          dialogueText: `Prove that conviction under pressure, ${name}. Press and hold to Overclock the Prism!`,
-          tellHint: 'Question 3 of 4 — Twist Fracture Spotlight & Hold-to-Overclock (up to 6.0x).',
+          dialogueText: `Let's put a little spice on Question Three, ${name}. When you're sure you know it, tap 2x Double Down to double your points!`,
+          tellHint: 'Warmup 3 of 4 — Tap 2x DOUBLE DOWN when you’re sure for +600 pts!',
           requiresNameAndOriginInput: false,
           currentChallengerName: name,
           hasRegisteredName: hasName,
@@ -950,12 +945,12 @@ export class PrologueDirector {
           stageLightingMode: 'BROADCAST',
           speakerId: 'vance',
           speakerName: 'Julian Vance',
-          speakerRole: 'Chief Adjudicator · The Meridian',
+          speakerRole: 'Host & Co-Creator · The Meridian',
           expression: 'neutral',
           portraitUrl: getPortraitUrl('vance', 'neutral'),
           voiceUrl: 'assets/voice/vance_intro_4.mp3',
-          dialogueText: `Final vetting instrument, ${name}: the Meridian Brass Astrolabe. Sculpt your own margin of error.`,
-          tellHint: 'Question 4 of 4 — Calibrator Astrolabe & Precision Tolerance Cone.',
+          dialogueText: `Last warmup, ${name}—Mara's favorite brass toy, the Closest-Year Dial. Even a close estimate scores points, so trust your gut.`,
+          tellHint: 'Warmup 4 of 4 — Drag the slider or tap -1 / +1 to pick the year.',
           requiresNameAndOriginInput: false,
           currentChallengerName: name,
           hasRegisteredName: hasName,
@@ -970,12 +965,12 @@ export class PrologueDirector {
         const persona = this.stampedPersona;
         const verbatimPersonaSpeech =
           persona?.id === 'MAVERICK'
-            ? 'High risk, fearless Overclocks, zero hesitation. Your Meridian Passport is stamped: The Maverick.'
+            ? 'Fearless double-downs, sharp instinct, zero hesitation. Mara would have loved you. Your Meridian Passport is stamped: The Maverick.'
             : persona?.id === 'DIPLOMAT'
-              ? 'Measured judgment, strategic alliances, composure under fire. Your Meridian Passport is stamped: The Diplomat.'
+              ? 'Warm composure, clever diplomacy, calm under the lights. Mara would have loved you. Your Meridian Passport is stamped: The Diplomat.'
               : persona?.id === 'ANALYST'
-                ? 'Methodical clue-peeling, surgical precision, zero wasted motion. Your Meridian Passport is stamped: The Analyst.'
-                : 'Cold instinct at three-point-zero, razor accuracy, unshakable nerve. Your Meridian Passport is stamped: The Prodigy.';
+                ? 'Patient deduction, smart use of clues, zero wasted motion. Mara would have loved you. Your Meridian Passport is stamped: The Analyst.'
+                : 'Effortless precision, razor speed, unshakable poise. Mara would have loved you. Your Meridian Passport is stamped: The Prodigy.';
         return {
           phase: this.phase,
           venueId: 'ch',
@@ -983,12 +978,12 @@ export class PrologueDirector {
           stageLightingMode: 'GOLD_RESONANCE',
           speakerId: 'vance',
           speakerName: 'Julian Vance',
-          speakerRole: 'Chief Adjudicator · The Meridian',
+          speakerRole: 'Host & Co-Creator · The Meridian',
           expression: 'smirk',
           portraitUrl: getPortraitUrl('vance', 'smirk'),
           voiceUrl: persona?.voiceUrl ?? 'assets/voice/vance_stamp.mp3',
           dialogueText: verbatimPersonaSpeech,
-          tellHint: `Crimson diplomatic wax seals ${name}'s Geneva Visa — 12-Domain Mastery Radar & Brass Astrolabe unlocked!`,
+          tellHint: `Warm crimson wax seals ${name}'s Geneva Visa — 12-Domain Radar & Mara's Brass Astrolabe unlocked!`,
           requiresNameAndOriginInput: false,
           currentChallengerName: name,
           hasRegisteredName: hasName,
@@ -1009,12 +1004,13 @@ export class PrologueDirector {
           stageLightingMode: 'BROADCAST',
           speakerId: 'vance',
           speakerName: 'Julian Vance',
-          speakerRole: 'Chief Adjudicator · The Meridian',
+          speakerRole: 'Host & Co-Creator · The Meridian',
           expression: 'intense',
           portraitUrl: getPortraitUrl('vance', 'intense'),
-          voiceUrl: 'assets/voice/vance_victory.mp3',
-          dialogueText: `London wants ${name} first. Tokyo wants ${name} first. Spin the World Globe and choose your Act I departure—whichever city waits will study your tape.`,
-          tellHint: 'Vance touches his left cufflink as golden flight arcs ignite toward London and Tokyo.',
+          voiceUrl: 'assets/voice/vance_stamp.mp3',
+          dialogueText: `Warmup cleared, ${name}! Geneva's easy Stage 1 rounds stay open on your map anytime—now choose your first international flight: London with Nadia, or Tokyo with Soren.`,
+          tellHint:
+            'Julian taps the brass globe as golden routes light up toward London and Tokyo—while Geneva stays open for extra warmup.',
           requiresNameAndOriginInput: false,
           currentChallengerName: name,
           hasRegisteredName: hasName,

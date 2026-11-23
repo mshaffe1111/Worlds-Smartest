@@ -1,7 +1,7 @@
 {
   "schema_version": "5.0.0",
   "title": "World's Smartest: The Meridian Circuit",
-  "tagline": "The questions aren't just testing what you know. They're testing who you become when you hold the answers.",
+  "tagline": "Dr. Mara Sato left one last puzzle—and eight cities to decide who inherits the truth.",
   "estimated_playtime_hours": {
     "core_spine_40_missions_hours": 9.8,
     "city_dossier_56_investigations_hours": 11.4,
@@ -88,73 +88,73 @@
     "progressive_difficulty_curve": [
       {
         "hub": "ch",
-        "label": "EASY",
+        "label": "EASY · WARMUP",
         "irt_b": [
-          -1.8,
-          -0.35
+          -1.85,
+          -0.85
         ],
-        "timer_sec": 22,
-        "rival_acc": 0.52
+        "timer_sec": 30,
+        "rival_acc": 0.35
       },
       {
         "hub": "gb",
         "label": "EASY+",
         "irt_b": [
-          -1.0,
-          0.1
+          -1.45,
+          -0.35
         ],
-        "timer_sec": 20,
-        "rival_acc": 0.58
+        "timer_sec": 26,
+        "rival_acc": 0.44
       },
       {
         "hub": "jp",
         "label": "MEDIUM",
         "irt_b": [
-          -0.5,
-          0.55
+          -0.95,
+          0.15
         ],
-        "timer_sec": 19,
-        "rival_acc": 0.64
+        "timer_sec": 24,
+        "rival_acc": 0.52
       },
       {
         "hub": "br",
         "label": "MEDIUM+",
         "irt_b": [
-          -0.1,
-          0.9
+          -0.45,
+          0.65
         ],
-        "timer_sec": 18,
-        "rival_acc": 0.68
+        "timer_sec": 22,
+        "rival_acc": 0.62
       },
       {
         "hub": "eg",
         "label": "CHALLENGING",
         "irt_b": [
-          0.3,
-          1.25
+          0.05,
+          1.1
         ],
-        "timer_sec": 17,
-        "rival_acc": 0.73
+        "timer_sec": 20,
+        "rival_acc": 0.7
       },
       {
         "hub": "is",
         "label": "HARD",
         "irt_b": [
-          0.65,
-          1.65
+          0.55,
+          1.55
         ],
-        "timer_sec": 15,
-        "rival_acc": 0.78
+        "timer_sec": 18,
+        "rival_acc": 0.76
       },
       {
         "hub": "sg",
         "label": "EXPERT",
         "irt_b": [
-          1.05,
-          2.1
+          1.0,
+          2.05
         ],
-        "timer_sec": 14,
-        "rival_acc": 0.83
+        "timer_sec": 16,
+        "rival_acc": 0.82
       },
       {
         "hub": "global",
@@ -163,8 +163,8 @@
           1.45,
           2.8
         ],
-        "timer_sec": 13,
-        "rival_acc": 0.88
+        "timer_sec": 15,
+        "rival_acc": 0.87
       }
     ],
     "illegal_mutator_banlist": [
@@ -413,42 +413,50 @@
       {
         "id": "vance_intro_1",
         "speaker": "vance",
-        "path": "res://assets/voice/vance_intro_1.mp3"
+        "path": "res://assets/voice/vance_intro_1.mp3",
+        "text": "Welcome to Dr. Mara Sato's study. You solved her Sunday cipher from home—so grab a chair, take a breath, and let's start easy."
       },
       {
         "id": "vance_intro_2",
         "speaker": "vance",
-        "path": "res://assets/voice/vance_intro_2.mp3"
+        "path": "res://assets/voice/vance_intro_2.mp3",
+        "text": "Mara spent forty years building the Meridian Archive with me—and Chancellor Lindqvist's board has spent three weeks trying to lock it away. Let's open with a classic warmup."
       },
       {
         "id": "vance_intro_3",
         "speaker": "vance",
-        "path": "res://assets/voice/vance_intro_3.mp3"
+        "path": "res://assets/voice/vance_intro_3.mp3",
+        "text": "Before London, before Tokyo, before the board tries to box you into a biography—tell me your name, and how you like to think."
       },
       {
         "id": "vance_intro_4",
         "speaker": "vance",
-        "path": "res://assets/voice/vance_intro_4.mp3"
+        "path": "res://assets/voice/vance_intro_4.mp3",
+        "text": "Last warmup—Mara's favorite brass toy, the Closest-Year Dial. Even a close estimate scores points, so trust your gut."
       },
       {
         "id": "vance_leak_react",
         "speaker": "vance",
-        "path": "res://assets/voice/vance_leak_react.mp3"
+        "path": "res://assets/voice/vance_leak_react.mp3",
+        "text": "Well spotted. Mara hated shortcuts almost as much as she loved leaving breadcrumbs in the margins. Let's keep going."
       },
       {
         "id": "vance_manifesto",
         "speaker": "vance",
-        "path": "res://assets/voice/vance_manifesto.mp3"
+        "path": "res://assets/voice/vance_manifesto.mp3",
+        "text": "Between us—if you win Mara's archive and a hundred million dollars, who should knowledge answer to? Institutions, the public, or one independent mind?"
       },
       {
         "id": "vance_stamp",
         "speaker": "vance",
-        "path": "res://assets/voice/vance_stamp.mp3"
+        "path": "res://assets/voice/vance_stamp.mp3",
+        "text": "Splendid warmup. Your Meridian Passport is officially stamped—and the world tour opens ahead of you."
       },
       {
         "id": "nadia_london_intro",
         "speaker": "nadia",
-        "path": "res://assets/voice/nadia_london_intro.mp3"
+        "path": "res://assets/voice/nadia_london_intro.mp3",
+        "text": "So you're the 2:14 AM solver who won Mara's Geneva seat. Welcome to the Sovereign Rotunda—let's see if you're as sharp under London lights."
       },
       {
         "id": "nadia_rio_intro",
@@ -458,12 +466,14 @@
       {
         "id": "soren_tokyo_intro",
         "speaker": "soren",
-        "path": "res://assets/voice/soren_tokyo_intro.mp3"
+        "path": "res://assets/voice/soren_tokyo_intro.mp3",
+        "text": "Seventy floors above Shibuya, friend. Mara told me you'd be fun to play against—hope your instincts move faster than my odds."
       },
       {
         "id": "teo_whisper",
         "speaker": "teo",
-        "path": "res://assets/voice/teo_whisper.mp3"
+        "path": "res://assets/voice/teo_whisper.mp3",
+        "text": "Whoa—hang on. Mara's desk monitor just flashed an old margin note from the night she died, right next to Question Two. Looks like she left a clue... and a timestamp."
       },
       {
         "id": "teo_cairo_twist",
@@ -473,7 +483,8 @@
       {
         "id": "lindqvist_london",
         "speaker": "lindqvist",
-        "path": "res://assets/voice/lindqvist_london.mp3"
+        "path": "res://assets/voice/lindqvist_london.mp3",
+        "text": "A quiet word before the broadcast begins. Dr. Sato loved clever games, yet serious archives require steady hands."
       },
       {
         "id": "tariq_reykjavik",
@@ -498,109 +509,109 @@
         "id": "cutscene_act0_1",
         "speaker": "vance",
         "path": "res://assets/voice/cutscene_act0_1.mp3",
-        "text": "Midnight over Lake Geneva. Four hundred thousand minds entered the cipher—only one unlocked the door."
+        "text": "Three weeks ago, legendary puzzle-maker Dr. Mara Sato passed away—leaving one final riddle tucked inside Sunday papers and public archives. Four hundred thousand people tried it, and your 2:14 AM answer earned a seat on Lake Geneva."
       },
       {
         "id": "cutscene_act0_2",
         "speaker": "vance",
         "path": "res://assets/voice/cutscene_act0_2.mp3",
-        "text": "Eight cities. Forty rounds. One hundred million dollars—and the lone human veto key over The Ledger."
+        "text": "I'm Julian Vance, Mara's longtime co-creator. Rather than hand her hundred-million-dollar Meridian Archive to a committee, she built an eight-city tournament—betting everything on one agile, curious mind."
       },
       {
         "id": "cutscene_act0_3",
         "speaker": "teo",
         "path": "res://assets/voice/cutscene_act0_3.mp3",
-        "text": "Don't trust the cameras, rookie. The last person who won this chair vanished in twenty nineteen."
+        "text": "Relax, the Geneva warmup is the fun part. I'm Teo—audio engineer and official espresso smuggler. Mara built these first four questions just to see how you think—though... weird. Her private terminal just woke up the second you walked in."
       },
       {
         "id": "cutscene_act1_1",
         "speaker": "nadia",
         "path": "res://assets/voice/cutscene_act1_1.mp3",
-        "text": "Welcome to London. Every answer in this rotunda goes live to two billion screens."
+        "text": "Welcome to London. I'm Nadia Al-Mansoor. Mara Sato designed this rotunda with a glass floor so nothing stays buried—though the board seems awfully nervous about what's underneath."
       },
       {
         "id": "cutscene_act1_2",
         "speaker": "lindqvist",
         "path": "res://assets/voice/cutscene_act1_2.mp3",
-        "text": "The Council prefers predictable champions. Step outside the corridor, and we can discuss your future."
+        "text": "A charming warmup in Geneva, truly. Yet Mara's archive holds diplomatic secrets too delicate for chance. Join me in the corridor—let us speak like adults."
       },
       {
         "id": "cutscene_act1_3",
         "speaker": "teo",
         "path": "res://assets/voice/cutscene_act1_3.mp3",
-        "text": "I pulled the hidden signal logs. Someone fed encrypted answers straight into a contender's earpiece."
+        "text": "Hey—while everyone was clinking champagne glasses, I checked the 2019 build logs. Mara ran a secret dress rehearsal seven years ago, and somebody scrubbed the winner's name."
       },
       {
         "id": "cutscene_act2_1",
         "speaker": "soren",
         "path": "res://assets/voice/cutscene_act2_1.mp3",
-        "text": "Seventy floors above Shibuya, friend—where every heartbeat trades like a futures contract."
+        "text": "Seventy floors above Shibuya, friend—welcome to my neighborhood. I'm Soren Kael, card counter turned probability trader, and Mara invited me strictly to give the board heartburn."
       },
       {
         "id": "cutscene_act2_2",
         "speaker": "soren",
         "path": "res://assets/voice/cutscene_act2_2.mp3",
-        "text": "Think you're playing a quiz show? Half the syndicate already bet your streak breaks tonight."
+        "text": "Word from London is you actually read the footnotes. Careful up here—half the trading floor already has side bets on whether your streak survives tonight."
       },
       {
         "id": "cutscene_act2_3",
         "speaker": "vance",
         "path": "res://assets/voice/cutscene_act2_3.mp3",
-        "text": "Soren Kael reads probabilities like oxygen. Outthink the house—or become its cautionary tale."
+        "text": "Soren Kael counts cards faster than most people blink. Keep your cool, read his silver coin, and remember why Mara put you in that chair."
       },
       {
         "id": "cutscene_act3_1",
         "speaker": "teo",
         "path": "res://assets/voice/cutscene_act3_1.mp3",
-        "text": "We cracked the Cairo vault. Trial Zero wasn't a rehearsal—it was a cover-up."
+        "text": "Okay, deep breath—we're inside Mara's sealed Cairo vault. Trial Zero wasn't a test run. It was the first time someone beat Lindqvist's board fair and square."
       },
       {
         "id": "cutscene_act3_2",
         "speaker": "nadia",
         "path": "res://assets/voice/cutscene_act3_2.mp3",
-        "text": "That signature on the dossier... that's Tariq. My brother didn't walk away. They erased him."
+        "text": "That handwriting in Mara's ledger... that's Tariq. My brother won her 2019 prototype—and the week he refused to sell out, the board made him vanish from the record."
       },
       {
         "id": "cutscene_act3_3",
         "speaker": "vance",
         "path": "res://assets/voice/cutscene_act3_3.mp3",
-        "text": "Careful what ghosts you exhume in the desert. The Council is already listening."
+        "text": "Mara hid this room for seven years waiting for someone sharp enough to find it. Read the whole page before you judge me—Lindqvist's lawyers are already landing."
       },
       {
         "id": "cutscene_act4_1",
         "speaker": "tariq",
         "path": "res://assets/voice/cutscene_act4_1.mp3",
-        "text": "I stayed in the shadows in Reykjavik so you could carry the ledger key onto the world stage."
+        "text": "Mara and Julian kept me off the grid in Reykjavik for seven winters so we could build a contest too public to rig. Now you carry her final key to the stage."
       },
       {
         "id": "cutscene_act4_2",
         "speaker": "lindqvist",
         "path": "res://assets/voice/cutscene_act4_2.mp3",
-        "text": "Enough theater. Cut their feed and lock the vault—no outsider dictates terms to the World Council."
+        "text": "Enough charming detective work. Invoke Article Nine and seal the archive—Dr. Sato's whim will not hand global stewardship to an amateur."
       },
       {
         "id": "cutscene_act4_3",
         "speaker": "soren",
         "path": "res://assets/voice/cutscene_act4_3.mp3",
-        "text": "Plot twist, friend. Even a gambler knows when the house is burning down. I'm betting on you."
+        "text": "Plot twist, friend. Even a card shark knows when the house is dealing from the bottom of the deck. Consider my chips all-in on you."
       },
       {
         "id": "cutscene_act5_1",
         "speaker": "vance",
         "path": "res://assets/voice/cutscene_act5_1.mp3",
-        "text": "The Apex Forum. Two billion witnesses watching every breath. No lifelines left to hide behind."
+        "text": "The Apex Forum. Two billion witnesses watching live, exactly as Mara drafted on a napkin seven years ago. No committees, no back rooms—just the questions."
       },
       {
         "id": "cutscene_act5_2",
         "speaker": "nadia",
         "path": "res://assets/voice/cutscene_act5_2.mp3",
-        "text": "For Tariq—and for everyone they tried to silence. Beat them clean, in front of the whole world."
+        "text": "For Tariq, for Mara, and for everyone who stayed up until two in the morning chasing a good clue. Beat Julian clean—in front of the whole world."
       },
       {
         "id": "cutscene_act5_3",
         "speaker": "vance",
         "path": "res://assets/voice/cutscene_act5_3.mp3",
-        "text": "Take the crown, claim the veto key—and decide who the sharpest mind on Earth answers to."
+        "text": "Take the chair across from me, claim Mara's veto key, and decide what the sharpest mind on Earth leaves behind."
       }
     ],
     "rival_reaction_clips": [
@@ -1727,7 +1738,7 @@
       "city": "Geneva",
       "country": "Switzerland",
       "region": "CH",
-      "difficulty_label": "EASY",
+      "difficulty_label": "EASY · WARMUP",
       "venue_name": "The Vetting Chamber",
       "venue_3d_scene": "vetting_chamber_room.glb",
       "hdri": "evening_museum_courtyard",
@@ -1738,7 +1749,7 @@
         46.2044,
         6.1432
       ],
-      "tagline": "An Alpine stone chamber where five opening rounds decide if you enter the world contest.",
+      "tagline": "Dr. Mara Sato's lakeside study—five joyful warmup rounds introducing the world tour and a curious 2:14 AM note.",
       "mission_ids": [
         "ch_1",
         "ch_2",
@@ -1788,7 +1799,7 @@
         51.5072,
         -0.1276
       ],
-      "tagline": "Grand marble columns, glass floor vaults, and Chancellor Lindqvist's backroom deals.",
+      "tagline": "London's glass-floored Rotunda, Nadia Al-Mansoor's razor wit, and a sealed 2019 archive drawer the board won't discuss.",
       "mission_ids": [
         "gb_1",
         "gb_2",
@@ -1844,7 +1855,7 @@
         35.6762,
         139.6503
       ],
-      "tagline": "Seventy floors above neon rain, where fast minds clash with hidden earpieces.",
+      "tagline": "Seventy floors above Shibuya with witty card shark Soren Kael—where fast minds clash over a mysterious live feed.",
       "mission_ids": [
         "jp_1",
         "jp_2",
@@ -1900,7 +1911,7 @@
         -22.9068,
         -43.1729
       ],
-      "tagline": "Ten thousand cheering fans under twilight glass—until sabotage turns rivalry deadly serious.",
+      "tagline": "Ten thousand cheering fans under Rio's twilight canopy—until podium sabotage reveals how far the board will go.",
       "mission_ids": [
         "br_1",
         "br_2",
@@ -1954,7 +1965,7 @@
         29.9792,
         31.1342
       ],
-      "tagline": "Beneath desert stone hides a secret 2019 contest—and the real reason Julian Vance chose you.",
+      "tagline": "Thirty-eight meters beneath Giza lies Mara's buried 2019 vault—and the truth about Nadia's brother Tariq.",
       "mission_ids": [
         "eg_1",
         "eg_2",
@@ -2004,7 +2015,7 @@
         64.1466,
         -21.9426
       ],
-      "tagline": "Northern lights over volcanic steam—where a ghost from 2019 flips the entire story.",
+      "tagline": "Northern lights over volcanic steam—where a ghost from Mara's 2019 prototype flips the entire mystery on its head.",
       "mission_ids": [
         "is_1",
         "is_2",
@@ -2054,7 +2065,7 @@
         1.3521,
         103.8198
       ],
-      "tagline": "Ninety stories above the global archive, every alliance you built faces the ultimate test.",
+      "tagline": "Ninety stories above the global archive, Chancellor Lindqvist calls an emergency vote and every alliance faces the fire.",
       "mission_ids": [
         "sg_1",
         "sg_2",
@@ -2104,7 +2115,7 @@
         36.0,
         -32.0
       ],
-      "tagline": "Two billion live viewers. One floating marble arena. Beat Julian Vance and claim the Final Key.",
+      "tagline": "Two billion live witnesses. One floating marble table. Outthink Julian Vance and claim Mara Sato's Final Key.",
       "mission_ids": [
         "global_1",
         "global_2",
@@ -2197,8 +2208,8 @@
       "act_index": 0,
       "trigger_before_mission": "ch_1",
       "hub_id": "ch",
-      "title": "ACT 0 · THE BLACK-GLASS SUMMONS",
-      "location": "Geneva, Switzerland · 23:42 CET",
+      "title": "ACT 0 · THE LAST PUZZLE OF DR. MARA SATO",
+      "location": "Lake Geneva, Switzerland · Dr. Mara Sato’s Study",
       "image": "res://assets/cutscenes/act0_invitation.jpg",
       "weather_fx": "alpine_snow",
       "music": "res://assets/audio/music_campaign_mystery.ogg",
@@ -2216,7 +2227,7 @@
           "speaker_name": "Julian Vance",
           "expression": "neutral",
           "voice_clip": "res://assets/voice/cutscene_act0_1.mp3",
-          "text": "Midnight over Lake Geneva. Four hundred thousand minds entered the cipher—only one unlocked the door."
+          "text": "Three weeks ago, legendary puzzle-maker Dr. Mara Sato passed away—leaving one final riddle tucked inside Sunday papers and public archives. Four hundred thousand people tried it, and your 2:14 AM answer earned a seat on Lake Geneva."
         },
         {
           "id": "cutscene_act0_2",
@@ -2224,16 +2235,15 @@
           "speaker_name": "Julian Vance",
           "expression": "intense",
           "voice_clip": "res://assets/voice/cutscene_act0_2.mp3",
-          "text": "Eight cities. Forty rounds. One hundred million dollars—and the lone human veto key over The Ledger."
+          "text": "I'm Julian Vance, Mara's longtime co-creator. Rather than hand her hundred-million-dollar Meridian Archive to a committee, she built an eight-city tournament—betting everything on one agile, curious mind."
         },
         {
           "id": "cutscene_act0_3",
           "speaker": "teo",
           "speaker_name": "Mateo 'Teo' Rojas",
-          "expression": "intense",
+          "expression": "neutral",
           "voice_clip": "res://assets/voice/cutscene_act0_3.mp3",
-          "text": "Don't trust the cameras, rookie. The last person who won this chair vanished in 2019.",
-          "tts_text": "Don't trust the cameras, rookie. The last person who won this chair vanished in twenty nineteen."
+          "text": "Relax, the Geneva warmup is the fun part. I'm Teo—audio engineer and official espresso smuggler. Mara built these first four questions just to see how you think—though... weird. Her private terminal just woke up the second you walked in."
         }
       ]
     },
@@ -2242,7 +2252,7 @@
       "act_index": 1,
       "trigger_before_mission": "gb_1",
       "hub_id": "gb",
-      "title": "ACT I · GLASS OVER ASHES",
+      "title": "ACT I · MARA’S MISSING CHAPTER",
       "location": "London, United Kingdom · The Sovereign Rotunda",
       "image": "res://assets/cutscenes/act1_london_leak.jpg",
       "weather_fx": "london_rain",
@@ -2261,7 +2271,7 @@
           "speaker_name": "Nadia Al-Mansoor",
           "expression": "neutral",
           "voice_clip": "res://assets/voice/cutscene_act1_1.mp3",
-          "text": "Welcome to London. Every answer in this rotunda goes live to two billion screens."
+          "text": "Welcome to London. I'm Nadia Al-Mansoor. Mara Sato designed this rotunda with a glass floor so nothing stays buried—though the board seems awfully nervous about what's underneath."
         },
         {
           "id": "cutscene_act1_2",
@@ -2269,7 +2279,7 @@
           "speaker_name": "Chancellor Ingrid Lindqvist",
           "expression": "neutral",
           "voice_clip": "res://assets/voice/cutscene_act1_2.mp3",
-          "text": "The Council prefers predictable champions. Step outside the corridor, and we can discuss your future."
+          "text": "A charming warmup in Geneva, truly. Yet Mara's archive holds diplomatic secrets too delicate for chance. Join me in the corridor—let us speak like adults."
         },
         {
           "id": "cutscene_act1_3",
@@ -2277,7 +2287,8 @@
           "speaker_name": "Mateo 'Teo' Rojas",
           "expression": "intense",
           "voice_clip": "res://assets/voice/cutscene_act1_3.mp3",
-          "text": "I pulled the hidden signal logs. Someone fed encrypted answers straight into a contender's earpiece."
+          "text": "Hey—while everyone was clinking champagne glasses, I checked the 2019 build logs. Mara ran a secret dress rehearsal seven years ago, and somebody scrubbed the winner's name.",
+          "tts_text": "Hey—while everyone was clinking champagne glasses, I checked the twenty nineteen build logs. Mara ran a secret dress rehearsal seven years ago, and somebody scrubbed the winner's name."
         }
       ]
     },
@@ -2286,8 +2297,8 @@
       "act_index": 2,
       "trigger_before_mission": "jp_1",
       "hub_id": "jp",
-      "title": "ACT II · SEVENTY FLOORS IN NEON RAIN",
-      "location": "Tokyo, Japan · The Shinkansen Sky Pavilion",
+      "title": "ACT II · ODDS IN THE NEON RAIN",
+      "location": "Tokyo, Japan · The Horizon Sky Pavilion",
       "image": "res://assets/cutscenes/act2_tokyo_confrontation.jpg",
       "weather_fx": "neon_rain",
       "music": "res://assets/audio/music_campaign_mystery.ogg",
@@ -2305,7 +2316,7 @@
           "speaker_name": "Soren 'Echo' Kael",
           "expression": "smirk",
           "voice_clip": "res://assets/voice/cutscene_act2_1.mp3",
-          "text": "Seventy floors above Shibuya, friend—where every heartbeat trades like a futures contract."
+          "text": "Seventy floors above Shibuya, friend—welcome to my neighborhood. I'm Soren Kael, card counter turned probability trader, and Mara invited me strictly to give the board heartburn."
         },
         {
           "id": "cutscene_act2_2",
@@ -2313,7 +2324,7 @@
           "speaker_name": "Soren 'Echo' Kael",
           "expression": "smirk",
           "voice_clip": "res://assets/voice/cutscene_act2_2.mp3",
-          "text": "Think you're playing a quiz show? Half the syndicate already bet your streak breaks tonight."
+          "text": "Word from London is you actually read the footnotes. Careful up here—half the trading floor already has side bets on whether your streak survives tonight."
         },
         {
           "id": "cutscene_act2_3",
@@ -2321,7 +2332,7 @@
           "speaker_name": "Julian Vance",
           "expression": "intense",
           "voice_clip": "res://assets/voice/cutscene_act2_3.mp3",
-          "text": "Soren Kael reads probabilities like oxygen. Outthink the house—or become its cautionary tale."
+          "text": "Soren Kael counts cards faster than most people blink. Keep your cool, read his silver coin, and remember why Mara put you in that chair."
         }
       ]
     },
@@ -2330,7 +2341,7 @@
       "act_index": 3,
       "trigger_before_mission": "eg_3",
       "hub_id": "eg",
-      "title": "ACT III · MERIDIAN ZERO",
+      "title": "ACT III · TRIAL ZERO",
       "location": "Giza Plateau, Egypt · 38 Meters Below the Solar Hall",
       "image": "res://assets/cutscenes/act3_cairo_vault.jpg",
       "weather_fx": "desert_dust",
@@ -2349,7 +2360,7 @@
           "speaker_name": "Mateo 'Teo' Rojas",
           "expression": "intense",
           "voice_clip": "res://assets/voice/cutscene_act3_1.mp3",
-          "text": "We cracked the Cairo vault. Trial Zero wasn't a rehearsal—it was a cover-up."
+          "text": "Okay, deep breath—we're inside Mara's sealed Cairo vault. Trial Zero wasn't a test run. It was the first time someone beat Lindqvist's board fair and square."
         },
         {
           "id": "cutscene_act3_2",
@@ -2357,7 +2368,8 @@
           "speaker_name": "Nadia Al-Mansoor",
           "expression": "shocked",
           "voice_clip": "res://assets/voice/cutscene_act3_2.mp3",
-          "text": "That signature on the dossier... that's Tariq. My brother didn't walk away. They erased him."
+          "text": "That handwriting in Mara's ledger... that's Tariq. My brother won her 2019 prototype—and the week he refused to sell out, the board made him vanish from the record.",
+          "tts_text": "That handwriting in Mara's ledger... that's Tariq. My brother won her twenty nineteen prototype—and the week he refused to sell out, the board made him vanish from the record."
         },
         {
           "id": "cutscene_act3_3",
@@ -2365,7 +2377,7 @@
           "speaker_name": "Julian Vance",
           "expression": "intense",
           "voice_clip": "res://assets/voice/cutscene_act3_3.mp3",
-          "text": "Careful what ghosts you exhume in the desert. The Council is already listening."
+          "text": "Mara hid this room for seven years waiting for someone sharp enough to find it. Read the whole page before you judge me—Lindqvist's lawyers are already landing."
         }
       ]
     },
@@ -2374,8 +2386,8 @@
       "act_index": 4,
       "trigger_before_mission": "sg_3",
       "hub_id": "sg",
-      "title": "ACT IV · THE KNIFE ON THE SKY-BRIDGE",
-      "location": "Singapore · 90 Floors Above The Ledger Core",
+      "title": "ACT IV · THE BOARD’S COUNTER-MOVE",
+      "location": "Singapore · 90 Floors Above the Meridian Archive",
       "image": "res://assets/cutscenes/act4_singapore_betrayal.jpg",
       "weather_fx": "uv_storm",
       "music": "res://assets/audio/music_campaign_mystery.ogg",
@@ -2393,7 +2405,7 @@
           "speaker_name": "Tariq Al-Mansoor",
           "expression": "neutral",
           "voice_clip": "res://assets/voice/cutscene_act4_1.mp3",
-          "text": "I stayed in the shadows in Reykjavik so you could carry the ledger key onto the world stage."
+          "text": "Mara and Julian kept me off the grid in Reykjavik for seven winters so we could build a contest too public to rig. Now you carry her final key to the stage."
         },
         {
           "id": "cutscene_act4_2",
@@ -2401,7 +2413,7 @@
           "speaker_name": "Chancellor Ingrid Lindqvist",
           "expression": "neutral",
           "voice_clip": "res://assets/voice/cutscene_act4_2.mp3",
-          "text": "Enough theater. Cut their feed and lock the vault—no outsider dictates terms to the World Council."
+          "text": "Enough charming detective work. Invoke Article Nine and seal the archive—Dr. Sato's whim will not hand global stewardship to an amateur."
         },
         {
           "id": "cutscene_act4_3",
@@ -2409,7 +2421,7 @@
           "speaker_name": "Soren 'Echo' Kael",
           "expression": "smirk",
           "voice_clip": "res://assets/voice/cutscene_act4_3.mp3",
-          "text": "Plot twist, friend. Even a gambler knows when the house is burning down. I'm betting on you."
+          "text": "Plot twist, friend. Even a card shark knows when the house is dealing from the bottom of the deck. Consider my chips all-in on you."
         }
       ]
     },
@@ -2418,7 +2430,7 @@
       "act_index": 5,
       "trigger_before_mission": "global_4",
       "hub_id": "global",
-      "title": "ACT V · THE APEX FORUM",
+      "title": "ACT V · MARA’S FINAL TABLE",
       "location": "International Waters · Two Billion Live Witnesses",
       "image": "res://assets/cutscenes/act5_apex_finale.jpg",
       "weather_fx": "ocean_mist",
@@ -2437,7 +2449,7 @@
           "speaker_name": "Julian Vance",
           "expression": "intense",
           "voice_clip": "res://assets/voice/cutscene_act5_1.mp3",
-          "text": "The Apex Forum. Two billion witnesses watching every breath. No lifelines left to hide behind."
+          "text": "The Apex Forum. Two billion witnesses watching live, exactly as Mara drafted on a napkin seven years ago. No committees, no back rooms—just the questions."
         },
         {
           "id": "cutscene_act5_2",
@@ -2445,7 +2457,7 @@
           "speaker_name": "Nadia Al-Mansoor",
           "expression": "neutral",
           "voice_clip": "res://assets/voice/cutscene_act5_2.mp3",
-          "text": "For Tariq—and for everyone they tried to silence. Beat them clean, in front of the whole world."
+          "text": "For Tariq, for Mara, and for everyone who stayed up until two in the morning chasing a good clue. Beat Julian clean—in front of the whole world."
         },
         {
           "id": "cutscene_act5_3",
@@ -2453,7 +2465,7 @@
           "speaker_name": "Julian Vance",
           "expression": "intense",
           "voice_clip": "res://assets/voice/cutscene_act5_3.mp3",
-          "text": "Take the crown, claim the veto key—and decide who the sharpest mind on Earth answers to."
+          "text": "Take the chair across from me, claim Mara's veto key, and decide what the sharpest mind on Earth leaves behind."
         }
       ]
     }
@@ -2496,13 +2508,13 @@
       {
         "id": "clue_01_summons",
         "number": 1,
-        "title": "The 99.4% Scouting Slip",
+        "title": "Mara's 2:14 AM Qualifier Slip",
         "city_id": "ch",
         "city_label": "Geneva",
         "unlock_mission": "ch_1",
         "suspect_id": "vance",
         "category": "DOCUMENT",
-        "summary": "Julian Vance's private Geneva note flags your mind as a 99.4% anomaly match—without naming who you matched.",
+        "summary": "Julian Vance's lakeside dossier flags your 2:14 AM solution as a 99.4% match to Dr. Mara Sato's 2019 prototype champion.",
         "red_thread_to": [
           "clue_06_trial00_photo",
           "clue_07_psychometric_match"
@@ -2515,13 +2527,13 @@
       {
         "id": "clue_02_watch_scratch",
         "number": 2,
-        "title": "Vance's Engraved Watch",
+        "title": "Mara's Margin Note & Watch",
         "city_id": "ch",
         "city_label": "Geneva",
         "unlock_mission": "ch_2",
         "suspect_id": "vance",
         "category": "ARTIFACT",
-        "summary": "Inside Julian's brass pocket watch is a hidden scratch: 'TRIAL ZERO — DO NOT LET THEM ERASE ANOTHER.'",
+        "summary": "Dr. Sato's monitor note matches an engraving inside Julian's pocket watch: 'TRIAL ZERO — DO NOT LET THEM ERASE ANOTHER.'",
         "red_thread_to": [
           "clue_03_drawer_00",
           "clue_09_rescue_code"
@@ -2540,7 +2552,7 @@
         "unlock_mission": "gb_2",
         "suspect_id": "lindqvist",
         "category": "PHOTOGRAPH",
-        "summary": "Sealed mahogany drawers beneath London's glass stage prove a secret 2019 pilot contest happened seven years ago.",
+        "summary": "Sealed mahogany drawers beneath Mara's London glass floor prove she ran a secret 2019 prototype contest seven years ago.",
         "red_thread_to": [
           "clue_04_wax_briefing",
           "clue_06_trial00_photo"
@@ -2559,7 +2571,7 @@
         "unlock_mission": "gb_3",
         "suspect_id": "lindqvist",
         "category": "DOCUMENT",
-        "summary": "Chancellor Lindqvist's backroom folder uses a Sovereign wax stamp dated 2019—linking her straight to the cover-up.",
+        "summary": "Chancellor Lindqvist's backroom folder bears a 2019 board seal—linking her directly to burying Mara's first champion.",
         "red_thread_to": [
           "clue_08_rio_burnt_relay",
           "clue_10_sovereign_receipt"
@@ -2578,7 +2590,7 @@
         "unlock_mission": "jp_2",
         "suspect_id": "soren",
         "category": "HARDWARE",
-        "summary": "Soren's sub-vocal earpiece was powered by Horizon servers—whose backup log also pinged buried coordinates under Giza.",
+        "summary": "Soren's sub-vocal earpiece ran through Horizon servers—whose backup log also pinged buried coordinates beneath Giza.",
         "red_thread_to": [
           "clue_07_psychometric_match",
           "clue_08_rio_burnt_relay"
@@ -2616,7 +2628,7 @@
         "unlock_mission": "eg_3",
         "suspect_id": "vance",
         "category": "DOSSIER",
-        "summary": "Pulled from the buried Giza vault: Tariq Al-Mansoor won Trial Zero, found Council rigging, and shares your 99.4% profile.",
+        "summary": "Pulled from Mara's buried Giza vault: Tariq Al-Mansoor won Trial Zero, uncovered board rigging, and shares your 99.4% reasoning profile.",
         "red_thread_to": [
           "clue_09_rescue_code",
           "clue_12_trojan_blueprint"
@@ -2635,7 +2647,7 @@
         "unlock_mission": "br_2",
         "suspect_id": "lindqvist",
         "category": "HARDWARE",
-        "summary": "Sabotaged Nadia's podium using Horizon chips—yet Soren's smooth coin tell proved he wasn't the saboteur.",
+        "summary": "Nadia's podium was spiked with Horizon chips—yet Soren's dead-still coin tell proved someone else framed him.",
         "red_thread_to": [
           "clue_10_sovereign_receipt"
         ],
@@ -2647,13 +2659,13 @@
       {
         "id": "clue_09_rescue_code",
         "number": 9,
-        "title": "Vance's Hidden Rescue Code",
+        "title": "Mara & Vance's Rescue Code",
         "city_id": "eg",
         "city_label": "Cairo",
         "unlock_mission": "eg_5",
         "suspect_id": "tariq",
         "category": "CIPHER",
-        "summary": "Vance's 'erasure' stamp on Tariq's 2019 file wasn't a hit order—it was a diplomatic witness-protection rescue code!",
+        "summary": "Julian's 'erasure' stamp on Tariq's 2019 file wasn't a betrayal—it was the safe-house code Mara used to spirit Tariq to safety.",
         "red_thread_to": [
           "clue_11_caldera_log"
         ],
@@ -2671,7 +2683,7 @@
         "unlock_mission": "sg_2",
         "suspect_id": "lindqvist",
         "category": "DOCUMENT",
-        "summary": "Found inside Singapore's server core: Lindqvist's own proxies bought Horizon parts to frame Soren and cut Nadia in Rio.",
+        "summary": "Found inside Singapore's archive core: Lindqvist's proxies bought Horizon hardware to frame Soren and cut Nadia in Rio.",
         "red_thread_to": [
           "clue_12_trojan_blueprint"
         ],
@@ -2689,7 +2701,7 @@
         "unlock_mission": "is_3",
         "suspect_id": "tariq",
         "category": "LOG",
-        "summary": "Tariq has been alive and partnering with Julian Vance in Iceland for seven years—building a global broadcast trap.",
+        "summary": "Tariq has been alive in Iceland for seven years, quietly helping Mara and Julian build a broadcast tournament too public to bury.",
         "red_thread_to": [
           "clue_12_trojan_blueprint"
         ],
@@ -2701,13 +2713,13 @@
       {
         "id": "clue_12_trojan_blueprint",
         "number": 12,
-        "title": "The Apex Trojan Charter",
+        "title": "Mara's Final Napkin Charter",
         "city_id": "global",
         "city_label": "Apex Forum",
         "unlock_mission": "global_4",
         "suspect_id": "vance",
         "category": "MASTER KEY",
-        "summary": "The complete puzzle: put one uncorrupted mind live before two billion people holding the Master Ledger Key so no bloc can silence them.",
+        "summary": "The full puzzle solved: put one unbought mind live before two billion people holding Mara's Master Key so no committee can silence them.",
         "red_thread_to": [],
         "board_pos": [
           0.6,
@@ -2888,10 +2900,10 @@
       "hub_id": "ch",
       "rhythm_slot": 1,
       "rhythm_role": "ARRIVAL_QUALIFIER",
-      "title": "Welcome to Geneva",
-      "subtitle": "Round 1 · The Vetting Chamber, Geneva",
-      "difficulty_label": "EASY",
-      "pass_goal": "Answer 3 of 4 classic trivia questions right to earn your spot on the World Circuit.",
+      "title": "Welcome to Mara's Study",
+      "subtitle": "Warmup 1 · Dr. Mara Sato's Study, Geneva",
+      "difficulty_label": "EASY · WARMUP",
+      "pass_goal": "Enjoy 4 classic warmup questions to settle in and start your World Tour.",
       "estimated_minutes": 6,
       "venue": "ch",
       "venue_region": "CH",
@@ -2900,11 +2912,11 @@
       "camera_preset": "CAM_INTERVIEW_OTS",
       "music_layer": "L2_InterviewTension",
       "question_count": 4,
-      "time_per_question_sec": 22,
+      "time_per_question_sec": 30,
       "difficulty_tier": 1,
       "irt_b_range": [
-        -1.8,
-        -0.95
+        -1.85,
+        -1.35
       ],
       "narrative_tags": [
         "SOVEREIGN_BLOC",
@@ -2923,7 +2935,7 @@
       "mutators": [
         "NONE"
       ],
-      "mutator_brief": "Warm-up round: tap the right answer before time runs out. Use 50/50, Hint, or 2x Wager anytime!",
+      "mutator_brief": "Easy warmup: tap your answer and click LOCK ANSWER. Use Hint, 50/50, or 2x Double Down anytime!",
       "speaker": "vance",
       "rival_id": "vance",
       "voice_clip": "res://assets/voice/vance_intro_1.mp3",
@@ -2944,8 +2956,8 @@
           "speaker_role": "Chief Host · The Meridian",
           "portrait": "res://assets/portraits_cutout/vance.png",
           "mood": "COMPOSED",
-          "tell_hint": "Rests two fingers on the brass lamp across the dark marble table.",
-          "text": "You solved what four hundred thousand others couldn't. Take a seat.",
+          "tell_hint": "Julian slides an espresso across the walnut—thumb brushing his left brass cufflink.",
+          "text": "Welcome to Dr. Mara Sato's study. You solved her Sunday cipher from home—so grab a chair, take a breath, and let's start easy.",
           "voice_clip": "res://assets/voice/vance_intro_1.mp3"
         },
         {
@@ -2955,8 +2967,8 @@
           "speaker_role": "Chief Host · The Meridian",
           "portrait": "res://assets/portraits_cutout/vance.png",
           "mood": "INTRIGUED",
-          "tell_hint": "Adjusts his left brass cufflink and murmurs '99.4% match' under his breath.",
-          "text": "Before London, before Tokyo, before two billion viewers... tell me who you really are.",
+          "tell_hint": "Mara's brass press waits beside your leather passport and 2:14 AM qualifier slip.",
+          "text": "Before London, before Tokyo, before the board tries to box you into a biography—tell me your name, and how you like to think.",
           "voice_clip": "res://assets/voice/vance_intro_3.mp3",
           "passive_elo_check": {
             "domain_id": 8,
@@ -2968,7 +2980,7 @@
       "choices": [
         {
           "id": "ch_1_origin_academic",
-          "label": "Former Professor",
+          "label": "Curious Scholar",
           "subtext": "I published proof my university tried to bury. They kept the title, I kept the truth.",
           "impact_badge": "+10 Integrity · Nadia respects you",
           "tone": "gold",
@@ -2983,12 +2995,12 @@
               "origin": "ACADEMIC"
             }
           },
-          "response_line": "Bold minds make terrible professors—and extraordinary world champions.",
+          "response_line": "Mara adored anyone who checked the footnotes—especially the ones committees hoped nobody would read.",
           "next_mission_id": "ch_2"
         },
         {
           "id": "ch_1_origin_polymath",
-          "label": "Self-Taught Outsider",
+          "label": "Self-Taught Polymath",
           "subtext": "No fancy pedigree, no rich sponsor. Just sharp instincts and fast thinking.",
           "impact_badge": "+10 Public Trust · Teo backs you",
           "tone": "cyan",
@@ -3002,12 +3014,12 @@
               "origin": "POLYMATH"
             }
           },
-          "response_line": "Refreshingly honest. The cameras will love you—and the Council will sweat.",
+          "response_line": "No pedigree, no sponsor, no script. Mara specifically built the Sunday qualifier for minds like yours.",
           "next_mission_id": "ch_2"
         },
         {
           "id": "ch_1_origin_strategist",
-          "label": "Bold Strategist",
+          "label": "Sharp Strategist",
           "subtext": "Every contest has hidden rules. I came here to outsmart the whole room.",
           "impact_badge": "+8 Council Favor · Soren notices you",
           "tone": "crimson",
@@ -3021,7 +3033,7 @@
               "origin": "STRATEGIST"
             }
           },
-          "response_line": "Careful. Here in Geneva, the house studies the players right back.",
+          "response_line": "Careful now—you read the room as closely as the puzzle. Soren Kael is going to enjoy meeting you.",
           "next_mission_id": "ch_2"
         }
       ],
@@ -3034,11 +3046,11 @@
           "portrait": "res://assets/portraits_cutout/vance.png",
           "mood": "PLEASED",
           "tell_hint": "Taps his silver pen twice beside his right ear in genuine approval.",
-          "text": "Clean. Surgical precision. Now let's see how you handle temptation.",
+          "text": "Clean, effortless, and right on the button. Now let's see what caught Teo's eye on Mara's desk.",
           "voice_clip": "res://assets/voice/vance_correct_1.mp3"
         }
       ],
-      "cliffhanger_hook": "Behind the one-way mirror, a producer shifts—flashing a bright hint across the table.",
+      "cliffhanger_hook": "On the monitor beside you, Dr. Mara Sato's private terminal wakes with a 2:14 AM note.",
       "mission_category": "CORE_SPINE",
       "side_slot": 0,
       "core_mission_index": 1,
@@ -3052,10 +3064,10 @@
       "hub_id": "ch",
       "rhythm_slot": 2,
       "rhythm_role": "COVERT_INVESTIGATION",
-      "title": "The Mirror Test",
-      "subtitle": "Round 2 · The Vetting Chamber, Geneva",
-      "difficulty_label": "EASY",
-      "pass_goal": "Answer 3 of 5 questions right and choose how to handle a leaked hint.",
+      "title": "Mara's Margin Note",
+      "subtitle": "Warmup 2 · Dr. Mara Sato's Study, Geneva",
+      "difficulty_label": "EASY · WARMUP",
+      "pass_goal": "Answer warmup trivia cleanly—try tapping Hint or 50/50 whenever you want an extra clue.",
       "estimated_minutes": 9,
       "venue": "ch",
       "venue_region": "CH",
@@ -3064,11 +3076,11 @@
       "camera_preset": "CAM_INTERVIEW_OTS",
       "music_layer": "L2_InterviewTension",
       "question_count": 6,
-      "time_per_question_sec": 22,
+      "time_per_question_sec": 30,
       "difficulty_tier": 1,
       "irt_b_range": [
-        -1.6,
-        -0.8
+        -1.75,
+        -1.2
       ],
       "narrative_tags": [
         "ETHICS",
@@ -3088,7 +3100,7 @@
       "mutators": [
         "MIRROR_LEAK_ETHICS"
       ],
-      "mutator_brief": "Moral Dilemma: a secret hint reflects across the marble mid-round—use it, report it, or play clean!",
+      "mutator_brief": "Easy warmup: tap HINT for a helpful clue, or 50/50 to cross out two wrong choices.",
       "speaker": "teo",
       "rival_id": "vance",
       "voice_clip": "res://assets/voice/teo_whisper.mp3",
@@ -3114,8 +3126,8 @@
           "speaker_role": "Rogue Broadcast Producer",
           "portrait": "res://assets/portraits_cutout/teo.png",
           "mood": "CONSPIRATORIAL",
-          "tell_hint": "Eyes stay steady off the red camera light—his whisper is genuine.",
-          "text": "Psst—don't look at the mirror. Check the reflection on the marble. You didn't hear it from me.",
+          "tell_hint": "Teo points at the glowing margin note on Mara's monitor—more puzzled than secretive.",
+          "text": "Whoa—hang on. Mara's desk monitor just flashed an old margin note from the night she died, right next to Question Two. Looks like she left a clue... and a timestamp.",
           "voice_clip": "res://assets/voice/teo_whisper.mp3"
         },
         {
@@ -3125,8 +3137,8 @@
           "speaker_role": "Chief Host · The Meridian",
           "portrait": "res://assets/portraits_cutout/vance.png",
           "mood": "WATCHFUL",
-          "tell_hint": "Notices the glare—yet taps his pen calmly instead of calling security.",
-          "text": "Careful. What happens behind one-way glass rarely stays hidden.",
+          "tell_hint": "Julian notices the glowing monitor with an amused eyebrow raise.",
+          "text": "Well spotted. Mara hated shortcuts almost as much as she loved leaving breadcrumbs in the margins. Let's keep going.",
           "voice_clip": "res://assets/voice/vance_leak_react.mp3",
           "passive_elo_check": {
             "domain_id": 11,
@@ -3138,7 +3150,7 @@
       "choices": [
         {
           "id": "ch_2_exploit",
-          "label": "Use the Secret Hint",
+          "label": "Read Mara's Margin Note",
           "subtext": "Read Teo's reflected clue for an easy edge—even if Vance notices.",
           "impact_badge": "-18 Integrity · Free Hint",
           "tone": "crimson",
@@ -3152,12 +3164,12 @@
               "free_hint_ch2": true
             }
           },
-          "response_line": "Quick answer—though your eyes drifted half an inch left of the screen.",
+          "response_line": "Quick eyes—though Mara's footnote wasn't just a hint. It asked why 2019's winner never got his trophy.",
           "next_mission_id": "ch_3"
         },
         {
           "id": "ch_2_flag",
-          "label": "Report the Leak to Vance",
+          "label": "Point It Out to Julian",
           "subtext": "Tap the table immediately and expose the security breach in the booth.",
           "impact_badge": "+15 Integrity · +18 Council · Lindqvist impressed",
           "tone": "gold",
@@ -3173,12 +3185,12 @@
               "sovereign_audit_bonus": true
             }
           },
-          "response_line": "Rules over shortcuts. Chancellor Lindqvist reads every Geneva report.",
+          "response_line": "Refreshing candor. Chancellor Lindqvist's auditors read every Geneva log—they'll appreciate that.",
           "next_mission_id": "ch_3"
         },
         {
           "id": "ch_2_clean",
-          "label": "Ignore It & Play Fair",
+          "label": "Leave It Untouched & Solve Clean",
           "subtext": "Block the glare with your sleeve, protect the producer, and solve it yourself.",
           "impact_badge": "+20 Integrity · +8 Public · Teo trusts you",
           "tone": "cyan",
@@ -3194,7 +3206,7 @@
               "clean_prodigy_track": true
             }
           },
-          "response_line": "You played fair without throwing a stranger under the bus. Rare poise.",
+          "response_line": "You solved it purely on your own wits without throwing Teo under the bus. Mara would have applauded.",
           "next_mission_id": "ch_3"
         }
       ],
@@ -3207,11 +3219,11 @@
           "portrait": "res://assets/portraits_cutout/vance.png",
           "mood": "SERIOUS",
           "tell_hint": "Snaps his pocket watch shut as heavy steel shutters close overhead.",
-          "text": "Opening a clue trades pride for clarity. Now face the bright lights.",
+          "text": "Smart use of clues is half the craft. Now step under the warm amber lights—Mara left one personal question.",
           "voice_clip": "res://assets/voice/vance_peel.mp3"
         }
       ],
-      "cliffhanger_hook": "Steel shutters slam across the Alpine windows as studio floodlights flare overhead.",
+      "cliffhanger_hook": "Julian glances at the monitor, smiles wryly, and dims the study lamps for Mara's personal question.",
       "mission_category": "CORE_SPINE",
       "side_slot": 0,
       "core_mission_index": 2,
@@ -3224,10 +3236,10 @@
       "hub_id": "ch",
       "rhythm_slot": 3,
       "rhythm_role": "RIVAL_MIND_GAME",
-      "title": "Under the Spotlight",
-      "subtitle": "Round 3 · The Vetting Chamber, Geneva",
-      "difficulty_label": "EASY",
-      "pass_goal": "Answer 4 of 5 spotlight questions right and declare who your mind answers to.",
+      "title": "Mara's Will & Charter",
+      "subtitle": "Warmup 3 · Dr. Mara Sato's Study, Geneva",
+      "difficulty_label": "EASY · WARMUP",
+      "pass_goal": "Try tapping 2x Double Down whenever you feel confident to double your points!",
       "estimated_minutes": 10,
       "venue": "ch",
       "venue_region": "CH",
@@ -3236,11 +3248,11 @@
       "camera_preset": "CAM_ORB_CLOSE",
       "music_layer": "L4_CountdownEscalation",
       "question_count": 7,
-      "time_per_question_sec": 22,
+      "time_per_question_sec": 30,
       "difficulty_tier": 2,
       "irt_b_range": [
-        -1.4,
-        -0.65
+        -1.6,
+        -1.05
       ],
       "narrative_tags": [
         "HIGH_POWER",
@@ -3261,7 +3273,7 @@
       "mutators": [
         "BLACKOUT_SPOTLIGHT"
       ],
-      "mutator_brief": "Spotlight Round: stay sharp under bright broadcast lights and try a bold 2x Wager when confident!",
+      "mutator_brief": "Easy warmup: when you know an answer cold, tap 2x DOUBLE DOWN for double points (+600)!",
       "speaker": "vance",
       "rival_id": "vance",
       "voice_clip": "res://assets/voice/vance_manifesto.mp3",
@@ -3281,8 +3293,8 @@
           "speaker_role": "Chief Host · The Meridian",
           "portrait": "res://assets/portraits_cutout/vance.png",
           "mood": "COMMANDING",
-          "tell_hint": "Steps into the bright downlight as the prize purse flashes behind him.",
-          "text": "I'm Julian Vance. The World Council wants one unaffiliated polymath to hold a hundred million dollar endowment—and the lone human veto key over The Ledger.",
+          "tell_hint": "Julian speaks warmly of Mara, his voice cooling slightly at Lindqvist's name.",
+          "text": "Mara spent forty years building the Meridian Archive with me—and Chancellor Lindqvist's board has spent three weeks trying to lock it away. Let's open with a classic warmup.",
           "voice_clip": "res://assets/voice/vance_intro_2.mp3"
         },
         {
@@ -3292,15 +3304,15 @@
           "speaker_role": "Chief Host · The Meridian",
           "portrait": "res://assets/portraits_cutout/vance.png",
           "mood": "INTENSE",
-          "tell_hint": "Leans over the marble table, voice dropping low and serious.",
-          "text": "One last question before the world watches. If you hold the sharpest mind on Earth, who does it answer to?",
+          "tell_hint": "Mara's brass charter recorder clicks softly on the walnut desk.",
+          "text": "Between us—if you win Mara's archive and a hundred million dollars, who should knowledge answer to? Institutions, the public, or one independent mind?",
           "voice_clip": "res://assets/voice/vance_manifesto.mp3"
         }
       ],
       "choices": [
         {
           "id": "ch_3_manifesto_council",
-          "label": "World Law & Order",
+          "label": "Trusted Institutions",
           "subtext": "Brilliance needs structure. I will answer to the World Council Charter.",
           "impact_badge": "+15 Council Favor · Lindqvist pleased",
           "tone": "gold",
@@ -3314,12 +3326,12 @@
               "manifesto": "COUNCIL"
             }
           },
-          "response_line": "Diplomatic. Let's hope the Council deserves that trust behind closed doors.",
+          "response_line": "Measured and diplomatic. Let's hope the board lives up to that trust once the cameras switch off.",
           "next_mission_id": "ch_4"
         },
         {
           "id": "ch_3_manifesto_public",
-          "label": "The People Watching",
+          "label": "Everyone — Open to the World",
           "subtext": "The truth archive belongs to humanity—not world leaders bargaining in private.",
           "impact_badge": "+15 Public Trust · +8 Integrity",
           "tone": "cyan",
@@ -3334,12 +3346,12 @@
               "manifesto": "PUBLIC"
             }
           },
-          "response_line": "Careful saying that in Geneva. Some people upstairs paid for those curtains.",
+          "response_line": "Spoken like Mara herself. Just expect a few icy stares from the folks upstairs who prefer locked drawers.",
           "next_mission_id": "ch_4"
         },
         {
           "id": "ch_3_manifesto_self",
-          "label": "Only Facts—and Myself",
+          "label": "An Independent Mind",
           "subtext": "Crowds panic and politicians scheme. I answer to cold evidence alone.",
           "impact_badge": "-10 Integrity · Soren respects you",
           "tone": "crimson",
@@ -3353,7 +3365,7 @@
               "manifesto": "SELF"
             }
           },
-          "response_line": "Fearless. That exact answer cost my favorite player his name—never mind.",
+          "response_line": "Fearless. The last person who gave me that exact answer won our 2019 prototype—ah, story for another city.",
           "next_mission_id": "ch_4"
         }
       ],
@@ -3366,11 +3378,11 @@
           "portrait": "res://assets/portraits_cutout/vance.png",
           "mood": "IMPRESSED",
           "tell_hint": "Adjusts his left cufflink quickly, hiding genuine surprise.",
-          "text": "Bold wager—and dead right. Now let's see how you price a risk.",
+          "text": "Bold call—and dead right. Let's finish Geneva's warmup with Mara's favorite brass instrument.",
           "voice_clip": "res://assets/voice/vance_overclock_win.mp3"
         }
       ],
-      "cliffhanger_hook": "Vance opens a velvet case—placing a gleaming brass compass dial dead center.",
+      "cliffhanger_hook": "Julian sets down Mara's antique brass dial—time for the Closest-Year warmup.",
       "mission_category": "CORE_SPINE",
       "side_slot": 0,
       "core_mission_index": 3
@@ -3382,10 +3394,10 @@
       "hub_id": "ch",
       "rhythm_slot": 4,
       "rhythm_role": "HIGH_STAKES_AUDIBLE",
-      "title": "Double or Nothing",
-      "subtitle": "Round 4 · The Vetting Chamber, Geneva",
-      "difficulty_label": "EASY",
-      "pass_goal": "Clear 4 of 5 questions—preview each topic and wager Safe (1x) or Double (2x)!",
+      "title": "The Closest-Year Dial",
+      "subtitle": "Warmup 4 · Dr. Mara Sato's Study, Geneva",
+      "difficulty_label": "EASY · WARMUP",
+      "pass_goal": "Test your instincts on dates and trivia—even close guesses score points on the dial!",
       "estimated_minutes": 11,
       "venue": "ch",
       "venue_region": "CH",
@@ -3394,11 +3406,11 @@
       "camera_preset": "CAM_CHRONO_OVERHEAD",
       "music_layer": "L3_DeductionPulse",
       "question_count": 7,
-      "time_per_question_sec": 22,
+      "time_per_question_sec": 30,
       "difficulty_tier": 2,
       "irt_b_range": [
-        -1.2,
-        -0.5
+        -1.45,
+        -0.95
       ],
       "narrative_tags": [
         "HORIZON_TECH",
@@ -3418,7 +3430,7 @@
       "mutators": [
         "DOUBLE_OR_NOTHING"
       ],
-      "mutator_brief": "Double or Nothing: preview each topic first, then pick Safe (1x) or Double (2x) stakes!",
+      "mutator_brief": "Easy warmup: drag the year slider or tap -1 / +1. Wide tolerance rewards smart estimates!",
       "speaker": "vance",
       "rival_id": "vance",
       "voice_clip": "res://assets/voice/vance_intro_4.mp3",
@@ -3443,8 +3455,8 @@
           "speaker_role": "Chief Host · The Meridian",
           "portrait": "res://assets/portraits_cutout/vance.png",
           "mood": "MEASURED",
-          "tell_hint": "Slides the golden trophy case forward beside the antique chess pieces.",
-          "text": "Anyone can guess a name. Great minds know when to play safe and when to double down.",
+          "tell_hint": "Julian spins the engraved brass dial across Mara's desk with genuine fondness.",
+          "text": "Last warmup—Mara's favorite brass toy, the Closest-Year Dial. Even a close estimate scores points, so trust your gut.",
           "voice_clip": "res://assets/voice/vance_intro_4.mp3"
         },
         {
@@ -3454,15 +3466,15 @@
           "speaker_role": "Rogue Broadcast Producer",
           "portrait": "res://assets/portraits_cutout/teo.png",
           "mood": "URGENT",
-          "tell_hint": "Blinks a quick message onto your tablet—'LOOK UNDER THE TROPHY BASE.'",
-          "text": "Pick your starting perk cleanly—you'll carry it into every city ahead.",
-          "voice_clip": "res://assets/voice/teo_whisper.mp3"
+          "tell_hint": "Teo grins from the audio console, holding up two freshly printed credential cards.",
+          "text": "Also, pick your favorite starting edge before we stamp your passport—you'll carry it into every city ahead.",
+          "voice_clip": null
         }
       ],
       "choices": [
         {
           "id": "ch_4_maverick_tune",
-          "label": "Choose High-Stakes Edge",
+          "label": "Bold Double-Down Edge",
           "subtext": "Built for bold bettors—boosts your 2x Wager bonus points on every hit!",
           "impact_badge": "Unlock High-Stakes Edge · +5 Public",
           "tone": "crimson",
@@ -3476,12 +3488,12 @@
               "persona_bias": "MAVERICK"
             }
           },
-          "response_line": "A gambler's nerve with a scholar's eye. Logged in your passport.",
+          "response_line": "A card player's nerve paired with a scholar's curiosity. Engraved straight into your passport.",
           "next_mission_id": "ch_5"
         },
         {
           "id": "ch_4_diplomat_tune",
-          "label": "Choose Extra Time Edge",
+          "label": "Extra Calm & Time Edge",
           "subtext": "Built for steady thinkers—adds +2 seconds to every question timer!",
           "impact_badge": "Unlock Extra Time Edge · +6 Integrity",
           "tone": "gold",
@@ -3495,7 +3507,7 @@
               "persona_bias": "DIPLOMAT"
             }
           },
-          "response_line": "Two extra heartbeats of calm often beat raw speed under pressure.",
+          "response_line": "Two extra heartbeats of breathing room beat frantic guessing every single day of the week.",
           "next_mission_id": "ch_5"
         }
       ],
@@ -3508,11 +3520,11 @@
           "portrait": "res://assets/portraits_cutout/vance.png",
           "mood": "PLEASED",
           "tell_hint": "Tilts the brass trophy so lamplight catches two scratched digits: '00.'",
-          "text": "Brilliant deduction. One final Geneva round opens the world map.",
+          "text": "Brilliant deduction. One celebratory Geneva finale unlocks your first flight on the World Globe.",
           "voice_clip": "res://assets/voice/vance_correct_2.mp3"
         }
       ],
-      "cliffhanger_hook": "A brass passport stamp clicks open as the 3D World Globe lights up London and Tokyo.",
+      "cliffhanger_hook": "Mara's brass press warms up—one final Geneva celebration opens London and Tokyo on the World Globe.",
       "mission_category": "CORE_SPINE",
       "side_slot": 0,
       "core_mission_index": 4
@@ -3525,9 +3537,9 @@
       "rhythm_slot": 5,
       "rhythm_role": "RELIC_BOSS_SHOWDOWN",
       "title": "Geneva Finale: Choose Your Flight",
-      "subtitle": "Boss Round · The Vetting Chamber, Geneva",
-      "difficulty_label": "EASY",
-      "pass_goal": "Win the Geneva Boss Round to unlock the Brass Astrolabe and fly to London or Tokyo!",
+      "subtitle": "Stage 1 Finale · Dr. Mara Sato's Study, Geneva",
+      "difficulty_label": "EASY · WARMUP",
+      "pass_goal": "Complete Geneva's celebratory warmup round to stamp your passport and pick London or Tokyo.",
       "estimated_minutes": 13,
       "venue": "ch",
       "venue_region": "CH",
@@ -3536,11 +3548,11 @@
       "camera_preset": "CAM_GLOBE_HERO",
       "music_layer": "L5_StreakEuphoria",
       "question_count": 8,
-      "time_per_question_sec": 22,
+      "time_per_question_sec": 30,
       "difficulty_tier": 3,
       "irt_b_range": [
-        -1.0,
-        -0.35
+        -1.35,
+        -0.85
       ],
       "narrative_tags": [
         "SOVEREIGN_BLOC",
@@ -3563,7 +3575,7 @@
       "mutators": [
         "CHAIN_SYNTHESIS"
       ],
-      "mutator_brief": "Geneva Boss Showdown: every right answer carries a free bonus clue into the next question!",
+      "mutator_brief": "Stage 1 Finale: friendly pace, classic questions, and your first World Tour boarding pass!",
       "speaker": "vance",
       "rival_id": "vance",
       "voice_clip": "res://assets/voice/vance_stamp.mp3",
@@ -3585,8 +3597,8 @@
           "speaker_role": "Chief Host · The Meridian",
           "portrait": "res://assets/portraits_cutout/vance.png",
           "mood": "TRIUMPHANT",
-          "tell_hint": "Stamps crimson wax onto your black-glass World Circuit passport.",
-          "text": "Impressive. Your Meridian Passport is stamped. Spin the globe—the circuit awaits.",
+          "tell_hint": "Warm crimson wax seals your Geneva Visa beside Mara's astrolabe crest.",
+          "text": "Splendid warmup. Your Meridian Passport is officially stamped—and the world tour opens ahead of you.",
           "voice_clip": "res://assets/voice/vance_stamp.mp3"
         },
         {
@@ -3596,9 +3608,9 @@
           "speaker_role": "Chief Host · The Meridian",
           "portrait": "res://assets/portraits_cutout/vance.png",
           "mood": "CRYPTIC",
-          "tell_hint": "Touches his left cufflink as golden routes glow toward London and Tokyo.",
-          "text": "London wants you first. Tokyo wants you first. Whichever city waits will study your tape.",
-          "voice_clip": "res://assets/voice/vance_intro_3.mp3"
+          "tell_hint": "Golden flight arcs shimmer across the brass globe toward London and Tokyo.",
+          "text": "London wants you first. Tokyo wants you first. Pick your departure—and whichever city waits will study your tape.",
+          "voice_clip": "res://assets/voice/vance_victory.mp3"
         }
       ],
       "choices": [
@@ -3619,7 +3631,7 @@
               "act1_track": "SOVEREIGN_FIRST"
             }
           },
-          "response_line": "Wheels up for London in forty minutes. Mind the glass floor tiles.",
+          "response_line": "Wheels up for London in forty minutes. Say hello to Nadia—and do mind the glass floor tiles.",
           "next_mission_id": "gb_1"
         },
         {
@@ -3639,7 +3651,7 @@
               "act1_track": "HORIZON_FIRST"
             }
           },
-          "response_line": "Bold detour. Tokyo loves speed—let's see if they handle turbulence.",
+          "response_line": "Bold detour. Soren Kael loves high-altitude company—just keep an eye on his silver coin.",
           "next_mission_id": "jp_1"
         }
       ],
@@ -3652,11 +3664,11 @@
           "portrait": "res://assets/portraits_cutout/vance.png",
           "mood": "COMPOSED",
           "tell_hint": "Speaks softly into his lapel mic as your private elevator doors shut.",
-          "text": "Profile match confirmed. Phase One is underway.",
+          "text": "Warmup complete and Geneva stamped. Mara's eight-city tour officially begins.",
           "voice_clip": "res://assets/voice/vance_victory.mp3"
         }
       ],
-      "cliffhanger_hook": "Mid-flight, your passport screen flashes an anonymous message: 'ASK WHO WON IN 2019.'",
+      "cliffhanger_hook": "As your boarding pass prints, Teo notices two VIP rivals already studying your Geneva warmup tape.",
       "mission_category": "CORE_SPINE",
       "side_slot": 0,
       "core_mission_index": 5
@@ -3673,7 +3685,7 @@
       "rhythm_role": "COVERT_INVESTIGATION",
       "title": "The 2017 Bedrock Invoice",
       "subtitle": "Sub-Lake Concrete Vaults · Geneva",
-      "difficulty_label": "EASY · DOSSIER OP",
+      "difficulty_label": "EASY · WARMUP · DOSSIER OP",
       "pass_goal": "Audit 11 archival engineering records from the 2017 Lake Geneva pour.",
       "estimated_minutes": 14,
       "venue": "ch",
@@ -3683,11 +3695,11 @@
       "camera_preset": "TABLETOP_INTIMATE",
       "music_layer": "mystery",
       "question_count": 11,
-      "time_per_question_sec": 22,
+      "time_per_question_sec": 30,
       "difficulty_tier": 2,
       "irt_b_range": [
-        -1.35,
-        -0.45
+        -1.65,
+        -0.9
       ],
       "narrative_tags": [
         "INVESTIGATIVE",
@@ -3829,7 +3841,7 @@
       "rhythm_role": "RIVAL_MIND_GAME",
       "title": "Cufflink Frequency Sweep",
       "subtitle": "Broadcast Gallery B · Geneva",
-      "difficulty_label": "EASY · DOSSIER OP",
+      "difficulty_label": "EASY · WARMUP · DOSSIER OP",
       "pass_goal": "Isolate 12 encrypted midnight signal bursts inside Control Gallery B.",
       "estimated_minutes": 15,
       "venue": "ch",
@@ -3839,11 +3851,11 @@
       "camera_preset": "TABLETOP_INTIMATE",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 22,
+      "time_per_question_sec": 30,
       "difficulty_tier": 2,
       "irt_b_range": [
-        -1.35,
-        -0.45
+        -1.65,
+        -0.9
       ],
       "narrative_tags": [
         "ESPIONAGE",
@@ -3983,7 +3995,7 @@
       "rhythm_role": "COVERT_INVESTIGATION",
       "title": "The Eleven Signed NDAs",
       "subtitle": "Sealed Registry Annex · Geneva",
-      "difficulty_label": "EASY · DOSSIER OP",
+      "difficulty_label": "EASY · WARMUP · DOSSIER OP",
       "pass_goal": "Cross-check 12 redacted contender files from the unpublicized 2019 pilot.",
       "estimated_minutes": 15,
       "venue": "ch",
@@ -3993,11 +4005,11 @@
       "camera_preset": "TABLETOP_INTIMATE",
       "music_layer": "mystery",
       "question_count": 12,
-      "time_per_question_sec": 22,
+      "time_per_question_sec": 30,
       "difficulty_tier": 2,
       "irt_b_range": [
-        -1.35,
-        -0.45
+        -1.65,
+        -0.9
       ],
       "narrative_tags": [
         "CLASSIFIED_LEDGER",
@@ -4137,7 +4149,7 @@
       "rhythm_role": "RIVAL_MIND_GAME",
       "title": "Iron Laurel Preliminary Hearing",
       "subtitle": "Chancery Committee Room · Geneva",
-      "difficulty_label": "EASY · DOSSIER OP",
+      "difficulty_label": "EASY · WARMUP · DOSSIER OP",
       "pass_goal": "Withstand 12 pointed treaty and governance challenges from Sovereign counsel.",
       "estimated_minutes": 15,
       "venue": "ch",
@@ -4147,11 +4159,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 22,
+      "time_per_question_sec": 30,
       "difficulty_tier": 2,
       "irt_b_range": [
-        -1.35,
-        -0.45
+        -1.65,
+        -0.9
       ],
       "narrative_tags": [
         "SOVEREIGN_BLOC",
@@ -4292,7 +4304,7 @@
       "rhythm_role": "COVERT_INVESTIGATION",
       "title": "Gallery B Mirror Calibration",
       "subtitle": "Optical Testing Rig · Geneva",
-      "difficulty_label": "EASY · DOSSIER OP",
+      "difficulty_label": "EASY · WARMUP · DOSSIER OP",
       "pass_goal": "Reconstruct 12 optical and historical clues behind the Vetting Chamber glass.",
       "estimated_minutes": 15,
       "venue": "ch",
@@ -4302,11 +4314,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "mystery",
       "question_count": 12,
-      "time_per_question_sec": 22,
+      "time_per_question_sec": 30,
       "difficulty_tier": 2,
       "irt_b_range": [
-        -1.35,
-        -0.45
+        -1.65,
+        -0.9
       ],
       "narrative_tags": [
         "LATERAL_DEDUCTION",
@@ -4447,7 +4459,7 @@
       "rhythm_role": "HIGH_STAKES_AUDIBLE",
       "title": "Old Town Watchmaker's Salon",
       "subtitle": "Rue du Rhône Cellar · Geneva",
-      "difficulty_label": "EASY · DOSSIER OP",
+      "difficulty_label": "EASY · WARMUP · DOSSIER OP",
       "pass_goal": "Win 12 double-stakes horology, science, and craft rounds off camera.",
       "estimated_minutes": 15,
       "venue": "ch",
@@ -4457,11 +4469,11 @@
       "camera_preset": "TABLETOP_INTIMATE",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 22,
+      "time_per_question_sec": 30,
       "difficulty_tier": 2,
       "irt_b_range": [
-        -1.35,
-        -0.45
+        -1.65,
+        -0.9
       ],
       "narrative_tags": [
         "BLACK_SALON",
@@ -4601,7 +4613,7 @@
       "rhythm_role": "HIGH_STAKES_AUDIBLE",
       "title": "Diplomatic Pouch Clearance",
       "subtitle": "Cointrin Tarmac Lounge · Geneva",
-      "difficulty_label": "EASY · DOSSIER OP",
+      "difficulty_label": "EASY · WARMUP · DOSSIER OP",
       "pass_goal": "Clear 12 rapid world-affairs and geography dispatches before wheels-up.",
       "estimated_minutes": 15,
       "venue": "ch",
@@ -4611,11 +4623,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 22,
+      "time_per_question_sec": 30,
       "difficulty_tier": 2,
       "irt_b_range": [
-        -1.35,
-        -0.45
+        -1.65,
+        -0.9
       ],
       "narrative_tags": [
         "ESPIONAGE",
@@ -4754,7 +4766,7 @@
       "title": "Arrival in London",
       "subtitle": "Round 1 · The Sovereign Rotunda, London",
       "difficulty_label": "EASY+",
-      "pass_goal": "Beat Nadia Al-Mansoor across 5 London debut questions.",
+      "pass_goal": "Warm up in London against acoustic engineer Nadia Al-Mansoor.",
       "estimated_minutes": 12,
       "venue": "gb",
       "venue_region": "GB",
@@ -4763,11 +4775,11 @@
       "camera_preset": "CAM_INTERVIEW_OTS",
       "music_layer": "L1_VenueBed",
       "question_count": 8,
-      "time_per_question_sec": 20,
+      "time_per_question_sec": 26,
       "difficulty_tier": 3,
       "irt_b_range": [
-        -1.0,
-        -0.55
+        -1.45,
+        -0.95
       ],
       "narrative_tags": [
         "SOVEREIGN_BLOC",
@@ -4787,7 +4799,7 @@
       "mutators": [
         "NONE"
       ],
-      "mutator_brief": "London debut: classic trivia with British history & culture flavor against rival Nadia Al-Mansoor.",
+      "mutator_brief": "Stage 2 London: welcoming pace with History, Arts, and World Culture flavor!",
       "speaker": "nadia",
       "rival_id": "nadia",
       "voice_clip": "res://assets/voice/nadia_london_intro.mp3",
@@ -4809,8 +4821,8 @@
           "speaker_role": "Acoustic Engineer & Rival",
           "portrait": "res://assets/portraits_cutout/nadia.png",
           "mood": "POISED",
-          "tell_hint": "Quick blink and slight smirk under London's crystal chandelier.",
-          "text": "So you're the Geneva prodigy. Welcome to the Sovereign Rotunda. Try not to blink.",
+          "tell_hint": "Nadia offers a sharp, polite smile—her eyes flicking once toward the sealed glass floor.",
+          "text": "So you're the 2:14 AM solver who won Mara's Geneva seat. Welcome to the Sovereign Rotunda—let's see if you're as sharp under London lights.",
           "voice_clip": "res://assets/voice/nadia_london_intro.mp3"
         },
         {
@@ -4820,9 +4832,9 @@
           "speaker_role": "Chief Host · The Meridian",
           "portrait": "res://assets/portraits_cutout/vance.png",
           "mood": "THEATRICAL",
-          "tell_hint": "Gestures up at two thousand watching diplomats in the balcony.",
-          "text": "Two thousand guests above you. Show London whether Geneva was pure talent.",
-          "voice_clip": "res://assets/voice/vance_correct_1.mp3"
+          "tell_hint": "Rain patters softly on the Victorian dome overhead as the round begins.",
+          "text": "Welcome to Mara's London Rotunda. Relax, trust your instincts, and show the crowd Geneva was no fluke.",
+          "voice_clip": "res://assets/voice/london_vance_rotunda_1.mp3"
         }
       ],
       "variant_branches": {
@@ -4850,7 +4862,7 @@
       "choices": [
         {
           "id": "gb_1_salute_nadia",
-          "label": "Praise Her Engineering Work",
+          "label": "Admire Her Acoustic Engineering",
           "subtext": "I read your Cairo sound research. Glad to test myself against real skill.",
           "impact_badge": "+1 Nadia Bond · +6 Integrity",
           "tone": "cyan",
@@ -4863,12 +4875,12 @@
               "london_opener": "RESPECT"
             }
           },
-          "response_line": "Flattery won't slow me down—though you do have better taste than reporters.",
+          "response_line": "Flattery won't slow my buzzer—though you definitely do better homework than the London press.",
           "next_mission_id": "gb_2"
         },
         {
           "id": "gb_1_call_tell",
-          "label": "Call Out Her Quick Blink",
+          "label": "Tease Her About Her Quick Blink",
           "subtext": "You blink half a beat before every big wager. I won't miss it.",
           "impact_badge": "+10 Public Trust · -1 Nadia",
           "tone": "crimson",
@@ -4881,7 +4893,7 @@
               "london_opener": "TAUNT"
             }
           },
-          "response_line": "Bold guess. Let's see if your read holds once the clock starts ticking.",
+          "response_line": "Oh, you're already reading tells? Careful—I've been studying this stage since Mara designed it.",
           "next_mission_id": "gb_2"
         }
       ],
@@ -4894,11 +4906,11 @@
           "portrait": "res://assets/portraits_cutout/nadia.png",
           "mood": "GUARDED",
           "tell_hint": "Jaw tightens as she glances straight down through a floor glass panel.",
-          "text": "Better than advertised. Watch your step—the vault under this floor holds sharper secrets.",
-          "voice_clip": "res://assets/voice/nadia_london_intro.mp3"
+          "text": "Better than advertised. Hey—before security clears the room, look straight down through the floor glass.",
+          "voice_clip": null
         }
       ],
-      "cliffhanger_hook": "Under your shoe, through floor glass, sealed mahogany drawers read: 'TRIAL ZERO — 2019.'",
+      "cliffhanger_hook": "Beneath your shoes, through Mara's glass floor, a locked mahogany drawer reads: 'TRIAL ZERO — 2019.'",
       "mission_category": "CORE_SPINE",
       "side_slot": 0,
       "core_mission_index": 6,
@@ -4914,7 +4926,7 @@
       "title": "The Glass Floor Archive",
       "subtitle": "Round 2 · The Sovereign Rotunda, London",
       "difficulty_label": "EASY+",
-      "pass_goal": "Answer 4 of 5 questions to crack the secret behind London's 2019 archive.",
+      "pass_goal": "Keep your cool across London's second round while uncovering Mara's 2019 archive clue.",
       "estimated_minutes": 13,
       "venue": "gb",
       "venue_region": "GB",
@@ -4923,11 +4935,11 @@
       "camera_preset": "CAM_INTERVIEW_OTS",
       "music_layer": "L3_DeductionPulse",
       "question_count": 9,
-      "time_per_question_sec": 20,
+      "time_per_question_sec": 26,
       "difficulty_tier": 3,
       "irt_b_range": [
-        -0.8,
-        -0.35
+        -1.3,
+        -0.8
       ],
       "narrative_tags": [
         "INVESTIGATIVE",
@@ -4974,9 +4986,9 @@
           "speaker_role": "Rogue Broadcast Producer",
           "portrait": "res://assets/portraits_cutout/teo.png",
           "mood": "CONSPIRATORIAL",
-          "tell_hint": "Checks the overhead camera sweep while pretending to fix a floor cable.",
-          "text": "Wait for the ad break. That drawer under your heel hides an erased 2019 contest.",
-          "voice_clip": "res://assets/voice/teo_whisper.mp3",
+          "tell_hint": "Teo pretends to check a cable while pointing subtly at the plaque under the glass.",
+          "text": "Keep your voice down—Lindqvist's security detail just swept the green room looking for that 2019 Trial Zero plate under your heel.",
+          "voice_clip": "res://assets/voice/london_teo_corridor_1.mp3",
           "passive_elo_check": {
             "domain_id": 0,
             "min_elo": 1250,
@@ -4990,15 +5002,15 @@
           "speaker_role": "Acoustic Engineer & Rival",
           "portrait": "res://assets/portraits_cutout/nadia.png",
           "mood": "TENSE",
-          "tell_hint": "Steps neatly around the glass tile, brushing her gold ear-cuff.",
-          "text": "Official stories in London are always edited twice. Keep your eyes on the round.",
-          "voice_clip": "res://assets/voice/nadia_london_intro.mp3"
+          "tell_hint": "Nadia's poise slips for half a second—this isn't just a tournament to her.",
+          "text": "The board swore Geneva this year was the first Meridian contest. Why is my brother's handwriting stamped under Mara's floor?",
+          "voice_clip": "res://assets/voice/london_nadia_trial00_2.mp3"
         }
       ],
       "choices": [
         {
           "id": "gb_2_scan_drawer",
-          "label": "Snap a Photo of the Label",
+          "label": "Snap a Quick Photo of the Label",
           "subtext": "Capture the hidden 2019 archive stamp while studio lights dim for break.",
           "impact_badge": "+6 Integrity · +1 Teo · -5 Council",
           "tone": "cyan",
@@ -5013,12 +5025,12 @@
               "london_drawer_scanned": true
             }
           },
-          "response_line": "Got the stamp—'ERASED BY COUNCIL VOTE.' Now we know they're hiding a past winner.",
+          "response_line": "Got it—'TRIAL ZERO · SEALED BY BOARD VOTE.' Mara left that glass transparent on purpose.",
           "next_mission_id": "gb_3"
         },
         {
           "id": "gb_2_keep_poise",
-          "label": "Keep Hands Visible on Table",
+          "label": "Keep Your Hands Visible & Stay Cool",
           "subtext": "Stay calm under the cameras so London security has nothing to suspect.",
           "impact_badge": "+10 Council · +4 Integrity",
           "tone": "gold",
@@ -5031,7 +5043,7 @@
               "london_drawer_scanned": false
             }
           },
-          "response_line": "Smart restraint—though secrets buried under glass rarely stay quiet.",
+          "response_line": "Smart poker face—though secrets Mara buried under glass never stay quiet for long.",
           "next_mission_id": "gb_3"
         }
       ],
@@ -5044,8 +5056,8 @@
           "portrait": "res://assets/portraits_cutout/teo.png",
           "mood": "ALERT",
           "tell_hint": "Glances swiftly toward heavy oak doors swinging open behind you.",
-          "text": "Heads up. Chancellor Lindqvist just cleared the lounge—carrying a wax-sealed folder.",
-          "voice_clip": "res://assets/voice/teo_whisper.mp3"
+          "text": "Heads up—Chancellor Lindqvist just cleared the tea lounge and asked for you by name.",
+          "voice_clip": null
         }
       ],
       "cliffhanger_hook": "Chancellor Ingrid Lindqvist steps into lamplight and removes her glasses—slowly.",
@@ -5061,7 +5073,7 @@
       "hub_id": "gb",
       "rhythm_slot": 3,
       "rhythm_role": "RIVAL_MIND_GAME",
-      "title": "Lindqvist's Secret Offer",
+      "title": "Lindqvist's Tea-Room Offer",
       "subtitle": "Round 3 · The Sovereign Rotunda, London",
       "difficulty_label": "EASY+",
       "pass_goal": "Win 4 of 6 questions and decide whether to accept or burn Lindqvist's secret briefing.",
@@ -5073,11 +5085,11 @@
       "camera_preset": "CAM_INTERVIEW_OTS",
       "music_layer": "L2_InterviewTension",
       "question_count": 9,
-      "time_per_question_sec": 20,
+      "time_per_question_sec": 26,
       "difficulty_tier": 4,
       "irt_b_range": [
-        -0.6,
-        -0.2
+        -1.15,
+        -0.65
       ],
       "narrative_tags": [
         "SOVEREIGN_BLOC",
@@ -5119,8 +5131,8 @@
           "speaker_role": "Chair, Sovereign Bloc",
           "portrait": "res://assets/portraits_cutout/lindqvist.png",
           "mood": "ICY",
-          "tell_hint": "Slowly removes her platinum glasses—the polite mask is off.",
-          "text": "A private briefing before the cameras roll. Smart contestants rarely refuse a head start.",
+          "tell_hint": "Lindqvist sets down her teacup and slides a wax-sealed folder across the walnut.",
+          "text": "A quiet word before the broadcast begins. Dr. Sato loved clever games, yet serious archives require steady hands.",
           "voice_clip": "res://assets/voice/lindqvist_london.mp3",
           "passive_elo_check": {
             "domain_id": 0,
@@ -5135,15 +5147,15 @@
           "speaker_role": "Chair, Sovereign Bloc",
           "portrait": "res://assets/portraits_cutout/lindqvist.png",
           "mood": "CALCULATING",
-          "tell_hint": "Slides the cream envelope two inches closer across dark walnut.",
-          "text": "Sovereign expects order here. You will open this folder—or play London without protection.",
-          "voice_clip": "res://assets/voice/lindqvist_london.mp3"
+          "tell_hint": "She removes her platinum glasses—cool, patient, and utterly convinced everyone has a price.",
+          "text": "Take this redaction cipher, and your opening decoy shatters automatically. Burn it, and you walk out alone.",
+          "voice_clip": "res://assets/voice/london_lindqvist_offer_2.mp3"
         }
       ],
       "choices": [
         {
           "id": "gb_3_accept_briefing",
-          "label": "Accept the Secret Briefing",
+          "label": "Accept the Sealed Folder",
           "subtext": "Unlock Sovereign Insider (removes 1 wrong choice on Q1), but Nadia grows suspicious.",
           "impact_badge": "Sovereign Insider · +18 Council · -14 Integrity",
           "tone": "crimson",
@@ -5161,12 +5173,12 @@
               "nadia_suspicion_audit": true
             }
           },
-          "response_line": "Sensible. Institutions remember who understands how power actually moves.",
+          "response_line": "Sensible. Institutions have long memories for people who appreciate steady hands.",
           "next_mission_id": "gb_4"
         },
         {
           "id": "gb_3_burn_briefing",
-          "label": "Burn It Unopened",
+          "label": "Decline & Burn It Unopened",
           "subtext": "Drop it straight in the candle dish—unlock Clean Hands (+25% no-hint bonus) & Camden Salon!",
           "impact_badge": "Clean Hands · +18 Integrity · Camden Salon",
           "tone": "gold",
@@ -5184,7 +5196,7 @@
               "black_salon_unlocked": true
             }
           },
-          "response_line": "Theatrical—and costly. You will regret refusing Sovereign shelter.",
+          "response_line": "Very theatrical—just like Mara. Remember this evening when the Rotunda turns chilly.",
           "next_mission_id": "gb_4"
         }
       ],
@@ -5197,8 +5209,8 @@
           "portrait": "res://assets/portraits_cutout/teo.png",
           "mood": "GRINNING",
           "tell_hint": "Slides a stamped crimson ticket quietly under your coffee saucer.",
-          "text": "Midnight. Arch 14 under Camden Lock. Come see trivia with zero Council rules.",
-          "voice_clip": "res://assets/voice/teo_whisper.mp3"
+          "text": "Midnight, Arch 14 under Camden Lock. Come see trivia night with zero board members and twice the espresso.",
+          "voice_clip": null
         }
       ],
       "cliffhanger_hook": "Teo's phone buzzes under the rim: 'Skip the Council car. Camden. Midnight.'",
@@ -5226,11 +5238,11 @@
       "camera_preset": "CAM_ORB_CLOSE",
       "music_layer": "L6_TwistFracture",
       "question_count": 9,
-      "time_per_question_sec": 20,
+      "time_per_question_sec": 26,
       "difficulty_tier": 4,
       "irt_b_range": [
-        -0.45,
-        -0.05
+        -0.95,
+        -0.5
       ],
       "narrative_tags": [
         "BLACK_SALON",
@@ -5278,9 +5290,9 @@
           "speaker_role": "Rogue Broadcast Producer",
           "portrait": "res://assets/portraits_cutout/teo.png",
           "mood": "EXCITED",
-          "tell_hint": "Sets a brass signal jammer onto scarred oak, silencing every phone.",
-          "text": "Welcome to Camden Underground. No diplomats, no hints—just raw human brilliance.",
-          "voice_clip": "res://assets/voice/teo_whisper.mp3"
+          "tell_hint": "String lights glow over brick arches as London's sharpest puzzle-solvers cheer from the booths.",
+          "text": "Welcome to Mara's favorite pub quiz cellar under Camden Lock. No cameras, no lawyers—just sharp minds and friendly wagers.",
+          "voice_clip": null
         },
         {
           "id": "gb_4_b2",
@@ -5289,9 +5301,9 @@
           "speaker_role": "Card Shark & Rival",
           "portrait": "res://assets/portraits_cutout/soren.png",
           "mood": "AMUSED",
-          "tell_hint": "Flips his silver coin out of brick shadows, eyes glinting behind amber glasses.",
-          "text": "Geneva's rising star slumming underground. Care to play without training wheels?",
-          "voice_clip": "res://assets/voice/soren_tokyo_intro.mp3"
+          "tell_hint": "Soren leans against a brick arch, flipping a silver coin with a warm grin.",
+          "text": "Well, well—Mara's 2:14 AM prodigy slumming it underground. Care to test your nerve without training wheels?",
+          "voice_clip": null
         }
       ],
       "variant_branches": {
@@ -5354,12 +5366,12 @@
               "camden_prize": "VAULT_CLUE_1"
             }
           },
-          "response_line": "'ERASED BY COUNCIL VOTE.' Guard that sheet—it unlocks the real story.",
+          "response_line": "'ERASED BY BOARD VOTE.' Fold that into your passport—it's the first real key to Mara's puzzle.",
           "next_mission_id": "gb_5"
         },
         {
           "id": "gb_4_buy_nadia_tape",
-          "label": "Trade for Nadia's Strategy Notes",
+          "label": "Trade for Nadia's Research Notes",
           "subtext": "Swap your winnings for underground notes on Nadia Al-Mansoor's weak spots.",
           "impact_badge": "-8 Integrity · +1 Soren · Boss Intel",
           "tone": "crimson",
@@ -5372,7 +5384,7 @@
               "camden_prize": "NADIA_INTEL"
             }
           },
-          "response_line": "Clever play. Turns out Nadia isn't chasing prize money—she's hunting a missing brother.",
+          "response_line": "Clever play. Nadia isn't here for the hundred million—she's tracing her missing brother Tariq.",
           "next_mission_id": "gb_5"
         }
       ],
@@ -5385,8 +5397,8 @@
           "portrait": "res://assets/portraits_cutout/soren.png",
           "mood": "IMPRESSED",
           "tell_hint": "Catches his coin cleanly and salutes with two fingers.",
-          "text": "Clean work. Hope we meet over Tokyo—if Nadia doesn't beat you tomorrow.",
-          "voice_clip": "res://assets/voice/soren_tokyo_intro.mp3"
+          "text": "Clean sweep. Hope we meet seventy floors up in Tokyo—assuming Nadia lets you leave London alive.",
+          "voice_clip": null
         }
       ],
       "cliffhanger_hook": "Dawn breaks over London as crews lift the bronze Armillary Sphere onto stage.",
@@ -5401,8 +5413,8 @@
       "hub_id": "gb",
       "rhythm_slot": 5,
       "rhythm_role": "RELIC_BOSS_SHOWDOWN",
-      "title": "London Boss: Face Nadia",
-      "subtitle": "Boss Round · The Sovereign Rotunda, London",
+      "title": "London Finale: Face Nadia",
+      "subtitle": "City Boss · The Sovereign Rotunda, London",
       "difficulty_label": "EASY+",
       "pass_goal": "Defeat Nadia Al-Mansoor to claim the London Armillary Sphere!",
       "estimated_minutes": 16,
@@ -5413,11 +5425,11 @@
       "camera_preset": "CAM_RELIC_HERO",
       "music_layer": "L5_StreakEuphoria",
       "question_count": 10,
-      "time_per_question_sec": 20,
+      "time_per_question_sec": 26,
       "difficulty_tier": 5,
       "irt_b_range": [
-        -0.3,
-        0.1
+        -0.8,
+        -0.35
       ],
       "narrative_tags": [
         "SOVEREIGN_BLOC",
@@ -5464,9 +5476,9 @@
           "speaker_role": "Acoustic Engineer & Rival",
           "portrait": "res://assets/portraits_cutout/nadia.png",
           "mood": "FIERCE",
-          "tell_hint": "Places both palms beside the spinning bronze sphere—pure focus.",
-          "text": "One trophy, zero shortcuts. Show London you actually earned your seat.",
-          "voice_clip": "res://assets/voice/nadia_london_intro.mp3"
+          "tell_hint": "Nadia squares her shoulders—fierce focus, zero malice, pure Queen's Gambit poise.",
+          "text": "No more warm-ups. Just your mind against mine under Mara's Sovereign dome—show London you earned your chair.",
+          "voice_clip": "res://assets/voice/nadia_on_boss_intro.mp3"
         },
         {
           "id": "gb_5_b2",
@@ -5475,15 +5487,15 @@
           "speaker_role": "Chief Host · The Meridian",
           "portrait": "res://assets/portraits_cutout/vance.png",
           "mood": "COMMANDING",
-          "tell_hint": "Lifts his brass watch as the dome skylight dims to warm gold.",
-          "text": "Speed round, trophy puzzle, and final wager. Win here and London is yours.",
-          "voice_clip": "res://assets/voice/vance_overclock_win.mp3"
+          "tell_hint": "Julian taps his silver pen beside his ear—quietly rooting for a clean duel.",
+          "text": "City Boss Showdown. Win the London Armillary Trophy and carry its secret onto your next flight.",
+          "voice_clip": "res://assets/voice/vance_on_boss_intro.mp3"
         }
       ],
       "choices": [
         {
           "id": "gb_5_show_notch",
-          "label": "Show Nadia the 'A.M. — 2019' Scratch",
+          "label": "Show Nadia the 'A.M. — 2019' Engraving",
           "subtext": "Quietly tilt the trophy ring toward her before broadcast cameras zoom in.",
           "impact_badge": "+2 Nadia Bond · +12 Integrity · London Trophy",
           "tone": "gold",
@@ -5497,12 +5509,12 @@
               "london_notch_shared": true
             }
           },
-          "response_line": "Nadia's jaw tightens hard. 'That's my brother's initials. Not another word on air.'",
+          "response_line": "Nadia's breath catches. 'That's Tariq's handwriting... Not another word on air. Meet me after the lights drop.'",
           "next_mission_id": "jp_1"
         },
         {
           "id": "gb_5_hide_notch",
-          "label": "Hide the Scratch With Your Sleeve",
+          "label": "Quietly Pocket the Engraving for Later",
           "subtext": "Keep the 2019 mystery strictly to yourself for later leverage.",
           "impact_badge": "+10 Council · -8 Integrity · London Trophy",
           "tone": "crimson",
@@ -5516,7 +5528,7 @@
               "london_notch_shared": false
             }
           },
-          "response_line": "You pocket the clue cleanly while the London hall erupts in applause.",
+          "response_line": "You keep the discovery shielded from Lindqvist's cameras while the Rotunda erupts in applause.",
           "next_mission_id": "jp_1"
         }
       ],
@@ -5529,7 +5541,7 @@
           "portrait": "res://assets/portraits_cutout/vance.png",
           "mood": "INTRIGUED",
           "tell_hint": "Taps his right-ear pen twice as the bronze sphere locks into your collection.",
-          "text": "London bows. Seventy stories of neon rain await in Tokyo.",
+          "text": "London belongs to you. Seventy floors of neon rain—and Soren Kael—await in Tokyo.",
           "voice_clip": "res://assets/voice/vance_victory.mp3"
         }
       ],
@@ -5561,11 +5573,11 @@
       "camera_preset": "TABLETOP_INTIMATE",
       "music_layer": "mystery",
       "question_count": 11,
-      "time_per_question_sec": 20,
+      "time_per_question_sec": 26,
       "difficulty_tier": 3,
       "irt_b_range": [
-        -0.8,
-        0.05
+        -1.2,
+        -0.45
       ],
       "narrative_tags": [
         "INVESTIGATIVE",
@@ -5716,11 +5728,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "mystery",
       "question_count": 12,
-      "time_per_question_sec": 20,
+      "time_per_question_sec": 26,
       "difficulty_tier": 3,
       "irt_b_range": [
-        -0.8,
-        0.05
+        -1.2,
+        -0.45
       ],
       "narrative_tags": [
         "ARCHIVE_CORE",
@@ -5871,11 +5883,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 20,
+      "time_per_question_sec": 26,
       "difficulty_tier": 3,
       "irt_b_range": [
-        -0.8,
-        0.05
+        -1.2,
+        -0.45
       ],
       "narrative_tags": [
         "ESPIONAGE",
@@ -6026,11 +6038,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 20,
+      "time_per_question_sec": 26,
       "difficulty_tier": 3,
       "irt_b_range": [
-        -0.8,
-        0.05
+        -1.2,
+        -0.45
       ],
       "narrative_tags": [
         "SOVEREIGN_BLOC",
@@ -6182,11 +6194,11 @@
       "camera_preset": "TABLETOP_INTIMATE",
       "music_layer": "mystery",
       "question_count": 12,
-      "time_per_question_sec": 20,
+      "time_per_question_sec": 26,
       "difficulty_tier": 3,
       "irt_b_range": [
-        -0.8,
-        0.05
+        -1.2,
+        -0.45
       ],
       "narrative_tags": [
         "MERIDIAN_ZERO",
@@ -6336,11 +6348,11 @@
       "camera_preset": "TABLETOP_INTIMATE",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 20,
+      "time_per_question_sec": 26,
       "difficulty_tier": 3,
       "irt_b_range": [
-        -0.8,
-        0.05
+        -1.2,
+        -0.45
       ],
       "narrative_tags": [
         "BLACK_SALON",
@@ -6490,11 +6502,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 20,
+      "time_per_question_sec": 26,
       "difficulty_tier": 3,
       "irt_b_range": [
-        -0.8,
-        0.05
+        -1.2,
+        -0.45
       ],
       "narrative_tags": [
         "ESPIONAGE",
@@ -6630,7 +6642,7 @@
       "rhythm_slot": 1,
       "rhythm_role": "ARRIVAL_QUALIFIER",
       "title": "Neon Speed Qualifier",
-      "subtitle": "Round 1 · The Sky Pavilion, Tokyo",
+      "subtitle": "Round 1 · The Horizon Sky Pavilion, Tokyo",
       "difficulty_label": "MEDIUM",
       "pass_goal": "Outscore Soren Kael in a fast-clock Tokyo speed round!",
       "estimated_minutes": 12,
@@ -6641,11 +6653,11 @@
       "camera_preset": "CAM_INTERVIEW_OTS",
       "music_layer": "L1_VenueBed",
       "question_count": 8,
-      "time_per_question_sec": 19,
+      "time_per_question_sec": 24,
       "difficulty_tier": 4,
       "irt_b_range": [
-        -0.5,
-        -0.05
+        -0.95,
+        -0.45
       ],
       "narrative_tags": [
         "HORIZON_TECH",
@@ -6688,8 +6700,8 @@
           "speaker_role": "Card Shark & Rival",
           "portrait": "res://assets/portraits_cutout/soren.png",
           "mood": "COCKY",
-          "tell_hint": "Rolls a silver coin across four knuckles above rain-slick neon glass.",
-          "text": "Seventy floors above Tokyo, friend. Hope your instincts are faster than my odds.",
+          "tell_hint": "Rain streaks the Shibuya glass as Soren rolls a silver coin across his fingers.",
+          "text": "Seventy floors above Shibuya, friend. Mara told me you'd be fun to play against—hope your instincts move faster than my odds.",
           "voice_clip": "res://assets/voice/soren_tokyo_intro.mp3"
         },
         {
@@ -6699,8 +6711,8 @@
           "speaker_role": "Chief Host · The Meridian",
           "portrait": "res://assets/portraits_cutout/vance.png",
           "mood": "SMOOTH",
-          "tell_hint": "Nods past glowing wooden lattice screens as a solo koto rings out.",
-          "text": "Horizon prizes pure speed. Show Tokyo that accuracy beats haste.",
+          "tell_hint": "Julian smiles warmly from the host podium.",
+          "text": "Horizon prizes quick reflexes, yet Mara always said calm accuracy beats reckless haste. Enjoy Tokyo.",
           "voice_clip": "res://assets/voice/vance_correct_1.mp3"
         }
       ],
@@ -6729,7 +6741,7 @@
       "choices": [
         {
           "id": "jp_1_match_pace",
-          "label": "Match His Speed",
+          "label": "Match Soren's Tempo",
           "subtext": "Embrace the fast clock and race Soren lock for lock.",
           "impact_badge": "+10 Public Trust · +1 Soren Bond",
           "tone": "cyan",
@@ -6742,12 +6754,12 @@
               "tokyo_tempo": "AGGRESSIVE"
             }
           },
-          "response_line": "Now we're talking. Nothing ruins a great view like hesitation.",
+          "response_line": "Now we're having fun! Nothing ruins a seventy-story view like overthinking.",
           "next_mission_id": "jp_2"
         },
         {
           "id": "jp_1_watch_hands",
-          "label": "Stay Calm & Watch His Hands",
+          "label": "Stay Calm & Read His Coin Tell",
           "subtext": "Ignore the trash talk and study Soren's silver coin every time he answers.",
           "impact_badge": "+8 Integrity · Spot Hidden Tell",
           "tone": "gold",
@@ -6760,7 +6772,7 @@
               "tokyo_tempo": "OBSERVANT"
             }
           },
-          "response_line": "Stare all you want—you still won't touch my split times.",
+          "response_line": "Watch the silver all you want, detective—you still have to beat my split times.",
           "next_mission_id": "jp_2"
         }
       ],
@@ -6773,8 +6785,8 @@
           "portrait": "res://assets/portraits_cutout/teo.png",
           "mood": "SUSPICIOUS",
           "tell_hint": "Freezes a slow-motion clip on his tablet screen.",
-          "text": "Soren locked Question 4 in under a second—faster than any human can read.",
-          "voice_clip": "res://assets/voice/teo_whisper.mp3"
+          "text": "Whoa—check the packet log. Soren locked Question Four in zero-point-eight seconds. Nobody reads that fast.",
+          "voice_clip": "res://assets/voice/tokyo_soren_telemetry_1.mp3"
         }
       ],
       "cliffhanger_hook": "In slow motion, Soren's coin freezes dead flat right before every impossible answer.",
@@ -6791,7 +6803,7 @@
       "rhythm_slot": 2,
       "rhythm_role": "COVERT_INVESTIGATION",
       "title": "Tracing the Hidden Signal",
-      "subtitle": "Round 2 · The Sky Pavilion, Tokyo",
+      "subtitle": "Round 2 · The Horizon Sky Pavilion, Tokyo",
       "difficulty_label": "MEDIUM",
       "pass_goal": "Score 4 of 6 right while Teo traces Soren's hidden earpiece signal.",
       "estimated_minutes": 13,
@@ -6802,11 +6814,11 @@
       "camera_preset": "CAM_INTERVIEW_OTS",
       "music_layer": "L3_DeductionPulse",
       "question_count": 9,
-      "time_per_question_sec": 19,
+      "time_per_question_sec": 24,
       "difficulty_tier": 4,
       "irt_b_range": [
-        -0.35,
-        0.15
+        -0.8,
+        -0.3
       ],
       "narrative_tags": [
         "HORIZON_TECH",
@@ -6853,9 +6865,9 @@
           "speaker_role": "Rogue Broadcast Producer",
           "portrait": "res://assets/portraits_cutout/teo.png",
           "mood": "URGENT",
-          "tell_hint": "Sweeps a hidden signal meter beside the dark lacquer table off-camera.",
-          "text": "Found it. A secret earpiece linked straight to Horizon's private server.",
-          "voice_clip": "res://assets/voice/teo_whisper.mp3",
+          "tell_hint": "Teo holds up his tablet waveform, genuinely impressed by the sheer audacity of the rig.",
+          "text": "Found it—there's a narrowband signal piggybacking on the bullet-train dampeners straight into Soren's collar.",
+          "voice_clip": null,
           "passive_elo_check": {
             "domain_id": 6,
             "min_elo": 1240,
@@ -6869,15 +6881,15 @@
           "speaker_role": "Card Shark & Rival",
           "portrait": "res://assets/portraits_cutout/soren.png",
           "mood": "SLICK",
-          "tell_hint": "His silver coin freezes flat between knuckles—glasses flashing gold.",
-          "text": "Up here we call it sharp intuition. Keep pace or fold.",
-          "voice_clip": "res://assets/voice/soren_tokyo_intro.mp3"
+          "tell_hint": "Soren's coin spins fast—he knows you've noticed something.",
+          "text": "Nice view from the seventy-second floor, right? Down there is Shibuya—up here, information is currency.",
+          "voice_clip": "res://assets/voice/tokyo_soren_backstage_1.mp3"
         }
       ],
       "choices": [
         {
           "id": "jp_2_log_packet",
-          "label": "Record Proof of the Cheat",
+          "label": "Save Clean Proof of the Signal",
           "subtext": "Let Teo save Horizon's illegal broadcast signal before confronting Soren.",
           "impact_badge": "+10 Integrity · +1 Teo · Terrace Proof",
           "tone": "cyan",
@@ -6891,12 +6903,12 @@
               "horizon_packet_logged": true
             }
           },
-          "response_line": "Clean recording saved. Now walk onto the rain terrace holding every card.",
+          "response_line": "Packet log archived. Now step onto the rain terrace holding every card in the deck.",
           "next_mission_id": "jp_3"
         },
         {
           "id": "jp_2_clone_key",
-          "label": "Copy Horizon's Secret Channel",
+          "label": "Mirror Horizon's Odds Channel",
           "subtext": "Quietly clone Soren's wireless key so you can read Horizon's hints too.",
           "impact_badge": "-12 Integrity · +8 Council · Cloned Key",
           "tone": "crimson",
@@ -6910,7 +6922,7 @@
               "horizon_cloned": true
             }
           },
-          "response_line": "Teo stares for two quiet seconds. 'Careful whose leash you pick up.'",
+          "response_line": "Teo raises an eyebrow. 'Careful whose shortcuts you borrow—Mara's will has an ethics clause.'",
           "next_mission_id": "jp_3"
         }
       ],
@@ -6923,8 +6935,8 @@
           "portrait": "res://assets/portraits_cutout/soren.png",
           "mood": "RATTLED",
           "tell_hint": "Pauses by the terrace door as his silver coin slips off his thumb.",
-          "text": "Wait—how did you beat my time on Six? Step outside. Now.",
-          "voice_clip": "res://assets/voice/soren_tokyo_intro.mp3"
+          "text": "Hang on—how did you beat my split on Question Six without a feed? Step onto the terrace. Let's talk.",
+          "voice_clip": null
         }
       ],
       "cliffhanger_hook": "Rain lashes the 70th-floor terrace as Soren pulls a tiny chip from behind his ear.",
@@ -6952,11 +6964,11 @@
       "camera_preset": "CAM_INTERVIEW_OTS",
       "music_layer": "L6_TwistFracture",
       "question_count": 9,
-      "time_per_question_sec": 19,
+      "time_per_question_sec": 24,
       "difficulty_tier": 5,
       "irt_b_range": [
-        -0.2,
-        0.3
+        -0.65,
+        -0.15
       ],
       "narrative_tags": [
         "HORIZON_TECH",
@@ -6999,9 +7011,9 @@
           "speaker_role": "Card Shark & Rival",
           "portrait": "res://assets/portraits_cutout/soren.png",
           "mood": "CORNERED",
-          "tell_hint": "Presses his silver coin flat against wet glass, neon pulsing on his cheek.",
-          "text": "Alright, detective—you caught me. Horizon owns my gambling debt. What's your price?",
-          "voice_clip": "res://assets/voice/soren_tokyo_intro.mp3"
+          "tell_hint": "For the first time all night, Soren's silver coin freezes completely flat.",
+          "text": "Caught my Horizon earpiece, did you? Name your price: share my probability lens, or fire a live jammer and play me straight up.",
+          "voice_clip": "res://assets/voice/tokyo_soren_confront_1.mp3"
         },
         {
           "id": "jp_3_b2",
@@ -7010,15 +7022,15 @@
           "speaker_role": "Rogue Broadcast Producer",
           "portrait": "res://assets/portraits_cutout/teo.png",
           "mood": "INTENSE",
-          "tell_hint": "Holds a pocket brass jammer over the studio breaker switch.",
-          "text": "Blackmail him for Horizon's edge—or let me fry his earpiece live on air.",
-          "voice_clip": "res://assets/voice/teo_whisper.mp3"
+          "tell_hint": "Teo hovers one finger over the broadcast RF cutoff switch.",
+          "text": "Your call—cut a quiet deal for Horizon's edge, or let me kill his signal live on air and watch him play on pure nerve.",
+          "voice_clip": null
         }
       ],
       "choices": [
         {
           "id": "jp_3_blackmail_soren",
-          "label": "Blackmail Soren for Horizon's Edge",
+          "label": "Share Soren's Probability Lens",
           "subtext": "Keep quiet in exchange for Horizon Edge (marks weak decoys)—risking leverage later.",
           "impact_badge": "Horizon Edge · -16 Integrity · +2 Soren",
           "tone": "crimson",
@@ -7034,12 +7046,12 @@
               "tokyo_earpiece": "BLACKMAILED"
             }
           },
-          "response_line": "Knew we spoke the same language. Just don't blink when Vance looks close.",
+          "response_line": "Smart business, friend. Keep my debt off Lindqvist's desk, and my odds overlay is yours.",
           "next_mission_id": "jp_4"
         },
         {
           "id": "jp_3_fire_jammer",
-          "label": "Fire the Signal Jammer Live!",
+          "label": "Kill the Signal Live & Play Fair!",
           "subtext": "Kill Soren's earpiece on air—blocking Hints for both players & unlocking Static Mastery!",
           "impact_badge": "Static Mastery · +18 Integrity · +16 Public",
           "tone": "gold",
@@ -7056,7 +7068,7 @@
               "tokyo_earpiece": "JAMMED"
             }
           },
-          "response_line": "Red static sweeps the pavilion—Soren winces as his earpiece dies stone cold!",
+          "response_line": "Static sweeps the pavilion—Soren's earpiece goes dead, and to everyone's shock, he breaks into a huge grin!",
           "next_mission_id": "jp_4"
         }
       ],
@@ -7086,7 +7098,7 @@
       "rhythm_slot": 4,
       "rhythm_role": "HIGH_STAKES_AUDIBLE",
       "title": "Skyline Code Breach",
-      "subtitle": "Round 4 · The Sky Pavilion, Tokyo",
+      "subtitle": "Round 4 · The Horizon Sky Pavilion, Tokyo",
       "difficulty_label": "MEDIUM",
       "pass_goal": "Win 4 of 6 rounds—spot Soren's rolling coin to Call His Bluff!",
       "estimated_minutes": 14,
@@ -7097,11 +7109,11 @@
       "camera_preset": "CAM_CRYPTEX_HERO",
       "music_layer": "L3_DeductionPulse",
       "question_count": 9,
-      "time_per_question_sec": 19,
+      "time_per_question_sec": 24,
       "difficulty_tier": 5,
       "irt_b_range": [
-        -0.05,
-        0.4
+        -0.45,
+        0.0
       ],
       "narrative_tags": [
         "CLASSIFIED_LEDGER",
@@ -7149,9 +7161,9 @@
           "speaker_role": "Rogue Broadcast Producer",
           "portrait": "res://assets/portraits_cutout/teo.png",
           "mood": "FOCUSED",
-          "tell_hint": "Loads Horizon's stolen file onto the table while rain drums the glass.",
-          "text": "Horizon wasn't only feeding trivia. Their server pinged Giza—thirty-eight meters underground.",
-          "voice_clip": "res://assets/voice/teo_whisper.mp3"
+          "tell_hint": "Teo zooms into a subterranean map stamped with Mara Sato's 2019 architectural seal.",
+          "text": "Plot twist—Soren's encrypted relay wasn't just streaming odds. It bounced through a dormant vault thirty-eight meters beneath Cairo.",
+          "voice_clip": "res://assets/voice/tokyo_teo_decrypt.mp3"
         },
         {
           "id": "jp_4_b2",
@@ -7160,15 +7172,15 @@
           "speaker_role": "Acoustic Engineer & Rival",
           "portrait": "res://assets/portraits_cutout/nadia.png",
           "mood": "SHARP",
-          "tell_hint": "Calls in on a private line, voice razor-tight.",
-          "text": "Check the sender stamp. That's Vance's Geneva signature—why is he pointing us to Cairo?",
-          "voice_clip": "res://assets/voice/nadia_london_intro.mp3"
+          "tell_hint": "Nadia studies the decrypted header—her skepticism of Julian deepening into real curiosity.",
+          "text": "Look at the co-signer stamp beside Mara's name. That's Julian Vance's Geneva key—why is he pointing us toward Giza?",
+          "voice_clip": null
         }
       ],
       "choices": [
         {
           "id": "jp_4_copy_coords",
-          "label": "Share the Buried Giza Map",
+          "label": "Share the Buried Cairo Blueprint",
           "subtext": "Send the secret Cairo chamber coordinates straight to Nadia and Teo.",
           "impact_badge": "+10 Integrity · +1 Nadia · +1 Teo",
           "tone": "cyan",
@@ -7183,12 +7195,12 @@
               "giza_coords_shared": true
             }
           },
-          "response_line": "Coordinates saved—thirty-eight meters beneath Cairo's stage sits a hidden vault.",
+          "response_line": "Coordinates saved—thirty-eight meters beneath Cairo's Solar Hall waits Mara's sealed 2019 chamber.",
           "next_mission_id": "jp_5"
         },
         {
           "id": "jp_4_purge_trace",
-          "label": "Erase the Trace Before Security Sweeps",
+          "label": "Keep the Coordinates Private for Now",
           "subtext": "Cut the connection early so Horizon's lawyers never link the hack to you.",
           "impact_badge": "+12 Council · Clean Record",
           "tone": "gold",
@@ -7201,7 +7213,7 @@
               "giza_coords_shared": false
             }
           },
-          "response_line": "Horizon's sweep hits empty air—though Cairo just got twice as dark.",
+          "response_line": "Horizon's sweep hits empty air—though Cairo just became a much trickier chess match.",
           "next_mission_id": "jp_5"
         }
       ],
@@ -7214,8 +7226,8 @@
           "portrait": "res://assets/portraits_cutout/vance.png",
           "mood": "COMPOSED",
           "tell_hint": "Adjusts his left cufflink as typhoon lightning forks over Tokyo.",
-          "text": "Card sharks are most dangerous with one chip left. Ready for Soren?",
-          "voice_clip": "res://assets/voice/vance_backfire.mp3"
+          "text": "A card shark with nothing left to hide is twice as fun to play. Ready for Soren's finale?",
+          "voice_clip": null
         }
       ],
       "cliffhanger_hook": "Typhoon thunder rattles the glass tower as the Tokyo Origami Prism rises on stage.",
@@ -7230,8 +7242,8 @@
       "hub_id": "jp",
       "rhythm_slot": 5,
       "rhythm_role": "RELIC_BOSS_SHOWDOWN",
-      "title": "Tokyo Boss: Face Soren",
-      "subtitle": "Boss Round · The Sky Pavilion, Tokyo",
+      "title": "Tokyo Finale: Face Soren",
+      "subtitle": "City Boss · The Horizon Sky Pavilion, Tokyo",
       "difficulty_label": "MEDIUM",
       "pass_goal": "Defeat Soren Kael in the typhoon finale to win the Tokyo Origami Prism!",
       "estimated_minutes": 16,
@@ -7242,11 +7254,11 @@
       "camera_preset": "CAM_RELIC_HERO",
       "music_layer": "L5_StreakEuphoria",
       "question_count": 10,
-      "time_per_question_sec": 19,
+      "time_per_question_sec": 24,
       "difficulty_tier": 6,
       "irt_b_range": [
-        0.1,
-        0.55
+        -0.3,
+        0.15
       ],
       "narrative_tags": [
         "HORIZON_TECH",
@@ -7293,9 +7305,9 @@
           "speaker_role": "Card Shark & Rival",
           "portrait": "res://assets/portraits_cutout/soren.png",
           "mood": "ELECTRIC",
-          "tell_hint": "Slams his silver coin flat on lacquer—no earpiece, pure nerve.",
-          "text": "No Horizon feed, no excuses. Just you, me, and the Tokyo trophy.",
-          "voice_clip": "res://assets/voice/soren_tokyo_intro.mp3"
+          "tell_hint": "Soren grins with genuine respect—tucking his earpiece into his pocket and spinning his coin.",
+          "text": "No feed, no odds engine, no excuses—just you, me, and Mara's Origami Trophy seventy stories up.",
+          "voice_clip": "res://assets/voice/soren_on_boss_intro.mp3"
         },
         {
           "id": "jp_5_b2",
@@ -7304,15 +7316,15 @@
           "speaker_role": "Chief Host · The Meridian",
           "portrait": "res://assets/portraits_cutout/vance.png",
           "mood": "GRAND",
-          "tell_hint": "Strikes the brass gong as lightning floods the glass tower.",
-          "text": "Two Act One titans collide. Win this showdown and fly to Rio.",
-          "voice_clip": "res://assets/voice/vance_overclock_win.mp3"
+          "tell_hint": "Shibuya's skyline blazes gold through the rain behind the stage.",
+          "text": "City Boss Showdown. Outthink Tokyo's sharpest gambler and book your ticket for Rio.",
+          "voice_clip": "res://assets/voice/vance_on_boss_intro.mp3"
         }
       ],
       "choices": [
         {
           "id": "jp_5_return_coin",
-          "label": "Slide Soren's Coin Back Across Table",
+          "label": "Slide Soren's Silver Coin Back Across the Table",
           "subtext": "'Play fair next time. You never needed Horizon's wire.'",
           "impact_badge": "+2 Soren · +10 Integrity · Tokyo Trophy",
           "tone": "cyan",
@@ -7327,12 +7339,12 @@
               "tokyo_soren_respect": true
             }
           },
-          "response_line": "He catches the coin with an honest grin. 'Watch Rio. Someone's targeting Nadia.'",
+          "response_line": "He catches it mid-spin with an honest laugh. 'Watch Rio, friend. Someone on the board is gunning for Nadia.'",
           "next_mission_id": "br_1"
         },
         {
           "id": "jp_5_pocket_coin",
-          "label": "Hold the Coin Up to Horizon's VIP Box",
+          "label": "Keep the Coin as Your Tokyo Souvenir",
           "subtext": "Flash the silver coin straight into the live broadcast camera.",
           "impact_badge": "+12 Public · -1 Soren · Tokyo Trophy",
           "tone": "crimson",
@@ -7348,7 +7360,7 @@
               "tokyo_soren_respect": false
             }
           },
-          "response_line": "Tokyo cheers—while Horizon's director quietly closes his tablet upstairs.",
+          "response_line": "Tokyo cheers—while Horizon's syndicate director quietly snaps his tablet shut in the glass box.",
           "next_mission_id": "br_1"
         }
       ],
@@ -7361,7 +7373,7 @@
           "portrait": "res://assets/portraits_cutout/vance.png",
           "mood": "PLEASED",
           "tell_hint": "Locks the Origami Prism and Gold-Lacquer finish into your collection.",
-          "text": "Act One is yours. Ten thousand fans wait beneath Rio's glass canopy.",
+          "text": "Act One complete. Ten thousand cheering fans wait under Rio's twilight glass canopy.",
           "voice_clip": "res://assets/voice/vance_victory.mp3"
         }
       ],
@@ -7392,11 +7404,11 @@
       "camera_preset": "TABLETOP_INTIMATE",
       "music_layer": "mystery",
       "question_count": 11,
-      "time_per_question_sec": 19,
+      "time_per_question_sec": 24,
       "difficulty_tier": 4,
       "irt_b_range": [
-        -0.35,
-        0.48
+        -0.75,
+        0.05
       ],
       "narrative_tags": [
         "HORIZON_TECH",
@@ -7547,11 +7559,11 @@
       "camera_preset": "TABLETOP_INTIMATE",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 19,
+      "time_per_question_sec": 24,
       "difficulty_tier": 4,
       "irt_b_range": [
-        -0.35,
-        0.48
+        -0.75,
+        0.05
       ],
       "narrative_tags": [
         "HORIZON_TECH",
@@ -7702,11 +7714,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "mystery",
       "question_count": 12,
-      "time_per_question_sec": 19,
+      "time_per_question_sec": 24,
       "difficulty_tier": 4,
       "irt_b_range": [
-        -0.35,
-        0.48
+        -0.75,
+        0.05
       ],
       "narrative_tags": [
         "LATERAL_DEDUCTION",
@@ -7857,11 +7869,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 19,
+      "time_per_question_sec": 24,
       "difficulty_tier": 4,
       "irt_b_range": [
-        -0.35,
-        0.48
+        -0.75,
+        0.05
       ],
       "narrative_tags": [
         "HORIZON_TECH",
@@ -8012,11 +8024,11 @@
       "camera_preset": "TABLETOP_INTIMATE",
       "music_layer": "mystery",
       "question_count": 12,
-      "time_per_question_sec": 19,
+      "time_per_question_sec": 24,
       "difficulty_tier": 4,
       "irt_b_range": [
-        -0.35,
-        0.48
+        -0.75,
+        0.05
       ],
       "narrative_tags": [
         "INVESTIGATIVE",
@@ -8167,11 +8179,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 19,
+      "time_per_question_sec": 24,
       "difficulty_tier": 4,
       "irt_b_range": [
-        -0.35,
-        0.48
+        -0.75,
+        0.05
       ],
       "narrative_tags": [
         "BLACK_SALON",
@@ -8322,11 +8334,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 19,
+      "time_per_question_sec": 24,
       "difficulty_tier": 4,
       "irt_b_range": [
-        -0.35,
-        0.48
+        -0.75,
+        0.05
       ],
       "narrative_tags": [
         "ESPIONAGE",
@@ -8474,11 +8486,11 @@
       "camera_preset": "CAM_INTERVIEW_OTS",
       "music_layer": "L1_VenueBed",
       "question_count": 9,
-      "time_per_question_sec": 18,
+      "time_per_question_sec": 22,
       "difficulty_tier": 5,
       "irt_b_range": [
-        -0.1,
-        0.35
+        -0.45,
+        0.05
       ],
       "narrative_tags": [
         "AGORA_CIVIC",
@@ -8620,11 +8632,11 @@
       "camera_preset": "CAM_INTERVIEW_OTS",
       "music_layer": "L6_TwistFracture",
       "question_count": 10,
-      "time_per_question_sec": 18,
+      "time_per_question_sec": 22,
       "difficulty_tier": 6,
       "irt_b_range": [
-        0.05,
-        0.5
+        -0.3,
+        0.2
       ],
       "narrative_tags": [
         "ETHICS",
@@ -8787,11 +8799,11 @@
       "camera_preset": "CAM_CRYPTEX_HERO",
       "music_layer": "L3_DeductionPulse",
       "question_count": 10,
-      "time_per_question_sec": 18,
+      "time_per_question_sec": 22,
       "difficulty_tier": 6,
       "irt_b_range": [
-        0.2,
-        0.65
+        -0.15,
+        0.35
       ],
       "narrative_tags": [
         "AGORA_CIVIC",
@@ -8971,11 +8983,11 @@
       "camera_preset": "CAM_ORB_CLOSE",
       "music_layer": "L4_CountdownEscalation",
       "question_count": 10,
-      "time_per_question_sec": 18,
+      "time_per_question_sec": 22,
       "difficulty_tier": 6,
       "irt_b_range": [
-        0.35,
-        0.78
+        0.0,
+        0.5
       ],
       "narrative_tags": [
         "INVESTIGATIVE",
@@ -9117,11 +9129,11 @@
       "camera_preset": "CAM_RELIC_HERO",
       "music_layer": "L5_StreakEuphoria",
       "question_count": 11,
-      "time_per_question_sec": 18,
+      "time_per_question_sec": 22,
       "difficulty_tier": 7,
       "irt_b_range": [
-        0.45,
-        0.9
+        0.15,
+        0.65
       ],
       "narrative_tags": [
         "AGORA_CIVIC",
@@ -9306,11 +9318,11 @@
       "camera_preset": "TABLETOP_INTIMATE",
       "music_layer": "mystery",
       "question_count": 11,
-      "time_per_question_sec": 18,
+      "time_per_question_sec": 22,
       "difficulty_tier": 5,
       "irt_b_range": [
-        0.02,
-        0.84
+        -0.25,
+        0.55
       ],
       "narrative_tags": [
         "INVESTIGATIVE",
@@ -9463,11 +9475,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 18,
+      "time_per_question_sec": 22,
       "difficulty_tier": 5,
       "irt_b_range": [
-        0.02,
-        0.84
+        -0.25,
+        0.55
       ],
       "narrative_tags": [
         "AGORA_CIVIC",
@@ -9618,11 +9630,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "mystery",
       "question_count": 12,
-      "time_per_question_sec": 18,
+      "time_per_question_sec": 22,
       "difficulty_tier": 5,
       "irt_b_range": [
-        0.02,
-        0.84
+        -0.25,
+        0.55
       ],
       "narrative_tags": [
         "ESPIONAGE",
@@ -9772,11 +9784,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 18,
+      "time_per_question_sec": 22,
       "difficulty_tier": 5,
       "irt_b_range": [
-        0.02,
-        0.84
+        -0.25,
+        0.55
       ],
       "narrative_tags": [
         "AGORA_CIVIC",
@@ -9928,11 +9940,11 @@
       "camera_preset": "TABLETOP_INTIMATE",
       "music_layer": "mystery",
       "question_count": 12,
-      "time_per_question_sec": 18,
+      "time_per_question_sec": 22,
       "difficulty_tier": 5,
       "irt_b_range": [
-        0.02,
-        0.84
+        -0.25,
+        0.55
       ],
       "narrative_tags": [
         "MERIDIAN_ZERO",
@@ -10083,11 +10095,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 18,
+      "time_per_question_sec": 22,
       "difficulty_tier": 5,
       "irt_b_range": [
-        0.02,
-        0.84
+        -0.25,
+        0.55
       ],
       "narrative_tags": [
         "BLACK_SALON",
@@ -10238,11 +10250,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 18,
+      "time_per_question_sec": 22,
       "difficulty_tier": 5,
       "irt_b_range": [
-        0.02,
-        0.84
+        -0.25,
+        0.55
       ],
       "narrative_tags": [
         "ESPIONAGE",
@@ -10283,7 +10295,7 @@
           "mood": "neutral",
           "tell_hint": "Harbor searchlights sweep across Guanabara Bay toward Sugarloaf.",
           "text": "Act II Diplomatic Cross-Clearance opens every prior embassy corridor behind you.",
-          "voice_clip": "res://assets/voice/vance_intro_2.mp3"
+          "voice_clip": "res://assets/voice/vance_victory.mp3"
         },
         {
           "id": "br_s7_b2",
@@ -10390,11 +10402,11 @@
       "camera_preset": "CAM_INTERVIEW_OTS",
       "music_layer": "L1_VenueBed",
       "question_count": 9,
-      "time_per_question_sec": 17,
+      "time_per_question_sec": 20,
       "difficulty_tier": 6,
       "irt_b_range": [
-        0.3,
-        0.72
+        0.05,
+        0.5
       ],
       "narrative_tags": [
         "MERIDIAN_ZERO",
@@ -10535,11 +10547,11 @@
       "camera_preset": "CAM_ORB_CLOSE",
       "music_layer": "L6_TwistFracture",
       "question_count": 10,
-      "time_per_question_sec": 17,
+      "time_per_question_sec": 20,
       "difficulty_tier": 7,
       "irt_b_range": [
-        0.45,
-        0.85
+        0.2,
+        0.65
       ],
       "narrative_tags": [
         "MERIDIAN_ZERO",
@@ -10679,11 +10691,11 @@
       "camera_preset": "CAM_INTERVIEW_OTS",
       "music_layer": "L6_TwistFracture",
       "question_count": 10,
-      "time_per_question_sec": 17,
+      "time_per_question_sec": 20,
       "difficulty_tier": 7,
       "irt_b_range": [
-        0.6,
-        0.98
+        0.35,
+        0.8
       ],
       "narrative_tags": [
         "MERIDIAN_ZERO",
@@ -10837,11 +10849,11 @@
       "camera_preset": "CAM_INTERVIEW_OTS",
       "music_layer": "L6_TwistFracture",
       "question_count": 10,
-      "time_per_question_sec": 17,
+      "time_per_question_sec": 20,
       "difficulty_tier": 7,
       "irt_b_range": [
-        0.75,
-        1.12
+        0.5,
+        0.95
       ],
       "narrative_tags": [
         "MERIDIAN_ZERO",
@@ -10985,11 +10997,11 @@
       "camera_preset": "CAM_RELIC_HERO",
       "music_layer": "L6_TwistFracture",
       "question_count": 11,
-      "time_per_question_sec": 17,
+      "time_per_question_sec": 20,
       "difficulty_tier": 8,
       "irt_b_range": [
-        0.85,
-        1.25
+        0.65,
+        1.1
       ],
       "narrative_tags": [
         "MERIDIAN_ZERO",
@@ -11131,11 +11143,11 @@
       "camera_preset": "TABLETOP_INTIMATE",
       "music_layer": "mystery",
       "question_count": 11,
-      "time_per_question_sec": 17,
+      "time_per_question_sec": 20,
       "difficulty_tier": 6,
       "irt_b_range": [
-        0.42,
-        1.18
+        0.2,
+        1.0
       ],
       "narrative_tags": [
         "MERIDIAN_ZERO",
@@ -11287,11 +11299,11 @@
       "camera_preset": "TABLETOP_INTIMATE",
       "music_layer": "mystery",
       "question_count": 12,
-      "time_per_question_sec": 17,
+      "time_per_question_sec": 20,
       "difficulty_tier": 6,
       "irt_b_range": [
-        0.42,
-        1.18
+        0.2,
+        1.0
       ],
       "narrative_tags": [
         "ARCHIVE_CORE",
@@ -11441,11 +11453,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 17,
+      "time_per_question_sec": 20,
       "difficulty_tier": 6,
       "irt_b_range": [
-        0.42,
-        1.18
+        0.2,
+        1.0
       ],
       "narrative_tags": [
         "ESPIONAGE",
@@ -11596,11 +11608,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 17,
+      "time_per_question_sec": 20,
       "difficulty_tier": 6,
       "irt_b_range": [
-        0.42,
-        1.18
+        0.2,
+        1.0
       ],
       "narrative_tags": [
         "SOVEREIGN_BLOC",
@@ -11751,11 +11763,11 @@
       "camera_preset": "TABLETOP_INTIMATE",
       "music_layer": "mystery",
       "question_count": 12,
-      "time_per_question_sec": 17,
+      "time_per_question_sec": 20,
       "difficulty_tier": 6,
       "irt_b_range": [
-        0.42,
-        1.18
+        0.2,
+        1.0
       ],
       "narrative_tags": [
         "MERIDIAN_ZERO",
@@ -11906,11 +11918,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 17,
+      "time_per_question_sec": 20,
       "difficulty_tier": 6,
       "irt_b_range": [
-        0.42,
-        1.18
+        0.2,
+        1.0
       ],
       "narrative_tags": [
         "BLACK_SALON",
@@ -12060,11 +12072,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 17,
+      "time_per_question_sec": 20,
       "difficulty_tier": 6,
       "irt_b_range": [
-        0.42,
-        1.18
+        0.2,
+        1.0
       ],
       "narrative_tags": [
         "ESPIONAGE",
@@ -12211,11 +12223,11 @@
       "camera_preset": "CAM_INTERVIEW_OTS",
       "music_layer": "L2_InterviewTension",
       "question_count": 10,
-      "time_per_question_sec": 15,
+      "time_per_question_sec": 18,
       "difficulty_tier": 7,
       "irt_b_range": [
-        0.65,
-        1.05
+        0.55,
+        0.95
       ],
       "narrative_tags": [
         "BLACK_SALON",
@@ -12393,11 +12405,11 @@
       "camera_preset": "CAM_ORB_CLOSE",
       "music_layer": "L4_CountdownEscalation",
       "question_count": 11,
-      "time_per_question_sec": 15,
+      "time_per_question_sec": 18,
       "difficulty_tier": 8,
       "irt_b_range": [
-        0.8,
-        1.22
+        0.7,
+        1.1
       ],
       "narrative_tags": [
         "ARCHIVE_CORE",
@@ -12537,11 +12549,11 @@
       "camera_preset": "CAM_INTERVIEW_OTS",
       "music_layer": "L2_InterviewTension",
       "question_count": 11,
-      "time_per_question_sec": 15,
+      "time_per_question_sec": 18,
       "difficulty_tier": 8,
       "irt_b_range": [
-        0.95,
-        1.38
+        0.85,
+        1.25
       ],
       "narrative_tags": [
         "MERIDIAN_ZERO",
@@ -12695,11 +12707,11 @@
       "camera_preset": "CAM_ORB_CLOSE",
       "music_layer": "L4_CountdownEscalation",
       "question_count": 11,
-      "time_per_question_sec": 15,
+      "time_per_question_sec": 18,
       "difficulty_tier": 8,
       "irt_b_range": [
-        1.1,
-        1.52
+        1.0,
+        1.4
       ],
       "narrative_tags": [
         "HIGH_STAKES_BLUFF",
@@ -12842,11 +12854,11 @@
       "camera_preset": "CAM_RELIC_HERO",
       "music_layer": "L6_TwistFracture",
       "question_count": 12,
-      "time_per_question_sec": 15,
+      "time_per_question_sec": 18,
       "difficulty_tier": 9,
       "irt_b_range": [
-        1.22,
-        1.65
+        1.15,
+        1.55
       ],
       "narrative_tags": [
         "MERIDIAN_ZERO",
@@ -12988,11 +13000,11 @@
       "camera_preset": "TABLETOP_INTIMATE",
       "music_layer": "tension",
       "question_count": 11,
-      "time_per_question_sec": 15,
+      "time_per_question_sec": 18,
       "difficulty_tier": 7,
       "irt_b_range": [
-        0.78,
-        1.56
+        0.7,
+        1.45
       ],
       "narrative_tags": [
         "MERIDIAN_ZERO",
@@ -13145,11 +13157,11 @@
       "camera_preset": "TABLETOP_INTIMATE",
       "music_layer": "mystery",
       "question_count": 12,
-      "time_per_question_sec": 15,
+      "time_per_question_sec": 18,
       "difficulty_tier": 7,
       "irt_b_range": [
-        0.78,
-        1.56
+        0.7,
+        1.45
       ],
       "narrative_tags": [
         "INVESTIGATIVE",
@@ -13301,11 +13313,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 15,
+      "time_per_question_sec": 18,
       "difficulty_tier": 7,
       "irt_b_range": [
-        0.78,
-        1.56
+        0.7,
+        1.45
       ],
       "narrative_tags": [
         "ESPIONAGE",
@@ -13455,11 +13467,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 15,
+      "time_per_question_sec": 18,
       "difficulty_tier": 7,
       "irt_b_range": [
-        0.78,
-        1.56
+        0.7,
+        1.45
       ],
       "narrative_tags": [
         "SOVEREIGN_BLOC",
@@ -13611,11 +13623,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "mystery",
       "question_count": 12,
-      "time_per_question_sec": 15,
+      "time_per_question_sec": 18,
       "difficulty_tier": 7,
       "irt_b_range": [
-        0.78,
-        1.56
+        0.7,
+        1.45
       ],
       "narrative_tags": [
         "ARCHIVE_CORE",
@@ -13766,11 +13778,11 @@
       "camera_preset": "TABLETOP_INTIMATE",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 15,
+      "time_per_question_sec": 18,
       "difficulty_tier": 7,
       "irt_b_range": [
-        0.78,
-        1.56
+        0.7,
+        1.45
       ],
       "narrative_tags": [
         "BLACK_SALON",
@@ -13921,11 +13933,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 15,
+      "time_per_question_sec": 18,
       "difficulty_tier": 7,
       "irt_b_range": [
-        0.78,
-        1.56
+        0.7,
+        1.45
       ],
       "narrative_tags": [
         "ESPIONAGE",
@@ -14073,11 +14085,11 @@
       "camera_preset": "CAM_INTERVIEW_OTS",
       "music_layer": "L3_DeductionPulse",
       "question_count": 10,
-      "time_per_question_sec": 14,
+      "time_per_question_sec": 16,
       "difficulty_tier": 8,
       "irt_b_range": [
-        1.05,
-        1.48
+        1.0,
+        1.42
       ],
       "narrative_tags": [
         "CLASSIFIED_LEDGER",
@@ -14214,11 +14226,11 @@
       "camera_preset": "CAM_CRYPTEX_HERO",
       "music_layer": "L6_TwistFracture",
       "question_count": 11,
-      "time_per_question_sec": 14,
+      "time_per_question_sec": 16,
       "difficulty_tier": 8,
       "irt_b_range": [
-        1.2,
-        1.62
+        1.15,
+        1.58
       ],
       "narrative_tags": [
         "CLASSIFIED_LEDGER",
@@ -14360,11 +14372,11 @@
       "camera_preset": "CAM_INTERVIEW_OTS",
       "music_layer": "L6_TwistFracture",
       "question_count": 11,
-      "time_per_question_sec": 14,
+      "time_per_question_sec": 16,
       "difficulty_tier": 9,
       "irt_b_range": [
-        1.35,
-        1.78
+        1.3,
+        1.74
       ],
       "narrative_tags": [
         "RIVAL_PRESSURE",
@@ -14585,11 +14597,11 @@
       "camera_preset": "CAM_ORB_CLOSE",
       "music_layer": "L4_CountdownEscalation",
       "question_count": 11,
-      "time_per_question_sec": 14,
+      "time_per_question_sec": 16,
       "difficulty_tier": 9,
       "irt_b_range": [
-        1.48,
-        1.94
+        1.45,
+        1.9
       ],
       "narrative_tags": [
         "ARCHIVE_CORE",
@@ -14729,11 +14741,11 @@
       "camera_preset": "CAM_RELIC_HERO",
       "music_layer": "L6_TwistFracture",
       "question_count": 12,
-      "time_per_question_sec": 14,
+      "time_per_question_sec": 16,
       "difficulty_tier": 9,
       "irt_b_range": [
-        1.62,
-        2.1
+        1.6,
+        2.05
       ],
       "narrative_tags": [
         "CLASSIFIED_LEDGER",
@@ -14875,11 +14887,11 @@
       "camera_preset": "TABLETOP_INTIMATE",
       "music_layer": "mystery",
       "question_count": 11,
-      "time_per_question_sec": 14,
+      "time_per_question_sec": 16,
       "difficulty_tier": 8,
       "irt_b_range": [
-        1.18,
-        1.98
+        1.15,
+        1.95
       ],
       "narrative_tags": [
         "INVESTIGATIVE",
@@ -15029,11 +15041,11 @@
       "camera_preset": "TABLETOP_INTIMATE",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 14,
+      "time_per_question_sec": 16,
       "difficulty_tier": 8,
       "irt_b_range": [
-        1.18,
-        1.98
+        1.15,
+        1.95
       ],
       "narrative_tags": [
         "HIGH_STAKES_BLUFF",
@@ -15184,11 +15196,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 14,
+      "time_per_question_sec": 16,
       "difficulty_tier": 8,
       "irt_b_range": [
-        1.18,
-        1.98
+        1.15,
+        1.95
       ],
       "narrative_tags": [
         "ESPIONAGE",
@@ -15340,11 +15352,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 14,
+      "time_per_question_sec": 16,
       "difficulty_tier": 8,
       "irt_b_range": [
-        1.18,
-        1.98
+        1.15,
+        1.95
       ],
       "narrative_tags": [
         "SOVEREIGN_BLOC",
@@ -15495,11 +15507,11 @@
       "camera_preset": "TABLETOP_INTIMATE",
       "music_layer": "mystery",
       "question_count": 12,
-      "time_per_question_sec": 14,
+      "time_per_question_sec": 16,
       "difficulty_tier": 8,
       "irt_b_range": [
-        1.18,
-        1.98
+        1.15,
+        1.95
       ],
       "narrative_tags": [
         "ESPIONAGE",
@@ -15651,11 +15663,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 14,
+      "time_per_question_sec": 16,
       "difficulty_tier": 8,
       "irt_b_range": [
-        1.18,
-        1.98
+        1.15,
+        1.95
       ],
       "narrative_tags": [
         "BLACK_SALON",
@@ -15807,11 +15819,11 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 14,
+      "time_per_question_sec": 16,
       "difficulty_tier": 8,
       "irt_b_range": [
-        1.18,
-        1.98
+        1.15,
+        1.95
       ],
       "narrative_tags": [
         "ARCHIVE_CORE",
@@ -15959,7 +15971,7 @@
       "camera_preset": "CAM_INTERVIEW_OTS",
       "music_layer": "L1_VenueBed",
       "question_count": 11,
-      "time_per_question_sec": 13,
+      "time_per_question_sec": 15,
       "difficulty_tier": 9,
       "irt_b_range": [
         1.45,
@@ -16010,7 +16022,7 @@
           "mood": "MAJESTIC",
           "tell_hint": "Stands beneath an open ocean dome as sweeping strings fill the marble hall.",
           "text": "Two billion people are watching. Every city, every twist, every clue led to this stone.",
-          "voice_clip": "res://assets/voice/vance_intro_2.mp3"
+          "voice_clip": "res://assets/voice/vance_on_boss_intro.mp3"
         },
         {
           "id": "global_1_b2",
@@ -16021,7 +16033,7 @@
           "mood": "AWE",
           "tell_hint": "Whispers cleanly into your headset—zero static, crystal clear.",
           "text": "The whole planet just paused for the Grand Final. Breathe—and own the room.",
-          "voice_clip": "res://assets/voice/teo_whisper.mp3"
+          "voice_clip": "res://assets/voice/teo_on_boss_intro.mp3"
         }
       ],
       "choices": [
@@ -16099,7 +16111,7 @@
       "camera_preset": "CAM_ORB_CLOSE",
       "music_layer": "L4_CountdownEscalation",
       "question_count": 12,
-      "time_per_question_sec": 13,
+      "time_per_question_sec": 15,
       "difficulty_tier": 9,
       "irt_b_range": [
         1.65,
@@ -16246,7 +16258,7 @@
       "camera_preset": "CAM_INTERVIEW_OTS",
       "music_layer": "L4_CountdownEscalation",
       "question_count": 12,
-      "time_per_question_sec": 13,
+      "time_per_question_sec": 15,
       "difficulty_tier": 10,
       "irt_b_range": [
         1.85,
@@ -16430,7 +16442,7 @@
       "camera_preset": "CAM_RELIC_HERO",
       "music_layer": "L6_TwistFracture",
       "question_count": 14,
-      "time_per_question_sec": 13,
+      "time_per_question_sec": 15,
       "difficulty_tier": 10,
       "irt_b_range": [
         2.05,
@@ -16578,7 +16590,7 @@
       "camera_preset": "CAM_GLOBE_HERO",
       "music_layer": "L5_StreakEuphoria",
       "question_count": 15,
-      "time_per_question_sec": 13,
+      "time_per_question_sec": 15,
       "difficulty_tier": 10,
       "irt_b_range": [
         2.2,
@@ -16799,7 +16811,7 @@
       "camera_preset": "TABLETOP_INTIMATE",
       "music_layer": "mystery",
       "question_count": 11,
-      "time_per_question_sec": 13,
+      "time_per_question_sec": 15,
       "difficulty_tier": 10,
       "irt_b_range": [
         1.72,
@@ -16954,7 +16966,7 @@
       "camera_preset": "TABLETOP_INTIMATE",
       "music_layer": "mystery",
       "question_count": 12,
-      "time_per_question_sec": 13,
+      "time_per_question_sec": 15,
       "difficulty_tier": 10,
       "irt_b_range": [
         1.72,
@@ -17110,7 +17122,7 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 13,
+      "time_per_question_sec": 15,
       "difficulty_tier": 10,
       "irt_b_range": [
         1.72,
@@ -17265,7 +17277,7 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 13,
+      "time_per_question_sec": 15,
       "difficulty_tier": 10,
       "irt_b_range": [
         1.72,
@@ -17419,7 +17431,7 @@
       "camera_preset": "TABLETOP_INTIMATE",
       "music_layer": "mystery",
       "question_count": 12,
-      "time_per_question_sec": 13,
+      "time_per_question_sec": 15,
       "difficulty_tier": 10,
       "irt_b_range": [
         1.72,
@@ -17574,7 +17586,7 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 13,
+      "time_per_question_sec": 15,
       "difficulty_tier": 10,
       "irt_b_range": [
         1.72,
@@ -17732,7 +17744,7 @@
       "camera_preset": "ARENA_SWEEP",
       "music_layer": "tension",
       "question_count": 12,
-      "time_per_question_sec": 13,
+      "time_per_question_sec": 15,
       "difficulty_tier": 10,
       "irt_b_range": [
         1.72,

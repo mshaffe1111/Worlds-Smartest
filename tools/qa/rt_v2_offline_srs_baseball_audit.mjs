@@ -756,6 +756,14 @@ async function launchBaseballBriefingLive(br, { roundCount = 10, diff = 'ADAPTIV
   }
 
   await br.clickSelector('#ws-cat-launch');
+  const readyOrStarted = await br.waitFor(
+    `Boolean(document.querySelector('#ws-btn-start-round-questions') || (document.querySelector('.ws-question-prompt') && (document.querySelector('[data-facet-idx]') || document.querySelector('#ws-cal-slider') || document.querySelector('.ws-codex-grid') || document.querySelector('.ws-gauntlet-row') || document.querySelector('.ws-globe-anchor-btn') || document.querySelector('#ws-btn-overclock'))))`,
+    15000,
+    120,
+  );
+  if (readyOrStarted && (await br.evalJs(`Boolean(document.querySelector('#ws-btn-start-round-questions'))`))) {
+    await br.clickSelector('#ws-btn-start-round-questions');
+  }
   const started = await br.waitFor(
     `Boolean(document.querySelector('.ws-question-prompt') && (document.querySelector('[data-facet-idx]') || document.querySelector('#ws-cal-slider') || document.querySelector('.ws-codex-grid') || document.querySelector('.ws-gauntlet-row') || document.querySelector('.ws-globe-anchor-btn') || document.querySelector('#ws-btn-overclock')))`,
     15000,
@@ -820,6 +828,27 @@ async function submitCurrentQuestionLive(br, preferredFacetIdx = 0) {
       } else {
         await br.clickSelector(`[data-facet-idx="${targetIdx}"]`);
       }
+    }
+  }
+  const revealedOrMulligan = await br.waitFor(
+    `Boolean(document.querySelector('.ws-intel-flash') || document.querySelector('#ws-second-wind-banner, .ws-facet-btn.is-mulligan-eliminated'))`,
+    8000,
+    100,
+  );
+  // v3.0 Mind Gambit Second Wind: if free mulligan intercepted a wrong pick, lock the next available facet!
+  if (
+    revealedOrMulligan &&
+    !(await br.evalJs(`Boolean(document.querySelector('.ws-intel-flash'))`))
+  ) {
+    await br.evalJs(`(() => {
+      const active = Array.from(document.querySelectorAll('[data-facet-idx]')).find(
+        (b) => !b.disabled && !b.classList.contains('is-mulligan-eliminated') && !b.classList.contains('is-shattered'),
+      );
+      if (active) active.click();
+    })()`);
+    await sleep(160);
+    if (await br.evalJs(`Boolean(document.querySelector('#ws-btn-overclock'))`)) {
+      await br.clickSelector('#ws-btn-overclock');
     }
   }
   const revealed = await br.waitFor(`Boolean(document.querySelector('.ws-intel-flash'))`, 8000, 100);
@@ -1244,7 +1273,11 @@ async function main() {
         await launchBaseballBriefingLive(brOff, { roundCount: 5, diff: 'ADAPTIVE' });
       } else {
         await brOff.clickSelector('#ws-instant-go-baseball');
-        await brOff.waitFor(`Boolean(document.querySelector('.ws-question-prompt'))`, 12000, 120);
+        await brOff.waitFor(`Boolean(!document.querySelector('.ws-intel-flash') && (document.querySelector('#ws-btn-start-round-questions') || document.querySelector('.ws-question-prompt')))`, 12000, 120);
+        if (await brOff.evalJs(`Boolean(document.querySelector('#ws-btn-start-round-questions'))`)) {
+          await brOff.clickSelector('#ws-btn-start-round-questions');
+        }
+        await brOff.waitFor(`Boolean(document.querySelector('.ws-question-prompt') && !document.querySelector('.ws-intel-flash'))`, 12000, 120);
         await sleep(500);
       }
 
@@ -1521,7 +1554,11 @@ async function main() {
         // Advance to next question or finish stage
         await br.clickSelector('#ws-btn-next-q');
         if (qi < 19) {
-          await br.waitFor(`Boolean(!document.querySelector('.ws-intel-flash') && document.querySelector('.ws-question-prompt'))`, 10000, 100);
+          await br.waitFor(`Boolean((!document.querySelector('.ws-intel-flash') && document.querySelector('.ws-question-prompt')) || document.querySelector('.ws-finale-topic-btn'))`, 10000, 100);
+          if (await br.evalJs(`Boolean(document.querySelector('.ws-finale-topic-btn'))`)) {
+            await br.clickSelector('.ws-finale-topic-btn');
+            await br.waitFor(`Boolean(!document.querySelector('.ws-intel-flash') && document.querySelector('.ws-question-prompt'))`, 10000, 100);
+          }
           await sleep(160);
         } else {
           await br.waitFor(`Boolean(document.querySelector('#ws-btn-share-duel-link, .ws-summary-card, #ws-util-vault'))`, 10000, 120);
@@ -1759,7 +1796,11 @@ async function main() {
         });
         if (qi < 9) {
           await br.clickSelector('#ws-btn-next-q');
-          await br.waitFor(`Boolean(!document.querySelector('.ws-intel-flash') && document.querySelector('.ws-question-prompt'))`, 10000, 100);
+          await br.waitFor(`Boolean((!document.querySelector('.ws-intel-flash') && document.querySelector('.ws-question-prompt')) || document.querySelector('.ws-finale-topic-btn'))`, 10000, 100);
+          if (await br.evalJs(`Boolean(document.querySelector('.ws-finale-topic-btn'))`)) {
+            await br.clickSelector('.ws-finale-topic-btn');
+            await br.waitFor(`Boolean(!document.querySelector('.ws-intel-flash') && document.querySelector('.ws-question-prompt'))`, 10000, 100);
+          }
           await sleep(160);
         }
       }
@@ -1882,6 +1923,10 @@ async function main() {
       await sleep(140);
       const msIndicator = await br.evalJs(`document.querySelector('#ws-briefing-diff-indicator')?.textContent?.replace(/\\s+/g, ' ').trim() || ''`);
       await br.clickSelector('#ws-cat-launch');
+      await br.waitFor(`Boolean(document.querySelector('#ws-btn-start-round-questions') || document.querySelector('.ws-question-prompt'))`, 12000, 120);
+      if (await br.evalJs(`Boolean(document.querySelector('#ws-btn-start-round-questions'))`)) {
+        await br.clickSelector('#ws-btn-start-round-questions');
+      }
       await br.waitFor(`Boolean(document.querySelector('.ws-question-prompt'))`, 12000, 120);
       await sleep(450);
 
@@ -1931,7 +1976,7 @@ async function main() {
         const txt = host?.textContent?.replace(/\\s+/g, ' ') || '';
         const trophyCards = host ? host.querySelectorAll('[data-honour-id], .ws-honour-card, .ws-trophy-card, .ws-meta-row, .ws-honour-row').length : 0;
         return {
-          has84Text: /\\b84\\b/.test(txt),
+          has84Text: /\\b(?:84|88)\\b/.test(txt),
           has44Text: /\\b44\\b/.test(txt),
           hasMensaLaureate: /Mensa 99th-Percentile Laureate|Honor Roll Foundations|Geodesic Sharpshooter/i.test(txt),
           trophyCards,
@@ -1963,7 +2008,7 @@ async function main() {
       gate(
         '4B.honours_84_trophies_44_unlockables_16_atelier_finishes',
         Boolean(
-          /84/.test(vaultCounts.trophiesTitle) &&
+          /(?:84|88)/.test(vaultCounts.trophiesTitle) &&
             /16 Finishes/i.test(vaultCounts.atelierSub) &&
             honoursDom.has84Text &&
             honoursDom.has44Text &&

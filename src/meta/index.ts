@@ -20,6 +20,7 @@ export * from './QuestionQualityFeedbackStore';
 import type { Stage3DDirector } from '../stage3d';
 import type { CouncilTrialsGhostMode } from '../modes';
 import type {
+  DomainId,
   EndingId,
   FactionId,
   HeroRelicId,
@@ -50,13 +51,18 @@ import {
 import { FactionLeagueView } from './FactionLeagueView';
 import {
   CareerAnalyticsStore,
+  type AnalyticsFilterState,
   type AnalyticsTimeRange,
   type CareerAnalyticsState,
   type MatchCompletedAnalyticsInput,
   type QuestionAnalyticsInput,
   type SpecialFeatKind,
 } from './CareerAnalyticsStore';
-import { CareerAnalyticsDashboardView } from './CareerAnalyticsDashboardView';
+import {
+  CareerAnalyticsDashboardView,
+  type CareerAnalyticsOpenOptions,
+  type PracticeSliceRequest,
+} from './CareerAnalyticsDashboardView';
 import {
   BROADCAST_TITLES_CATALOG,
   HUD_ACCENT_THEMES,
@@ -64,6 +70,7 @@ import {
   getEquippedHudTheme,
   getTotalHonoursCount,
   getTotalUnlockablesCount,
+  type HonourAspectCategory,
   type HonourProgressItem,
   type HonourRarityTier,
   type HudAccentThemeSpec,
@@ -99,7 +106,14 @@ export interface MetaProgressionSuiteCallbacks {
   onLaunchGhostDuel?: (contenderId?: string) => void;
   onLaunchBlackSalon?: () => void;
   onLaunchLivePrismReview?: (cards: readonly SrsReviewCard[]) => void;
+  onPracticeSlice?: (slice: PracticeSliceRequest) => void;
   onCloseSuite?: () => void;
+}
+
+interface MetaNavStackEntry {
+  section: MetaSuiteSectionId;
+  passportTab?: PassportTabId;
+  analyticsFilter?: AnalyticsFilterState;
 }
 
 /**
@@ -127,7 +141,7 @@ export class MetaProgressionSuite {
 
   private readonly deps: MetaProgressionSuiteDependencies;
   private callbacks: MetaProgressionSuiteCallbacks;
-  private navStack: MetaSuiteSectionId[] = [];
+  private navStack: MetaNavStackEntry[] = [];
   private currentSection: MetaSuiteSectionId | null = null;
   private historyGuardArmed = false;
   private readonly boundPopState: () => void;
@@ -196,6 +210,7 @@ export class MetaProgressionSuite {
     this.analyticsView = new CareerAnalyticsDashboardView({
       store: this.analyticsStore,
       passport: deps.passport,
+      srsEngine: this.srsEngine,
       audio: deps.audio,
       haptics: deps.haptics,
     });
@@ -257,7 +272,8 @@ export class MetaProgressionSuite {
   }
 
   /**
-   * Unwinds one step in the sub-navigation stack (`#168` §1a), or closes the suite if at root.
+   * Unwinds one step in the sub-navigation stack (`#168` §1a), restoring prior filter/tab state,
+   * or closes the suite if at root.
    */
   public goBack(): boolean {
     const prev = this.navStack.pop();
@@ -265,7 +281,23 @@ export class MetaProgressionSuite {
       this.closeAll(true);
       return false;
     }
-    this.openSectionInternal(prev, false);
+    if (prev.section === 'PASSPORT') {
+      this.openPassport(prev.passportTab ?? 'CREDENTIALS', false, false);
+      return true;
+    }
+    if (prev.section === 'ANALYTICS' && prev.analyticsFilter) {
+      const f = prev.analyticsFilter;
+      this.openAnalytics(f.range, false, {
+        initialDomainId: f.domainId,
+        initialSubcatLabel: f.subcatLabel,
+        initialArchetype: f.archetype,
+        initialPeelTier: f.peelTier,
+        initialOutcome: f.outcome,
+        initialSpeedBucket: f.speedBucket,
+      });
+      return true;
+    }
+    this.openSectionInternal(prev.section, false);
     return true;
   }
 
@@ -284,8 +316,15 @@ export class MetaProgressionSuite {
   private prepareTransitionTo(target: MetaSuiteSectionId, recordHistory: boolean): void {
     const wasOpen = this.isOpen();
     if (recordHistory && wasOpen && this.currentSection && this.currentSection !== target) {
-      if (this.navStack[this.navStack.length - 1] !== this.currentSection) {
-        this.navStack.push(this.currentSection);
+      const last = this.navStack[this.navStack.length - 1];
+      if (!last || last.section !== this.currentSection) {
+        const entry: MetaNavStackEntry = { section: this.currentSection };
+        if (this.currentSection === 'PASSPORT') {
+          entry.passportTab = this.passportBook.getActiveTab();
+        } else if (this.currentSection === 'ANALYTICS') {
+          entry.analyticsFilter = this.analyticsView.getFilterState();
+        }
+        this.navStack.push(entry);
         if (this.navStack.length > 16) {
           this.navStack.shift();
         }
@@ -380,6 +419,8 @@ export class MetaProgressionSuite {
       },
       onInspectRelicInObservatory: (relicId: HeroRelicId | 'championship_trophy') =>
         this.openObservatory('RELICS_3D', relicId, true),
+      onOpenDomainAnalytics: (domainId: DomainId) =>
+        this.openAnalytics('ALL_TIME', true, { initialDomainId: domainId }),
       onNavigateSection: (sec) => this.openSection(sec),
       onClose: () => {
         this.resetSuiteNavigationState(true);
@@ -391,12 +432,14 @@ export class MetaProgressionSuite {
     initialTab: ObservatoryTabId = 'RELICS_3D',
     initialArtifactId: ShowcaseArtifactId = 'championship_trophy',
     recordHistory = true,
+    initialDomainId?: DomainId | number | null,
   ): void {
     this.prepareTransitionTo('OBSERVATORY', recordHistory);
     this.sync3DShowcaseClass(initialTab === 'RELICS_3D');
     this.observatory.open({
       initialTab,
       initialArtifactId,
+      initialDomainId,
       canGoBack: this.canGoBack(),
       onBack: () => {
         this.goBack();
@@ -475,14 +518,35 @@ export class MetaProgressionSuite {
   public openAnalytics(
     initialRange: AnalyticsTimeRange = 'ALL_TIME',
     recordHistory = true,
+    initialFilter?: Pick<
+      CareerAnalyticsOpenOptions,
+      | 'initialDomainId'
+      | 'initialSubcatLabel'
+      | 'initialArchetype'
+      | 'initialPeelTier'
+      | 'initialOutcome'
+      | 'initialSpeedBucket'
+    >,
   ): void {
     this.prepareTransitionTo('ANALYTICS', recordHistory);
     this.sync3DShowcaseClass(false);
     this.analyticsView.open({
       initialRange,
+      ...initialFilter,
       canGoBack: this.canGoBack(),
       onBack: () => {
         this.goBack();
+      },
+      onPracticeSlice: (slice) => {
+        this.closeViewsOnly();
+        this.resetSuiteNavigationState(false);
+        this.callbacks.onPracticeSlice?.(slice);
+      },
+      onOpenMissedCards: (domainId) => {
+        this.openObservatory('SELF_QUIZ', 'championship_trophy', true, domainId);
+      },
+      onOpenRelatedHonours: (req) => {
+        this.openHonours('TROPHIES_64', 'ALL', true, req.aspect, req.contextLabel);
       },
       onNavigateSection: (sec) => this.openSection(sec),
       onClose: () => {
@@ -495,12 +559,16 @@ export class MetaProgressionSuite {
     initialTab: HonoursSubTab = 'TROPHIES_64',
     initialTierFilter: HonourRarityTier | 'ALL' = 'ALL',
     recordHistory = true,
+    initialAspectFilter: HonourAspectCategory | 'ALL' = 'ALL',
+    initialContextLabel?: string | null,
   ): void {
     this.prepareTransitionTo('HONOURS', recordHistory);
     this.sync3DShowcaseClass(false);
     this.honoursView.open({
       initialTab,
       initialTierFilter,
+      initialAspectFilter,
+      initialContextLabel,
       canGoBack: this.canGoBack(),
       onBack: () => {
         this.goBack();
@@ -541,7 +609,7 @@ export class MetaProgressionSuite {
   }
 
   /**
-   * Returns live dynamic catalog totals (84 Honours, 44 Unlockables = 16 Finishes + 17 Titles + 11 Themes)
+   * Returns live dynamic catalog totals (88 Honours, 44 Unlockables = 16 Finishes + 17 Titles + 11 Themes)
    * so HUD / Vault badges automatically scale with every future expansion pack!
    */
   public getCatalogTotals(): {
@@ -618,10 +686,14 @@ export class MetaProgressionSuite {
   }
 
   /**
-   * Opens the 3D Intel Observatory directly on the 5-Box Leitner Mastery Deck tab.
+   * Opens the 3D Intel Observatory directly on the 5-Box Leitner Mastery Deck tab,
+   * optionally pre-filtered to a specific Sovereign Domain!
    */
-  public openMasteryReviewDeck(recordHistory = true): void {
-    this.openObservatory('SELF_QUIZ', 'championship_trophy', recordHistory);
+  public openMasteryReviewDeck(
+    recordHistory = true,
+    initialDomainId?: DomainId | number | null,
+  ): void {
+    this.openObservatory('SELF_QUIZ', 'championship_trophy', recordHistory, initialDomainId);
   }
 
   public getEquippedHudAccentTheme(): HudAccentThemeSpec {

@@ -13,8 +13,13 @@
 // ============================================================================
 
 import {
+  FORGE_DOMAINS,
   forgeEngine,
+  getAcademicTierSpec,
+  getCampaignStageSpec,
   normalizeToPrismQuestion,
+  resolveCampaignAcademicTier,
+  type Archetype3D,
   type BriefingDifficultyPreset,
   type CalibratorConeId,
   type CampaignHubCode,
@@ -55,25 +60,37 @@ import {
 import {
   ArchiveDescentEndless,
   BriefingCategoriesMode,
+  ClueLadderTracker,
   CouncilTrialsGhostMode,
   DailyGlobalFeed,
   DuelRaceTracker,
   ScoringEngine,
+  buildFinaleCategoryOptions,
   buildShareableDuelUrl,
   computeHaversineDistanceKm,
+  computeRetryMercyBoost,
   createDuelSplitFromResult,
+  createMatchGambitSession,
   duelRivalsStore,
   encodeDuelChallenge,
+  evaluatePrismAnswer,
   extractDuelParamFromLocation,
   getDailyGlobalLeaderboard,
   getSubcategoryLeaderboard,
+  mindGambitStore,
+  pickFinaleQuestionForCategoryAsync,
+  shouldUseClueLadder,
+  swapQuestionToStrongestDomain,
   utcDateToCode,
   type BriefingRunLength,
   type DuelChallengePayload,
   type DuelMode,
   type DuelQuestionSplit,
   type LeaderboardCohortSnapshot,
+  type MatchGambitSession,
+  type MindGambitId,
   type PrismAnswerSubmission,
+  type RetryMercyBoost,
   type ScoredQuestionResult,
 } from '../modes';
 import type { BossPhaseBannerDirector } from '../cinema/BossPhaseBannerDirector';
@@ -85,6 +102,7 @@ import {
   getQuarantinedQidSet,
   getQuestionVote,
   recordQuestionFeedback,
+  type PracticeSliceRequest,
   type SpecialFeatKind,
   type SrsReviewCard,
 } from '../meta';
@@ -105,16 +123,30 @@ import {
   SovereignHUD,
   buildDefaultCityCards,
   formatHudValue,
+  type ActiveGambitHudState,
   type ActiveHubTab,
   type CampaignResumeViewInfo,
   type CityCardState,
+  type ClueLadderStepView,
+  type ClueLadderViewState,
+  type FinaleCategoryPickerViewState,
   type GameplayQuestionViewState,
   type HubViewState,
   type MatchSummaryViewState,
+  type MindGambitCardView,
+  type RoundReadyViewState,
   type StoryDialogueViewState,
 } from './SovereignHUD';
 
-type ScreenKind = 'TITLE' | 'REGISTRATION' | 'HUB' | 'STORY_DIALOGUE' | 'GAMEPLAY' | 'SUMMARY';
+type ScreenKind =
+  | 'TITLE'
+  | 'REGISTRATION'
+  | 'HUB'
+  | 'STORY_DIALOGUE'
+  | 'ROUND_READY'
+  | 'FINALE_PICKER'
+  | 'GAMEPLAY'
+  | 'SUMMARY';
 
 type ActiveMatchContext =
   | { kind: 'PROLOGUE'; qCard: PrologueQuestionCard }
@@ -148,6 +180,7 @@ type ActiveMatchContext =
       index: number;
       scoring: ScoringEngine;
       rival: RivalAI;
+      mercy: RetryMercyBoost;
       shieldsRemaining?: number;
       suddenDeathBackfired: boolean;
       bluffBonusPoints: number;
@@ -159,6 +192,7 @@ type ActiveMatchContext =
   | { kind: 'DAILY'; total: number; index: number; utcDate: string }
   | {
       kind: 'BRIEFING';
+      questions: PrismQuestion[];
       total: number;
       index: number;
       domainsLabel: string;
@@ -170,6 +204,54 @@ type ActiveMatchContext =
     }
   | { kind: 'ENDLESS' }
   | { kind: 'TRIALS'; isBlackSalon: boolean; opponentHandle: string; total: number; index: number };
+
+function difficultyTierToBadgeKey(
+  raw: string | undefined | null,
+): RoundReadyViewState['difficultyTierKey'] {
+  const key = String(raw ?? '').trim().toUpperCase();
+  if (key.includes('MENSA') || key.includes('GENIUS')) return 'mensa';
+  if (key.includes('GRADUATE') || key.includes('HARD')) return 'graduate';
+  if (key.includes('COLLEGE') || key.includes('MEDIUM')) return 'college';
+  if (key.includes('HIGH_SCHOOL') || key.includes('HIGH SCHOOL')) return 'high-school';
+  return 'middle-school';
+}
+
+function replacePrismQuestionInPlace(target: PrismQuestion, source: PrismQuestion): void {
+  delete target.codex;
+  delete target.calibrator;
+  delete target.gauntlet;
+  delete target.heroSynthesis;
+  delete target.globePin;
+  delete target.visualPlate;
+  delete target.heroRelicId;
+  Object.assign(target, source);
+}
+
+function buildPickerGambitCards(): MindGambitCardView[] {
+  return mindGambitStore.getPickerOptions(3).map((g) => ({
+    id: g.id,
+    title: g.name,
+    tagline: g.shortBadge,
+    description: g.description,
+    unlocked: g.unlocked,
+    unlockRequirement: g.unlockConditionLabel,
+  }));
+}
+
+function toClueLadderViewState(tracker: ClueLadderTracker): ClueLadderViewState {
+  const snap = tracker.getSnapshot();
+  const mapped = snap.steps.map((s) => ({
+    step: s.step,
+    points: s.pointsValue,
+    label: s.label,
+    text: s.text,
+  })) as [ClueLadderStepView, ClueLadderStepView, ClueLadderStepView];
+  return {
+    activeStep: snap.activeStep,
+    steps: mapped,
+    nextRevealInSec: snap.canRevealNext ? snap.nextAutoRevealInSec : null,
+  };
+}
 
 function formatDifficultyPresetLabel(raw: string | undefined | null): string {
   const key = String(raw ?? '').trim().toUpperCase();
@@ -223,8 +305,8 @@ function prologueCardToPrismQuestion(card: PrologueQuestionCard): PrismQuestion 
       l2Subcategory: card.taughtVerb,
       microTopicId: `prologue_q_${card.questionIndex}`,
       regions: ['CH', 'GLOBAL'],
-      irtB: -0.9,
-      irtA: 1.2,
+      irtB: -1.45,
+      irtA: 1.0,
       archetype: card.archetype,
       prompt: card.prompt,
       answerCorrect: card.answerCorrect,
@@ -247,7 +329,7 @@ function prologueCardToPrismQuestion(card: PrologueQuestionCard): PrismQuestion 
       heroRelicId: card.archetype === 'CALIBRATOR_DIAL' ? 'meridian_astrolabe' : undefined,
     },
     {
-      timerSec: card.timeTotalSec,
+      timerSec: Math.max(35, card.timeTotalSec || 35),
       facetCount: 4,
       shuffleSalt: 0,
     },
@@ -323,6 +405,7 @@ export class SovereignMasterController {
 
   // Active Story / Backstage Queue State
   private activeDialogueVm: StoryDialogueViewState | null = null;
+  private dialogueLeadsToMatch = false;
   private pendingDialogueQueue: CampaignDialogueBeat[] = [];
   private pendingMissionChoices: CampaignChoiceOption[] = [];
   private onDialogueQueueComplete: (() => void) | null = null;
@@ -334,6 +417,26 @@ export class SovereignMasterController {
     conversation: BackstageHubConversation;
     currentNode: BackstageDialogueNode;
   } | null = null;
+
+  // v3.0 Pre-Round Readiness Gate, Finale Category Picker, Clue Ladder & Mind Gambits State
+  private activeRoundReadyVm: RoundReadyViewState | null = null;
+  private onRoundReadyStart: (() => void | Promise<void>) | null = null;
+  private isStartingRoundQuestions = false;
+  private activeFinalePickerVm: FinaleCategoryPickerViewState | null = null;
+  private onFinaleCategorySelected: ((domainId: number) => void | Promise<void>) | null = null;
+  private isSelectingFinaleCategory = false;
+  private readingGraceRemainingSec = 0;
+  private activeClueLadder: ClueLadderTracker | null = null;
+  private activeGambitSession: MatchGambitSession | null = null;
+  private activeMercyBoost: RetryMercyBoost | null = null;
+  private liveBluffRadarLabel: string | null = null;
+  private matchFirstClueSnipes = 0;
+  private matchBluffsCaught = 0;
+  private matchSecondWindTriggered = false;
+  private matchFinaleCategoryWon = false;
+  private matchExtraBonusPoints = 0;
+  private questionMindGambitTriggered = false;
+  private questionFinaleCategoryPicked = false;
 
   // Active Live Question State
   private matchCtx: ActiveMatchContext | null = null;
@@ -494,6 +597,10 @@ export class SovereignMasterController {
           this.closeAllModals();
           void this.launchSpacedRepetitionReview(cards);
         },
+        onPracticeSlice: (slice) => {
+          this.closeAllModals();
+          void this.launchPracticeSliceBriefing(slice);
+        },
         onCloseSuite: () => {
           this.lastMetaSuiteClosedAtMs = performance.now();
           document.documentElement.classList.remove('ws-3d-showcase-open');
@@ -535,6 +642,7 @@ export class SovereignMasterController {
             this.saveSlotsModal?.isOpen() ||
             this.hud?.isVaultDrawerOpen() ||
             this.hud?.isVisualLightboxOpen() ||
+            this.hud?.isRulesModalOpen() ||
             this.leaveConfirmModalEl !== null ||
             this.restartFromStartModalEl !== null
           ) {
@@ -543,7 +651,11 @@ export class SovereignMasterController {
           if (this.screen === 'GAMEPLAY') {
             return this.liveVm?.revealed ? 'GAMEPLAY_REVEALED' : 'GAMEPLAY_LIVE';
           }
-          if (this.screen === 'TITLE') {
+          if (
+            this.screen === 'TITLE' ||
+            this.screen === 'ROUND_READY' ||
+            this.screen === 'FINALE_PICKER'
+          ) {
             return 'HUB';
           }
           return this.screen;
@@ -563,7 +675,18 @@ export class SovereignMasterController {
           }
         },
         onChargeFrame: (snap) => {
-          this.stage3d.setOverclockState(snap.charge01 > 0.01, snap.charge01);
+          const doubled = Boolean(this.liveVm?.doubleDownActive);
+          this.stage3d.setOverclockState(
+            snap.charge01 > 0.01 || doubled,
+            snap.charge01 > 0.01 ? snap.charge01 : doubled ? 0.55 : 0,
+          );
+          if (snap.charge01 >= 0.08 && this.liveVm && !this.liveVm.revealed) {
+            const labelEl = document.getElementById('ws-overclock-label');
+            if (labelEl) {
+              const effMult = Math.max(2.0, snap.effectiveTotalMultiplier);
+              labelEl.textContent = `✦ 2× WAGER (${effMult.toFixed(1)}×) — RELEASE`;
+            }
+          }
         },
         onCommit: (payload) => {
           this.hud?.notifyOverclockCommittedOrCancelled();
@@ -572,6 +695,9 @@ export class SovereignMasterController {
         onBluffEchoCancel: () => {
           this.hud?.notifyOverclockCommittedOrCancelled();
           this.handleBluffCancel();
+          if (this.liveVm) {
+            this.hud.syncDoubleDownDom(this.liveVm);
+          }
         },
       },
       shortcutCallbacks: {
@@ -691,6 +817,20 @@ export class SovereignMasterController {
             this.syncVaultLiveStatus();
           }
         },
+        onRulesModalToggle: (open) => {
+          if (open) {
+            this.stopAnyActiveOverclockAudio();
+          }
+        },
+        onSelectRoundGambit: (gambitId) => {
+          this.handleSelectRoundGambit(gambitId);
+        },
+        onStartRoundQuestions: () => {
+          void this.handleStartRoundQuestions();
+        },
+        onSelectFinaleCategory: (domainId) => {
+          void this.handleSelectFinaleCategory(domainId);
+        },
 
         onTitleEnterMeridian: () => this.handleTitleEnterMeridian(),
         onTitleQuickMode: (tab) => this.handleTitleQuickMode(tab),
@@ -760,6 +900,9 @@ export class SovereignMasterController {
         onSelectGlobeAnchor: (lat, lon, anchorIdx) =>
           this.handleSelectGlobeCoords(lat, lon, anchorIdx, true),
         onTriggerPeel: () => this.handleTriggerPeel(),
+        onToggleDoubleDown: () => this.handleToggleDoubleDown(),
+        onRevealNextClueStep: () => this.handleRevealNextClueStep(),
+        onUseSwapTopicGambit: () => this.handleUseSwapTopicGambit(),
         onTriggerCouncilVeto: () => this.handleCouncilVeto(),
         onUpdateCalibrator: (est, cone) => this.handleUpdateCalibrator(est, cone),
         onUpdateCodexRing: (subjIdx, delta) => this.handleUpdateCodex(subjIdx, delta),
@@ -913,6 +1056,10 @@ export class SovereignMasterController {
   }
 
   private popNavigationReturnStack(fromPopState = false): boolean {
+    if (this.hud.isRulesModalOpen()) {
+      this.hud.closeRulesModal();
+      return true;
+    }
     if (this.hud.isVisualLightboxOpen()) {
       this.hud.closeVisualLightbox();
       return true;
@@ -973,6 +1120,10 @@ export class SovereignMasterController {
   }
 
   private handleTopBarBack(): void {
+    if (this.hud.isRulesModalOpen()) {
+      this.hud.closeRulesModal();
+      return;
+    }
     if (this.hud.isVaultDrawerOpen()) {
       this.hud.closeVaultDrawer();
       return;
@@ -989,7 +1140,11 @@ export class SovereignMasterController {
       }
       return;
     }
-    if (this.screen === 'STORY_DIALOGUE') {
+    if (
+      this.screen === 'STORY_DIALOGUE' ||
+      this.screen === 'ROUND_READY' ||
+      this.screen === 'FINALE_PICKER'
+    ) {
       if (this.activeBackstageCtx) {
         this.popNavigationReturnStack(false);
         return;
@@ -1522,6 +1677,11 @@ export class SovereignMasterController {
     this.pausePassive2DActors();
     this.hud.closeVaultDrawer();
     this.hud.closeVisualLightbox();
+    this.hud.closeRulesModal();
+    this.activeRoundReadyVm = null;
+    this.onRoundReadyStart = null;
+    this.activeFinalePickerVm = null;
+    this.onFinaleCategorySelected = null;
     this.screen = 'TITLE';
     this.renderTitleScreen();
     void this.stage3d.showTitleShowcase('ch').then(() => {
@@ -1722,6 +1882,10 @@ export class SovereignMasterController {
       this.handleTitleEnterMeridian();
       return;
     }
+    if (this.screen === 'ROUND_READY') {
+      void this.handleStartRoundQuestions();
+      return;
+    }
     if (this.screen === 'GAMEPLAY' && this.liveVm?.revealed) {
       void this.advanceAfterReveal();
       return;
@@ -1761,7 +1925,11 @@ export class SovereignMasterController {
   private rerenderTopState(): void {
     if (this.screen === 'TITLE') this.renderTitleScreen();
     else if (this.screen === 'HUB') this.renderHubScreen();
-    else if (this.screen === 'GAMEPLAY' && this.liveVm) {
+    else if (this.screen === 'ROUND_READY' && this.activeRoundReadyVm) {
+      this.hud.renderRoundReady(this.activeRoundReadyVm);
+    } else if (this.screen === 'FINALE_PICKER' && this.activeFinalePickerVm) {
+      this.hud.renderFinaleCategoryPicker(this.activeFinalePickerVm);
+    } else if (this.screen === 'GAMEPLAY' && this.liveVm) {
       this.liveVm.remainingTimeSec = this.timerRemainingSec;
       this.hud.renderGameplay(this.liveVm);
     } else if (this.screen === 'STORY_DIALOGUE' && this.activeDialogueVm) {
@@ -1887,29 +2055,74 @@ export class SovereignMasterController {
       }
 
       this.matchCtx = { kind: 'PROLOGUE', qCard };
-      // Preserve 3.0x Tier-1 multiplier when player exploits Teo's mirror glimpse and surface leakedHintText!
+      this.activeGambitSession = null;
+      this.activeMercyBoost = null;
+      this.activeClueLadder = null;
       const initialPeel: PeelTier = 1;
       const leakedActive = Boolean(snap.leakedHintRevealed && qCard.leakedHintText);
-      void this.beginQuestionOnStage(prismQ, {
-        modeLabel: 'GENEVA SCREENING',
-        chyronTitle: 'GENEVA · THE VETTING CHAMBER',
-        chyronSub: 'VETTING ASSESSMENT',
-        questionIndex: qCard.questionIndex - 1,
-        questionTotal: 4,
-        playerScore: this.prologueScoring.getMatchScore(),
-        streak: this.prologueScoring.getStreak(),
-        rivalId: 'vance',
-        rivalName: 'Vance',
-        rivalScore: 0,
-        rivalStatus: 'HIDDEN',
-        actorId: snap.speakerId,
-        actorName: snap.speakerName,
-        actorExpression: snap.expression,
-        tellLine: leakedActive ? qCard.leakedHintText! : snap.tellHint || snap.dialogueText,
-        coachHint: leakedActive ? qCard.leakedHintText! : qCard.coachPrompt,
-        initialPeelTier: initialPeel,
-        peelSealed: false,
-      });
+
+      const prologueMechanicByIdx: Record<number, { title: string; tip: string }> = {
+        1: {
+          title: 'Pick & Lock',
+          tip: 'Tap any choice A–D, then tap ✓ Lock Answer to submit (+300 pts). No penalty for missing during warmup!',
+        },
+        2: {
+          title: 'Hint & 50/50',
+          tip: leakedActive
+            ? 'Mara’s Margin Note is already open! Need more help? Tap ◆ Hint (2× pts) or 50/50 (1× pts) to cross out 2 wrong choices.'
+            : 'Need a nudge? Tap ◆ Hint (2× pts) for a clue, or tap again for 50/50 (1× pts) to cross out 2 wrong choices.',
+        },
+        3: {
+          title: '2× Double Down',
+          tip: 'Confident in your answer? Toggle ✦ 2× Double Down before locking to double your points (+600 pts), or stay safe at 1×.',
+        },
+        4: {
+          title: 'Closest-Year Slider',
+          tip: 'Slide the year dial to your best guess, choose a precision band (Wide / Sharp / Bullseye), and tap ✓ Lock Answer!',
+        },
+      };
+      const mech = prologueMechanicByIdx[qCard.questionIndex] ?? prologueMechanicByIdx[1];
+
+      this.presentRoundReadyGate(
+        {
+          chyronTitle: 'GENEVA · THE VETTING CHAMBER',
+          chyronSub: `WARMUP QUESTION ${qCard.questionIndex} OF 4`,
+          roundTitle: `Ready for Question ${qCard.questionIndex} of 4`,
+          roundSubtitle: 'Warmup — you cannot fail this check. Take your time!',
+          difficultyLabel: 'Middle School · Warmup',
+          difficultyTierKey: 'middle-school',
+          questionCount: 4,
+          timerPerQuestionSec: Math.round(prismQ.timerSec || 35),
+          isPrologueStep: true,
+          prologueQuestionNumber: qCard.questionIndex,
+          prologueMechanicTitle: mech.title,
+          prologueMechanicTip: mech.tip,
+          startButtonLabel: `▶ START QUESTION ${qCard.questionIndex}`,
+        },
+        () => {
+          void this.beginQuestionOnStage(prismQ, {
+            modeLabel: 'GENEVA WARMUP',
+            chyronTitle: 'GENEVA · THE VETTING CHAMBER',
+            chyronSub: `WARMUP · Q${qCard.questionIndex} / 4`,
+            questionIndex: qCard.questionIndex - 1,
+            questionTotal: 4,
+            playerScore: this.prologueScoring.getMatchScore(),
+            streak: this.prologueScoring.getStreak(),
+            rivalId: 'vance',
+            rivalName: 'Vance',
+            rivalScore: 0,
+            rivalStatus: 'HIDDEN',
+            actorId: snap.speakerId,
+            actorName: snap.speakerName,
+            actorExpression: snap.expression,
+            tellLine: leakedActive ? qCard.leakedHintText! : snap.tellHint || snap.dialogueText,
+            coachHint: leakedActive ? qCard.leakedHintText! : qCard.coachPrompt,
+            initialPeelTier: initialPeel,
+            peelSealed: false,
+          });
+        },
+        false,
+      );
       return;
     }
 
@@ -2012,6 +2225,15 @@ export class SovereignMasterController {
     this.pausePassive2DActors();
     this.hud.closeVaultDrawer();
     this.hud.closeVisualLightbox();
+    this.hud.closeRulesModal();
+    this.activeRoundReadyVm = null;
+    this.onRoundReadyStart = null;
+    this.activeFinalePickerVm = null;
+    this.onFinaleCategorySelected = null;
+    this.activeClueLadder = null;
+    this.activeGambitSession = null;
+    this.activeMercyBoost = null;
+    this.liveBluffRadarLabel = null;
     this.matchCtx = null;
     this.liveVm = null;
     this.activeBackstageCtx = null;
@@ -2127,8 +2349,17 @@ export class SovereignMasterController {
           });
 
       const firstCoreId = card.coreMissionIds[0] ?? card.missionIds[0];
-      const timerSec =
-        this.campaign.getMissionView(firstCoreId)?.matchSpec.timePerQuestionSec ?? 18;
+      const hubCode = card.hubId as CampaignHubCode;
+      const stageSpec = getCampaignStageSpec(hubCode);
+      const hubTier = resolveCampaignAcademicTier(hubCode, 0, 0);
+      const earlyHubFloorSec =
+        hubCode === 'ch' ? 30 : hubCode === 'gb' ? 28 : hubCode === 'jp' ? 26 : 0;
+      const timerSec = Math.max(
+        earlyHubFloorSec,
+        getAcademicTierSpec(hubTier).timerSec,
+        stageSpec.timerSec,
+        this.campaign.getMissionView(firstCoreId)?.matchSpec.timePerQuestionSec ?? stageSpec.timerSec,
+      );
       const nextPlayableId =
         card.nextPlayableMissionId ??
         missions.find((m) => m.unlocked && !m.completed)?.id ??
@@ -2139,11 +2370,11 @@ export class SovereignMasterController {
         : null;
 
       return {
-        hub: card.hubId as CampaignHubCode,
+        hub: hubCode,
         order: card.order,
         city: card.city,
         venueName: card.venueName,
-        difficultyLabel: card.difficultyLabel,
+        difficultyLabel: formatDifficultyPresetLabel(hubTier),
         timerSec,
         unlocked: unlockedHub,
         clearedMissions: card.completedCount,
@@ -2382,6 +2613,7 @@ export class SovereignMasterController {
         () => {
           void this.startCampaignPrismMatch(mView);
         },
+        true,
       );
     };
 
@@ -2425,7 +2657,9 @@ export class SovereignMasterController {
     beats: CampaignDialogueBeat[],
     choicesAtEnd: CampaignChoiceOption[],
     onDone: () => void,
+    leadsToMatch = false,
   ): void {
+    this.dialogueLeadsToMatch = leadsToMatch;
     this.pendingDialogueQueue = [...beats];
     let availChoices = [...choicesAtEnd].filter((c) => c.available);
     // Safety fallback (#145): if choices were supplied (e.g. global_5 endings) and 0 were marked available, unlock first
@@ -2506,7 +2740,11 @@ export class SovereignMasterController {
         : undefined,
       tellText: nextBeat.tellHint,
       choices,
-      continueLabel: isLastBeat ? 'CONTINUE ▶' : 'NEXT ▶',
+      continueLabel: isLastBeat
+        ? this.dialogueLeadsToMatch
+          ? 'PREPARE FOR QUESTIONS ▶'
+          : 'CONTINUE ▶'
+        : 'NEXT ▶',
     };
     this.hud.renderStoryDialogue(this.activeDialogueVm);
   }
@@ -2720,7 +2958,7 @@ export class SovereignMasterController {
           speakerRole: prevVm?.speakerRole || 'Meridian Circuit',
           expression: 'intense',
           text: res.responseLine.trim(),
-          continueLabel: 'CONTINUE ▶',
+          continueLabel: this.dialogueLeadsToMatch ? 'PREPARE FOR QUESTIONS ▶' : 'CONTINUE ▶',
         };
         this.hud.renderStoryDialogue(this.activeDialogueVm);
         return;
@@ -2740,53 +2978,54 @@ export class SovereignMasterController {
     const rules = spec.compiledRules;
     const deferredEndingChoices = refreshed.choices.filter((c) => Boolean(c.endingId));
 
-    let questions: PrismQuestion[];
-    if (spec.isBossShowdown) {
-      questions = await forgeEngine.queryCampaignRoundAsync({
-        hub: spec.hubId as CampaignHubCode,
-        roundIndex: spec.rhythmSlot - 1,
-        count: spec.questionCount,
-        isBossShowdown: true,
-        lateralJammerMode: rules.peelLockedBothPlayers,
-        nemesisCounterPick: rules.nemesisWeakestDomainActive,
-        domains: spec.preferredDomains.length > 0 ? spec.preferredDomains : undefined,
-      });
-    } else {
-      if (!forgeEngine.isReady()) {
-        await forgeEngine.init('./data');
-      }
-      if (spec.preferredDomains.length > 0) {
-        await forgeEngine.ensureDomainsLoaded(spec.preferredDomains);
-      }
-      const [irtMin, irtMax] = spec.irtBRange;
-      const targetIrtCurve = Array.from({ length: spec.questionCount }, (_, i) =>
-        spec.questionCount <= 1
-          ? (irtMin + irtMax) * 0.5
-          : irtMin + ((irtMax - irtMin) * i) / (spec.questionCount - 1),
-      );
-      questions = forgeEngine.queryQuestions({
-        count: spec.questionCount,
-        mode: 'CAMPAIGN',
-        hub: spec.hubId as CampaignHubCode,
-        roundIndex: spec.rhythmSlot - 1,
-        domains: spec.preferredDomains.length > 0 ? spec.preferredDomains : undefined,
-        archetypes: spec.morphSequence.length > 0 ? spec.morphSequence : undefined,
-        irtMin,
-        irtMax,
-        targetIrtCurve,
-        lateralJammerMode: rules.peelLockedBothPlayers,
-        nemesisCounterPick: rules.nemesisWeakestDomainActive,
-      });
-    }
+    const hubCode = spec.hubId as CampaignHubCode;
+    const stageSpec = getCampaignStageSpec(hubCode);
+    const failedAttempts = Math.max(
+      refreshed.failedAttemptInfo?.attempts ?? 0,
+      this.localFailedMissions.get(mission.id)?.attempts ?? 0,
+    );
+    const mercy = computeRetryMercyBoost(failedAttempts);
 
+    // Mandate #1: ALWAYS route through `forgeEngine.queryCampaignRoundAsync` so strict
+    // Stage 1 (MIDDLE_SCHOOL) -> Stage 8 (MENSA) difficulty gates & Scout's Advantage mercy apply!
+    const questions = await forgeEngine.queryCampaignRoundAsync({
+      hub: hubCode,
+      roundIndex: spec.rhythmSlot - 1,
+      count: spec.questionCount,
+      isBossShowdown: spec.isBossShowdown,
+      irtBRange: spec.irtBRange,
+      lateralJammerMode: rules.peelLockedBothPlayers,
+      nemesisCounterPick: rules.nemesisWeakestDomainActive,
+      domains: spec.preferredDomains.length > 0 ? spec.preferredDomains : undefined,
+      morphSequence: spec.isBossShowdown
+        ? undefined
+        : spec.morphSequence.length > 0
+          ? spec.morphSequence
+          : undefined,
+      mercyTierShift: mercy.mercyTierShift,
+      bonusTimerSec: mercy.bonusTimerSec,
+    });
+
+    const effectiveTier = resolveCampaignAcademicTier(
+      hubCode,
+      spec.rhythmSlot - 1,
+      mercy.mercyTierShift,
+    );
+    const earlyHubFloorSec =
+      hubCode === 'ch' ? 30 : hubCode === 'gb' ? 28 : hubCode === 'jp' ? 26 : 0;
+    const tierTimerSec = getAcademicTierSpec(effectiveTier).timerSec;
+    const targetTimerSec =
+      Math.max(earlyHubFloorSec, tierTimerSec, stageSpec.timerSec, spec.timePerQuestionSec) +
+      mercy.bonusTimerSec;
     for (const q of questions) {
       if (q.archetype !== 'GAUNTLET_SHATTER') {
-        q.timerSec = spec.timePerQuestionSec;
+        q.timerSec = Math.max(q.timerSec || 0, targetTimerSec);
       }
     }
 
     const rival = new RivalAI({
       actorId: spec.rivalId,
+      hubId: hubCode,
       tempoStealActive:
         rules.activeMutators.includes('TEMPO_STEAL') || rules.nadiaSuspicionTempoSteal,
       tempoStealImmune: rules.tempoStealImmune,
@@ -2798,15 +3037,24 @@ export class SovereignMasterController {
       isFinaleVsVance: spec.missionId === 'global_5',
     });
 
-    const initialShields =
+    // Mandate #1: Disable shield-depletion instant failure on early non-boss stages (ch / gb / jp)!
+    const baseShields =
       typeof rules.startingShields === 'number'
         ? rules.startingShields
         : spec.isBossShowdown
           ? 3
           : undefined;
+    const isEarlyNonBoss =
+      !spec.isBossShowdown && (hubCode === 'ch' || hubCode === 'gb' || hubCode === 'jp');
+    const initialShields = isEarlyNonBoss
+      ? undefined
+      : typeof baseShields === 'number'
+        ? baseShields + mercy.bonusStartingShields
+        : undefined;
 
     const scoring = new ScoringEngine();
     this.resetPerMatchAnalyticsCounters();
+    this.activeMercyBoost = mercy.active ? mercy : null;
     this.matchCtx = {
       kind: 'CAMPAIGN',
       mission: refreshed,
@@ -2814,6 +3062,7 @@ export class SovereignMasterController {
       index: 0,
       scoring,
       rival,
+      mercy,
       shieldsRemaining: initialShields,
       suddenDeathBackfired: false,
       bluffBonusPoints: 0,
@@ -2829,60 +3078,261 @@ export class SovereignMasterController {
       return;
     }
 
-    // Play Phase I Boss Showdown Broadcast Stinger before Q0 on Boss missions (#140 & #176/#178)!
-    if (spec.isBossShowdown) {
-      const cue = this.campaign.getRivalReaction(spec.rivalId, 'on_boss_intro');
-      const bossBanner = await this.getBossBanner();
-      await bossBanner.playIfPhaseTransition(
-        {
-          isBossShowdown: true,
-          questionIndex: 0,
-          totalQuestions: questions.length,
+    const stageNumber = stageSpec.index + 1;
+    const tierDisplay = formatDifficultyPresetLabel(effectiveTier);
+    const scoutsBadge = mercy.active ? `${mercy.badgeTitle}: ${mercy.badgeDetail}` : null;
+
+    this.presentRoundReadyGate(
+      {
+        chyronTitle: `${spec.countryCode} · ${spec.title.toUpperCase()}`,
+        chyronSub: `${tierDisplay.toUpperCase()} · ${questions.length} QUESTIONS`,
+        roundTitle: refreshed.title,
+        roundSubtitle: refreshed.subtitle,
+        difficultyLabel: `${tierDisplay} · ${stageNumber <= 2 ? 'Welcoming' : `Stage ${stageNumber}`}`,
+        difficultyTierKey: difficultyTierToBadgeKey(effectiveTier),
+        questionCount: questions.length,
+        timerPerQuestionSec: Math.round(q0.timerSec || targetTimerSec),
+        scoutsAdvantageBadge: scoutsBadge,
+        gambits: buildPickerGambitCards(),
+        selectedGambitId: mindGambitStore.getEquippedGambitId(),
+        startButtonLabel: '▶ START QUESTIONS',
+      },
+      async () => {
+        // Play Phase I Boss Showdown Broadcast Stinger before Q0 on Boss missions!
+        if (spec.isBossShowdown) {
+          const cue = this.campaign.getRivalReaction(spec.rivalId, 'on_boss_intro');
+          const bossBanner = await this.getBossBanner();
+          await bossBanner.playIfPhaseTransition(
+            {
+              isBossShowdown: true,
+              questionIndex: 0,
+              totalQuestions: questions.length,
+              archetype: q0.archetype,
+              questions,
+              bossPhases: spec.bossPhases,
+            },
+            {
+              hubId: spec.hubId,
+              countryCode: spec.countryCode,
+              cityName: refreshed.title,
+              missionTitle: refreshed.subtitle,
+              heroRelicId: spec.heroRelicId,
+              rivalId: spec.rivalId,
+              voiceUrl: spec.hubId === 'global' ? undefined : cue.voiceUrl,
+              stage3d: this.stage3d,
+            },
+          );
+        }
+
+        const rivalHud = rival.beginQuestion({
+          qid: q0.qid,
+          domainId: q0.l0Domain,
+          irtB: q0.irtB,
           archetype: q0.archetype,
-          questions,
-          bossPhases: spec.bossPhases,
-        },
-        {
-          hubId: spec.hubId,
-          countryCode: spec.countryCode,
-          cityName: refreshed.title,
-          missionTitle: refreshed.subtitle,
-          heroRelicId: spec.heroRelicId,
-          rivalId: spec.rivalId,
-          voiceUrl: spec.hubId === 'global' ? undefined : cue.voiceUrl,
-          stage3d: this.stage3d,
-        },
-      );
+          timeTotalSec: q0.timerSec,
+          hubId: hubCode,
+          difficultyTier: q0.difficultyTier,
+        });
+
+        await this.beginQuestionOnStage(q0, {
+          modeLabel: tierDisplay.toUpperCase(),
+          chyronTitle: `${spec.countryCode} · ${spec.title.toUpperCase()}`,
+          chyronSub: `${tierDisplay} · ${Math.round(q0.timerSec)}s`,
+          questionIndex: 0,
+          questionTotal: questions.length,
+          playerScore: 0,
+          streak: 0,
+          shields: initialShields,
+          rivalId: rivalHud.actorId,
+          rivalName: rivalHud.shortName,
+          rivalScore: rivalHud.score,
+          rivalStatus: rivalHud.status,
+          actorId: rivalHud.actorId,
+          actorName: rivalHud.name,
+          actorExpression: rivalHud.expression,
+          tellLine: rivalHud.tellPillText,
+          coachHint: spec.mutatorBrief || undefined,
+          peelSealed: rules.peelLockedBothPlayers,
+          autoRedactOneDecoy: rules.autoShatterDecoyOnQ1,
+        });
+      },
+      true,
+    );
+  }
+
+  // ==========================================================================
+  // V3.0 PRE-ROUND READINESS GATE, MIND GAMBITS & FINALE CATEGORY PICKER
+  // ==========================================================================
+
+  private presentRoundReadyGate(
+    vm: RoundReadyViewState,
+    onStart: () => void | Promise<void>,
+    enableMindGambits = true,
+  ): void {
+    this.stopTelemetryLoop();
+    this.pausePassive2DActors();
+    this.hud.closeVaultDrawer();
+    this.hud.closeVisualLightbox();
+    this.hud.closeRulesModal();
+
+    this.screen = 'ROUND_READY';
+    this.isStartingRoundQuestions = false;
+    this.activeRoundReadyVm = vm;
+    this.onRoundReadyStart = async () => {
+      if (enableMindGambits) {
+        this.activeGambitSession = createMatchGambitSession(
+          mindGambitStore.getEquippedGambitId(),
+          { grantFreeSecondWind: Boolean(this.activeMercyBoost?.grantFreeSecondWind) },
+        );
+      } else {
+        this.activeGambitSession = null;
+      }
+      await onStart();
+    };
+    this.hud.renderRoundReady(vm);
+  }
+
+  private handleSelectRoundGambit(gambitId: string): void {
+    if (!this.activeRoundReadyVm) return;
+    if (mindGambitStore.setEquippedGambit(gambitId as MindGambitId)) {
+      this.activeRoundReadyVm = {
+        ...this.activeRoundReadyVm,
+        gambits: buildPickerGambitCards(),
+        selectedGambitId: mindGambitStore.getEquippedGambitId(),
+      };
+      this.hud.renderRoundReady(this.activeRoundReadyVm);
     }
+  }
 
-    const rivalHud = rival.beginQuestion({
-      qid: q0.qid,
-      domainId: q0.l0Domain,
-      irtB: q0.irtB,
-      archetype: q0.archetype,
-      timeTotalSec: q0.timerSec,
-    });
+  private async handleStartRoundQuestions(): Promise<void> {
+    if (this.screen !== 'ROUND_READY' || this.isStartingRoundQuestions || !this.onRoundReadyStart) {
+      return;
+    }
+    this.isStartingRoundQuestions = true;
+    const starter = this.onRoundReadyStart;
+    this.onRoundReadyStart = null;
+    this.activeRoundReadyVm = null;
+    try {
+      await starter();
+    } finally {
+      this.isStartingRoundQuestions = false;
+    }
+  }
 
-    await this.beginQuestionOnStage(q0, {
-      modeLabel: spec.difficultyLabel,
-      chyronTitle: `${spec.countryCode} · ${spec.title.toUpperCase()}`,
-      chyronSub: spec.difficultyLabel,
-      questionIndex: 0,
-      questionTotal: questions.length,
-      playerScore: 0,
-      streak: 0,
-      shields: initialShields,
-      rivalId: rivalHud.actorId,
-      rivalName: rivalHud.shortName,
-      rivalScore: rivalHud.score,
-      rivalStatus: rivalHud.status,
-      actorId: rivalHud.actorId,
-      actorName: rivalHud.name,
-      actorExpression: rivalHud.expression,
-      tellLine: rivalHud.tellPillText,
-      coachHint: spec.mutatorBrief || undefined,
-      peelSealed: rules.peelLockedBothPlayers,
-      autoRedactOneDecoy: rules.autoShatterDecoyOnQ1,
+  private presentFinaleCategoryPicker(
+    vm: FinaleCategoryPickerViewState,
+    onSelect: (domainId: number) => void | Promise<void>,
+  ): void {
+    this.stopTelemetryLoop();
+    this.pausePassive2DActors();
+    this.screen = 'FINALE_PICKER';
+    this.isSelectingFinaleCategory = false;
+    this.activeFinalePickerVm = vm;
+    this.onFinaleCategorySelected = onSelect;
+    this.hud.renderFinaleCategoryPicker(vm);
+  }
+
+  private async handleSelectFinaleCategory(domainId: number): Promise<void> {
+    if (
+      this.screen !== 'FINALE_PICKER' ||
+      this.isSelectingFinaleCategory ||
+      !this.onFinaleCategorySelected
+    ) {
+      return;
+    }
+    this.isSelectingFinaleCategory = true;
+    const picker = this.onFinaleCategorySelected;
+    this.onFinaleCategorySelected = null;
+    this.activeFinalePickerVm = null;
+    try {
+      await picker(domainId);
+    } finally {
+      this.isSelectingFinaleCategory = false;
+    }
+  }
+
+  private getActiveMatchQuestions(): PrismQuestion[] | undefined {
+    const ctx = this.matchCtx;
+    if (!ctx) return undefined;
+    if (
+      ctx.kind === 'CAMPAIGN' ||
+      ctx.kind === 'BRIEFING' ||
+      ctx.kind === 'DUEL' ||
+      ctx.kind === 'SHOWCASE' ||
+      ctx.kind === 'SRS_REVIEW'
+    ) {
+      return ctx.questions;
+    }
+    return undefined;
+  }
+
+  private canCurrentMatchSwapTopic(): boolean {
+    const ctx = this.matchCtx;
+    if (!ctx) return false;
+    return (
+      ctx.kind === 'CAMPAIGN' ||
+      ctx.kind === 'BRIEFING' ||
+      ctx.kind === 'ENDLESS' ||
+      ctx.kind === 'TRIALS' ||
+      ctx.kind === 'DAILY' ||
+      ctx.kind === 'SHOWCASE'
+    );
+  }
+
+  private buildActiveGambitHudState(isFinalQuestion: boolean): ActiveGambitHudState | null {
+    const mercyLabel = this.activeMercyBoost?.active ? this.activeMercyBoost.badgeTitle : null;
+    if (!this.activeGambitSession) {
+      if (!mercyLabel) return null;
+      return {
+        id: 'SCOUTS_ADVANTAGE',
+        title: "Scout's Advantage",
+        statusText: this.activeMercyBoost!.badgeDetail,
+        scoutsAdvantageLabel: mercyLabel,
+      };
+    }
+    const pill = this.activeGambitSession.getHudPillState(isFinalQuestion);
+    return {
+      id: pill.gambitId,
+      title: pill.name,
+      statusText: pill.detailText,
+      canUseSwapTopic: pill.canSwapTopic && this.canCurrentMatchSwapTopic(),
+      swapTopicUsed: this.activeGambitSession.equippedId === 'TOPIC_REROLL' && !pill.canSwapTopic,
+      secondWindReady: pill.secondWindReady,
+      bluffRadarLabel: pill.bluffRadarActive ? this.liveBluffRadarLabel : null,
+      comboBonusLabel: pill.comboBonusLabel,
+      scoutsAdvantageLabel: mercyLabel,
+    };
+  }
+
+  private async launchPracticeSliceBriefing(slice: PracticeSliceRequest): Promise<void> {
+    const hasDomain =
+      typeof slice.domainId === 'number' && slice.domainId >= 0 && slice.domainId <= 11;
+    const domains: DomainId[] | 'GLOBAL_MIX' = hasDomain
+      ? [Math.trunc(slice.domainId!) as DomainId]
+      : 'GLOBAL_MIX';
+    const domainMeta = hasDomain ? FORGE_DOMAINS[Math.trunc(slice.domainId!)] : null;
+    const topicDisplayLabel =
+      slice.subcatLabel && slice.subcatLabel.trim().length > 0
+        ? slice.subcatLabel.trim()
+        : domainMeta
+          ? `${domainMeta.name} Practice`
+          : slice.outcome === 'WRONG'
+            ? 'Missed Questions Practice'
+            : slice.outcome === 'DOUBLE_DOWN'
+              ? 'Double-Down Practice'
+              : 'Targeted Stats Practice';
+
+    const safeArchetype: Archetype3D | 'ALL_MORPHS' | undefined =
+      slice.archetype && slice.archetype !== 'HERO_ARTIFACT_SYNTHESIS'
+        ? (slice.archetype as Archetype3D)
+        : undefined;
+
+    await this.launchBriefingRun({
+      domains,
+      difficulty: 'ADAPTIVE',
+      length: 5,
+      topicDisplayLabel,
+      archetypeFilter: safeArchetype,
     });
   }
 
@@ -2895,6 +3345,14 @@ export class SovereignMasterController {
     this.matchMax6xWins = 0;
     this.matchShieldsLost = 0;
     this.matchSorenBluffCaught = false;
+    this.matchFirstClueSnipes = 0;
+    this.matchBluffsCaught = 0;
+    this.matchSecondWindTriggered = false;
+    this.matchFinaleCategoryWon = false;
+    this.matchExtraBonusPoints = 0;
+    this.activeClueLadder = null;
+    this.activeMercyBoost = null;
+    this.liveBluffRadarLabel = null;
     this.currentMatchRecordedQids = [];
     this.currentMatchRecordedSplits = [];
   }
@@ -2913,25 +3371,43 @@ export class SovereignMasterController {
     };
     void this.setStageVenueWithAmbience('global');
     this.stage3d.setLightingMode('BROADCAST');
-    this.playGameplayVoiceOnce('vance_intro_2');
 
-    void this.beginQuestionOnStage(firstQuestion, {
-      modeLabel: `FEED #${packet.broadcastNumber}`,
-      chyronTitle: `GLOBAL FEED #${packet.broadcastNumber}`,
-      chyronSub: packet.utcDate,
-      questionIndex: 0,
-      questionTotal: packet.questions.length,
-      playerScore: 0,
-      streak: 0,
-      rivalId: 'vance',
-      rivalName: 'Vance',
-      rivalScore: 0,
-      rivalStatus: 'HIDDEN',
-      actorId: 'vance',
-      actorName: 'Julian Vance',
-      actorExpression: 'neutral',
-      tellLine: hostGreeting,
-    });
+    this.presentRoundReadyGate(
+      {
+        chyronTitle: `GLOBAL FEED #${packet.broadcastNumber}`,
+        chyronSub: `${packet.utcDate} · ${packet.questions.length} QUESTIONS`,
+        roundTitle: `Daily Global Feed #${packet.broadcastNumber}`,
+        roundSubtitle: 'Same 10 questions for every challenger worldwide today.',
+        difficultyLabel: 'Daily Mix · Progressive',
+        difficultyTierKey: 'college',
+        questionCount: packet.questions.length,
+        timerPerQuestionSec: Math.round(firstQuestion.timerSec || 22),
+        gambits: buildPickerGambitCards(),
+        selectedGambitId: mindGambitStore.getEquippedGambitId(),
+        startButtonLabel: '▶ START QUESTIONS',
+      },
+      () => {
+        this.playGameplayVoiceOnce('vance_intro_2');
+        void this.beginQuestionOnStage(firstQuestion, {
+          modeLabel: `FEED #${packet.broadcastNumber}`,
+          chyronTitle: `GLOBAL FEED #${packet.broadcastNumber}`,
+          chyronSub: packet.utcDate,
+          questionIndex: 0,
+          questionTotal: packet.questions.length,
+          playerScore: 0,
+          streak: 0,
+          rivalId: 'vance',
+          rivalName: 'Vance',
+          rivalScore: 0,
+          rivalStatus: 'HIDDEN',
+          actorId: 'vance',
+          actorName: 'Julian Vance',
+          actorExpression: 'neutral',
+          tellLine: hostGreeting,
+        });
+      },
+      true,
+    );
   }
 
   private async openBriefingPickerModal(opts?: {
@@ -2990,6 +3466,7 @@ export class SovereignMasterController {
     l1SubcategoryId?: string;
     l2TopicId?: string;
     topicDisplayLabel?: string;
+    archetypeFilter?: Archetype3D | 'ALL_MORPHS';
   }): Promise<void> {
     this.stopTelemetryLoop();
     this.resetPerMatchAnalyticsCounters();
@@ -3006,6 +3483,7 @@ export class SovereignMasterController {
 
     this.matchCtx = {
       kind: 'BRIEFING',
+      questions,
       total: questions.length,
       index: 0,
       domainsLabel: subLabel,
@@ -3018,23 +3496,41 @@ export class SovereignMasterController {
     await this.setStageVenueWithAmbience('studio');
     this.stage3d.setLightingMode('BROADCAST');
 
-    await this.beginQuestionOnStage(firstQuestion, {
-      modeLabel: `BRIEFING · ${diffLabel.toUpperCase()}`,
-      chyronTitle: 'THE BRIEFING ROOM',
-      chyronSub: subLabel,
-      questionIndex: 0,
-      questionTotal: questions.length,
-      playerScore: 0,
-      streak: 0,
-      rivalId: 'nadia',
-      rivalName: 'Nadia',
-      rivalScore: 0,
-      rivalStatus: 'HIDDEN',
-      actorId: 'nadia',
-      actorName: 'Nadia Al-Mansoor',
-      actorExpression: 'neutral',
-      tellLine: nadiaGreeting,
-    });
+    this.presentRoundReadyGate(
+      {
+        chyronTitle: 'THE BRIEFING ROOM',
+        chyronSub: subLabel,
+        roundTitle: cfg.topicDisplayLabel || 'Briefing Room Practice',
+        roundSubtitle: `${questions.length}-question custom focus set · ${diffLabel}`,
+        difficultyLabel: diffLabel,
+        difficultyTierKey: difficultyTierToBadgeKey(cfg.difficulty),
+        questionCount: questions.length,
+        timerPerQuestionSec: Math.round(firstQuestion.timerSec || 24),
+        gambits: buildPickerGambitCards(),
+        selectedGambitId: mindGambitStore.getEquippedGambitId(),
+        startButtonLabel: '▶ START QUESTIONS',
+      },
+      async () => {
+        await this.beginQuestionOnStage(firstQuestion, {
+          modeLabel: `BRIEFING · ${diffLabel.toUpperCase()}`,
+          chyronTitle: 'THE BRIEFING ROOM',
+          chyronSub: subLabel,
+          questionIndex: 0,
+          questionTotal: questions.length,
+          playerScore: 0,
+          streak: 0,
+          rivalId: 'nadia',
+          rivalName: 'Nadia',
+          rivalScore: 0,
+          rivalStatus: 'HIDDEN',
+          actorId: 'nadia',
+          actorName: 'Nadia Al-Mansoor',
+          actorExpression: 'neutral',
+          tellLine: nadiaGreeting,
+        });
+      },
+      true,
+    );
   }
 
   // ==========================================================================
@@ -3045,6 +3541,7 @@ export class SovereignMasterController {
   private launchInstantTrialPrism(): void {
     this.stopTelemetryLoop();
     this.resetPerMatchAnalyticsCounters();
+    this.activeGambitSession = null;
     this.activeBackstageCtx = null;
 
     // Upgrade #4: Synchronous < 100ms cold-open 1-Prism launch (zero cutscenes, zero name gate!)
@@ -3059,8 +3556,8 @@ export class SovereignMasterController {
     this.stage3d.setLightingMode('BROADCAST');
 
     void this.beginQuestionOnStage(q, {
-      modeLabel: 'INSTANT PRISM',
-      chyronTitle: 'THE MERIDIAN · LIVE PRISM',
+      modeLabel: 'QUICK 1-Q',
+      chyronTitle: 'THE MERIDIAN · QUICK QUESTION',
       chyronSub: '1-TAP SHOWCASE',
       questionIndex: 0,
       questionTotal: 1,
@@ -3073,7 +3570,7 @@ export class SovereignMasterController {
       actorId: 'vance',
       actorName: 'Julian Vance',
       actorExpression: 'neutral',
-      tellLine: 'Spin A–D, tap Peel for clues, or hold Lock to Overclock up to 6.0×!',
+      tellLine: 'Pick A–D, tap Hint if stuck, or toggle 2× Double Down before locking!',
       isInstantTrialPrism: true,
     });
   }
@@ -3154,30 +3651,48 @@ export class SovereignMasterController {
     await this.setStageVenueWithAmbience('sg');
     this.stage3d.setLightingMode('BROADCAST');
 
-    await this.beginQuestionOnStage(q0, {
-      modeLabel: `1v1 DUEL · ${payload.topicLabel || payload.mode}`,
-      chyronTitle: `1v1 DUEL VS ${payload.challengerName.toUpperCase()}`,
-      chyronSub: payload.topicLabel || `${questions.length} PRISMS`,
-      questionIndex: 0,
-      questionTotal: questions.length,
-      playerScore: 0,
-      streak: 0,
-      rivalId: 'soren',
-      rivalName: payload.challengerName,
-      rivalScore: 0,
-      rivalStatus: 'THINKING',
-      actorId: 'soren',
-      actorName: payload.challengerName,
-      actorExpression: 'intense',
-      tellLine: `Beat ${payload.challengerName}'s ${payload.totalScore.toLocaleString('en-US')} PTS across ${questions.length} exact Prisms!`,
-      duelLiveSplit: {
-        challengerName: payload.challengerName,
-        playerScore: 0,
-        challengerScore: 0,
-        deltaPts: 0,
-        leader: 'TIED',
+    this.presentRoundReadyGate(
+      {
+        chyronTitle: `1v1 DUEL VS ${payload.challengerName.toUpperCase()}`,
+        chyronSub: payload.topicLabel || `${questions.length} QUESTIONS`,
+        roundTitle: `Head-to-Head vs ${payload.challengerName}`,
+        roundSubtitle: `Target to beat: ${payload.totalScore.toLocaleString('en-US')} PTS across ${questions.length} matched questions.`,
+        difficultyLabel: '1v1 Ghost Duel',
+        difficultyTierKey: 'college',
+        questionCount: questions.length,
+        timerPerQuestionSec: Math.round(q0.timerSec || 22),
+        gambits: buildPickerGambitCards(),
+        selectedGambitId: mindGambitStore.getEquippedGambitId(),
+        startButtonLabel: '▶ START DUEL',
       },
-    });
+      async () => {
+        await this.beginQuestionOnStage(q0, {
+          modeLabel: `1v1 DUEL · ${payload.topicLabel || payload.mode}`,
+          chyronTitle: `1v1 DUEL VS ${payload.challengerName.toUpperCase()}`,
+          chyronSub: payload.topicLabel || `${questions.length} PRISMS`,
+          questionIndex: 0,
+          questionTotal: questions.length,
+          playerScore: 0,
+          streak: 0,
+          rivalId: 'soren',
+          rivalName: payload.challengerName,
+          rivalScore: 0,
+          rivalStatus: 'THINKING',
+          actorId: 'soren',
+          actorName: payload.challengerName,
+          actorExpression: 'intense',
+          tellLine: `Beat ${payload.challengerName}'s ${payload.totalScore.toLocaleString('en-US')} PTS across ${questions.length} exact questions!`,
+          duelLiveSplit: {
+            challengerName: payload.challengerName,
+            playerScore: 0,
+            challengerScore: 0,
+            deltaPts: 0,
+            leader: 'TIED',
+          },
+        });
+      },
+      true,
+    );
   }
 
   private async launchVisualOrGlobeShowcase(
@@ -3214,26 +3729,47 @@ export class SovereignMasterController {
     await this.setStageVenueWithAmbience(kind === 'GLOBE_PIN_DROP' ? 'global' : 'studio');
     this.stage3d.setLightingMode('BROADCAST');
 
-    await this.beginQuestionOnStage(q0, {
-      modeLabel: kind === 'GLOBE_PIN_DROP' ? '3D GLOBE PIN-DROP' : 'VISUAL BLUEPRINTS',
-      chyronTitle: kind === 'GLOBE_PIN_DROP' ? 'MERIDIAN 3D GLOBE ATLAS' : 'SAPPHIRE BLUEPRINT LENS',
-      chyronSub: `${questions.length}-PRISM SHOWCASE`,
-      questionIndex: 0,
-      questionTotal: questions.length,
-      playerScore: 0,
-      streak: 0,
-      rivalId: 'nadia',
-      rivalName: 'Nadia',
-      rivalScore: 0,
-      rivalStatus: 'HIDDEN',
-      actorId: 'nadia',
-      actorName: 'Nadia Al-Mansoor',
-      actorExpression: 'neutral',
-      tellLine:
-        kind === 'GLOBE_PIN_DROP'
-          ? 'Tap the 3D Meridian Globe (or a Quick Region pill) to drop your pinpoint!'
-          : 'Inspect the Sapphire Blueprint Lens plate — tap it to enlarge full-screen!',
-    });
+    this.presentRoundReadyGate(
+      {
+        chyronTitle: kind === 'GLOBE_PIN_DROP' ? 'MERIDIAN 3D GLOBE ATLAS' : 'SAPPHIRE BLUEPRINT LENS',
+        chyronSub: `${questions.length}-QUESTION SHOWCASE`,
+        roundTitle: kind === 'GLOBE_PIN_DROP' ? '3D Globe Pin-Drop Atlas' : 'Visual Blueprint Lens',
+        roundSubtitle:
+          kind === 'GLOBE_PIN_DROP'
+            ? 'Drop your pinpoint on the 3D Earth or pick a Quick Region button!'
+            : 'Study crisp diagram plates and lock your answer!',
+        difficultyLabel: 'Showcase · Adaptive',
+        difficultyTierKey: 'high-school',
+        questionCount: questions.length,
+        timerPerQuestionSec: Math.round(q0.timerSec || 25),
+        gambits: buildPickerGambitCards(),
+        selectedGambitId: mindGambitStore.getEquippedGambitId(),
+        startButtonLabel: '▶ START QUESTIONS',
+      },
+      async () => {
+        await this.beginQuestionOnStage(q0, {
+          modeLabel: kind === 'GLOBE_PIN_DROP' ? '3D GLOBE PIN-DROP' : 'VISUAL BLUEPRINTS',
+          chyronTitle: kind === 'GLOBE_PIN_DROP' ? 'MERIDIAN 3D GLOBE ATLAS' : 'SAPPHIRE BLUEPRINT LENS',
+          chyronSub: `${questions.length}-PRISM SHOWCASE`,
+          questionIndex: 0,
+          questionTotal: questions.length,
+          playerScore: 0,
+          streak: 0,
+          rivalId: 'nadia',
+          rivalName: 'Nadia',
+          rivalScore: 0,
+          rivalStatus: 'HIDDEN',
+          actorId: 'nadia',
+          actorName: 'Nadia Al-Mansoor',
+          actorExpression: 'neutral',
+          tellLine:
+            kind === 'GLOBE_PIN_DROP'
+              ? 'Tap the 3D Meridian Globe (or a Quick Region pill) to drop your pinpoint!'
+              : 'Inspect the Sapphire Blueprint Lens plate — tap it to enlarge full-screen!',
+        });
+      },
+      true,
+    );
   }
 
   private async launchSpacedRepetitionReview(cards: readonly SrsReviewCard[]): Promise<void> {
@@ -3270,23 +3806,41 @@ export class SovereignMasterController {
     await this.setStageVenueWithAmbience('studio');
     this.stage3d.setLightingMode('BROADCAST');
 
-    await this.beginQuestionOnStage(q0, {
-      modeLabel: 'LEITNER MASTERY DECK',
-      chyronTitle: 'SPACED-REPETITION REVIEW',
-      chyronSub: `${questions.length} DUE CARDS`,
-      questionIndex: 0,
-      questionTotal: questions.length,
-      playerScore: 0,
-      streak: 0,
-      rivalId: 'nadia',
-      rivalName: 'Nadia',
-      rivalScore: 0,
-      rivalStatus: 'HIDDEN',
-      actorId: 'nadia',
-      actorName: 'Nadia Al-Mansoor',
-      actorExpression: 'neutral',
-      tellLine: 'Correct recalls promote cards up the 5-Box Leitner mastery schedule!',
-    });
+    this.presentRoundReadyGate(
+      {
+        chyronTitle: 'SPACED-REPETITION REVIEW',
+        chyronSub: `${questions.length} DUE CARDS`,
+        roundTitle: 'Leitner Mastery Deck Review',
+        roundSubtitle: 'Correct recalls promote missed cards up the 5-Box Mastery schedule.',
+        difficultyLabel: 'Personal Review',
+        difficultyTierKey: 'middle-school',
+        questionCount: questions.length,
+        timerPerQuestionSec: Math.round(q0.timerSec || 26),
+        gambits: buildPickerGambitCards(),
+        selectedGambitId: mindGambitStore.getEquippedGambitId(),
+        startButtonLabel: '▶ START REVIEW',
+      },
+      async () => {
+        await this.beginQuestionOnStage(q0, {
+          modeLabel: 'LEITNER MASTERY DECK',
+          chyronTitle: 'SPACED-REPETITION REVIEW',
+          chyronSub: `${questions.length} DUE CARDS`,
+          questionIndex: 0,
+          questionTotal: questions.length,
+          playerScore: 0,
+          streak: 0,
+          rivalId: 'nadia',
+          rivalName: 'Nadia',
+          rivalScore: 0,
+          rivalStatus: 'HIDDEN',
+          actorId: 'nadia',
+          actorName: 'Nadia Al-Mansoor',
+          actorExpression: 'neutral',
+          tellLine: 'Correct recalls promote cards up the 5-Box Leitner mastery schedule!',
+        });
+      },
+      true,
+    );
   }
 
   private async launchEndlessDescent(resume: boolean): Promise<void> {
@@ -3304,24 +3858,42 @@ export class SovereignMasterController {
     await this.setStageVenueWithAmbience('ledger');
     this.stage3d.setLightingMode('BROADCAST');
 
-    await this.beginQuestionOnStage(question, {
-      modeLabel: `${hud.strataTitle} (${hud.strataMultiplier}x)`,
-      chyronTitle: `ARCHIVE DESCENT · DEPTH ${hud.depth}`,
-      chyronSub: hud.strataTitle,
-      questionIndex: (hud.depth - 1) % 5,
-      questionTotal: 5,
-      playerScore: hud.totalLiveScore,
-      streak: hud.overclockRepairStreak,
-      shields: hud.shields,
-      rivalId: 'tariq',
-      rivalName: 'Tariq',
-      rivalScore: 0,
-      rivalStatus: 'HIDDEN',
-      actorId: 'tariq',
-      actorName: 'Archive Core Telemetry',
-      actorExpression: 'neutral',
-      tellLine: `3-Streak Overclock repairs +1 Shield · Airlock every 5 Prisms.`,
-    });
+    this.presentRoundReadyGate(
+      {
+        chyronTitle: `ARCHIVE DESCENT · DEPTH ${hud.depth}`,
+        chyronSub: `${hud.strataTitle} (${hud.strataMultiplier}x)`,
+        roundTitle: resume ? `Resume Depth ${hud.depth}` : 'Archive Descent · Endless Run',
+        roundSubtitle: `${hud.shields} Shields active · Safe Airlock & Score Bank every 5 questions.`,
+        difficultyLabel: `${hud.strataTitle} · ${hud.strataMultiplier}x`,
+        difficultyTierKey: hud.depth >= 16 ? 'graduate' : hud.depth >= 6 ? 'college' : 'high-school',
+        questionCount: 5,
+        timerPerQuestionSec: Math.round(question.timerSec || 22),
+        gambits: buildPickerGambitCards(),
+        selectedGambitId: mindGambitStore.getEquippedGambitId(),
+        startButtonLabel: '▶ START DESCENT',
+      },
+      async () => {
+        await this.beginQuestionOnStage(question, {
+          modeLabel: `${hud.strataTitle} (${hud.strataMultiplier}x)`,
+          chyronTitle: `ARCHIVE DESCENT · DEPTH ${hud.depth}`,
+          chyronSub: hud.strataTitle,
+          questionIndex: (hud.depth - 1) % 5,
+          questionTotal: 5,
+          playerScore: hud.totalLiveScore + this.matchExtraBonusPoints,
+          streak: hud.overclockRepairStreak,
+          shields: hud.shields,
+          rivalId: 'tariq',
+          rivalName: 'Tariq',
+          rivalScore: 0,
+          rivalStatus: 'HIDDEN',
+          actorId: 'tariq',
+          actorName: 'Archive Core Telemetry',
+          actorExpression: 'neutral',
+          tellLine: '3-Streak Double Down repairs +1 Shield · Safe Airlock every 5 questions.',
+        });
+      },
+      true,
+    );
   }
 
   private async continueEndlessFromAirlock(): Promise<void> {
@@ -3337,7 +3909,7 @@ export class SovereignMasterController {
       chyronSub: hud.strataTitle,
       questionIndex: (hud.depth - 1) % 5,
       questionTotal: 5,
-      playerScore: hud.totalLiveScore,
+      playerScore: hud.totalLiveScore + this.matchExtraBonusPoints,
       streak: hud.overclockRepairStreak,
       shields: hud.shields,
       rivalId: 'tariq',
@@ -3358,12 +3930,18 @@ export class SovereignMasterController {
       typeof this.activeSummaryVm.endlessCanContinueFloor === 'number'
     ) {
       const extracted = this.endlessMode.extractAtAirlock();
+      mindGambitStore.recordMatchProgress({
+        won: extracted.extractedCleanly,
+        maxStreak: extracted.maxStreak,
+        firstClueSnipes: this.matchFirstClueSnipes,
+        gambitTriggered: Boolean(this.activeGambitSession?.hasTriggeredAnyEffect()),
+      });
       this.notifyMetaMatchCompleted({
         mode: 'ENDLESS',
         won: extracted.extractedCleanly,
         correctCount: extracted.correctCount,
         totalQuestions: Math.max(1, extracted.depthCleared),
-        score: extracted.finalBankedScore,
+        score: extracted.finalBankedScore + this.matchExtraBonusPoints,
         shieldsLost: this.matchShieldsLost,
         peelsUsed: this.matchPeelsUsed,
         max6xOverclockWinsInMatch: this.matchMax6xWins,
@@ -3392,24 +3970,42 @@ export class SovereignMasterController {
       await this.setStageVenueWithAmbience('is');
       this.stage3d.setLightingMode('TWIST_FRACTURE');
 
-      await this.beginQuestionOnStage(firstQuestion, {
-        modeLabel: 'BLACK SALON',
-        chyronTitle: `BLACK SALON · ${salonSpec.roundTitle.toUpperCase()}`,
-        chyronSub: salonSpec.mutatorLabel,
-        questionIndex: 0,
-        questionTotal: questions.length,
-        playerScore: 0,
-        streak: 0,
-        rivalId: salonSpec.opponent.portraitActorId,
-        rivalName: salonSpec.opponent.handle,
-        rivalScore: 0,
-        rivalStatus: 'THINKING',
-        actorId: salonSpec.opponent.portraitActorId,
-        actorName: salonSpec.opponent.handle,
-        actorExpression: 'intense',
-        tellLine: salonSpec.mutatorLabel,
-        peelSealed: salonSpec.peelLocked,
-      });
+      this.presentRoundReadyGate(
+        {
+          chyronTitle: `BLACK SALON · ${salonSpec.roundTitle.toUpperCase()}`,
+          chyronSub: salonSpec.mutatorLabel,
+          roundTitle: `Black Salon · ${salonSpec.roundTitle}`,
+          roundSubtitle: `High-stakes match vs ${salonSpec.opponent.handle} · ${salonSpec.mutatorLabel}`,
+          difficultyLabel: 'Black Salon · Graduate',
+          difficultyTierKey: 'graduate',
+          questionCount: questions.length,
+          timerPerQuestionSec: Math.round(firstQuestion.timerSec || 18),
+          gambits: buildPickerGambitCards(),
+          selectedGambitId: mindGambitStore.getEquippedGambitId(),
+          startButtonLabel: '▶ START BLACK SALON',
+        },
+        async () => {
+          await this.beginQuestionOnStage(firstQuestion, {
+            modeLabel: 'BLACK SALON',
+            chyronTitle: `BLACK SALON · ${salonSpec.roundTitle.toUpperCase()}`,
+            chyronSub: salonSpec.mutatorLabel,
+            questionIndex: 0,
+            questionTotal: questions.length,
+            playerScore: 0,
+            streak: 0,
+            rivalId: salonSpec.opponent.portraitActorId,
+            rivalName: salonSpec.opponent.handle,
+            rivalScore: 0,
+            rivalStatus: 'THINKING',
+            actorId: salonSpec.opponent.portraitActorId,
+            actorName: salonSpec.opponent.handle,
+            actorExpression: 'intense',
+            tellLine: salonSpec.mutatorLabel,
+            peelSealed: salonSpec.peelLocked,
+          });
+        },
+        true,
+      );
       return;
     }
 
@@ -3432,23 +4028,41 @@ export class SovereignMasterController {
     await this.setStageVenueWithAmbience('sg');
     this.stage3d.setLightingMode('BROADCAST');
 
-    await this.beginQuestionOnStage(firstQuestion, {
-      modeLabel: 'GHOST DUEL',
-      chyronTitle: 'WORLD COUNCIL TRIALS · 3D GHOST DUEL',
-      chyronSub: `VS ${opponentHandle.toUpperCase()}`,
-      questionIndex: 0,
-      questionTotal: questions.length,
-      playerScore: 0,
-      streak: 0,
-      rivalId: pick.portraitActorId,
-      rivalName: opponentHandle,
-      rivalScore: 0,
-      rivalStatus: 'THINKING',
-      actorId: pick.portraitActorId,
-      actorName: opponentHandle,
-      actorExpression: 'neutral',
-      tellLine: `3D Kinetic Ghost Replay active — ${pick.styleTag}`,
-    });
+    this.presentRoundReadyGate(
+      {
+        chyronTitle: 'WORLD COUNCIL TRIALS · 3D GHOST DUEL',
+        chyronSub: `VS ${opponentHandle.toUpperCase()}`,
+        roundTitle: `Ghost Duel vs ${opponentHandle}`,
+        roundSubtitle: `${pick.styleTag} · ${questions.length} competitive questions.`,
+        difficultyLabel: 'Council Trials · College',
+        difficultyTierKey: 'college',
+        questionCount: questions.length,
+        timerPerQuestionSec: Math.round(firstQuestion.timerSec || 20),
+        gambits: buildPickerGambitCards(),
+        selectedGambitId: mindGambitStore.getEquippedGambitId(),
+        startButtonLabel: '▶ START TRIAL',
+      },
+      async () => {
+        await this.beginQuestionOnStage(firstQuestion, {
+          modeLabel: 'GHOST DUEL',
+          chyronTitle: 'WORLD COUNCIL TRIALS · 3D GHOST DUEL',
+          chyronSub: `VS ${opponentHandle.toUpperCase()}`,
+          questionIndex: 0,
+          questionTotal: questions.length,
+          playerScore: 0,
+          streak: 0,
+          rivalId: pick.portraitActorId,
+          rivalName: opponentHandle,
+          rivalScore: 0,
+          rivalStatus: 'THINKING',
+          actorId: pick.portraitActorId,
+          actorName: opponentHandle,
+          actorExpression: 'neutral',
+          tellLine: `3D Kinetic Ghost Replay active — ${pick.styleTag}`,
+        });
+      },
+      true,
+    );
   }
 
   // ==========================================================================
@@ -3479,12 +4093,14 @@ export class SovereignMasterController {
       peelSealed?: boolean;
       autoRedactOneDecoy?: boolean;
       isInstantTrialPrism?: boolean;
+      isFinaleQuestion?: boolean;
       duelLiveSplit?: GameplayQuestionViewState['duelLiveSplit'];
     },
   ): Promise<void> {
     this.screen = 'GAMEPLAY';
     this.hud.closeVaultDrawer();
     this.hud.closeVisualLightbox();
+    this.hud.closeRulesModal();
     this.spinUsedThisQ = false;
 
     const ctxSnap = this.matchCtx;
@@ -3524,12 +4140,35 @@ export class SovereignMasterController {
         ? q.gauntlet?.windowSec ?? 10
         : q.timerSec || 20;
     this.timerRemainingSec = this.timerTotalSec;
+    this.readingGraceRemainingSec = 2.0;
     this.activeElapsedSec = 0;
     this.isCommittingAnswer = false;
     this.isAdvancingQuestion = false;
     this.questionBluffCalled = false;
     this.questionBluffEchoCancelled = false;
     this.questionCodexMoves = 0;
+    this.questionMindGambitTriggered = false;
+    this.questionFinaleCategoryPicked = Boolean(opts.isFinaleQuestion);
+    this.liveBluffRadarLabel = null;
+
+    const isFinalSlot =
+      Boolean(opts.isFinaleQuestion) ||
+      (ctxSnap?.kind !== 'PROLOGUE' &&
+        ctxSnap?.kind !== 'INSTANT_TRIAL' &&
+        opts.questionTotal >= 4 &&
+        opts.questionIndex === opts.questionTotal - 1);
+
+    const clueLadderEligible =
+      ctxSnap?.kind !== 'PROLOGUE' &&
+      ctxSnap?.kind !== 'INSTANT_TRIAL' &&
+      !opts.isFinaleQuestion &&
+      shouldUseClueLadder(
+        opts.questionIndex,
+        opts.questionTotal,
+        q,
+        this.getActiveMatchQuestions(),
+      );
+    this.activeClueLadder = clueLadderEligible ? new ClueLadderTracker(q, true) : null;
 
     const initialPeelTier = opts.initialPeelTier ?? 1;
     const initialFacetIndex = shattered.includes(0) ? 1 : 0;
@@ -3566,6 +4205,13 @@ export class SovereignMasterController {
       question: q,
       remainingTimeSec: this.timerRemainingSec,
       totalTimeSec: this.timerTotalSec,
+      readingGraceRemainingSec: this.readingGraceRemainingSec,
+      doubleDownActive: false,
+      clueLadder: this.activeClueLadder ? toClueLadderViewState(this.activeClueLadder) : null,
+      activeGambit: this.buildActiveGambitHudState(isFinalSlot),
+      secondWindBanner: null,
+      isFinaleQuestion: isFinalSlot,
+      scoutsAdvantageActive: Boolean(this.activeMercyBoost?.active),
       heroStepIndex: 0,
       selectedFacetIndex: initialFacetIndex,
       peelTier: initialPeelTier,
@@ -3640,6 +4286,7 @@ export class SovereignMasterController {
       Boolean(this.saveSlotsModal?.isOpen()) ||
       this.hud.isVaultDrawerOpen() ||
       this.hud.isVisualLightboxOpen() ||
+      this.hud.isRulesModalOpen() ||
       this.leaveConfirmModalEl !== null ||
       this.restartFromStartModalEl !== null ||
       Boolean(this.motionCinema?.isActive()) ||
@@ -3778,10 +4425,19 @@ export class SovereignMasterController {
     if (outcome.wasActuallyBluffing) {
       // Only credit bluffCalled on a verified genuine bluff (single source of truth via recordQuestionOutcome)
       this.questionBluffCalled = true;
-      this.matchCtx.scoring.awardBonusPoints(outcome.playerBonusPoints);
-      this.liveVm.playerScore = this.matchCtx.scoring.getMatchScore();
+      this.matchBluffsCaught += 1;
+      const radarStealBonus = this.activeGambitSession?.getBluffRadarStealBonus() ?? 0;
+      if (radarStealBonus > 0) {
+        this.questionMindGambitTriggered = true;
+        this.metaSuite.recordSpecialFeat('MIND_GAMBIT_USED');
+      }
+      this.matchCtx.scoring.awardBonusPoints(outcome.playerBonusPoints + radarStealBonus);
+      this.liveVm.playerScore = this.matchCtx.scoring.getMatchScore() + this.matchCtx.bluffBonusPoints;
       this.liveVm.rivalScore = this.matchCtx.rival.getScore();
-      this.liveVm.tellLine = outcome.bannerText;
+      this.liveVm.tellLine =
+        radarStealBonus > 0
+          ? `${outcome.bannerText} · ◎ Tell Scanner +${radarStealBonus} Steal!`
+          : outcome.bannerText;
       this.liveVm.actorExpression = 'shocked';
       this.haptics.correctBloom();
       this.audio.playSfx('gold_resonance');
@@ -3836,12 +4492,45 @@ export class SovereignMasterController {
         return;
       }
 
+      // Mandate #2: 2.0-second Reading Grace on every question before countdown ticks!
+      if (this.readingGraceRemainingSec > 0) {
+        this.readingGraceRemainingSec = Math.max(0, this.readingGraceRemainingSec - dt);
+        this.liveVm.readingGraceRemainingSec = this.readingGraceRemainingSec;
+        this.hud.updateLiveTelemetry({
+          remainingSec: this.timerRemainingSec,
+          totalSec: this.timerTotalSec,
+          readingGraceSec: this.readingGraceRemainingSec,
+          clueLadderNextSec: this.activeClueLadder?.canRevealNext
+            ? this.activeClueLadder.nextAutoRevealInSec
+            : null,
+          rivalStatus: this.liveVm.rivalStatus,
+          rivalName: this.liveVm.rivalName,
+          rivalScore: this.liveVm.rivalScore,
+          playerScore: this.liveVm.playerScore,
+          actorId: this.liveVm.actorId,
+          actorExpression: this.liveVm.actorExpression,
+          tellLine: this.liveVm.tellLine,
+          duelLiveSplit: this.liveVm.duelLiveSplit,
+        });
+        this.telemetryRaf = requestAnimationFrame(step);
+        return;
+      }
+
       this.activeElapsedSec += dt;
       const elapsed = this.activeElapsedSec;
-      if (elapsed > 0.85) {
-        this.timerRemainingSec = Math.max(0, this.timerRemainingSec - dt);
-      }
+      this.timerRemainingSec = Math.max(0, this.timerRemainingSec - dt);
       this.liveVm.remainingTimeSec = this.timerRemainingSec;
+      this.liveVm.readingGraceRemainingSec = 0;
+
+      // Mandate #7: Progressive Clue Ladder auto-reveal (`4.5s` per step after Reading Grace)
+      if (this.activeClueLadder && this.activeClueLadder.canRevealNext) {
+        const ladderTick = this.activeClueLadder.tick(dt);
+        if (ladderTick.advanced) {
+          this.liveVm.clueLadder = toClueLadderViewState(this.activeClueLadder);
+          this.audio.playSfx('shutter_peel');
+          this.hud.renderGameplay(this.liveVm);
+        }
+      }
 
       if (this.matchCtx?.kind === 'CAMPAIGN') {
         const tickOut = this.matchCtx.rival.tick(elapsed);
@@ -3855,6 +4544,24 @@ export class SovereignMasterController {
         this.liveVm.rivalStatus = tickOut.hud.status;
         this.liveVm.actorExpression = tickOut.hud.expression;
         this.liveVm.tellLine = tickOut.hud.tellPillText;
+        if (this.activeGambitSession?.isBluffRadarActive()) {
+          const radar = this.matchCtx.rival.getBluffRadarReadout();
+          const nextLabel = radar.activeWager ? radar.label : null;
+          if (nextLabel !== this.liveBluffRadarLabel) {
+            this.liveBluffRadarLabel = nextLabel;
+            if (this.liveVm.activeGambit) {
+              this.liveVm.activeGambit.bluffRadarLabel = nextLabel;
+            }
+            const radarEl = document.getElementById('ws-gambit-bluff-radar');
+            if (radarEl) {
+              radarEl.textContent = nextLabel ?? '';
+              radarEl.style.display = nextLabel ? '' : 'none';
+            }
+          }
+          if (nextLabel) {
+            this.liveVm.tellLine = nextLabel;
+          }
+        }
         this.characterRig.syncLiveCampaignRival(tickOut.hud);
       } else if (this.matchCtx?.kind === 'TRIALS') {
         const ghostFrame = this.trialsMode.sampleOpponentGhostAt(elapsed);
@@ -3894,6 +4601,10 @@ export class SovereignMasterController {
       this.hud.updateLiveTelemetry({
         remainingSec: this.timerRemainingSec,
         totalSec: this.timerTotalSec,
+        readingGraceSec: 0,
+        clueLadderNextSec: this.activeClueLadder?.canRevealNext
+          ? this.activeClueLadder.nextAutoRevealInSec
+          : null,
         rivalStatus: this.liveVm.rivalStatus,
         rivalName: this.liveVm.rivalName,
         rivalScore: this.liveVm.rivalScore,
@@ -4009,6 +4720,50 @@ export class SovereignMasterController {
       return;
     }
 
+    // Mandate #7: Hot-Streak Surge free 50/50 recharge preserves full multiplier!
+    if (
+      this.activeGambitSession &&
+      this.activeGambitSession.getFreeFiftyFiftyCharges() > 0 &&
+      this.liveVm.peelTier < 3 &&
+      (this.liveVm.question.archetype === 'SIGHTLINE_LOCK' ||
+        this.liveVm.question.archetype === 'HERO_ARTIFACT_SYNTHESIS')
+    ) {
+      if (this.activeGambitSession.consumeFreeFiftyFifty()) {
+        this.questionMindGambitTriggered = true;
+        this.metaSuite.recordSpecialFeat('MIND_GAMBIT_USED');
+        const q = this.liveVm.question;
+        const step =
+          q.archetype === 'HERO_ARTIFACT_SYNTHESIS' && q.heroSynthesis
+            ? q.heroSynthesis.steps[this.liveVm.heroStepIndex ?? 0]
+            : null;
+        const activeCorrectIdx = step ? step.correctFacetIndex : q.correctFacetIndex;
+        const elim = [0, 1, 2, 3]
+          .filter((i) => i !== activeCorrectIdx && !this.liveVm!.shatteredFacetIndices.includes(i))
+          .slice(0, 2);
+        for (const eIdx of elim) {
+          this.liveVm.shatteredFacetIndices.push(eIdx);
+        }
+        if (this.liveVm.shatteredFacetIndices.includes(this.liveVm.selectedFacetIndex)) {
+          const surviving = [0, 1, 2, 3].find(
+            (i) => !this.liveVm!.shatteredFacetIndices.includes(i),
+          );
+          if (surviving !== undefined) {
+            this.liveVm.selectedFacetIndex = surviving;
+            this.stage3d.spinToFacet(surviving, false);
+          }
+        }
+        this.liveVm.coachHint = `✦ STREAK SURGE FREE 50/50 (FULL MULTIPLIER KEPT): ${q.clues[0]}`;
+        this.liveVm.activeGambit = this.buildActiveGambitHudState(Boolean(this.liveVm.isFinaleQuestion));
+        this.liveVm.remainingTimeSec = this.timerRemainingSec;
+        if (!from3D) this.stage3d.triggerPeel(elim);
+        this.haptics.peel(3);
+        this.audio.playSfx('glass_shatter');
+        this.vfx.playPeelShimmer();
+        this.hud.renderGameplay(this.liveVm);
+        return;
+      }
+    }
+
     const nextTier: 2 | 3 = this.liveVm.peelTier === 1 ? 2 : 3;
     this.matchPeelsUsed += 1;
     this.liveVm.peelTier = nextTier;
@@ -4064,6 +4819,178 @@ export class SovereignMasterController {
     this.haptics.peel(nextTier);
     this.vfx.playPeelShimmer();
     this.hud.renderGameplay(this.liveVm);
+  }
+
+  private handleToggleDoubleDown(): void {
+    if (!this.liveVm || this.liveVm.revealed) return;
+    this.liveVm.doubleDownActive = !this.liveVm.doubleDownActive;
+    this.haptics.sightlineSnap();
+    this.audio.playSfx(this.liveVm.doubleDownActive ? 'sightline_snap' : 'ui_tap');
+    this.stage3d.setOverclockState(
+      this.liveVm.doubleDownActive,
+      this.liveVm.doubleDownActive ? 0.55 : 0,
+    );
+    this.hud.syncDoubleDownDom(this.liveVm);
+  }
+
+  private handleRevealNextClueStep(): void {
+    if (
+      !this.liveVm ||
+      this.liveVm.revealed ||
+      !this.activeClueLadder ||
+      !this.activeClueLadder.canRevealNext
+    ) {
+      return;
+    }
+    const res = this.activeClueLadder.revealNextStep();
+    if (!res.revealed) return;
+    this.liveVm.clueLadder = toClueLadderViewState(this.activeClueLadder);
+    this.liveVm.remainingTimeSec = this.timerRemainingSec;
+    this.haptics.uiTap();
+    this.audio.playSfx('shutter_peel');
+    this.hud.renderGameplay(this.liveVm);
+  }
+
+  private handleUseSwapTopicGambit(): void {
+    if (
+      !this.liveVm ||
+      this.liveVm.revealed ||
+      !this.matchCtx ||
+      !this.activeGambitSession?.canUseTopicSwap() ||
+      !this.canCurrentMatchSwapTopic()
+    ) {
+      return;
+    }
+    if (!this.activeGambitSession.consumeTopicSwap()) return;
+    this.questionMindGambitTriggered = true;
+    this.metaSuite.recordSpecialFeat('MIND_GAMBIT_USED');
+
+    const curQ = this.liveVm.question;
+    const activeQs = this.getActiveMatchQuestions();
+    const excludeQids = Array.from(
+      new Set<number>([
+        curQ.qid,
+        ...(activeQs?.map((item) => item.qid) ?? []),
+        ...this.currentMatchRecordedQids,
+      ]),
+    );
+
+    let difficultyPreset: BriefingDifficultyPreset = curQ.difficultyTier ?? 'MIDDLE_SCHOOL';
+    let mercyTierShift = 0;
+    if (this.matchCtx.kind === 'CAMPAIGN') {
+      mercyTierShift = this.matchCtx.mercy.mercyTierShift;
+      difficultyPreset = resolveCampaignAcademicTier(
+        this.matchCtx.mission.hubId as CampaignHubCode,
+        this.matchCtx.mission.matchSpec.rhythmSlot - 1,
+        mercyTierShift,
+      );
+    } else if (this.matchCtx.kind === 'BRIEFING') {
+      difficultyPreset = this.matchCtx.difficultyPreset;
+    }
+
+    const replacement = swapQuestionToStrongestDomain(forgeEngine, curQ, {
+      excludeQids,
+      difficultyPreset,
+      mercyTierShift,
+    });
+    replacement.timerSec = Math.max(curQ.timerSec || 22, replacement.timerSec || 22);
+
+    if (
+      this.matchCtx.kind === 'CAMPAIGN' ||
+      this.matchCtx.kind === 'BRIEFING' ||
+      this.matchCtx.kind === 'SHOWCASE'
+    ) {
+      this.matchCtx.questions[this.matchCtx.index] = replacement;
+    } else if (this.matchCtx.kind === 'ENDLESS') {
+      const target = this.endlessMode.getCurrentQuestion();
+      if (target) replacePrismQuestionInPlace(target, replacement);
+    } else if (this.matchCtx.kind === 'TRIALS') {
+      const target = this.trialsMode.getCurrentQuestion();
+      if (target) replacePrismQuestionInPlace(target, replacement);
+    } else if (this.matchCtx.kind === 'DAILY') {
+      const target = this.dailyMode.getCurrentQuestion();
+      if (target) replacePrismQuestionInPlace(target, replacement);
+    }
+
+    const qForStage =
+      this.matchCtx.kind === 'ENDLESS'
+        ? this.endlessMode.getCurrentQuestion() ?? replacement
+        : this.matchCtx.kind === 'TRIALS'
+          ? this.trialsMode.getCurrentQuestion() ?? replacement
+          : this.matchCtx.kind === 'DAILY'
+            ? this.dailyMode.getCurrentQuestion() ?? replacement
+            : replacement;
+
+    this.liveVm.question = qForStage;
+    this.liveVm.peelTier = 1;
+    this.liveVm.heroStepIndex = 0;
+    this.liveVm.selectedFacetIndex = 0;
+    this.liveVm.shatteredFacetIndices = [];
+    this.liveVm.doubleDownActive = false;
+    this.liveVm.secondWindBanner = '↻ TOPIC SWAPPED to your strongest domain!';
+    this.liveVm.calibratorEstimate = qForStage.calibrator
+      ? qForStage.calibrator.initialEstimate
+      : 0;
+    this.liveVm.calibratorCone = 'SHARP';
+    this.liveVm.selectedGlobeCoords = null;
+    this.liveVm.selectedGlobeAnchorIndex = null;
+
+    this.timerTotalSec = qForStage.timerSec || 24;
+    this.timerRemainingSec = this.timerTotalSec;
+    this.readingGraceRemainingSec = 2.0;
+    this.activeElapsedSec = 0;
+    this.questionBluffCalled = false;
+    this.questionBluffEchoCancelled = false;
+    this.questionCodexMoves = 0;
+    this.liveVm.totalTimeSec = this.timerTotalSec;
+    this.liveVm.remainingTimeSec = this.timerRemainingSec;
+    this.liveVm.readingGraceRemainingSec = this.readingGraceRemainingSec;
+
+    const keepClueLadder =
+      this.activeClueLadder !== null ||
+      shouldUseClueLadder(
+        this.liveVm.questionIndex,
+        this.liveVm.questionTotal,
+        qForStage,
+        this.getActiveMatchQuestions(),
+      );
+    this.activeClueLadder =
+      keepClueLadder && !this.liveVm.isFinaleQuestion
+        ? new ClueLadderTracker(qForStage, true)
+        : null;
+    this.liveVm.clueLadder = this.activeClueLadder
+      ? toClueLadderViewState(this.activeClueLadder)
+      : null;
+    this.liveVm.activeGambit = this.buildActiveGambitHudState(Boolean(this.liveVm.isFinaleQuestion));
+
+    this.ergonomics.notifyQuestionStarted(
+      this.resolveLiveTierMultiplier(this.liveVm),
+      4,
+      0,
+      Boolean(this.liveVm.peelSealedByJammer),
+    );
+    if (this.matchCtx.kind === 'CAMPAIGN') {
+      const rivalHud = this.matchCtx.rival.beginQuestion({
+        qid: qForStage.qid,
+        domainId: qForStage.l0Domain,
+        irtB: qForStage.irtB,
+        archetype: qForStage.archetype,
+        timeTotalSec: this.timerTotalSec,
+        hubId: this.matchCtx.mission.hubId,
+        difficultyTier: qForStage.difficultyTier,
+      });
+      this.liveVm.rivalStatus = rivalHud.status;
+      this.liveVm.tellLine = rivalHud.tellPillText;
+      this.characterRig.syncLiveCampaignRival(rivalHud);
+    }
+
+    this.haptics.sightlineSnap();
+    this.audio.playSfx('shutter_peel');
+    this.vfx.playPeelShimmer();
+    this.hud.renderGameplay(this.liveVm);
+    void this.stage3d.presentQuestion(qForStage).then(() => {
+      this.metaSuite.applyEquippedFinish();
+    });
   }
 
   private handleCouncilVeto(): void {
@@ -4122,6 +5049,8 @@ export class SovereignMasterController {
         irtB: replacement.irtB,
         archetype: replacement.archetype,
         timeTotalSec: this.timerTotalSec,
+        hubId: this.matchCtx.mission.hubId,
+        difficultyTier: replacement.difficultyTier,
       });
       this.liveVm.rivalStatus = rivalHud.status;
       this.liveVm.tellLine = rivalHud.tellPillText;
@@ -4269,6 +5198,58 @@ export class SovereignMasterController {
         return;
       }
 
+      const activeCorrectIdxPre =
+        q.archetype === 'HERO_ARTIFACT_SYNTHESIS' && q.heroSynthesis
+          ? q.heroSynthesis.steps[this.liveVm.heroStepIndex ?? 0].correctFacetIndex
+          : q.correctFacetIndex;
+
+      // Mandate #7: Second Wind Mulligan (from SECOND_WIND Gambit or Scout's Advantage Retry Mercy)!
+      if (
+        !timedOut &&
+        this.activeGambitSession?.canTriggerSecondWind(q.archetype, false) &&
+        this.liveVm.selectedFacetIndex !== activeCorrectIdxPre
+      ) {
+        const sw = this.activeGambitSession.consumeSecondWind();
+        if (sw.triggered) {
+          this.questionMindGambitTriggered = true;
+          this.matchSecondWindTriggered = true;
+          this.metaSuite.recordSpecialFeat('MIND_GAMBIT_USED');
+          this.metaSuite.recordSpecialFeat('SECOND_WIND_SAVED');
+
+          const wrongIdx = this.liveVm.selectedFacetIndex;
+          if (!this.liveVm.shatteredFacetIndices.includes(wrongIdx)) {
+            this.liveVm.shatteredFacetIndices.push(wrongIdx);
+            this.stage3d.redactFacet(wrongIdx);
+          }
+          const surviving = [0, 1, 2, 3].find(
+            (i) => !this.liveVm!.shatteredFacetIndices.includes(i),
+          );
+          if (surviving !== undefined) {
+            this.liveVm.selectedFacetIndex = surviving;
+            this.stage3d.spinToFacet(surviving, false);
+          }
+          this.liveVm.doubleDownActive = false;
+          this.stage3d.setOverclockState(false, 0);
+          this.liveVm.secondWindBanner = sw.bannerText;
+          this.timerRemainingSec = Math.min(this.timerTotalSec, this.timerRemainingSec + 3.0);
+          this.liveVm.remainingTimeSec = this.timerRemainingSec;
+          this.liveVm.activeGambit = this.buildActiveGambitHudState(
+            Boolean(this.liveVm.isFinaleQuestion),
+          );
+          this.ergonomics.notifyQuestionStarted(
+            this.resolveLiveTierMultiplier(this.liveVm),
+            4,
+            this.liveVm.selectedFacetIndex,
+            Boolean(this.liveVm.peelSealedByJammer),
+          );
+          this.haptics.peel(2);
+          this.audio.playSfx('shutter_peel');
+          this.vfx.playPeelShimmer();
+          this.hud.renderGameplay(this.liveVm);
+          return;
+        }
+      }
+
       const frozenLockTimeSec = Math.max(0, this.timerRemainingSec);
       this.stopTelemetryLoop();
       this.liveVm.remainingTimeSec = frozenLockTimeSec;
@@ -4277,14 +5258,19 @@ export class SovereignMasterController {
       this.audio.playSfx('vault_thunk');
 
       const elapsedSec = this.getElapsedSec();
-      const overclocked = overclockCharge01 >= 0.08;
+      // Mandate #4: Explicit 2x Double Down toggle OR classic pointer-hold Overclock!
+      const effectiveCharge01 =
+        !timedOut && this.liveVm.doubleDownActive && overclockCharge01 < 0.08
+          ? 1.0
+          : overclockCharge01;
+      const overclocked = effectiveCharge01 >= 0.08;
 
       const submission: PrismAnswerSubmission = {
         archetype: q.archetype,
         selectedFacetIndex: this.liveVm.selectedFacetIndex,
         peelTier: this.liveVm.peelTier,
         overclocked,
-        overclockCharge: overclockCharge01,
+        overclockCharge: effectiveCharge01,
         elapsedSec,
         timedOut,
         calibratorEstimate: this.liveVm.calibratorEstimate,
@@ -4295,8 +5281,38 @@ export class SovereignMasterController {
         synthesisStepIndex: this.liveVm.heroStepIndex ?? 0,
       };
 
+      // Mandate #7: Snapshot Clue Ladder & evaluate Mind Gambit bonuses cleanly before scoring!
+      const ladderBonus = this.activeClueLadder ? this.activeClueLadder.ladderBonusPoints : 0;
+      const ladderCallout = this.activeClueLadder ? this.activeClueLadder.currentCalloutBanner : null;
+      const isLadderStep1 = Boolean(this.activeClueLadder?.isStep1Snipe);
+      const currentStreakBefore = this.liveVm.streak;
+      const previewEval = evaluatePrismAnswer(q, submission, currentStreakBefore);
+      const gambitEval = this.activeGambitSession
+        ? this.activeGambitSession.evaluateQuestionBonuses({
+            correct: previewEval.correct,
+            currentStreakBefore,
+            isClueLadderStep1: isLadderStep1,
+            elapsedSec,
+            isFinalQuestion: Boolean(this.liveVm.isFinaleQuestion),
+          })
+        : null;
+
+      if (gambitEval?.statusCallout) {
+        this.questionMindGambitTriggered = true;
+        this.metaSuite.recordSpecialFeat('MIND_GAMBIT_USED');
+      }
+
+      const v3Modifiers = {
+        clueLadderBonusPoints: ladderBonus,
+        gambitFlatBonusPoints: gambitEval?.clueBountyPoints ?? 0,
+        streakComboMultiplierBonus: gambitEval?.streakComboMultiplierBonus ?? 0,
+        finaleJackpotMultiplier: gambitEval?.finaleJackpotMultiplier ?? 1.0,
+        zeroDoubleDownPenalty: gambitEval?.zeroDoubleDownPenalty ?? false,
+      };
+
       let scored: ScoredQuestionResult;
       let campaignRivalActor: CastMemberId | null = null;
+      let extraNonNativeBonus = 0;
 
       if (this.matchCtx.kind === 'PROLOGUE') {
         scored = this.prologueScoring.submitAnswer(q, submission);
@@ -4316,7 +5332,7 @@ export class SovereignMasterController {
         this.matchCtx.kind === 'SRS_REVIEW' ||
         this.matchCtx.kind === 'SHOWCASE'
       ) {
-        scored = this.matchCtx.scoring.submitAnswer(q, submission);
+        scored = this.matchCtx.scoring.submitAnswer(q, submission, v3Modifiers);
         this.liveVm.playerScore = scored.matchScoreAfter;
         this.liveVm.streak = scored.streakAfter;
         forgeEngine.recordQuestionOutcome({
@@ -4339,7 +5355,7 @@ export class SovereignMasterController {
         );
       } else if (this.matchCtx.kind === 'DUEL') {
         const ctx = this.matchCtx;
-        scored = ctx.scoring.submitAnswer(q, submission);
+        scored = ctx.scoring.submitAnswer(q, submission, v3Modifiers);
         this.liveVm.playerScore = scored.matchScoreAfter;
         this.liveVm.streak = scored.streakAfter;
         forgeEngine.recordQuestionOutcome({
@@ -4368,7 +5384,7 @@ export class SovereignMasterController {
           {
             correct: scored.correct,
             peelTier: submission.peelTier,
-            overclockCharge: overclockCharge01,
+            overclockCharge: effectiveCharge01,
           },
         );
         this.liveVm.rivalScore = comp.challengerCumulativePts;
@@ -4389,6 +5405,7 @@ export class SovereignMasterController {
           sovereignDomainMultiplier: rules.sovereignDomainBonusMultiplier,
           overclockPeakBonusScale: rules.overclockPeakBonusScale,
           chronoSurgeActive: rules.activeMutators.includes('CHRONO_SURGE'),
+          ...v3Modifiers,
         });
         forgeEngine.recordQuestionOutcome({
           qid: q.qid,
@@ -4417,12 +5434,12 @@ export class SovereignMasterController {
           (spec.isBossShowdown &&
             ctx.index > (heroIdx >= 0 ? heroIdx : ctx.questions.length - 2)) ||
           rules.activeMutators.includes('ZERO_SHIELD_SUDDEN_DEATH');
-        if (isPhase3SuddenDeath && scored.backfired) {
+        if (isPhase3SuddenDeath && scored.backfired && !v3Modifiers.zeroDoubleDownPenalty) {
           ctx.suddenDeathBackfired = true;
           this.matchShieldsLost += ctx.shieldsRemaining ?? 3;
           ctx.shieldsRemaining = 0;
         } else if (!scored.correct && typeof ctx.shieldsRemaining === 'number') {
-          const loss = scored.backfired ? 2 : 1;
+          const loss = scored.backfired && !v3Modifiers.zeroDoubleDownPenalty ? 2 : 1;
           const prevShields = ctx.shieldsRemaining;
           ctx.shieldsRemaining = Math.max(0, ctx.shieldsRemaining - loss);
           this.matchShieldsLost += Math.max(0, prevShields - ctx.shieldsRemaining);
@@ -4445,7 +5462,19 @@ export class SovereignMasterController {
       } else if (this.matchCtx.kind === 'DAILY') {
         const out = this.dailyMode.submitCurrentAnswer(submission);
         scored = out.resolution;
-        this.liveVm.playerScore = scored.matchScoreAfter;
+        if (scored.correct) {
+          extraNonNativeBonus =
+            ladderBonus +
+            (gambitEval?.clueBountyPoints ?? 0) +
+            (gambitEval && gambitEval.streakComboMultiplierBonus > 0
+              ? Math.round(100 * gambitEval.streakComboMultiplierBonus)
+              : 0) +
+            (gambitEval && gambitEval.finaleJackpotMultiplier > 1
+              ? Math.round(scored.pointsEarned * (gambitEval.finaleJackpotMultiplier - 1))
+              : 0);
+          this.matchExtraBonusPoints += extraNonNativeBonus;
+        }
+        this.liveVm.playerScore = scored.matchScoreAfter + this.matchExtraBonusPoints;
         this.liveVm.streak = scored.streakAfter;
         if (out.completedSummary) {
           this.pendingDailySummary = out.completedSummary;
@@ -4453,7 +5482,19 @@ export class SovereignMasterController {
       } else if (this.matchCtx.kind === 'BRIEFING') {
         const out = this.briefingMode.submitCurrentAnswer(submission);
         scored = out.resolution;
-        this.liveVm.playerScore = scored.matchScoreAfter;
+        if (scored.correct) {
+          extraNonNativeBonus =
+            ladderBonus +
+            (gambitEval?.clueBountyPoints ?? 0) +
+            (gambitEval && gambitEval.streakComboMultiplierBonus > 0
+              ? Math.round(100 * gambitEval.streakComboMultiplierBonus)
+              : 0) +
+            (gambitEval && gambitEval.finaleJackpotMultiplier > 1
+              ? Math.round(scored.pointsEarned * (gambitEval.finaleJackpotMultiplier - 1))
+              : 0);
+          this.matchExtraBonusPoints += extraNonNativeBonus;
+        }
+        this.liveVm.playerScore = scored.matchScoreAfter + this.matchExtraBonusPoints;
         this.liveVm.streak = scored.streakAfter;
         if (out.summary) {
           this.pendingBriefingSummary = out.summary;
@@ -4463,6 +5504,16 @@ export class SovereignMasterController {
         const out = await this.endlessMode.submitCurrentAnswer(submission);
         scored = out.resolution;
         if (scored.correct) {
+          extraNonNativeBonus =
+            ladderBonus +
+            (gambitEval?.clueBountyPoints ?? 0) +
+            (gambitEval && gambitEval.streakComboMultiplierBonus > 0
+              ? Math.round(100 * gambitEval.streakComboMultiplierBonus)
+              : 0) +
+            (gambitEval && gambitEval.finaleJackpotMultiplier > 1
+              ? Math.round(scored.pointsEarned * (gambitEval.finaleJackpotMultiplier - 1))
+              : 0);
+          this.matchExtraBonusPoints += extraNonNativeBonus;
           this.endlessRunCorrectCount += 1;
           this.endlessRunStreak += 1;
           if (this.endlessRunStreak > this.endlessRunMaxStreak) {
@@ -4471,7 +5522,7 @@ export class SovereignMasterController {
         } else {
           this.endlessRunStreak = 0;
         }
-        this.liveVm.playerScore = out.hud.totalLiveScore;
+        this.liveVm.playerScore = out.hud.totalLiveScore + this.matchExtraBonusPoints;
         this.liveVm.shields = out.hud.shields;
         if (out.hud.shields < prevShields) {
           this.matchShieldsLost += prevShields - out.hud.shields;
@@ -4480,7 +5531,19 @@ export class SovereignMasterController {
       } else {
         const out = this.trialsMode.submitCurrentAnswer(submission);
         scored = out.resolution;
-        this.liveVm.playerScore = scored.matchScoreAfter;
+        if (scored.correct) {
+          extraNonNativeBonus =
+            ladderBonus +
+            (gambitEval?.clueBountyPoints ?? 0) +
+            (gambitEval && gambitEval.streakComboMultiplierBonus > 0
+              ? Math.round(100 * gambitEval.streakComboMultiplierBonus)
+              : 0) +
+            (gambitEval && gambitEval.finaleJackpotMultiplier > 1
+              ? Math.round(scored.pointsEarned * (gambitEval.finaleJackpotMultiplier - 1))
+              : 0);
+          this.matchExtraBonusPoints += extraNonNativeBonus;
+        }
+        this.liveVm.playerScore = scored.matchScoreAfter + this.matchExtraBonusPoints;
         this.liveVm.streak = scored.streakAfter;
         this.liveVm.rivalScore = out.ghostTotalScore;
         this.liveVm.rivalStatus = 'LOCKED';
@@ -4488,6 +5551,30 @@ export class SovereignMasterController {
           this.pendingTrialsSummary = out.summary;
         }
       }
+
+      // Snapshot locked Clue Ladder step BEFORE revealing all 3 steps on the reveal card!
+      const lockedClueLadderStep = this.activeClueLadder
+        ? this.activeClueLadder.activeStep
+        : undefined;
+
+      // Record Clue-1 Snipe & Finale Category Win honours feats!
+      if (scored.correct && isLadderStep1) {
+        this.matchFirstClueSnipes += 1;
+        this.metaSuite.recordSpecialFeat('CLUE_LADDER_STEP1_SNIPE');
+      }
+      if (scored.correct && this.questionFinaleCategoryPicked) {
+        this.matchFinaleCategoryWon = true;
+        this.metaSuite.recordSpecialFeat('FINALE_CATEGORY_WIN');
+      }
+
+      // Reveal full 3-step Clue Ladder on reveal card and refresh Gambit HUD strip
+      if (this.activeClueLadder) {
+        this.activeClueLadder.revealAllSteps();
+        this.liveVm.clueLadder = toClueLadderViewState(this.activeClueLadder);
+      }
+      this.liveVm.activeGambit = this.buildActiveGambitHudState(
+        Boolean(this.liveVm.isFinaleQuestion),
+      );
 
       // Upgrade #1: Record compact per-question split for 1-Tap `?duel=` Share Links (up to 15 Qs)
       if (
@@ -4502,7 +5589,7 @@ export class SovereignMasterController {
         );
       }
 
-      if (scored.correct && submission.peelTier === 1 && overclockCharge01 >= 0.88) {
+      if (scored.correct && submission.peelTier === 1 && effectiveCharge01 >= 0.88) {
         this.matchMax6xWins += 1;
       }
       if (
@@ -4610,17 +5697,27 @@ export class SovereignMasterController {
         .getSnapshot()
         .bookmarks.some((b) => b.qid === q.qid);
 
-      // #166 §3 + Upgrade #5 + #329: Live Career Analytics, Leitner SRS Auto-Capture & 84 Honours!
-      this.notifyMetaQuestionOutcome(q, submission, scored);
+      // #166 §3 + Upgrade #5 + #329 + v3.0: Live Career Analytics, Leitner SRS Auto-Capture & 88 Honours!
+      const displayEarnedPoints = scored.pointsEarned + extraNonNativeBonus;
+      const revealedClueBonus = scored.correct && ladderBonus > 0 ? ladderBonus : undefined;
+      const revealedGambitBonus =
+        scored.correct && gambitEval && gambitEval.clueBountyPoints > 0
+          ? gambitEval.clueBountyPoints
+          : undefined;
+      this.notifyMetaQuestionOutcome(q, submission, scored, lockedClueLadderStep);
 
       this.liveVm.revealed = {
         correct: scored.correct,
         backfired: scored.backfired,
         bullseye: scored.bullseye,
-        earnedPoints: scored.pointsEarned,
+        earnedPoints: displayEarnedPoints,
         tierMultiplier: scored.tierMultiplier,
         overclockMultiplier: scored.overclockMultiplier,
         speedBonus: scored.speedBonus,
+        ladderBonusPoints: revealedClueBonus,
+        ladderSnipeLabel: revealedClueBonus ? ladderCallout : null,
+        gambitBonusPoints: revealedGambitBonus,
+        gambitBonusLabel: gambitEval?.statusCallout ?? null,
         correctFacetIndex: activeCorrectIdx,
         selectedFacetIndex: this.liveVm.selectedFacetIndex,
         correctDisplay: scored.correctAnswerDisplay,
@@ -4953,66 +6050,138 @@ export class SovereignMasterController {
         ctx.index += 1;
         const nextQ = !shieldsShattered ? ctx.questions[ctx.index] : undefined;
         if (nextQ) {
-          // Play Phase II / Phase III Boss Showdown Broadcast Stinger on phase boundaries (#140 & #176/#178)!
-          if (spec.isBossShowdown) {
-            const bossBanner = await this.getBossBanner();
-            await bossBanner.playIfPhaseTransition(
+          const launchNextCampaignQuestion = async (
+            chosenQ: PrismQuestion,
+            isFinalePicked = false,
+          ): Promise<void> => {
+            // Play Phase II / Phase III Boss Showdown Broadcast Stinger on phase boundaries (#140 & #176/#178)!
+            if (spec.isBossShowdown) {
+              const bossBanner = await this.getBossBanner();
+              await bossBanner.playIfPhaseTransition(
+                {
+                  isBossShowdown: true,
+                  questionIndex: ctx.index,
+                  totalQuestions: ctx.questions.length,
+                  archetype: chosenQ.archetype,
+                  questions: ctx.questions,
+                  bossPhases: spec.bossPhases,
+                },
+                {
+                  hubId: spec.hubId,
+                  countryCode: spec.countryCode,
+                  cityName: ctx.mission.title,
+                  missionTitle: ctx.mission.subtitle,
+                  heroRelicId: spec.heroRelicId,
+                  rivalId: spec.rivalId,
+                  stage3d: this.stage3d,
+                },
+              );
+            }
+
+            const rivalHud = ctx.rival.beginQuestion({
+              qid: chosenQ.qid,
+              domainId: chosenQ.l0Domain,
+              irtB: chosenQ.irtB,
+              archetype: chosenQ.archetype,
+              timeTotalSec: chosenQ.timerSec,
+              hubId: spec.hubId,
+              difficultyTier: chosenQ.difficultyTier,
+            });
+            await this.beginQuestionOnStage(chosenQ, {
+              modeLabel: this.liveVm?.modeLabel ?? ctx.mission.difficultyLabel,
+              chyronTitle: `${ctx.mission.countryCode} · ${ctx.mission.title.toUpperCase()}`,
+              chyronSub: this.liveVm?.chyronSub ?? ctx.mission.difficultyLabel,
+              questionIndex: ctx.index,
+              questionTotal: ctx.questions.length,
+              playerScore: ctx.scoring.getMatchScore() + ctx.bluffBonusPoints,
+              streak: ctx.scoring.getStreak(),
+              shields: ctx.shieldsRemaining,
+              rivalId: rivalHud.actorId,
+              rivalName: rivalHud.shortName,
+              rivalScore: rivalHud.score,
+              rivalStatus: rivalHud.status,
+              actorId: rivalHud.actorId,
+              actorName: rivalHud.name,
+              actorExpression: rivalHud.expression,
+              tellLine: rivalHud.tellPillText,
+              peelSealed: spec.compiledRules.peelLockedBothPlayers,
+              isFinaleQuestion: isFinalePicked,
+            });
+          };
+
+          // Mandate #7: Finale Category Picker (*Final Jeopardy!* moment) before final question of non-boss rounds!
+          if (
+            !spec.isBossShowdown &&
+            ctx.questions.length >= 4 &&
+            ctx.index === ctx.questions.length - 1
+          ) {
+            const preferredDom = spec.preferredDomains[0] ?? null;
+            const finaleOptions = buildFinaleCategoryOptions(forgeEngine, preferredDom, 3);
+            const effectiveTier = resolveCampaignAcademicTier(
+              spec.hubId as CampaignHubCode,
+              spec.rhythmSlot - 1,
+              ctx.mercy.mercyTierShift,
+            );
+            const hasJackpot = this.activeGambitSession?.equippedId === 'FINALE_JACKPOT';
+            this.presentFinaleCategoryPicker(
               {
-                isBossShowdown: true,
-                questionIndex: ctx.index,
-                totalQuestions: ctx.questions.length,
-                archetype: nextQ.archetype,
-                questions: ctx.questions,
-                bossPhases: spec.bossPhases,
+                chyronTitle: `${ctx.mission.countryCode} · FINAL QUESTION`,
+                chyronSub: ctx.mission.title.toUpperCase(),
+                headline: 'Final Question: Choose Your Category',
+                subheadline: 'Pick your favorite topic below to lock in the deciding question!',
+                jackpotNote: hasJackpot
+                  ? '★ VAULT JACKPOT ACTIVE: 2.5× Final Payout & Zero Double-Down Penalty!'
+                  : '✦ Final Question — Tip: Toggle 2× Double Down if you know your chosen topic!',
+                options: finaleOptions.map((o) => ({
+                  domainId: o.domainId,
+                  title: o.title,
+                  subtitle: o.subtitle,
+                  medallionUrl: o.medallionUrl,
+                  isStrongest: o.isRecommended,
+                })),
               },
-              {
-                hubId: spec.hubId,
-                countryCode: spec.countryCode,
-                cityName: ctx.mission.title,
-                missionTitle: ctx.mission.subtitle,
-                heroRelicId: spec.heroRelicId,
-                rivalId: spec.rivalId,
-                stage3d: this.stage3d,
+              async (pickedDomainId) => {
+                const pickedQ = await pickFinaleQuestionForCategoryAsync(
+                  forgeEngine,
+                  pickedDomainId as DomainId,
+                  effectiveTier,
+                  {
+                    excludeQids: ctx.questions.map((item) => item.qid),
+                    timerSec: nextQ.timerSec,
+                    hub: spec.hubId,
+                    mercyTierShift: ctx.mercy.mercyTierShift,
+                    bonusTimerSec: ctx.mercy.bonusTimerSec,
+                  },
+                );
+                ctx.questions[ctx.index] = pickedQ;
+                await launchNextCampaignQuestion(pickedQ, true);
               },
             );
+            return;
           }
 
-          const rivalHud = ctx.rival.beginQuestion({
-            qid: nextQ.qid,
-            domainId: nextQ.l0Domain,
-            irtB: nextQ.irtB,
-            archetype: nextQ.archetype,
-            timeTotalSec: nextQ.timerSec,
-          });
-          await this.beginQuestionOnStage(nextQ, {
-            modeLabel: ctx.mission.difficultyLabel,
-            chyronTitle: `${ctx.mission.countryCode} · ${ctx.mission.title.toUpperCase()}`,
-            chyronSub: ctx.mission.difficultyLabel,
-            questionIndex: ctx.index,
-            questionTotal: ctx.questions.length,
-            playerScore: ctx.scoring.getMatchScore() + ctx.bluffBonusPoints,
-            streak: ctx.scoring.getStreak(),
-            shields: ctx.shieldsRemaining,
-            rivalId: rivalHud.actorId,
-            rivalName: rivalHud.shortName,
-            rivalScore: rivalHud.score,
-            rivalStatus: rivalHud.status,
-            actorId: rivalHud.actorId,
-            actorName: rivalHud.name,
-            actorExpression: rivalHud.expression,
-            tellLine: rivalHud.tellPillText,
-            peelSealed: spec.compiledRules.peelLockedBothPlayers,
-          });
+          await launchNextCampaignQuestion(nextQ, false);
           return;
         }
 
-        // Campaign Mission Finished! (#145 P1 #4 & #171 §2.1: Strictly gate unlocks & render Crimson Failure UX on loss!)
+        // Campaign Mission Finished!
+        // Mandate #1: Forgiving early pass threshold (`>= 40%` on Stage 1 Geneva & Stage 2 London, `>= 60%` later)!
         const playerPts = ctx.scoring.getMatchScore() + ctx.bluffBonusPoints;
         const rivalPts = ctx.rival.getScore();
+        const isForgivingEarlyHub = ctx.mission.hubId === 'ch' || ctx.mission.hubId === 'gb';
+        const passRatio = isForgivingEarlyHub ? 0.4 : 0.6;
         const won =
           !shieldsShattered &&
           (playerPts >= rivalPts ||
-            ctx.scoring.getCorrectCount() >= Math.ceil(ctx.questions.length * 0.6));
+            ctx.scoring.getCorrectCount() >= Math.ceil(ctx.questions.length * passRatio));
+
+        mindGambitStore.recordMatchProgress({
+          won,
+          maxStreak: ctx.scoring.getMaxStreak(),
+          bluffsCaught: this.matchBluffsCaught,
+          firstClueSnipes: this.matchFirstClueSnipes,
+          gambitTriggered: Boolean(this.activeGambitSession?.hasTriggeredAnyEffect()),
+        });
 
         const failReasonCode:
           | 'PHASE3_SUDDEN_DEATH_BACKFIRE'
@@ -5125,7 +6294,7 @@ export class SovereignMasterController {
                 : `${ctx.mission.title} — LEVEL FAILED`,
             subheadline: won
               ? ctx.mission.cliffhangerHook
-              : 'Outscore your rival or solve at least 60% of Prisms without shattering your Shields to advance.',
+              : `Outscore your rival or solve at least ${isForgivingEarlyHub ? '40%' : '60%'} of questions to advance. Retrying unlocks Scout's Advantage (+6s Timer & Free Second Wind)!`,
             challengerName: this.passport.getChallengerName(),
             playerScore: playerPts,
             rivalName: ctx.rival.getName(),
@@ -5178,7 +6347,7 @@ export class SovereignMasterController {
             chyronSub: this.liveVm.chyronSub,
             questionIndex: this.matchCtx.index,
             questionTotal: this.matchCtx.total,
-            playerScore: prog.score,
+            playerScore: prog.score + this.matchExtraBonusPoints,
             streak: this.liveVm.streak,
             rivalId: 'vance',
             rivalName: 'Vance',
@@ -5189,45 +6358,53 @@ export class SovereignMasterController {
             actorExpression: 'neutral',
             tellLine:
               this.matchCtx.index === this.matchCtx.total - 1
-                ? 'FINAL PRISM — Calibrator Bullseye Tiebreaker!'
+                ? 'FINAL QUESTION — Closest-Year Bullseye Tiebreaker!'
                 : 'Global Feed synchronized UTC seed active.',
+            isFinaleQuestion: this.matchCtx.index === this.matchCtx.total - 1,
           });
           return;
         }
 
         const sum = this.pendingDailySummary!;
         this.pendingDailySummary = null;
-        this.notifyMetaMatchCompleted({
-          mode: 'DAILY',
-          hubId: 'global',
-          won: true,
-          correctCount: sum.correctCount,
-          totalQuestions: sum.totalQuestions,
-          score: sum.totalScore,
-          peelsUsed: this.matchPeelsUsed,
-          max6xOverclockWinsInMatch: this.matchMax6xWins,
-          utcDate: sum.utcDate,
-          isReplay: Boolean((sum as { isReplay?: boolean }).isReplay),
-        });
+        const dailyFinalScore = sum.totalScore + this.matchExtraBonusPoints;
         let curRunStreak = 0;
         let maxRunStreak = 0;
         for (const r of sum.resolutions) {
           curRunStreak = r.correct ? curRunStreak + 1 : 0;
           if (curRunStreak > maxRunStreak) maxRunStreak = curRunStreak;
         }
+        mindGambitStore.recordMatchProgress({
+          won: sum.correctCount >= Math.ceil(sum.totalQuestions * 0.5),
+          maxStreak: maxRunStreak,
+          firstClueSnipes: this.matchFirstClueSnipes,
+          gambitTriggered: Boolean(this.activeGambitSession?.hasTriggeredAnyEffect()),
+        });
+        this.notifyMetaMatchCompleted({
+          mode: 'DAILY',
+          hubId: 'global',
+          won: true,
+          correctCount: sum.correctCount,
+          totalQuestions: sum.totalQuestions,
+          score: dailyFinalScore,
+          peelsUsed: this.matchPeelsUsed,
+          max6xOverclockWinsInMatch: this.matchMax6xWins,
+          utcDate: sum.utcDate,
+          isReplay: Boolean((sum as { isReplay?: boolean }).isReplay),
+        });
         const dailyDuelUrl = this.buildDuelShareUrlForCurrentMatch({
           mode: 'DAILY',
           domainId: -1,
           topicLabel: `Daily #${sum.broadcastNumber}`,
           utcDate: sum.utcDate,
-          totalScore: sum.totalScore,
+          totalScore: dailyFinalScore,
         });
         const dailyLb = this.buildSummaryLeaderboard({
           scope: 'DAILY',
           topicKey: `daily:${sum.utcDate}`,
           topicLabel: `Global Feed #${sum.broadcastNumber}`,
           utcDate: sum.utcDate,
-          playerScore: sum.totalScore,
+          playerScore: dailyFinalScore,
         });
         this.pausePassive2DActors();
         void this.stage3d.showChampionshipTrophy(0);
@@ -5238,7 +6415,7 @@ export class SovereignMasterController {
           headline: `GLOBAL FEED #${sum.broadcastNumber} · ${sum.topPercentBanner.toUpperCase()}`,
           subheadline: `Daily Streak: ${sum.dailyStreak}d · ${sum.emojiRow}`,
           challengerName: sum.challengerName,
-          playerScore: sum.totalScore,
+          playerScore: dailyFinalScore,
           correctCount: sum.correctCount,
           totalCount: sum.totalQuestions,
           bestStreak: maxRunStreak,
@@ -5255,35 +6432,92 @@ export class SovereignMasterController {
         const nextQ = this.briefingMode.getCurrentQuestion();
         if (nextQ && !this.pendingBriefingSummary) {
           ctx.index += 1;
-          await this.beginQuestionOnStage(nextQ, {
-            modeLabel: this.liveVm.modeLabel,
-            chyronTitle: 'THE BRIEFING ROOM',
-            chyronSub: ctx.domainsLabel,
-            questionIndex: ctx.index,
-            questionTotal: ctx.total,
-            playerScore: this.liveVm.playerScore,
-            streak: this.liveVm.streak,
-            rivalId: 'nadia',
-            rivalName: 'Nadia',
-            rivalScore: 0,
-            rivalStatus: 'HIDDEN',
-            actorId: 'nadia',
-            actorName: 'Nadia Al-Mansoor',
-            actorExpression: 'neutral',
-            tellLine: '12-Domain IRT Radar updating live.',
-          });
+          const launchBriefingQ = async (
+            chosenQ: PrismQuestion,
+            isFinalePicked = false,
+          ): Promise<void> => {
+            await this.beginQuestionOnStage(chosenQ, {
+              modeLabel: this.liveVm?.modeLabel ?? 'BRIEFING',
+              chyronTitle: 'THE BRIEFING ROOM',
+              chyronSub: ctx.domainsLabel,
+              questionIndex: ctx.index,
+              questionTotal: ctx.total,
+              playerScore: this.liveVm?.playerScore ?? 0,
+              streak: this.liveVm?.streak ?? 0,
+              rivalId: 'nadia',
+              rivalName: 'Nadia',
+              rivalScore: 0,
+              rivalStatus: 'HIDDEN',
+              actorId: 'nadia',
+              actorName: 'Nadia Al-Mansoor',
+              actorExpression: 'neutral',
+              tellLine: isFinalePicked
+                ? 'Final Category locked — give it your best shot!'
+                : '12-Domain Skill Radar updating live.',
+              isFinaleQuestion: isFinalePicked,
+            });
+          };
+
+          // Mandate #7: Finale Category Picker before the final question of Briefing runs (`>= 4` Qs)!
+          if (ctx.total >= 4 && ctx.index === ctx.total - 1) {
+            const prefDom =
+              ctx.domainId >= 0 && ctx.domainId <= 11 ? (ctx.domainId as DomainId) : null;
+            const finaleOptions = buildFinaleCategoryOptions(forgeEngine, prefDom, 3);
+            const hasJackpot = this.activeGambitSession?.equippedId === 'FINALE_JACKPOT';
+            this.presentFinaleCategoryPicker(
+              {
+                chyronTitle: 'THE BRIEFING ROOM · FINAL QUESTION',
+                chyronSub: ctx.domainsLabel,
+                headline: 'Final Question: Choose Your Category',
+                subheadline: 'Choose 1 of 3 domains for your closing question!',
+                jackpotNote: hasJackpot
+                  ? '★ VAULT JACKPOT ACTIVE: 2.5× Final Payout & Zero Double-Down Penalty!'
+                  : '✦ Final Question — Toggle 2× Double Down if you feel confident!',
+                options: finaleOptions.map((o) => ({
+                  domainId: o.domainId,
+                  title: o.title,
+                  subtitle: o.subtitle,
+                  medallionUrl: o.medallionUrl,
+                  isStrongest: o.isRecommended,
+                })),
+              },
+              async (pickedDomainId) => {
+                const pickedQ = await pickFinaleQuestionForCategoryAsync(
+                  forgeEngine,
+                  pickedDomainId as DomainId,
+                  ctx.difficultyPreset,
+                  {
+                    excludeQids: ctx.questions.map((item) => item.qid),
+                    timerSec: nextQ.timerSec,
+                  },
+                );
+                ctx.questions[ctx.index] = pickedQ;
+                await launchBriefingQ(pickedQ, true);
+              },
+            );
+            return;
+          }
+
+          await launchBriefingQ(nextQ, false);
           return;
         }
 
         const sum = this.pendingBriefingSummary!;
         this.pendingBriefingSummary = null;
+        const briefingFinalScore = sum.totalScore + this.matchExtraBonusPoints;
         const wonBriefing = sum.correctCount >= Math.ceil(sum.totalQuestions * 0.5);
+        mindGambitStore.recordMatchProgress({
+          won: wonBriefing,
+          maxStreak: sum.maxStreak,
+          firstClueSnipes: this.matchFirstClueSnipes,
+          gambitTriggered: Boolean(this.activeGambitSession?.hasTriggeredAnyEffect()),
+        });
         this.notifyMetaMatchCompleted({
           mode: 'BRIEFING',
           won: wonBriefing,
           correctCount: sum.correctCount,
           totalQuestions: sum.totalQuestions,
-          score: sum.totalScore,
+          score: briefingFinalScore,
           peelsUsed: this.matchPeelsUsed,
           max6xOverclockWinsInMatch: this.matchMax6xWins,
           difficultyPreset: ctx.difficultyPreset,
@@ -5294,13 +6528,13 @@ export class SovereignMasterController {
           l1Id: ctx.l1Id,
           l2Id: ctx.l2Id,
           topicLabel: (ctx.topicLabel || sum.domainsLabel).slice(0, 28),
-          totalScore: sum.totalScore,
+          totalScore: briefingFinalScore,
         });
         const briefLb = this.buildSummaryLeaderboard({
           scope: 'SUBCATEGORY',
           topicKey: ctx.l2Id || ctx.l1Id || (ctx.domainId >= 0 ? `domain:${ctx.domainId}` : 'global'),
           topicLabel: ctx.topicLabel || sum.domainsLabel,
-          playerScore: sum.totalScore,
+          playerScore: briefingFinalScore,
         });
         this.pausePassive2DActors();
         void this.stage3d.showChampionshipTrophy(0);
@@ -5311,7 +6545,7 @@ export class SovereignMasterController {
           headline: 'BRIEFING CALIBRATION COMPLETE',
           subheadline: `${sum.domainsLabel} · ${formatDifficultyPresetLabel(sum.difficulty)}`,
           challengerName: sum.challengerName,
-          playerScore: sum.totalScore,
+          playerScore: briefingFinalScore,
           correctCount: sum.correctCount,
           totalCount: sum.totalQuestions,
           bestStreak: sum.maxStreak,
@@ -5332,12 +6566,19 @@ export class SovereignMasterController {
 
         if (step.runEndedSummary) {
           const s = step.runEndedSummary;
+          const endlessFinalScore = s.finalBankedScore + this.matchExtraBonusPoints;
+          mindGambitStore.recordMatchProgress({
+            won: s.extractedCleanly,
+            maxStreak: s.maxStreak,
+            firstClueSnipes: this.matchFirstClueSnipes,
+            gambitTriggered: Boolean(this.activeGambitSession?.hasTriggeredAnyEffect()),
+          });
           this.notifyMetaMatchCompleted({
             mode: 'ENDLESS',
             won: s.extractedCleanly,
             correctCount: s.correctCount,
             totalQuestions: Math.max(1, s.depthCleared),
-            score: s.finalBankedScore,
+            score: endlessFinalScore,
             shieldsLost: this.matchShieldsLost,
             peelsUsed: this.matchPeelsUsed,
             max6xOverclockWinsInMatch: this.matchMax6xWins,
@@ -5356,7 +6597,7 @@ export class SovereignMasterController {
               : 'SHIELDS SHATTERED — EMERGENCY EXTRACT',
             subheadline: `Reached Depth ${s.depthCleared} (${s.strataReached})`,
             challengerName: s.challengerName,
-            playerScore: s.finalBankedScore,
+            playerScore: endlessFinalScore,
             correctCount: s.correctCount,
             totalCount: Math.max(1, s.depthCleared),
             bestStreak: s.maxStreak,
@@ -5389,7 +6630,7 @@ export class SovereignMasterController {
               ? `${wave2Log.code} — ${wave2Log.title}: “${wave2Log.body}”`
               : `${air.loreLogTitle}: “${air.loreLogText}”`,
             challengerName: this.passport.getChallengerName(),
-            playerScore: air.totalExtractableScore,
+            playerScore: air.totalExtractableScore + this.matchExtraBonusPoints,
             correctCount: airCorrect,
             totalCount: air.depthReached,
             bestStreak: airBestStreak,
@@ -5402,24 +6643,71 @@ export class SovereignMasterController {
 
         if (step.nextQuestion) {
           const hud = step.hud;
-          await this.beginQuestionOnStage(step.nextQuestion, {
-            modeLabel: `${hud.strataTitle} (${hud.strataMultiplier}x)`,
-            chyronTitle: `ARCHIVE DESCENT · DEPTH ${hud.depth}`,
-            chyronSub: hud.strataTitle,
-            questionIndex: (hud.depth - 1) % 5,
-            questionTotal: 5,
-            playerScore: hud.totalLiveScore,
-            streak: hud.overclockRepairStreak,
-            shields: hud.shields,
-            rivalId: 'tariq',
-            rivalName: 'Tariq',
-            rivalScore: 0,
-            rivalStatus: 'HIDDEN',
-            actorId: 'tariq',
-            actorName: 'Archive Core Telemetry',
-            actorExpression: 'neutral',
-            tellLine: `Safe Banked: ${hud.bankedSafeScore.toLocaleString()} PTS · Unbanked Haul: ${hud.unbankedFloorHaul.toLocaleString()} PTS`,
-          });
+          const floorQIndex = (hud.depth - 1) % 5;
+          const launchEndlessQ = async (
+            chosenQ: PrismQuestion,
+            isFinalePicked = false,
+          ): Promise<void> => {
+            await this.beginQuestionOnStage(chosenQ, {
+              modeLabel: `${hud.strataTitle} (${hud.strataMultiplier}x)`,
+              chyronTitle: `ARCHIVE DESCENT · DEPTH ${hud.depth}`,
+              chyronSub: hud.strataTitle,
+              questionIndex: floorQIndex,
+              questionTotal: 5,
+              playerScore: hud.totalLiveScore + this.matchExtraBonusPoints,
+              streak: hud.overclockRepairStreak,
+              shields: hud.shields,
+              rivalId: 'tariq',
+              rivalName: 'Tariq',
+              rivalScore: 0,
+              rivalStatus: 'HIDDEN',
+              actorId: 'tariq',
+              actorName: 'Archive Core Telemetry',
+              actorExpression: 'neutral',
+              tellLine: `Safe Banked: ${hud.bankedSafeScore.toLocaleString()} PTS · Unbanked Haul: ${hud.unbankedFloorHaul.toLocaleString()} PTS`,
+              isFinaleQuestion: isFinalePicked,
+            });
+          };
+
+          // Mandate #7: Finale Category Picker before Q5 (Airlock Gate) of every Endless floor!
+          if (floorQIndex === 4) {
+            const finaleOptions = buildFinaleCategoryOptions(forgeEngine, null, 3);
+            const hasJackpot = this.activeGambitSession?.equippedId === 'FINALE_JACKPOT';
+            this.presentFinaleCategoryPicker(
+              {
+                chyronTitle: `ARCHIVE DESCENT · AIRLOCK GATE (DEPTH ${hud.depth})`,
+                chyronSub: hud.strataTitle,
+                headline: 'Airlock Finale: Choose Your Category',
+                subheadline: 'Clear this final floor question to reach the Safe Extraction Airlock!',
+                jackpotNote: hasJackpot
+                  ? '★ VAULT JACKPOT ACTIVE: 2.5× Final Payout & Zero Double-Down Penalty!'
+                  : `✦ ${hud.strataMultiplier}× Strata Multiplier active on this Airlock Question!`,
+                options: finaleOptions.map((o) => ({
+                  domainId: o.domainId,
+                  title: o.title,
+                  subtitle: o.subtitle,
+                  medallionUrl: o.medallionUrl,
+                  isStrongest: o.isRecommended,
+                })),
+              },
+              async (pickedDomainId) => {
+                const pickedQ = await pickFinaleQuestionForCategoryAsync(
+                  forgeEngine,
+                  pickedDomainId as DomainId,
+                  step.nextQuestion!.difficultyTier ?? 'ADAPTIVE',
+                  {
+                    excludeQids: [step.nextQuestion!.qid],
+                    timerSec: step.nextQuestion!.timerSec,
+                  },
+                );
+                replacePrismQuestionInPlace(step.nextQuestion!, pickedQ);
+                await launchEndlessQ(step.nextQuestion!, true);
+              },
+            );
+            return;
+          }
+
+          await launchEndlessQ(step.nextQuestion, false);
         }
         return;
       }
@@ -5445,6 +6733,7 @@ export class SovereignMasterController {
             actorExpression: 'neutral',
             tellLine: this.liveVm.tellLine,
             peelSealed: this.liveVm.peelSealedByJammer,
+            isFinaleQuestion: this.matchCtx.index === this.matchCtx.total - 1,
           });
           return;
         }
@@ -5452,6 +6741,13 @@ export class SovereignMasterController {
         const sum = this.pendingTrialsSummary!;
         const isBlackSalon = this.matchCtx.isBlackSalon;
         this.pendingTrialsSummary = null;
+        const trialsFinalScore = sum.playerScore + this.matchExtraBonusPoints;
+        mindGambitStore.recordMatchProgress({
+          won: sum.won,
+          maxStreak: sum.maxStreak,
+          firstClueSnipes: this.matchFirstClueSnipes,
+          gambitTriggered: Boolean(this.activeGambitSession?.hasTriggeredAnyEffect()),
+        });
         if (isBlackSalon && sum.won) {
           this.metaSuite.recordSpecialFeat('BLACK_SALON_VICTORY');
         }
@@ -5461,7 +6757,7 @@ export class SovereignMasterController {
           won: sum.won,
           correctCount: sum.correctCount,
           totalQuestions: sum.totalQuestions,
-          score: sum.playerScore,
+          score: trialsFinalScore,
           isBlackSalon,
           peelsUsed: this.matchPeelsUsed,
           max6xOverclockWinsInMatch: this.matchMax6xWins,
@@ -5470,13 +6766,13 @@ export class SovereignMasterController {
           mode: 'TRIALS',
           domainId: -1,
           topicLabel: isBlackSalon ? 'Black Salon Blitz' : 'Council Trials Duel',
-          totalScore: sum.playerScore,
+          totalScore: trialsFinalScore,
         });
         const trialsLb = this.buildSummaryLeaderboard({
           scope: 'SUBCATEGORY',
           topicKey: 'trials:global',
           topicLabel: isBlackSalon ? 'Black Salon Blitz' : 'Council Trials',
-          playerScore: sum.playerScore,
+          playerScore: trialsFinalScore,
         });
         this.pausePassive2DActors();
         void this.stage3d.showChampionshipTrophy(0);
@@ -5489,7 +6785,7 @@ export class SovereignMasterController {
             : 'GHOST DUEL COMPLETE',
           subheadline: `Trials Elo: ${sum.newTrialsElo} (${sum.eloDelta >= 0 ? `+${sum.eloDelta}` : sum.eloDelta}) · +${sum.factionPointsAwarded} Bloc Pts`,
           challengerName: sum.challengerName,
-          playerScore: sum.playerScore,
+          playerScore: trialsFinalScore,
           rivalName: sum.opponentHandle,
           rivalScore: sum.ghostScore,
           correctCount: sum.correctCount,
@@ -5516,10 +6812,12 @@ export class SovereignMasterController {
       Boolean(this.dossierModal?.isOpen()) ||
       Boolean(this.briefingModal?.isOpen()) ||
       Boolean(this.saveSlotsModal?.isOpen()) ||
+      this.hud.isRulesModalOpen() ||
       this.leaveConfirmModalEl !== null ||
       this.restartFromStartModalEl !== null;
     this.hud.closeVaultDrawer();
     this.hud.closeVisualLightbox();
+    this.hud.closeRulesModal();
     this.metaSuite.closeAll(false);
     this.dossierModal?.close();
     this.briefingModal?.close();
@@ -5891,6 +7189,7 @@ export class SovereignMasterController {
     this.offlineUnsubscribe?.();
     this.offlineUnsubscribe = null;
     this.hud.closeVisualLightbox();
+    this.hud.closeRulesModal();
     this.motionCinema?.dispose();
     this.bossBanner?.dispose();
     this.endingDirector?.dispose();
@@ -5915,6 +7214,7 @@ export class SovereignMasterController {
     q: PrismQuestion,
     sub: PrismAnswerSubmission,
     scored: ScoredQuestionResult,
+    lockedClueLadderStep?: 1 | 2 | 3,
   ): void {
     const skillSnap = forgeEngine.getSkillSnapshot();
     const modeStr =
@@ -5934,7 +7234,7 @@ export class SovereignMasterController {
       distractors: q.facets.filter((f) => !f.isCorrect).map((f) => f.text),
       whyExplanation: scored.whyExplanation,
       domainId: q.l0Domain,
-      subcatLabel: q.l1Category,
+      subcatLabel: q.l2Subcategory || q.l1Category,
       wasCorrect: scored.correct,
     });
 
@@ -5945,6 +7245,11 @@ export class SovereignMasterController {
       mode: modeStr,
       hubId,
       archetype: q.archetype,
+      subcatLabel: q.l2Subcategory || q.l1Category,
+      clueLadderStep: lockedClueLadderStep,
+      mindGambitId: this.activeGambitSession?.equippedId,
+      mindGambitTriggered: this.questionMindGambitTriggered,
+      finaleCategoryPicked: this.questionFinaleCategoryPicked,
       correct: scored.correct,
       peelTier: sub.peelTier,
       overclockCharge01: sub.overclockCharge,
@@ -5969,7 +7274,12 @@ export class SovereignMasterController {
   private notifyMetaMatchCompleted(
     input: Parameters<MetaProgressionSuite['recordMatchCompleted']>[0],
   ): void {
-    this.metaSuite.recordMatchCompleted(input);
+    this.metaSuite.recordMatchCompleted({
+      ...input,
+      mindGambitUsed: input.mindGambitUsed ?? this.activeGambitSession?.equippedId,
+      secondWindTriggered: input.secondWindTriggered ?? this.matchSecondWindTriggered,
+      finaleCategoryWon: input.finaleCategoryWon ?? this.matchFinaleCategoryWon,
+    });
     // Flush Passport/Blackboard/Honours mutations into active Save Slot so page reload never wipes them
     this.saveSlotManager.saveActiveSlot();
     this.syncVaultLiveStatus();

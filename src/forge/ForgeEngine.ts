@@ -10,11 +10,14 @@
 
 import { IrtAdaptiveDirector } from './IrtAdaptiveDirector';
 import {
+  doesCandidateMatchDifficultyPreset,
   getAcademicTierSpec,
   getAdjacentAcademicTiers,
   normalizeBriefingDifficultyPreset,
   presetToAcademicTier,
+  resolveCampaignAcademicTier,
   scoreQuestionDifficulty,
+  shiftAcademicDifficultyTier,
 } from './QuestionDifficultyCalibration';
 import { MAX_QID, RoaringSeenTracker } from './RoaringSeenTracker';
 import {
@@ -25,6 +28,7 @@ import {
   decodeQuestionByQidFromChunks,
   decodeShardRawQuestion,
   fnv1a32,
+  formatCleanTriviaNumber,
   isCleanShardCandidate,
   normalizeToPrismQuestion,
   normalizeVisualAssetUrl,
@@ -42,12 +46,11 @@ import {
   type TaxonomyShardRule,
 } from './TaxonomyCatalog';
 import {
-  CAMPAIGN_DIFFICULTY_CURVE,
   FORGE_DOMAINS,
-  getCampaignStageSpec,
   type AcademicDifficultyTier,
   type Archetype3D,
   type BriefingDifficultyPreset,
+  type CalibratorToleranceCone,
   type CampaignHubCode,
   type CampaignStageSpec,
   type DailyBroadcastPacket,
@@ -72,6 +75,297 @@ import {
   type ShardManifest,
   type ShardTableTypeSpec,
 } from './types';
+
+/**
+ * v3.0 Strict 8-City Progressive Campaign Difficulty Curve (`MIDDLE_SCHOOL` -> `MENSA`):
+ *   - Stage 1 Geneva (`ch`):    MIDDLE_SCHOOL (30s, 35% rival accuracy, 0 Codex)
+ *   - Stage 2 London (`gb`):    Rounds 0–1 MIDDLE_SCHOOL, Rounds 2–4 HIGH_SCHOOL (26s, 42% rival)
+ *   - Stage 3 Tokyo (`jp`):     HIGH_SCHOOL (24s, 54% rival)
+ *   - Stage 4 Rio (`br`):       COLLEGE (22s, 64% rival)
+ *   - Stage 5 Cairo (`eg`):     COLLEGE (20s, 70% rival)
+ *   - Stage 6 Reykjavik (`is`): GRADUATE (18s, 76% rival)
+ *   - Stage 7 Singapore (`sg`): GRADUATE (16s, 82% rival)
+ *   - Stage 8 Apex (`global`):  MENSA (15s, 88% rival)
+ */
+export const CAMPAIGN_DIFFICULTY_CURVE: ReadonlyArray<CampaignStageSpec> = [
+  {
+    index: 0,
+    hub: 'ch',
+    regionCode: 'CH',
+    city: 'Geneva',
+    venueName: 'The Vetting Chamber',
+    difficultyLabel: 'EASY',
+    irtMin: -1.85,
+    irtMax: -0.85,
+    timerSec: 30,
+    rivalAccuracy: 0.35,
+    heroRelicId: 'meridian_astrolabe',
+    heroRelicTitle: 'Meridian Brass Astrolabe',
+    unlockedArchetypes: ['SIGHTLINE_LOCK', 'GAUNTLET_SHATTER', 'CALIBRATOR_DIAL'],
+    preferGoldCuratedFirst: true,
+  },
+  {
+    index: 1,
+    hub: 'gb',
+    regionCode: 'GB',
+    city: 'London',
+    venueName: 'The Sovereign Rotunda',
+    difficultyLabel: 'EASY+',
+    irtMin: -1.45,
+    irtMax: -0.2,
+    timerSec: 26,
+    rivalAccuracy: 0.42,
+    heroRelicId: 'armillary_orrery',
+    heroRelicTitle: 'Locked Armillary Orrery',
+    unlockedArchetypes: ['SIGHTLINE_LOCK', 'GAUNTLET_SHATTER', 'CALIBRATOR_DIAL', 'GLOBE_PIN_DROP'],
+    preferGoldCuratedFirst: true,
+  },
+  {
+    index: 2,
+    hub: 'jp',
+    regionCode: 'JP',
+    city: 'Tokyo',
+    venueName: 'Shinkansen Sky Pavilion',
+    difficultyLabel: 'MEDIUM',
+    irtMin: -0.85,
+    irtMax: -0.15,
+    timerSec: 24,
+    rivalAccuracy: 0.54,
+    heroRelicId: 'origami_prism',
+    heroRelicTitle: 'Folding Origami Prism',
+    unlockedArchetypes: ['SIGHTLINE_LOCK', 'GAUNTLET_SHATTER', 'CALIBRATOR_DIAL', 'GLOBE_PIN_DROP'],
+    preferGoldCuratedFirst: true,
+  },
+  {
+    index: 3,
+    hub: 'br',
+    regionCode: 'BR',
+    city: 'Rio de Janeiro',
+    venueName: 'Botanical Glass Canopy',
+    difficultyLabel: 'MEDIUM+',
+    irtMin: -0.15,
+    irtMax: 0.65,
+    timerSec: 22,
+    rivalAccuracy: 0.64,
+    heroRelicId: 'emerald_sphere',
+    heroRelicTitle: 'Emerald Resonance Sphere',
+    unlockedArchetypes: [
+      'SIGHTLINE_LOCK',
+      'GAUNTLET_SHATTER',
+      'CALIBRATOR_DIAL',
+      'CODEX_DUAL_RING',
+      'GLOBE_PIN_DROP',
+    ],
+    preferGoldCuratedFirst: false,
+  },
+  {
+    index: 4,
+    hub: 'eg',
+    regionCode: 'EG',
+    city: 'Cairo',
+    venueName: 'Solar Acoustic Hall',
+    difficultyLabel: 'CHALLENGING',
+    irtMin: -0.05,
+    irtMax: 0.75,
+    timerSec: 20,
+    rivalAccuracy: 0.7,
+    heroRelicId: 'cipher_box',
+    heroRelicTitle: 'Meridian Zero Cipher Box',
+    unlockedArchetypes: [
+      'SIGHTLINE_LOCK',
+      'GAUNTLET_SHATTER',
+      'CALIBRATOR_DIAL',
+      'CODEX_DUAL_RING',
+      'GLOBE_PIN_DROP',
+    ],
+    preferGoldCuratedFirst: false,
+  },
+  {
+    index: 5,
+    hub: 'is',
+    regionCode: 'IS',
+    city: 'Reykjavik',
+    venueName: 'Geothermal Basalt Caldera',
+    difficultyLabel: 'HARD',
+    irtMin: 0.65,
+    irtMax: 1.45,
+    timerSec: 18,
+    rivalAccuracy: 0.76,
+    heroRelicId: 'cryo_relay',
+    heroRelicTitle: 'Cryo-Core Relay',
+    unlockedArchetypes: [
+      'SIGHTLINE_LOCK',
+      'GAUNTLET_SHATTER',
+      'CALIBRATOR_DIAL',
+      'CODEX_DUAL_RING',
+      'GLOBE_PIN_DROP',
+    ],
+    preferGoldCuratedFirst: false,
+  },
+  {
+    index: 6,
+    hub: 'sg',
+    regionCode: 'SG',
+    city: 'Singapore',
+    venueName: 'Diplomatic Sky-Bridge & Core',
+    difficultyLabel: 'EXPERT',
+    irtMin: 0.75,
+    irtMax: 1.55,
+    timerSec: 16,
+    rivalAccuracy: 0.82,
+    heroRelicId: 'council_seal',
+    heroRelicTitle: 'Fractured Council Seal',
+    unlockedArchetypes: [
+      'SIGHTLINE_LOCK',
+      'GAUNTLET_SHATTER',
+      'CALIBRATOR_DIAL',
+      'CODEX_DUAL_RING',
+      'GLOBE_PIN_DROP',
+    ],
+    preferGoldCuratedFirst: false,
+  },
+  {
+    index: 7,
+    hub: 'global',
+    regionCode: 'GLOBAL',
+    city: 'Apex Forum',
+    venueName: 'The Apex Forum',
+    difficultyLabel: 'GENIUS',
+    irtMin: 1.45,
+    irtMax: 2.85,
+    timerSec: 15,
+    rivalAccuracy: 0.88,
+    heroRelicId: 'master_ledger',
+    heroRelicTitle: 'Master Ledger Core',
+    unlockedArchetypes: [
+      'SIGHTLINE_LOCK',
+      'GAUNTLET_SHATTER',
+      'CALIBRATOR_DIAL',
+      'CODEX_DUAL_RING',
+      'GLOBE_PIN_DROP',
+      'HERO_ARTIFACT_SYNTHESIS',
+    ],
+    preferGoldCuratedFirst: false,
+  },
+];
+
+export function getCampaignStageSpec(hubOrRegion: string): CampaignStageSpec {
+  const norm = String(hubOrRegion ?? 'ch').trim().toLowerCase();
+  const found = CAMPAIGN_DIFFICULTY_CURVE.find(
+    (s) => s.hub === norm || s.regionCode.toLowerCase() === norm || s.city.toLowerCase() === norm,
+  );
+  return found ?? CAMPAIGN_DIFFICULTY_CURVE[0];
+}
+
+export interface ForgeQueryRequestWithMercy extends ForgeQueryRequest {
+  /** Optional Retry Mercy tier shift (`-1` or `-2`) lowering academic tier on retried missions */
+  mercyTierShift?: number;
+  /** Optional extra timer seconds granted by Retry Mercy ("Scout's Advantage") */
+  bonusTimerSec?: number;
+}
+
+/**
+ * Widens `CALIBRATOR_DIAL` tolerance cones cleanly on `MIDDLE_SCHOOL` & `HIGH_SCHOOL`
+ * while mathematically preserving the `0%` untouched `initialEstimate` auto-win invariant
+ * and comma-free calendar year formatting!
+ */
+export function applyForgivingCalibratorCones(
+  pq: PrismQuestion,
+  effectiveTier?: AcademicDifficultyTier | null,
+): PrismQuestion {
+  if (pq.archetype !== 'CALIBRATOR_DIAL' || !pq.calibrator) {
+    return pq;
+  }
+  const tier = effectiveTier ?? pq.difficultyTier;
+  if (tier !== 'MIDDLE_SCHOOL' && tier !== 'HIGH_SCHOOL') {
+    return pq;
+  }
+
+  const cal = pq.calibrator;
+  const span = cal.maxVal - cal.minVal;
+  const step = Math.max(0.1, cal.step);
+  if (!Number.isFinite(span) || span <= step * 3) {
+    return pq;
+  }
+
+  const snapMargin = (rawMargin: number, minSteps: number): number => {
+    const snapped = Math.round(rawMargin / step) * step;
+    return Math.max(step * minSteps, snapped);
+  };
+
+  const maxDistToBound = Math.max(
+    Math.abs(cal.exactVal - cal.minVal),
+    Math.abs(cal.maxVal - cal.exactVal),
+  );
+  // Keep at least `2 * step` clearance so `initialEstimate` can ALWAYS sit strictly outside WIDE!
+  const safeMaxWide = Math.max(step * 2, maxDistToBound - step * 2);
+
+  const isMid = tier === 'MIDDLE_SCHOOL';
+  const targetWidePct = isMid ? 0.24 : 0.2;
+  const targetSharpPct = isMid ? 0.11 : 0.085;
+  const targetPinholePct = isMid ? 0.035 : 0.025;
+
+  const wideMargin = Math.min(
+    snapMargin(span * targetWidePct, isMid ? 3 : 2),
+    Math.floor((span * (isMid ? 0.36 : 0.32)) / step) * step,
+    Math.floor(safeMaxWide / step) * step,
+  );
+  const clampedWide = Math.max(cal.toleranceCones[0]?.margin ?? step * 2, Math.min(wideMargin, safeMaxWide));
+  const sharpMargin = Math.min(
+    snapMargin(span * targetSharpPct, isMid ? 2 : 1),
+    Math.max(step, clampedWide - step),
+  );
+  const pinholeMargin = Math.min(
+    snapMargin(span * targetPinholePct, 1),
+    Math.max(step, sharpMargin - step),
+  );
+
+  const unitSuffix = cal.unit ? ` ${cal.unit}` : '';
+  const cones: [CalibratorToleranceCone, CalibratorToleranceCone, CalibratorToleranceCone] = [
+    {
+      id: 'WIDE',
+      label: `WIDE ±${formatCleanTriviaNumber(clampedWide, cal.unit, pq.prompt)}${unitSuffix}`,
+      margin: clampedWide,
+      pctOfSpan: Number(clamp(clampedWide / span, 0.12, 0.38).toFixed(3)),
+      multiplier: 1.5,
+    },
+    {
+      id: 'SHARP',
+      label: `SHARP ±${formatCleanTriviaNumber(sharpMargin, cal.unit, pq.prompt)}${unitSuffix}`,
+      margin: sharpMargin,
+      pctOfSpan: Number(clamp(sharpMargin / span, 0.05, 0.2).toFixed(3)),
+      multiplier: 2.5,
+    },
+    {
+      id: 'PINHOLE',
+      label: `PINHOLE ±${formatCleanTriviaNumber(pinholeMargin, cal.unit, pq.prompt)}${unitSuffix}`,
+      margin: pinholeMargin,
+      pctOfSpan: Number(clamp(pinholeMargin / span, 0.015, 0.08).toFixed(3)),
+      multiplier: 3.5,
+    },
+  ];
+  cal.toleranceCones = cones;
+
+  // Preserve 0% untouched auto-win invariant after widening WIDE cone!
+  const snapToStep = (v: number): number =>
+    clamp(Math.round(v / step) * step, cal.minVal, cal.maxVal);
+  if (Math.abs(cal.initialEstimate - cal.exactVal) <= clampedWide * 1.08) {
+    const lowAnchor = snapToStep(cal.minVal + span * 0.08);
+    const highAnchor = snapToStep(cal.maxVal - span * 0.08);
+    const lowDist = Math.abs(lowAnchor - cal.exactVal);
+    const highDist = Math.abs(highAnchor - cal.exactVal);
+    let candidate = lowDist >= highDist ? lowAnchor : highAnchor;
+    if (Math.abs(candidate - cal.exactVal) <= clampedWide) {
+      candidate =
+        Math.abs(cal.minVal - cal.exactVal) >= Math.abs(cal.maxVal - cal.exactVal)
+          ? cal.minVal
+          : cal.maxVal;
+    }
+    cal.initialEstimate = candidate;
+  }
+
+  return pq;
+}
 
 const DAILY_BROADCAST_SALT = 'WS_MERIDIAN_GLOBAL_FEED_V4';
 const EPOCH_DAY_MS = 86_400_000;
@@ -2006,13 +2300,12 @@ export class ForgeEngine {
     const usedQids = new Set<number>();
     const usedDomains = new Set<number>();
 
-    // Prefer accessible Geneva/Global Gold Core questions (qid <= 832, irtB in [-1.80, -0.15])
+    // Prefer accessible Geneva/Global Gold Core Middle School questions
     const goldSightline = this.tier1Questions.filter(
       (q) =>
         q.qid <= 4_964 &&
         q.archetype === 'SIGHTLINE_LOCK' &&
-        q.irtB >= -1.8 &&
-        q.irtB <= -0.2 &&
+        doesCandidateMatchDifficultyPreset(q, 'MIDDLE_SCHOOL', { allowAdjacent: false }) &&
         Array.isArray(q.clues) &&
         q.clues.length >= 2,
     );
@@ -2041,11 +2334,11 @@ export class ForgeEngine {
       return best;
     };
 
-    const q1Raw = pickSightline(true, -0.95);
-    const q2Raw = pickSightline(false, -0.75);
-    const q3Raw = pickSightline(false, -0.5);
+    const q1Raw = pickSightline(true, -1.35);
+    const q2Raw = pickSightline(false, -1.2);
+    const q3Raw = pickSightline(false, -1.05);
 
-    // Q4: Meridian Brass Astrolabe CALIBRATOR_DIAL (prefer QID 4 Geneva 1864 CE if unseen, else crisp Gold Calibrator)
+    // Q4: Meridian Brass Astrolabe CALIBRATOR_DIAL (prefer Apollo 1969 / accessible landmark year if unseen)
     const q4Exact = this.byQid.get(4);
     let q4Raw: RawQuestionRecord | undefined =
       q4Exact && !this.seenTracker.hasSeen(4) ? q4Exact : undefined;
@@ -2054,7 +2347,7 @@ export class ForgeEngine {
         (q) =>
           q.archetype === 'CALIBRATOR_DIAL' &&
           q.qid <= 4_964 &&
-          q.irtB <= 0.45 &&
+          q.irtB <= 0.1 &&
           !usedQids.has(q.qid),
       );
       q4Raw =
@@ -2066,12 +2359,15 @@ export class ForgeEngine {
     const salt = rng.nextUint32();
     const out = [q1Raw, q2Raw, q3Raw, q4Raw].map((raw, idx) => {
       const pq = normalizeToPrismQuestion(raw, {
-        timerSec: 22,
+        timerSec: 30,
         facetCount: 4,
         shuffleSalt: (salt + idx * 7919) >>> 0,
       });
-      if (idx === 3 && !pq.heroRelicId) {
-        pq.heroRelicId = 'meridian_astrolabe';
+      if (idx === 3) {
+        if (!pq.heroRelicId) {
+          pq.heroRelicId = 'meridian_astrolabe';
+        }
+        applyForgivingCalibratorCones(pq, 'MIDDLE_SCHOOL');
       }
       return pq;
     });
@@ -2079,9 +2375,11 @@ export class ForgeEngine {
   }
 
   /**
-   * Synchronous Campaign Round Selector enforcing the strict 8-City Progressive Curve:
-   * Geneva (-1.80..-0.35, 22s, Gold/curated first!) -> London (20s) -> Tokyo (19s) ->
-   * Rio (18s) -> Cairo (17s) -> Reykjavik (15s) -> Singapore (14s) -> Apex Forum (13s).
+   * Synchronous Campaign Round Selector enforcing the strict 8-City Progressive Curve (`MIDDLE_SCHOOL` -> `MENSA`):
+   * Geneva (`MIDDLE_SCHOOL`, 30s) -> London (R0-1 `MIDDLE_SCHOOL`, R2-4 `HIGH_SCHOOL`, 26s) ->
+   * Tokyo (`HIGH_SCHOOL`, 24s) -> Rio (`COLLEGE`, 22s) -> Cairo (`COLLEGE`, 20s) ->
+   * Reykjavik (`GRADUATE`, 18s) -> Singapore (`GRADUATE`, 16s) -> Apex Forum (`MENSA`, 15s).
+   * Supports optional `mercyTierShift` (`-1` or `-2`) and `bonusTimerSec` for Retry Mercy ("Scout's Advantage").
    */
   public queryCampaignRound(params: {
     hub: CampaignHubCode | string;
@@ -2095,6 +2393,9 @@ export class ForgeEngine {
     excludeDomains?: DomainId[];
     irtBRange?: [number, number];
     morphSequence?: Archetype3D[];
+    difficultyPreset?: BriefingDifficultyPreset;
+    mercyTierShift?: number;
+    bonusTimerSec?: number;
     facetCount?: 4 | 5 | 6;
     seed?: number;
     quarantinedQids?: ReadonlySet<number>;
@@ -2102,6 +2403,12 @@ export class ForgeEngine {
     const stage = getCampaignStageSpec(params.hub);
     const roundIdx = clamp(params.roundIndex ?? 0, 0, 11);
     const count = clamp(params.count ?? 5, 1, 25);
+    const mercyShift = Number.isFinite(params.mercyTierShift)
+      ? clamp(Math.trunc(params.mercyTierShift!), -2, 0)
+      : 0;
+    const bonusTimerSec = Number.isFinite(params.bonusTimerSec)
+      ? clamp(Math.round(params.bonusTimerSec!), 0, 20)
+      : 0;
 
     // Warm up deep-campaign shards in background for Stage 3+
     if (stage.index >= 3) {
@@ -2110,17 +2417,35 @@ export class ForgeEngine {
     }
 
     if (params.isBossShowdown) {
-      return this.buildBossShowdownQuestions(stage, count, params);
+      return this.buildBossShowdownQuestions(stage, count, {
+        ...params,
+        mercyTierShift: mercyShift,
+        bonusTimerSec,
+      });
     }
 
-    const effIrtMin =
-      params.irtBRange && Number.isFinite(params.irtBRange[0])
-        ? clamp(params.irtBRange[0], -1.85, 2.65)
-        : stage.irtMin;
-    const effIrtMax =
-      params.irtBRange && Number.isFinite(params.irtBRange[1])
-        ? clamp(Math.max(effIrtMin + 0.2, params.irtBRange[1]), -1.5, 2.85)
-        : stage.irtMax;
+    const explicitTier = presetToAcademicTier(params.difficultyPreset);
+    const targetTier: AcademicDifficultyTier = explicitTier
+      ? shiftAcademicDifficultyTier(explicitTier, mercyShift)
+      : resolveCampaignAcademicTier(stage.hub, roundIdx, mercyShift);
+    const tierSpec = getAcademicTierSpec(targetTier);
+
+    // Align IRT band strictly with resolved AcademicDifficultyTier (never let stale caller irtBRange override mercy or early-stage tiers!)
+    let effIrtMin = tierSpec.irtMin;
+    let effIrtMax = tierSpec.irtMax;
+    if (
+      mercyShift === 0 &&
+      params.irtBRange &&
+      Number.isFinite(params.irtBRange[0]) &&
+      Number.isFinite(params.irtBRange[1])
+    ) {
+      const overlapLo = Math.max(tierSpec.irtMin, params.irtBRange[0]);
+      const overlapHi = Math.min(tierSpec.irtMax, params.irtBRange[1]);
+      if (overlapHi - overlapLo >= 0.25) {
+        effIrtMin = overlapLo;
+        effIrtMax = overlapHi;
+      }
+    }
 
     const span = Math.max(0.25, effIrtMax - effIrtMin);
     const roundFrac = roundIdx / 4;
@@ -2130,14 +2455,37 @@ export class ForgeEngine {
       roundFrac,
     );
 
-    const fallbackSchedule = this.buildCityArchetypeSchedule(stage, count, roundIdx);
-    const schedule: Archetype3D[] =
+    const fallbackSchedule = this.buildCityArchetypeSchedule(stage, count, roundIdx, targetTier);
+    const rawSchedule: Archetype3D[] =
       Array.isArray(params.morphSequence) && params.morphSequence.length > 0
         ? Array.from({ length: count }, (_, idx) => {
             const rawArch = params.morphSequence![idx] ?? fallbackSchedule[idx];
             return rawArch === 'HERO_ARTIFACT_SYNTHESIS' ? 'SIGHTLINE_LOCK' : rawArch;
           })
         : fallbackSchedule;
+
+    // Enforce strict early-stage morph discipline:
+    //   • `ch` or `MIDDLE_SCHOOL`: 0 `CODEX_DUAL_RING`, max 1 forgiving `GAUNTLET_SHATTER` or `CALIBRATOR_DIAL`
+    //   • `HIGH_SCHOOL`: 0 `CODEX_DUAL_RING`
+    let earlySpecialCount = 0;
+    const schedule: Archetype3D[] = rawSchedule.map((arch) => {
+      if (
+        (stage.hub === 'ch' || targetTier === 'MIDDLE_SCHOOL' || targetTier === 'HIGH_SCHOOL') &&
+        arch === 'CODEX_DUAL_RING'
+      ) {
+        return 'SIGHTLINE_LOCK';
+      }
+      if (
+        (stage.hub === 'ch' || targetTier === 'MIDDLE_SCHOOL') &&
+        (arch === 'GAUNTLET_SHATTER' || arch === 'CALIBRATOR_DIAL')
+      ) {
+        if (earlySpecialCount >= 1) {
+          return 'SIGHTLINE_LOCK';
+        }
+        earlySpecialCount += 1;
+      }
+      return arch;
+    });
 
     const targetCurve: number[] = [];
     for (let i = 0; i < count; i++) {
@@ -2153,6 +2501,9 @@ export class ForgeEngine {
       domains: params.domains,
       excludeDomains: params.excludeDomains,
       archetypes: schedule,
+      difficultyPreset: targetTier,
+      mercyTierShift: 0,
+      bonusTimerSec,
       irtMin: effIrtMin,
       irtMax: effIrtMax,
       targetIrtCurve: targetCurve,
@@ -2462,14 +2813,18 @@ export class ForgeEngine {
     const schedule: Archetype3D[] = [];
     for (let i = 0; i < count; i++) {
       if (targetTier === 'MIDDLE_SCHOOL') {
-        // Keep Middle School mostly crisp SIGHTLINE_LOCK (~70%) with gentle True/False or Globe beats
-        if (count >= 4 && i % 3 === 2) {
+        // Keep Middle School mostly crisp SIGHTLINE_LOCK (~70%) with gentle True/False or Globe on slot 2
+        if (count >= 4 && i % 3 === 2 && i !== count - 1) {
           schedule.push(morphRotation[Math.floor(i / 3) % morphRotation.length]);
         } else {
           schedule.push('SIGHTLINE_LOCK');
         }
-      } else if (count >= 4 && i % 2 === 1) {
-        schedule.push(morphRotation[Math.floor(i / 2) % morphRotation.length]);
+      } else if (count >= 4 && i >= 2 && i !== count - 1 && i % 2 === 0) {
+        // Reserve slot 0 (opener), slot 1 (Clue Ladder), and final slot (Finale Category Picker) as Sightline,
+        // weaving special morphs cleanly on slots 2, 4, 6... (and slot 3 when count === 5)!
+        schedule.push(morphRotation[Math.floor((i - 2) / 2) % morphRotation.length]);
+      } else if (count === 5 && i === 3) {
+        schedule.push(morphRotation[1 % morphRotation.length]);
       } else {
         schedule.push('SIGHTLINE_LOCK');
       }
@@ -2689,7 +3044,7 @@ export class ForgeEngine {
    * General-purpose unified query engine across Tier-1 (`questions.json`),
    * Tier-2 (`domain_*.json` + `subcat_*.json` lazy shards), and Codex Synthesis.
    */
-  public async queryQuestionsAsync(req: ForgeQueryRequest): Promise<PrismQuestion[]> {
+  public async queryQuestionsAsync(req: ForgeQueryRequestWithMercy): Promise<PrismQuestion[]> {
     if (!this.initialized) {
       await this.init();
     }
@@ -2705,7 +3060,7 @@ export class ForgeEngine {
     return this.queryQuestions(req);
   }
 
-  public queryQuestions(req: ForgeQueryRequest): PrismQuestion[] {
+  public queryQuestions(req: ForgeQueryRequestWithMercy): PrismQuestion[] {
     const count = clamp(req.count, 1, 100);
     const respectSeen = req.respectSeenBitset ?? req.mode !== 'DAILY';
     const facetCount: 4 | 5 | 6 = req.facetCount ?? 4;
@@ -2717,12 +3072,44 @@ export class ForgeEngine {
         : sharedCryptoRng;
 
     const stage = req.hub ? getCampaignStageSpec(req.hub) : null;
-    const targetTier = presetToAcademicTier(req.difficultyPreset);
-    const baseTimer = targetTier
-      ? getAcademicTierSpec(targetTier).timerSec
-      : stage
-        ? stage.timerSec
-        : 18;
+    const mercyShift = Number.isFinite(req.mercyTierShift)
+      ? clamp(Math.trunc(req.mercyTierShift!), -2, 0)
+      : 0;
+    const bonusTimerSec = Number.isFinite(req.bonusTimerSec)
+      ? clamp(Math.round(req.bonusTimerSec!), 0, 20)
+      : 0;
+
+    const explicitTier = presetToAcademicTier(req.difficultyPreset);
+    const baseTier: AcademicDifficultyTier | null =
+      explicitTier ??
+      (req.mode === 'CAMPAIGN' && stage
+        ? resolveCampaignAcademicTier(stage.hub, req.roundIndex ?? 0, 0)
+        : null);
+    const targetTier: AcademicDifficultyTier | null =
+      baseTier && mercyShift !== 0
+        ? shiftAcademicDifficultyTier(baseTier, mercyShift)
+        : baseTier;
+
+    const nominalCampaignTier =
+      req.mode === 'CAMPAIGN' && stage
+        ? resolveCampaignAcademicTier(stage.hub, req.roundIndex ?? 0, 0)
+        : null;
+    const isMercyRelaxedTier = Boolean(
+      nominalCampaignTier &&
+        targetTier &&
+        getAcademicTierSpec(targetTier).rank < getAcademicTierSpec(nominalCampaignTier).rank,
+    );
+    const rawBaseTimer =
+      req.mode === 'CAMPAIGN' && stage
+        ? isMercyRelaxedTier && targetTier
+          ? Math.max(stage.timerSec, getAcademicTierSpec(targetTier).timerSec)
+          : stage.timerSec
+        : targetTier
+          ? getAcademicTierSpec(targetTier).timerSec
+          : stage
+            ? stage.timerSec
+            : 18;
+    const baseTimer = rawBaseTimer + bonusTimerSec;
 
     const taxFilter = this.resolveTaxonomyFilter(req.l1SubcategoryId, req.l2TopicId);
 
@@ -2787,12 +3174,23 @@ export class ForgeEngine {
 
     // 2. Fill remaining slots along difficulty curve & morph schedule
     for (let slot = results.length; slot < count; slot++) {
-      const wantArch: Archetype3D =
+      const rawArch: Archetype3D =
         req.archetypes && req.archetypes.length > 0
           ? req.archetypes[slot % req.archetypes.length]
           : 'SIGHTLINE_LOCK';
+      const wantArch: Archetype3D =
+        rawArch === 'CODEX_DUAL_RING' &&
+        (targetTier === 'MIDDLE_SCHOOL' || targetTier === 'HIGH_SCHOOL')
+          ? 'SIGHTLINE_LOCK'
+          : rawArch;
 
-      const { lo, hi, targetB } = this.resolveSlotDifficulty(req, slot, count, allowedDomains);
+      const { lo, hi, targetB } = this.resolveSlotDifficulty(
+        req,
+        slot,
+        count,
+        allowedDomains,
+        targetTier,
+      );
 
       // Per #118: Campaign (Geneva -> Apex) pulls strictly from Tier-1 human-curated
       // questions.json (20,165 items) FIRST before falling back to Tier-2 shards!
@@ -2940,15 +3338,14 @@ export class ForgeEngine {
 
       if (!rawPicked && wantArch === 'GLOBE_PIN_DROP') {
         // Fallback to non-quarantined Globe Pin-Drop matching targetTier (or adjacent) so Mensa never leaks easy landmarks!
-        const allowedGlobeTiers = targetTier
-          ? new Set<AcademicDifficultyTier>(getAdjacentAcademicTiers(targetTier))
-          : null;
         const globeFallback = [...this.visualGlobeRecords, ...INSTANT_COLD_OPEN_PRISMS].filter(
           (q) => {
             if (q.archetype !== 'GLOBE_PIN_DROP' || usedQids.has(q.qid)) return false;
-            if (allowedGlobeTiers) {
-              const d = scoreQuestionDifficulty(q);
-              if (!allowedGlobeTiers.has(d.difficultyTier)) return false;
+            if (
+              targetTier &&
+              !doesCandidateMatchDifficultyPreset(q, targetTier, { allowAdjacent: true })
+            ) {
+              return false;
             }
             return true;
           },
@@ -2970,11 +3367,17 @@ export class ForgeEngine {
       usedDomainsInBatch.add(domId);
       prevDomain = domId;
 
+      const gauntletBase =
+        targetTier === 'MIDDLE_SCHOOL'
+          ? 14
+          : targetTier === 'HIGH_SCHOOL'
+            ? 12
+            : clamp(Math.min(baseTimer, Number(finalRaw.gauntletExt?.windowSec ?? 10)), 8, 14);
       const timerForMorph =
         finalRaw.archetype === 'GAUNTLET_SHATTER'
-          ? clamp(Math.min(baseTimer, Number(finalRaw.gauntletExt?.windowSec ?? 10)), 6, 14)
+          ? clamp(gauntletBase + bonusTimerSec, 8, 22)
           : finalRaw.archetype === 'GLOBE_PIN_DROP'
-            ? Math.max(baseTimer, 20)
+            ? Math.max(baseTimer, 22)
             : baseTimer;
 
       let pq = normalizeToPrismQuestion(finalRaw, {
@@ -2982,6 +3385,13 @@ export class ForgeEngine {
         facetCount,
         shuffleSalt: rng.nextUint32(),
       });
+
+      if (pq.archetype === 'GAUNTLET_SHATTER' && pq.gauntlet) {
+        pq.gauntlet.windowSec = timerForMorph;
+      }
+      if (pq.archetype === 'CALIBRATOR_DIAL') {
+        applyForgivingCalibratorCones(pq, targetTier);
+      }
 
       if (pq.archetype === 'HERO_ARTIFACT_SYNTHESIS' && !pq.heroSynthesis) {
         pq = attachHeroSynthesisChain(pq, [], stage?.hub ?? 'global');
@@ -3302,23 +3712,18 @@ export class ForgeEngine {
 
     if (candidates.length === 0) return null;
 
-    const allowedTiersByPass: Array<ReadonlySet<AcademicDifficultyTier> | null> = opts.targetTier
-      ? [
-          new Set<AcademicDifficultyTier>([opts.targetTier]),
-          new Set<AcademicDifficultyTier>(getAdjacentAcademicTiers(opts.targetTier)),
-        ]
-      : [null];
+    const maxPasses = opts.targetTier ? 2 : 1;
 
-    for (let pass = 0; pass < allowedTiersByPass.length; pass++) {
-      const tierGate = allowedTiersByPass[pass];
+    for (let pass = 0; pass < maxPasses; pass++) {
       const scored: Array<{ q: RawQuestionRecord; s: number }> = [];
       for (const q of candidates) {
         const diff = scoreQuestionDifficulty(q);
-        if (tierGate && !tierGate.has(diff.difficultyTier)) continue;
         if (
-          pass === 0 &&
-          opts.targetTier === 'MIDDLE_SCHOOL' &&
-          diff.calibratedIrtB > -0.8
+          opts.targetTier &&
+          !doesCandidateMatchDifficultyPreset(q, opts.targetTier, {
+            allowAdjacent: pass > 0,
+            assessment: diff,
+          })
         ) {
           continue;
         }
@@ -3330,6 +3735,7 @@ export class ForgeEngine {
         }
         if (opts.preferVisual && q.visualPlate?.imageUrl) s += 30;
         if (q.subcatId?.trim().toLowerCase() === topicIdLow) s += 20;
+        if (opts.targetTier === 'MIDDLE_SCHOOL' && diff.breakdown.lexiconDelta <= -10) s += 16;
         s -= Math.abs(diff.calibratedIrtB - opts.targetB) * 12;
         s += opts.rng.nextFloat() * 14;
         scored.push({ q, s });
@@ -3350,32 +3756,42 @@ export class ForgeEngine {
     stage: CampaignStageSpec,
     count: number,
     roundIdx: number,
+    targetTier?: AcademicDifficultyTier,
   ): Archetype3D[] {
     const schedule = new Array<Archetype3D>(count).fill('SIGHTLINE_LOCK');
     const hasGlobe = (this.byArchetype.get('GLOBE_PIN_DROP')?.length ?? 0) > 0;
+    const blockCodex =
+      stage.hub === 'ch' ||
+      stage.hub === 'gb' ||
+      stage.hub === 'jp' ||
+      targetTier === 'MIDDLE_SCHOOL' ||
+      targetTier === 'HIGH_SCHOOL';
     const specials = stage.unlockedArchetypes.filter(
       (a) =>
         a !== 'SIGHTLINE_LOCK' &&
         a !== 'HERO_ARTIFACT_SYNTHESIS' &&
+        (!blockCodex || a !== 'CODEX_DUAL_RING') &&
         (a !== 'GLOBE_PIN_DROP' || hasGlobe),
     );
     if (specials.length === 0) {
       return schedule;
     }
-    if (stage.hub === 'ch') {
-      // Geneva weaves a welcoming Estimate / True-False beat so 5-Q rounds never repeat 5 plain MCQs!
+    if (stage.hub === 'ch' || targetTier === 'MIDDLE_SCHOOL') {
+      // Stage 1 Geneva & Middle School: 0 Codex, max 1 forgiving Gauntlet or Calibrator per round!
       if (count >= 4) {
         schedule[Math.min(count - 2, 2)] =
-          roundIdx % 2 === 0 ? 'CALIBRATOR_DIAL' : 'GAUNTLET_SHATTER';
+          roundIdx % 2 === 0 ? 'GAUNTLET_SHATTER' : 'CALIBRATOR_DIAL';
       }
       return schedule;
     }
     if (count >= 4) {
-      schedule[1] = specials[roundIdx % specials.length];
+      // Keep slot 0 (crisp opener) and slot 1 (Clue Ladder) as SIGHTLINE_LOCK;
+      // weave special morphs on slot 2 & slot 3 (and alternating beyond), leaving final slot for Finale Picker!
+      schedule[2] = specials[roundIdx % specials.length];
       if (count >= 5) {
         schedule[3] = specials[(roundIdx + 1) % specials.length];
       }
-      for (let extra = 5; extra < count; extra += 2) {
+      for (let extra = 5; extra < count - 1; extra += 2) {
         schedule[extra] = specials[(roundIdx + extra) % specials.length];
       }
     }
@@ -3392,6 +3808,8 @@ export class ForgeEngine {
       domains?: DomainId[];
       excludeDomains?: DomainId[];
       irtBRange?: [number, number];
+      mercyTierShift?: number;
+      bonusTimerSec?: number;
       facetCount?: 4 | 5 | 6;
       seed?: number;
     },
@@ -3400,20 +3818,25 @@ export class ForgeEngine {
     //   • Phase I (indices 0 .. p1Count-1): Shield Break (`p1Count = count >= 9 ? 4 : count >= 5 ? 2 : 1`)
     //   • Phase II (exact index === p1Count): 3-Step Chained `HERO_ARTIFACT_SYNTHESIS` Relic
     //   • Phase III (indices p1Count+1 .. count-1): Sovereign Sudden Death (interleaved morphs)
-    const effIrtMin =
-      params.irtBRange && Number.isFinite(params.irtBRange[0])
-        ? clamp(params.irtBRange[0], -1.85, 2.65)
-        : stage.irtMin;
-    const effIrtMax =
-      params.irtBRange && Number.isFinite(params.irtBRange[1])
-        ? clamp(Math.max(effIrtMin + 0.2, params.irtBRange[1]), -1.5, 2.85)
-        : stage.irtMax;
+    const mercyShift = Number.isFinite(params.mercyTierShift)
+      ? clamp(Math.trunc(params.mercyTierShift!), -2, 0)
+      : 0;
+    const bonusTimerSec = Number.isFinite(params.bonusTimerSec)
+      ? clamp(Math.round(params.bonusTimerSec!), 0, 20)
+      : 0;
+    const bossTier = resolveCampaignAcademicTier(stage.hub, 4, mercyShift);
+    const tierSpec = getAcademicTierSpec(bossTier);
+    const effIrtMin = tierSpec.irtMin;
+    const effIrtMax = tierSpec.irtMax;
     const facetCount = params.facetCount ?? 4;
     if (count <= 1) {
-      return [this.getBossArtifactSynthesis(stage.hub, facetCount)];
+      const soloRelic = this.getBossArtifactSynthesis(stage.hub, facetCount);
+      if (bonusTimerSec > 0) soloRelic.timerSec += bonusTimerSec;
+      return [soloRelic];
     }
 
     const relicBoss = this.getBossArtifactSynthesis(stage.hub, facetCount);
+    if (bonusTimerSec > 0) relicBoss.timerSec += bonusTimerSec;
     const reservedQids = new Set<number>([relicBoss.qid]);
     if (relicBoss.heroSynthesis) {
       for (const st of relicBoss.heroSynthesis.steps) {
@@ -3429,8 +3852,16 @@ export class ForgeEngine {
 
     const p1Schedule: Archetype3D[] = [];
     for (let i = 0; i < p1Count; i++) {
-      // Mix GAUNTLET_SHATTER + brisk SIGHTLINE_LOCK when p1Count > 2 (#176)
-      p1Schedule.push(p1Count > 2 && i % 2 === 1 ? 'SIGHTLINE_LOCK' : 'GAUNTLET_SHATTER');
+      // Mix GAUNTLET_SHATTER + brisk SIGHTLINE_LOCK when p1Count > 2 (#176); keep Stage 1 Geneva gentle!
+      p1Schedule.push(
+        bossTier === 'MIDDLE_SCHOOL'
+          ? i === 0
+            ? 'GAUNTLET_SHATTER'
+            : 'SIGHTLINE_LOCK'
+          : p1Count > 2 && i % 2 === 1
+            ? 'SIGHTLINE_LOCK'
+            : 'GAUNTLET_SHATTER',
+      );
     }
 
     const out: PrismQuestion[] = [];
@@ -3438,9 +3869,12 @@ export class ForgeEngine {
       count: p1Count,
       mode: 'CAMPAIGN',
       hub: stage.hub,
+      roundIndex: 4,
       archetypes: p1Schedule,
+      difficultyPreset: bossTier,
+      bonusTimerSec,
       irtMin: effIrtMin,
-      irtMax: Math.min(2.85, effIrtMax + 0.25),
+      irtMax: effIrtMax,
       domains: params.domains,
       excludeDomains: params.excludeDomains,
       excludeQids: Array.from(reservedQids),
@@ -3458,10 +3892,15 @@ export class ForgeEngine {
 
     const remaining = count - out.length;
     if (remaining > 0) {
-      const hasCodex = stage.unlockedArchetypes.includes('CODEX_DUAL_RING');
+      const hasCodex =
+        stage.unlockedArchetypes.includes('CODEX_DUAL_RING') &&
+        bossTier !== 'MIDDLE_SCHOOL' &&
+        bossTier !== 'HIGH_SCHOOL';
       const p3Cycle: Archetype3D[] = hasCodex
         ? ['CALIBRATOR_DIAL', 'SIGHTLINE_LOCK', 'CODEX_DUAL_RING', 'SIGHTLINE_LOCK', 'GAUNTLET_SHATTER', 'SIGHTLINE_LOCK']
-        : ['CALIBRATOR_DIAL', 'SIGHTLINE_LOCK', 'GAUNTLET_SHATTER', 'SIGHTLINE_LOCK'];
+        : bossTier === 'MIDDLE_SCHOOL'
+          ? ['SIGHTLINE_LOCK', 'CALIBRATOR_DIAL', 'SIGHTLINE_LOCK', 'SIGHTLINE_LOCK']
+          : ['CALIBRATOR_DIAL', 'SIGHTLINE_LOCK', 'GAUNTLET_SHATTER', 'SIGHTLINE_LOCK'];
       const p3Schedule: Archetype3D[] =
         remaining === 1
           ? ['SIGHTLINE_LOCK']
@@ -3473,8 +3912,10 @@ export class ForgeEngine {
         hub: stage.hub,
         roundIndex: 4,
         archetypes: p3Schedule,
-        irtMin: Math.min(2.65, effIrtMin + 0.15),
-        irtMax: Math.min(2.85, effIrtMax + 0.35),
+        difficultyPreset: bossTier,
+        bonusTimerSec,
+        irtMin: effIrtMin,
+        irtMax: effIrtMax,
         domains: params.domains,
         excludeDomains: params.excludeDomains,
         excludeQids: Array.from(reservedQids),
@@ -3490,11 +3931,24 @@ export class ForgeEngine {
   }
 
   private resolveSlotDifficulty(
-    req: ForgeQueryRequest,
+    req: ForgeQueryRequestWithMercy,
     slot: number,
     count: number,
     allowedDomains: ReadonlyArray<DomainId>,
+    resolvedTier?: AcademicDifficultyTier | null,
   ): { lo: number; hi: number; targetB: number } {
+    const frac = slot / Math.max(1, count - 1);
+    const hasMercyShift = Boolean(req.mercyTierShift && req.mercyTierShift < 0);
+
+    // When a fixed academic tier is active on Campaign (or Mercy shifted the tier down),
+    // anchor the IRT slot curve to that exact tier's band so stale caller curves never fight the tier!
+    if (resolvedTier && (hasMercyShift || req.mode === 'CAMPAIGN')) {
+      const spec = getAcademicTierSpec(resolvedTier);
+      const pad = Math.min(0.12, (spec.irtMax - spec.irtMin) * 0.14);
+      const tb = lerp(spec.irtMin + pad, spec.irtMax - pad, frac);
+      return { lo: spec.irtMin, hi: spec.irtMax, targetB: tb };
+    }
+
     if (req.targetIrtCurve && req.targetIrtCurve.length > 0) {
       const tb = req.targetIrtCurve[Math.min(slot, req.targetIrtCurve.length - 1)];
       return {
@@ -3505,13 +3959,11 @@ export class ForgeEngine {
     }
 
     if (req.irtMin !== undefined && req.irtMax !== undefined) {
-      const frac = slot / Math.max(1, count - 1);
       const tb = lerp(req.irtMin + 0.15, req.irtMax - 0.1, frac);
       return { lo: req.irtMin, hi: req.irtMax, targetB: tb };
     }
 
-    const frac = slot / Math.max(1, count - 1);
-    const preset = normalizeBriefingDifficultyPreset(req.difficultyPreset ?? 'ADAPTIVE');
+    const preset = resolvedTier ?? normalizeBriefingDifficultyPreset(req.difficultyPreset ?? 'ADAPTIVE');
     switch (preset) {
       case 'MIDDLE_SCHOOL':
       case 'EASY': {
@@ -3652,9 +4104,6 @@ export class ForgeEngine {
     if (candidateDomains.length === 0) return null;
 
     const tierSpec = targetTier ? getAcademicTierSpec(targetTier) : null;
-    const adjacentTierSet = targetTier
-      ? new Set<AcademicDifficultyTier>(getAdjacentAcademicTiers(targetTier))
-      : null;
 
     const getRowWindowBounds = (
       len: number,
@@ -3897,13 +4346,12 @@ export class ForgeEngine {
               continue;
             }
             if (targetTier) {
-              const diff = scoreQuestionDifficulty(decoded, {
-                shardRowRank01: cand.rowRank01,
-              });
-              if (pass === 0) {
-                if (diff.difficultyTier !== targetTier) continue;
-                if (targetTier === 'MIDDLE_SCHOOL' && diff.calibratedIrtB > -0.8) continue;
-              } else if (adjacentTierSet && !adjacentTierSet.has(diff.difficultyTier)) {
+              if (
+                !doesCandidateMatchDifficultyPreset(decoded, targetTier, {
+                  allowAdjacent: pass > 0,
+                  shardRowRank01: cand.rowRank01,
+                })
+              ) {
                 continue;
               }
             }
@@ -3939,9 +4387,11 @@ export class ForgeEngine {
           !usedQids.has(codexRaw.qid) &&
           (!respectSeen || !this.seenTracker.hasSeen(codexRaw.qid))
         ) {
-          if (targetTier) {
-            const diff = scoreQuestionDifficulty(codexRaw);
-            if (adjacentTierSet && !adjacentTierSet.has(diff.difficultyTier)) continue;
+          if (
+            targetTier &&
+            !doesCandidateMatchDifficultyPreset(codexRaw, targetTier, { allowAdjacent: true })
+          ) {
+            continue;
           }
           return codexRaw;
         }
@@ -4035,11 +4485,12 @@ export class ForgeEngine {
           continue;
         }
         if (targetTier) {
-          const diff = scoreQuestionDifficulty(decoded, { shardRowRank01: c.rowRank01 });
-          if (pass === 0) {
-            if (diff.difficultyTier !== targetTier) continue;
-            if (targetTier === 'MIDDLE_SCHOOL' && diff.calibratedIrtB > -0.8) continue;
-          } else if (adjacentTierSet && !adjacentTierSet.has(diff.difficultyTier)) {
+          if (
+            !doesCandidateMatchDifficultyPreset(decoded, targetTier, {
+              allowAdjacent: pass > 0,
+              shardRowRank01: c.rowRank01,
+            })
+          ) {
             continue;
           }
         }
@@ -4089,11 +4540,15 @@ export class ForgeEngine {
           opts.allowedDomains.length > 0 ? new Set<number>(opts.allowedDomains) : null;
         const regionalCands = hostPool.filter((q) => {
           if (opts.usedQids.has(q.qid)) return false;
+          if (opts.usedAnswersInBatch?.has(q.answerCorrect.trim().toLowerCase())) return false;
           if (q.archetype !== opts.wantArch) return false;
           if (allowDomSet && !allowDomSet.has(q.l0Domain)) return false;
           if (opts.respectSeen && this.seenTracker.hasSeen(q.qid)) return false;
-          if (q.irtB < opts.irtMin - 0.35 || q.irtB > opts.irtMax + 0.35) return false;
-          return isCleanShardCandidate(q);
+          if (!isCleanShardCandidate(q)) return false;
+          if (opts.targetTier) {
+            return doesCandidateMatchDifficultyPreset(q, opts.targetTier, { allowAdjacent: false });
+          }
+          return q.irtB >= opts.irtMin - 0.35 && q.irtB <= opts.irtMax + 0.35;
         });
         if (regionalCands.length > 0) {
           opts.rng.shuffleInPlace(regionalCands);
@@ -4143,9 +4598,6 @@ export class ForgeEngine {
       opts.regions && opts.regions.length > 0 ? new Set<string>(opts.regions) : null;
 
     const targetTier = opts.targetTier ?? null;
-    const adjacentTiers = targetTier
-      ? new Set<AcademicDifficultyTier>(getAdjacentAcademicTiers(targetTier))
-      : null;
 
     // Crypto-random full-pool / reservoir evaluation (NEVER walks sequential QIDs!)
     const maxSample = targetTier ? 1400 : 520;
@@ -4162,16 +4614,21 @@ export class ForgeEngine {
         if (!isCleanShardCandidate(q)) continue;
 
         let effectiveIrtB = q.irtB;
+        let householdBonus = 0;
         if (targetTier) {
           const diff = scoreQuestionDifficulty(q);
-          if (pass === 0) {
-            if (diff.difficultyTier !== targetTier) continue;
-            if (targetTier === 'MIDDLE_SCHOOL' && diff.calibratedIrtB > -0.8) continue;
-          } else if (adjacentTiers && !adjacentTiers.has(diff.difficultyTier)) {
-            // NEVER jump 2+ tiers (e.g. Middle School NEVER draws College/Graduate/Mensa!)
+          if (
+            !doesCandidateMatchDifficultyPreset(q, targetTier, {
+              allowAdjacent: pass > 0,
+              assessment: diff,
+            })
+          ) {
             continue;
           }
           effectiveIrtB = diff.calibratedIrtB;
+          if (targetTier === 'MIDDLE_SCHOOL' && diff.breakdown.lexiconDelta <= -10) {
+            householdBonus = 16;
+          }
         } else if (pass === 0 && (q.irtB < opts.irtMin || q.irtB > opts.irtMax)) {
           continue;
         }
@@ -4189,7 +4646,7 @@ export class ForgeEngine {
         }
 
         const dom = clamp(q.l0Domain, 0, 11) as DomainId;
-        let score = 0;
+        let score = householdBonus;
 
         if (opts.respectSeen) {
           if (!this.seenTracker.hasSeen(q.qid)) score += 52;

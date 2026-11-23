@@ -1,43 +1,90 @@
 // ============================================================================
-// WORLD'S SMARTEST — Career Analytics & Historical Right/Wrong Graphs (`#166` §2.1)
-// Renders 5 High-DPI Interactive Graphs (`tabular-nums`, `backdrop-filter: none`,
-// `390×844` portrait + `844×390` landscape + `1050×1080` square + desktop):
-//  1. Graph 1: Historical Right vs. Wrong Stacked Bar & Rolling Accuracy % Spline
-//  2. Graph 2: 12-Domain Right vs. Wrong Mastery Breakdown & Sovereign Polar Radar
-//  3. Graph 3: Global IRT ELO & Overclock Conviction Trajectory Line Chart
-//  4. Graph 4: 5-Morph & Peel-Tier Right/Wrong Matrix + 5-Bucket Speed Histogram
-//  5. Ledger Tape: Scrollable Recent Question History (Right/Wrong, Domain, Morph, Time, Pts)
+// WORLD'S SMARTEST — Career Analytics & Linked Interactive Graphs (`v3.0`)
+// 100% Live Multi-Dimensional Cross-Filtering across all 5 Sections:
+//  • Unified `AnalyticsFilterState` (range, domainId, subcatLabel, archetype,
+//    peelTier, outcome, speedBucket, bucketKey)
+//  • Active Drill-Down Breadcrumb & 3 Linked Action Buttons (`#ws-stats-filter-bar`)
+//  • Graph 1: Stacked Right/Wrong Bars & Rolling Accuracy % (clickable bars)
+//  • Graph 2: 12-Domain Polar Radar (clickable spokes/labels) + 12 Domain Rows
+//    + Live Subcategory Breakdown when a domain is active
+//  • Graph 3: Filtered IRT ELO Trajectory & Double-Down Conviction Telemetry
+//  • Graph 4A: Clickable 6-Morph Matrix & Plain-English Hint Tiers
+//    (`No Hint (3x)` · `Hint (2x)` · `50/50 (1x)`)
+//  • Graph 4B: Clickable 5-Bucket Speed Histogram SVG (`[data-speed-bucket]`)
+//  • Section 5: Live-Filtered Question Ledger Tape
+//  • Zero OS color emojis · Zero nested 4-sided boxes · Zero backdrop-filter ·
+//    Zero year commas · >= 44px touch targets · 0px overflow on 360x640..1280x800
 // ============================================================================
 
-import { SOVEREIGN_DOMAINS, getSovereignDomainMeta, type PassportSystem } from '../narrative';
+import {
+  SOVEREIGN_DOMAINS,
+  getSovereignDomainMeta,
+  type DomainId,
+  type PassportSystem,
+} from '../narrative';
 import type { StudioAudioEngine } from '../audio/StudioAudioEngine';
 import type { HapticsEngine } from '../audio/HapticsEngine';
 import {
   ALL_ANALYTICS_ARCHETYPES,
   SPEED_BUCKET_LABELS,
+  computeFilteredAnalyticsView,
+  computeSpeedBucketIdx,
+  createDefaultAnalyticsFilter,
+  isDoubleDownEvent,
   type AnalyticsArchetype,
+  type AnalyticsBarBucketPoint,
+  type AnalyticsEloPoint,
+  type AnalyticsFilterState,
+  type AnalyticsOutcomeFilter,
+  type AnalyticsSpeedBucketIndex,
   type AnalyticsTimeRange,
-  type CareerAnalyticsState,
   type CareerAnalyticsStore,
+  type FilteredAnalyticsView,
   type QuestionAnalyticsEvent,
 } from './CareerAnalyticsStore';
+import type { HonourAspectCategory } from './HallOfHonoursSystem';
+import type { SpacedRepetitionEngine } from './SpacedRepetitionEngine';
 import {
   attachMetaEscapeHandler,
   bindVaultJumperEvents,
   ensureMetaStylesInjected,
   escapeMetaHtml,
   renderVaultJumperHtml,
+  sanitizeMetaCopy,
   type MetaSuiteSectionId,
 } from './DiplomaticPassportBook';
+
+export interface PracticeSliceRequest {
+  domainId: number | null;
+  subcatLabel: string | null;
+  outcome: AnalyticsOutcomeFilter;
+  archetype?: AnalyticsArchetype | null;
+  peelTier?: 1 | 2 | 3 | null;
+  speedBucket?: AnalyticsSpeedBucketIndex | null;
+}
+
+export interface RelatedHonoursRequest {
+  aspect: HonourAspectCategory | 'ALL';
+  contextLabel?: string | null;
+  domainId: DomainId | null;
+  archetype: AnalyticsArchetype | null;
+  peelTier: 1 | 2 | 3 | null;
+  outcome: AnalyticsOutcomeFilter;
+  speedBucket: AnalyticsSpeedBucketIndex | null;
+}
 
 export interface CareerAnalyticsDashboardDependencies {
   store: CareerAnalyticsStore;
   passport: PassportSystem;
+  srsEngine?: SpacedRepetitionEngine;
   audio?: StudioAudioEngine;
   haptics?: HapticsEngine;
 }
 
 export interface CareerAnalyticsDashboardCallbacks {
+  onPracticeSlice?: (slice: PracticeSliceRequest) => void;
+  onOpenMissedCards?: (domainId: DomainId | null) => void;
+  onOpenRelatedHonours?: (req: RelatedHonoursRequest) => void;
   onNavigateSection?: (section: MetaSuiteSectionId) => void;
   onBack?: () => void;
   onClose?: () => void;
@@ -45,15 +92,13 @@ export interface CareerAnalyticsDashboardCallbacks {
 
 export interface CareerAnalyticsOpenOptions extends CareerAnalyticsDashboardCallbacks {
   initialRange?: AnalyticsTimeRange;
+  initialDomainId?: DomainId | number | null;
+  initialSubcatLabel?: string | null;
+  initialArchetype?: AnalyticsArchetype | null;
+  initialPeelTier?: 1 | 2 | 3 | null;
+  initialOutcome?: AnalyticsOutcomeFilter;
+  initialSpeedBucket?: AnalyticsSpeedBucketIndex | null;
   canGoBack?: boolean;
-}
-
-interface BarBucketPoint {
-  label: string;
-  sublabel: string;
-  right: number;
-  wrong: number;
-  rollingAccPct: number;
 }
 
 const ARCHETYPE_SHORT_LABELS: Record<AnalyticsArchetype, string> = {
@@ -65,72 +110,71 @@ const ARCHETYPE_SHORT_LABELS: Record<AnalyticsArchetype, string> = {
   GLOBE_PIN_DROP: 'Globe Pin-Drop',
 };
 
+const PEEL_TIER_LABELS: Record<'1' | '2' | '3', string> = {
+  '1': 'No Hint (3x)',
+  '2': 'Hint (2x)',
+  '3': '50/50 (1x)',
+};
+
+const PEEL_TIER_SHORT_TAGS: Record<1 | 2 | 3, string> = {
+  1: 'No Hint',
+  2: 'Hint',
+  3: '50/50',
+};
+
+const OUTCOME_LABELS: Record<AnalyticsOutcomeFilter, string> = {
+  ALL: 'All Answers',
+  RIGHT: 'Right Only',
+  WRONG: 'Wrong Only',
+  DOUBLE_DOWN: '2x Double Down',
+};
+
 function pctStr(right: number, wrong: number): string {
   const tot = right + wrong;
   if (tot <= 0) return '—';
   return `${((right / tot) * 100).toFixed(1)}%`;
 }
 
-function buildRangeBarSeries(
-  snap: CareerAnalyticsState,
-  range: AnalyticsTimeRange,
-): BarBucketPoint[] {
-  if (range === 'LAST_25') {
-    const recent = snap.events.slice(-25);
-    if (recent.length === 0 && snap.totalRight + snap.totalWrong > 0) {
-      const tot = snap.totalRight + snap.totalWrong;
-      return [
-        {
-          label: 'Career',
-          sublabel: `${snap.totalRight}R / ${snap.totalWrong}W`,
-          right: snap.totalRight,
-          wrong: snap.totalWrong,
-          rollingAccPct: Math.round((snap.totalRight / tot) * 100),
-        },
-      ];
-    }
-    let runR = 0;
-    let runTot = 0;
-    return recent.map((ev, idx) => {
-      runTot += 1;
-      if (ev.correct) runR += 1;
-      const dom = getSovereignDomainMeta(ev.domainId);
-      return {
-        label: `Q${idx + 1}`,
-        sublabel: `${dom.shortName} · ${(ev.responseTimeMs / 1000).toFixed(1)}s · ${ev.correct ? `+${ev.pointsDelta} PTS` : 'MISS'}`,
-        right: ev.correct ? 1 : 0,
-        wrong: ev.correct ? 0 : 1,
-        rollingAccPct: Math.round((runR / runTot) * 100),
-      };
-    });
-  }
+function clampDomainOrNull(raw?: DomainId | number | null): DomainId | null {
+  if (raw === undefined || raw === null) return null;
+  const n = Math.floor(Number(raw));
+  if (!Number.isFinite(n) || n < 0 || n > 11) return null;
+  return n as DomainId;
+}
 
-  const maxDays = range === 'DAYS_7' ? 7 : range === 'DAYS_30' ? 30 : 365;
-  const sortedKeys = Object.keys(snap.dailyBuckets).sort().slice(-maxDays);
-  let cumR = 0;
-  let cumTot = 0;
-  return sortedKeys.map((dk) => {
-    const b = snap.dailyBuckets[dk];
-    cumR += b.right;
-    cumTot += b.right + b.wrong;
-    const dayTot = b.right + b.wrong;
-    const dayAcc = dayTot > 0 ? Math.round((b.right / dayTot) * 100) : 0;
-    return {
-      label: dk.slice(5), // MM-DD
-      sublabel: `${dk}: ${b.right} Right · ${b.wrong} Wrong (${dayAcc}%) · +${b.pointsEarned.toLocaleString('en-US')} PTS`,
-      right: b.right,
-      wrong: b.wrong,
-      rollingAccPct: cumTot > 0 ? Math.round((cumR / cumTot) * 100) : dayAcc,
-    };
-  });
+function inferRelatedHonourAspect(filter: AnalyticsFilterState): HonourAspectCategory | 'ALL' {
+  if (filter.domainId !== null) return 'DOMAINS_POLYMATH';
+  if (filter.speedBucket !== null) return 'STREAK_SPEED';
+  if (
+    filter.archetype !== null ||
+    filter.peelTier !== null ||
+    filter.outcome === 'DOUBLE_DOWN'
+  ) {
+    return 'PRISM_OVERCLOCK';
+  }
+  return 'ALL';
+}
+
+function buildFilterContextLabel(filter: AnalyticsFilterState): string | null {
+  const parts: string[] = [];
+  if (filter.domainId !== null) {
+    parts.push(getSovereignDomainMeta(filter.domainId).name);
+  }
+  if (filter.subcatLabel) parts.push(filter.subcatLabel);
+  if (filter.archetype) parts.push(ARCHETYPE_SHORT_LABELS[filter.archetype]);
+  if (filter.peelTier !== null) parts.push(PEEL_TIER_LABELS[String(filter.peelTier) as '1' | '2' | '3']);
+  if (filter.outcome !== 'ALL') parts.push(OUTCOME_LABELS[filter.outcome]);
+  if (filter.speedBucket !== null) parts.push(SPEED_BUCKET_LABELS[filter.speedBucket]);
+  return parts.length > 0 ? parts.join(' · ') : null;
 }
 
 /**
  * Graph 1: High-DPI SVG Stacked Right/Wrong Bars + Golden Rolling Accuracy % Trend Curve.
+ * Every bar is clickable to filter the entire dashboard to that day or question!
  */
 function buildRightWrongTrendSvg(
-  series: readonly BarBucketPoint[],
-  selectedIdx: number | null,
+  series: readonly AnalyticsBarBucketPoint[],
+  activeBucketKey: string | null,
 ): string {
   const w = 560;
   const h = 192;
@@ -146,8 +190,8 @@ function buildRightWrongTrendSvg(
       <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block;">
         <rect x="${padL}" y="${padT}" width="${plotW}" height="${plotH}" rx="8" fill="rgba(12,17,28,0.65)" stroke="rgba(216,175,87,0.2)" stroke-dasharray="4 4"/>
         <text x="${w / 2}" y="${h / 2 - 7}" text-anchor="middle" fill="#b8b2a6" font-size="11.5" font-family="Inter,sans-serif">
-          <tspan x="${w / 2}" dy="0">Answer questions in any mode to populate</tspan>
-          <tspan x="${w / 2}" dy="17">Right/Wrong bars &amp; Rolling Accuracy</tspan>
+          <tspan x="${w / 2}" dy="0">No questions match this active filter slice</tspan>
+          <tspan x="${w / 2}" dy="17">Adjust filters or reset to inspect all history</tspan>
         </text>
       </svg>
     `;
@@ -155,7 +199,7 @@ function buildRightWrongTrendSvg(
 
   const maxCount = Math.max(1, ...series.map((p) => p.right + p.wrong));
   const stepX = plotW / series.length;
-  const barW = Math.max(5, Math.min(26, stepX * 0.66));
+  const barW = Math.max(6, Math.min(28, stepX * 0.66));
 
   const gridLines = [0, 0.5, 1.0]
     .map((frac) => {
@@ -164,8 +208,8 @@ function buildRightWrongTrendSvg(
       const cntLbl = Math.round(frac * maxCount);
       return `
         <line x1="${padL}" y1="${y.toFixed(1)}" x2="${w - padR}" y2="${y.toFixed(1)}" stroke="rgba(216,175,87,0.15)" stroke-dasharray="3 3"/>
-        <text x="${padL - 5}" y="${(y + 3).toFixed(1)}" text-anchor="end" fill="#7d8594" font-size="9" font-family="JetBrains Mono,monospace">${cntLbl}</text>
-        <text x="${w - padR + 5}" y="${(y + 3).toFixed(1)}" text-anchor="start" fill="#f2cf7e" font-size="9" font-family="JetBrains Mono,monospace">${pctLbl}</text>
+        <text x="${padL - 5}" y="${(y + 3).toFixed(1)}" text-anchor="end" fill="#a5afc2" font-size="9.5" font-family="JetBrains Mono,monospace">${cntLbl}</text>
+        <text x="${w - padR + 5}" y="${(y + 3).toFixed(1)}" text-anchor="start" fill="#f2cf7e" font-size="9.5" font-family="JetBrains Mono,monospace">${pctLbl}</text>
       `;
     })
     .join('');
@@ -180,27 +224,38 @@ function buildRightWrongTrendSvg(
     const wH = (pt.wrong / maxCount) * plotH;
     const rY = padT + plotH - rH;
     const wY = rY - wH;
-    const isSel = selectedIdx === idx;
+    const isSel = pt.isSelected || activeBucketKey === pt.bucketKey;
+    const dimmed = activeBucketKey !== null && !isSel;
 
     barsSvg.push(`
-      <g data-g1-idx="${idx}" style="cursor:pointer;">
-        <rect x="${(cx - stepX * 0.48).toFixed(1)}" y="${padT}" width="${(stepX * 0.96).toFixed(1)}" height="${plotH}" fill="${isSel ? 'rgba(242,207,126,0.10)' : 'transparent'}" rx="3"/>
+      <g
+        data-g1-idx="${idx}"
+        data-g1-bucket="${escapeMetaHtml(pt.bucketKey)}"
+        data-g1-right="${pt.right}"
+        data-g1-wrong="${pt.wrong}"
+        role="button"
+        tabindex="0"
+        aria-label="${escapeMetaHtml(`${pt.label}: ${pt.right} right, ${pt.wrong} wrong`)}"
+        style="cursor:pointer;opacity:${dimmed ? '0.32' : '1'};"
+      >
+        <rect x="${(cx - stepX * 0.48).toFixed(1)}" y="${padT}" width="${(stepX * 0.96).toFixed(1)}" height="${plotH + 18}" fill="${isSel ? 'rgba(242,207,126,0.15)' : 'transparent'}" rx="3"/>
         ${rH > 0 ? `<rect x="${(cx - barW / 2).toFixed(1)}" y="${rY.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(2, rH).toFixed(1)}" fill="#39d49a" rx="2"/>` : ''}
         ${wH > 0 ? `<rect x="${(cx - barW / 2).toFixed(1)}" y="${wY.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(2, wH).toFixed(1)}" fill="#e05263" rx="2"/>` : ''}
+        ${isSel ? `<line x1="${cx.toFixed(1)}" y1="${padT}" x2="${cx.toFixed(1)}" y2="${padT + plotH}" stroke="#f2cf7e" stroke-width="1.2" stroke-dasharray="2 2"/>` : ''}
       </g>
     `);
 
     const accY = padT + (1 - pt.rollingAccPct / 100) * plotH;
     linePts.push(`${cx.toFixed(1)},${accY.toFixed(1)}`);
     dotsSvg.push(
-      `<circle data-g1-idx="${idx}" cx="${cx.toFixed(1)}" cy="${accY.toFixed(1)}" r="${isSel ? '4.8' : '3.0'}" fill="#f2cf7e" stroke="#080b11" stroke-width="1.3" style="cursor:pointer;"/>`,
+      `<circle data-g1-idx="${idx}" data-g1-bucket="${escapeMetaHtml(pt.bucketKey)}" cx="${cx.toFixed(1)}" cy="${accY.toFixed(1)}" r="${isSel ? '5.2' : '3.2'}" fill="#f2cf7e" stroke="#080b11" stroke-width="1.3" style="cursor:pointer;opacity:${dimmed ? '0.4' : '1'};"/>`,
     );
 
     const showLabel =
       series.length <= 12 || idx === 0 || idx === series.length - 1 || idx % Math.ceil(series.length / 8) === 0;
     if (showLabel) {
       barsSvg.push(
-        `<text x="${cx.toFixed(1)}" y="${h - 8}" text-anchor="middle" fill="#b8b2a6" font-size="8.8" font-family="JetBrains Mono,monospace">${escapeMetaHtml(pt.label)}</text>`,
+        `<text data-g1-idx="${idx}" data-g1-bucket="${escapeMetaHtml(pt.bucketKey)}" x="${cx.toFixed(1)}" y="${h - 8}" text-anchor="middle" fill="${isSel ? '#f2cf7e' : '#b8b2a6'}" font-size="9" font-weight="${isSel ? '800' : '500'}" font-family="JetBrains Mono,monospace" style="cursor:pointer;">${escapeMetaHtml(pt.label)}</text>`,
       );
     }
   });
@@ -209,7 +264,7 @@ function buildRightWrongTrendSvg(
     <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block;">
       ${gridLines}
       ${barsSvg.join('')}
-      <polyline points="${linePts.join(' ')}" fill="none" stroke="#f2cf7e" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+      <polyline points="${linePts.join(' ')}" fill="none" stroke="#f2cf7e" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" pointer-events="none"/>
       ${dotsSvg.join('')}
     </svg>
   `;
@@ -217,11 +272,15 @@ function buildRightWrongTrendSvg(
 
 /**
  * Graph 2 (Left): Sovereign 12-Domain Polar Accuracy & ELO Radar.
+ * Clicking ANY spoke, vertex, or domain label toggles that exact domain filter!
  */
-function buildPolarDomainRadarSvg(snap: CareerAnalyticsState, focusedDomain: number): string {
+function buildPolarDomainRadarSvg(
+  view: FilteredAnalyticsView,
+  activeDomainId: DomainId | null,
+): string {
   const cx = 155;
   const cy = 135;
-  const maxR = 88;
+  const maxR = 86;
   const rings = [0.33, 0.66, 1.0];
 
   const grid = rings
@@ -237,69 +296,94 @@ function buildPolarDomainRadarSvg(snap: CareerAnalyticsState, focusedDomain: num
 
   const polyPts: string[] = [];
   const spokes: string[] = [];
+  const vertices: string[] = [];
   const labels: string[] = [];
+
+  const maxDomTotal = Math.max(1, ...view.byDomain.map((d) => d.right + d.wrong));
+  const isWrongOnly = view.filter.outcome === 'WRONG';
 
   for (let i = 0; i < 12; i++) {
     const a = (Math.PI * 2 * i) / 12 - Math.PI / 2;
     const cosA = Math.cos(a);
     const sinA = Math.sin(a);
-    const d = snap.byDomain[i];
+    const d = view.byDomain[i];
     const tot = d.right + d.wrong;
-    const eloNorm = Math.max(0.2, Math.min(1.0, (d.lastElo - 750) / 1350));
-    const accNorm = tot > 0 ? Math.max(0.18, d.right / tot) : eloNorm;
-    const rFrac = tot > 0 ? accNorm * 0.65 + eloNorm * 0.35 : eloNorm;
+    let rFrac: number;
+    if (isWrongOnly) {
+      // In Wrong Only slice, show relative miss concentration per domain cleanly
+      rFrac = tot > 0 ? Math.max(0.22, tot / maxDomTotal) : 0.1;
+    } else if (tot > 0) {
+      const accNorm = Math.max(0.18, d.right / tot);
+      const eloNorm = Math.max(0.2, Math.min(1.0, (d.lastElo - 750) / 1350));
+      rFrac = accNorm * 0.72 + eloNorm * 0.28;
+    } else {
+      rFrac = view.hasActiveDimensionFilter ? 0.12 : Math.max(0.18, Math.min(0.85, (d.lastElo - 750) / 1350));
+    }
 
     const px = cx + cosA * maxR * rFrac;
     const py = cy + sinA * maxR * rFrac;
     polyPts.push(`${px.toFixed(1)},${py.toFixed(1)}`);
 
-    const isFoc = i === focusedDomain;
-    spokes.push(
-      `<line x1="${cx}" y1="${cy}" x2="${(cx + cosA * maxR).toFixed(1)}" y2="${(cy + sinA * maxR).toFixed(1)}" stroke="${isFoc ? '#f2cf7e' : 'rgba(216,175,87,0.16)'}" stroke-width="${isFoc ? '1.6' : '1'}"/>`,
-    );
+    const isAct = activeDomainId === i;
+    const ox = cx + cosA * maxR;
+    const oy = cy + sinA * maxR;
+
+    spokes.push(`
+      <g data-g2-dom="${i}" data-radar-spoke="${i}" role="button" tabindex="0" aria-label="Filter by ${escapeMetaHtml(SOVEREIGN_DOMAINS[i].name)}" style="cursor:pointer;">
+        <line x1="${cx}" y1="${cy}" x2="${ox.toFixed(1)}" y2="${oy.toFixed(1)}" stroke="transparent" stroke-width="14"/>
+        <line x1="${cx}" y1="${cy}" x2="${ox.toFixed(1)}" y2="${oy.toFixed(1)}" stroke="${isAct ? '#f2cf7e' : 'rgba(216,175,87,0.18)'}" stroke-width="${isAct ? '2.2' : '1'}"/>
+      </g>
+    `);
+
+    vertices.push(`
+      <g data-g2-dom="${i}" style="cursor:pointer;">
+        <circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="12" fill="transparent"/>
+        <circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="${isAct ? '5.4' : tot > 0 ? '3.3' : '2.1'}" fill="${isAct ? '#f2cf7e' : isWrongOnly ? '#ff7c8c' : '#39d49a'}" stroke="#080b11" stroke-width="1.3"/>
+      </g>
+    `);
+
     const lx = cx + cosA * (maxR + 15);
     const ly = cy + sinA * (maxR + 14);
     const anchor = cosA < -0.25 ? 'end' : cosA > 0.25 ? 'start' : 'middle';
     labels.push(
-      `<text data-g2-dom="${i}" x="${lx.toFixed(1)}" y="${(ly + 3).toFixed(1)}" text-anchor="${anchor}" fill="${isFoc ? '#f2cf7e' : '#cfc9bc'}" font-size="8.8" font-weight="${isFoc ? '800' : '600'}" style="cursor:pointer;">${escapeMetaHtml(SOVEREIGN_DOMAINS[i].shortName)}</text>`,
+      `<text data-g2-dom="${i}" x="${lx.toFixed(1)}" y="${(ly + 3).toFixed(1)}" text-anchor="${anchor}" fill="${isAct ? '#f2cf7e' : tot > 0 ? '#ebe5d8' : '#8f99ad'}" font-size="${isAct ? '9.6' : '8.8'}" font-weight="${isAct ? '800' : '600'}" style="cursor:pointer;">${escapeMetaHtml(SOVEREIGN_DOMAINS[i].shortName)}</text>`,
     );
   }
+
+  const polyStroke = isWrongOnly ? '#e05263' : '#39d49a';
+  const polyFill = isWrongOnly ? 'rgba(224,82,99,0.22)' : 'rgba(57,212,154,0.22)';
 
   return `
     <svg viewBox="0 0 310 270" style="width:100%;max-width:295px;height:auto;display:block;margin:0 auto;">
       ${grid}
       ${spokes.join('')}
-      <polygon points="${polyPts.join(' ')}" fill="rgba(57,212,154,0.22)" stroke="#39d49a" stroke-width="2"/>
+      <polygon points="${polyPts.join(' ')}" fill="${polyFill}" stroke="${polyStroke}" stroke-width="2" pointer-events="none"/>
+      ${vertices.join('')}
       ${labels.join('')}
     </svg>
   `;
 }
 
 /**
- * Graph 3: Global IRT ELO Trajectory Line Chart (`800..2200`).
+ * Graph 3: Filtered Global/Slice IRT ELO Trajectory Line Chart.
  */
-function buildEloTrajectorySvg(snap: CareerAnalyticsState): string {
+function buildEloTrajectorySvg(eloPoints: readonly AnalyticsEloPoint[]): string {
   const w = 520;
   const h = 156;
-  const padX = 40;
+  const padX = 42;
   const padY = 18;
   const plotW = w - padX * 2;
   const plotH = h - padY * 2;
 
-  const eloPoints: Array<{ label: string; elo: number }> = [{ label: 'Start', elo: 1200 }];
-  if (snap.sessions.length > 0) {
-    for (const s of snap.sessions.slice(-24)) {
-      eloPoints.push({ label: s.mode.slice(0, 4), elo: s.eloAfter });
-    }
-  } else if (snap.events.length > 0) {
-    const step = Math.max(1, Math.floor(snap.events.length / 20));
-    for (let i = 0; i < snap.events.length; i += step) {
-      eloPoints.push({ label: `Q${i + 1}`, elo: snap.events[i].eloAfter });
-    }
-    const lastEv = snap.events[snap.events.length - 1];
-    eloPoints.push({ label: 'Now', elo: lastEv.eloAfter });
-  } else {
-    eloPoints.push({ label: 'Now', elo: snap.globalEloLatest });
+  if (eloPoints.length === 0) {
+    return `
+      <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block;">
+        <rect x="${padX}" y="${padY}" width="${plotW}" height="${plotH}" rx="8" fill="rgba(12,17,28,0.65)" stroke="rgba(86,212,245,0.2)" stroke-dasharray="4 4"/>
+        <text x="${w / 2}" y="${h / 2 + 4}" text-anchor="middle" fill="#b8b2a6" font-size="11" font-family="Inter,sans-serif">
+          No ELO trajectory points in this active slice
+        </text>
+      </svg>
+    `;
   }
 
   const minElo = Math.min(1000, ...eloPoints.map((p) => p.elo)) - 40;
@@ -319,15 +403,15 @@ function buildEloTrajectorySvg(snap: CareerAnalyticsState): string {
   return `
     <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block;">
       <line x1="${padX}" y1="${padY}" x2="${w - padX}" y2="${padY}" stroke="rgba(86,212,245,0.22)" stroke-dasharray="3 3"/>
-      <text x="${padX - 6}" y="${padY + 4}" text-anchor="end" fill="#56d4f5" font-size="9" font-family="JetBrains Mono,monospace">${Math.round(maxElo)}</text>
+      <text x="${padX - 6}" y="${padY + 4}" text-anchor="end" fill="#56d4f5" font-size="9.5" font-family="JetBrains Mono,monospace">${Math.round(maxElo)}</text>
       <line x1="${padX}" y1="${h - padY}" x2="${w - padX}" y2="${h - padY}" stroke="rgba(216,175,87,0.2)"/>
-      <text x="${padX - 6}" y="${h - padY + 3}" text-anchor="end" fill="#7d8594" font-size="9" font-family="JetBrains Mono,monospace">${Math.round(minElo)}</text>
+      <text x="${padX - 6}" y="${h - padY + 3}" text-anchor="end" fill="#a5afc2" font-size="9.5" font-family="JetBrains Mono,monospace">${Math.round(minElo)}</text>
       <polygon points="${area}" fill="rgba(86,212,245,0.14)"/>
       <polyline points="${poly}" fill="none" stroke="#56d4f5" stroke-width="2.3" stroke-linejoin="round"/>
       ${coords
         .map(
           (c, i) =>
-            i === coords.length - 1 || coords.length <= 12
+            i === coords.length - 1 || coords.length <= 16
               ? `<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="${i === coords.length - 1 ? '4.5' : '3'}" fill="${i === coords.length - 1 ? '#f2cf7e' : '#56d4f5'}" stroke="#080b11" stroke-width="1.2"/>`
               : '',
         )
@@ -337,22 +421,25 @@ function buildEloTrajectorySvg(snap: CareerAnalyticsState): string {
 }
 
 /**
- * Graph 4 (Right): 5-Bucket Response-Time Stacked Right/Wrong Histogram.
+ * Graph 4 (Right): Clickable 5-Bucket Response-Time Stacked Right/Wrong Histogram.
  */
-function buildSpeedHistogramSvg(snap: CareerAnalyticsState): string {
+function buildSpeedHistogramSvg(
+  view: FilteredAnalyticsView,
+  activeSpeedBucket: AnalyticsSpeedBucketIndex | null,
+): string {
   const w = 340;
-  const h = 158;
-  const padX = 24;
-  const padT = 18;
-  const padB = 28;
+  const h = 166;
+  const padX = 18;
+  const padT = 20;
+  const padB = 30;
   const plotW = w - padX * 2;
   const plotH = h - padT - padB;
 
-  const maxB = Math.max(1, ...snap.speedBuckets.map((b) => b.right + b.wrong));
+  const maxB = Math.max(1, ...view.speedBuckets.map((b) => b.right + b.wrong));
   const stepX = plotW / 5;
-  const barW = 34;
+  const barW = 36;
 
-  const cols = snap.speedBuckets
+  const cols = view.speedBuckets
     .map((b, idx) => {
       const cx = padX + stepX * (idx + 0.5);
       const rH = (b.right / maxB) * plotH;
@@ -360,12 +447,34 @@ function buildSpeedHistogramSvg(snap: CareerAnalyticsState): string {
       const rY = padT + plotH - rH;
       const wY = rY - wH;
       const tot = b.right + b.wrong;
+      const isSel = activeSpeedBucket === idx;
+      const dimmed = activeSpeedBucket !== null && !isSel;
+
       return `
-        <g>
+        <g
+          data-speed-bucket="${idx}"
+          data-speed-right="${b.right}"
+          data-speed-wrong="${b.wrong}"
+          data-speed-total="${tot}"
+          role="button"
+          tabindex="0"
+          aria-pressed="${isSel}"
+          aria-label="Speed bucket ${escapeMetaHtml(SPEED_BUCKET_LABELS[idx])}: ${b.right} right, ${b.wrong} wrong"
+          style="cursor:pointer;opacity:${dimmed ? '0.35' : '1'};"
+        >
+          <rect
+            x="${(cx - stepX * 0.45).toFixed(1)}"
+            y="${padT - 12}"
+            width="${(stepX * 0.9).toFixed(1)}"
+            height="${plotH + 34}"
+            rx="6"
+            fill="${isSel ? 'rgba(242,207,126,0.14)' : 'transparent'}"
+          />
           ${rH > 0 ? `<rect x="${(cx - barW / 2).toFixed(1)}" y="${rY.toFixed(1)}" width="${barW}" height="${Math.max(2, rH).toFixed(1)}" fill="#39d49a" rx="3"/>` : ''}
           ${wH > 0 ? `<rect x="${(cx - barW / 2).toFixed(1)}" y="${wY.toFixed(1)}" width="${barW}" height="${Math.max(2, wH).toFixed(1)}" fill="#e05263" rx="3"/>` : ''}
-          <text x="${cx.toFixed(1)}" y="${Math.max(11, (tot > 0 ? wY : padT + plotH) - 4).toFixed(1)}" text-anchor="middle" fill="#f6f2e9" font-size="9" font-family="JetBrains Mono,monospace">${tot}</text>
-          <text x="${cx.toFixed(1)}" y="${h - 9}" text-anchor="middle" fill="#b8b2a6" font-size="9.5" font-family="JetBrains Mono,monospace">${escapeMetaHtml(SPEED_BUCKET_LABELS[idx])}</text>
+          ${isSel ? `<line x1="${(cx - barW / 2).toFixed(1)}" y1="${padT + plotH + 2}" x2="${(cx + barW / 2).toFixed(1)}" y2="${padT + plotH + 2}" stroke="#f2cf7e" stroke-width="2.4"/>` : ''}
+          <text x="${cx.toFixed(1)}" y="${Math.max(12, (tot > 0 ? wY : padT + plotH) - 5).toFixed(1)}" text-anchor="middle" fill="${isSel ? '#f2cf7e' : '#f6f2e9'}" font-size="9.5" font-weight="700" font-family="JetBrains Mono,monospace">${tot}</text>
+          <text x="${cx.toFixed(1)}" y="${h - 9}" text-anchor="middle" fill="${isSel ? '#f2cf7e' : '#c8c2b6'}" font-size="9.5" font-weight="${isSel ? '800' : '500'}" font-family="JetBrains Mono,monospace">${escapeMetaHtml(SPEED_BUCKET_LABELS[idx])}</text>
         </g>
       `;
     })
@@ -387,9 +496,7 @@ export class CareerAnalyticsDashboardView {
   private unsubscribeStore: (() => void) | null = null;
   private callbacks: CareerAnalyticsOpenOptions = {};
 
-  private activeRange: AnalyticsTimeRange = 'LAST_25';
-  private selectedBarIdx: number | null = null;
-  private focusedDomainIdx = 0;
+  private filter: AnalyticsFilterState = createDefaultAnalyticsFilter('ALL_TIME');
 
   constructor(deps: CareerAnalyticsDashboardDependencies) {
     this.deps = deps;
@@ -400,18 +507,76 @@ export class CareerAnalyticsDashboardView {
     return this.modalBackdrop !== null || this.mountedContainer !== null;
   }
 
+  public getFilterState(): AnalyticsFilterState {
+    return { ...this.filter };
+  }
+
+  public setFilter(partial: Partial<AnalyticsFilterState>): void {
+    const nextDomain =
+      partial.domainId !== undefined ? clampDomainOrNull(partial.domainId) : this.filter.domainId;
+    const domainChanged = nextDomain !== this.filter.domainId;
+    const nextRange = partial.range ?? this.filter.range;
+    const rangeChanged = nextRange !== this.filter.range;
+
+    this.filter = {
+      range: nextRange,
+      domainId: nextDomain,
+      subcatLabel:
+        nextDomain === null
+          ? null
+          : partial.subcatLabel !== undefined
+            ? partial.subcatLabel
+            : domainChanged
+              ? null
+              : this.filter.subcatLabel,
+      archetype: partial.archetype !== undefined ? partial.archetype : this.filter.archetype,
+      peelTier: partial.peelTier !== undefined ? partial.peelTier : this.filter.peelTier,
+      outcome: partial.outcome ?? this.filter.outcome,
+      speedBucket: partial.speedBucket !== undefined ? partial.speedBucket : this.filter.speedBucket,
+      bucketKey:
+        partial.bucketKey !== undefined
+          ? partial.bucketKey
+          : rangeChanged
+            ? null
+            : this.filter.bucketKey,
+    };
+    if (this.isOpen()) {
+      this.rerender();
+    }
+  }
+
+  public resetFilters(): void {
+    this.filter = createDefaultAnalyticsFilter(this.filter.range);
+    if (this.isOpen()) {
+      this.rerender();
+    }
+  }
+
+  private applyInitialOptions(options: CareerAnalyticsOpenOptions): void {
+    const domainId = clampDomainOrNull(options.initialDomainId);
+    this.filter = {
+      range: options.initialRange ?? 'ALL_TIME',
+      domainId,
+      subcatLabel: domainId !== null ? options.initialSubcatLabel?.trim() || null : null,
+      archetype: options.initialArchetype ?? null,
+      peelTier: options.initialPeelTier ?? null,
+      outcome: options.initialOutcome ?? 'ALL',
+      speedBucket: options.initialSpeedBucket ?? null,
+      bucketKey: null,
+    };
+  }
+
   public open(options: CareerAnalyticsOpenOptions = {}): void {
     this.close();
     this.callbacks = options;
-    this.activeRange = options.initialRange ?? 'LAST_25';
-    this.selectedBarIdx = null;
+    this.applyInitialOptions(options);
     this.deps.store.syncAndBackfillFromProfile(this.deps.passport);
 
     const backdrop = document.createElement('div');
     backdrop.className = 'ws-meta-backdrop';
     backdrop.setAttribute('role', 'dialog');
     backdrop.setAttribute('aria-modal', 'true');
-    backdrop.setAttribute('aria-label', 'Career Stats & Historical Right/Wrong Graphs');
+    backdrop.setAttribute('aria-label', 'Career Stats & Linked Telemetry Graphs');
     backdrop.addEventListener('click', (ev) => {
       if (ev.target === backdrop) {
         this.handleClose();
@@ -431,7 +596,7 @@ export class CareerAnalyticsDashboardView {
   public mount(container: HTMLElement, options: CareerAnalyticsOpenOptions = {}): void {
     this.unmount();
     this.callbacks = options;
-    this.activeRange = options.initialRange ?? 'LAST_25';
+    this.applyInitialOptions(options);
     this.deps.store.syncAndBackfillFromProfile(this.deps.passport);
     this.mountedContainer = container;
     this.unsubscribeStore = this.deps.store.subscribe(() => {
@@ -482,26 +647,221 @@ export class CareerAnalyticsDashboardView {
   }
 
   private rerender(): void {
+    const prevScroll =
+      (this.modalBackdrop ?? this.mountedContainer)?.querySelector<HTMLElement>('.ws-meta-body-scroll')
+        ?.scrollTop ?? 0;
+
     if (this.modalBackdrop) {
       this.renderInto(this.modalBackdrop, true);
     } else if (this.mountedContainer) {
       this.renderInto(this.mountedContainer, false);
     }
+
+    const bodyEl = (this.modalBackdrop ?? this.mountedContainer)?.querySelector<HTMLElement>(
+      '.ws-meta-body-scroll',
+    );
+    if (bodyEl && prevScroll > 0) {
+      bodyEl.scrollTop = prevScroll;
+    }
+  }
+
+  private computeMissedCardsBadgeCount(view: FilteredAnalyticsView): number {
+    let srsDomainCount = 0;
+    if (this.deps.srsEngine) {
+      this.deps.srsEngine.syncFromPassportBookmarks(this.deps.passport.getSnapshot().bookmarks);
+      const cards = this.deps.srsEngine.getAllCards();
+      srsDomainCount =
+        this.filter.domainId !== null
+          ? cards.filter((c) => c.domainId === this.filter.domainId).length
+          : cards.length;
+    }
+    const sliceMissed = view.kpis.totalWrong;
+    return srsDomainCount > 0 ? srsDomainCount : sliceMissed;
+  }
+
+  private renderActiveFilterBar(view: FilteredAnalyticsView): string {
+    const chips: Array<{ key: string; label: string }> = [];
+    if (this.filter.domainId !== null) {
+      chips.push({ key: 'domain', label: getSovereignDomainMeta(this.filter.domainId).name });
+    }
+    if (this.filter.subcatLabel) {
+      chips.push({ key: 'subcat', label: this.filter.subcatLabel });
+    }
+    if (this.filter.outcome !== 'ALL') {
+      chips.push({ key: 'outcome', label: OUTCOME_LABELS[this.filter.outcome] });
+    }
+    if (this.filter.archetype) {
+      chips.push({ key: 'archetype', label: ARCHETYPE_SHORT_LABELS[this.filter.archetype] });
+    }
+    if (this.filter.peelTier !== null) {
+      chips.push({
+        key: 'peel',
+        label: PEEL_TIER_LABELS[String(this.filter.peelTier) as '1' | '2' | '3'],
+      });
+    }
+    if (this.filter.speedBucket !== null) {
+      chips.push({ key: 'speed', label: `Speed ${SPEED_BUCKET_LABELS[this.filter.speedBucket]}` });
+    }
+    if (this.filter.bucketKey !== null) {
+      const matchedBar = view.barSeries.find((b) => b.bucketKey === this.filter.bucketKey);
+      chips.push({
+        key: 'bucket',
+        label: matchedBar
+          ? `${this.filter.range === 'LAST_25' ? matchedBar.label : matchedBar.bucketKey}`
+          : this.filter.bucketKey,
+      });
+    }
+
+    const missedCount = this.computeMissedCardsBadgeCount(view);
+    const activeDomMeta =
+      this.filter.domainId !== null ? getSovereignDomainMeta(this.filter.domainId) : null;
+    const practiceTitle = activeDomMeta
+      ? `Practice ${activeDomMeta.shortName} Slice`
+      : 'Practice This Slice';
+
+    return `
+      <div
+        id="ws-stats-filter-bar"
+        class="ws-stats-filter-bar ${view.hasActiveDimensionFilter ? 'is-filtered' : ''}"
+        data-active-filter-count="${view.activeFilterCount}"
+        data-active-domain="${this.filter.domainId ?? ''}"
+      >
+        <div class="ws-stats-filter-chips-row">
+          ${
+            chips.length > 0
+              ? `
+                <span class="ws-stats-slice-summary">
+                  ✦ Slice: <strong>${view.kpis.totalAnswered}</strong> of ${view.rangeTotalCount} Q
+                </span>
+                ${chips
+                  .map(
+                    (ch) => `
+                      <button
+                        type="button"
+                        class="ws-stats-filter-chip"
+                        data-remove-filter="${ch.key}"
+                        aria-label="Remove ${escapeMetaHtml(ch.label)} filter"
+                      >
+                        <span>${escapeMetaHtml(ch.label)}</span>
+                        <span aria-hidden="true" style="color:var(--ivory-primary);font-weight:800;">✕</span>
+                      </button>
+                    `,
+                  )
+                  .join('')}
+                <button
+                  type="button"
+                  class="ws-stats-reset-btn"
+                  id="ws-stats-reset-filters"
+                  data-reset-filters="true"
+                >
+                  ↺ Reset All
+                </button>
+              `
+              : `
+                <span class="ws-stats-slice-summary">
+                  Showing all <strong>${view.kpis.totalAnswered}</strong> questions · Tap any domain, spoke, pill, or bar to cross-filter
+                </span>
+              `
+          }
+        </div>
+
+        <div class="ws-stats-linked-actions">
+          <button
+            type="button"
+            class="ws-meta-btn-gold ws-stats-action-cta"
+            id="ws-stats-practice-slice"
+            aria-label="${escapeMetaHtml(practiceTitle)}"
+          >
+            ▸ Practice This Slice
+          </button>
+          <button
+            type="button"
+            class="ws-meta-btn ws-stats-action-btn"
+            id="ws-stats-open-srs"
+            style="color:#8ee5ff;"
+          >
+            ✦ Review Missed Cards (${missedCount})
+          </button>
+          <button
+            type="button"
+            class="ws-meta-btn ws-stats-action-btn"
+            id="ws-stats-open-honours"
+            style="color:var(--gold-bright);"
+          >
+            ◆ Related Trophies
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  private renderSubcategoryBreakdown(view: FilteredAnalyticsView): string {
+    if (this.filter.domainId === null) return '';
+    const domMeta = getSovereignDomainMeta(this.filter.domainId);
+
+    return `
+      <div id="ws-stats-subcat-panel" class="ws-stats-subcat-panel" data-subcat-domain="${this.filter.domainId}">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;">
+          <span class="ws-meta-section-title" style="color:${domMeta.accentHex};">
+            ◆ Subcategory Breakdown · ${escapeMetaHtml(domMeta.name)}
+          </span>
+          ${
+            this.filter.subcatLabel
+              ? `<button type="button" class="ws-meta-inline-link" data-remove-filter="subcat" style="min-height:44px;padding:0 6px;">✕ Clear Subcategory</button>`
+              : `<span style="font-family:var(--font-mono);font-size:10.5px;color:#a5afc2;">Tap a topic to drill deeper</span>`
+          }
+        </div>
+        ${
+          view.subcategories.length > 0
+            ? `<div style="display:flex;flex-direction:column;">
+                ${view.subcategories
+                  .map((row) => {
+                    const isSel =
+                      this.filter.subcatLabel !== null &&
+                      this.filter.subcatLabel.toLowerCase() === row.subcatLabel.toLowerCase();
+                    const dimmed = this.filter.subcatLabel !== null && !isSel;
+                    return `
+                      <button
+                        type="button"
+                        data-subcat-filter="${escapeMetaHtml(row.subcatLabel)}"
+                        data-subcat-right="${row.right}"
+                        data-subcat-wrong="${row.wrong}"
+                        aria-pressed="${isSel}"
+                        class="ws-meta-row is-interactive ws-stats-row-btn ${isSel ? 'is-focused' : ''} ${dimmed ? 'is-dimmed' : ''}"
+                      >
+                        <span style="min-width:0;flex:0 1 138px;font-size:12px;font-weight:600;color:var(--ivory-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                          ${escapeMetaHtml(sanitizeMetaCopy(row.subcatLabel))}
+                        </span>
+                        <div style="flex:1 1 60px;min-width:36px;height:5px;border-radius:999px;background:rgba(224,82,99,0.38);overflow:hidden;">
+                          <div style="width:${row.accuracyPct}%;height:100%;background:#39d49a;"></div>
+                        </div>
+                        <span style="font-family:var(--font-mono);font-size:11px;color:#c8c2b6;white-space:nowrap;flex-shrink:0;">
+                          <strong style="color:#67ebb8;">${row.right}R</strong>·<strong style="color:#ff8a98;">${row.wrong}W</strong>
+                          <span style="color:#a5afc2;">(${row.accuracyPct}%)</span>
+                        </span>
+                      </button>
+                    `;
+                  })
+                  .join('')}
+              </div>`
+            : `<div style="padding:10px 0;font-size:12px;color:#a5afc2;">No questions recorded in ${escapeMetaHtml(domMeta.name)} for this filter slice yet.</div>`
+        }
+      </div>
+    `;
   }
 
   private renderInto(host: HTMLElement, isModal: boolean): void {
     const snap = this.deps.store.getSnapshot();
+    const view = computeFilteredAnalyticsView(snap, this.filter);
     const challengerName = this.deps.passport.getChallengerName();
-    const totalAnswered = snap.totalRight + snap.totalWrong;
-    const avgMs = totalAnswered > 0 ? snap.totalResponseMs / totalAnswered : 0;
-    const ocTotal = snap.overclock.overclockWins + snap.overclock.overclockMisses;
-    const ocWinPct = ocTotal > 0 ? `${((snap.overclock.overclockWins / ocTotal) * 100).toFixed(0)}%` : '—';
+    const { kpis } = view;
 
-    const barSeries = buildRangeBarSeries(snap, this.activeRange);
     const activeBarTooltip =
-      this.selectedBarIdx !== null && barSeries[this.selectedBarIdx]
-        ? barSeries[this.selectedBarIdx]
-        : barSeries[barSeries.length - 1] ?? null;
+      (this.filter.bucketKey !== null
+        ? view.barSeries.find((b) => b.bucketKey === this.filter.bucketKey)
+        : null) ??
+      view.barSeries[view.barSeries.length - 1] ??
+      null;
 
     const vaultJumperHtml = renderVaultJumperHtml('ANALYTICS', {
       isModal,
@@ -509,16 +869,22 @@ export class CareerAnalyticsDashboardView {
       canNavigate: Boolean(this.callbacks.onNavigateSection),
     });
 
-    const recentLedger: QuestionAnalyticsEvent[] = [...snap.events].reverse().slice(0, 35);
+    const recentLedger: QuestionAnalyticsEvent[] = view.ledgerEvents.slice(0, 50);
+    const ddWinPctStr = kpis.doubleDownWinPct !== null ? `${kpis.doubleDownWinPct}%` : '—';
+    const hasDomFilter = this.filter.domainId !== null;
+    const hasArchFilter = this.filter.archetype !== null;
+    const hasPeelFilter = this.filter.peelTier !== null;
+
+    const sliceSubtitle = buildFilterContextLabel(this.filter);
 
     host.innerHTML = `
-      <div class="ws-meta-shell">
+      <div class="ws-meta-shell" data-stats-filtered="${view.hasActiveDimensionFilter ? 'true' : 'false'}">
         <div class="ws-meta-topbar">
           <div class="ws-meta-topbar-left">
             <button type="button" class="ws-meta-back-btn" id="ws-stats-back" data-meta-back="true" aria-label="Back">← Back</button>
             <div class="ws-meta-topbar-titles">
               <h2 class="ws-meta-title">CAREER STATS</h2>
-              <div class="ws-meta-eyebrow">${escapeMetaHtml(challengerName)} · Right/Wrong &amp; IRT Telemetry</div>
+              <div class="ws-meta-eyebrow">${escapeMetaHtml(challengerName)} · ${escapeMetaHtml(sliceSubtitle ?? 'Linked Interactive Telemetry')}</div>
             </div>
           </div>
           <div class="ws-meta-topbar-right">
@@ -538,7 +904,7 @@ export class CareerAnalyticsDashboardView {
           )
             .map(
               ([id, lbl]) => `
-                <button type="button" role="tab" aria-selected="${this.activeRange === id}" class="ws-meta-underline-tab ${this.activeRange === id ? 'is-active' : ''}" data-range-tab="${id}">
+                <button type="button" role="tab" aria-selected="${this.filter.range === id}" class="ws-meta-underline-tab ${this.filter.range === id ? 'is-active' : ''}" data-range-tab="${id}">
                   ${lbl}
                 </button>
               `,
@@ -547,140 +913,213 @@ export class CareerAnalyticsDashboardView {
         </div>
 
         <div class="ws-meta-body-scroll">
-          <!-- Frameless Hairline KPI Strip (Zero Nested KPI Boxes!) -->
-          <div class="ws-meta-kpi-strip">
-            <div class="ws-meta-kpi-cell">
+          <!-- Clickable Outcome KPI Filter Pills -->
+          <div class="ws-meta-hscroll ws-stats-outcome-strip" role="group" aria-label="Filter by Outcome">
+            ${(
+              [
+                ['ALL', `All (${view.outcomeCounts.all})`],
+                ['RIGHT', `Right Only (${view.outcomeCounts.right})`],
+                ['WRONG', `Wrong Only (${view.outcomeCounts.wrong})`],
+                ['DOUBLE_DOWN', `2x Double Down (${view.outcomeCounts.doubleDown})`],
+              ] as const
+            )
+              .map(([oid, lbl]) => {
+                const isAct = this.filter.outcome === oid;
+                return `
+                  <button
+                    type="button"
+                    class="ws-meta-chip ws-stats-outcome-pill ${isAct ? 'is-active' : ''}"
+                    data-outcome-filter="${oid}"
+                    aria-pressed="${isAct}"
+                  >
+                    ${lbl}
+                  </button>
+                `;
+              })
+              .join('')}
+          </div>
+
+          <!-- Frameless Hairline KPI Strip (100% Live Recomputed from Filtered Slice!) -->
+          <div class="ws-meta-kpi-strip" id="ws-stats-kpi-strip" data-kpi-total="${kpis.totalAnswered}" data-kpi-right="${kpis.totalRight}" data-kpi-wrong="${kpis.totalWrong}">
+            <div class="ws-meta-kpi-cell" data-stats-kpi="rw">
               <span class="ws-meta-kpi-lbl">Right / Wrong</span>
               <span class="ws-meta-kpi-val">
-                <span style="color:var(--emerald-win);">${snap.totalRight}R</span>
-                <span style="color:var(--ivory-dim);font-weight:500;">·</span>
-                <span style="color:var(--crimson-alert);">${snap.totalWrong}W</span>
+                <span data-stats-right="${kpis.totalRight}" style="color:#67ebb8;">${kpis.totalRight}R</span>
+                <span style="color:#a5afc2;font-weight:500;">·</span>
+                <span data-stats-wrong="${kpis.totalWrong}" style="color:#ff8a98;">${kpis.totalWrong}W</span>
               </span>
             </div>
-            <div class="ws-meta-kpi-cell">
+            <div class="ws-meta-kpi-cell" data-stats-kpi="accuracy">
               <span class="ws-meta-kpi-lbl">Accuracy</span>
-              <span class="ws-meta-kpi-val" style="color:var(--gold-bright);">${pctStr(snap.totalRight, snap.totalWrong)}</span>
+              <span class="ws-meta-kpi-val" style="color:var(--gold-bright);">${kpis.accuracyPct !== null ? `${kpis.accuracyPct.toFixed(1)}%` : '—'}</span>
             </div>
-            <div class="ws-meta-kpi-cell">
+            <div class="ws-meta-kpi-cell" data-stats-kpi="streak">
               <span class="ws-meta-kpi-lbl">Streak</span>
-              <span class="ws-meta-kpi-val">${snap.currentStreak} <span style="font-size:12px;color:var(--gold-bright);">/ ${snap.bestStreak} BEST</span></span>
+              <span class="ws-meta-kpi-val">${kpis.currentStreak} <span style="font-size:11.5px;color:var(--gold-bright);">/ ${kpis.bestStreak} BEST</span></span>
             </div>
-            <div class="ws-meta-kpi-cell">
-              <span class="ws-meta-kpi-lbl">Global ELO</span>
-              <span class="ws-meta-kpi-val" style="color:var(--cyan-clue);">${snap.globalEloLatest} <span style="font-size:11px;color:var(--ivory-dim);">(${snap.globalEloPeak})</span></span>
+            <div class="ws-meta-kpi-cell" data-stats-kpi="elo">
+              <span class="ws-meta-kpi-lbl">${this.filter.domainId !== null ? 'Slice ELO' : 'Global ELO'}</span>
+              <span class="ws-meta-kpi-val" style="color:var(--cyan-clue);">${kpis.eloLatest} <span style="font-size:11px;color:#a5afc2;">(${kpis.eloPeak})</span></span>
             </div>
-            <div class="ws-meta-kpi-cell">
-              <span class="ws-meta-kpi-lbl">Speed · Overclock</span>
-              <span class="ws-meta-kpi-val" style="font-size:14.5px;">${totalAnswered > 0 ? `${(avgMs / 1000).toFixed(1)}s` : '—'} · <span style="color:var(--gold-bright);">${ocWinPct}</span></span>
+            <div class="ws-meta-kpi-cell" data-stats-kpi="speed">
+              <span class="ws-meta-kpi-lbl">Speed · 2x Win</span>
+              <span class="ws-meta-kpi-val" style="font-size:14.5px;">${kpis.totalAnswered > 0 ? `${(kpis.avgResponseMs / 1000).toFixed(1)}s` : '—'} · <span style="color:var(--gold-bright);">${ddWinPctStr}</span></span>
             </div>
           </div>
 
+          <!-- Active Drill-Down Breadcrumb & 3 Linked Action Buttons -->
+          ${this.renderActiveFilterBar(view)}
+
           <!-- Graph 1: Historical Right vs. Wrong Stacked Bars & Rolling Accuracy % -->
-          <div class="ws-meta-section">
+          <div class="ws-meta-section" id="ws-stats-section-1">
             <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px;">
               <h3 class="ws-meta-section-title">1. Right vs. Wrong &amp; Rolling Accuracy</h3>
-              <span style="font-family:var(--font-mono);font-size:10px;color:var(--ivory-muted);">
-                <span style="color:var(--emerald-win);">■ Right</span> · <span style="color:var(--crimson-alert);">■ Wrong</span> · <span style="color:var(--gold-bright);">— Accuracy %</span>
+              <span style="font-family:var(--font-mono);font-size:10.5px;color:#c8c2b6;">
+                <span style="color:#67ebb8;">■ Right</span> · <span style="color:#ff8a98;">■ Wrong</span> · <span style="color:var(--gold-bright);">— Accuracy %</span>
               </span>
             </div>
 
-            ${buildRightWrongTrendSvg(barSeries, this.selectedBarIdx)}
+            ${buildRightWrongTrendSvg(view.barSeries, this.filter.bucketKey)}
 
             ${
               activeBarTooltip
                 ? `<div class="ws-meta-note" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-family:var(--font-mono);font-size:11px;color:var(--ivory-primary);">
                     <span>[${escapeMetaHtml(activeBarTooltip.label)}] ${escapeMetaHtml(activeBarTooltip.sublabel)}</span>
-                    <span style="color:var(--gold-bright);font-weight:700;">Rolling ${activeBarTooltip.rollingAccPct}%</span>
+                    <span style="color:var(--gold-bright);font-weight:700;">Rolling ${activeBarTooltip.rollingAccPct}%${this.filter.bucketKey ? ' · Filtered (tap bar to clear)' : ' · Tap any bar to filter'}</span>
                   </div>`
                 : ''
             }
           </div>
 
-          <!-- Graph 2: 12-Domain Mastery Breakdown & Polar Radar -->
-          <div class="ws-meta-section">
-            <h3 class="ws-meta-section-title">2. 12-Domain Mastery &amp; Polar Radar</h3>
+          <!-- Graph 2: 12-Domain Mastery Breakdown, Polar Radar & Subcategory Drill-Down -->
+          <div class="ws-meta-section" id="ws-stats-section-2">
+            <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px;">
+              <h3 class="ws-meta-section-title">2. 12-Domain Mastery &amp; Polar Radar</h3>
+              <span style="font-family:var(--font-mono);font-size:10.5px;color:#a5afc2;">
+                ${hasDomFilter ? 'Tap active domain again to show all 12' : 'Tap any spoke or domain row to drill down'}
+              </span>
+            </div>
+
             <div class="ws-meta-two-col" style="align-items:center;">
               <div>
-                ${buildPolarDomainRadarSvg(snap, this.focusedDomainIdx)}
+                ${buildPolarDomainRadarSvg(view, this.filter.domainId)}
               </div>
               <div style="display:flex;flex-direction:column;">
                 ${SOVEREIGN_DOMAINS.map((dom, idx) => {
-                  const dc = snap.byDomain[idx];
+                  const dc = view.byDomain[idx];
                   const tot = dc.right + dc.wrong;
-                  const rPct = tot > 0 ? (dc.right / tot) * 100 : 50;
-                  const isFoc = idx === this.focusedDomainIdx;
+                  const rPct = tot > 0 ? (dc.right / tot) * 100 : 0;
+                  const isAct = idx === this.filter.domainId;
+                  const isDim = hasDomFilter && !isAct;
                   return `
-                    <div data-g2-dom="${idx}" class="ws-meta-row is-interactive ${isFoc ? 'is-focused' : ''}" style="padding:6px 4px;gap:8px;">
-                      <img src="./${escapeMetaHtml(dom.medallionUrl)}" alt="" style="width:18px;height:18px;object-fit:contain;flex-shrink:0;"/>
-                      <span style="width:74px;font-size:11.5px;font-weight:600;color:var(--ivory-primary);flex-shrink:0;">${escapeMetaHtml(dom.shortName)}</span>
-                      <div style="flex:1 1 auto;height:5px;border-radius:999px;background:rgba(224,82,99,0.38);overflow:hidden;">
-                        <div style="width:${tot > 0 ? rPct.toFixed(1) : '0'}%;height:100%;background:#39d49a;"></div>
-                      </div>
-                      <span style="font-family:var(--font-mono);font-size:10px;color:var(--ivory-muted);min-width:112px;text-align:right;flex-shrink:0;">
-                        <strong style="color:var(--emerald-win);">${dc.right}R</strong>·<strong style="color:var(--crimson-alert);">${dc.wrong}W</strong> <span style="color:var(--ivory-dim);">(${pctStr(dc.right, dc.wrong)})</span> · <strong style="color:${dom.accentHex};">${dc.lastElo}</strong>
+                    <button
+                      type="button"
+                      data-g2-dom="${idx}"
+                      data-g2-right="${dc.right}"
+                      data-g2-wrong="${dc.wrong}"
+                      aria-pressed="${isAct}"
+                      class="ws-meta-row is-interactive ws-stats-row-btn ${isAct ? 'is-focused' : ''} ${isDim ? 'is-dimmed' : ''}"
+                    >
+                      <span style="display:inline-flex;align-items:center;gap:7px;min-width:0;flex:0 1 104px;">
+                        <img src="./${escapeMetaHtml(dom.medallionUrl)}" alt="" style="width:18px;height:18px;object-fit:contain;flex-shrink:0;"/>
+                        <span style="font-size:12px;font-weight:${isAct ? '700' : '600'};color:${isAct ? 'var(--gold-bright)' : 'var(--ivory-primary)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeMetaHtml(dom.shortName)}</span>
                       </span>
-                    </div>
+                      <div style="flex:1 1 44px;min-width:28px;height:5px;border-radius:999px;background:${tot > 0 ? 'rgba(224,82,99,0.42)' : 'rgba(255,255,255,0.08)'};overflow:hidden;">
+                        <div style="width:${rPct.toFixed(1)}%;height:100%;background:#39d49a;"></div>
+                      </div>
+                      <span style="font-family:var(--font-mono);font-size:10.5px;color:#c8c2b6;white-space:nowrap;flex-shrink:0;">
+                        <strong style="color:#67ebb8;">${dc.right}R</strong>·<strong style="color:#ff8a98;">${dc.wrong}W</strong> <span style="color:#a5afc2;">(${pctStr(dc.right, dc.wrong)})</span> · <strong style="color:${dom.accentHex};">${dc.lastElo}</strong>
+                      </span>
+                    </button>
                   `;
                 }).join('')}
               </div>
             </div>
+
+            ${this.renderSubcategoryBreakdown(view)}
           </div>
 
-          <!-- Graph 3: Global IRT ELO & Overclock Conviction Trajectory -->
-          <div class="ws-meta-section">
-            <h3 class="ws-meta-section-title">3. Global IRT ELO &amp; Conviction Telemetry</h3>
+          <!-- Graph 3: Filtered IRT ELO & Double-Down Conviction Telemetry -->
+          <div class="ws-meta-section" id="ws-stats-section-3">
+            <h3 class="ws-meta-section-title">3. IRT ELO &amp; Conviction Telemetry${this.filter.domainId !== null ? ` · ${escapeMetaHtml(getSovereignDomainMeta(this.filter.domainId).shortName)}` : ''}</h3>
             <div class="ws-meta-two-col" style="align-items:center;">
               <div>
-                ${buildEloTrajectorySvg(snap)}
+                ${buildEloTrajectorySvg(view.eloSeries)}
               </div>
               <div style="display:flex;flex-direction:column;">
                 <div class="ws-meta-row" style="font-family:var(--font-mono);font-size:11.5px;">
-                  <span style="color:var(--ivory-muted);">Safe Lock Record</span>
-                  <span><strong style="color:var(--emerald-win);">${snap.overclock.safeLockWins}W</strong> – <strong style="color:var(--crimson-alert);">${snap.overclock.safeLockMisses}L</strong> <span style="color:var(--ivory-dim);">(${pctStr(snap.overclock.safeLockWins, snap.overclock.safeLockMisses)})</span></span>
+                  <span style="color:#c8c2b6;">Standard Lock Record</span>
+                  <span><strong style="color:#67ebb8;">${kpis.safeLockWins}W</strong> – <strong style="color:#ff8a98;">${kpis.safeLockMisses}L</strong> <span style="color:#a5afc2;">(${pctStr(kpis.safeLockWins, kpis.safeLockMisses)})</span></span>
                 </div>
-                <div class="ws-meta-row" style="font-family:var(--font-mono);font-size:11.5px;">
-                  <span style="color:var(--ivory-muted);">Overclock Wins</span>
-                  <span style="color:var(--gold-bright);font-weight:700;">${snap.overclock.overclockWins} Wins · ${snap.overclock.max6xWins} at 6.0x</span>
-                </div>
+                <button
+                  type="button"
+                  class="ws-meta-row is-interactive ws-stats-row-btn ${this.filter.outcome === 'DOUBLE_DOWN' ? 'is-focused' : ''}"
+                  data-outcome-filter="DOUBLE_DOWN"
+                  style="font-family:var(--font-mono);font-size:11.5px;"
+                >
+                  <span style="color:#c8c2b6;">2x Double-Down Wins</span>
+                  <span style="color:var(--gold-bright);font-weight:700;">${kpis.doubleDownWins}W – ${kpis.doubleDownMisses}L (${ddWinPctStr})</span>
+                </button>
                 <div class="ws-meta-row" style="font-family:var(--font-mono);font-size:11.5px;border-bottom:none;">
-                  <span style="color:var(--ivory-muted);">Backfires / 6.0x Streak</span>
-                  <span><strong style="color:var(--crimson-alert);">${snap.overclock.backfires}</strong> · Peak <strong style="color:var(--gold-bright);">${snap.overclock.bestConsecutiveMax6xWins}×</strong></span>
+                  <span style="color:#c8c2b6;">Backfires / Max Streak</span>
+                  <span><strong style="color:#ff8a98;">${kpis.backfires}</strong> · Peak <strong style="color:var(--gold-bright);">${kpis.bestConsecutiveMax6xWins}×</strong></span>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Graph 4: 5-Morph & Peel-Tier Matrix + Response-Time Histogram -->
-          <div class="ws-meta-section">
+          <!-- Graph 4: 6-Morph & Hint-Tier Matrix + Clickable Speed Histogram -->
+          <div class="ws-meta-section" id="ws-stats-section-4">
             <div class="ws-meta-two-col">
               <div style="display:flex;flex-direction:column;gap:8px;">
-                <h3 class="ws-meta-section-title">4A. 6-Morph &amp; Peel-Tier Matrix</h3>
+                <h3 class="ws-meta-section-title">4A. 6-Morph &amp; Hint-Tier Matrix</h3>
                 <div>
                   ${ALL_ANALYTICS_ARCHETYPES.map((arch) => {
-                    const c = snap.byArchetype[arch];
+                    const c = view.byArchetype[arch];
+                    const isAct = this.filter.archetype === arch;
+                    const isDim = hasArchFilter && !isAct;
                     return `
-                      <div class="ws-meta-row" style="padding:7px 2px;font-family:var(--font-mono);font-size:11px;">
-                        <span style="color:var(--ivory-primary);">${escapeMetaHtml(ARCHETYPE_SHORT_LABELS[arch])}</span>
-                        <span><strong style="color:var(--emerald-win);">${c.right}R</strong> · <strong style="color:var(--crimson-alert);">${c.wrong}W</strong> <span style="color:var(--ivory-dim);">(${pctStr(c.right, c.wrong)})</span></span>
-                      </div>
+                      <button
+                        type="button"
+                        data-arch-filter="${arch}"
+                        data-arch-right="${c.right}"
+                        data-arch-wrong="${c.wrong}"
+                        aria-pressed="${isAct}"
+                        class="ws-meta-row is-interactive ws-stats-row-btn ${isAct ? 'is-focused' : ''} ${isDim ? 'is-dimmed' : ''}"
+                        style="font-family:var(--font-mono);font-size:11px;"
+                      >
+                        <span style="color:${isAct ? 'var(--gold-bright)' : 'var(--ivory-primary)'};font-weight:${isAct ? '700' : '500'};">${escapeMetaHtml(ARCHETYPE_SHORT_LABELS[arch])}</span>
+                        <span><strong style="color:#67ebb8;">${c.right}R</strong> · <strong style="color:#ff8a98;">${c.wrong}W</strong> <span style="color:#a5afc2;">(${pctStr(c.right, c.wrong)})</span></span>
+                      </button>
                     `;
                   }).join('')}
                 </div>
-                <div class="ws-meta-kpi-strip" style="border-bottom:none;padding-bottom:0;padding-top:4px;">
+                <div class="ws-stats-peel-grid" role="group" aria-label="Filter by Hint Tier">
                   ${(
                     [
-                      ['1', '3.0x Cold'],
-                      ['2', '2.0x Clue'],
-                      ['3', '1.2x Blue'],
+                      [1, '1', PEEL_TIER_LABELS['1']],
+                      [2, '2', PEEL_TIER_LABELS['2']],
+                      [3, '3', PEEL_TIER_LABELS['3']],
                     ] as const
                   )
-                    .map(([tk, lbl]) => {
-                      const tc = snap.byPeelTier[tk];
+                    .map(([tierNum, tk, lbl]) => {
+                      const tc = view.byPeelTier[tk];
+                      const isAct = this.filter.peelTier === tierNum;
+                      const isDim = hasPeelFilter && !isAct;
                       return `
-                        <div class="ws-meta-kpi-cell" style="padding:4px 8px;">
-                          <span class="ws-meta-kpi-lbl" style="color:var(--gold-bright);">${lbl}</span>
-                          <span class="ws-meta-kpi-val" style="font-size:13px;">${tc.right}R / ${tc.wrong}W</span>
-                        </div>
+                        <button
+                          type="button"
+                          class="ws-stats-peel-btn ${isAct ? 'is-active' : ''} ${isDim ? 'is-dimmed' : ''}"
+                          data-peel-filter="${tierNum}"
+                          data-peel-right="${tc.right}"
+                          data-peel-wrong="${tc.wrong}"
+                          aria-pressed="${isAct}"
+                        >
+                          <span class="ws-meta-kpi-lbl" style="color:${isAct ? 'var(--gold-bright)' : '#e6d095'};">${lbl}</span>
+                          <span class="ws-meta-kpi-val" style="font-size:13px;">
+                            <span style="color:#67ebb8;">${tc.right}R</span> / <span style="color:#ff8a98;">${tc.wrong}W</span>
+                          </span>
+                        </button>
                       `;
                     })
                     .join('')}
@@ -688,43 +1127,83 @@ export class CareerAnalyticsDashboardView {
               </div>
 
               <div style="display:flex;flex-direction:column;gap:8px;">
-                <h3 class="ws-meta-section-title">4B. Response-Time Histogram</h3>
-                ${buildSpeedHistogramSvg(snap)}
+                <div style="display:flex;align-items:baseline;justify-content:space-between;gap:6px;">
+                  <h3 class="ws-meta-section-title">4B. Response-Time Histogram</h3>
+                  <span style="font-family:var(--font-mono);font-size:10.5px;color:#a5afc2;">
+                    ${this.filter.speedBucket !== null ? 'Tap active bar to clear' : 'Tap any bar to filter'}
+                  </span>
+                </div>
+                ${buildSpeedHistogramSvg(view, this.filter.speedBucket)}
               </div>
             </div>
           </div>
 
-          <!-- 5. Chronological Question Ledger Tape -->
-          <div class="ws-meta-section" style="border-bottom:none;">
-            <h3 class="ws-meta-section-title">5. Question Ledger Tape (Last ${recentLedger.length})</h3>
+          <!-- 5. Chronological Question Ledger Tape (Strictly Filtered!) -->
+          <div class="ws-meta-section" id="ws-stats-section-5" style="border-bottom:none;">
+            <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px;">
+              <h3 class="ws-meta-section-title">
+                5. Question Ledger Tape (${recentLedger.length}${view.filteredEvents.length > recentLedger.length ? ` of ${view.filteredEvents.length}` : ''})
+              </h3>
+              ${
+                view.hasActiveDimensionFilter
+                  ? `<span style="font-family:var(--font-mono);font-size:10.5px;color:var(--gold-bright);">Filtered Slice Only</span>`
+                  : ''
+              }
+            </div>
             ${
               recentLedger.length > 0
-                ? `<div style="display:flex;flex-direction:column;max-height:240px;overflow-y:auto;">
+                ? `<div id="ws-stats-ledger" style="display:flex;flex-direction:column;max-height:280px;overflow-y:auto;">
                     ${recentLedger
                       .map((ev) => {
                         const dom = getSovereignDomainMeta(ev.domainId);
                         const mult =
-                          ev.peelTier === 1 ? 3.0 : ev.peelTier === 2 ? 2.0 : 1.2;
-                        const effMult = (mult * (1 + ev.overclockCharge01)).toFixed(1);
+                          ev.peelTier === 1 ? 3.0 : ev.peelTier === 2 ? 2.0 : 1.0;
+                        const dd = isDoubleDownEvent(ev);
+                        const effMult = (mult * (dd ? 2 : 1)).toFixed(1);
+                        const speedIdx = ev.speedBucketIdx ?? computeSpeedBucketIdx(ev.responseTimeMs);
+                        const cleanPrompt = ev.promptSnippet ? sanitizeMetaCopy(ev.promptSnippet) : '';
+                        const cleanSubcat = ev.subcatLabel ? sanitizeMetaCopy(ev.subcatLabel) : '';
                         return `
-                          <div class="ws-meta-row" style="flex-wrap:wrap;padding:7px 4px;font-family:var(--font-mono);font-size:11px;box-shadow:inset 2px 0 0 ${ev.correct ? 'var(--emerald-win)' : 'var(--crimson-alert)'};padding-left:10px;">
-                            <span style="display:inline-flex;align-items:center;gap:7px;">
-                              <span style="font-weight:800;color:${ev.correct ? 'var(--emerald-win)' : 'var(--crimson-alert)'};">
-                                ${ev.correct ? '✓' : ev.backfired ? '✕!' : '✕'}
+                          <div
+                            class="ws-meta-row"
+                            data-ledger-domain="${ev.domainId}"
+                            data-ledger-correct="${ev.correct ? 'true' : 'false'}"
+                            data-ledger-arch="${ev.archetype}"
+                            data-ledger-peel="${ev.peelTier}"
+                            data-ledger-speed="${speedIdx}"
+                            data-ledger-date="${escapeMetaHtml(ev.dateKey)}"
+                            style="flex-direction:column;align-items:stretch;gap:4px;padding:9px 4px 9px 10px;font-family:var(--font-mono);font-size:11px;box-shadow:inset 2px 0 0 ${ev.correct ? 'var(--emerald-win)' : 'var(--crimson-alert)'};"
+                          >
+                            <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;">
+                              <span style="display:inline-flex;align-items:center;gap:6px;min-width:0;flex-wrap:wrap;">
+                                <span style="font-weight:800;color:${ev.correct ? '#67ebb8' : '#ff8a98'};">
+                                  ${ev.correct ? '✓' : ev.backfired ? '✕!' : '✕'}
+                                </span>
+                                <img src="./${escapeMetaHtml(dom.medallionUrl)}" alt="" style="width:16px;height:16px;object-fit:contain;flex-shrink:0;"/>
+                                <span style="color:var(--ivory-primary);font-weight:600;">${escapeMetaHtml(dom.shortName)}</span>
+                                ${cleanSubcat ? `<span style="color:${dom.accentHex};">· ${escapeMetaHtml(cleanSubcat)}</span>` : ''}
+                                <span style="color:#a5afc2;">· ${escapeMetaHtml(ARCHETYPE_SHORT_LABELS[ev.archetype])} · ${PEEL_TIER_SHORT_TAGS[ev.peelTier]}${dd ? ' · 2x' : ''}</span>
                               </span>
-                              <img src="./${escapeMetaHtml(dom.medallionUrl)}" alt="" style="width:16px;height:16px;object-fit:contain;"/>
-                              <span style="color:var(--ivory-primary);">${escapeMetaHtml(dom.shortName)}</span>
-                              <span style="color:var(--ivory-dim);">· ${escapeMetaHtml(ARCHETYPE_SHORT_LABELS[ev.archetype])}</span>
-                            </span>
-                            <span style="color:var(--ivory-muted);">
-                              ${(ev.responseTimeMs / 1000).toFixed(1)}s · ${effMult}x · <strong style="color:${ev.correct ? 'var(--gold-bright)' : 'var(--ivory-dim)'};">+${ev.pointsDelta.toLocaleString('en-US')} PTS</strong>
-                            </span>
+                              <span style="color:#c8c2b6;white-space:nowrap;">
+                                ${(ev.responseTimeMs / 1000).toFixed(1)}s · ${effMult}x · <strong style="color:${ev.correct ? 'var(--gold-bright)' : '#a5afc2'};">+${ev.pointsDelta.toLocaleString('en-US')} PTS</strong>
+                              </span>
+                            </div>
+                            ${
+                              cleanPrompt
+                                ? `<div style="font-family:var(--font-sans);font-size:11.5px;color:#c8c2b6;line-height:1.35;white-space:normal;">
+                                    ${escapeMetaHtml(cleanPrompt)}${ev.answerLabel ? ` — <strong style="color:var(--ivory-primary);">${escapeMetaHtml(sanitizeMetaCopy(ev.answerLabel))}</strong>` : ''}
+                                  </div>`
+                                : ''
+                            }
                           </div>
                         `;
                       })
                       .join('')}
                   </div>`
-                : `<div style="padding:18px 0;text-align:center;font-size:12.5px;color:var(--ivory-muted);">No individual question events logged in this browser session yet.</div>`
+                : `<div id="ws-stats-ledger-empty" style="padding:18px 0;text-align:center;font-size:12.5px;color:#c8c2b6;display:flex;flex-direction:column;align-items:center;gap:10px;">
+                    <span>${view.hasActiveDimensionFilter ? 'No recorded questions match every active filter in this slice.' : 'No individual question events logged in this browser session yet.'}</span>
+                    ${view.hasActiveDimensionFilter ? `<button type="button" class="ws-stats-reset-btn" data-reset-filters="true">↺ Reset All Filters</button>` : ''}
+                  </div>`
             }
           </div>
         </div>
@@ -747,37 +1226,171 @@ export class CareerAnalyticsDashboardView {
       },
     });
 
+    // Time range tabs (preserves domain/outcome/morph/speed filters; clears range-scoped bucketKey)
     host.querySelectorAll<HTMLButtonElement>('[data-range-tab]').forEach((btn) => {
       btn.addEventListener('click', () => {
         const next = btn.dataset.rangeTab as AnalyticsTimeRange | undefined;
-        if (!next || next === this.activeRange) return;
-        this.activeRange = next;
-        this.selectedBarIdx = null;
+        if (!next || next === this.filter.range) return;
         this.deps.haptics?.uiTap();
         this.deps.audio?.playSfx('ui_tap');
-        this.rerender();
+        this.setFilter({ range: next, bucketKey: null });
       });
     });
 
-    host.querySelectorAll<SVGElement>('[data-g1-idx]').forEach((el) => {
+    // Outcome filter pills (All / Right Only / Wrong Only / 2x Double Down)
+    host.querySelectorAll<HTMLElement>('[data-outcome-filter]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const next = btn.dataset.outcomeFilter as AnalyticsOutcomeFilter | undefined;
+        if (!next) return;
+        this.deps.haptics?.uiTap();
+        this.deps.audio?.playSfx('ui_tap');
+        const resolved: AnalyticsOutcomeFilter =
+          next !== 'ALL' && this.filter.outcome === next ? 'ALL' : next;
+        this.setFilter({ outcome: resolved });
+      });
+    });
+
+    // Removable active filter chips
+    host.querySelectorAll<HTMLButtonElement>('[data-remove-filter]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.removeFilter;
+        this.deps.haptics?.uiTap();
+        this.deps.audio?.playSfx('ui_tap');
+        if (key === 'domain') this.setFilter({ domainId: null, subcatLabel: null });
+        else if (key === 'subcat') this.setFilter({ subcatLabel: null });
+        else if (key === 'outcome') this.setFilter({ outcome: 'ALL' });
+        else if (key === 'archetype') this.setFilter({ archetype: null });
+        else if (key === 'peel') this.setFilter({ peelTier: null });
+        else if (key === 'speed') this.setFilter({ speedBucket: null });
+        else if (key === 'bucket') this.setFilter({ bucketKey: null });
+      });
+    });
+
+    // Reset All button(s)
+    host.querySelectorAll<HTMLButtonElement>('[data-reset-filters]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        this.deps.haptics?.uiTap();
+        this.deps.audio?.playSfx('ui_tap');
+        this.resetFilters();
+      });
+    });
+
+    // Linked Action 1: Practice This Slice
+    host.querySelector('#ws-stats-practice-slice')?.addEventListener('click', () => {
+      this.deps.haptics?.lockThunk();
+      this.deps.audio?.playSfx('vault_thunk');
+      this.callbacks.onPracticeSlice?.({
+        domainId: this.filter.domainId,
+        subcatLabel: this.filter.subcatLabel,
+        outcome: this.filter.outcome,
+        archetype: this.filter.archetype,
+        peelTier: this.filter.peelTier,
+        speedBucket: this.filter.speedBucket,
+      });
+    });
+
+    // Linked Action 2: Review Missed Cards (pre-filtered to domainId in Mastery Deck!)
+    host.querySelector('#ws-stats-open-srs')?.addEventListener('click', () => {
+      this.deps.haptics?.uiTap();
+      this.deps.audio?.playSfx('ui_tap');
+      if (this.callbacks.onOpenMissedCards) {
+        this.callbacks.onOpenMissedCards(this.filter.domainId);
+      } else {
+        this.callbacks.onNavigateSection?.('OBSERVATORY');
+      }
+    });
+
+    // Linked Action 3: Related Trophies (pre-filtered in Hall of Honours!)
+    host.querySelector('#ws-stats-open-honours')?.addEventListener('click', () => {
+      this.deps.haptics?.uiTap();
+      this.deps.audio?.playSfx('ui_tap');
+      if (this.callbacks.onOpenRelatedHonours) {
+        this.callbacks.onOpenRelatedHonours({
+          aspect: inferRelatedHonourAspect(this.filter),
+          contextLabel: buildFilterContextLabel(this.filter),
+          domainId: this.filter.domainId,
+          archetype: this.filter.archetype,
+          peelTier: this.filter.peelTier,
+          outcome: this.filter.outcome,
+          speedBucket: this.filter.speedBucket,
+        });
+      } else {
+        this.callbacks.onNavigateSection?.('HONOURS');
+      }
+    });
+
+    // Graph 1: Clickable bars & dots filter to that exact day/question (toggle!)
+    host.querySelectorAll<Element>('[data-g1-bucket]').forEach((el) => {
       el.addEventListener('click', () => {
-        const idx = Number(el.getAttribute('data-g1-idx'));
-        if (!Number.isFinite(idx)) return;
-        this.selectedBarIdx = idx;
+        const key = el.getAttribute('data-g1-bucket');
+        if (!key) return;
         this.deps.haptics?.spinTick();
         this.deps.audio?.playSfx('spin_tick');
-        this.rerender();
+        this.setFilter({ bucketKey: this.filter.bucketKey === key ? null : key });
       });
     });
 
+    // Graph 2: Clickable Polar Radar spokes/labels AND 12 Domain rows (toggle!)
     host.querySelectorAll<Element>('[data-g2-dom]').forEach((el) => {
       el.addEventListener('click', () => {
         const idx = Number(el.getAttribute('data-g2-dom'));
         if (!Number.isFinite(idx) || idx < 0 || idx > 11) return;
-        this.focusedDomainIdx = idx;
+        const domId = idx as DomainId;
         this.deps.haptics?.spinTick();
         this.deps.audio?.playSfx('spin_tick');
-        this.rerender();
+        this.setFilter({
+          domainId: this.filter.domainId === domId ? null : domId,
+          subcatLabel: null,
+        });
+      });
+    });
+
+    // Graph 2: Clickable Subcategory Breakdown rows (toggle!)
+    host.querySelectorAll<HTMLButtonElement>('[data-subcat-filter]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const lbl = btn.dataset.subcatFilter?.trim();
+        if (!lbl) return;
+        this.deps.haptics?.spinTick();
+        this.deps.audio?.playSfx('spin_tick');
+        const isSame =
+          this.filter.subcatLabel !== null &&
+          this.filter.subcatLabel.toLowerCase() === lbl.toLowerCase();
+        this.setFilter({ subcatLabel: isSame ? null : lbl });
+      });
+    });
+
+    // Graph 4A: Clickable Morph rows (toggle!)
+    host.querySelectorAll<HTMLButtonElement>('[data-arch-filter]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const arch = btn.dataset.archFilter as AnalyticsArchetype | undefined;
+        if (!arch) return;
+        this.deps.haptics?.spinTick();
+        this.deps.audio?.playSfx('spin_tick');
+        this.setFilter({ archetype: this.filter.archetype === arch ? null : arch });
+      });
+    });
+
+    // Graph 4A: Clickable Hint-Tier cells (toggle!)
+    host.querySelectorAll<HTMLButtonElement>('[data-peel-filter]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const raw = Number(btn.dataset.peelFilter);
+        if (raw !== 1 && raw !== 2 && raw !== 3) return;
+        const tier = raw as 1 | 2 | 3;
+        this.deps.haptics?.spinTick();
+        this.deps.audio?.playSfx('spin_tick');
+        this.setFilter({ peelTier: this.filter.peelTier === tier ? null : tier });
+      });
+    });
+
+    // Graph 4B: Clickable Speed Histogram SVG bars (toggle!)
+    host.querySelectorAll<Element>('[data-speed-bucket]').forEach((el) => {
+      el.addEventListener('click', () => {
+        const raw = Number(el.getAttribute('data-speed-bucket'));
+        if (!Number.isInteger(raw) || raw < 0 || raw > 4) return;
+        const sb = raw as AnalyticsSpeedBucketIndex;
+        this.deps.haptics?.spinTick();
+        this.deps.audio?.playSfx('spin_tick');
+        this.setFilter({ speedBucket: this.filter.speedBucket === sb ? null : sb });
       });
     });
   }

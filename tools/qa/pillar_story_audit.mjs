@@ -315,16 +315,33 @@ if (jp3post && /live signal jam/i.test(jp3post.text) && !/raw\.id === 'jp_3'/.te
   );
 }
 
-// CHECK 1N: Act 0 Cutscene #3 subtitle vs actual recorded audio (`cutscene_act0_3.mp3`)
+// CHECK 1N: Act 0 Cutscene #3 subtitle vs actual recorded audio (`cutscene_act0_3.mp3`) + Zero legacy v2 melodrama
 if (prologueDirSrc.includes('vanished five years ago')) {
   addFinding(
     'P1',
-    '@forge-number-hygiene',
+    '@story-thriller-writer',
     'VO_SUBTITLE_MISMATCH',
     'src/narrative/PrologueDirector.ts:156',
-    'Act 0 cutscene line `cutscene_act0_3` subtitle says "The last genius who sat in that chair vanished five years ago.", contradicting the actual recorded MP3 `cutscene_act0_3.mp3` ("Don\'t trust the cameras, rookie. The last person who won this chair vanished in 2019.") AND the 2026 timeline!',
-    'Align `PrologueDirector.ts:156` subtitle to match `cutscene_act0_3.mp3` ("Don\'t trust the cameras, rookie. The last person who won this chair vanished in 2019.").'
+    'Act 0 cutscene line `cutscene_act0_3` contains obsolete "vanished five years ago" text.',
+    'Align `PrologueDirector.ts` Slide 3 subtitle to the v3 Mara Sato script.'
   );
+}
+for (const [label, blob] of [
+  ['src/narrative/PrologueDirector.ts', prologueDirSrc],
+  ['src/cinema/MotionCinemaDirector.ts', motionCinemaSrc],
+  ['public/data/campaign_20hr.json', JSON.stringify(campaign)],
+  ['public/data/narrative_wave2.json', JSON.stringify(wave2)],
+]) {
+  if (/Don't trust the cameras/i.test(blob)) {
+    addFinding(
+      'P0',
+      '@story-thriller-writer',
+      'LEGACY_MELODRAMA_LEAK',
+      label,
+      `Legacy cheesy line "Don't trust the cameras" still present in ${label}!`,
+      'Replace with the v3 Dr. Mara Sato study warmup script.'
+    );
+  }
 }
 
 // CHECK 1O: Back-to-back duplicate line between `br_1_post` and `br_2_b1`
@@ -804,12 +821,16 @@ try {
     await camp.loadCampaignData('./data/campaign_20hr.json');
     await w2.loadWave2Data('./data/narrative_wave2.json');
 
-    // (1) Act 0 cutscene #3 subtitle verbatim matches cutout_act0_3.mp3
+    // (1) Act 0 cutscene #3 subtitle verbatim matches v3 Mara Sato cutscene_act0_3.mp3 (zero "Don't trust the cameras")
     const s0 = pro.startFromBeginning();
     assert.equal(
       s0.cutsceneSlides[2].subtitle,
-      "Don't trust the cameras, rookie. The last person who won this chair vanished in 2019."
+      "Relax, the Geneva warmup is the fun part. I'm Teo—audio engineer and official espresso smuggler. Mara built these first four questions just to see how you think—though... weird. Her private terminal just woke up the second you walked in."
     );
+    assert.equal(pro.getVettingQuestion(1).answerCorrect, 'Eiffel Tower');
+    assert.equal(pro.getVettingQuestion(2).answerCorrect, 'Saturn');
+    assert.equal(pro.getVettingQuestion(3).answerCorrect, 'Mona Lisa');
+    assert.equal(pro.getVettingQuestion(4).answerCorrect, '1969 CE');
     liveTsAssertionsPassed++;
 
     // (2) Challenger Name validation rejects "!!!" and accepts "Elena Voss"
@@ -819,11 +840,11 @@ try {
     assert.equal(pp.getChallengerName(), 'Elena Voss');
     liveTsAssertionsPassed++;
 
-    // (3) Geneva Q1 -> Q2 EXPLOIT_LEAK reveals leakedHintText & writes branchFlags.prologue_leak = EXPLOITED
+    // (3) Geneva Q1 -> Q2 EXPLOIT_LEAK reveals Mara's Saturn margin note & writes branchFlags.prologue_leak = EXPLOITED
     pro.recordQuestionCompleted({ questionIndex: 1, correct: true, spinUsed: true, peelTierUsed: 1, overclocked: false });
     const leakSnap = pro.chooseMirrorLeakAction('EXPLOIT_LEAK');
     assert.equal(leakSnap.leakedHintRevealed, true);
-    assert.ok(leakSnap.activeQuestion.leakedHintText.includes('Ptolemaic'));
+    assert.ok(leakSnap.activeQuestion.leakedHintText.includes('ringed in ice'));
     assert.equal(bb.getSnapshot().branchFlags.prologue_leak, 'EXPLOITED');
     liveTsAssertionsPassed++;
 

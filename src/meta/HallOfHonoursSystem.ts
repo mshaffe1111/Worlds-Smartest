@@ -84,6 +84,10 @@ export interface HonourV2StoresTelemetry {
   srsBox5Mastered: number;
   feedbackRatingsCount: number;
   offlinePacksCount: number;
+  clueLadderStep1Snipes: number;
+  mindGambitsActivated: number;
+  secondWindSaves: number;
+  finaleCategoryWins: number;
 }
 
 export interface HonourEvaluationContext {
@@ -499,6 +503,10 @@ function readV2StoresTelemetry(analytics: CareerAnalyticsState): HonourV2StoresT
   let srsBox5Mastered = 0;
   let feedbackRatingsCount = 0;
   let offlinePacksCount = analytics.feats.offlinePacksCached ?? 0;
+  let clueLadderStep1Snipes = analytics.feats.clueLadderStep1Snipes ?? 0;
+  let mindGambitsActivated = analytics.feats.mindGambitsActivated ?? 0;
+  let secondWindSaves = analytics.feats.secondWindSaves ?? 0;
+  let finaleCategoryWins = analytics.feats.finaleCategoryWins ?? 0;
 
   try {
     if (typeof localStorage !== 'undefined') {
@@ -567,6 +575,45 @@ function readV2StoresTelemetry(analytics: CareerAnalyticsState): HonourV2StoresT
           );
         }
       }
+
+      const rawGambits = localStorage.getItem('ws_mind_gambits_v3');
+      if (rawGambits) {
+        const parsed = JSON.parse(rawGambits) as {
+          gambitsUsedCount?: number;
+          firstClueSnipes?: number;
+          totalActivations?: number;
+          activations?: number;
+          usedCount?: number;
+          secondWindSaves?: number;
+          clueSnipes?: number;
+          finaleWins?: number;
+        } | null;
+        if (parsed && typeof parsed === 'object') {
+          mindGambitsActivated = Math.max(
+            mindGambitsActivated,
+            Math.floor(
+              Number(
+                parsed.gambitsUsedCount ??
+                  parsed.totalActivations ??
+                  parsed.activations ??
+                  parsed.usedCount,
+              ) || 0,
+            ),
+          );
+          secondWindSaves = Math.max(
+            secondWindSaves,
+            Math.floor(Number(parsed.secondWindSaves) || 0),
+          );
+          clueLadderStep1Snipes = Math.max(
+            clueLadderStep1Snipes,
+            Math.floor(Number(parsed.firstClueSnipes ?? parsed.clueSnipes) || 0),
+          );
+          finaleCategoryWins = Math.max(
+            finaleCategoryWins,
+            Math.floor(Number(parsed.finaleWins) || 0),
+          );
+        }
+      }
     }
   } catch {
     // Ignore restricted/corrupt localStorage cleanly
@@ -579,6 +626,10 @@ function readV2StoresTelemetry(analytics: CareerAnalyticsState): HonourV2StoresT
     srsBox5Mastered,
     feedbackRatingsCount,
     offlinePacksCount,
+    clueLadderStep1Snipes,
+    mindGambitsActivated,
+    secondWindSaves,
+    finaleCategoryWins,
   };
 }
 
@@ -1669,6 +1720,62 @@ export const HONOURS_V2_EXPANSION: readonly HonourDefinition[] = [
   },
 ];
 
+export const HONOURS_V3_EXPANSION: readonly HonourDefinition[] = [
+  {
+    id: 'v3_clue_ladder_first_snipe',
+    number: 85,
+    packId: 'v3.0',
+    title: 'First-Clue Sharpshooter',
+    description: 'Solve a 3-Step Clue Ladder question on Step 1 (500 PTS Genius Lead) without extra clues.',
+    tier: 'TIER_1_EASY',
+    aspect: 'PRISM_OVERCLOCK',
+    emblemKey: 'medal_tier1_bronze',
+    target: 1,
+    measure: (c) => c.v2Stores.clueLadderStep1Snipes,
+  },
+  {
+    id: 'v3_clue_ladder_apex_sniper',
+    number: 86,
+    packId: 'v3.0',
+    title: 'Apex Clue Sniper',
+    description: 'Land 5 First-Clue Snipes on Step 1 of the Clue Ladder across any game modes.',
+    tier: 'TIER_3_HARD',
+    aspect: 'STREAK_SPEED',
+    emblemKey: 'trophy_streak_chronometer',
+    target: 5,
+    measure: (c) => c.v2Stores.clueLadderStep1Snipes,
+  },
+  {
+    id: 'v3_mind_gambit_tactician',
+    number: 87,
+    packId: 'v3.0',
+    title: 'Tactical Gambit Debut',
+    description: 'Equip and activate a Tactical Mind Gambit (Second Wind, Specialist Swap, or Surge) in a live round.',
+    tier: 'TIER_1_EASY',
+    aspect: 'MODES_TRIALS',
+    emblemKey: 'medal_tier1_bronze',
+    target: 1,
+    measure: (c) =>
+      Math.max(c.v2Stores.mindGambitsActivated, c.v2Stores.secondWindSaves),
+  },
+  {
+    id: 'v3_mind_gambit_grandmaster',
+    number: 88,
+    packId: 'v3.0',
+    title: 'Grandmaster of Mind Gambits',
+    description: 'Activate 5 Tactical Mind Gambits or win 3 Finale Category Picker showdowns.',
+    tier: 'TIER_3_HARD',
+    aspect: 'DOMAINS_POLYMATH',
+    emblemKey: 'medal_tier3_gold',
+    target: 5,
+    measure: (c) =>
+      Math.max(
+        c.v2Stores.mindGambitsActivated,
+        Math.min(5, c.v2Stores.finaleCategoryWins * 2),
+      ),
+  },
+];
+
 export const HONOURS_EXPANSION_PACKS: ReadonlyArray<{
   packId: string;
   label: string;
@@ -1676,10 +1783,11 @@ export const HONOURS_EXPANSION_PACKS: ReadonlyArray<{
 }> = [
   { packId: 'v1.0', label: 'Core Meridian Circuit', honours: HONOURS_V1_CORE },
   { packId: 'v2.0', label: 'Commercial v2.0 Expansion', honours: HONOURS_V2_EXPANSION },
+  { packId: 'v3.0', label: 'Gameplay v3.0 Clue Ladder & Mind Gambits', honours: HONOURS_V3_EXPANSION },
 ];
 
 /**
- * Unified Hall of Honours Catalog (dynamically composed from Core + Expansion Packs = 84 Total).
+ * Unified Hall of Honours Catalog (dynamically composed from Core + Expansion Packs = 88 Total).
  */
 export const HALL_OF_HONOURS_CATALOG: readonly HonourDefinition[] = HONOURS_EXPANSION_PACKS.flatMap(
   (pack) => pack.honours,

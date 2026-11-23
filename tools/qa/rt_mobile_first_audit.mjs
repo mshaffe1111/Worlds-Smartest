@@ -19,9 +19,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const DIST_DIR = path.join(REPO_ROOT, 'dist');
-const SCREENSHOT_DIR =
-  'C:/Users/mshaf/.gemini/antigravity/brain/eb3f6b04-45f9-447f-a269-bde2ddd66a57';
-
 const CLI_ARGS = Object.fromEntries(
   process.argv
     .slice(2)
@@ -31,6 +28,11 @@ const CLI_ARGS = Object.fromEntries(
       return idx === -1 ? [a.slice(2), 'true'] : [a.slice(2, idx), a.slice(idx + 1)];
     }),
 );
+
+const SCREENSHOT_DIR =
+  CLI_ARGS.out ||
+  'C:/Users/mshaf/.gemini/antigravity/brain/eb3f6b04-45f9-447f-a269-bde2ddd66a57';
+fs.mkdirSync(SCREENSHOT_DIR, { recursive: true });
 
 const RUN_TAG = CLI_ARGS.tag || 'audit';
 const FILTER_VIEWPORTS = CLI_ARGS.viewports
@@ -1047,7 +1049,7 @@ function measureSheetModalInPage(kind) {
 
   const slotCount = document.querySelectorAll('[data-slot-load]').length;
   const dialogText = dialog ? (dialog.textContent || '') : '';
-  const has64TrophiesRef = /\/?\s*64\b|64\s+troph/i.test(dialogText);
+  const has64TrophiesRef = /\/?\s*(?:64|84|88)\b|(?:64|84|88)\s+troph/i.test(dialogText);
   const hasBaseballRef = /baseball/i.test(dialogText);
 
   return {
@@ -1425,6 +1427,21 @@ async function auditViewport(browser, baseUrl, vp) {
     if (!launchedBaseball) {
       result.failures.push(`[P0] Gameplay Live: Could not click #ws-cat-launch`);
     } else {
+      // v3.0 Pre-Round Readiness gate: cleanly advance into live questions if present!
+      const hitReadyOrLive = await browser.waitFor(
+        () =>
+          Boolean(document.querySelector('#ws-btn-start-round-questions')) ||
+          (document.querySelectorAll('[data-facet-idx]').length === 4 &&
+            Boolean(document.querySelector('#ws-btn-overclock'))),
+        null,
+        14000,
+      );
+      if (hitReadyOrLive) {
+        const hasReadyBtn = await browser.eval('Boolean(document.querySelector("#ws-btn-start-round-questions"))');
+        if (hasReadyBtn) {
+          await browser.clickSelector('#ws-btn-start-round-questions', { scroll: true });
+        }
+      }
       const gotGameplay = await browser.waitFor(
         () =>
           document.querySelectorAll('[data-facet-idx]').length === 4 &&
@@ -1483,6 +1500,29 @@ async function auditViewport(browser, baseUrl, vp) {
           null,
           2500,
         );
+        // v3.0 Mind Gambit `SECOND_WIND` free mulligan: if the first lock picked a wrong facet
+        // and Second Wind saved the player (`#ws-second-wind-banner` active), pick the next
+        // remaining unshattered facet and lock again via #ws-btn-overclock!
+        if (!reachedReveal) {
+          const savedBySecondWind = await browser.eval(
+            'Boolean(document.querySelector("#ws-second-wind-banner, .ws-facet-btn.is-mulligan-eliminated"))',
+          );
+          if (savedBySecondWind) {
+            await browser.evalFn(() => {
+              const active = [...document.querySelectorAll('[data-facet-idx]')].find(
+                (b) => !b.disabled && !b.classList.contains('is-mulligan-eliminated') && !b.classList.contains('is-shattered'),
+              );
+              if (active) active.click();
+            });
+            await sleep(160);
+            await browser.clickSelector('#ws-btn-overclock', { scroll: false, holdMs: 55 });
+            reachedReveal = await browser.waitFor(
+              () => Boolean(document.querySelector('#ws-btn-next-q') && document.querySelector('#ws-btn-bookmark')),
+              null,
+              2500,
+            );
+          }
+        }
         if (!reachedReveal) {
           result.failures.push(`[P0] Gameplay Reveal: Clicking #ws-btn-overclock FAILED to submit answer!`);
           // Fallback: double-click an active unshattered facet so we can still measure Reveal geometry

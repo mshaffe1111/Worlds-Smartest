@@ -87,9 +87,9 @@ const SHOT_SPECS: Record<CameraShotId, ShotSpec> = {
       objMaxY: 1.751,
       objHalfW: 0.47,
       objHalfD: 0.47,
-      topFrac: 0.125,
-      botFrac: 0.445,
-      maxWidthFrac: 0.82,
+      topFrac: 0.085,
+      botFrac: 0.37,
+      maxWidthFrac: 0.78,
     },
   },
   PRISM_PEEL_INSPECT: {
@@ -103,9 +103,9 @@ const SHOT_SPECS: Record<CameraShotId, ShotSpec> = {
       objMaxY: 1.751,
       objHalfW: 0.48,
       objHalfD: 0.48,
-      topFrac: 0.125,
-      botFrac: 0.445,
-      maxWidthFrac: 0.82,
+      topFrac: 0.085,
+      botFrac: 0.37,
+      maxWidthFrac: 0.78,
     },
   },
   CODEX_FOCUS: {
@@ -119,9 +119,9 @@ const SHOT_SPECS: Record<CameraShotId, ShotSpec> = {
       objMaxY: 1.558,
       objHalfW: 0.38,
       objHalfD: 0.38,
-      topFrac: 0.11,
-      botFrac: 0.445,
-      maxWidthFrac: 0.82,
+      topFrac: 0.085,
+      botFrac: 0.37,
+      maxWidthFrac: 0.78,
     },
   },
   CALIBRATOR_FOCUS: {
@@ -135,9 +135,9 @@ const SHOT_SPECS: Record<CameraShotId, ShotSpec> = {
       objMaxY: 1.845,
       objHalfW: 0.525,
       objHalfD: 0.29,
-      topFrac: 0.11,
-      botFrac: 0.445,
-      maxWidthFrac: 0.86,
+      topFrac: 0.085,
+      botFrac: 0.37,
+      maxWidthFrac: 0.82,
     },
   },
   GAUNTLET_FOCUS: {
@@ -151,9 +151,9 @@ const SHOT_SPECS: Record<CameraShotId, ShotSpec> = {
       objMaxY: 1.49,
       objHalfW: 0.41,
       objHalfD: 0.05,
-      topFrac: 0.12,
-      botFrac: 0.42,
-      maxWidthFrac: 0.84,
+      topFrac: 0.09,
+      botFrac: 0.36,
+      maxWidthFrac: 0.8,
     },
   },
   GLOBE_OVERWATCH: {
@@ -167,9 +167,9 @@ const SHOT_SPECS: Record<CameraShotId, ShotSpec> = {
       objMaxY: 1.87,
       objHalfW: 0.47,
       objHalfD: 0.47,
-      topFrac: 0.11,
-      botFrac: 0.455,
-      maxWidthFrac: 0.84,
+      topFrac: 0.085,
+      botFrac: 0.385,
+      maxWidthFrac: 0.82,
     },
   },
   TROPHY_HERO: {
@@ -485,14 +485,15 @@ export class CameraChoreographer {
           : 1.0;
 
       if (isGameplayShot) {
-        const leftPanePullback = THREE.MathUtils.clamp(
-          440 / Math.max(320, this.viewportHeight),
-          1.06,
-          1.22
+        // v3.0 Centered Stage Mandate (#3): Keep gameplay 3D Prism/Globe horizontally centered
+        // and lifted gently toward upper-center backdrop behind/above the centered question card!
+        const centeredPullback = THREE.MathUtils.clamp(
+          460 / Math.max(320, this.viewportHeight),
+          1.12,
+          1.32
         );
-        pullback = Math.max(pullback, leftPanePullback);
-        this.targetLook.x += 0.8;
-        this.targetLook.y += 0.02;
+        pullback = Math.max(pullback, centeredPullback);
+        this.targetLook.y -= this.activeShot === 'GLOBE_OVERWATCH' ? 0.2 : 0.12;
       } else if (isLeftPaneShowcase) {
         const showcasePullback = THREE.MathUtils.clamp(
           450 / Math.max(320, this.viewportHeight),
@@ -524,10 +525,11 @@ export class CameraChoreographer {
     }
 
     // 3. DESKTOP / TABLET LANDSCAPE (aspect >= 0.95 && vh > 520):
-    // Preserve classic regal studio framing; center Observatory/Trophy inside open left gallery pane (#273 #6)
+    // Center 3D Earth cleanly in upper-center above centered prompt on GLOBE_OVERWATCH,
+    // and elevate standard gameplay Prism subtly behind centered stage; keep Observatory/Trophy left-gallery pane.
     const halfVertRad = THREE.MathUtils.degToRad(spec.fov * 0.5);
     const horizSpanAtBase = 2 * baseDist * Math.tan(halfVertRad) * this.aspect;
-    const pullback =
+    let pullback =
       horizSpanAtBase < spec.minHorizontalSpan
         ? THREE.MathUtils.clamp(spec.minHorizontalSpan / Math.max(0.25, horizSpanAtBase), 1.0, 1.55)
         : 1.0;
@@ -537,6 +539,18 @@ export class CameraChoreographer {
       (this.activeShot === 'RELIC_OBSERVATORY' || this.activeShot === 'TROPHY_HERO')
     ) {
       this.targetLook.x += 0.36;
+    } else if (this.activeShot === 'GLOBE_OVERWATCH') {
+      pullback = Math.max(pullback, 1.12);
+      this.targetLook.y -= 0.22;
+    } else if (
+      this.activeShot === 'PRISM_STANDARD' ||
+      this.activeShot === 'PRISM_PEEL_INSPECT' ||
+      this.activeShot === 'CODEX_FOCUS' ||
+      this.activeShot === 'CALIBRATOR_FOCUS' ||
+      this.activeShot === 'GAUNTLET_FOCUS'
+    ) {
+      pullback = Math.max(pullback, 1.08);
+      this.targetLook.y -= 0.14;
     }
 
     this.targetPos.copy(this.targetLook).addScaledVector(rawOffset, pullback);
