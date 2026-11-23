@@ -13,11 +13,11 @@
       "category": "persona_stamp",
       "venue": "ch",
       "expression": "neutral",
-      "duration_s": 7.65,
-      "size_bytes": 61484,
+      "duration_s": 10.29,
+      "size_bytes": 82590,
       "lufs": -16.1,
-      "true_peak_db": -2.5,
-      "text": "High risk, fearless Overclocks, zero hesitation. Your Meridian Passport is stamped: The Maverick."
+      "true_peak_db": -3.5,
+      "text": "Fearless double-downs, sharp instinct, zero hesitation. Mara would have loved you. Your Meridian Passport is stamped: The Maverick."
     },
     {
       "id": "vance_persona_diplomat",
@@ -28,11 +28,11 @@
       "category": "persona_stamp",
       "venue": "ch",
       "expression": "neutral",
-      "duration_s": 8.1,
-      "size_bytes": 65036,
+      "duration_s": 10.21,
+      "size_bytes": 81964,
       "lufs": -16.4,
-      "true_peak_db": -2.4,
-      "text": "Measured judgment, strategic alliances, composure under fire. Your Meridian Passport is stamped: The Diplomat."
+      "true_peak_db": -3.4,
+      "text": "Warm composure, clever diplomacy, calm under the lights. Mara would have loved you. Your Meridian Passport is stamped: The Diplomat."
     },
     {
       "id": "vance_persona_analyst",
@@ -43,11 +43,11 @@
       "category": "persona_stamp",
       "venue": "ch",
       "expression": "neutral",
-      "duration_s": 8.33,
-      "size_bytes": 66917,
-      "lufs": -16.1,
-      "true_peak_db": -2.6,
-      "text": "Methodical clue-peeling, surgical precision, zero wasted motion. Your Meridian Passport is stamped: The Analyst."
+      "duration_s": 10.45,
+      "size_bytes": 83844,
+      "lufs": -16.0,
+      "true_peak_db": -3.4,
+      "text": "Patient deduction, smart use of clues, zero wasted motion. Mara would have loved you. Your Meridian Passport is stamped: The Analyst."
     },
     {
       "id": "vance_persona_prodigy",
@@ -58,11 +58,11 @@
       "category": "persona_stamp",
       "venue": "ch",
       "expression": "intense",
-      "duration_s": 8.52,
-      "size_bytes": 68380,
-      "lufs": -16.3,
-      "true_peak_db": -2.4,
-      "text": "Cold instinct at three-point-zero, razor accuracy, unshakable nerve. Your Meridian Passport is stamped: The Prodigy."
+      "duration_s": 9.82,
+      "size_bytes": 78829,
+      "lufs": -16.6,
+      "true_peak_db": -3.2,
+      "text": "Effortless precision, razor speed, unshakable poise. Mara would have loved you. Your Meridian Passport is stamped: The Prodigy."
     },
     {
       "id": "london_lindqvist_offer_1",
@@ -1035,11 +1035,11 @@
       "category": "persona_stamp",
       "venue": "ch",
       "expression": "neutral",
-      "duration_s": 7.65,
-      "size_bytes": 61484,
+      "duration_s": 10.29,
+      "size_bytes": 82590,
       "lufs": -16.1,
-      "true_peak_db": -2.5,
-      "text": "High risk, fearless Overclocks, zero hesitation. Your Meridian Passport is stamped: The Maverick."
+      "true_peak_db": -3.5,
+      "text": "Fearless double-downs, sharp instinct, zero hesitation. Mara would have loved you. Your Meridian Passport is stamped: The Maverick."
     },
     "vance_persona_diplomat": {
       "id": "vance_persona_diplomat",
@@ -1050,11 +1050,11 @@
       "category": "persona_stamp",
       "venue": "ch",
       "expression": "neutral",
-      "duration_s": 8.1,
-      "size_bytes": 65036,
+      "duration_s": 10.21,
+      "size_bytes": 81964,
       "lufs": -16.4,
-      "true_peak_db": -2.4,
-      "text": "Measured judgment, strategic alliances, composure under fire. Your Meridian Passport is stamped: The Diplomat."
+      "true_peak_db": -3.4,
+      "text": "Warm composure, clever diplomacy, calm under the lights. Mara would have loved you. Your Meridian Passport is stamped: The Diplomat."
     },
     "vance_persona_analyst": {
       "id": "vance_persona_analyst",
@@ -1065,11 +1065,11 @@
       "category": "persona_stamp",
       "venue": "ch",
       "expression": "neutral",
-      "duration_s": 8.33,
-      "size_bytes": 66917,
-      "lufs": -16.1,
-      "true_peak_db": -2.6,
-      "text": "Methodical clue-peeling, surgical precision, zero wasted motion. Your Meridian Passport is stamped: The Analyst."
+      "duration_s": 10.45,
+      "size_bytes": 83844,
+      "lufs": -16.0,
+      "true_peak_db": -3.4,
+      "text": "Patient deduction, smart use of clues, zero wasted motion. Mara would have loved you. Your Meridian Passport is stamped: The Analyst."
     },
     "vance_persona_prodigy": {
       "id": "vance_persona_prodigy",
@@ -1080,11 +1080,11 @@
       "category": "persona_stamp",
       "venue": "ch",
       "expression": "intense",
-      "duration_s": 8.52,
-      "size_bytes": 68380,
-      "lufs": -16.3,
-      "true_peak_db": -2.4,
-      "text": "Cold instinct at three-point-zero, razor accuracy, unshakable nerve. Your Meridian Passport is stamped: The Prodigy."
+      "duration_s": 9.82,
+      "size_bytes": 78829,
+      "lufs": -16.6,
+      "true_peak_db": -3.2,
+      "text": "Effortless precision, razor speed, unshakable poise. Mara would have loved you. Your Meridian Passport is stamped: The Prodigy."
     },
     "london_lindqvist_offer_1": {
       "id": "london_lindqvist_offer_1",

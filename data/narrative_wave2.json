@@ -19,7 +19,7 @@
       "tellCaption": "Vance taps his silver stylus twice beside his right ear before pressing the brass seal.",
       "voiceClipId": "vance_persona_maverick",
       "voiceUrl": "assets/voice/vance_persona_maverick.mp3",
-      "text": "High risk, fearless Overclocks, zero hesitation. Your Meridian Passport is stamped: The Maverick.",
+      "text": "Fearless double-downs, sharp instinct, zero hesitation. Mara would have loved you. Your Meridian Passport is stamped: The Maverick.",
       "portraitUrl": "assets/portraits_cutout/vance.png"
     },
     {
@@ -33,7 +33,7 @@
       "tellCaption": "Vance inclines his head a single measured degree as warm wax meets leather.",
       "voiceClipId": "vance_persona_diplomat",
       "voiceUrl": "assets/voice/vance_persona_diplomat.mp3",
-      "text": "Measured judgment, strategic alliances, composure under fire. Your Meridian Passport is stamped: The Diplomat.",
+      "text": "Warm composure, clever diplomacy, calm under the lights. Mara would have loved you. Your Meridian Passport is stamped: The Diplomat.",
       "portraitUrl": "assets/portraits_cutout/vance.png"
     },
     {
@@ -47,7 +47,7 @@
       "tellCaption": "Vance aligns the brass astrolabe crosshairs dead center over your dossier.",
       "voiceClipId": "vance_persona_analyst",
       "voiceUrl": "assets/voice/vance_persona_analyst.mp3",
-      "text": "Methodical clue-peeling, surgical precision, zero wasted motion. Your Meridian Passport is stamped: The Analyst.",
+      "text": "Patient deduction, smart use of clues, zero wasted motion. Mara would have loved you. Your Meridian Passport is stamped: The Analyst.",
       "portraitUrl": "assets/portraits_cutout/vance.png"
     },
     {
@@ -61,7 +61,7 @@
       "tellCaption": "Vance's fingers brush his left brass cufflink—startled by how closely your chart mirrors 2019.",
       "voiceClipId": "vance_persona_prodigy",
       "voiceUrl": "assets/voice/vance_persona_prodigy.mp3",
-      "text": "Cold instinct at three-point-zero, razor accuracy, unshakable nerve. Your Meridian Passport is stamped: The Prodigy.",
+      "text": "Effortless precision, razor speed, unshakable poise. Mara would have loved you. Your Meridian Passport is stamped: The Prodigy.",
       "portraitUrl": "assets/portraits_cutout/vance_intense.png"
     }
   ],
@@ -69,8 +69,8 @@
     "ch": {
       "id": "ch_backstage_vance_summons",
       "hubId": "ch",
-      "title": "Behind the Obsidian Glass",
-      "locationLabel": "Vetting Antechamber · Geneva",
+      "title": "Espresso in Mara's Study",
+      "locationLabel": "Dr. Mara Sato's Study · Geneva",
       "ambienceUrl": "assets/audio/ambience_chamber_room.mp3",
       "unlockAfterMission": "ch_1",
       "interlocutorId": "vance",
@@ -82,25 +82,25 @@
           "expression": "neutral",
           "portraitUrl": "assets/portraits_cutout/vance.png",
           "voiceUrl": "assets/voice/vance_intro_1.mp3",
-          "text": "You solved what four hundred thousand others couldn't. Take a seat.",
-          "tellHint": "Vance adjusts his left brass cufflink—withholding the real reason you were summoned.",
+          "text": "Welcome to Dr. Mara Sato's study. You solved her Sunday cipher from home—so grab a chair, take a breath, and let's start easy.",
+          "tellHint": "Julian pours two espressos beside Mara's 2019 notebook—thumb briefly brushing his left cufflink.",
           "options": [
             {
               "id": "ask_why_outsider",
-              "label": "Ask why an unaffiliated outsider was chosen",
+              "label": "Ask why Mara hid her qualifier in Sunday newspapers",
               "nextNodeId": "n2_outsider",
               "responseVoiceUrl": "assets/voice/vance_intro_3.mp3",
-              "responseText": "Before London, before Tokyo, before two billion viewers... tell me who you really are.",
+              "responseText": "Before London, before Tokyo, before the board tries to box you into a biography—tell me your name, and how you like to think.",
               "integrityDelta": 6,
               "bondNpc": "vance",
               "bondDelta": 1
             },
             {
               "id": "ask_about_endowment",
-              "label": "Ask what strings attach to the $100M key",
+              "label": "Ask why Lindqvist's board is fighting Mara's will",
               "nextNodeId": "n2_stakes",
               "responseVoiceUrl": "assets/voice/vance_intro_2.mp3",
-              "responseText": "I'm Julian Vance. The World Council wants one unaffiliated polymath to hold a hundred million dollar endowment—and the lone human veto key over The Ledger.",
+              "responseText": "Mara spent forty years building the Meridian Archive with me—and Chancellor Lindqvist's board has spent three weeks trying to lock it away. Let's open with a classic warmup.",
               "councilFavorDelta": 5
             }
           ]
@@ -112,8 +112,8 @@
           "expression": "intense",
           "portraitUrl": "assets/portraits_cutout/vance_intense.png",
           "voiceUrl": "assets/voice/vance_intro_3.mp3",
-          "text": "Before London, before Tokyo, before two billion viewers... tell me who you really are.",
-          "tellHint": "He taps his silver stylus twice—quietly pleased you spotted the anomaly.",
+          "text": "Before London, before Tokyo, before the board tries to box you into a biography—tell me your name, and how you like to think.",
+          "tellHint": "He taps his silver pen twice—genuinely pleased you read between the lines.",
           "options": [],
           "nextNodeId": "n3_close"
         },
@@ -124,8 +124,8 @@
           "expression": "neutral",
           "portraitUrl": "assets/portraits_cutout/vance.png",
           "voiceUrl": "assets/voice/vance_intro_2.mp3",
-          "text": "I'm Julian Vance. The World Council wants one unaffiliated polymath to hold a hundred million dollar endowment—and the lone human veto key over The Ledger.",
-          "tellHint": "His fingers linger on the brass pocket watch beside the chess set.",
+          "text": "Mara spent forty years building the Meridian Archive with me—and Chancellor Lindqvist's board has spent three weeks trying to lock it away. Let's open with a classic warmup.",
+          "tellHint": "His fingers rest lightly on Mara's engraved brass pocket watch.",
           "options": [],
           "nextNodeId": "n3_close"
         },
@@ -136,8 +136,8 @@
           "expression": "intense",
           "portraitUrl": "assets/portraits_cutout/vance_intense.png",
           "voiceUrl": "assets/voice/vance_manifesto.mp3",
-          "text": "One last question before the world watches. If you hold the sharpest mind on Earth, who does it answer to?",
-          "tellHint": "He unlocks the velvet astrolabe case across the veined marble.",
+          "text": "Between us—if you win Mara's archive and a hundred million dollars, who should knowledge answer to? Institutions, the public, or one independent mind?",
+          "tellHint": "Julian opens the velvet case holding Mara's brass astrolabe.",
           "options": [
             {
               "id": "vow_truth",
@@ -692,8 +692,8 @@
       {
         "id": "ch_backstage_vance_summons",
         "hubId": "ch",
-        "title": "Behind the Obsidian Glass",
-        "locationLabel": "Vetting Antechamber · Geneva",
+        "title": "Espresso in Mara's Study",
+        "locationLabel": "Dr. Mara Sato's Study · Geneva",
         "ambienceUrl": "assets/audio/ambience_chamber_room.mp3",
         "unlockAfterMission": "ch_1",
         "interlocutorId": "vance",
@@ -705,25 +705,25 @@
             "expression": "neutral",
             "portraitUrl": "assets/portraits_cutout/vance.png",
             "voiceUrl": "assets/voice/vance_intro_1.mp3",
-            "text": "You solved what four hundred thousand others couldn't. Take a seat.",
-            "tellHint": "Vance adjusts his left brass cufflink—withholding the real reason you were summoned.",
+            "text": "Welcome to Dr. Mara Sato's study. You solved her Sunday cipher from home—so grab a chair, take a breath, and let's start easy.",
+            "tellHint": "Julian pours two espressos beside Mara's 2019 notebook—thumb briefly brushing his left cufflink.",
             "options": [
               {
                 "id": "ask_why_outsider",
-                "label": "Ask why an unaffiliated outsider was chosen",
+                "label": "Ask why Mara hid her qualifier in Sunday newspapers",
                 "nextNodeId": "n2_outsider",
                 "responseVoiceUrl": "assets/voice/vance_intro_3.mp3",
-                "responseText": "Before London, before Tokyo, before two billion viewers... tell me who you really are.",
+                "responseText": "Before London, before Tokyo, before the board tries to box you into a biography—tell me your name, and how you like to think.",
                 "integrityDelta": 6,
                 "bondNpc": "vance",
                 "bondDelta": 1
               },
               {
                 "id": "ask_about_endowment",
-                "label": "Ask what strings attach to the $100M key",
+                "label": "Ask why Lindqvist's board is fighting Mara's will",
                 "nextNodeId": "n2_stakes",
                 "responseVoiceUrl": "assets/voice/vance_intro_2.mp3",
-                "responseText": "I'm Julian Vance. The World Council wants one unaffiliated polymath to hold a hundred million dollar endowment—and the lone human veto key over The Ledger.",
+                "responseText": "Mara spent forty years building the Meridian Archive with me—and Chancellor Lindqvist's board has spent three weeks trying to lock it away. Let's open with a classic warmup.",
                 "councilFavorDelta": 5
               }
             ]
@@ -735,8 +735,8 @@
             "expression": "intense",
             "portraitUrl": "assets/portraits_cutout/vance_intense.png",
             "voiceUrl": "assets/voice/vance_intro_3.mp3",
-            "text": "Before London, before Tokyo, before two billion viewers... tell me who you really are.",
-            "tellHint": "He taps his silver stylus twice—quietly pleased you spotted the anomaly.",
+            "text": "Before London, before Tokyo, before the board tries to box you into a biography—tell me your name, and how you like to think.",
+            "tellHint": "He taps his silver pen twice—genuinely pleased you read between the lines.",
             "options": []
           },
           {
@@ -746,8 +746,8 @@
             "expression": "neutral",
             "portraitUrl": "assets/portraits_cutout/vance.png",
             "voiceUrl": "assets/voice/vance_intro_2.mp3",
-            "text": "I'm Julian Vance. The World Council wants one unaffiliated polymath to hold a hundred million dollar endowment—and the lone human veto key over The Ledger.",
-            "tellHint": "His fingers linger on the brass pocket watch beside the chess set.",
+            "text": "Mara spent forty years building the Meridian Archive with me—and Chancellor Lindqvist's board has spent three weeks trying to lock it away. Let's open with a classic warmup.",
+            "tellHint": "His fingers rest lightly on Mara's engraved brass pocket watch.",
             "options": []
           },
           {
@@ -757,8 +757,8 @@
             "expression": "intense",
             "portraitUrl": "assets/portraits_cutout/vance_intense.png",
             "voiceUrl": "assets/voice/vance_manifesto.mp3",
-            "text": "One last question before the world watches. If you hold the sharpest mind on Earth, who does it answer to?",
-            "tellHint": "He unlocks the velvet astrolabe case across the veined marble.",
+            "text": "Between us—if you win Mara's archive and a hundred million dollars, who should knowledge answer to? Institutions, the public, or one independent mind?",
+            "tellHint": "Julian opens the velvet case holding Mara's brass astrolabe.",
             "options": [
               {
                 "id": "vow_truth",
@@ -787,7 +787,7 @@
         "id": "ch_backstage_teo_control_booth",
         "hubId": "ch",
         "title": "Espresso in the Control Corridor",
-        "locationLabel": "Broadcast Gallery B · Geneva",
+        "locationLabel": "Mara Sato Studio Console · Geneva",
         "ambienceUrl": "assets/audio/ambience_chamber_room.mp3",
         "unlockAfterMission": "ch_2",
         "interlocutorId": "teo",
@@ -796,15 +796,15 @@
             "id": "n1",
             "speakerId": "teo",
             "speakerName": "Mateo \"Teo\" Rojas",
-            "expression": "intense",
-            "portraitUrl": "assets/portraits_cutout/teo_intense.png",
+            "expression": "neutral",
+            "portraitUrl": "assets/portraits_cutout/teo.png",
             "voiceUrl": "assets/voice/teo_whisper.mp3",
-            "text": "Psst—don't look at the mirror. Check the reflection on the marble. You didn't hear it from me.",
-            "tellHint": "Teo glances up at the unlit tally lamp before leaning close with two espressos.",
+            "text": "Whoa—hang on. Mara's desk monitor just flashed an old margin note from the night she died, right next to Question Two. Looks like she left a clue... and a timestamp.",
+            "tellHint": "Teo adjusts your lapel mic while glancing quizzically at Mara's waking terminal.",
             "options": [
               {
                 "id": "confront_teo_test",
-                "label": "\"Was that mirror glare a mistake—or were you testing me?\"",
+                "label": "\"Was Mara's monitor note a glitch—or did she schedule it for tonight?\"",
                 "nextNodeId": "n2_vance_enter",
                 "responseVoiceUrl": "assets/voice/vance_leak_react.mp3",
                 "responseText": "Careful. What happens behind one-way glass rarely stays hidden.",
@@ -814,7 +814,7 @@
               },
               {
                 "id": "ask_2019_rumor",
-                "label": "\"You mentioned someone vanished in 2019. Give me a name.\"",
+                "label": "\"Mara's footnote mentioned a 2019 winner. Give me a name.\"",
                 "nextNodeId": "n2_vance_enter",
                 "responseVoiceUrl": "assets/voice/vance_leak_react.mp3",
                 "responseText": "Careful. What happens behind one-way glass rarely stays hidden.",
@@ -831,8 +831,8 @@
             "expression": "intense",
             "portraitUrl": "assets/portraits_cutout/vance_intense.png",
             "voiceUrl": "assets/voice/vance_leak_react.mp3",
-            "text": "Careful. What happens behind one-way glass rarely stays hidden.",
-            "tellHint": "Julian Vance appears silently in the doorway, adjusting his left cufflink.",
+            "text": "Well spotted. Mara hated shortcuts almost as much as she loved leaving breadcrumbs in the margins. Let's keep going.",
+            "tellHint": "Julian leans against the doorframe with an amused, knowing half-smile.",
             "options": [
               {
                 "id": "cover_for_teo",
@@ -846,7 +846,7 @@
               },
               {
                 "id": "stand_ground_vance",
-                "label": "Hold Vance's gaze—\"Then stop hiding files behind mirrors.\"",
+                "label": "Hold Julian's gaze—\"Then tell me what happened in Mara's 2019 prototype.\"",
                 "nextNodeId": null,
                 "responseVoiceUrl": null,
                 "responseText": "Logged in your Meridian Dossier.",
@@ -874,7 +874,7 @@
             "expression": "neutral",
             "portraitUrl": "assets/portraits_cutout/lindqvist.png",
             "voiceUrl": null,
-            "text": "Julian insisted on bringing an unaffiliated citizen into our Alpine vault. Tell me why Sovereign Bloc should permit it.",
+            "text": "Dr. Sato always did have a flair for eccentric wills. Tell me plainly why an outsider belongs inside the Meridian Archive.",
             "tellHint": "Chancellor Lindqvist inspects your qualifying chart through platinum spectacles.",
             "options": [
               {
@@ -957,7 +957,7 @@
             "expression": "intense",
             "portraitUrl": "assets/portraits_cutout/lindqvist.png",
             "voiceUrl": null,
-            "text": "Ask Julian who drafted the original vault schematics. He signed the first blueprint himself.",
+            "text": "Ask Julian who co-signed Mara's original vault blueprints. He knows far more about 2019 than he lets on.",
             "tellHint": "Lindqvist watches you leave without a single contraction in her tone.",
             "options": []
           }
@@ -979,7 +979,7 @@
             "expression": "smirk",
             "portraitUrl": "assets/portraits_cutout/soren_smirk.png",
             "voiceUrl": null,
-            "text": "So this is Julian's mystery wildcard. Care to tell us which university or hedge fund secretly owns you?",
+            "text": "So you're the 2:14 AM solver from Mara's Sunday cipher. Care to tell us which university or hedge fund secretly sponsors you?",
             "tellHint": "Soren rolls his gold-rimmed coin across a glass coffee table opposite Nadia.",
             "options": [
               {
@@ -1033,7 +1033,7 @@
             "expression": "intense",
             "portraitUrl": "assets/portraits_cutout/nadia.png",
             "voiceUrl": null,
-            "text": "Just watch your step in Act One. Rumor says Geneva ran a secret pilot seven years ago—and scrubbed the winner.",
+            "text": "Just keep your eyes open in London. Word is Mara ran a quiet prototype seven years ago—and the board scrubbed the winner.",
             "tellHint": "Nadia glances briefly toward the hallway security camera.",
             "options": [
               {
@@ -1350,7 +1350,7 @@
             "expression": "neutral",
             "portraitUrl": "assets/portraits_cutout/vance.png",
             "voiceUrl": null,
-            "text": "Magnificent, isn't it? Three centuries of celestial mechanics—and human vanity still thinks it owns the stars.",
+            "text": "Mara built this celestial orrery with her own hands—three centuries of mechanics reminding committees they do not own the stars.",
             "tellHint": "Stage lights are dimmed to amber as Julian Vance gazes up at the bronze Armillary Orrery.",
             "options": [
               {
@@ -1721,7 +1721,7 @@
             "expression": "neutral",
             "portraitUrl": "assets/portraits_cutout/lindqvist.png",
             "voiceUrl": null,
-            "text": "Now you see Horizon Collective without its press gloss. Speed worshipped without ethical brakes.",
+            "text": "Now you see Horizon Collective without Mara's romantic nostalgia. Pure velocity worshipped without institutional brakes.",
             "tellHint": "Neon skyline rain shimmers behind Chancellor Lindqvist's silver silhouette.",
             "options": [
               {
@@ -3496,8 +3496,8 @@
       "id": "ch_backstage_vance_summons",
       "hubId": "ch",
       "city": "Geneva",
-      "title": "Behind the Obsidian Glass",
-      "locationLabel": "Vetting Antechamber · Geneva",
+      "title": "Espresso in Mara's Study",
+      "locationLabel": "Dr. Mara Sato's Study · Geneva",
       "venueRoomGlb": "assets/aaa_models/vetting_chamber_room.glb",
       "ambientAudioUrl": "assets/audio/ambience_chamber_room.mp3",
       "lightingMode": "INTERVIEW",
@@ -3511,13 +3511,13 @@
           "expression": "neutral",
           "tellId": "vance_cufflink_glint",
           "tellCaption": "Vance adjusts his left brass cufflink—withholding the real reason you were summoned.",
-          "text": "You solved what four hundred thousand others couldn't. Take a seat.",
+          "text": "Welcome to Dr. Mara Sato's study. You solved her Sunday cipher from home—so grab a chair, take a breath, and let's start easy.",
           "voiceClipId": "vance_intro_1",
           "voiceUrl": "assets/voice/vance_intro_1.mp3",
           "choices": [
             {
               "id": "ask_why_outsider",
-              "label": "Ask why an unaffiliated outsider was chosen",
+              "label": "Ask why Mara hid her qualifier in Sunday newspapers",
               "effects": {
                 "integrity": 6,
                 "bonds": {
@@ -3531,7 +3531,7 @@
             },
             {
               "id": "ask_about_endowment",
-              "label": "Ask what strings attach to the $100M key",
+              "label": "Ask why Lindqvist's board is fighting Mara's will",
               "effects": {
                 "councilFavor": 5,
                 "setFlag": {
@@ -3547,7 +3547,8 @@
             "minTheta": 0.2,
             "insight": "The Geneva qualifying cipher wasn't testing raw trivia—it measured lateral pattern symmetry."
           },
-          "portraitUrl": "assets/portraits_cutout/vance.png"
+          "portraitUrl": "assets/portraits_cutout/vance.png",
+          "tellHint": "Julian pours two espressos beside Mara's 2019 notebook—thumb briefly brushing his left cufflink."
         },
         "n2_outsider": {
           "id": "n2_outsider",
@@ -3556,12 +3557,13 @@
           "expression": "intense",
           "tellId": "vance_stylus_tap",
           "tellCaption": "He taps his silver stylus twice—quietly pleased you spotted the anomaly.",
-          "text": "Before London, before Tokyo, before two billion viewers... tell me who you really are.",
+          "text": "Before London, before Tokyo, before the board tries to box you into a biography—tell me your name, and how you like to think.",
           "voiceClipId": "vance_intro_3",
           "voiceUrl": "assets/voice/vance_intro_3.mp3",
           "choices": [],
           "nextNodeId": "n3_close",
-          "portraitUrl": "assets/portraits_cutout/vance_intense.png"
+          "portraitUrl": "assets/portraits_cutout/vance_intense.png",
+          "tellHint": "He taps his silver pen twice—genuinely pleased you read between the lines."
         },
         "n2_stakes": {
           "id": "n2_stakes",
@@ -3570,12 +3572,13 @@
           "expression": "neutral",
           "tellId": "vance_cufflink_glint",
           "tellCaption": "His fingers linger on the brass pocket watch beside the chess set.",
-          "text": "I'm Julian Vance. The World Council wants one unaffiliated polymath to hold a hundred million dollar endowment—and the lone human veto key over The Ledger.",
+          "text": "Mara spent forty years building the Meridian Archive with me—and Chancellor Lindqvist's board has spent three weeks trying to lock it away. Let's open with a classic warmup.",
           "voiceClipId": "vance_intro_2",
           "voiceUrl": "assets/voice/vance_intro_2.mp3",
           "choices": [],
           "nextNodeId": "n3_close",
-          "portraitUrl": "assets/portraits_cutout/vance.png"
+          "portraitUrl": "assets/portraits_cutout/vance.png",
+          "tellHint": "His fingers rest lightly on Mara's engraved brass pocket watch."
         },
         "n3_close": {
           "id": "n3_close",
@@ -3584,7 +3587,7 @@
           "expression": "intense",
           "tellId": "vance_stylus_tap",
           "tellCaption": "He unlocks the velvet astrolabe case across the veined marble.",
-          "text": "One last question before the world watches. If you hold the sharpest mind on Earth, who does it answer to?",
+          "text": "Between us—if you win Mara's archive and a hundred million dollars, who should knowledge answer to? Institutions, the public, or one independent mind?",
           "voiceClipId": "vance_manifesto",
           "voiceUrl": "assets/voice/vance_manifesto.mp3",
           "choices": [
@@ -3612,7 +3615,8 @@
             }
           ],
           "nextNodeId": null,
-          "portraitUrl": "assets/portraits_cutout/vance_intense.png"
+          "portraitUrl": "assets/portraits_cutout/vance_intense.png",
+          "tellHint": "Julian opens the velvet case holding Mara's brass astrolabe."
         }
       }
     },
@@ -3621,7 +3625,7 @@
       "hubId": "ch",
       "city": "Geneva",
       "title": "Espresso in the Control Corridor",
-      "locationLabel": "Broadcast Gallery B · Geneva",
+      "locationLabel": "Mara Sato Studio Console · Geneva",
       "venueRoomGlb": "assets/aaa_models/vetting_chamber_room.glb",
       "ambientAudioUrl": "assets/audio/ambience_chamber_room.mp3",
       "lightingMode": "INTERVIEW",
@@ -3632,16 +3636,16 @@
           "id": "n1",
           "speaker": "teo",
           "speakerName": "Mateo \"Teo\" Rojas",
-          "expression": "intense",
+          "expression": "neutral",
           "tellId": "teo_camera_flick",
           "tellCaption": "Teo glances up at the unlit tally lamp before leaning close with two espressos.",
-          "text": "Psst—don't look at the mirror. Check the reflection on the marble. You didn't hear it from me.",
+          "text": "Whoa—hang on. Mara's desk monitor just flashed an old margin note from the night she died, right next to Question Two. Looks like she left a clue... and a timestamp.",
           "voiceClipId": "teo_whisper",
           "voiceUrl": "assets/voice/teo_whisper.mp3",
           "choices": [
             {
               "id": "confront_teo_test",
-              "label": "\"Was that mirror glare a mistake—or were you testing me?\"",
+              "label": "\"Was Mara's monitor note a glitch—or did she schedule it for tonight?\"",
               "effects": {
                 "integrity": 6,
                 "bonds": {
@@ -3652,7 +3656,7 @@
             },
             {
               "id": "ask_2019_rumor",
-              "label": "\"You mentioned someone vanished in 2019. Give me a name.\"",
+              "label": "\"Mara's footnote mentioned a 2019 winner. Give me a name.\"",
               "effects": {
                 "publicTrust": 6,
                 "bonds": {
@@ -3666,7 +3670,8 @@
             }
           ],
           "nextNodeId": null,
-          "portraitUrl": "assets/portraits_cutout/teo_intense.png"
+          "portraitUrl": "assets/portraits_cutout/teo.png",
+          "tellHint": "Teo adjusts your lapel mic while glancing quizzically at Mara's waking terminal."
         },
         "n2_vance_enter": {
           "id": "n2_vance_enter",
@@ -3675,7 +3680,7 @@
           "expression": "intense",
           "tellId": "vance_cufflink_glint",
           "tellCaption": "Julian Vance appears silently in the doorway, adjusting his left cufflink.",
-          "text": "Careful. What happens behind one-way glass rarely stays hidden.",
+          "text": "Well spotted. Mara hated shortcuts almost as much as she loved leaving breadcrumbs in the margins. Let's keep going.",
           "voiceClipId": "vance_leak_react",
           "voiceUrl": "assets/voice/vance_leak_react.mp3",
           "choices": [
@@ -3693,7 +3698,7 @@
             },
             {
               "id": "stand_ground_vance",
-              "label": "Hold Vance's gaze—\"Then stop hiding files behind mirrors.\"",
+              "label": "Hold Julian's gaze—\"Then tell me what happened in Mara's 2019 prototype.\"",
               "effects": {
                 "integrity": 10,
                 "bonds": {
@@ -3705,7 +3710,8 @@
             }
           ],
           "nextNodeId": null,
-          "portraitUrl": "assets/portraits_cutout/vance_intense.png"
+          "portraitUrl": "assets/portraits_cutout/vance_intense.png",
+          "tellHint": "Julian leans against the doorframe with an amused, knowing half-smile."
         }
       }
     },
@@ -3728,7 +3734,7 @@
           "expression": "neutral",
           "tellId": "lindqvist_spectacles",
           "tellCaption": "Chancellor Lindqvist inspects your qualifying chart through platinum spectacles.",
-          "text": "Julian insisted on bringing an unaffiliated citizen into our Alpine vault. Tell me why Sovereign Bloc should permit it.",
+          "text": "Dr. Sato always did have a flair for eccentric wills. Tell me plainly why an outsider belongs inside the Meridian Archive.",
           "voiceClipId": null,
           "voiceUrl": null,
           "choices": [
@@ -3833,7 +3839,7 @@
           "expression": "intense",
           "tellId": "lindqvist_spectacles",
           "tellCaption": "Lindqvist watches you leave without a single contraction in her tone.",
-          "text": "Ask Julian who drafted the original vault schematics. He signed the first blueprint himself.",
+          "text": "Ask Julian who co-signed Mara's original vault blueprints. He knows far more about 2019 than he lets on.",
           "voiceClipId": null,
           "voiceUrl": null,
           "choices": [],
@@ -3861,7 +3867,7 @@
           "expression": "smirk",
           "tellId": "soren_coin_roll",
           "tellCaption": "Soren rolls his gold-rimmed coin across a glass coffee table opposite Nadia.",
-          "text": "So this is Julian's mystery wildcard. Care to tell us which university or hedge fund secretly owns you?",
+          "text": "So you're the 2:14 AM solver from Mara's Sunday cipher. Care to tell us which university or hedge fund secretly sponsors you?",
           "voiceClipId": null,
           "voiceUrl": null,
           "choices": [
@@ -3931,7 +3937,7 @@
           "expression": "intense",
           "tellId": "nadia_jaw_clench",
           "tellCaption": "Nadia glances briefly toward the hallway security camera.",
-          "text": "Just watch your step in Act One. Rumor says Geneva ran a secret pilot seven years ago—and scrubbed the winner.",
+          "text": "Just keep your eyes open in London. Word is Mara ran a quiet prototype seven years ago—and the board scrubbed the winner.",
           "voiceClipId": null,
           "voiceUrl": null,
           "choices": [
@@ -4341,7 +4347,7 @@
           "expression": "neutral",
           "tellId": "vance_cufflink_glint",
           "tellCaption": "Stage lights are dimmed to amber as Julian Vance gazes up at the bronze Armillary Orrery.",
-          "text": "Magnificent, isn't it? Three centuries of celestial mechanics—and human vanity still thinks it owns the stars.",
+          "text": "Mara built this celestial orrery with her own hands—three centuries of mechanics reminding committees they do not own the stars.",
           "voiceClipId": null,
           "voiceUrl": null,
           "choices": [
@@ -4817,7 +4823,7 @@
           "expression": "neutral",
           "tellId": "lindqvist_spectacles",
           "tellCaption": "Neon skyline rain shimmers behind Chancellor Lindqvist's silver silhouette.",
-          "text": "Now you see Horizon Collective without its press gloss. Speed worshipped without ethical brakes.",
+          "text": "Now you see Horizon Collective without Mara's romantic nostalgia. Pure velocity worshipped without institutional brakes.",
           "voiceClipId": null,
           "voiceUrl": null,
           "choices": [
