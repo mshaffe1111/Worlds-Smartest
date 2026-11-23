@@ -1,10 +1,14 @@
 // ============================================================================
-// WORLD'S SMARTEST — Clean Studio Audio Engine (ZERO Procedural Oscillators!)
+// WORLD'S SMARTEST v4.0 — Broadcast Studio Audio Engine (ZERO Procedural Oscillators!)
 // Plays:
-//  1) All 144 Studio-Mastered Neural VO Clips (./assets/voice/*.mp3)
-//  2) Crisp Physical Horological Foley Samples (./assets/audio/sfx_*.{mp3,wav})
-//  3) Verified Acoustic Room-Air Venue Beds ONLY if explicitly toggled ON
-//     (STRICT DEFAULT: AMBIENCE OFF!)
+//  1) Adaptive Prime-Time Broadcast Music Score (ON by default via `ws_v4_music_enabled`,
+//     seamless WebAudio dual-deck crossfades, -18 LUFS mastered stereo MP3 loops)
+//  2) Harmonically Ascending Musical Streak Stingers (Cmaj9 -> Dmaj9 -> Emaj9 -> Gmaj9 -> Fanfare)
+//  3) Horological Countdown Clock Ticks, Urgent Double-Pulse & Broadcast Timeout Chime
+//  4) World-Search Escalating Crowd Energy (Small Hall -> TV Studio -> Global Arena + Gasp)
+//  5) Tactile Board & Game-Show Cues (`playBoardCue`) + Legacy Physical Foley Cues
+//  6) Click-Free Voice Engine (80ms smooth ramp-down in `stopVoice()`, dual Music 0.30x +
+//     Crowd 0.35x WebAudio voice ducking, and `playVerifiedVoice()` mismatch guard)
 // ============================================================================
 
 export type SfxCueId =
@@ -23,9 +27,43 @@ export type SfxCueId =
   | 'streak_2'
   | 'streak_3'
   | 'streak_4'
-  | 'streak_5';
+  | 'streak_5'
+  | 'clock_tick'
+  | 'clock_urgent'
+  | 'buzzer_timeout'
+  | 'crowd_small_hall'
+  | 'crowd_tv_studio'
+  | 'crowd_global_arena'
+  | 'crowd_gasp'
+  | 'tile_flip'
+  | 'padlock_break'
+  | 'wheel_tick'
+  | 'power_play'
+  | 'wedge_earned'
+  | 'rival_trap'
+  | 'lock_in'
+  | 'wrong_answer';
 
-export type MusicCueId = 'ambient' | 'tension' | 'mystery' | 'finale';
+export type MusicCueId =
+  | 'title'
+  | 'board'
+  | 'thinking'
+  | 'tension'
+  | 'finale'
+  | 'ambient'
+  | 'mystery';
+
+export type AudienceReactionKind = 'applause' | 'roar' | 'gasp';
+
+export type BoardCueKind =
+  | 'tile_flip'
+  | 'padlock_break'
+  | 'wheel_tick'
+  | 'power_play'
+  | 'wedge_earned'
+  | 'rival_trap'
+  | 'lock_in'
+  | 'wrong_answer';
 
 export interface StudioAudioManifest {
   musicApproved?: boolean;
@@ -33,34 +71,61 @@ export interface StudioAudioManifest {
   music?: Partial<Record<MusicCueId, string>>;
   roomTone?: string | null;
   sfx?: Partial<Record<string, string>>;
+  verifiedVoiceTranscripts?: Record<string, string>;
 }
 
 const SFX_STORAGE_KEY = 'ws_studio_sfx_enabled_v2';
+const VOICE_STORAGE_KEY = 'ws_studio_voice_enabled_v2';
+const V4_MUSIC_STORAGE_KEY = 'ws_v4_music_enabled';
 const MUSIC_STORAGE_KEY = 'ws_studio_music_enabled_v2';
 const AMBIENCE_V2_STORAGE_KEY = 'ws_ambience_enabled_v2';
-const VOICE_STORAGE_KEY = 'ws_studio_voice_enabled_v2';
 
-// Exact 10 microphone-recorded horological Foley cues in public/assets/audio/
+// Exact broadcast ducking ratios during Host / Challenger VO playback
+const VOICE_DUCK_MUSIC_GAIN = 0.30;
+const VOICE_DUCK_CROWD_GAIN = 0.35;
+const VOICE_STOP_FADE_MS = 80;
+const MUSIC_CROSSFADE_MS = 650;
+
+// Broadcast-mastered stereo MP3 assets in public/assets/audio/
 const SFX_CANDIDATES: Record<SfxCueId, string[]> = {
-  ui_tap: ['./assets/audio/sfx_ui_tap.mp3', './assets/audio/sfx_ui_tap.wav'],
-  spin_tick: ['./assets/audio/sfx_spin_tick.mp3', './assets/audio/sfx_spin_tick.wav'],
-  sightline_snap: ['./assets/audio/sfx_sightline_snap.mp3', './assets/audio/sfx_sightline_snap.wav'],
-  shutter_peel: ['./assets/audio/sfx_shutter_peel.mp3', './assets/audio/sfx_shutter_peel.wav'],
-  glass_shatter: ['./assets/audio/sfx_glass_shatter.mp3', './assets/audio/sfx_glass_shatter.wav'],
-  overclock_charge: ['./assets/audio/sfx_overclock_charge.mp3', './assets/audio/sfx_overclock_charge.wav'],
-  vault_thunk: ['./assets/audio/sfx_vault_thunk.mp3', './assets/audio/sfx_vault_thunk.wav'],
-  gold_resonance: ['./assets/audio/sfx_gold_resonance.mp3', './assets/audio/sfx_gold_resonance.wav'],
-  backfire_fracture: ['./assets/audio/sfx_backfire_fracture.mp3', './assets/audio/sfx_backfire_fracture.wav'],
-  passport_stamp: ['./assets/audio/sfx_passport_stamp.mp3', './assets/audio/sfx_passport_stamp.wav'],
-  cutscene_whoosh: ['./assets/audio/sfx_shutter_peel.mp3', './assets/audio/sfx_shutter_peel.wav'],
-  streak_1: ['./assets/audio/sfx_gold_resonance.mp3'],
-  streak_2: ['./assets/audio/sfx_gold_resonance.mp3'],
-  streak_3: ['./assets/audio/sfx_gold_resonance.mp3'],
-  streak_4: ['./assets/audio/sfx_gold_resonance.mp3'],
-  streak_5: ['./assets/audio/sfx_gold_resonance.mp3'],
+  ui_tap: ['./assets/audio/sfx_ui_tap.mp3'],
+  spin_tick: ['./assets/audio/sfx_spin_tick.mp3'],
+  sightline_snap: ['./assets/audio/sfx_sightline_snap.mp3'],
+  shutter_peel: ['./assets/audio/sfx_shutter_peel.mp3'],
+  glass_shatter: ['./assets/audio/sfx_glass_shatter.mp3'],
+  overclock_charge: ['./assets/audio/sfx_overclock_charge.mp3'],
+  vault_thunk: ['./assets/audio/sfx_vault_thunk.mp3'],
+  gold_resonance: ['./assets/audio/sfx_gold_resonance.mp3'],
+  backfire_fracture: ['./assets/audio/sfx_backfire_fracture.mp3'],
+  passport_stamp: ['./assets/audio/sfx_passport_stamp.mp3'],
+  cutscene_whoosh: ['./assets/audio/sfx_shutter_peel.mp3'],
+  // 5 distinct harmonically ascending musical reward stingers (ZERO pitch-smear!)
+  streak_1: ['./assets/audio/sfx_streak_1.mp3'],
+  streak_2: ['./assets/audio/sfx_streak_2.mp3'],
+  streak_3: ['./assets/audio/sfx_streak_3.mp3'],
+  streak_4: ['./assets/audio/sfx_streak_4.mp3'],
+  streak_5: ['./assets/audio/sfx_streak_5.mp3'],
+  // Horological countdown clock & timeout chime
+  clock_tick: ['./assets/audio/sfx_clock_tick.mp3'],
+  clock_urgent: ['./assets/audio/sfx_clock_urgent.mp3'],
+  buzzer_timeout: ['./assets/audio/sfx_buzzer_timeout.mp3'],
+  // World-Search escalating audience reactions
+  crowd_small_hall: ['./assets/audio/sfx_crowd_small_hall.mp3'],
+  crowd_tv_studio: ['./assets/audio/sfx_crowd_tv_studio.mp3'],
+  crowd_global_arena: ['./assets/audio/sfx_crowd_global_arena.mp3'],
+  crowd_gasp: ['./assets/audio/sfx_crowd_gasp.mp3'],
+  // Tactile v4 game-show board cues
+  tile_flip: ['./assets/audio/sfx_tile_flip.mp3'],
+  padlock_break: ['./assets/audio/sfx_padlock_break.mp3'],
+  wheel_tick: ['./assets/audio/sfx_wheel_tick.mp3'],
+  power_play: ['./assets/audio/sfx_power_play.mp3'],
+  wedge_earned: ['./assets/audio/sfx_wedge_earned.mp3'],
+  rival_trap: ['./assets/audio/sfx_rival_trap.mp3'],
+  lock_in: ['./assets/audio/sfx_lock_in.mp3'],
+  wrong_answer: ['./assets/audio/sfx_wrong_answer.mp3'],
 };
 
-// Loudness-calibrated against exact 48kHz PCM peak/RMS profiles of public/assets/audio/sfx_*.mp3
+// Loudness-calibrated against exact 48kHz PCM peak/RMS profiles of public/assets/audio/*.mp3
 const SFX_VOLUMES: Record<SfxCueId, number> = {
   ui_tap: 0.48,
   spin_tick: 0.44,
@@ -73,14 +138,29 @@ const SFX_VOLUMES: Record<SfxCueId, number> = {
   backfire_fracture: 0.64,
   passport_stamp: 0.70,
   cutscene_whoosh: 0.54,
-  streak_1: 0.42,
-  streak_2: 0.44,
-  streak_3: 0.45,
-  streak_4: 0.47,
-  streak_5: 0.49,
+  streak_1: 0.56,
+  streak_2: 0.58,
+  streak_3: 0.60,
+  streak_4: 0.62,
+  streak_5: 0.66,
+  clock_tick: 0.54,
+  clock_urgent: 0.62,
+  buzzer_timeout: 0.64,
+  crowd_small_hall: 0.56,
+  crowd_tv_studio: 0.62,
+  crowd_global_arena: 0.66,
+  crowd_gasp: 0.62,
+  tile_flip: 0.54,
+  padlock_break: 0.62,
+  wheel_tick: 0.48,
+  power_play: 0.66,
+  wedge_earned: 0.68,
+  rival_trap: 0.62,
+  lock_in: 0.58,
+  wrong_answer: 0.58,
 };
 
-// Rapid-duplicate dedupe windows (prevents phase flanging & +6dB double-triggers on lock/tap)
+// Rapid-duplicate dedupe windows (prevents phase flanging & +6dB double-triggers)
 const CUE_DEDUPE_MS: Record<SfxCueId, number> = {
   ui_tap: 35,
   spin_tick: 34,
@@ -93,21 +173,69 @@ const CUE_DEDUPE_MS: Record<SfxCueId, number> = {
   backfire_fracture: 75,
   passport_stamp: 90,
   cutscene_whoosh: 75,
-  streak_1: 75,
-  streak_2: 75,
-  streak_3: 75,
-  streak_4: 75,
-  streak_5: 75,
+  streak_1: 80,
+  streak_2: 80,
+  streak_3: 80,
+  streak_4: 80,
+  streak_5: 80,
+  clock_tick: 220,
+  clock_urgent: 240,
+  buzzer_timeout: 320,
+  crowd_small_hall: 450,
+  crowd_tv_studio: 450,
+  crowd_global_arena: 450,
+  crowd_gasp: 420,
+  tile_flip: 55,
+  padlock_break: 90,
+  wheel_tick: 32,
+  power_play: 220,
+  wedge_earned: 220,
+  rival_trap: 160,
+  lock_in: 85,
+  wrong_answer: 140,
 };
 
-// Equal-loudness room-air trim per venue bed (all 5 beds sit at uniform ~-30 dBFS floor)
-const VENUE_AMBIENCE_VOLUME_SCALE: Record<string, number> = {
-  './assets/audio/ambience_chamber_room.mp3': 1.0,
-  './assets/audio/ambience_cairo_vault_air.mp3': 0.94,
-  './assets/audio/ambience_ocean_storm_air.mp3': 0.94,
-  './assets/audio/ambience_tokyo_neon_rain.mp3': 0.84,
-  './assets/audio/ambience_london_rain.mp3': 0.76,
+const CROWD_CUES = new Set<SfxCueId>([
+  'crowd_small_hall',
+  'crowd_tv_studio',
+  'crowd_global_arena',
+  'crowd_gasp',
+]);
+
+// Equal-loudness broadcast trim per music stem & venue room-air bed
+const MUSIC_TRACK_VOLUME_SCALE: Record<string, number> = {
+  './assets/audio/music_title_showtime.mp3': 1.0,
+  './assets/audio/music_board_groove.mp3': 0.90,
+  './assets/audio/music_thinking_bed.mp3': 0.82,
+  './assets/audio/music_finale_tension.mp3': 0.94,
+  './assets/audio/ambience_chamber_room.mp3': 0.72,
+  './assets/audio/ambience_cairo_vault_air.mp3': 0.68,
+  './assets/audio/ambience_ocean_storm_air.mp3': 0.68,
+  './assets/audio/ambience_tokyo_neon_rain.mp3': 0.60,
+  './assets/audio/ambience_london_rain.mp3': 0.54,
 };
+
+const DEFAULT_V4_MUSIC_MAP: Record<Exclude<MusicCueId, 'ambient'>, string> = {
+  title: './assets/audio/music_title_showtime.mp3',
+  board: './assets/audio/music_board_groove.mp3',
+  thinking: './assets/audio/music_thinking_bed.mp3',
+  tension: './assets/audio/music_finale_tension.mp3',
+  finale: './assets/audio/music_finale_tension.mp3',
+  mystery: './assets/audio/music_thinking_bed.mp3',
+};
+
+interface ActiveMusicDeck {
+  url: string;
+  source: AudioBufferSourceNode;
+  gain: GainNode;
+  cleanupTimer: ReturnType<typeof setTimeout> | null;
+}
+
+interface LegacyAudioFadeState {
+  el: HTMLAudioElement;
+  rafId: number;
+  timerId: ReturnType<typeof setTimeout> | null;
+}
 
 function nowMs(): number {
   if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
@@ -140,6 +268,79 @@ function normalizeAssetUrl(raw: string): string {
     return `./assets/voice/${withExt}`;
   }
   return `./${trimmed}`;
+}
+
+function normalizeTranscriptText(raw: string): string {
+  return raw
+    .toLowerCase()
+    .replace(/[\u2018\u2019']/g, '')
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function computeTranscriptSimilarity(subtitleText: string, expectedText: string): number {
+  const normA = normalizeTranscriptText(subtitleText);
+  const normB = normalizeTranscriptText(expectedText);
+  if (!normA || !normB) return 0;
+  if (normA === normB) return 1.0;
+
+  const wordsA = normA.split(' ');
+  const wordsB = normB.split(' ');
+  const lenRatio = Math.min(wordsA.length, wordsB.length) / Math.max(wordsA.length, wordsB.length);
+  if (lenRatio < 0.55) return lenRatio * 0.5;
+
+  const countsB = new Map<string, number>();
+  for (const w of wordsB) {
+    countsB.set(w, (countsB.get(w) ?? 0) + 1);
+  }
+  let matched = 0;
+  for (const w of wordsA) {
+    const rem = countsB.get(w) ?? 0;
+    if (rem > 0) {
+      matched += 1;
+      countsB.set(w, rem - 1);
+    }
+  }
+  const union = wordsA.length + wordsB.length - matched;
+  const jaccard = union > 0 ? matched / union : 0;
+  const containment = matched / Math.max(wordsA.length, wordsB.length);
+  return 0.5 * jaccard + 0.5 * containment;
+}
+
+function isLegacyV1V2VoiceUrl(normalizedUrl: string): boolean {
+  const lower = normalizedUrl.toLowerCase();
+  if (!lower.includes('/assets/voice/')) return false;
+  const basename = lower.slice(lower.lastIndexOf('/') + 1);
+  return !basename.startsWith('v4_');
+}
+
+/**
+ * Safely ramps a WebAudio AudioParam without Safari/Chrome intrinsic-value discontinuity clicks.
+ */
+function rampAudioParam(
+  param: AudioParam,
+  targetValue: number,
+  currentTime: number,
+  durationSec: number,
+  fallbackCurrentValue?: number,
+): void {
+  const safeTarget = Math.max(0.0001, targetValue);
+  const ext = param as AudioParam & {
+    cancelAndHoldAtTime?: (cancelTime: number) => AudioParam;
+  };
+  if (typeof ext.cancelAndHoldAtTime === 'function') {
+    ext.cancelAndHoldAtTime(currentTime);
+  } else {
+    const startVal = Math.max(0.0001, fallbackCurrentValue ?? param.value);
+    param.cancelScheduledValues(currentTime);
+    param.setValueAtTime(startVal, currentTime);
+  }
+  if (durationSec <= 0.001) {
+    param.setValueAtTime(safeTarget, currentTime);
+  } else {
+    param.linearRampToValueAtTime(safeTarget, currentTime + durationSec);
+  }
 }
 
 /**
@@ -199,6 +400,10 @@ function findZeroCrossingLoopPoints(
 export class StudioAudioEngine {
   private ctx: AudioContext | null = null;
   private sfxMasterNode: AudioNode | null = null;
+  private musicMasterGain: GainNode | null = null;
+  private musicDuckGain: GainNode | null = null;
+  private crowdDuckGain: GainNode | null = null;
+
   private sfxBuffers = new Map<SfxCueId, AudioBuffer>();
   private urlBuffers = new Map<string, AudioBuffer>();
   private loadingUrlPromises = new Map<string, Promise<AudioBuffer | null>>();
@@ -207,7 +412,7 @@ export class StudioAudioEngine {
   private sfxEnabled: boolean;
   private voiceEnabled: boolean;
   private musicEnabled: boolean;
-  private musicApproved = false;
+  private musicApproved = true;
   private manifestLoaded = false;
   private manifest: StudioAudioManifest = {};
 
@@ -218,14 +423,24 @@ export class StudioAudioEngine {
   private voiceAnalyser: AnalyserNode | null = null;
   private voiceAnalyserData: Uint8Array<ArrayBuffer> | null = null;
   private voiceSourceMap = new WeakMap<HTMLAudioElement, MediaElementAudioSourceNode>();
+  private voiceGainMap = new WeakMap<HTMLAudioElement, GainNode>();
+  private retiringVoiceCleanups = new Map<HTMLAudioElement, () => void>();
+  private verifiedVoiceTranscripts = new Map<string, string>();
+  private lastBlockedVoiceReason: string | null = null;
 
+  // WebAudio dual-deck crossfade music state (+ HTMLAudio fallback for minimal environments)
+  private activeMusicDeck: ActiveMusicDeck | null = null;
+  private fadingMusicDecks = new Set<ActiveMusicDeck>();
   private musicEl: HTMLAudioElement | null = null;
+  private fadingMusicEls = new Set<LegacyAudioFadeState>();
   private musicToken = 0;
   private musicFadeRaf = 0;
-  private currentMusicCue: MusicCueId = 'ambient';
+  private currentMusicCue: MusicCueId = 'title';
   private activeVenueAmbienceUrl = './assets/audio/ambience_chamber_room.mp3';
-  private baseMusicVolume = 0.28;
+  private baseMusicVolume = 0.40;
   private isVoiceDucking = false;
+  private currentMusicDuckScalar = 1.0;
+  private currentCrowdDuckScalar = 1.0;
 
   private activeChargeSource: AudioBufferSourceNode | null = null;
   private activeChargeGain: GainNode | null = null;
@@ -244,14 +459,17 @@ export class StudioAudioEngine {
   constructor() {
     this.sfxEnabled = this.readBoolStorage(SFX_STORAGE_KEY, true);
     this.voiceEnabled = this.readBoolStorage(VOICE_STORAGE_KEY, true);
-    // Strict default AMBIENCE: OFF — user may opt in to warm acoustic room-tone in Vault Drawer!
+
+    // World's Smartest v4.0: Broadcast score & studio energy ON by default (`ws_v4_music_enabled`),
+    // while strictly honoring any explicit user mute/toggle preference!
     this.musicApproved = true;
     this.manifest = {
       musicApproved: true,
-      defaultMusicEnabled: false,
+      defaultMusicEnabled: true,
+      music: { ...DEFAULT_V4_MUSIC_MAP },
       roomTone: './assets/audio/ambience_chamber_room.mp3',
     };
-    this.musicEnabled = this.readAmbienceStorage(false);
+    this.musicEnabled = this.readV4MusicStorage(true);
 
     this.attachGestureAndLifecycleListeners();
     void this.initManifestAndPrewarm();
@@ -270,15 +488,12 @@ export class StudioAudioEngine {
     return fallback;
   }
 
-  private readAmbienceStorage(fallback: boolean): boolean {
+  private readV4MusicStorage(fallback: boolean): boolean {
     try {
       if (typeof window !== 'undefined' && window.localStorage) {
-        const v2 = window.localStorage.getItem(AMBIENCE_V2_STORAGE_KEY);
-        if (v2 === '1' || v2 === 'true') return true;
-        if (v2 === '0' || v2 === 'false') return false;
-        const legacy = window.localStorage.getItem(MUSIC_STORAGE_KEY);
-        if (legacy === 'true' || legacy === '1') return true;
-        if (legacy === 'false' || legacy === '0') return false;
+        const v4 = window.localStorage.getItem(V4_MUSIC_STORAGE_KEY);
+        if (v4 === 'true' || v4 === '1') return true;
+        if (v4 === 'false' || v4 === '0') return false;
       }
     } catch {
       // Ignore private mode restrictions
@@ -392,6 +607,9 @@ export class StudioAudioEngine {
         try {
           this.ctx = new AudioCtx();
           this.sfxMasterNode = null;
+          this.musicMasterGain = null;
+          this.musicDuckGain = null;
+          this.crowdDuckGain = null;
         } catch {
           this.ctx = null;
         }
@@ -403,7 +621,7 @@ export class StudioAudioEngine {
     return this.ctx;
   }
 
-  /** Soft broadcast safety limiter on the SFX bus so simultaneous Foley layers never clip above 0 dBFS */
+  /** Soft broadcast safety limiter on the master output bus so simultaneous layers never clip above 0 dBFS */
   private getSfxOutputNode(ctx: AudioContext): AudioNode {
     if (this.sfxMasterNode) return this.sfxMasterNode;
     try {
@@ -425,16 +643,79 @@ export class StudioAudioEngine {
     return ctx.destination;
   }
 
+  /** Dedicated Crowd SFX bus with smooth WebAudio voice ducking (0.35x when Host/Challenger speaks) */
+  private getCrowdOutputNode(ctx: AudioContext): AudioNode {
+    if (this.crowdDuckGain) return this.crowdDuckGain;
+    try {
+      const duckGain = ctx.createGain();
+      duckGain.gain.value = this.currentCrowdDuckScalar;
+      duckGain.connect(this.getSfxOutputNode(ctx));
+      this.crowdDuckGain = duckGain;
+      return duckGain;
+    } catch {
+      return this.getSfxOutputNode(ctx);
+    }
+  }
+
+  /** Dedicated Broadcast Music bus with master trim + smooth WebAudio voice ducking (0.30x when VO speaks) */
+  private getMusicInputNode(ctx: AudioContext): AudioNode | null {
+    if (this.musicDuckGain && this.musicMasterGain) {
+      return this.musicDuckGain;
+    }
+    try {
+      const duckGain = ctx.createGain();
+      duckGain.gain.value = this.currentMusicDuckScalar;
+      const masterGain = ctx.createGain();
+      masterGain.gain.value = this.baseMusicVolume;
+      duckGain.connect(masterGain);
+      masterGain.connect(this.getSfxOutputNode(ctx));
+      this.musicDuckGain = duckGain;
+      this.musicMasterGain = masterGain;
+      return duckGain;
+    } catch {
+      return null;
+    }
+  }
+
   public async initManifestAndPrewarm(): Promise<void> {
     if (this.manifestLoaded) return;
     this.manifestLoaded = true;
+    void this.loadVoiceTranscriptRegistry();
     if (this.unlocked) {
       this.prewarmCoreBuffers();
     }
   }
 
+  private async loadVoiceTranscriptRegistry(): Promise<void> {
+    if (typeof fetch !== 'function') return;
+    try {
+      const resp = await fetch('./assets/voice/vo_wave2_manifest.json');
+      if (!resp.ok) return;
+      const contentType = resp.headers?.get?.('content-type') ?? '';
+      if (contentType.includes('text/html')) return;
+      const data = (await resp.json()) as {
+        clips?: Array<{ url?: string; file?: string; id?: string; text?: string }>;
+      };
+      if (!Array.isArray(data?.clips)) return;
+      for (const clip of data.clips) {
+        if (!clip?.text) continue;
+        if (clip.url) {
+          this.verifiedVoiceTranscripts.set(normalizeAssetUrl(clip.url), clip.text);
+        }
+        if (clip.file) {
+          this.verifiedVoiceTranscripts.set(normalizeAssetUrl(clip.file), clip.text);
+        }
+        if (clip.id) {
+          this.verifiedVoiceTranscripts.set(normalizeAssetUrl(clip.id), clip.text);
+        }
+      }
+    } catch {
+      // Manifest unavailable in offline/test harness — playVerifiedVoice still enforces strict guards
+    }
+  }
+
   private prewarmCoreBuffers(): void {
-    // Prewarm all 10 unique physical Foley buffers quietly after first user gesture (zero pre-gesture AudioContext warning!)
+    // Prewarm core tactile Foley & v4 broadcast cues quietly after first user gesture
     const coreCues: SfxCueId[] = [
       'ui_tap',
       'spin_tick',
@@ -446,6 +727,22 @@ export class StudioAudioEngine {
       'gold_resonance',
       'backfire_fracture',
       'passport_stamp',
+      'streak_1',
+      'streak_2',
+      'streak_3',
+      'streak_4',
+      'streak_5',
+      'clock_tick',
+      'clock_urgent',
+      'buzzer_timeout',
+      'tile_flip',
+      'padlock_break',
+      'wheel_tick',
+      'lock_in',
+      'wrong_answer',
+      'power_play',
+      'wedge_earned',
+      'rival_trap',
     ];
     for (const cue of coreCues) {
       void this.loadCueBuffer(cue);
@@ -475,7 +772,7 @@ export class StudioAudioEngine {
           this.failedUrls.add(url);
           return null;
         }
-        const contentType = resp.headers.get('content-type') ?? '';
+        const contentType = resp.headers?.get?.('content-type') ?? '';
         if (contentType.includes('text/html')) {
           // Vite SPA fallback 200 HTML -> not an audio file!
           this.failedUrls.add(url);
@@ -509,7 +806,6 @@ export class StudioAudioEngine {
     if (!ctx) return null;
 
     const candidates = this.getCandidateUrls(cue);
-    // Check already-decoded shared URL buffers immediately (streak_1..5 / cutscene_whoosh!)
     for (const url of candidates) {
       const shared = this.urlBuffers.get(url);
       if (shared) {
@@ -580,6 +876,7 @@ export class StudioAudioEngine {
   public setMusicEnabled(enabled: boolean): boolean {
     if (!this.musicApproved) {
       this.musicEnabled = false;
+      this.writeBoolStorage(V4_MUSIC_STORAGE_KEY, false);
       this.writeBoolStorage(MUSIC_STORAGE_KEY, false);
       this.writeRawStorage(AMBIENCE_V2_STORAGE_KEY, '0');
       this.stopMusic();
@@ -587,6 +884,7 @@ export class StudioAudioEngine {
       return false;
     }
     this.musicEnabled = Boolean(enabled);
+    this.writeBoolStorage(V4_MUSIC_STORAGE_KEY, this.musicEnabled);
     this.writeBoolStorage(MUSIC_STORAGE_KEY, this.musicEnabled);
     this.writeRawStorage(AMBIENCE_V2_STORAGE_KEY, this.musicEnabled ? '1' : '0');
     this.syncMusicPlayback();
@@ -603,8 +901,23 @@ export class StudioAudioEngine {
     return this.sfxEnabled;
   }
 
+  public getCurrentMusicCue(): MusicCueId {
+    return this.currentMusicCue;
+  }
+
+  public isVoiceDucked(): boolean {
+    return this.isVoiceDucking;
+  }
+
+  public getVoiceDuckGains(): { music: number; crowd: number } {
+    return {
+      music: this.currentMusicDuckScalar,
+      crowd: this.currentCrowdDuckScalar,
+    };
+  }
+
   // --------------------------------------------------------------------------
-  // Physical Foley Playback (Zero Synthesizers!)
+  // Broadcast SFX, Musical Streaks, Clock Ticks, Crowd & Board Cues
   // --------------------------------------------------------------------------
 
   public playSfx(
@@ -636,7 +949,7 @@ export class StudioAudioEngine {
 
     // Await shared in-flight decode Promise (never drops first-tap SFX during prewarm!)
     const requestedAt = tMs;
-    const maxDeferMs = cue === 'spin_tick' ? 180 : 1200;
+    const maxDeferMs = cue === 'spin_tick' || cue === 'wheel_tick' ? 180 : 1200;
     void this.loadCueBuffer(cue).then((buf) => {
       if (this.disposed || !buf || !this.ctx || !this.sfxEnabled) return;
       if (nowMs() - requestedAt > maxDeferMs) return;
@@ -657,15 +970,19 @@ export class StudioAudioEngine {
       }
       const source = ctx.createBufferSource();
       source.buffer = buffer;
-      // Subtle +/-2% natural micro-variation on watch-escapement ticks so repeats never sound robotic
+      // Subtle +/-2% natural micro-variation ONLY on mechanical escapement ticks so repeats stay organic
       const naturalJitter = cue === 'spin_tick' ? 0.98 + Math.random() * 0.04 : 1.0;
       source.playbackRate.value = Math.max(0.5, Math.min(1.6, (rate ?? 1.0) * naturalJitter));
 
       const gain = ctx.createGain();
       gain.gain.value = Math.max(0, Math.min(1, SFX_VOLUMES[cue] * volumeScale));
 
+      const destNode = CROWD_CUES.has(cue)
+        ? this.getCrowdOutputNode(ctx)
+        : this.getSfxOutputNode(ctx);
+
       source.connect(gain);
-      gain.connect(this.getSfxOutputNode(ctx));
+      gain.connect(destNode);
       source.onended = () => {
         try {
           source.disconnect();
@@ -678,6 +995,81 @@ export class StudioAudioEngine {
     } catch {
       // Ignore playback errors cleanly
     }
+  }
+
+  /**
+   * True harmonically ascending musical streak reward progression (ZERO microtonal pitch-smearing!):
+   *   1: Cmaj9 | 2: Dmaj9 | 3: Emaj9 | 4: Gmaj9 | 5+: Radiant Octave Fanfare
+   */
+  public playStreakFanfare(streak: number): void {
+    if (this.disposed || !this.sfxEnabled) return;
+    const clamped = Math.max(1, Math.min(5, Math.floor(streak))) as 1 | 2 | 3 | 4 | 5;
+    this.playSfx(`streak_${clamped}`, { rate: 1.0 });
+  }
+
+  /**
+   * Horological studio countdown clock & timeout cadence:
+   *   - 6s..3s : crisp studio clock tick (`sfx_clock_tick.mp3`)
+   *   - 2s..1s : urgent double-pulse heartbeat tick (`sfx_clock_urgent.mp3`)
+   *   - <= 0s  : warm broadcast timeout chime (`sfx_buzzer_timeout.mp3`)
+   */
+  public playCountdownTick(secondsLeft: number): void {
+    if (this.disposed || !this.sfxEnabled || !Number.isFinite(secondsLeft)) return;
+    if (secondsLeft <= 0) {
+      this.playSfx('buzzer_timeout');
+      return;
+    }
+    const sec = Math.ceil(secondsLeft);
+    if (sec <= 2) {
+      this.playSfx('clock_urgent', { volumeScale: sec === 1 ? 1.08 : 0.96 });
+      return;
+    }
+    if (sec <= 6) {
+      // Subtle organic urgency swell from 6s -> 3s without pitch distortion
+      const swell = 0.80 + (6 - sec) * 0.06;
+      this.playSfx('clock_tick', { volumeScale: swell });
+    }
+  }
+
+  /**
+   * World-Search escalating audience energy (routed through dedicated Crowd Duck Bus = 0.35x during VO!):
+   *   - Tiers 1–2: intimate room claps (`sfx_crowd_small_hall.mp3`)
+   *   - Tiers 3–5: lively TV studio applause (`sfx_crowd_tv_studio.mp3`)
+   *   - Tiers 6–8: massive global arena ovation (`sfx_crowd_global_arena.mp3`)
+   *   - kind='gasp': collective studio audience gasp (`sfx_crowd_gasp.mp3`)
+   */
+  public playAudienceReaction(tierNumber: number, kind: AudienceReactionKind = 'applause'): void {
+    if (this.disposed || !this.sfxEnabled) return;
+    const tier = Math.max(1, Math.min(8, Math.floor(Number.isFinite(tierNumber) ? tierNumber : 1)));
+
+    if (kind === 'gasp') {
+      const scale = tier >= 6 ? 1.05 : tier >= 3 ? 0.96 : 0.86;
+      this.playSfx('crowd_gasp', { volumeScale: scale });
+      return;
+    }
+
+    const roarBoost = kind === 'roar' ? 1.15 : 1.0;
+    if (tier <= 2) {
+      this.playSfx('crowd_small_hall', { volumeScale: roarBoost });
+    } else if (tier <= 5) {
+      this.playSfx('crowd_tv_studio', { volumeScale: roarBoost });
+    } else {
+      this.playSfx('crowd_global_arena', { volumeScale: roarBoost });
+    }
+  }
+
+  /**
+   * Tactile v4 board & game-show cues (`tile_flip`, `padlock_break`, `wheel_tick`,
+   * `power_play`, `wedge_earned`, `rival_trap`, `lock_in`, `wrong_answer`).
+   */
+  public playBoardCue(kind: BoardCueKind): void {
+    if (this.disposed || !this.sfxEnabled) return;
+    if (kind === 'wheel_tick') {
+      const pegJitter = 0.97 + Math.random() * 0.06;
+      this.playSfx('wheel_tick', { rate: pegJitter });
+      return;
+    }
+    this.playSfx(kind);
   }
 
   /**
@@ -712,8 +1104,6 @@ export class StudioAudioEngine {
         const src = ctx.createBufferSource();
         src.buffer = audioBuf;
 
-        // Sustain smoothly across the measured -17.7 dBFS harmonic plateau (~0.56s..0.76s)
-        // snapped to exact rising zero-crossings so holding past 1.05s never cuts out or clicks!
         const loopPts = findZeroCrossingLoopPoints(audioBuf, 0.56, 0.76);
         if (loopPts) {
           src.loop = true;
@@ -771,24 +1161,13 @@ export class StudioAudioEngine {
     if (src && gain && this.ctx) {
       try {
         const t = this.ctx.currentTime;
-        // Prefer spec cancelAndHoldAtTime to avoid Safari/Chrome intrinsic-value jump clicks!
-        const param = gain.gain as AudioParam & {
-          cancelAndHoldAtTime?: (cancelTime: number) => AudioParam;
-        };
-        if (typeof param.cancelAndHoldAtTime === 'function') {
-          param.cancelAndHoldAtTime(t);
-        } else {
-          const frac = Math.max(0, Math.min(1, (t - startT) / 0.81));
-          const approxCurrent = 0.18 + (SFX_VOLUMES.overclock_charge - 0.18) * frac;
-          param.cancelScheduledValues(t);
-          param.setValueAtTime(Math.max(0.0001, approxCurrent), t);
-        }
-        param.linearRampToValueAtTime(0.0001, t + 0.045);
+        const frac = Math.max(0, Math.min(1, (t - startT) / 0.81));
+        const approxCurrent = 0.18 + (SFX_VOLUMES.overclock_charge - 0.18) * frac;
+        rampAudioParam(gain.gain, 0.0001, t, 0.045, approxCurrent);
 
         if (this.ctx.state === 'running') {
           src.stop(t + 0.055);
         } else {
-          // If AudioContext is suspended/interrupted, stop immediately so it never resumes later!
           src.stop();
           src.disconnect();
           gain.disconnect();
@@ -805,19 +1184,86 @@ export class StudioAudioEngine {
     }
   }
 
-  public playStreakFanfare(streak: number): void {
-    if (!this.sfxEnabled) return;
-    const clamped = Math.max(1, Math.min(5, Math.floor(streak))) as 1 | 2 | 3 | 4 | 5;
-    if (streak >= 2) {
-      this.playSfx(`streak_${clamped}`, { rate: 1.0 + (clamped - 1) * 0.045 });
-    } else {
-      this.playSfx('gold_resonance');
+  // --------------------------------------------------------------------------
+  // Verified Neural Voice Acting + Smooth 80ms Fade-Out + Dual Ducking
+  // --------------------------------------------------------------------------
+
+  public registerVerifiedVoiceTranscript(clipOrUrl: string, transcript: string): void {
+    const url = normalizeAssetUrl(clipOrUrl);
+    if (url && transcript.trim()) {
+      this.verifiedVoiceTranscripts.set(url, transcript.trim());
     }
   }
 
-  // --------------------------------------------------------------------------
-  // Neural Voice Acting (144 Mastered Clips in ./assets/voice/*.mp3)
-  // --------------------------------------------------------------------------
+  public getLastBlockedVoiceReason(): string | null {
+    return this.lastBlockedVoiceReason;
+  }
+
+  /**
+   * Voice integrity guard: verifies that `voiceUrl`'s recorded transcript matches `subtitleText`
+   * (and optional `transcriptExpectation`) so mismatched legacy v1/v2 `.mp3` clips can NEVER
+   * play over v4 World Tour lines!
+   *
+   * Returns `true` if verified and playback was initiated; `false` if blocked (still fires `onEnded`).
+   */
+  public playVerifiedVoice(
+    voiceUrl: string | null | undefined,
+    subtitleText: string,
+    transcriptExpectation?: string,
+    onEnded?: () => void,
+  ): boolean {
+    const fireEndedAsync = () => {
+      if (onEnded) {
+        queueMicrotask(() => {
+          if (!this.disposed) onEnded();
+        });
+      }
+    };
+
+    if (this.disposed || !voiceUrl || !voiceUrl.trim() || !subtitleText || !subtitleText.trim()) {
+      this.lastBlockedVoiceReason = 'empty_url_or_subtitle';
+      fireEndedAsync();
+      return false;
+    }
+
+    const normalizedUrl = normalizeAssetUrl(voiceUrl);
+    const knownTranscript = this.verifiedVoiceTranscripts.get(normalizedUrl);
+
+    // 1. If we know the recorded transcript for this clip from manifest/registry, subtitle MUST match it!
+    if (knownTranscript !== undefined) {
+      if (computeTranscriptSimilarity(subtitleText, knownTranscript) < 0.78) {
+        this.lastBlockedVoiceReason = `manifest_mismatch:${normalizedUrl}`;
+        fireEndedAsync();
+        return false;
+      }
+    }
+
+    // 2. If caller passed an explicit transcript expectation, subtitle MUST match it!
+    if (transcriptExpectation !== undefined) {
+      if (
+        !transcriptExpectation.trim() ||
+        computeTranscriptSimilarity(subtitleText, transcriptExpectation) < 0.78
+      ) {
+        this.lastBlockedVoiceReason = `expectation_mismatch:${normalizedUrl}`;
+        fireEndedAsync();
+        return false;
+      }
+    }
+
+    // 3. Fail-closed guard for legacy v1/v2 story `.mp3` clips in `./assets/voice/` (non-`v4_` filenames):
+    //    NEVER allow an unverified v1/v2 recording to play over v4 subtitles without a verified transcript match!
+    if (isLegacyV1V2VoiceUrl(normalizedUrl)) {
+      if (knownTranscript === undefined && transcriptExpectation === undefined) {
+        this.lastBlockedVoiceReason = `unverified_legacy_v1v2_clip:${normalizedUrl}`;
+        fireEndedAsync();
+        return false;
+      }
+    }
+
+    this.lastBlockedVoiceReason = null;
+    this.playVoice(normalizedUrl, onEnded);
+    return true;
+  }
 
   public playVoice(clipOrUrl: string, onEnded?: () => void): void {
     const url = normalizeAssetUrl(clipOrUrl);
@@ -826,11 +1272,12 @@ export class StudioAudioEngine {
       return;
     }
 
-    // Guarantees ZERO overlapping VO lines and invalidates any previous in-flight play() Promise!
-    this.stopVoice();
+    // Smoothly retire any previous VO line (80ms click-free fade, keeping ducking steady during handoff)
+    this.stopVoiceInternal(false, this.voiceEnabled);
     const myToken = ++this.voiceToken;
 
     if (!this.voiceEnabled) {
+      this.setVoiceDucking(false);
       if (onEnded) {
         queueMicrotask(() => {
           if (myToken === this.voiceToken && !this.disposed) {
@@ -854,7 +1301,6 @@ export class StudioAudioEngine {
       const finish = () => {
         if (endedCalled) return;
         endedCalled = true;
-        // Strictly ignore events from a superseded/stopped audio element!
         if (myToken !== this.voiceToken) return;
         if (this.currentVoiceEl === audio) {
           this.currentVoiceEl = null;
@@ -870,7 +1316,6 @@ export class StudioAudioEngine {
       const playPromise = audio.play();
       if (playPromise && typeof playPromise.catch === 'function') {
         playPromise.catch(() => {
-          // If stopVoice() or a newer playVoice() already superseded this clip, DO NOTHING!
           if (myToken !== this.voiceToken || this.disposed) return;
 
           // Browser blocked autoplay prior to first user click — queue cleanly for first gesture!
@@ -896,8 +1341,54 @@ export class StudioAudioEngine {
     }
   }
 
-  public stopVoice(): void {
-    // Advance token FIRST so any error/AbortError fired by unloading src is 100% ignored!
+  /**
+   * Stops active VO playback cleanly with a smooth 80ms click-free ramp-down (ZERO hard 0ms chop!).
+   * Pass `immediate = true` only for synchronous teardown (e.g. `dispose()`).
+   */
+  public stopVoice(immediate = false): void {
+    this.stopVoiceInternal(immediate, false);
+  }
+
+  private finalizeVoiceElementTeardown(el: HTMLAudioElement): void {
+    this.retiringVoiceCleanups.delete(el);
+    try {
+      el.pause();
+      try {
+        el.currentTime = 0;
+      } catch {
+        // Ignore unseekable state
+      }
+      if (typeof el.removeAttribute === 'function') {
+        el.removeAttribute('src');
+      } else {
+        el.src = '';
+      }
+      if (typeof el.load === 'function') {
+        el.load();
+      }
+    } catch {
+      // Ignore teardown errors
+    }
+    const gainNode = this.voiceGainMap.get(el);
+    if (gainNode) {
+      try {
+        gainNode.disconnect();
+      } catch {
+        // Already disconnected
+      }
+    }
+    const srcNode = this.voiceSourceMap.get(el);
+    if (srcNode) {
+      try {
+        srcNode.disconnect();
+      } catch {
+        // Already disconnected
+      }
+    }
+  }
+
+  private stopVoiceInternal(immediate: boolean, keepDucking: boolean): void {
+    // Advance token FIRST so any late error/ended event from a retiring clip is 100% ignored!
     ++this.voiceToken;
     this.pendingVoiceRequest = null;
 
@@ -906,34 +1397,69 @@ export class StudioAudioEngine {
     this.currentVoiceId = '';
 
     if (el) {
-      try {
-        el.pause();
-        try {
-          el.currentTime = 0;
-        } catch {
-          // Ignore unseekable state
+      if (immediate || el.paused || el.ended) {
+        this.finalizeVoiceElementTeardown(el);
+      } else {
+        // Smooth 80ms click-free ramp-down on WebAudio GainNode + HTMLAudioElement volume!
+        const gainNode = this.voiceGainMap.get(el);
+        if (gainNode && this.ctx && this.ctx.state === 'running') {
+          try {
+            rampAudioParam(gainNode.gain, 0.0001, this.ctx.currentTime, VOICE_STOP_FADE_MS / 1000, 1.0);
+          } catch {
+            // Fall through to HTMLAudio volume ramp
+          }
         }
-        if (typeof el.removeAttribute === 'function') {
-          el.removeAttribute('src');
-        } else {
-          el.src = '';
-        }
-        if (typeof el.load === 'function') {
-          el.load();
-        }
-      } catch {
-        // Ignore teardown errors
-      }
-      const srcNode = this.voiceSourceMap.get(el);
-      if (srcNode) {
-        try {
-          srcNode.disconnect();
-        } catch {
-          // Already disconnected
-        }
+
+        const startVol = Math.max(0, Math.min(1, Number.isFinite(el.volume) ? el.volume : 0.92));
+        const fadeStartMs = nowMs();
+        let finished = false;
+        let stepTimer: ReturnType<typeof setTimeout> | null = null;
+        let deadlineTimer: ReturnType<typeof setTimeout> | null = null;
+
+        const finishNow = () => {
+          if (finished) return;
+          finished = true;
+          if (stepTimer !== null) {
+            clearTimeout(stepTimer);
+            stepTimer = null;
+          }
+          if (deadlineTimer !== null) {
+            clearTimeout(deadlineTimer);
+            deadlineTimer = null;
+          }
+          try {
+            el.volume = 0;
+          } catch {
+            // Ignore read-only volume
+          }
+          this.finalizeVoiceElementTeardown(el);
+        };
+
+        this.retiringVoiceCleanups.set(el, finishNow);
+
+        const tickFade = () => {
+          if (finished) return;
+          const elapsed = nowMs() - fadeStartMs;
+          const frac = Math.max(0, 1 - elapsed / VOICE_STOP_FADE_MS);
+          try {
+            el.volume = Math.max(0, Math.min(1, startVol * frac));
+          } catch {
+            // Ignore
+          }
+          if (elapsed >= VOICE_STOP_FADE_MS) {
+            finishNow();
+          } else {
+            stepTimer = setTimeout(tickFade, 16);
+          }
+        };
+        stepTimer = setTimeout(tickFade, 16);
+        deadlineTimer = setTimeout(finishNow, VOICE_STOP_FADE_MS + 4);
       }
     }
-    this.setVoiceDucking(false);
+
+    if (!keepDucking) {
+      this.setVoiceDucking(false);
+    }
   }
 
   public isVoicePlaying(): boolean {
@@ -949,7 +1475,7 @@ export class StudioAudioEngine {
   }
 
   private attachVoiceAnalyser(audioEl: HTMLAudioElement): void {
-    // Never route HTMLAudioElement into a suspended AudioContext (silences pre-unlock output per #145)
+    // Never route HTMLAudioElement into a suspended AudioContext (silences pre-unlock output)
     if (!this.unlocked) return;
     const ctx = this.ensureContext();
     if (!ctx || ctx.state !== 'running') return;
@@ -965,8 +1491,12 @@ export class StudioAudioEngine {
       let src = this.voiceSourceMap.get(audioEl);
       if (!src) {
         src = ctx.createMediaElementSource(audioEl);
+        const vGain = ctx.createGain();
+        vGain.gain.value = 1.0;
         this.voiceSourceMap.set(audioEl, src);
-        src.connect(this.voiceAnalyser);
+        this.voiceGainMap.set(audioEl, vGain);
+        src.connect(vGain);
+        vGain.connect(this.voiceAnalyser);
         this.voiceAnalyser.connect(ctx.destination);
       }
     } catch {
@@ -995,39 +1525,57 @@ export class StudioAudioEngine {
         // Fallback below
       }
     }
-    // Natural speech cadence fallback if analyser hasn't unlocked yet
     const t = nowMs() * 0.012;
     return 0.25 + 0.35 * Math.abs(Math.sin(t) * Math.cos(t * 0.63));
   }
 
+  // --------------------------------------------------------------------------
+  // Adaptive Broadcast Score & Smooth Crossfaded Music Engine
+  // --------------------------------------------------------------------------
+
   /**
-   * Switches the subtle venue-matched acoustic room-air bed (only audible when user toggles AMBIENCE: ON).
+   * Updates venue-matched acoustic room-air bed (used when `currentMusicCue === 'ambient'`).
+   * Supports both legacy venue codes (`ch`, `gb`, `jp`, `eg`, `global`) and v4 `VenueStageThemeId`s.
    */
   public setVenueAmbience(venueCode: string): void {
     const code = (venueCode || 'ch').toLowerCase();
     const map: Record<string, string> = {
       ch: './assets/audio/ambience_chamber_room.mp3',
       studio: './assets/audio/ambience_chamber_room.mp3',
+      tier1_community_hall: './assets/audio/ambience_chamber_room.mp3',
+      tier2_civic_theater: './assets/audio/ambience_chamber_room.mp3',
+      tier3_regional_tv: './assets/audio/ambience_chamber_room.mp3',
+      tier4_national_arena: './assets/audio/ambience_chamber_room.mp3',
       gb: './assets/audio/ambience_london_rain.mp3',
       br: './assets/audio/ambience_london_rain.mp3',
+      tier5_london_rotunda: './assets/audio/ambience_london_rain.mp3',
       jp: './assets/audio/ambience_tokyo_neon_rain.mp3',
       sg: './assets/audio/ambience_tokyo_neon_rain.mp3',
+      tier6_tokyo_skydome: './assets/audio/ambience_tokyo_neon_rain.mp3',
       eg: './assets/audio/ambience_cairo_vault_air.mp3',
       is: './assets/audio/ambience_cairo_vault_air.mp3',
       ledger: './assets/audio/ambience_cairo_vault_air.mp3',
+      tier7_cairo_pavilion: './assets/audio/ambience_cairo_vault_air.mp3',
       global: './assets/audio/ambience_ocean_storm_air.mp3',
+      tier8_global_finale: './assets/audio/ambience_ocean_storm_air.mp3',
     };
     this.activeVenueAmbienceUrl = map[code] ?? './assets/audio/ambience_chamber_room.mp3';
     this.manifest.roomTone = this.activeVenueAmbienceUrl;
-    if (this.isMusicEnabled()) {
+    if (this.isMusicEnabled() && this.currentMusicCue === 'ambient') {
       this.syncMusicPlayback();
     }
   }
 
-  // --------------------------------------------------------------------------
-  // Studio Room-Tone Bed (Strictly Opt-In, Default OFF & Loudness-Matched)
-  // --------------------------------------------------------------------------
-
+  /**
+   * Smoothly crossfades to the requested broadcast music stem:
+   *   - `'title'`    -> Warm prime-time game-show theme (`music_title_showtime.mp3`)
+   *   - `'board'`    -> Light rhythmic board-selection groove (`music_board_groove.mp3`)
+   *   - `'thinking'` -> Subtle Jeopardy!/Millionaire contemplation pulse (`music_thinking_bed.mp3`)
+   *   - `'tension'`  -> High-stakes championship heartbeat & pad (`music_finale_tension.mp3`)
+   *   - `'finale'`   -> High-stakes championship heartbeat & pad (`music_finale_tension.mp3`)
+   *   - `'mystery'`  -> Focused contemplation bed (`music_thinking_bed.mp3`)
+   *   - `'ambient'`  -> Venue-matched acoustic room-air bed
+   */
   public setMusicCue(cue: MusicCueId): void {
     this.currentMusicCue = cue;
     if (this.isMusicEnabled()) {
@@ -1037,29 +1585,91 @@ export class StudioAudioEngine {
 
   private resolveMusicUrl(cue: MusicCueId): string | null {
     if (!this.musicApproved) return null;
+    if (cue === 'ambient') {
+      const room = this.manifest.roomTone ?? this.activeVenueAmbienceUrl;
+      return room ? normalizeAssetUrl(room) : null;
+    }
     const mapped =
-      this.manifest.music?.[cue] ?? this.manifest.music?.ambient ?? this.manifest.roomTone;
+      this.manifest.music?.[cue] ??
+      DEFAULT_V4_MUSIC_MAP[cue] ??
+      this.manifest.roomTone ??
+      this.activeVenueAmbienceUrl;
     return mapped ? normalizeAssetUrl(mapped) : null;
   }
 
-  private getTargetMusicVolume(url?: string): number {
-    const cueUrl = url ?? this.musicEl?.dataset?.cueUrl ?? this.activeVenueAmbienceUrl;
-    const trim = VENUE_AMBIENCE_VOLUME_SCALE[cueUrl] ?? 1.0;
-    const duckFactor = this.isVoiceDucking ? 0.34 : 1.0;
-    return Math.max(0, Math.min(1, this.baseMusicVolume * trim * duckFactor));
+  private getTrackScale(url: string): number {
+    return MUSIC_TRACK_VOLUME_SCALE[url] ?? 0.90;
   }
 
-  private cancelMusicFade(): void {
+  private getTargetFallbackMusicVolume(url?: string): number {
+    const cueUrl = url ?? this.musicEl?.dataset?.cueUrl ?? this.activeVenueAmbienceUrl;
+    const trim = this.getTrackScale(cueUrl);
+    return Math.max(0, Math.min(1, this.baseMusicVolume * trim * this.currentMusicDuckScalar));
+  }
+
+  /**
+   * Smoothly ducks BOTH music (`0.30x`) and crowd beds (`0.35x`) via WebAudio gain transitions
+   * whenever Host Max Sterling or a Challenger speaks.
+   */
+  public setVoiceDucking(ducking: boolean): void {
+    if (this.isVoiceDucking === ducking) return;
+    this.isVoiceDucking = ducking;
+    const targetMusic = ducking ? VOICE_DUCK_MUSIC_GAIN : 1.0;
+    const targetCrowd = ducking ? VOICE_DUCK_CROWD_GAIN : 1.0;
+    const prevMusic = this.currentMusicDuckScalar;
+    const prevCrowd = this.currentCrowdDuckScalar;
+    this.currentMusicDuckScalar = targetMusic;
+    this.currentCrowdDuckScalar = targetCrowd;
+
+    const fadeSec = ducking ? 0.14 : 0.36;
+    if (this.ctx) {
+      const t = this.ctx.currentTime;
+      if (this.musicDuckGain) {
+        try {
+          if (this.ctx.state === 'running') {
+            rampAudioParam(this.musicDuckGain.gain, targetMusic, t, fadeSec, prevMusic);
+          } else {
+            this.musicDuckGain.gain.value = targetMusic;
+          }
+        } catch {
+          this.musicDuckGain.gain.value = targetMusic;
+        }
+      }
+      if (this.crowdDuckGain) {
+        try {
+          if (this.ctx.state === 'running') {
+            rampAudioParam(
+              this.crowdDuckGain.gain,
+              targetCrowd,
+              t,
+              ducking ? 0.12 : 0.34,
+              prevCrowd,
+            );
+          } else {
+            this.crowdDuckGain.gain.value = targetCrowd;
+          }
+        } catch {
+          this.crowdDuckGain.gain.value = targetCrowd;
+        }
+      }
+    }
+
+    if (this.musicEl) {
+      this.rampFallbackMusicVolumeTo(this.getTargetFallbackMusicVolume(), ducking ? 150 : 360);
+    }
+  }
+
+  private cancelFallbackMusicFade(): void {
     if (this.musicFadeRaf !== 0 && typeof cancelAnimationFrame === 'function') {
       cancelAnimationFrame(this.musicFadeRaf);
       this.musicFadeRaf = 0;
     }
   }
 
-  private rampMusicVolumeTo(targetVol: number, durationMs: number): void {
+  private rampFallbackMusicVolumeTo(targetVol: number, durationMs: number): void {
     const el = this.musicEl;
     if (!el) return;
-    this.cancelMusicFade();
+    this.cancelFallbackMusicFade();
     const clampedTarget = Math.max(0, Math.min(1, targetVol));
     if (durationMs <= 0 || typeof requestAnimationFrame !== 'function') {
       el.volume = clampedTarget;
@@ -1088,84 +1698,45 @@ export class StudioAudioEngine {
     this.musicFadeRaf = requestAnimationFrame(step);
   }
 
-  private syncMusicPlayback(): void {
-    if (this.disposed || !this.isMusicEnabled()) {
-      this.stopMusic();
-      return;
-    }
-    const url = this.resolveMusicUrl(this.currentMusicCue);
-    if (!url) {
-      this.stopMusic();
-      return;
-    }
-
-    if (this.musicEl && this.musicEl.dataset.cueUrl === url) {
-      this.rampMusicVolumeTo(this.getTargetMusicVolume(url), 180);
-      if (this.musicEl.paused && this.unlocked) {
-        void this.musicEl.play().catch(() => {});
+  private retireWebAudioDeck(deck: ActiveMusicDeck, fadeMs: number): void {
+    const cleanup = () => {
+      if (deck.cleanupTimer !== null) {
+        clearTimeout(deck.cleanupTimer);
+        deck.cleanupTimer = null;
       }
+      this.fadingMusicDecks.delete(deck);
+      try {
+        deck.source.stop();
+      } catch {
+        // Already stopped
+      }
+      try {
+        deck.source.disconnect();
+        deck.gain.disconnect();
+      } catch {
+        // Already disconnected
+      }
+    };
+
+    if (!this.ctx || fadeMs <= 0 || this.ctx.state !== 'running') {
+      cleanup();
       return;
     }
 
-    this.stopMusic();
-    const myMusicToken = ++this.musicToken;
+    this.fadingMusicDecks.add(deck);
     try {
-      const el = new Audio(url);
-      el.loop = true;
-      el.preload = 'auto';
-      el.dataset.cueUrl = url;
-      el.volume = 0;
-      el.addEventListener(
-        'error',
-        () => {
-          if (myMusicToken !== this.musicToken || this.musicEl !== el || this.disposed) return;
-          // Graceful fallback to verified Geneva chamber room-tone if a venue bed fails to load
-          if (url !== './assets/audio/ambience_chamber_room.mp3') {
-            el.src = './assets/audio/ambience_chamber_room.mp3';
-            el.dataset.cueUrl = './assets/audio/ambience_chamber_room.mp3';
-            if (this.unlocked && this.isMusicEnabled()) {
-              void el.play().catch(() => {});
-              this.rampMusicVolumeTo(
-                this.getTargetMusicVolume('./assets/audio/ambience_chamber_room.mp3'),
-                240,
-              );
-            }
-          }
-        },
-        { once: true },
-      );
-      this.musicEl = el;
-      if (this.unlocked) {
-        void el
-          .play()
-          .then(() => {
-            if (myMusicToken === this.musicToken && this.musicEl === el) {
-              this.rampMusicVolumeTo(this.getTargetMusicVolume(url), 240);
-            }
-          })
-          .catch(() => {});
-      } else {
-        el.volume = this.getTargetMusicVolume(url);
-      }
+      const t = this.ctx.currentTime;
+      const fadeSec = fadeMs / 1000;
+      rampAudioParam(deck.gain.gain, 0.0001, t, fadeSec, this.getTrackScale(deck.url));
+      deck.source.stop(t + fadeSec + 0.025);
+      deck.cleanupTimer = setTimeout(cleanup, fadeMs + 45);
     } catch {
-      this.musicEl = null;
+      cleanup();
     }
   }
 
-  private setVoiceDucking(ducking: boolean): void {
-    if (this.isVoiceDucking === ducking) return;
-    this.isVoiceDucking = ducking;
-    if (this.musicEl) {
-      this.rampMusicVolumeTo(this.getTargetMusicVolume(), ducking ? 160 : 360);
-    }
-  }
-
-  public stopMusic(): void {
-    ++this.musicToken;
-    this.cancelMusicFade();
-    const el = this.musicEl;
-    this.musicEl = null;
-    if (el) {
+  private retireFallbackAudioElement(el: HTMLAudioElement, fadeMs: number): void {
+    const teardown = () => {
       try {
         el.pause();
         if (typeof el.removeAttribute === 'function') {
@@ -1179,13 +1750,269 @@ export class StudioAudioEngine {
       } catch {
         // Ignore
       }
+    };
+
+    if (fadeMs <= 0 || el.paused) {
+      teardown();
+      return;
+    }
+
+    const startVol = Math.max(0, Math.min(1, el.volume));
+    const steps = 6;
+    const stepMs = Math.max(16, Math.floor(fadeMs / steps));
+    let i = 0;
+    const state: LegacyAudioFadeState = { el, rafId: 0, timerId: null };
+    this.fadingMusicEls.add(state);
+
+    const tick = () => {
+      i += 1;
+      try {
+        el.volume = Math.max(0, startVol * (1 - i / steps));
+      } catch {
+        // Ignore
+      }
+      if (i >= steps) {
+        this.fadingMusicEls.delete(state);
+        teardown();
+      } else {
+        state.timerId = setTimeout(tick, stepMs);
+      }
+    };
+    state.timerId = setTimeout(tick, stepMs);
+  }
+
+  private syncMusicPlayback(): void {
+    if (this.disposed || !this.isMusicEnabled()) {
+      this.stopMusic();
+      return;
+    }
+    const url = this.resolveMusicUrl(this.currentMusicCue);
+    if (!url) {
+      this.stopMusic();
+      return;
+    }
+
+    // Do not attempt audio start before first user gesture; unlock listener calls syncMusicPlayback()!
+    if (!this.unlocked) {
+      return;
+    }
+
+    // Already playing this exact stem on WebAudio deck? Keep seamless!
+    if (this.activeMusicDeck && this.activeMusicDeck.url === url) {
+      if (this.ctx && this.isContextSuspended(this.ctx)) {
+        void this.ctx.resume().catch(() => {});
+      }
+      return;
+    }
+
+    // Already playing this exact stem on HTMLAudio fallback?
+    if (this.musicEl && this.musicEl.dataset.cueUrl === url) {
+      this.rampFallbackMusicVolumeTo(this.getTargetFallbackMusicVolume(url), 180);
+      if (this.musicEl.paused) {
+        void this.musicEl.play().catch(() => {});
+      }
+      return;
+    }
+
+    const myMusicToken = ++this.musicToken;
+    const ctx = this.ensureContext();
+    const musicBus = ctx ? this.getMusicInputNode(ctx) : null;
+
+    // Prefer gapless WebAudio BufferSource dual-deck crossfade when AudioContext & fetch exist!
+    if (ctx && musicBus && typeof fetch === 'function') {
+      void this.startWebAudioMusicDeck(ctx, musicBus, url, myMusicToken);
+      return;
+    }
+
+    this.startFallbackHtmlAudioMusic(url, myMusicToken);
+  }
+
+  private async startWebAudioMusicDeck(
+    ctx: AudioContext,
+    musicBus: AudioNode,
+    url: string,
+    myToken: number,
+  ): Promise<void> {
+    let buf = await this.fetchAndDecodeUrl(ctx, url);
+    let effectiveUrl = url;
+    if (!buf && url !== './assets/audio/ambience_chamber_room.mp3') {
+      effectiveUrl = './assets/audio/ambience_chamber_room.mp3';
+      buf = await this.fetchAndDecodeUrl(ctx, effectiveUrl);
+    }
+    if (this.disposed || myToken !== this.musicToken || !this.isMusicEnabled()) return;
+    if (!buf) {
+      // Fallback gracefully to HTMLAudioElement if WebAudio decode failed
+      this.startFallbackHtmlAudioMusic(url, myToken);
+      return;
+    }
+
+    try {
+      if (this.isContextSuspended(ctx)) {
+        void ctx.resume().catch(() => {});
+      }
+
+      const prevDeck = this.activeMusicDeck;
+      const hadPrev = Boolean(prevDeck || this.musicEl);
+      const fadeMs = hadPrev ? MUSIC_CROSSFADE_MS : 360;
+      const fadeSec = fadeMs / 1000;
+
+      if (prevDeck) {
+        this.activeMusicDeck = null;
+        this.retireWebAudioDeck(prevDeck, fadeMs);
+      }
+      if (this.musicEl) {
+        const oldEl = this.musicEl;
+        this.musicEl = null;
+        this.cancelFallbackMusicFade();
+        this.retireFallbackAudioElement(oldEl, fadeMs);
+      }
+
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      src.loop = true;
+      src.loopStart = 0;
+      src.loopEnd = buf.duration;
+
+      const deckGain = ctx.createGain();
+      const targetScale = this.getTrackScale(effectiveUrl);
+      const t = ctx.currentTime;
+      if (ctx.state === 'running') {
+        deckGain.gain.setValueAtTime(0.0001, t);
+        deckGain.gain.linearRampToValueAtTime(targetScale, t + fadeSec);
+      } else {
+        deckGain.gain.value = targetScale;
+      }
+
+      src.connect(deckGain);
+      deckGain.connect(musicBus);
+
+      const deck: ActiveMusicDeck = {
+        url: effectiveUrl,
+        source: src,
+        gain: deckGain,
+        cleanupTimer: null,
+      };
+      src.onended = () => {
+        if (this.activeMusicDeck === deck) {
+          this.activeMusicDeck = null;
+        }
+        this.fadingMusicDecks.delete(deck);
+        try {
+          src.disconnect();
+          deckGain.disconnect();
+        } catch {
+          // Ignore
+        }
+      };
+
+      src.start(0);
+      this.activeMusicDeck = deck;
+    } catch {
+      this.startFallbackHtmlAudioMusic(effectiveUrl, myToken);
+    }
+  }
+
+  private startFallbackHtmlAudioMusic(url: string, myMusicToken: number): void {
+    const prevEl = this.musicEl;
+    const fadeMs = prevEl ? MUSIC_CROSSFADE_MS : 280;
+    if (prevEl) {
+      this.musicEl = null;
+      this.cancelFallbackMusicFade();
+      this.retireFallbackAudioElement(prevEl, fadeMs);
+    }
+
+    try {
+      const el = new Audio(url);
+      el.loop = true;
+      el.preload = 'auto';
+      el.dataset.cueUrl = url;
+      el.volume = 0;
+      el.addEventListener(
+        'error',
+        () => {
+          if (myMusicToken !== this.musicToken || this.musicEl !== el || this.disposed) return;
+          if (url !== './assets/audio/ambience_chamber_room.mp3') {
+            el.src = './assets/audio/ambience_chamber_room.mp3';
+            el.dataset.cueUrl = './assets/audio/ambience_chamber_room.mp3';
+            if (this.unlocked && this.isMusicEnabled()) {
+              void el.play().catch(() => {});
+              this.rampFallbackMusicVolumeTo(
+                this.getTargetFallbackMusicVolume('./assets/audio/ambience_chamber_room.mp3'),
+                260,
+              );
+            }
+          }
+        },
+        { once: true },
+      );
+      this.musicEl = el;
+      void el
+        .play()
+        .then(() => {
+          if (myMusicToken === this.musicToken && this.musicEl === el) {
+            this.rampFallbackMusicVolumeTo(this.getTargetFallbackMusicVolume(url), fadeMs);
+          }
+        })
+        .catch(() => {});
+    } catch {
+      this.musicEl = null;
+    }
+  }
+
+  public stopMusic(immediate = false): void {
+    ++this.musicToken;
+    this.cancelFallbackMusicFade();
+
+    const fadeMs = immediate ? 0 : 180;
+    if (this.activeMusicDeck) {
+      const deck = this.activeMusicDeck;
+      this.activeMusicDeck = null;
+      this.retireWebAudioDeck(deck, fadeMs);
+    }
+    if (immediate) {
+      for (const deck of [...this.fadingMusicDecks]) {
+        if (deck.cleanupTimer !== null) clearTimeout(deck.cleanupTimer);
+        try {
+          deck.source.stop();
+          deck.source.disconnect();
+          deck.gain.disconnect();
+        } catch {
+          // Ignore
+        }
+      }
+      this.fadingMusicDecks.clear();
+    }
+
+    const el = this.musicEl;
+    this.musicEl = null;
+    if (el) {
+      this.retireFallbackAudioElement(el, fadeMs);
+    }
+    if (immediate) {
+      for (const st of [...this.fadingMusicEls]) {
+        if (st.timerId !== null) clearTimeout(st.timerId);
+        try {
+          st.el.pause();
+          st.el.removeAttribute?.('src');
+          st.el.load?.();
+        } catch {
+          // Ignore
+        }
+      }
+      this.fadingMusicEls.clear();
     }
   }
 
   public dispose(): void {
     this.disposed = true;
-    this.stopVoice();
-    this.stopMusic();
+    // Synchronously flush any retiring VO fade timers before closing context
+    for (const finishFn of [...this.retiringVoiceCleanups.values()]) {
+      finishFn();
+    }
+    this.retiringVoiceCleanups.clear();
+
+    this.stopVoice(true);
+    this.stopMusic(true);
     this.stopOverclockCharge();
     this.onStateChangedListeners.clear();
 
@@ -1209,6 +2036,19 @@ export class StudioAudioEngine {
       document.removeEventListener('visibilitychange', this.boundVisibilityHandler);
       this.boundVisibilityHandler = null;
     }
+
+    for (const node of [this.musicDuckGain, this.musicMasterGain, this.crowdDuckGain]) {
+      if (node) {
+        try {
+          node.disconnect();
+        } catch {
+          // Ignore
+        }
+      }
+    }
+    this.musicDuckGain = null;
+    this.musicMasterGain = null;
+    this.crowdDuckGain = null;
 
     if (this.sfxMasterNode && this.ctx && this.sfxMasterNode !== this.ctx.destination) {
       try {
