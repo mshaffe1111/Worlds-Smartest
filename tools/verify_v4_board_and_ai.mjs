@@ -394,6 +394,90 @@ function verifyHonestScoringAndVictoryRules() {
     false,
   );
 
+  // Deadlock tiebreak reason string check (strictOnDeadlock true vs false)
+  const deadlockedBoard = {
+    ...sampleBoard,
+    playerScore: 2000,
+    rivalScore: 2000,
+    earnedWedges: ['GOLD_HISTORY'],
+    rivalWedges: ['GOLD_HISTORY'],
+    hasActiveRival: true,
+  };
+  const deadlockStrict = Scoring.evaluateBoardOutcome(deadlockedBoard, { strictOnDeadlock: true });
+  assert.equal(deadlockStrict.playerWon, false);
+  assert.equal(deadlockStrict.reason, 'TIEBREAK_DEADLOCK_LOSS');
+
+  const deadlockRelaxed = Scoring.evaluateBoardOutcome(deadlockedBoard, { strictOnDeadlock: false });
+  assert.equal(deadlockRelaxed.playerWon, true);
+  assert.equal(deadlockRelaxed.reason, 'TIEBREAK_DEADLOCK_WIN');
+
+  // Partial-credit Match-4 / Sort-4 + streak / Double Down conservation (P1 regression proof)
+  const partialEval = {
+    isCorrect: true,
+    accuracyRatio: 0.5,
+    isBullseyeOrSweep: false,
+    basePoints: 200, // 2/4 partial hit on a 400-pt tile
+    bonusPoints: 0,
+    wagerDeltaPoints: 0,
+    netPointsDelta: 200,
+    correctSummaryLabel: '2/4 Matched',
+    detailBreakdown: '+200 partial',
+  };
+  const partialWithStreak = Scoring.reconcileEvaluatedAnswerForBoard({
+    evalResult: partialEval,
+    tilePointValue: 400,
+    tileTwist: 'NONE',
+    currentPlayerScore: 500,
+    currentRivalScore: 300,
+    hasActiveRival: true,
+    currentStreak: 2, // +50 streak
+    doubleDownArmed: false,
+  });
+  assert.equal(partialWithStreak.evaluated.basePoints, 200, 'Partial hit must keep 200 base, not overwrite to 400');
+  assert.equal(partialWithStreak.evaluated.bonusPoints, 50);
+  assert.equal(partialWithStreak.playerDelta, 250);
+  assert.equal(partialWithStreak.newPlayerScore, 750);
+
+  const partialWithDD = Scoring.reconcileEvaluatedAnswerForBoard({
+    evalResult: partialEval,
+    tilePointValue: 400,
+    tileTwist: 'NONE',
+    currentPlayerScore: 500,
+    currentRivalScore: 300,
+    hasActiveRival: true,
+    currentStreak: 2,
+    doubleDownArmed: true,
+  });
+  assert.equal(partialWithDD.evaluated.basePoints, 200);
+  assert.equal(partialWithDD.evaluated.wagerDeltaPoints, 200);
+  assert.equal(partialWithDD.playerDelta, 450);
+
+  // Also verify via Board.resolveTileResult directly on a 400-pt tile
+  const tile400 = sampleBoard.tiles.find((t) => t.pointValue === 400 && t.twist === 'NONE') ??
+    sampleBoard.tiles.find((t) => t.pointValue === 400);
+  const partialBoardRes = Board.resolveTileResult(
+    { ...sampleBoard, playerScore: 500 },
+    tile400.tileId,
+    partialEval,
+    { currentStreak: 2, doubleDownArmed: false },
+  );
+  assert.equal(partialBoardRes.evaluated.basePoints, 200);
+  assert.equal(partialBoardRes.playerScoreDelta, tile400.twist === 'RIVAL_BOUNTY' ? 550 : 250);
+
+  // Partial miss with Double Down armed must still subtract full -0.5x of tilePointValue (-200)
+  const partialMissDD = Scoring.reconcileEvaluatedAnswerForBoard({
+    evalResult: { ...partialEval, isCorrect: false, basePoints: 0, netPointsDelta: 0 },
+    tilePointValue: 400,
+    tileTwist: 'NONE',
+    currentPlayerScore: 500,
+    currentRivalScore: 300,
+    hasActiveRival: true,
+    currentStreak: 2,
+    doubleDownArmed: true,
+  });
+  assert.equal(partialMissDD.playerDelta, -200);
+  assert.equal(partialMissDD.newPlayerScore, 300);
+
   // Solo tryout (hasActiveRival === false)
   assert.equal(
     Scoring.didPlayerWinBoard({
@@ -756,6 +840,10 @@ function run500BoardSimulation() {
         assert.equal(selectable.length, 1, 'When forcedTileId is set, selectable must have length 1');
         assert.equal(selectable[0].tileId, board.forcedTileId);
         assert.ok(board.forcedReasonBanner && board.forcedReasonBanner.length > 8);
+        assert.ok(
+          !/\$\d+/.test(board.forcedReasonBanner),
+          `Forced banner must use "pts" not "$" for tile points: ${board.forcedReasonBanner}`,
+        );
         topoRec.forcedTurns++;
       }
 
@@ -865,6 +953,10 @@ function run500BoardSimulation() {
       // Active Single-Player Challenger AI turn!
       if (!board.isBoardComplete && board.hasActiveRival) {
         const aiRes = Challenger.runChallengerTurn(board, challenger, playerProfile, rng);
+        assert.ok(
+          !/\$\d+/.test(aiRes.action.banterLine),
+          `Challenger banter must use "pts" not "$" for tile points: ${aiRes.action.banterLine}`,
+        );
         ledgerRivalScore += aiRes.action.rivalPointsDelta;
         if (
           aiRes.board.playerScore !== ledgerPlayerScore ||

@@ -126,6 +126,7 @@ export type BoardVictoryReasonV4 =
   | 'OUTSCORED_RIVAL'
   | 'TIEBREAK_WEDGES'
   | 'TIEBREAK_TILES_WON'
+  | 'TIEBREAK_DEADLOCK_WIN'
   | 'OUTSCORED_BY_RIVAL'
   | 'TIEBREAK_RIVAL_WEDGES'
   | 'TIEBREAK_RIVAL_TILES_WON'
@@ -479,17 +480,30 @@ export function reconcileEvaluatedAnswerForBoard(params: {
     powerPlayWager != null ||
     doubleDownArmed ||
     wheelEffect !== 'NONE' ||
-    currentStreak > 0;
+    (evalResult.isCorrect && currentStreak > 0);
 
   if (!evalResultIsFinalized && hasBoardModifiers) {
-    // Compute authoritative board score preserving any format-specific bonus from evalResult
-    // (such as Clue Escalator early bonus) only if non-negative and not already base/wager.
+    // Preserve partial-credit base points on hits when 0 < accuracyRatio < 1
+    // (e.g. partial Match-4 / Sort-4 / Pinpoint) instead of overwriting with full tilePointValue.
+    const isPartialHit =
+      evalResult.isCorrect &&
+      Number.isFinite(evalResult.accuracyRatio) &&
+      evalResult.accuracyRatio > 0 &&
+      evalResult.accuracyRatio < 1;
+
+    const effectiveBaseTilePoints = isPartialHit
+      ? evalResult.basePoints > 0
+        ? Math.min(tilePointValue, sanitizeInt(evalResult.basePoints, 0))
+        : Math.round(tilePointValue * evalResult.accuracyRatio)
+      : tilePointValue;
+
+    // Preserve any non-negative format-specific bonus (such as Clue Escalator early solve).
     const extraFormatBonusPoints =
       evalResult.isCorrect && evalResult.bonusPoints > 0 ? evalResult.bonusPoints : 0;
 
     return scoreAnswerV4({
       isCorrect: evalResult.isCorrect,
-      baseTilePoints: tilePointValue,
+      baseTilePoints: effectiveBaseTilePoints,
       currentPlayerScore,
       currentRivalScore,
       hasActiveRival,
@@ -656,7 +670,7 @@ export function evaluateBoardOutcome(
       headlineSummary = `Tiebreak Loss. Tied at ${playerScore}, Challenger claimed more tiles (${rivalTilesClaimed} to ${playerTilesWon}).`;
     } else {
       playerWon = !strictOnDeadlock;
-      reason = 'TIEBREAK_DEADLOCK_LOSS';
+      reason = playerWon ? 'TIEBREAK_DEADLOCK_WIN' : 'TIEBREAK_DEADLOCK_LOSS';
       headlineSummary = playerWon
         ? `Photo-Finish Draw Victory at ${playerScore}!`
         : `Deadlock Loss at ${playerScore}. Beat the Challenger outright to advance.`;

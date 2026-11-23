@@ -1464,7 +1464,7 @@ export function resolveTileResult(
           index: spec.index,
           rewardType: 'CRACK_LOCK',
           unlockedTileId: crackTarget.tileId,
-          banner: `LINE CLEAR COMBO! Shattered the vault on ${colTitle} ($${crackTarget.pointValue})!`,
+          banner: `LINE CLEAR COMBO! Shattered the vault on ${colTitle} (${crackTarget.pointValue} pts)!`,
         });
       } else {
         // Reward Priority 2: Recharge a lifeline!
@@ -1535,7 +1535,7 @@ export function resolveTileResult(
         nextBoard = {
           ...nextBoard,
           forcedTileId: jumped.tileId,
-          forcedReasonBanner: `SPOTLIGHT SWEEP! The studio beam snapped straight to "${col.wittyTitle}" ($${jumped.pointValue})!`,
+          forcedReasonBanner: `SPOTLIGHT SWEEP! The studio beam snapped straight to "${col.wittyTitle}" (${jumped.pointValue} pts)!`,
         };
       }
     } else if (
@@ -1551,7 +1551,7 @@ export function resolveTileResult(
         nextBoard = {
           ...nextBoard,
           forcedTileId: picked.tileId,
-          forcedReasonBanner: `SPOTLIGHT ROULETTE! No choosing this turn — you're live on "${col.wittyTitle}" ($${picked.pointValue})!`,
+          forcedReasonBanner: `SPOTLIGHT ROULETTE! No choosing this turn — you're live on "${col.wittyTitle}" (${picked.pointValue} pts)!`,
         };
       }
     }

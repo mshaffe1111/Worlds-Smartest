@@ -315,18 +315,18 @@ function executeForceWeakTile(
 
   let forcedReasonBanner: string;
   if (picked.matchKind === 'EXACT_WEAK' && weakPct !== null) {
-    forcedReasonBanner = `${challenger.name} studied your career stats (${weakPct}% in ${domainName}) and forced you onto "${targetCol.wittyTitle}" ($${targetTile.pointValue})!`;
+    forcedReasonBanner = `${challenger.name} studied your career stats (${weakPct}% in ${domainName}) and forced you onto "${targetCol.wittyTitle}" (${targetTile.pointValue} pts)!`;
   } else if (picked.matchKind === 'EXACT_WEAK' || picked.matchKind === 'WEDGE_WEAK') {
     const weakLabel =
       playerStats?.weakestDomainName ??
       (playerStats?.weakestDomainId !== null && playerStats?.weakestDomainId !== undefined
         ? DOMAIN_TOPIC_SUBTITLE_V4[playerStats.weakestDomainId]
         : domainName);
-    forcedReasonBanner = `${challenger.name} targeted your ${weakLabel} weak spot and locked you onto "${targetCol.wittyTitle}" ($${targetTile.pointValue})!`;
+    forcedReasonBanner = `${challenger.name} targeted your ${weakLabel} weak spot and locked you onto "${targetCol.wittyTitle}" (${targetTile.pointValue} pts)!`;
   } else if (picked.matchKind === 'RIVAL_STRONG') {
-    forcedReasonBanner = `${challenger.name} dragged you onto their home turf: "${targetCol.wittyTitle}" ($${targetTile.pointValue})!`;
+    forcedReasonBanner = `${challenger.name} dragged you onto their home turf: "${targetCol.wittyTitle}" (${targetTile.pointValue} pts)!`;
   } else {
-    forcedReasonBanner = `${challenger.name} seized control of the board and forced "${targetCol.wittyTitle}" ($${targetTile.pointValue})!`;
+    forcedReasonBanner = `${challenger.name} seized control of the board and forced "${targetCol.wittyTitle}" (${targetTile.pointValue} pts)!`;
   }
 
   const nextTiles = board.tiles.map((t) =>
@@ -346,7 +346,7 @@ function executeForceWeakTile(
     domain: domainName,
     weakDomain: domainName,
     category: targetCol.wittyTitle,
-    tile: `${targetCol.wittyTitle} ($${targetTile.pointValue})`,
+    tile: `${targetCol.wittyTitle} (${targetTile.pointValue} pts)`,
   });
 
   const nextBoard: StageBoardStateV4 = {
@@ -463,7 +463,7 @@ function executePlantBounty(
       targetColIndex: target.colIndex,
       rivalPointsDelta: 0,
       rivalSucceeded: true,
-      banterLine: `${challenger.name} dropped a Rival Bounty on "${col.wittyTitle}" ($${target.pointValue}) — beat it to steal +300, or miss and hand over +200!`,
+      banterLine: `${challenger.name} dropped a Rival Bounty on "${col.wittyTitle}" (${target.pointValue} pts) — beat it to steal +300, or miss and hand over +200!`,
     },
     forcedByStageSpotlight: false,
     usedPlayerWeaknessStats: target.domainId === playerStats?.weakestDomainId,
@@ -496,7 +496,7 @@ function executeClaimTile(
         targetColIndex: target.colIndex,
         rivalPointsDelta: 0,
         rivalSucceeded: false,
-        banterLine: `${challenger.name} took a swing at "${col.wittyTitle}" ($${target.pointValue}) and missed — the tile stays wide open!`,
+        banterLine: `${challenger.name} took a swing at "${col.wittyTitle}" (${target.pointValue} pts) and missed — the tile stays wide open!`,
       },
       forcedByStageSpotlight: false,
       usedPlayerWeaknessStats: false,
@@ -751,7 +751,7 @@ export function runChallengerTurn(
         workingBoard = {
           ...workingBoard,
           forcedTileId: spotTile.tileId,
-          forcedReasonBanner: `SPOTLIGHT ROULETTE! Studio cameras locked onto "${spotCol.wittyTitle}" ($${spotTile.pointValue}) — no backing out!`,
+          forcedReasonBanner: `SPOTLIGHT ROULETTE! Studio cameras locked onto "${spotCol.wittyTitle}" (${spotTile.pointValue} pts) — no backing out!`,
         };
         // Challenger still plays a non-conflicting tile/bounty move on their turn!
         const followUp =
