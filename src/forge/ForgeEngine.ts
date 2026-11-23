@@ -30,12 +30,14 @@ import {
   fnv1a32,
   formatCleanTriviaNumber,
   isCleanShardCandidate,
+  isShardRowFamousEnoughForTier,
   normalizeToPrismQuestion,
   normalizeVisualAssetUrl,
   sharedCryptoRng,
   synthesizeShardCodexQuestion,
   type RngLike,
 } from './ShardDecoder';
+import type { QuestionCardV4 } from '../v4/contracts';
 import {
   BUILTIN_TAXONOMY_SEEDS,
   type ForgeTaxonomyTree,
@@ -679,9 +681,9 @@ export const INSTANT_COLD_OPEN_PRISMS: ReadonlyArray<RawQuestionRecord> = [
       coordHint: 'Southern & Western Hemisphere: near 13° S, 73° W.',
       quickAnchors: [
         { label: 'Machu Picchu, Peru', lat: -13.1631, lon: -72.545 },
-        { label: 'Chichen Itza, Mexico', lat: 20.6843, lon: -88.5678 },
-        { label: 'Petra, Jordan', lat: 30.3285, lon: 35.4444 },
-        { label: 'Angkor Wat, Cambodia', lat: 13.4125, lon: 103.867 },
+        { label: 'Lima, Peru', lat: -12.0464, lon: -77.0428 },
+        { label: 'La Paz, Bolivia', lat: -16.4897, lon: -68.1193 },
+        { label: 'Quito, Ecuador', lat: -0.1807, lon: -78.4678 },
       ],
     },
     glyphHint: 'globe',
@@ -755,7 +757,7 @@ export const INSTANT_COLD_OPEN_PRISMS: ReadonlyArray<RawQuestionRecord> = [
         { label: 'Reykjavik, Iceland', lat: 64.1466, lon: -21.9426 },
         { label: 'Oslo, Norway', lat: 59.9139, lon: 10.7522 },
         { label: 'Nuuk, Greenland', lat: 64.1814, lon: -51.6941 },
-        { label: 'Anchorage, Alaska', lat: 61.2181, lon: -149.9003 },
+        { label: 'Torshavn, Faroe Islands', lat: 62.0079, lon: -6.791 },
       ],
     },
     glyphHint: 'compass',
@@ -900,8 +902,8 @@ export const INSTANT_COLD_OPEN_PRISMS: ReadonlyArray<RawQuestionRecord> = [
       quickAnchors: [
         { label: 'Chicago, Illinois', lat: 41.9484, lon: -87.6553 },
         { label: 'Boston, Massachusetts', lat: 42.3467, lon: -71.0972 },
-        { label: 'Los Angeles, California', lat: 34.0739, lon: -118.24 },
-        { label: 'Tokyo, Japan', lat: 35.7056, lon: 139.7519 },
+        { label: 'St. Louis, Missouri', lat: 38.627, lon: -90.1994 },
+        { label: 'Minneapolis, Minnesota', lat: 44.9778, lon: -93.265 },
       ],
     },
     glyphHint: 'globe',
@@ -997,6 +999,8 @@ export class ForgeEngine {
   private jeopardyBySubcatId: Map<string, RawQuestionRecord[]> = new Map();
   private jeopardyByDomain: Map<DomainId, RawQuestionRecord[]> = new Map();
   private jeopardySignaturePackLoaded = false;
+  private curatedV4Cards: QuestionCardV4[] = [];
+  private curatedV4PackLoaded = false;
   private quarantinedQids: Set<number> = new Set();
 
   private shardManifest: ShardManifest | null = null;
@@ -1126,6 +1130,7 @@ export class ForgeEngine {
         taxonomyResult,
         visualGlobeResult,
         jeopardySigResult,
+        curatedV4Result,
       ] = await Promise.allSettled([
         this.fetchTier1Questions(),
         this.fetchJson<ShardManifest>(`${this.dataBaseUrl}/shards/shard_manifest.json`),
@@ -1141,6 +1146,9 @@ export class ForgeEngine {
         this.fetchJson<RawVisualGlobePackBundle | RawQuestionRecord[]>(
           `${this.dataBaseUrl}/jeopardy_signature_packs.json`,
         ),
+        this.fetchJson<QuestionCardV4[] | { cards?: QuestionCardV4[]; items?: QuestionCardV4[] }>(
+          `${this.dataBaseUrl}/curated_v4_witty_pack.json`,
+        ),
       ]);
 
       if (questionsResult.status === 'fulfilled' && questionsResult.value.length > 0) {
@@ -1154,6 +1162,9 @@ export class ForgeEngine {
       }
       if (jeopardySigResult.status === 'fulfilled' && jeopardySigResult.value) {
         this.ingestJeopardySignaturePackData(jeopardySigResult.value);
+      }
+      if (curatedV4Result.status === 'fulfilled' && curatedV4Result.value) {
+        this.ingestCuratedV4PackData(curatedV4Result.value);
       }
       if (
         manifestResult.status === 'fulfilled' &&
@@ -1171,6 +1182,172 @@ export class ForgeEngine {
     })();
 
     return this.initPromise;
+  }
+
+  /**
+   * Loads (or hot-reloads) `public/data/curated_v4_witty_pack.json`
+   * (240+ hand-crafted, witty, curiosity-hook 7-format game-show cards across all 12 domains).
+   */
+  public async loadCuratedV4Pack(customUrl?: string): Promise<number> {
+    if (this.curatedV4PackLoaded && !customUrl) {
+      return this.curatedV4Cards.length;
+    }
+    try {
+      const url = customUrl ?? `${this.dataBaseUrl}/curated_v4_witty_pack.json`;
+      const bundle = await this.fetchJson<
+        QuestionCardV4[] | { cards?: QuestionCardV4[]; items?: QuestionCardV4[] }
+      >(url);
+      return this.ingestCuratedV4PackData(bundle);
+    } catch {
+      return 0;
+    }
+  }
+
+  public ingestCuratedV4PackData(
+    bundle: QuestionCardV4[] | { cards?: QuestionCardV4[]; items?: QuestionCardV4[] },
+  ): number {
+    const rawList: QuestionCardV4[] = Array.isArray(bundle)
+      ? bundle
+      : Array.isArray(bundle?.cards)
+        ? bundle.cards
+        : Array.isArray(bundle?.items)
+          ? bundle.items
+          : [];
+    if (rawList.length === 0) return 0;
+
+    const existingIds = new Set<number>(this.curatedV4Cards.map((c) => c.qid));
+    let added = 0;
+    let nextQid = 1_090_001;
+
+    const tierToIrt = (tier: QuestionCardV4['difficultyTier']): number => {
+      switch (tier) {
+        case 'MIDDLE_SCHOOL':
+          return -1.25;
+        case 'HIGH_SCHOOL':
+          return -0.5;
+        case 'COLLEGE':
+          return 0.25;
+        case 'GRADUATE':
+          return 1.05;
+        case 'MENSA':
+          return 1.95;
+      }
+    };
+
+    for (const card of rawList) {
+      if (!card || !card.prompt || !card.format) continue;
+      const qid =
+        typeof card.qid === 'number' && card.qid >= 1_090_000 && !existingIds.has(card.qid)
+          ? Math.trunc(card.qid)
+          : (() => {
+              while (existingIds.has(nextQid) || this.byQid.has(nextQid)) nextQid++;
+              return nextQid++;
+            })();
+      const cleanCard: QuestionCardV4 = { ...card, qid };
+      existingIds.add(qid);
+      this.curatedV4Cards.push(cleanCard);
+      added++;
+
+      // Bridge MULTIPLE_CHOICE & PINPOINT_DIAL & SVG VISUAL_SPOTTER cards into Tier-1 indexes too
+      if (
+        card.format === 'MULTIPLE_CHOICE' &&
+        Array.isArray(card.choices) &&
+        card.choices.length === 4 &&
+        card.correctIndex !== undefined
+      ) {
+        const answerCorrect = card.choices[card.correctIndex];
+        const distractors = card.choices
+          .filter((_, idx) => idx !== card.correctIndex)
+          .map((text, idx) => ({ text, plausibility: Number((0.84 - idx * 0.05).toFixed(2)) }));
+        const bridged: RawQuestionRecord = {
+          qid,
+          l0Domain: card.domainId,
+          l1Category: card.categoryLabel,
+          l2Subcategory: card.wittyHeader ?? card.categoryLabel,
+          microTopicId: `v4_witty_${qid}`,
+          regions: ['GLOBAL'],
+          narrativeTags: ['ARCHIVE_CORE'],
+          tone: 'WITTY',
+          irtB: tierToIrt(card.difficultyTier),
+          irtA: 1.3,
+          freshness: 'EVERGREEN',
+          archetype: 'SIGHTLINE_LOCK',
+          prompt: card.prompt,
+          answerCorrect,
+          distractors,
+          clues: [card.helpfulHint, card.helpfulHint],
+          whyExplanation: card.funFactWhy,
+        };
+        if (isCleanShardCandidate(bridged) && !this.byQid.has(qid)) {
+          this.attachExtraRecordToTier1Indexes(bridged);
+        }
+      } else if (card.format === 'PINPOINT_DIAL' && card.pinpoint) {
+        const pp = card.pinpoint;
+        const bridged: RawQuestionRecord = {
+          qid,
+          l0Domain: card.domainId,
+          l1Category: card.categoryLabel,
+          l2Subcategory: card.wittyHeader ?? card.categoryLabel,
+          microTopicId: `v4_witty_${qid}`,
+          regions: ['GLOBAL'],
+          narrativeTags: ['ARCHIVE_CORE'],
+          tone: 'WITTY',
+          irtB: tierToIrt(card.difficultyTier),
+          irtA: 1.3,
+          freshness: 'EVERGREEN',
+          archetype: 'CALIBRATOR_DIAL',
+          prompt: card.prompt,
+          answerCorrect: `${pp.exactVal}${pp.unitLabel ? ` ${pp.unitLabel}` : ''}`.trim(),
+          clues: [card.helpfulHint, card.helpfulHint],
+          whyExplanation: card.funFactWhy,
+          calibratorExt: {
+            exactVal: pp.exactVal,
+            unit: pp.unitLabel,
+            minVal: pp.minVal,
+            maxVal: pp.maxVal,
+            step: pp.step,
+          },
+        };
+        if (isCleanShardCandidate(bridged) && !this.byQid.has(qid)) {
+          this.attachExtraRecordToTier1Indexes(bridged);
+        }
+      }
+    }
+
+    if (added > 0) {
+      this.curatedV4PackLoaded = true;
+    }
+    return added;
+  }
+
+  public getCuratedV4Cards(): ReadonlyArray<QuestionCardV4> {
+    return this.curatedV4Cards;
+  }
+
+  public getLoadedShardChunksForDomain(domainId: DomainId): ReadonlyArray<ShardChunkData> {
+    return this.loadedShardsByDomain.get(clamp(Math.trunc(domainId), 0, 11) as DomainId) ?? [];
+  }
+
+  public getUnifiedManifest(): ShardManifest | null {
+    return this.getUnifiedManifestForDecode();
+  }
+
+  public getVisualGlobeRecords(): ReadonlyArray<RawQuestionRecord> {
+    return this.visualGlobeRecords;
+  }
+
+  public getJeopardyRecords(domainId?: DomainId): ReadonlyArray<RawQuestionRecord> {
+    if (domainId === undefined) return this.jeopardySignatureRecords;
+    return this.jeopardyByDomain.get(clamp(Math.trunc(domainId), 0, 11) as DomainId) ?? [];
+  }
+
+  public getCleanTier1Records(domainId?: DomainId): ReadonlyArray<RawQuestionRecord> {
+    if (domainId === undefined) return this.tier1Questions;
+    return this.byDomain.get(clamp(Math.trunc(domainId), 0, 11) as DomainId) ?? [];
+  }
+
+  public getDataBaseUrl(): string {
+    return this.dataBaseUrl;
   }
 
   /**
@@ -1449,6 +1626,7 @@ export class ForgeEngine {
         qid,
         regions,
       };
+      if (!isCleanShardCandidate(enriched)) return;
       this.tier1Questions.push(enriched);
       this.byQid.set(qid, enriched);
       const dom = clamp(Math.trunc(enriched.l0Domain ?? 0), 0, 11) as DomainId;
@@ -3204,14 +3382,9 @@ export class ForgeEngine {
 
       let rawPicked: RawQuestionRecord | null = null;
 
-      // Upgrade #2 & #3: When drilling into ANY of the 157 subcategories, organically weave in
-      // high-priority Jeopardy Signature clues + Visual Sapphire Blueprints / Globe Pin-Drops
-      // on curated lead slots before drawing deeply from the 1.2M+ specialist shard corpus!
-      if (
-        taxFilter &&
-        (wantArch === 'GLOBE_PIN_DROP' ||
-          (wantArch === 'SIGHTLINE_LOCK' && (slot === 0 || slot === 2 || slot % 4 === 0)))
-      ) {
+      // Priority Routing: curated_v4_witty_pack + Jeopardy Signature + Gold Venue + Visual/Globe
+      // + clean Gold Core ALWAYS serve FIRST before touching shards!
+      if (taxFilter) {
         rawPicked = this.pickFromCuratedTopicPool({
           wantArch,
           taxFilter,
@@ -3221,39 +3394,12 @@ export class ForgeEngine {
           respectSeen,
           targetB,
           targetTier,
-          preferVisual: slot === 2,
+          preferVisual: slot === 2 || Boolean(req.preferVisualOrGlobe),
         });
       }
 
-      // When an L1/L2 Subcategory Drill-Down is active (e.g. Baseball 34,000+ Qs!),
-      // prioritize specialist shard tables & filtered domain tables directly!
-      const tryShardFirst =
-        !rawPicked &&
-        canUseShards &&
-        (Boolean(taxFilter) ||
-          (req.mode === 'BRIEFING' && slot % 2 === 1) ||
-          (req.mode === 'ENDLESS' && slot % 2 === 1));
-
-      if (tryShardFirst) {
-        rawPicked = this.pickFromLoadedShards(
-          wantArch,
-          lo,
-          hi,
-          targetB,
-          allowedDomains,
-          usedQids,
-          rng,
-          respectSeen,
-          prevDomain,
-          facetCount - 1,
-          taxFilter,
-          targetTier,
-          usedAnswersInBatch,
-        );
-      }
-
       if (!rawPicked) {
-        rawPicked = this.pickFromTier1Catalog({
+        const tier1Candidate = this.pickFromTier1Catalog({
           wantArch,
           irtMin: lo,
           irtMax: hi,
@@ -3266,7 +3412,7 @@ export class ForgeEngine {
           rng,
           respectSeen,
           prevDomain,
-          preferGoldCurated: Boolean(stage?.preferGoldCuratedFirst),
+          preferGoldCurated: true,
           preferVisualOrGlobe: Boolean(req.preferVisualOrGlobe),
           regions: slot < Math.ceil(count * 0.45) ? req.regions : undefined,
           requiredTags: req.requiredTags,
@@ -3274,9 +3420,17 @@ export class ForgeEngine {
           lateralJammerMode: req.lateralJammerMode,
           taxFilter,
         });
+        // If Tier-1 only returned an ALREADY-SEEN item while unseen shards are available,
+        // seamlessly graduate into the 500k–950k+ non-repeating shard pool!
+        if (
+          tier1Candidate &&
+          !(respectSeen && canUseShards && this.seenTracker.hasSeen(tier1Candidate.qid))
+        ) {
+          rawPicked = tier1Candidate;
+        }
       }
 
-      // If Tier-1 was exhausted on a specific narrow category, fall back to loaded shards
+      // Once curated Tier-1 packs are exhausted or seen for this scope, draw cleanly from fame-gated shards!
       if (!rawPicked && canUseShards) {
         rawPicked = this.pickFromLoadedShards(
           wantArch,
@@ -4300,6 +4454,19 @@ export class ForgeEngine {
             if (respectSeen && this.seenTracker.hasSeen(qid) && probe < probes - 18) continue;
 
             const row = sl.tbl.r[ri];
+            if (
+              !isShardRowFamousEnoughForTier(
+                sl.tbl.type,
+                row,
+                sl.spec,
+                sl.chunk.p,
+                ri,
+                sl.tbl.r.length,
+                targetTier,
+              )
+            ) {
+              continue;
+            }
             const irtB = clamp(
               Number(row[row.length - 1]) / 100.0 + Number(sl.spec.angles[ai].irtOffset ?? 0),
               -1.6,
@@ -4438,6 +4605,19 @@ export class ForgeEngine {
         const win = getRowWindowBounds(tbl.r.length, pass);
         const ri = rng.nextInt(win.minPos, win.maxPos);
         const row = tbl.r[ri];
+        if (
+          !isShardRowFamousEnoughForTier(
+            tbl.type,
+            row,
+            spec,
+            chunk.p,
+            ri,
+            tbl.r.length,
+            targetTier,
+          )
+        ) {
+          continue;
+        }
         const qid = tbl.baseQid + ri * spec.angles.length + ai;
         if (usedQids.has(qid)) continue;
 
@@ -4658,16 +4838,25 @@ export class ForgeEngine {
           }
         }
 
-        const isGoldItem =
-          q.qid <= 4_964 ||
+        // Decisive curated priority routing:
+        //   1. Curated v4 Witty Pack (1,090,000+) -> +42
+        //   2. Jeopardy Signature Packs (1,060,000..1,069,999) -> +36
+        //   3. Gold Venue Packs (50,000..59,999) & Visual/Globe (1,070,000..1,089,999) -> +34
+        //   4. Clean Gold Core (1..832) -> +32
+        //   5. Clean Tier-1 Reference/Trivia API (833..4,964) -> +12
+        if (q.qid >= 1_090_000 && q.qid < 1_100_000) {
+          score += 42;
+        } else if (q.qid >= 1_060_000 && q.qid < 1_070_000) {
+          score += 36;
+        } else if (
           (q.qid >= 50_000 && q.qid < 60_000) ||
-          (q.qid >= 1_060_000 && q.qid < 1_090_000);
-        if (opts.preferGoldCurated && isGoldItem) {
-          score += q.qid <= 832 || q.qid >= 50_000 ? 26 : 16;
-        }
-        if (q.qid >= 1_060_000 && q.qid < 1_070_000) {
-          // Jeopardy Signature pack boost across all 12 domains & 157 subcategories
-          score += 18;
+          (q.qid >= 1_070_000 && q.qid < 1_090_000)
+        ) {
+          score += 34;
+        } else if (q.qid <= 832) {
+          score += 32;
+        } else if (q.qid <= 4_964) {
+          score += opts.preferGoldCurated ? 12 : 8;
         }
         if (q.visualPlate?.imageUrl || q.archetype === 'GLOBE_PIN_DROP') {
           score += opts.preferVisualOrGlobe ? 34 : 16;
