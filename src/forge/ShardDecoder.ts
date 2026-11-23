@@ -805,17 +805,167 @@ function hasWordStem(hayLow: string, stem: string): boolean {
   return false;
 }
 
+const BENCHMARK_SLOP_QID_MIN = 4_965;
+const BENCHMARK_SLOP_QID_MAX = 20_165;
+
+const RE_EXAM_STEM_SLOP =
+  /\b(?:which of the following|all of the following except|none of the above|all of the above|which statement best|which option best|which sentence best|select the correct statement|choose the correct option|the best answer is|statement 1\s*\||statement 2\s*\|)\b/i;
+
+const RE_FILL_IN_BLANK = /_{3,}|\[\s*blank\s*\]|\(\s*blank\s*\)/i;
+
+const RE_ARC_WORKSHEET_SLOP =
+  /^(?:jerry|marta|sally|tommy|timmy|billy|bobby|suzy|susie|maria|carlos|jamal|keisha|a student|a teacher|a class|four students|two students|three students|a group of students|some students|a boy|a girl|a scientist is studying|a researcher wants)\b|\b(?:a student wants to|a student is investigating|students are studying|students in a class|teacher asked the class|in an experiment, a student)\b/i;
+
+const RE_MMLU_MATH_SLOP =
+  /\b(?:find the derivative|evaluate the integral|characteristic of the ring|suppose that\s+[a-z]\b|let\s+[fgh]\(x\)|homomorphism from|sylow subgroup|abelian group of order|for which values of x|what is the limit as|find the characteristic of)\b|\\(?:frac|int|sum|lim|sqrt|alpha|beta|theta)\b|\bdy\/dx\b/i;
+
+const RE_BOOLQ_TYPO_SLOP = /\binfonity\b|\bTim raines\b/i;
+
+const RE_APOLLO_SPACE_TERMS =
+  /\b(?:apollo\s*(?:11|13|17|8|9|10|12|program|mission|spacecraft)|moon landing|lunar module|nasa|neil armstrong|buzz aldrin|space shuttle|saturn v)\b/i;
+
+const RE_ROBOTIC_WHY =
+  /stands as the (?:exact |accurate )?(?:verified )?solution|verified\b[^.]{0,60}\b(?:match is|record confirms|answer is|solution is)|(?:record confirms|archive locks in|ledger locks in)\s+["'“]|confirmed (?:true|false|under|in)\b[^.]{0,65}(?:verified record|precise match|accurate answer|stands on|for this)|^false on the\b[^.]{0,50}\brecord:|setting it apart from the three decoys|directly satisfies the\b|is the precise match for this|verified in the meridian ledger/i;
+
+const RE_LOWERCASE_START = /^[a-z](?!H\b|Phone|Pad|Pod|Mac|OS|Bay|RNA|DNA|Sports)/;
+
 /**
- * Runtime prose hygiene check (per @qa-art-critic #118, @redteam-fun-ux-audio #190,
- * & @rt-copy-dates-auditor #249):
- *   1. Blocks quarantined Tier-1 items, junk distractors ("Unknown"), hypernym collisions,
+ * Detects scraped benchmark/exam slop (MMLU, MMLU-Pro, AI2 ARC, Google BoolQ),
+ * fill-in-the-blank school stems, lowercase search queries, and mis-filed Apollo-in-Myth items.
+ */
+export function isBenchmarkOrExamSlop(raw: Pick<RawQuestionRecord, 'qid' | 'l0Domain' | 'prompt' | 'whyExplanation' | 'microTopicId'>): boolean {
+  // Block the entire QID 4,965..20,165 MMLU / MMLU-Pro / AI2 ARC / Google BoolQ partition in questions.json
+  if (raw.qid >= BENCHMARK_SLOP_QID_MIN && raw.qid <= BENCHMARK_SLOP_QID_MAX) {
+    return true;
+  }
+  const promptTrim = String(raw.prompt ?? '').trim();
+  if (!promptTrim) return true;
+
+  const promptCore = promptTrim.replace(/^["'“‘(\[]+/, '').trim();
+  if (RE_LOWERCASE_START.test(promptCore)) {
+    return true;
+  }
+  if (
+    RE_FILL_IN_BLANK.test(promptTrim) ||
+    RE_EXAM_STEM_SLOP.test(promptTrim) ||
+    RE_ARC_WORKSHEET_SLOP.test(promptTrim) ||
+    RE_MMLU_MATH_SLOP.test(promptTrim) ||
+    RE_BOOLQ_TYPO_SLOP.test(promptTrim)
+  ) {
+    return true;
+  }
+  // Never allow Apollo 11 / NASA spaceflight items mis-filed under Domain 10 (Myth & Literature)
+  if (raw.l0Domain === 10 && RE_APOLLO_SPACE_TERMS.test(promptTrim)) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Detects zero-info robotic template explanations (`"stands as the exact verified solution"`,
+ * `"The verified ... record confirms"`, `"archive locks in"`, etc.).
+ */
+export function hasRoboticWhyExplanation(why?: string | null): boolean {
+  if (!why || typeof why !== 'string') return false;
+  return RE_ROBOTIC_WHY.test(why.trim());
+}
+
+const RE_CATALOG_ENTITY_NAME =
+  /^(?:HD|HIP|GJ|K2|KOI|TOI|WASP|HAT-?P|OGLE|Kepler|TRAPPIST|PSR|CoRoT|LHS|WD|NGC|IC|UGC|PGC|MACS|Abell|SDSS|2MASS|Gliese|Ross|Wolf|BD|CD|CPD|HR|PSO|CFBDS|WISE|DENIS|EPIC|TIC|Gaia|MOA|KELT|QATAR|HATS|TrES|XO|SWEEPS|OTV|Kosmos|Cosmos|USA)[-+\s]?\d/i;
+
+export function isObscureCatalogEntityName(name: string): boolean {
+  return RE_CATALOG_ENTITY_NAME.test(String(name ?? '').trim());
+}
+
+/**
+ * Fame & Familiarity Gate for structured fact shards:
+ * Ensures `MIDDLE_SCHOOL`..`COLLEGE` tiers never pull pop-15k obscure towns,
+ * catalog exoplanets (`HD ...`, `Kepler-...`, `PSR ...`), `NGC`/`MACS` deep-sky catalogs,
+ * or obscure synthetic chemicals — reserving deep cuts strictly for `GRADUATE` / `MENSA`.
+ */
+export function isShardRowFamousEnoughForTier(
+  typeId: string,
+  row: ReadonlyArray<string | number>,
+  spec: Pick<ShardTableTypeSpec, 'cols' | 'poolCols'>,
+  pool: ReadonlyArray<string>,
+  rowIdx: number,
+  totalRows: number,
+  tier?: 'MIDDLE_SCHOOL' | 'HIGH_SCHOOL' | 'COLLEGE' | 'GRADUATE' | 'MENSA' | null,
+): boolean {
+  if (!tier || tier === 'GRADUATE' || tier === 'MENSA') {
+    return true;
+  }
+
+  // Strictly reserve exoplanet discovery catalogs for GRADUATE / MENSA
+  if (typeId === 'sci_exoplanet' || typeId === 'sub_sci_exo_deep') {
+    return false;
+  }
+
+  const poolCols = new Set<number>(spec.poolCols ?? []);
+  const entityName = resolveCell(row, 0, poolCols, pool).trim();
+  if (!entityName || isObscureCatalogEntityName(entityName)) {
+    return false;
+  }
+
+  // City population familiarity gate (`geo_city`: col 3 is pop_k in thousands)
+  if (typeId === 'geo_city') {
+    const popColIdx = spec.cols.indexOf('pop_k');
+    const popK = popColIdx >= 0 ? Number(row[popColIdx]) : 0;
+    if (tier === 'MIDDLE_SCHOOL') {
+      return Number.isFinite(popK) && popK >= 1200 && rowIdx < 320;
+    }
+    if (tier === 'HIGH_SCHOOL') {
+      return Number.isFinite(popK) && popK >= 500 && rowIdx < 900;
+    }
+    // COLLEGE: >= 200k cities only (never obscure pop-15k towns!)
+    return Number.isFinite(popK) && popK >= 200 && rowIdx < 2400;
+  }
+
+  // Chemical familiarity gate: only household molecules in Middle/High/College
+  if (typeId === 'sci_chemical') {
+    if (tier === 'MIDDLE_SCHOOL') return rowIdx < 45;
+    if (tier === 'HIGH_SCHOOL') return rowIdx < 140;
+    return rowIdx < 400;
+  }
+
+  // Astronomical deep-sky objects: keep named icons (Pleiades, Andromeda, Orion Nebula) in lower tiers
+  if (typeId === 'sci_astro') {
+    if (tier === 'MIDDLE_SCHOOL') return rowIdx < 30;
+    if (tier === 'HIGH_SCHOOL') return rowIdx < 90;
+    return rowIdx < 220;
+  }
+
+  const rank01 = totalRows > 1 ? rowIdx / (totalRows - 1) : 0;
+  if (tier === 'MIDDLE_SCHOOL') {
+    const maxRow = totalRows <= 220 ? Math.ceil(totalRows * 0.45) : Math.min(220, Math.max(35, Math.floor(totalRows * 0.08)));
+    return rowIdx <= maxRow && (totalRows <= 220 || rank01 <= 0.09);
+  }
+  if (tier === 'HIGH_SCHOOL') {
+    const maxRow = totalRows <= 220 ? Math.ceil(totalRows * 0.72) : Math.min(650, Math.max(90, Math.floor(totalRows * 0.22)));
+    return rowIdx <= maxRow && (totalRows <= 220 || rank01 <= 0.24);
+  }
+  // COLLEGE
+  const maxRow = totalRows <= 220 ? totalRows : Math.min(1800, Math.max(180, Math.floor(totalRows * 0.45)));
+  return rowIdx <= maxRow && (totalRows <= 220 || rank01 <= 0.46);
+}
+
+/**
+ * Runtime prose hygiene & anti-slop quarantine check:
+ *   1. Blocks 100% of MMLU, MMLU-Pro, AI2 ARC, Google BoolQ, fill-in-the-blank stems,
+ *      "which of the following" exam stems, lowercase-starting prompts, robotic zero-info
+ *      `whyExplanation`s, and mis-filed Apollo-in-Myth items across ALL archetypes.
+ *   2. Blocks quarantined Tier-1 items, junk distractors ("Unknown"), hypernym collisions,
  *      and broken shuffled letter-reference MCQ options ("A and B only", "Both C and D").
- *   2. Blocks self-answering stems & clues on SIGHTLINE_LOCK (l0Domain !== 11) where
- *      `answerCorrect` (or distinctive singular-stem tokens, e.g., "Tiger Stadium" -> "Tigers")
- *      leaks inside `prompt` or `clues`.
+ *   3. Blocks self-answering stems & clues on SIGHTLINE_LOCK (l0Domain !== 11).
  */
 export function isCleanShardCandidate(raw: RawQuestionRecord): boolean {
   if (QUARANTINED_TIER1_QIDS.has(raw.qid)) {
+    return false;
+  }
+  if (isBenchmarkOrExamSlop(raw)) {
+    return false;
+  }
+  if (hasRoboticWhyExplanation(raw.whyExplanation)) {
     return false;
   }
   if (raw.archetype !== 'SIGHTLINE_LOCK') {
@@ -1289,6 +1439,264 @@ export function pickShardDistractors(
   return picked;
 }
 
+const RE_DRY_LETTER_HINT =
+  /\b(?:starts with|begins with|opening (?:letter|word) (?:is|begins)|first letter)\s+["'“‘]?[A-Za-z0-9]["'”’]?/i;
+
+function describeCenturyFromYear(rawYear: string | number | undefined): string | null {
+  const y = Number(rawYear);
+  if (!Number.isFinite(y) || y === 0) return null;
+  if (y < 0) {
+    const c = Math.ceil(Math.abs(y) / 100);
+    return `the ${c}${c === 1 ? 'st' : c === 2 ? 'nd' : c === 3 ? 'rd' : 'th'} century BCE`;
+  }
+  if (y >= 1000 && y <= 2120) {
+    const decade = Math.floor(y / 10) * 10;
+    const cent = Math.ceil(y / 100);
+    const suf = cent % 10 === 1 && cent !== 11 ? 'st' : cent % 10 === 2 && cent !== 12 ? 'nd' : cent % 10 === 3 && cent !== 13 ? 'rd' : 'th';
+    return y >= 1900 ? `the ${decade}s` : `the ${cent}${suf} century`;
+  }
+  return null;
+}
+
+/**
+ * Rewrites dry dictionary shard stems into lively, broadcast-ready game-show phrasing
+ * while keeping exact factual meaning and deterministic variation per QID.
+ */
+function polishShardBroadcastPrompt(
+  prompt: string,
+  typeId: string,
+  angleId: string,
+  ctx: Record<string, string | number>,
+  qid: number,
+): string {
+  let out = sanitizeTriviaCopy(prompt);
+  const v = fnv1a32(`V4_REWRITE:${qid}:${angleId}`) % 4;
+  const name = String(ctx.name ?? ctx.title ?? '').trim();
+  const country = String(ctx.country ?? '').trim();
+  const year = ctx.year !== undefined ? String(ctx.year).trim() : '';
+  const role = String(ctx.role ?? ctx.field ?? ctx.discipline ?? ctx.craft ?? '').trim();
+
+  // Rewrite dry "Which country [or realm] was [historical figure / scientist / role] X associated with?"
+  if (/which country(?: or realm)? was /i.test(out) && /associated with\??$/i.test(out) && name) {
+    const roleBit = role ? `${role.toLowerCase()} ` : '';
+    const yearBit = year && /^\d{3,4}$/.test(year) ? ` (born ${year})` : '';
+    const variants = [
+      `Passport check: which nation can claim ${roleBit}${name}${yearBit} as part of its story?`,
+      `Which country's flag belongs beside ${roleBit}${name}${yearBit} in the history books?`,
+      `Put ${roleBit}${name}${yearBit} on the map—which country or realm did they hail from?`,
+      `Which country shaped the legacy of ${roleBit}${name}${yearBit}?`,
+    ];
+    return sanitizeTriviaCopy(variants[v]);
+  }
+
+  // Rewrite dry "Which of these ... was associated with {country}?"
+  if (/which of these .* was associated with /i.test(out) && country) {
+    const variants = [
+      `Spotlight on ${country}: which of these notable names belongs to its heritage?`,
+      `Step onto ${country}'s stage—which one of these figures comes from there?`,
+      `Only one of these names ties back to ${country}. Who makes the cut?`,
+      `Who among these four shares a homeland link with ${country}?`,
+    ];
+    return sanitizeTriviaCopy(variants[v]);
+  }
+
+  // Rewrite dry "was directly associated with {country}" / "was associated with {country}" T/F statements
+  if (/\bwas (?:directly )?associated with\b/i.test(out)) {
+    out = out.replace(/\bwas directly associated with\b/gi, 'left its mark on');
+    out = out.replace(/\bwas associated with\b/gi, 'hailed from');
+  }
+
+  // Rewrite dry "Check this {cat} result: {stmt}? Answer: {ans}."
+  if (/^Check this .* (?:result|puzzle):/i.test(out) && ctx.stmt && ctx.ans !== undefined) {
+    const cat = String(ctx.cat ?? 'Logic').trim();
+    const stmt = String(ctx.stmt).replace(/\?+$/, '').trim();
+    const ansText = String(ctx.fake ?? ctx.ans).trim();
+    return sanitizeTriviaCopy(`Quick ${cat} check: "${stmt}?" — Does that come out to ${ansText}?`);
+  }
+
+  // Rewrite dry "Estimate the exact value: {stmt}?"
+  if (/^Estimate the exact value:/i.test(out) && ctx.stmt) {
+    const stmt = String(ctx.stmt).replace(/\?+$/, '').trim();
+    return sanitizeTriviaCopy(`Lock the dial on this number: ${stmt}?`);
+  }
+
+  // Capitalize leading lowercase species/chemical names cleanly
+  if (typeId === 'nat_species' || typeId === 'sci_chemical') {
+    out = out.replace(/^([a-z])/, (_m, c: string) => c.toUpperCase());
+  }
+
+  return sanitizeTriviaCopy(out);
+}
+
+/**
+ * Generates genuine lateral contextual hints for shard questions — NEVER `'starts with "K"'`
+ * and NEVER printing the answer verbatim.
+ */
+function buildLateralShardHint(
+  spec: ShardTableTypeSpec,
+  ctx: Record<string, string | number>,
+  cleanAnswer: string,
+  existingClue: string,
+  qid: number,
+): string {
+  const ansLow = cleanAnswer.trim().toLowerCase();
+  const isCleanExisting =
+    existingClue.trim().length >= 16 &&
+    !RE_DRY_LETTER_HINT.test(existingClue) &&
+    !/^category context:/i.test(existingClue.trim()) &&
+    !(ansLow.length >= 4 && existingClue.toLowerCase().includes(ansLow));
+
+  if (isCleanExisting) {
+    return sanitizeTriviaCopy(existingClue);
+  }
+
+  const hints: string[] = [];
+  const century = describeCenturyFromYear(ctx.year);
+  const safeAdd = (candidate: string): void => {
+    const clean = sanitizeTriviaCopy(candidate);
+    if (!clean) return;
+    if (ansLow.length >= 4 && clean.toLowerCase().includes(ansLow)) return;
+    hints.push(clean);
+  };
+
+  if (century) {
+    safeAdd(`Timeframe check: anchor your mental timeline right around ${century}.`);
+  }
+  if (ctx.conflict) {
+    safeAdd(`This flashpoint unfolded as part of ${ctx.conflict}.`);
+  }
+  if (ctx.region && ctx.country && !ansLow.includes(String(ctx.region).toLowerCase())) {
+    safeAdd(`Zoom in on the ${ctx.region} region to narrow the map down fast.`);
+  }
+  if (ctx.continent) {
+    safeAdd(`Keep your compass pointed toward ${ctx.continent}.`);
+  }
+  if (ctx.medium) {
+    safeAdd(`Picture this masterpiece in its original medium: ${String(ctx.medium).toLowerCase()}.`);
+  }
+  if (ctx.category && spec.l0Domain === 1) {
+    safeAdd(`On the periodic table, it sits among the ${String(ctx.category).toLowerCase()} elements.`);
+  }
+  if (ctx.anum !== undefined && Number.isFinite(Number(ctx.anum))) {
+    const z = Number(ctx.anum);
+    const band = z <= 20 ? 'the light first 20 elements' : z <= 54 ? 'the middle rows (atomic numbers 21 to 54)' : 'the heavier lower rows of the periodic table';
+    safeAdd(`Look among ${band} to zero in on the right match.`);
+  }
+  if (ctx.constellation) {
+    safeAdd(`Stargazers trace this deep-sky sight inside the constellation ${ctx.constellation}.`);
+  }
+  if (ctx.sport) {
+    safeAdd(`Keep your head in the game—this record comes straight from ${String(ctx.sport).toLowerCase()}.`);
+  }
+  if (ctx.industry) {
+    safeAdd(`Think of the major pioneers shaping the ${String(ctx.industry).toLowerCase()} sector.`);
+  }
+  if (ctx.sw_type) {
+    safeAdd(`In tech history, this one made its name as a ${String(ctx.sw_type).toLowerCase()}.`);
+  }
+  if (ctx.group && spec.l0Domain === 7) {
+    safeAdd(`In the animal kingdom, place this entry in the ${String(ctx.group).toLowerCase()} branch.`);
+  }
+  if (ctx.tradition) {
+    safeAdd(`Flip open the folklore shelf for ${ctx.tradition}.`);
+  }
+  if (ctx.lang) {
+    safeAdd(`Its earliest pages were written in ${ctx.lang}.`);
+  }
+  if (ctx.role) {
+    safeAdd(`Remember their calling: best remembered as a ${String(ctx.role).toLowerCase()}.`);
+  }
+  if (ctx.cat && spec.l0Domain === 11) {
+    safeAdd(`Work step by step using classic ${String(ctx.cat).toLowerCase()} rules—check parity and order of magnitude first.`);
+  }
+
+  if (hints.length > 0) {
+    const idx = fnv1a32(`V4_HINT:${qid}:${spec.l1Category}`) % hints.length;
+    return hints[idx];
+  }
+
+  const fallbackPool = [
+    `Cross-check the era and home region—eliminating the two biggest outliers in ${spec.l1Category.toLowerCase()} makes the answer jump out.`,
+    `Think of the signature hallmark inside ${spec.l1Category.toLowerCase()} that separates this classic from its rivals.`,
+    `Trust your first instinct on ${spec.l1Category.toLowerCase()} context—two of the options belong to a completely different corner of the field.`,
+  ];
+  return sanitizeTriviaCopy(fallbackPool[fnv1a32(`V4_HFB:${qid}`) % fallbackPool.length]);
+}
+
+function polishShardWhyExplanation(
+  why: string,
+  spec: ShardTableTypeSpec,
+  ctx: Record<string, string | number>,
+  cleanAnswer: string,
+): string {
+  let out = sanitizeTriviaCopy(why);
+  if (!out || /^exact (?:answer|value):|^verified solution:/i.test(out) || hasRoboticWhyExplanation(out)) {
+    const cat = String(ctx.cat ?? spec.l1Category).trim();
+    if (spec.l0Domain === 11 && ctx.stmt && cleanAnswer) {
+      return sanitizeTriviaCopy(`Working through this ${cat.toLowerCase()} puzzle lands cleanly on ${cleanAnswer}.`);
+    }
+    const subj = String(ctx.name ?? ctx.title ?? '').trim();
+    if (subj && cleanAnswer && cleanAnswer !== 'TRUE' && cleanAnswer !== 'FALSE') {
+      return sanitizeTriviaCopy(`In ${spec.l1Category}, ${subj} pairs directly with ${cleanAnswer}.`);
+    }
+  }
+  out = out.replace(/\bwas associated with\b/gi, 'made a lasting mark in');
+  out = out.replace(/\bwas directly associated with\b/gi, 'shaped the history of');
+  return sanitizeTriviaCopy(out);
+}
+
+/**
+ * Ensures Codex Dual-Ring / Synthesis clues NEVER leak any `subject <-> target` answer pair
+ * verbatim and NEVER reveal `decoyTarget` verbatim!
+ */
+function buildNonLeakingCodexClues(
+  catLabel: string,
+  pairs: ReadonlyArray<{ subject: string; target: string }>,
+  decoyTarget: string,
+  qid: number,
+  rawClues?: ReadonlyArray<string>,
+): [string, string] {
+  const leaksAnswer = (clue: string): boolean => {
+    const low = clue.toLowerCase();
+    if (!low || low.length < 12) return true;
+    const decoyLow = decoyTarget.trim().toLowerCase();
+    if (decoyLow.length >= 3 && low.includes(decoyLow)) return true;
+    for (const p of pairs) {
+      const sLow = p.subject.trim().toLowerCase();
+      const tLow = p.target.trim().toLowerCase();
+      if (sLow.length >= 3 && tLow.length >= 3 && low.includes(sLow) && low.includes(tLow)) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const rawCatLow = catLabel.toLowerCase();
+  const decoyLow = decoyTarget.trim().toLowerCase();
+  const catCollidesWithAnswer =
+    (decoyLow.length >= 3 && rawCatLow.includes(decoyLow)) ||
+    pairs.some((p) => {
+      const sl = p.subject.trim().toLowerCase();
+      const tl = p.target.trim().toLowerCase();
+      return (sl.length >= 3 && rawCatLow.includes(sl)) || (tl.length >= 3 && rawCatLow.includes(tl));
+    });
+  const catLow = catCollidesWithAnswer ? 'featured' : rawCatLow;
+  const safeDefaults: [string, string] =
+    (fnv1a32(`CDX_HINT:${qid}`) & 1) === 0
+      ? [
+          `Lock in the single ${catLow} match you feel 100% sure about first—each upper entry owns a distinct partner below.`,
+          `Compare era, region, or signature style across the final two items; one option on the lower ring is an uninvited odd-one-out.`,
+        ]
+      : [
+          `Start by spotting the most iconic ${catLow} connection, then narrow the remaining pairs by process of elimination.`,
+          `No two entries share a partner—once two links click into place, only one match and one odd-one-out decoy remain.`,
+        ];
+
+  const c1 = rawClues?.[0] && !leaksAnswer(rawClues[0]) ? sanitizeTriviaCopy(rawClues[0]) : safeDefaults[0];
+  const c2 = rawClues?.[1] && !leaksAnswer(rawClues[1]) ? sanitizeTriviaCopy(rawClues[1]) : safeDefaults[1];
+  return [c1, c2];
+}
+
 /**
  * Decodes a single question from a `WS_SHARD_V1` chunk in <0.05ms, matching
  * `validate_million_shards.py::decode_question` bit-for-bit.
@@ -1433,26 +1841,30 @@ export function decodeShardRawQuestion(
       angle.prompt ?? angle.stem,
       qid,
     );
-    out.prompt = sanitizeTriviaCopy(formatTemplate(sightPromptTpl, ctx));
+    out.prompt = polishShardBroadcastPrompt(
+      formatTemplate(sightPromptTpl, ctx),
+      typeId,
+      angle.id,
+      ctx,
+      qid,
+    );
     const cleanAns = sanitizeAnswerOrFacet(ans, out.prompt);
     out.answerCorrect = cleanAns;
     out.distractors = dists.map((d, idx) => ({
       text: sanitizeAnswerOrFacet(d, out.prompt),
       plausibility: Number((0.84 - idx * 0.06).toFixed(2)),
     }));
-    let c1 = sanitizeTriviaCopy(formatTemplate(angle.clue1 ?? '', ctx));
-    let c2 = sanitizeTriviaCopy(formatTemplate(angle.clue2 ?? '', ctx));
-    if (spec.l0Domain !== 11 && cleanAns.trim().length >= 4) {
-      const ansLow = cleanAns.trim().toLowerCase();
-      if (c1.toLowerCase().includes(ansLow)) {
-        c1 = `Category context: ${spec.l1Category}.`;
-      }
-      if (c2.toLowerCase().includes(ansLow)) {
-        c2 = `The verified answer begins with "${ctx.ans_init}".`;
-      }
-    }
-    out.clues = [c1, c2 || `The verified answer begins with "${ctx.ans_init}".`];
-    out.whyExplanation = sanitizeTriviaCopy(formatTemplate(angle.why ?? '', ctx));
+    const rawC1 = sanitizeTriviaCopy(formatTemplate(angle.clue1 ?? '', ctx));
+    const rawC2 = sanitizeTriviaCopy(formatTemplate(angle.clue2 ?? '', ctx));
+    const c1 = buildLateralShardHint(spec, ctx, cleanAns, rawC1, qid);
+    const c2 = buildLateralShardHint(spec, ctx, cleanAns, rawC2, qid ^ 0x4f1bbcdc);
+    out.clues = [c1, c2];
+    out.whyExplanation = polishShardWhyExplanation(
+      formatTemplate(angle.why ?? '', ctx),
+      spec,
+      ctx,
+      cleanAns,
+    );
   } else if (arch === 'GAUNTLET_SHATTER') {
     const isTrue = (fnv1a32(`TF:${qid}`) & 1) === 0;
     if (isTrue) {
@@ -1461,9 +1873,20 @@ export function decodeShardRawQuestion(
         angle.truePrompt,
         qid,
       );
-      out.prompt = sanitizeTriviaCopy(formatTemplate(trueTpl, ctx));
+      out.prompt = polishShardBroadcastPrompt(
+        formatTemplate(trueTpl, ctx),
+        typeId,
+        angle.id,
+        ctx,
+        qid,
+      );
       out.answerCorrect = 'TRUE';
-      out.whyExplanation = sanitizeTriviaCopy(formatTemplate(angle.whyTrue ?? '', ctx));
+      out.whyExplanation = polishShardWhyExplanation(
+        formatTemplate(angle.whyTrue ?? '', ctx),
+        spec,
+        ctx,
+        'TRUE',
+      );
     } else {
       let fake = 'Unknown';
       if (angle.inlineFakeCol !== undefined) {
@@ -1488,15 +1911,27 @@ export function decodeShardRawQuestion(
         angle.falsePrompt,
         qid,
       );
-      out.prompt = sanitizeTriviaCopy(formatTemplate(falseTpl, ctx));
+      out.prompt = polishShardBroadcastPrompt(
+        formatTemplate(falseTpl, ctx),
+        typeId,
+        angle.id,
+        ctx,
+        qid,
+      );
       out.answerCorrect = 'FALSE';
-      out.whyExplanation = sanitizeTriviaCopy(formatTemplate(angle.whyFalse ?? '', ctx));
+      out.whyExplanation = polishShardWhyExplanation(
+        formatTemplate(angle.whyFalse ?? '', ctx),
+        spec,
+        ctx,
+        'FALSE',
+      );
     }
-    const c1 = sanitizeTriviaCopy(formatTemplate(angle.clue1 ?? '', ctx));
+    const rawC1 = sanitizeTriviaCopy(formatTemplate(angle.clue1 ?? '', ctx));
+    const c1 = buildLateralShardHint(spec, ctx, out.answerCorrect, rawC1, qid);
     out.clues = [
       c1,
       sanitizeTriviaCopy(
-        `Cross-check the verified ${spec.l1Category.toLowerCase()} record for ${primarySubject}.`,
+        `Check the headline fact on ${primarySubject}—watch closely for a swapped country, year, or creator.`,
       ),
     ];
     out.gauntletExt = { isTrue, isTrick: false, windowSec: 8 };
@@ -1514,10 +1949,17 @@ export function decodeShardRawQuestion(
       angle.prompt ?? angle.stem,
       qid,
     );
-    out.prompt = sanitizeTriviaCopy(formatTemplate(calPromptTpl, ctx));
+    out.prompt = polishShardBroadcastPrompt(
+      formatTemplate(calPromptTpl, ctx),
+      typeId,
+      angle.id,
+      ctx,
+      qid,
+    );
     const formattedExact = formatCleanTriviaNumber(bounds.exactVal, unit, out.prompt, exactColName);
     out.answerCorrect = sanitizeTriviaCopy(`${formattedExact}${unit ? ` ${unit}` : ''}`.trim());
-    const c1 = sanitizeTriviaCopy(formatTemplate(angle.clue1 ?? '', ctx));
+    const rawC1 = sanitizeTriviaCopy(formatTemplate(angle.clue1 ?? '', ctx));
+    const c1 = buildLateralShardHint(spec, ctx, out.answerCorrect, rawC1, qid);
     const halfSpan = Math.max(bounds.step, Math.round((bounds.maxVal - bounds.minVal) * 0.25));
     const bandLo = Math.max(bounds.minVal, bounds.exactVal - halfSpan);
     const bandHi = Math.min(bounds.maxVal, bounds.exactVal + halfSpan);
@@ -1529,7 +1971,12 @@ export function decodeShardRawQuestion(
         `Pinpoint band: between ${formattedLo} and ${formattedHi}${unit ? ` ${unit}` : ''}.`,
       ),
     ];
-    out.whyExplanation = sanitizeTriviaCopy(formatTemplate(angle.why ?? '', ctx));
+    out.whyExplanation = polishShardWhyExplanation(
+      formatTemplate(angle.why ?? '', ctx),
+      spec,
+      ctx,
+      out.answerCorrect,
+    );
     out.calibratorExt = {
       exactVal: bounds.exactVal,
       minVal: bounds.minVal,
@@ -1588,27 +2035,26 @@ export function decodeShardRawQuestion(
       angle.stemVariants ?? angle.promptVariants,
       angle.prompt ??
         angle.stem ??
-        `Align each ${spec.l1Category.toLowerCase()} entry on the upper ring with its verified match below.`,
+        `Pair each ${spec.l1Category.toLowerCase()} headline with its true partner—watch out for the odd-one-out decoy.`,
       qid,
     );
     out.prompt = sanitizeTriviaCopy(formatTemplate(codexPromptTpl, ctx));
     out.answerCorrect = `3/3 ${spec.l1Category} Matches`;
-    out.clues = [
-      sanitizeTriviaCopy(
-        formatTemplate(angle.clue1 ?? `${pairs[0].subject} aligns with ${pairs[0].target}.`, ctx),
-      ),
-      sanitizeTriviaCopy(
-        formatTemplate(
-          angle.clue2 ??
-            `${pairs[1].subject} pairs with ${pairs[1].target}; "${decoyTarget}" is the decoy.`,
-          ctx,
-        ),
-      ),
+    const candidateClues = [
+      angle.clue1 ? formatTemplate(angle.clue1, ctx) : '',
+      angle.clue2 ? formatTemplate(angle.clue2, ctx) : '',
     ];
+    out.clues = buildNonLeakingCodexClues(
+      spec.l1Category,
+      pairs,
+      decoyTarget,
+      qid,
+      candidateClues,
+    );
     out.whyExplanation = sanitizeTriviaCopy(
       formatTemplate(
         angle.why ??
-          `Verified links: ${pairs[0].subject} = ${pairs[0].target}; ${pairs[1].subject} = ${pairs[1].target}; ${pairs[2].subject} = ${pairs[2].target}.`,
+          `Full lineup: ${pairs[0].subject} pairs with ${pairs[0].target}, ${pairs[1].subject} with ${pairs[1].target}, and ${pairs[2].subject} with ${pairs[2].target}.`,
         ctx,
       ),
     );
@@ -1758,18 +2204,18 @@ export function synthesizeShardCodexQuestion(
     freshness: 'EVERGREEN',
     archetype: 'CODEX_DUAL_RING',
     prompt: sanitizeTriviaCopy(
-      `Align each ${catLabel.toLowerCase()} subject on the upper ring with its verified match below.`,
+      `Pair each ${catLabel.toLowerCase()} entry with its true match—one option below is an uninvited decoy.`,
     ),
     answerCorrect: `3/3 ${catLabel} Matches`,
-    clues: [
-      sanitizeTriviaCopy(`${pairs[0].subject} locks directly to ${pairs[0].target}.`),
-      sanitizeTriviaCopy(
-        `${pairs[1].subject} pairs with ${pairs[1].target}; "${decoyTarget}" is the unaligned decoy.`,
-      ),
-    ],
+    clues: buildNonLeakingCodexClues(
+      catLabel,
+      pairs.map((p) => ({ subject: p.subject, target: p.target })),
+      decoyTarget,
+      qid,
+    ),
     glyphHint: chosen.spec.glyphHint ?? getForgeDomainInfo(domainId).glyphShape,
     whyExplanation: sanitizeTriviaCopy(
-      `Verified links: ${pairs[0].subject} -> ${pairs[0].target}; ${pairs[1].subject} -> ${pairs[1].target}; ${pairs[2].subject} -> ${pairs[2].target}.`,
+      `Full lineup: ${pairs[0].subject} pairs with ${pairs[0].target}, ${pairs[1].subject} with ${pairs[1].target}, and ${pairs[2].subject} with ${pairs[2].target}.`,
     ),
     codexExt: {
       pairs: pairs.map((p) => ({ subject: p.subject, target: p.target })),
@@ -2081,34 +2527,195 @@ function buildGauntletSpec(raw: RawQuestionRecord, cleanPrompt?: string): Gauntl
   };
 }
 
-const WORLD_CAPITAL_ANCHORS: ReadonlyArray<{ label: string; lat: number; lon: number }> = [
-  { label: 'London, UK', lat: 51.5074, lon: -0.1278 },
-  { label: 'Tokyo, Japan', lat: 35.6762, lon: 139.6503 },
-  { label: 'Cairo, Egypt', lat: 30.0444, lon: 31.2357 },
-  { label: 'Rio de Janeiro, Brazil', lat: -22.9068, lon: -43.1729 },
+/** Dense 128-city regional anchor atlas so GLOBE_PIN_DROP & VISUAL_SPOTTER always pick plausible regional neighbors (350–2,200 km). */
+export const REGIONAL_GLOBE_ANCHORS: ReadonlyArray<{ label: string; lat: number; lon: number }> = [
+  // North America — East & Midwest
+  { label: 'Boston, USA', lat: 42.3601, lon: -71.0589 },
   { label: 'New York, USA', lat: 40.7128, lon: -74.006 },
-  { label: 'Sydney, Australia', lat: -33.8688, lon: 151.2093 },
-  { label: 'Reykjavik, Iceland', lat: 64.1466, lon: -21.9426 },
-  { label: 'Singapore', lat: 1.3521, lon: 103.8198 },
-  { label: 'Nairobi, Kenya', lat: -1.2921, lon: 36.8219 },
-  { label: 'Mexico City, Mexico', lat: 19.4326, lon: -99.1332 },
-  { label: 'New Delhi, India', lat: 28.6139, lon: 77.209 },
-  { label: 'Buenos Aires, Argentina', lat: -34.6037, lon: -58.3816 },
-  { label: 'Paris, France', lat: 48.8566, lon: 2.3522 },
-  { label: 'Athens, Greece', lat: 37.9838, lon: 23.7275 },
-  { label: 'Cape Town, South Africa', lat: -33.9249, lon: 18.4241 },
-  { label: 'Lima, Peru', lat: -12.0464, lon: -77.0428 },
-  { label: 'Seoul, South Korea', lat: 37.5665, lon: 126.978 },
+  { label: 'Philadelphia, USA', lat: 39.9526, lon: -75.1652 },
+  { label: 'Washington, D.C., USA', lat: 38.9072, lon: -77.0369 },
+  { label: 'Baltimore, USA', lat: 39.2904, lon: -76.6122 },
+  { label: 'Pittsburgh, USA', lat: 40.4406, lon: -79.9959 },
+  { label: 'Atlanta, USA', lat: 33.749, lon: -84.388 },
+  { label: 'Miami, USA', lat: 25.7617, lon: -80.1918 },
+  { label: 'New Orleans, USA', lat: 29.9511, lon: -90.0715 },
+  { label: 'Chicago, USA', lat: 41.8781, lon: -87.6298 },
+  { label: 'Detroit, USA', lat: 42.3314, lon: -83.0458 },
+  { label: 'St. Louis, USA', lat: 38.627, lon: -90.1994 },
+  { label: 'Minneapolis, USA', lat: 44.9778, lon: -93.265 },
+  { label: 'Kansas City, USA', lat: 39.0997, lon: -94.5786 },
+  { label: 'Dallas, USA', lat: 32.7767, lon: -96.797 },
+  { label: 'Houston, USA', lat: 29.7604, lon: -95.3698 },
+  // North America — West, Canada & Mexico/Caribbean
+  { label: 'Denver, USA', lat: 39.7392, lon: -104.9903 },
+  { label: 'Phoenix, USA', lat: 33.4484, lon: -112.074 },
+  { label: 'Salt Lake City, USA', lat: 40.7608, lon: -111.891 },
+  { label: 'Los Angeles, USA', lat: 34.0522, lon: -118.2437 },
+  { label: 'San Diego, USA', lat: 32.7157, lon: -117.1611 },
+  { label: 'San Francisco, USA', lat: 37.7749, lon: -122.4194 },
+  { label: 'Seattle, USA', lat: 47.6062, lon: -122.3321 },
+  { label: 'Portland, USA', lat: 45.5152, lon: -122.6784 },
   { label: 'Toronto, Canada', lat: 43.6532, lon: -79.3832 },
-  { label: 'Istanbul, Turkey', lat: 41.0082, lon: 28.9784 },
-  { label: 'Wellington, New Zealand', lat: -41.2865, lon: 174.7762 },
+  { label: 'Montreal, Canada', lat: 45.5017, lon: -73.5673 },
+  { label: 'Vancouver, Canada', lat: 49.2827, lon: -123.1207 },
+  { label: 'Calgary, Canada', lat: 51.0447, lon: -114.0719 },
+  { label: 'Halifax, Canada', lat: 44.6488, lon: -63.5752 },
   { label: 'Anchorage, Alaska', lat: 61.2181, lon: -149.9003 },
-  { label: 'Honolulu, Hawaii', lat: 21.3069, lon: -157.8583 },
-  { label: 'Rome, Italy', lat: 41.9028, lon: 12.4964 },
+  { label: 'Fairbanks, Alaska', lat: 64.8378, lon: -147.7164 },
+  { label: 'Juneau, Alaska', lat: 58.3019, lon: -134.4197 },
+  { label: 'Mexico City, Mexico', lat: 19.4326, lon: -99.1332 },
+  { label: 'Guadalajara, Mexico', lat: 20.6597, lon: -103.3496 },
+  { label: 'Monterrey, Mexico', lat: 25.6866, lon: -100.3161 },
+  { label: 'Cancun, Mexico', lat: 21.1619, lon: -86.8515 },
+  { label: 'Havana, Cuba', lat: 23.1136, lon: -82.3666 },
+  { label: 'San Juan, Puerto Rico', lat: 18.4655, lon: -66.1057 },
+  { label: 'Panama City, Panama', lat: 8.9824, lon: -79.5199 },
+  { label: 'San Jose, Costa Rica', lat: 9.9281, lon: -84.0907 },
+  // South America
+  { label: 'Bogota, Colombia', lat: 4.711, lon: -74.0721 },
+  { label: 'Quito, Ecuador', lat: -0.1807, lon: -78.4678 },
+  { label: 'Lima, Peru', lat: -12.0464, lon: -77.0428 },
+  { label: 'Cusco, Peru', lat: -13.5319, lon: -71.9675 },
+  { label: 'La Paz, Bolivia', lat: -16.4897, lon: -68.1193 },
+  { label: 'Santiago, Chile', lat: -33.4489, lon: -70.6693 },
+  { label: 'Buenos Aires, Argentina', lat: -34.6037, lon: -58.3816 },
+  { label: 'Montevideo, Uruguay', lat: -34.9011, lon: -56.1645 },
+  { label: 'Sao Paulo, Brazil', lat: -23.5505, lon: -46.6333 },
+  { label: 'Rio de Janeiro, Brazil', lat: -22.9068, lon: -43.1729 },
+  { label: 'Brasilia, Brazil', lat: -15.7975, lon: -47.8919 },
+  { label: 'Salvador, Brazil', lat: -12.9714, lon: -38.5014 },
+  { label: 'Manaus, Brazil', lat: -3.119, lon: -60.0217 },
+  { label: 'Caracas, Venezuela', lat: 10.4806, lon: -66.9036 },
+  { label: 'Asuncion, Paraguay', lat: -25.2637, lon: -57.5759 },
+  { label: 'Bariloche, Argentina', lat: -41.1335, lon: -71.3103 },
+  { label: 'Comodoro Rivadavia, Argentina', lat: -45.8641, lon: -67.4966 },
+  { label: 'Puerto Montt, Chile', lat: -41.4693, lon: -72.9424 },
+  { label: 'Stanley, Falkland Islands', lat: -51.6977, lon: -57.8517 },
+  { label: 'Mar del Plata, Argentina', lat: -38.0055, lon: -57.5426 },
+  // Europe
+  { label: 'London, UK', lat: 51.5074, lon: -0.1278 },
+  { label: 'Edinburgh, UK', lat: 55.9533, lon: -3.1883 },
+  { label: 'Dublin, Ireland', lat: 53.3498, lon: -6.2603 },
+  { label: 'Paris, France', lat: 48.8566, lon: 2.3522 },
+  { label: 'Lyon, France', lat: 45.764, lon: 4.8357 },
+  { label: 'Madrid, Spain', lat: 40.4168, lon: -3.7038 },
+  { label: 'Barcelona, Spain', lat: 41.3874, lon: 2.1686 },
+  { label: 'Lisbon, Portugal', lat: 38.7223, lon: -9.1393 },
+  { label: 'Amsterdam, Netherlands', lat: 52.3676, lon: 4.9041 },
+  { label: 'Brussels, Belgium', lat: 50.8503, lon: 4.3517 },
   { label: 'Geneva, Switzerland', lat: 46.2044, lon: 6.1432 },
+  { label: 'Zurich, Switzerland', lat: 47.3769, lon: 8.5417 },
+  { label: 'Berlin, Germany', lat: 52.52, lon: 13.405 },
+  { label: 'Munich, Germany', lat: 48.1351, lon: 11.582 },
+  { label: 'Rome, Italy', lat: 41.9028, lon: 12.4964 },
+  { label: 'Milan, Italy', lat: 45.4642, lon: 9.19 },
+  { label: 'Venice, Italy', lat: 45.4408, lon: 12.3155 },
+  { label: 'Vienna, Austria', lat: 48.2082, lon: 16.3738 },
+  { label: 'Prague, Czechia', lat: 50.0755, lon: 14.4378 },
+  { label: 'Warsaw, Poland', lat: 52.2297, lon: 21.0122 },
+  { label: 'Budapest, Hungary', lat: 47.4979, lon: 19.0402 },
+  { label: 'Athens, Greece', lat: 37.9838, lon: 23.7275 },
+  { label: 'Istanbul, Turkey', lat: 41.0082, lon: 28.9784 },
+  { label: 'Stockholm, Sweden', lat: 59.3293, lon: 18.0686 },
+  { label: 'Oslo, Norway', lat: 59.9139, lon: 10.7522 },
+  { label: 'Copenhagen, Denmark', lat: 55.6761, lon: 12.5683 },
+  { label: 'Helsinki, Finland', lat: 60.1699, lon: 24.9384 },
+  { label: 'Reykjavik, Iceland', lat: 64.1466, lon: -21.9426 },
+  { label: 'Torshavn, Faroe Islands', lat: 62.0079, lon: -6.791 },
+  { label: 'Nuuk, Greenland', lat: 64.1814, lon: -51.6941 },
+  { label: 'Bergen, Norway', lat: 60.3913, lon: 5.3221 },
+  { label: 'Moscow, Russia', lat: 55.7558, lon: 37.6173 },
+  { label: 'Saint Petersburg, Russia', lat: 59.9311, lon: 30.3609 },
+  { label: 'Kyiv, Ukraine', lat: 50.4501, lon: 30.5234 },
+  { label: 'Bucharest, Romania', lat: 44.4268, lon: 26.1025 },
+  // Africa & Middle East
+  { label: 'Cairo, Egypt', lat: 30.0444, lon: 31.2357 },
+  { label: 'Casablanca, Morocco', lat: 33.5731, lon: -7.5898 },
+  { label: 'Tunis, Tunisia', lat: 36.8065, lon: 10.1815 },
+  { label: 'Algiers, Algeria', lat: 36.7538, lon: 3.0588 },
+  { label: 'Lagos, Nigeria', lat: 6.5244, lon: 3.3792 },
+  { label: 'Accra, Ghana', lat: 5.6037, lon: -0.187 },
+  { label: 'Dakar, Senegal', lat: 14.7167, lon: -17.4677 },
+  { label: 'Addis Ababa, Ethiopia', lat: 9.032, lon: 38.7469 },
+  { label: 'Nairobi, Kenya', lat: -1.2921, lon: 36.8219 },
+  { label: 'Kampala, Uganda', lat: 0.3476, lon: 32.5825 },
+  { label: 'Kigali, Rwanda', lat: -1.9441, lon: 30.0619 },
+  { label: 'Lusaka, Zambia', lat: -15.3875, lon: 28.3228 },
+  { label: 'Harare, Zimbabwe', lat: -17.8292, lon: 31.0522 },
+  { label: 'Dar es Salaam, Tanzania', lat: -6.7924, lon: 39.2083 },
+  { label: 'Kinshasa, DR Congo', lat: -4.4419, lon: 15.2663 },
+  { label: 'Johannesburg, South Africa', lat: -26.2041, lon: 28.0473 },
+  { label: 'Durban, South Africa', lat: -29.8587, lon: 31.0218 },
+  { label: 'Gaborone, Botswana', lat: -24.6282, lon: 25.9231 },
+  { label: 'Bloemfontein, South Africa', lat: -29.0852, lon: 26.1596 },
+  { label: 'Cape Town, South Africa', lat: -33.9249, lon: 18.4241 },
+  { label: 'Windhoek, Namibia', lat: -22.5609, lon: 17.0658 },
+  { label: 'Maputo, Mozambique', lat: -25.9692, lon: 32.5732 },
+  { label: 'Jerusalem', lat: 31.7683, lon: 35.2137 },
+  { label: 'Amman, Jordan', lat: 31.9454, lon: 35.9284 },
+  { label: 'Beirut, Lebanon', lat: 33.8938, lon: 35.5018 },
+  { label: 'Riyadh, Saudi Arabia', lat: 24.7136, lon: 46.6753 },
+  { label: 'Dubai, UAE', lat: 25.2048, lon: 55.2708 },
+  { label: 'Tehran, Iran', lat: 35.6892, lon: 51.389 },
+  { label: 'Baghdad, Iraq', lat: 33.3152, lon: 44.3661 },
+  { label: 'Tashkent, Uzbekistan', lat: 41.2995, lon: 69.2401 },
+  { label: 'Almaty, Kazakhstan', lat: 43.222, lon: 76.8512 },
+  { label: 'Ulaanbaatar, Mongolia', lat: 47.8864, lon: 106.9057 },
+  { label: 'Novosibirsk, Russia', lat: 55.0084, lon: 82.9357 },
+  { label: 'Krasnoyarsk, Russia', lat: 56.0153, lon: 92.8932 },
+  { label: 'Harbin, China', lat: 45.8038, lon: 126.5349 },
+  // Asia & Oceania
+  { label: 'New Delhi, India', lat: 28.6139, lon: 77.209 },
+  { label: 'Mumbai, India', lat: 19.076, lon: 72.8777 },
+  { label: 'Bengaluru, India', lat: 12.9716, lon: 77.5946 },
+  { label: 'Hyderabad, India', lat: 17.385, lon: 78.4867 },
+  { label: 'Chennai, India', lat: 13.0827, lon: 80.2707 },
+  { label: 'Kochi, India', lat: 9.9312, lon: 76.2673 },
+  { label: 'Kolkata, India', lat: 22.5726, lon: 88.3639 },
+  { label: 'Kathmandu, Nepal', lat: 27.7172, lon: 85.324 },
+  { label: 'Colombo, Sri Lanka', lat: 6.9271, lon: 79.8612 },
+  { label: 'Islamabad, Pakistan', lat: 33.6844, lon: 73.0479 },
+  { label: 'Bangkok, Thailand', lat: 13.7563, lon: 100.5018 },
+  { label: 'Hanoi, Vietnam', lat: 21.0278, lon: 105.8342 },
+  { label: 'Ho Chi Minh City, Vietnam', lat: 10.8231, lon: 106.6297 },
+  { label: 'Phnom Penh, Cambodia', lat: 11.5564, lon: 104.9282 },
+  { label: 'Kuala Lumpur, Malaysia', lat: 3.139, lon: 101.6869 },
+  { label: 'Singapore', lat: 1.3521, lon: 103.8198 },
+  { label: 'Jakarta, Indonesia', lat: -6.2088, lon: 106.8456 },
+  { label: 'Surabaya, Indonesia', lat: -7.2575, lon: 112.7521 },
+  { label: 'Denpasar, Bali', lat: -8.6705, lon: 115.2126 },
+  { label: 'Makassar, Indonesia', lat: -5.1477, lon: 119.4327 },
+  { label: 'Dili, Timor-Leste', lat: -8.5569, lon: 125.5603 },
+  { label: 'Manila, Philippines', lat: 14.5995, lon: 120.9842 },
+  { label: 'Beijing, China', lat: 39.9042, lon: 116.4074 },
+  { label: 'Shanghai, China', lat: 31.2304, lon: 121.4737 },
+  { label: 'Hong Kong', lat: 22.3193, lon: 114.1694 },
+  { label: 'Taipei, Taiwan', lat: 25.033, lon: 121.5654 },
+  { label: 'Seoul, South Korea', lat: 37.5665, lon: 126.978 },
+  { label: 'Busan, South Korea', lat: 35.1796, lon: 129.0756 },
+  { label: 'Tokyo, Japan', lat: 35.6762, lon: 139.6503 },
+  { label: 'Osaka, Japan', lat: 34.6937, lon: 135.5023 },
+  { label: 'Sapporo, Japan', lat: 43.0618, lon: 141.3545 },
+  { label: 'Sydney, Australia', lat: -33.8688, lon: 151.2093 },
+  { label: 'Melbourne, Australia', lat: -37.8136, lon: 144.9631 },
+  { label: 'Brisbane, Australia', lat: -27.4698, lon: 153.0251 },
+  { label: 'Adelaide, Australia', lat: -34.9285, lon: 138.6007 },
+  { label: 'Hobart, Australia', lat: -42.8821, lon: 147.3272 },
+  { label: 'Cairns, Australia', lat: -16.9186, lon: 145.7781 },
+  { label: 'Darwin, Australia', lat: -12.4634, lon: 130.8456 },
+  { label: 'Perth, Australia', lat: -31.9505, lon: 115.8605 },
+  { label: 'Port Moresby, Papua New Guinea', lat: -9.4438, lon: 147.1803 },
+  { label: 'Auckland, New Zealand', lat: -36.8485, lon: 174.7633 },
+  { label: 'Wellington, New Zealand', lat: -41.2865, lon: 174.7762 },
+  { label: 'Christchurch, New Zealand', lat: -43.5321, lon: 172.6362 },
+  { label: 'Queenstown, New Zealand', lat: -45.0312, lon: 168.6626 },
+  { label: 'Dunedin, New Zealand', lat: -45.8788, lon: 170.5028 },
+  { label: 'Suva, Fiji', lat: -18.1416, lon: 178.4419 },
+  { label: 'Honolulu, Hawaii', lat: 21.3069, lon: -157.8583 },
+  { label: 'Papeete, French Polynesia', lat: -17.5516, lon: -149.5585 },
 ];
 
-function approxGreatCircleKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+export function approxGreatCircleKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const toRad = Math.PI / 180;
   const dLat = (lat2 - lat1) * toRad;
   const dLon = (lon2 - lon1) * toRad;
@@ -2120,6 +2727,81 @@ function approxGreatCircleKm(lat1: number, lon1: number, lat2: number, lon2: num
     1,
   );
   return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function cityCoreToken(label: string): string {
+  const afterDot = label.includes('·') ? label.split('·').pop()!.trim() : label.trim();
+  // If afterDot is "City, Country", extract "city". If afterDot has no comma (e.g. "Australia" or "India"),
+  // use the landmark/city prefix before "·" so we NEVER exclude other cities in the same country!
+  if (afterDot.includes(',')) {
+    return afterDot.split(',')[0].trim().toLowerCase();
+  }
+  const beforeDot = label.includes('·') ? label.split('·')[0].trim().toLowerCase() : afterDot.toLowerCase();
+  return beforeDot;
+}
+
+/**
+ * Picks plausible regional neighbor decoys strictly within `350–2,200 km` of `(targetLat, targetLon)`
+ * (widening gently ONLY for ultra-isolated oceanic islands with fewer than 3 cities in 2,200 km)
+ * so GLOBE_PIN_DROP & VISUAL_SPOTTER NEVER pair Boston with Seoul or New York with Sydney!
+ */
+export function pickRegionalGlobeDecoys(
+  targetLat: number,
+  targetLon: number,
+  targetLabel: string,
+  seed: number,
+  desiredCount = 3,
+): Array<{ label: string; lat: number; lon: number }> {
+  const targetLow = targetLabel.trim().toLowerCase();
+  const targetCityCore = cityCoreToken(targetLabel);
+  const rng = new DeterministicRng(seed);
+
+  const scored = REGIONAL_GLOBE_ANCHORS.map((cand) => ({
+    ...cand,
+    distKm: approxGreatCircleKm(targetLat, targetLon, cand.lat, cand.lon),
+  })).filter((cand) => {
+    const cLow = cand.label.toLowerCase();
+    const cCore = cityCoreToken(cand.label);
+    if (cLow === targetLow || cCore === targetCityCore) return false;
+    if (targetCityCore.length >= 4 && (cLow.includes(targetCityCore) || targetLow.includes(cCore))) {
+      return false;
+    }
+    return cand.distKm >= 350;
+  });
+
+  // Primary regional band: 350..2,200 km!
+  const regionalBand = scored.filter((c) => c.distKm >= 350 && c.distKm <= 2200);
+  rng.shuffleInPlace(regionalBand);
+
+  const picked: Array<{ label: string; lat: number; lon: number }> = [];
+  const tryPickFrom = (
+    pool: ReadonlyArray<{ label: string; lat: number; lon: number; distKm: number }>,
+    minPeerSpacingKm: number,
+  ): void => {
+    for (const cand of pool) {
+      if (picked.length >= desiredCount) break;
+      if (picked.some((p) => p.label.toLowerCase() === cand.label.toLowerCase())) continue;
+      if (
+        picked.some(
+          (p) => approxGreatCircleKm(p.lat, p.lon, cand.lat, cand.lon) < minPeerSpacingKm,
+        )
+      ) {
+        continue;
+      }
+      picked.push({ label: cand.label, lat: cand.lat, lon: cand.lon });
+    }
+  };
+
+  tryPickFrom(regionalBand, 260);
+  if (picked.length < desiredCount) {
+    tryPickFrom(regionalBand, 120);
+  }
+  if (picked.length < desiredCount) {
+    // Only for ultra-isolated oceanic targets (e.g. Honolulu / Easter Island): pick nearest Pacific/basin peers
+    const nearestFallback = [...scored].sort((a, b) => a.distKm - b.distKm);
+    tryPickFrom(nearestFallback, 200);
+  }
+  return picked;
 }
 
 /**
@@ -2222,58 +2904,65 @@ function buildGlobePinSpec(raw: RawQuestionRecord, shuffleSalt: number): GlobePi
       synthesizeGlobeCoordHint(targetLat, targetLon),
   );
 
-  const rng = new DeterministicRng(
-    fnv1a32(`WS_GLOBE_ANCHORS:${raw.qid}:${shuffleSalt}:${targetLabel}`),
-  );
+  const seed = fnv1a32(`WS_GLOBE_ANCHORS:${raw.qid}:${shuffleSalt}:${targetLabel}`);
+  const rng = new DeterministicRng(seed);
 
-  let anchors: Array<{ label: string; lat: number; lon: number }> = [];
-  if (Array.isArray(ext?.quickAnchors) && ext.quickAnchors.length >= 4) {
-    const seenLabels = new Set<string>();
+  // Validate any pre-authored quickAnchors: keep ONLY regional decoys within 350..2,200 km!
+  // Any opposite-hemisphere / far-away legacy decoy (e.g. Seoul for Boston) is replaced cleanly.
+  const targetAnchor = { label: targetLabel, lat: targetLat, lon: targetLon };
+  const validRegionalDecoys: Array<{ label: string; lat: number; lon: number }> = [];
+  const seenDecoyLabels = new Set<string>([targetLabel.toLowerCase(), cityCoreToken(targetLabel)]);
+
+  if (Array.isArray(ext?.quickAnchors)) {
     for (const a of ext.quickAnchors) {
       if (!a || !a.label) continue;
       const lbl = sanitizeTriviaCopy(String(a.label).trim());
-      if (!lbl || seenLabels.has(lbl.toLowerCase())) continue;
-      seenLabels.add(lbl.toLowerCase());
-      anchors.push({
-        label: lbl,
-        lat: clamp(Number(a.lat), -89.9, 89.9),
-        lon: clamp(Number(a.lon), -180, 180),
-      });
-      if (anchors.length >= 4) break;
+      if (!lbl) continue;
+      const lat = clamp(Number(a.lat), -89.9, 89.9);
+      const lon = clamp(Number(a.lon), -180, 180);
+      const d = approxGreatCircleKm(targetLat, targetLon, lat, lon);
+      // Skip the target itself or anything too close (<350 km) or far away (>2,200 km)
+      if (d < 350 || d > 2200) continue;
+      const low = lbl.toLowerCase();
+      const core = cityCoreToken(lbl);
+      if (seenDecoyLabels.has(low) || seenDecoyLabels.has(core)) continue;
+      seenDecoyLabels.add(low);
+      seenDecoyLabels.add(core);
+      validRegionalDecoys.push({ label: lbl, lat, lon });
+      if (validRegionalDecoys.length >= 3) break;
     }
   }
 
-  if (anchors.length < 4) {
-    anchors = [{ label: targetLabel, lat: targetLat, lon: targetLon }];
-    const targetLow = targetLabel.toLowerCase();
-    const minDistFromTarget = Math.max(grazeKm + 400, 2600);
-    const pool = [...WORLD_CAPITAL_ANCHORS];
-    rng.shuffleInPlace(pool);
-
-    for (const cand of pool) {
-      if (anchors.length >= 4) break;
-      const cLow = cand.label.toLowerCase();
-      if (cLow === targetLow || cLow.includes(targetLow) || targetLow.includes(cLow)) continue;
-      const dTarget = approxGreatCircleKm(targetLat, targetLon, cand.lat, cand.lon);
-      if (dTarget < minDistFromTarget) continue;
-      const tooCloseToExisting = anchors.some(
-        (existing) => approxGreatCircleKm(existing.lat, existing.lon, cand.lat, cand.lon) < 1800,
-      );
-      if (tooCloseToExisting) continue;
-      anchors.push({ ...cand });
-    }
-    // Safety fallback if target is unusual or spacing was tight
-    for (const cand of pool) {
-      if (anchors.length >= 4) break;
-      if (anchors.some((existing) => existing.label.toLowerCase() === cand.label.toLowerCase())) {
+  if (validRegionalDecoys.length < 3) {
+    const regionalFill = pickRegionalGlobeDecoys(
+      targetLat,
+      targetLon,
+      targetLabel,
+      seed ^ 0x51ed270b,
+      6,
+    );
+    for (const cand of regionalFill) {
+      if (validRegionalDecoys.length >= 3) break;
+      const low = cand.label.toLowerCase();
+      const core = cityCoreToken(cand.label);
+      if (seenDecoyLabels.has(low) || seenDecoyLabels.has(core)) continue;
+      if (
+        validRegionalDecoys.some(
+          (existing) => approxGreatCircleKm(existing.lat, existing.lon, cand.lat, cand.lon) < 180,
+        )
+      ) {
         continue;
       }
-      if (approxGreatCircleKm(targetLat, targetLon, cand.lat, cand.lon) > goldKm + 200) {
-        anchors.push({ ...cand });
-      }
+      seenDecoyLabels.add(low);
+      seenDecoyLabels.add(core);
+      validRegionalDecoys.push(cand);
     }
   }
 
+  const anchors: Array<{ label: string; lat: number; lon: number }> = [
+    targetAnchor,
+    ...validRegionalDecoys.slice(0, 3),
+  ];
   rng.shuffleInPlace(anchors);
 
   return {
@@ -2305,7 +2994,7 @@ export function normalizeToPrismQuestion(
   const isCuratedPackQid =
     raw.qid <= 4_964 ||
     (raw.qid >= 50_000 && raw.qid < 60_000) ||
-    (raw.qid >= 1_060_000 && raw.qid < 1_090_000);
+    (raw.qid >= 1_060_000 && raw.qid < 1_100_000);
 
   const sourceTier: QuestionSourceTier =
     options.sourceTier ??
@@ -2331,22 +3020,36 @@ export function normalizeToPrismQuestion(
         : sanitizeAnswerOrFacet(raw.answerCorrect, cleanPrompt);
 
   const rawClues = Array.isArray(raw.clues) ? raw.clues : [];
-  const lateralClue =
+  let lateralClue =
     arch === 'GLOBE_PIN_DROP' && globePin
       ? globePin.regionHint
       : sanitizeTriviaCopy(
           rawClues[0]?.trim() ||
-            `Category focus: ${raw.l1Category ?? domainMeta.name}.`,
+            `Think of the signature hallmark in ${raw.l1Category ?? domainMeta.name} that rules out the two outliers.`,
         );
-  const pinpointClue =
+  let pinpointClue =
     arch === 'GLOBE_PIN_DROP' && globePin
       ? globePin.coordHint
       : sanitizeTriviaCopy(
           rawClues[1]?.trim() ||
             (arch === 'SIGHTLINE_LOCK' || arch === 'HERO_ARTIFACT_SYNTHESIS'
-              ? `Half of the false facets have been eliminated—verify the ${domainMeta.shortName.toLowerCase()} link.`
+              ? `Eliminate the two most distant ${domainMeta.shortName.toLowerCase()} outliers to zero in on the true link.`
               : lateralClue),
         );
+
+  if (arch === 'CODEX_DUAL_RING' && raw.codexExt) {
+    const safeCodexClues = buildNonLeakingCodexClues(
+      raw.l1Category?.trim() || domainMeta.name,
+      raw.codexExt.pairs,
+      raw.codexExt.decoyTarget,
+      raw.qid,
+      [lateralClue, pinpointClue],
+    );
+    lateralClue = safeCodexClues[0];
+    pinpointClue = safeCodexClues[1];
+  } else if (RE_DRY_LETTER_HINT.test(pinpointClue)) {
+    pinpointClue = lateralClue;
+  }
 
   const glyphHint: GlyphHint = raw.glyphHint ?? domainMeta.glyphShape;
   const glyphId = resolveSdfGlyphId(raw, domId);
@@ -2449,8 +3152,9 @@ export function normalizeToPrismQuestion(
     glyphId,
     glyphUrl,
     whyExplanation: sanitizeTriviaCopy(
-      raw.whyExplanation?.trim() ||
-        `Verified in The Meridian Ledger (${domainMeta.name} · ${l1Category}).`,
+      raw.whyExplanation?.trim() && !hasRoboticWhyExplanation(raw.whyExplanation)
+        ? raw.whyExplanation.trim()
+        : `${cleanAnswerCorrect} takes the spotlight in ${l1Category} (${domainMeta.name}).`,
     ),
     timerSec: options.timerSec ?? defaultTimer,
     facets,
