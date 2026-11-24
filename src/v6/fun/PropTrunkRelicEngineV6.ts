@@ -886,6 +886,13 @@ function ensurePropTrunkStyles(): void {
 .v6tr-root.v6tr-landscape .v6tr-shop-grid {
   gap: 4px;
 }
+.v6tr-root.v6tr-landscape .v6tr-item-card {
+  padding: 2px 5px;
+  gap: 1px;
+}
+.v6tr-root.v6tr-landscape .v6tr-buy-btn {
+  padding: 1px 4px;
+}
 .v6tr-root.v6tr-landscape .v6tr-cta,
 .v6tr-root.v6tr-landscape .v6tr-reroll {
   padding: 4px 10px;

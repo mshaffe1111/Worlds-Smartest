@@ -2720,7 +2720,7 @@ export class BoardContraptionRendererA {
       rimMesh.position.y = -0.02;
       plaqueMesh = new THREE.Mesh(this.trackGeo(new THREE.CircleGeometry(0.28, 6)), plaqueMat);
       plaqueMesh.rotation.x = -Math.PI / 2;
-      plaqueMesh.position.y = 0.166;
+      plaqueMesh.position.y = 0.178;
     } else if (visualKind === 'STANDING_DOMINO') {
       const domGeo = this.trackGeo(new THREE.BoxGeometry(0.36, 0.62, 0.12));
       domGeo.translate(0, 0.31, 0); // Pivot at bottom edge for realistic rigid-body toppling!

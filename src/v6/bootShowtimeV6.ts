@@ -392,13 +392,37 @@ const INTEGRATION_CSS = `
   .v6-board-top-deck {
     padding: 4px 8px;
   }
+  .v6-board-identity {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .v6-board-rule-pill {
+    display: none;
+  }
+  .v6-board-duel-strip {
+    flex: 0 0 auto;
+  }
+  .v6-board-score-chip {
+    flex: 0 0 auto;
+  }
   .v6-board-bottom-dock {
     flex-direction: row;
     align-items: center;
     padding: 4px 8px;
+    gap: 6px;
   }
   .v6-board-node-scroller {
-    flex: 1 1 0;
+    flex: 1 1 56%;
+    min-width: 0;
+  }
+  .v6-board-controls-row {
+    width: auto;
+    flex: 0 1 44%;
+    min-width: 0;
+    justify-content: flex-end;
+  }
+  .v6-board-tactical-btn {
+    flex: 0 1 auto;
   }
 }
 
