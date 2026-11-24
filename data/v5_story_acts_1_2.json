@@ -1,0 +1,4570 @@
+{
+  "version": "5.0",
+  "acts": [
+    1,
+    2
+  ],
+  "nodes": [
+    {
+      "nodeId": "act1_m1",
+      "actNumber": 1,
+      "tierNumber": 1,
+      "lane": "MAIN_STAGE",
+      "ephemeraStyle": "POLAROID_SNAPSHOT",
+      "pinX": 50,
+      "pinY": 91,
+      "tiltDeg": -2.5,
+      "cityStamp": "OAKRIDGE, BROOKLYN",
+      "venueName": "Oakridge Community Hall",
+      "showTitle": "The Rainy-Night Open Call",
+      "hookBlurb": "Showcase Starter board: 42 folding chairs, 4 mixed tactile formats, and your first shot at a $10M search.",
+      "challengerId": null,
+      "boardCols": 4,
+      "boardRows": 3,
+      "maxTurns": 6,
+      "topology": "OPEN_TRYOUT",
+      "boardTwistId": "showcase_starter",
+      "entryFeeUsd": 0,
+      "purseUsd": 250,
+      "baseAudience": 42,
+      "soloTargetScore": 850,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "PINPOINT_DIAL",
+        "SORT_4"
+      ],
+      "preferredDomains": [
+        0,
+        2,
+        4,
+        1
+      ],
+      "initialUnlocked": true,
+      "onWinUnlockIds": [
+        "act1_m2",
+        "act1_s1"
+      ],
+      "onLossUnlockIds": [
+        "act1_r1"
+      ],
+      "preMatchSceneId": "scene_cold_open",
+      "postWinSceneId": "scene_sam_trunk_intro",
+      "postLossSceneId": "scene_act1_redemption_diner"
+    },
+    {
+      "nodeId": "act1_r1",
+      "actNumber": 1,
+      "tierNumber": 1,
+      "lane": "REDEMPTION_GRIT",
+      "ephemeraStyle": "TORN_PUB_FLYER",
+      "pinX": 17,
+      "pinY": 84,
+      "tiltDeg": -5.5,
+      "cityStamp": "BROOKLYN, NY",
+      "venueName": "Lou's 24-Hour Diner",
+      "showTitle": "2 AM All-Night Diner Quiz",
+      "hookBlurb": "Late-night Redemption hustle: Showcase Starter booth match under neon coffee lights for an Underdog Chip.",
+      "challengerId": "frankie_russo",
+      "boardCols": 4,
+      "boardRows": 3,
+      "maxTurns": 7,
+      "topology": "OPEN_TRYOUT",
+      "boardTwistId": "showcase_starter",
+      "entryFeeUsd": 0,
+      "purseUsd": 350,
+      "baseAudience": 28,
+      "soloTargetScore": 900,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "MULTI_STRIKE",
+        "PINPOINT_DIAL"
+      ],
+      "preferredDomains": [
+        4,
+        5,
+        9,
+        2
+      ],
+      "rewardCharmId": "underdog_chip",
+      "onWinUnlockIds": [
+        "act1_m2",
+        "act1_r2"
+      ],
+      "onLossUnlockIds": [
+        "act1_r2"
+      ],
+      "preMatchSceneId": "scene_act1_diner_walkout",
+      "postWinSceneId": "scene_act1_diner_comeback"
+    },
+    {
+      "nodeId": "act1_m2",
+      "actNumber": 1,
+      "tierNumber": 1,
+      "lane": "MAIN_STAGE",
+      "ephemeraStyle": "POLAROID_SNAPSHOT",
+      "pinX": 48,
+      "pinY": 77,
+      "tiltDeg": 2.0,
+      "cityStamp": "OAKRIDGE, BROOKLYN",
+      "venueName": "Oakridge Community Hall",
+      "showTitle": "Tuesday Night at Frankie's",
+      "hookBlurb": "Showcase Starter head-to-head: Frankie rules Pop & Sports, so target Science tiles and snag 6 Jewel Wedges.",
+      "challengerId": "frankie_russo",
+      "boardCols": 4,
+      "boardRows": 3,
+      "maxTurns": 8,
+      "topology": "OPEN_TRYOUT",
+      "boardTwistId": "showcase_starter",
+      "entryFeeUsd": 50,
+      "purseUsd": 500,
+      "baseAudience": 86,
+      "soloTargetScore": 1100,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "SORT_4",
+        "CLUE_ESCALATOR"
+      ],
+      "preferredDomains": [
+        4,
+        5,
+        1,
+        9
+      ],
+      "onWinUnlockIds": [
+        "act1_m3",
+        "act1_v1"
+      ],
+      "onLossUnlockIds": [
+        "act1_r2"
+      ],
+      "secretUnlockIds": [
+        "act1_v1"
+      ],
+      "preMatchSceneId": "scene_frankie_first_match"
+    },
+    {
+      "nodeId": "act1_s1",
+      "actNumber": 1,
+      "tierNumber": 1,
+      "lane": "SPONSOR_SHOWCASE",
+      "ephemeraStyle": "CALL_SHEET_CLIP",
+      "pinX": 82,
+      "pinY": 83,
+      "tiltDeg": 4.5,
+      "cityStamp": "OAKRIDGE, BROOKLYN",
+      "venueName": "WOKR 98.7 Morning Booth",
+      "showTitle": "Morning-Zoo Time-Bomb Blitz",
+      "hookBlurb": "Time-Bomb Hot Potato debut: defuse the sizzling fuse tile before it jumps, and flip 2x Double Down on live radio.",
+      "challengerId": null,
+      "boardCols": 4,
+      "boardRows": 3,
+      "maxTurns": 7,
+      "topology": "SPOTLIGHT_ROULETTE",
+      "boardTwistId": "time_bomb_hot_potato",
+      "entryFeeUsd": 50,
+      "purseUsd": 650,
+      "baseAudience": 310,
+      "soloTargetScore": 1150,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "PINPOINT_DIAL",
+        "MULTI_STRIKE",
+        "VISUAL_SPOTTER"
+      ],
+      "preferredDomains": [
+        4,
+        2,
+        5,
+        6
+      ],
+      "optionalDare": {
+        "dareId": "dare_act1_radio_double",
+        "sponsor": "INDEPENDENT",
+        "description": "Arm the 2x Double Down throw-switch and nail the clue live on air.",
+        "conditionKind": "WIN_DOUBLE_DOWN",
+        "bonusPurseUsd": 300,
+        "bonusViewers": 180
+      },
+      "rewardCharmId": "grassroots_megaphone",
+      "onWinUnlockIds": [
+        "act1_m3"
+      ],
+      "onLossUnlockIds": [
+        "act1_r2"
+      ],
+      "preMatchSceneId": "scene_act1_radio_dare"
+    },
+    {
+      "nodeId": "act1_r2",
+      "actNumber": 1,
+      "tierNumber": 1,
+      "lane": "REDEMPTION_GRIT",
+      "ephemeraStyle": "TORN_PUB_FLYER",
+      "pinX": 14,
+      "pinY": 69,
+      "tiltDeg": 5.0,
+      "cityStamp": "RED HOOK, BROOKLYN",
+      "venueName": "Copper Kettle Taproom",
+      "showTitle": "Backroom Brewery Play-In",
+      "hookBlurb": "Time-Bomb Hot Potato brawl: smoky taproom qualifier where ticking fuse tiles bounce if you hesitate.",
+      "challengerId": null,
+      "boardCols": 4,
+      "boardRows": 3,
+      "maxTurns": 8,
+      "topology": "SPOTLIGHT_ROULETTE",
+      "boardTwistId": "time_bomb_hot_potato",
+      "entryFeeUsd": 0,
+      "purseUsd": 550,
+      "baseAudience": 95,
+      "soloTargetScore": 1200,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "PINPOINT_DIAL",
+        "CLUE_ESCALATOR"
+      ],
+      "preferredDomains": [
+        9,
+        5,
+        0,
+        4
+      ],
+      "onWinUnlockIds": [
+        "act1_m3",
+        "act1_g1"
+      ],
+      "onLossUnlockIds": [
+        "act1_r3"
+      ],
+      "preMatchSceneId": "scene_act1_timebomb_intro"
+    },
+    {
+      "nodeId": "act1_m3",
+      "actNumber": 1,
+      "tierNumber": 1,
+      "lane": "MAIN_STAGE",
+      "ephemeraStyle": "POLAROID_SNAPSHOT",
+      "pinX": 52,
+      "pinY": 64,
+      "tiltDeg": -3.0,
+      "cityStamp": "OAKRIDGE, BROOKLYN",
+      "venueName": "Oakridge Community Hall",
+      "showTitle": "The Red Button Barroom Brawl",
+      "hookBlurb": "Red SCREW RIVAL! Buzzer debut: slam the dome on a Science tile Frankie dreads to steal his points if he chokes.",
+      "challengerId": "frankie_russo",
+      "boardCols": 4,
+      "boardRows": 4,
+      "maxTurns": 9,
+      "topology": "OPEN_TRYOUT",
+      "boardTwistId": "showcase_starter",
+      "entryFeeUsd": 100,
+      "purseUsd": 750,
+      "baseAudience": 135,
+      "soloTargetScore": 1450,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "SORT_4",
+        "PINPOINT_DIAL",
+        "MULTI_STRIKE"
+      ],
+      "preferredDomains": [
+        1,
+        11,
+        4,
+        5
+      ],
+      "optionalDare": {
+        "dareId": "dare_act1_screw_frankie",
+        "sponsor": "INDEPENDENT",
+        "description": "Slam SCREW RIVAL! on a tough tile and steal points when Frankie misses.",
+        "conditionKind": "USE_SCREW_SUCCESSFULLY",
+        "bonusPurseUsd": 350,
+        "bonusViewers": 120
+      },
+      "onWinUnlockIds": [
+        "act1_m4",
+        "act1_g1"
+      ],
+      "onLossUnlockIds": [
+        "act1_r3"
+      ],
+      "preMatchSceneId": "scene_frankie_screw_intro"
+    },
+    {
+      "nodeId": "act1_v1",
+      "actNumber": 1,
+      "tierNumber": 1,
+      "lane": "VELVET_SALON",
+      "ephemeraStyle": "VELVET_WAX_INVITE",
+      "pinX": 84,
+      "pinY": 69,
+      "tiltDeg": -4.0,
+      "cityStamp": "BROOKLYN HEIGHTS",
+      "venueName": "Aldine Rare Books Parlor",
+      "showTitle": "The Candlelit Bookshop Salon",
+      "hookBlurb": "Velvet X-Crossroads twist: wax-sealed midnight salon where glowing diagonal tracks double every answer.",
+      "challengerId": "denise_park",
+      "boardCols": 4,
+      "boardRows": 4,
+      "maxTurns": 9,
+      "topology": "CROSSROADS_HYBRID",
+      "boardTwistId": "velvet_x_crossroads",
+      "entryFeeUsd": 150,
+      "purseUsd": 1200,
+      "baseAudience": 64,
+      "soloTargetScore": 1600,
+      "featuredFormats": [
+        "CLUE_ESCALATOR",
+        "SORT_4",
+        "MATCH_4",
+        "MULTIPLE_CHOICE"
+      ],
+      "preferredDomains": [
+        10,
+        0,
+        3,
+        8
+      ],
+      "optionalDare": {
+        "dareId": "dare_act1_velvet_pure",
+        "sponsor": "VELVET_SOCIETY",
+        "description": "Win the candlelit parlor without touching your 50/50 or Clue coins.",
+        "conditionKind": "NO_LIFELINES_USED",
+        "bonusPurseUsd": 500,
+        "bonusViewers": 90
+      },
+      "onWinUnlockIds": [
+        "act1_m4",
+        "act1_v2"
+      ],
+      "onLossUnlockIds": [
+        "act1_r3"
+      ],
+      "preMatchSceneId": "scene_velvet_salon_1"
+    },
+    {
+      "nodeId": "act1_g1",
+      "actNumber": 1,
+      "tierNumber": 1,
+      "lane": "RIVAL_GRUDGE",
+      "ephemeraStyle": "CALL_SHEET_CLIP",
+      "pinX": 31,
+      "pinY": 57,
+      "tiltDeg": 4.0,
+      "cityStamp": "OAKRIDGE, BROOKLYN",
+      "venueName": "Frankie's Corner Tap",
+      "showTitle": "Last-Call Sparring Session",
+      "hookBlurb": "Chain-Padlock warm-up after closing time: beat Frankie on his home mahogany to claim Frankie's Lucky Coaster.",
+      "challengerId": "frankie_russo",
+      "boardCols": 4,
+      "boardRows": 4,
+      "maxTurns": 9,
+      "topology": "PADLOCK_NEIGHBORS",
+      "boardTwistId": "chain_padlocks",
+      "entryFeeUsd": 100,
+      "purseUsd": 900,
+      "baseAudience": 55,
+      "soloTargetScore": 1500,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "MULTI_STRIKE",
+        "VISUAL_SPOTTER"
+      ],
+      "preferredDomains": [
+        4,
+        5,
+        9,
+        1
+      ],
+      "rewardCharmId": "frankies_coaster",
+      "onWinUnlockIds": [
+        "act1_m4"
+      ],
+      "onLossUnlockIds": [
+        "act1_r3"
+      ],
+      "preMatchSceneId": "scene_frankie_sparring_call"
+    },
+    {
+      "nodeId": "act1_r3",
+      "actNumber": 1,
+      "tierNumber": 1,
+      "lane": "REDEMPTION_GRIT",
+      "ephemeraStyle": "BOARDING_PASS",
+      "pinX": 14,
+      "pinY": 54,
+      "tiltDeg": -6.0,
+      "cityStamp": "DOWNTOWN BROOKLYN",
+      "venueName": "Civic Annex Basement",
+      "showTitle": "Midnight Subway Wildcard",
+      "hookBlurb": "Time-Bomb Hot Potato last-chance ticket: outrun the fuse below street level to storm back into Oakridge's final.",
+      "challengerId": "frankie_russo",
+      "boardCols": 4,
+      "boardRows": 4,
+      "maxTurns": 9,
+      "topology": "SPOTLIGHT_ROULETTE",
+      "boardTwistId": "time_bomb_hot_potato",
+      "entryFeeUsd": 0,
+      "purseUsd": 700,
+      "baseAudience": 120,
+      "soloTargetScore": 1400,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "PINPOINT_DIAL",
+        "SORT_4",
+        "CLUE_ESCALATOR"
+      ],
+      "preferredDomains": [
+        2,
+        0,
+        4,
+        7
+      ],
+      "onWinUnlockIds": [
+        "act1_m4"
+      ],
+      "onLossUnlockIds": [
+        "act1_m4"
+      ],
+      "preMatchSceneId": "scene_act1_wildcard_grit"
+    },
+    {
+      "nodeId": "act1_m4",
+      "actNumber": 1,
+      "tierNumber": 1,
+      "lane": "MAIN_STAGE",
+      "ephemeraStyle": "POLAROID_SNAPSHOT",
+      "pinX": 50,
+      "pinY": 50,
+      "tiltDeg": 1.5,
+      "cityStamp": "OAKRIDGE, BROOKLYN",
+      "venueName": "Oakridge Community Hall",
+      "showTitle": "Oakridge Crown Showdown",
+      "hookBlurb": "Tier 1 Championship: 180 locals packed wall-to-wall, chained 800-pt vaults, and Frankie's 6-year belt on the table.",
+      "challengerId": "frankie_russo",
+      "boardCols": 4,
+      "boardRows": 4,
+      "maxTurns": 10,
+      "topology": "PADLOCK_NEIGHBORS",
+      "boardTwistId": "chain_padlocks",
+      "entryFeeUsd": 150,
+      "purseUsd": 1500,
+      "baseAudience": 180,
+      "soloTargetScore": 1800,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "SORT_4",
+        "PINPOINT_DIAL",
+        "CLUE_ESCALATOR"
+      ],
+      "preferredDomains": [
+        0,
+        1,
+        4,
+        5
+      ],
+      "optionalDare": {
+        "dareId": "dare_act1_oakridge_wedges",
+        "sponsor": "INDEPENDENT",
+        "description": "Light up at least 3 Jewel Wedges on the Oakridge championship medallion.",
+        "conditionKind": "EARN_3_WEDGES",
+        "bonusPurseUsd": 500,
+        "bonusViewers": 240
+      },
+      "onWinUnlockIds": [
+        "act1_m5",
+        "act1_s2"
+      ],
+      "onLossUnlockIds": [
+        "act1_r4"
+      ],
+      "preMatchSceneId": "scene_frankie_climax_walkout",
+      "postWinSceneId": "scene_frankie_crown_win",
+      "postLossSceneId": "scene_frankie_crown_loss"
+    },
+    {
+      "nodeId": "act1_r4",
+      "actNumber": 1,
+      "tierNumber": 2,
+      "lane": "REDEMPTION_GRIT",
+      "ephemeraStyle": "TORN_PUB_FLYER",
+      "pinX": 17,
+      "pinY": 42,
+      "tiltDeg": 4.5,
+      "cityStamp": "CIVIC DISTRICT",
+      "venueName": "Channel 56 Basement Studio",
+      "showTitle": "Public-Access Cable Wildcard",
+      "hookBlurb": "Fail-forward cable play-in: buzzing fluorescent tubes, Time-Bomb Blitz tiles, and a backdoor ticket to the Lyric.",
+      "challengerId": null,
+      "boardCols": 4,
+      "boardRows": 4,
+      "maxTurns": 9,
+      "topology": "SPOTLIGHT_ROULETTE",
+      "boardTwistId": "time_bomb_hot_potato",
+      "entryFeeUsd": 0,
+      "purseUsd": 1100,
+      "baseAudience": 620,
+      "soloTargetScore": 1750,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "MULTI_STRIKE",
+        "VISUAL_SPOTTER"
+      ],
+      "preferredDomains": [
+        4,
+        6,
+        2,
+        5
+      ],
+      "onWinUnlockIds": [
+        "act1_m5",
+        "act1_m6"
+      ],
+      "onLossUnlockIds": [
+        "act1_r5"
+      ],
+      "preMatchSceneId": "scene_public_access_wildcard"
+    },
+    {
+      "nodeId": "act1_m5",
+      "actNumber": 1,
+      "tierNumber": 2,
+      "lane": "MAIN_STAGE",
+      "ephemeraStyle": "POLAROID_SNAPSHOT",
+      "pinX": 49,
+      "pinY": 38,
+      "tiltDeg": -2.0,
+      "cityStamp": "DOWNTOWN CIVIC",
+      "venueName": "Downtown Lyric Theater",
+      "showTitle": "Curtain Up at the Lyric",
+      "hookBlurb": "3D Chain-Reaction Padlocks showcase: Denise Park locks the 400/800 vaults until you shatter adjacent prerequisites.",
+      "challengerId": "denise_park",
+      "boardCols": 4,
+      "boardRows": 4,
+      "maxTurns": 10,
+      "topology": "PADLOCK_NEIGHBORS",
+      "boardTwistId": "chain_padlocks",
+      "entryFeeUsd": 250,
+      "purseUsd": 2000,
+      "baseAudience": 1400,
+      "soloTargetScore": 2000,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "SORT_4",
+        "MATCH_4",
+        "CLUE_ESCALATOR"
+      ],
+      "preferredDomains": [
+        0,
+        8,
+        10,
+        3
+      ],
+      "onWinUnlockIds": [
+        "act1_m6",
+        "act1_s2"
+      ],
+      "onLossUnlockIds": [
+        "act1_r5"
+      ],
+      "preMatchSceneId": "scene_denise_padlocks_intro"
+    },
+    {
+      "nodeId": "act1_s2",
+      "actNumber": 1,
+      "tierNumber": 2,
+      "lane": "SPONSOR_SHOWCASE",
+      "ephemeraStyle": "CALL_SHEET_CLIP",
+      "pinX": 82,
+      "pinY": 48,
+      "tiltDeg": 5.5,
+      "cityStamp": "DOWNTOWN CIVIC",
+      "venueName": "Lyric Mezzanine Press Lounge",
+      "showTitle": "Apex Talent Scout Screen Test",
+      "hookBlurb": "Spotlight Roulette showcase: Apex Network scouts dangle a big cash advance if you ignite a 4-question hot streak.",
+      "challengerId": null,
+      "boardCols": 4,
+      "boardRows": 4,
+      "maxTurns": 9,
+      "topology": "SPOTLIGHT_ROULETTE",
+      "boardTwistId": "spotlight_roulette",
+      "entryFeeUsd": 250,
+      "purseUsd": 2800,
+      "baseAudience": 2100,
+      "soloTargetScore": 2100,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "PINPOINT_DIAL",
+        "MULTI_STRIKE",
+        "VISUAL_SPOTTER"
+      ],
+      "preferredDomains": [
+        4,
+        2,
+        1,
+        6
+      ],
+      "optionalDare": {
+        "dareId": "dare_act1_apex_streak4",
+        "sponsor": "APEX_NETWORK",
+        "description": "Chain 4 consecutive correct answers while the Apex cameras roll.",
+        "conditionKind": "REACH_STREAK_4",
+        "bonusPurseUsd": 900,
+        "bonusViewers": 1200
+      },
+      "onWinUnlockIds": [
+        "act1_m7"
+      ],
+      "onLossUnlockIds": [
+        "act1_r5"
+      ],
+      "preMatchSceneId": "scene_apex_sponsor_pitch"
+    },
+    {
+      "nodeId": "act1_r5",
+      "actNumber": 1,
+      "tierNumber": 2,
+      "lane": "REDEMPTION_GRIT",
+      "ephemeraStyle": "TORN_PUB_FLYER",
+      "pinX": 16,
+      "pinY": 29,
+      "tiltDeg": -4.5,
+      "cityStamp": "DOWNTOWN CIVIC",
+      "venueName": "Civic Library Reading Room",
+      "showTitle": "After-Hours Detention Play-In",
+      "hookBlurb": "Chain-Padlock study session after lockup: shatter Denise's locked History lanes to claw back into the Lyric bracket.",
+      "challengerId": "denise_park",
+      "boardCols": 4,
+      "boardRows": 4,
+      "maxTurns": 10,
+      "topology": "PADLOCK_NEIGHBORS",
+      "boardTwistId": "chain_padlocks",
+      "entryFeeUsd": 0,
+      "purseUsd": 1600,
+      "baseAudience": 780,
+      "soloTargetScore": 1950,
+      "featuredFormats": [
+        "CLUE_ESCALATOR",
+        "SORT_4",
+        "MATCH_4",
+        "MULTIPLE_CHOICE"
+      ],
+      "preferredDomains": [
+        0,
+        10,
+        8,
+        2
+      ],
+      "onWinUnlockIds": [
+        "act1_m7",
+        "act1_g2"
+      ],
+      "onLossUnlockIds": [
+        "act1_r6"
+      ],
+      "preMatchSceneId": "scene_denise_library_redemption"
+    },
+    {
+      "nodeId": "act1_m6",
+      "actNumber": 1,
+      "tierNumber": 2,
+      "lane": "MAIN_STAGE",
+      "ephemeraStyle": "POLAROID_SNAPSHOT",
+      "pinX": 65,
+      "pinY": 34,
+      "tiltDeg": 3.5,
+      "cityStamp": "DOWNTOWN CIVIC",
+      "venueName": "Downtown Lyric Theater",
+      "showTitle": "The Red-Pen Pyramid Ascent",
+      "hookBlurb": "Pyramid Ascent debut: clear foundation tiles along the bottom tier to unlock your climb toward the Lyric Apex.",
+      "challengerId": "denise_park",
+      "boardCols": 5,
+      "boardRows": 3,
+      "maxTurns": 10,
+      "topology": "PADLOCK_NEIGHBORS",
+      "boardTwistId": "pyramid_ascent",
+      "entryFeeUsd": 300,
+      "purseUsd": 2600,
+      "baseAudience": 2400,
+      "soloTargetScore": 2250,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "SORT_4",
+        "PINPOINT_DIAL",
+        "CLUE_ESCALATOR"
+      ],
+      "preferredDomains": [
+        0,
+        3,
+        8,
+        10
+      ],
+      "onWinUnlockIds": [
+        "act1_m7",
+        "act1_v2"
+      ],
+      "onLossUnlockIds": [
+        "act1_r5"
+      ],
+      "secretUnlockIds": [
+        "act1_v2"
+      ],
+      "preMatchSceneId": "scene_denise_pyramid_intro"
+    },
+    {
+      "nodeId": "act1_m7",
+      "actNumber": 1,
+      "tierNumber": 2,
+      "lane": "MAIN_STAGE",
+      "ephemeraStyle": "POLAROID_SNAPSHOT",
+      "pinX": 46,
+      "pinY": 27,
+      "tiltDeg": -2.5,
+      "cityStamp": "DOWNTOWN CIVIC",
+      "venueName": "Lyric Stage Door Broadcast",
+      "showTitle": "Cable Truck Cameo Clash",
+      "hookBlurb": "Time-Bomb Hot Potato ambush: Channel 7 streak-holder Trevor Blake crashes your rehearsal with live TV cameras.",
+      "challengerId": "trevor_blake",
+      "boardCols": 5,
+      "boardRows": 3,
+      "maxTurns": 10,
+      "topology": "SPOTLIGHT_ROULETTE",
+      "boardTwistId": "time_bomb_hot_potato",
+      "entryFeeUsd": 350,
+      "purseUsd": 3200,
+      "baseAudience": 4100,
+      "soloTargetScore": 2400,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "MULTI_STRIKE",
+        "PINPOINT_DIAL"
+      ],
+      "preferredDomains": [
+        4,
+        2,
+        5,
+        1
+      ],
+      "onWinUnlockIds": [
+        "act1_m8",
+        "act1_g2"
+      ],
+      "onLossUnlockIds": [
+        "act1_r6"
+      ],
+      "preMatchSceneId": "scene_trevor_lyric_crash"
+    },
+    {
+      "nodeId": "act1_v2",
+      "actNumber": 1,
+      "tierNumber": 2,
+      "lane": "VELVET_SALON",
+      "ephemeraStyle": "VELVET_WAX_INVITE",
+      "pinX": 84,
+      "pinY": 31,
+      "tiltDeg": -5.0,
+      "cityStamp": "LYRIC CLOCKTOWER",
+      "venueName": "Private Mezzanine Box Zero",
+      "showTitle": "The Clocktower Spiral Salon",
+      "hookBlurb": "Spiral Labyrinth debut: carve inward from the outer ring to crack the 1000-pt Core and claim the Velvet Wax Seal.",
+      "challengerId": "denise_park",
+      "boardCols": 5,
+      "boardRows": 3,
+      "maxTurns": 10,
+      "topology": "FOG_EXPLORER",
+      "boardTwistId": "spiral_labyrinth",
+      "entryFeeUsd": 400,
+      "purseUsd": 4200,
+      "baseAudience": 180,
+      "soloTargetScore": 2550,
+      "featuredFormats": [
+        "CLUE_ESCALATOR",
+        "SORT_4",
+        "MATCH_4",
+        "VISUAL_SPOTTER",
+        "MULTIPLE_CHOICE"
+      ],
+      "preferredDomains": [
+        3,
+        10,
+        0,
+        11
+      ],
+      "optionalDare": {
+        "dareId": "dare_act1_clocktower_line",
+        "sponsor": "VELVET_SOCIETY",
+        "description": "Complete any full row or column for a +300 Stage Sweep Jackpot.",
+        "conditionKind": "CLEAR_FULL_LINE",
+        "bonusPurseUsd": 1100,
+        "bonusViewers": 400
+      },
+      "rewardCharmId": "velvet_wax_seal",
+      "onWinUnlockIds": [
+        "act1_m8"
+      ],
+      "onLossUnlockIds": [
+        "act1_r6"
+      ],
+      "preMatchSceneId": "scene_velvet_salon_2"
+    },
+    {
+      "nodeId": "act1_g2",
+      "actNumber": 1,
+      "tierNumber": 2,
+      "lane": "RIVAL_GRUDGE",
+      "ephemeraStyle": "CALL_SHEET_CLIP",
+      "pinX": 30,
+      "pinY": 23,
+      "tiltDeg": 5.5,
+      "cityStamp": "DOWNTOWN CIVIC",
+      "venueName": "Lyric Rehearsal Hall",
+      "showTitle": "Office Hours: Syllabus Duel",
+      "hookBlurb": "Personal score-settler with Denise Park on a Chain-Padlock board: prove your chops and earn Denise's Red Fountain Pen.",
+      "challengerId": "denise_park",
+      "boardCols": 5,
+      "boardRows": 3,
+      "maxTurns": 10,
+      "topology": "PADLOCK_NEIGHBORS",
+      "boardTwistId": "chain_padlocks",
+      "entryFeeUsd": 250,
+      "purseUsd": 3000,
+      "baseAudience": 890,
+      "soloTargetScore": 2450,
+      "featuredFormats": [
+        "SORT_4",
+        "CLUE_ESCALATOR",
+        "MULTIPLE_CHOICE",
+        "PINPOINT_DIAL"
+      ],
+      "preferredDomains": [
+        0,
+        8,
+        10,
+        4
+      ],
+      "rewardCharmId": "denises_red_pen",
+      "onWinUnlockIds": [
+        "act1_m8"
+      ],
+      "onLossUnlockIds": [
+        "act1_r6"
+      ],
+      "preMatchSceneId": "scene_denise_office_hours"
+    },
+    {
+      "nodeId": "act1_s3",
+      "actNumber": 1,
+      "tierNumber": 2,
+      "lane": "SPONSOR_SHOWCASE",
+      "ephemeraStyle": "CALL_SHEET_CLIP",
+      "pinX": 78,
+      "pinY": 16,
+      "tiltDeg": 3.0,
+      "cityStamp": "DOWNTOWN CIVIC",
+      "venueName": "Lyric Grand Lobby",
+      "showTitle": "Brooklyn Homecoming Gala",
+      "hookBlurb": "Tug-of-War Turf exhibition with Frankie: paint majority board territory and hit a live Power Play wager.",
+      "challengerId": "frankie_russo",
+      "boardCols": 5,
+      "boardRows": 3,
+      "maxTurns": 10,
+      "topology": "CROSSROADS_HYBRID",
+      "boardTwistId": "tug_of_war_turf",
+      "entryFeeUsd": 200,
+      "purseUsd": 3500,
+      "baseAudience": 3600,
+      "soloTargetScore": 2500,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "PINPOINT_DIAL",
+        "MULTI_STRIKE"
+      ],
+      "preferredDomains": [
+        4,
+        5,
+        9,
+        2
+      ],
+      "optionalDare": {
+        "dareId": "dare_act1_gala_powerplay",
+        "sponsor": "INDEPENDENT",
+        "description": "Find a hidden Power Play tile and win your custom wager cleanly.",
+        "conditionKind": "WIN_POWER_PLAY",
+        "bonusPurseUsd": 1000,
+        "bonusViewers": 1500
+      },
+      "onWinUnlockIds": [
+        "act1_m9"
+      ],
+      "onLossUnlockIds": [
+        "act1_r6"
+      ]
+    },
+    {
+      "nodeId": "act1_r6",
+      "actNumber": 1,
+      "tierNumber": 2,
+      "lane": "REDEMPTION_GRIT",
+      "ephemeraStyle": "BOARDING_PASS",
+      "pinX": 14,
+      "pinY": 15,
+      "tiltDeg": -5.5,
+      "cityStamp": "GRAND CONCOURSE",
+      "venueName": "Concourse Kiosk Broadcast",
+      "showTitle": "Last-Train Civic Play-In",
+      "hookBlurb": "Spotlight Roulette wild sprint before midnight: ride forced jump beams to grab the final seat at the City Final.",
+      "challengerId": "trevor_blake",
+      "boardCols": 5,
+      "boardRows": 3,
+      "maxTurns": 10,
+      "topology": "SPOTLIGHT_ROULETTE",
+      "boardTwistId": "spotlight_roulette",
+      "entryFeeUsd": 0,
+      "purseUsd": 2400,
+      "baseAudience": 2900,
+      "soloTargetScore": 2350,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "SORT_4",
+        "PINPOINT_DIAL"
+      ],
+      "preferredDomains": [
+        2,
+        4,
+        5,
+        7
+      ],
+      "onWinUnlockIds": [
+        "act1_m8",
+        "act1_m9"
+      ],
+      "onLossUnlockIds": [
+        "act1_m9"
+      ],
+      "preMatchSceneId": "scene_act1_final_wildcard"
+    },
+    {
+      "nodeId": "act1_m8",
+      "actNumber": 1,
+      "tierNumber": 2,
+      "lane": "MAIN_STAGE",
+      "ephemeraStyle": "POLAROID_SNAPSHOT",
+      "pinX": 62,
+      "pinY": 21,
+      "tiltDeg": 2.0,
+      "cityStamp": "DOWNTOWN CIVIC",
+      "venueName": "Downtown Lyric Theater",
+      "showTitle": "Balcony of Brass: Semifinal",
+      "hookBlurb": "Pyramid Ascent semifinal on 20 tiles: chamber strings swell as you scale the brass ladder toward the City Crown.",
+      "challengerId": "denise_park",
+      "boardCols": 5,
+      "boardRows": 4,
+      "maxTurns": 11,
+      "topology": "PADLOCK_NEIGHBORS",
+      "boardTwistId": "pyramid_ascent",
+      "entryFeeUsd": 450,
+      "purseUsd": 4000,
+      "baseAudience": 4900,
+      "soloTargetScore": 2800,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "SORT_4",
+        "MATCH_4",
+        "CLUE_ESCALATOR",
+        "VISUAL_SPOTTER"
+      ],
+      "preferredDomains": [
+        0,
+        3,
+        8,
+        10,
+        1
+      ],
+      "onWinUnlockIds": [
+        "act1_m9",
+        "act1_s3"
+      ],
+      "onLossUnlockIds": [
+        "act1_r6"
+      ]
+    },
+    {
+      "nodeId": "act1_m9",
+      "actNumber": 1,
+      "tierNumber": 2,
+      "lane": "MAIN_STAGE",
+      "ephemeraStyle": "BOARDING_PASS",
+      "pinX": 48,
+      "pinY": 9,
+      "tiltDeg": -1.5,
+      "cityStamp": "DOWNTOWN CIVIC",
+      "venueName": "Downtown Lyric Theater",
+      "showTitle": "City Championship Curtain Call",
+      "hookBlurb": "Act I Climax: 6,500 watching live, 3D Chain Padlocks across 20 tiles, and a live Channel 7 studio contract on the line.",
+      "challengerId": "denise_park",
+      "boardCols": 5,
+      "boardRows": 4,
+      "maxTurns": 12,
+      "topology": "PADLOCK_NEIGHBORS",
+      "boardTwistId": "chain_padlocks",
+      "entryFeeUsd": 500,
+      "purseUsd": 5500,
+      "baseAudience": 6500,
+      "soloTargetScore": 3100,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "SORT_4",
+        "PINPOINT_DIAL",
+        "CLUE_ESCALATOR",
+        "MULTI_STRIKE"
+      ],
+      "preferredDomains": [
+        0,
+        1,
+        2,
+        4,
+        8,
+        10
+      ],
+      "optionalDare": {
+        "dareId": "dare_act1_city_wedges",
+        "sponsor": "INDEPENDENT",
+        "description": "Collect at least 3 Jewel Wedges before the Lyric curtain drops.",
+        "conditionKind": "EARN_3_WEDGES",
+        "bonusPurseUsd": 1500,
+        "bonusViewers": 3200
+      },
+      "onWinUnlockIds": [
+        "act2_m1",
+        "act2_s1"
+      ],
+      "onLossUnlockIds": [
+        "act2_r1"
+      ],
+      "preMatchSceneId": "scene_act1_climax_walkout",
+      "postWinSceneId": "scene_act1_climax_win",
+      "postLossSceneId": "scene_act1_climax_loss"
+    },
+    {
+      "nodeId": "act2_m1",
+      "actNumber": 2,
+      "tierNumber": 3,
+      "lane": "MAIN_STAGE",
+      "ephemeraStyle": "POLAROID_SNAPSHOT",
+      "pinX": 50,
+      "pinY": 91,
+      "tiltDeg": 2.0,
+      "cityStamp": "REGIONAL TV CENTER",
+      "venueName": "Channel 7 Studio B",
+      "showTitle": "Live After the Noon Weather",
+      "hookBlurb": "Tug-of-War Turf broadcast debut: 78,000 viewers live! Claim majority studio tiles against Trevor Blake for a +500 bonus.",
+      "challengerId": "trevor_blake",
+      "boardCols": 5,
+      "boardRows": 4,
+      "maxTurns": 11,
+      "topology": "CROSSROADS_HYBRID",
+      "boardTwistId": "tug_of_war_turf",
+      "entryFeeUsd": 750,
+      "purseUsd": 8000,
+      "baseAudience": 78000,
+      "soloTargetScore": 3200,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "PINPOINT_DIAL",
+        "MULTI_STRIKE"
+      ],
+      "preferredDomains": [
+        4,
+        2,
+        5,
+        1
+      ],
+      "onWinUnlockIds": [
+        "act2_m2",
+        "act2_s1"
+      ],
+      "onLossUnlockIds": [
+        "act2_r1"
+      ],
+      "preMatchSceneId": "scene_trevor_turf_intro"
+    },
+    {
+      "nodeId": "act2_r1",
+      "actNumber": 2,
+      "tierNumber": 3,
+      "lane": "REDEMPTION_GRIT",
+      "ephemeraStyle": "TORN_PUB_FLYER",
+      "pinX": 17,
+      "pinY": 84,
+      "tiltDeg": -5.5,
+      "cityStamp": "CHANNEL 7 LOT",
+      "venueName": "Satellite Van #4",
+      "showTitle": "3 AM Infomercial Scramble",
+      "hookBlurb": "Graveyard-shift Redemption play-in: Time-Bomb Hot Potato between blender commercials while Frankie cheers on speakerphone.",
+      "challengerId": "frankie_russo",
+      "boardCols": 5,
+      "boardRows": 3,
+      "maxTurns": 10,
+      "topology": "SPOTLIGHT_ROULETTE",
+      "boardTwistId": "time_bomb_hot_potato",
+      "entryFeeUsd": 0,
+      "purseUsd": 5500,
+      "baseAudience": 19000,
+      "soloTargetScore": 2900,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "SORT_4",
+        "VISUAL_SPOTTER"
+      ],
+      "preferredDomains": [
+        4,
+        5,
+        9,
+        2
+      ],
+      "onWinUnlockIds": [
+        "act2_m2",
+        "act2_r2"
+      ],
+      "onLossUnlockIds": [
+        "act2_r2"
+      ],
+      "preMatchSceneId": "scene_act2_graveyard_redemption"
+    },
+    {
+      "nodeId": "act2_s1",
+      "actNumber": 2,
+      "tierNumber": 3,
+      "lane": "SPONSOR_SHOWCASE",
+      "ephemeraStyle": "CALL_SHEET_CLIP",
+      "pinX": 83,
+      "pinY": 83,
+      "tiltDeg": 4.5,
+      "cityStamp": "CHANNEL 7 STAGE",
+      "venueName": "Apex Daytime Showcase Set",
+      "showTitle": "Apex Daytime Ratings Sweep",
+      "hookBlurb": "Spotlight Roulette stunt show: nail a live 2x Double Down dare for Apex brass to earn the Syndicate Golden Dice charm.",
+      "challengerId": null,
+      "boardCols": 5,
+      "boardRows": 4,
+      "maxTurns": 10,
+      "topology": "SPOTLIGHT_ROULETTE",
+      "boardTwistId": "spotlight_roulette",
+      "entryFeeUsd": 800,
+      "purseUsd": 12000,
+      "baseAudience": 110000,
+      "soloTargetScore": 3350,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "PINPOINT_DIAL",
+        "CLUE_ESCALATOR",
+        "MULTI_STRIKE"
+      ],
+      "preferredDomains": [
+        4,
+        6,
+        1,
+        2
+      ],
+      "optionalDare": {
+        "dareId": "dare_act2_apex_double",
+        "sponsor": "APEX_NETWORK",
+        "description": "Flip 2x Double Down during Sweeps Week and stick the landing on camera.",
+        "conditionKind": "WIN_DOUBLE_DOWN",
+        "bonusPurseUsd": 4500,
+        "bonusViewers": 45000
+      },
+      "rewardCharmId": "syndicate_golden_dice",
+      "onWinUnlockIds": [
+        "act2_m3"
+      ],
+      "onLossUnlockIds": [
+        "act2_r2"
+      ],
+      "preMatchSceneId": "scene_apex_ratings_contract"
+    },
+    {
+      "nodeId": "act2_m2",
+      "actNumber": 2,
+      "tierNumber": 3,
+      "lane": "MAIN_STAGE",
+      "ephemeraStyle": "POLAROID_SNAPSHOT",
+      "pinX": 48,
+      "pinY": 77,
+      "tiltDeg": -2.5,
+      "cityStamp": "REGIONAL TV CENTER",
+      "venueName": "Channel 7 Studio B",
+      "showTitle": "Spiral of the Teleprompter",
+      "hookBlurb": "Spiral Labyrinth live: cut inward from the studio perimeter rings to detonate the glowing 1000-pt Core.",
+      "challengerId": "trevor_blake",
+      "boardCols": 5,
+      "boardRows": 4,
+      "maxTurns": 11,
+      "topology": "FOG_EXPLORER",
+      "boardTwistId": "spiral_labyrinth",
+      "entryFeeUsd": 1000,
+      "purseUsd": 11000,
+      "baseAudience": 115000,
+      "soloTargetScore": 3500,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "SORT_4",
+        "PINPOINT_DIAL",
+        "VISUAL_SPOTTER"
+      ],
+      "preferredDomains": [
+        2,
+        4,
+        1,
+        3
+      ],
+      "onWinUnlockIds": [
+        "act2_m3",
+        "act2_v1"
+      ],
+      "onLossUnlockIds": [
+        "act2_r2"
+      ],
+      "secretUnlockIds": [
+        "act2_v1"
+      ],
+      "preMatchSceneId": "scene_act2_spiral_intro"
+    },
+    {
+      "nodeId": "act2_r2",
+      "actNumber": 2,
+      "tierNumber": 3,
+      "lane": "REDEMPTION_GRIT",
+      "ephemeraStyle": "TORN_PUB_FLYER",
+      "pinX": 15,
+      "pinY": 68,
+      "tiltDeg": 5.0,
+      "cityStamp": "NEWARK, NJ",
+      "venueName": "UHF Studio 44",
+      "showTitle": "Syndicated Overnight Repeater",
+      "hookBlurb": "Pyramid Ascent comeback: Denise Park drills you backstage before a gritty overnight studio bracket.",
+      "challengerId": "denise_park",
+      "boardCols": 5,
+      "boardRows": 4,
+      "maxTurns": 11,
+      "topology": "PADLOCK_NEIGHBORS",
+      "boardTwistId": "pyramid_ascent",
+      "entryFeeUsd": 0,
+      "purseUsd": 7500,
+      "baseAudience": 34000,
+      "soloTargetScore": 3300,
+      "featuredFormats": [
+        "SORT_4",
+        "CLUE_ESCALATOR",
+        "MATCH_4",
+        "MULTIPLE_CHOICE"
+      ],
+      "preferredDomains": [
+        0,
+        8,
+        10,
+        1
+      ],
+      "onWinUnlockIds": [
+        "act2_m3",
+        "act2_g1"
+      ],
+      "onLossUnlockIds": [
+        "act2_r3"
+      ],
+      "preMatchSceneId": "scene_denise_greenroom_call"
+    },
+    {
+      "nodeId": "act2_m3",
+      "actNumber": 2,
+      "tierNumber": 3,
+      "lane": "MAIN_STAGE",
+      "ephemeraStyle": "POLAROID_SNAPSHOT",
+      "pinX": 52,
+      "pinY": 64,
+      "tiltDeg": 3.0,
+      "cityStamp": "REGIONAL TV CENTER",
+      "venueName": "Channel 7 Studio B",
+      "showTitle": "Sweeps Week Screw-Over",
+      "hookBlurb": "Tug-of-War Turf grudge broadcast: Trevor hunts your weak domains on camera — slam SCREW RIVAL! right back at him.",
+      "challengerId": "trevor_blake",
+      "boardCols": 5,
+      "boardRows": 4,
+      "maxTurns": 12,
+      "topology": "CROSSROADS_HYBRID",
+      "boardTwistId": "tug_of_war_turf",
+      "entryFeeUsd": 1200,
+      "purseUsd": 15000,
+      "baseAudience": 165000,
+      "soloTargetScore": 3700,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "MULTI_STRIKE",
+        "PINPOINT_DIAL",
+        "CLUE_ESCALATOR"
+      ],
+      "preferredDomains": [
+        1,
+        3,
+        4,
+        5
+      ],
+      "optionalDare": {
+        "dareId": "dare_act2_screw_trevor",
+        "sponsor": "APEX_NETWORK",
+        "description": "Use SCREW RIVAL! on Trevor and steal the tile live during Sweeps Week.",
+        "conditionKind": "USE_SCREW_SUCCESSFULLY",
+        "bonusPurseUsd": 5000,
+        "bonusViewers": 55000
+      },
+      "onWinUnlockIds": [
+        "act2_m4",
+        "act2_g1"
+      ],
+      "onLossUnlockIds": [
+        "act2_r3"
+      ],
+      "preMatchSceneId": "scene_trevor_screw_ambush"
+    },
+    {
+      "nodeId": "act2_v1",
+      "actNumber": 2,
+      "tierNumber": 3,
+      "lane": "VELVET_SALON",
+      "ephemeraStyle": "VELVET_WAX_INVITE",
+      "pinX": 84,
+      "pinY": 68,
+      "tiltDeg": -4.5,
+      "cityStamp": "MIDTOWN ATRIUM",
+      "venueName": "Botanical Club Conservatory",
+      "showTitle": "The Conservatory Velvet Salon",
+      "hookBlurb": "Velvet X-Crossroads under glass: an unannounced midnight duel with Boston ER ace Dr. Priya Nair before prime-time.",
+      "challengerId": "priya_nair",
+      "boardCols": 5,
+      "boardRows": 4,
+      "maxTurns": 11,
+      "topology": "CROSSROADS_HYBRID",
+      "boardTwistId": "velvet_x_crossroads",
+      "entryFeeUsd": 1500,
+      "purseUsd": 20000,
+      "baseAudience": 420,
+      "soloTargetScore": 3900,
+      "featuredFormats": [
+        "CLUE_ESCALATOR",
+        "PINPOINT_DIAL",
+        "SORT_4",
+        "MATCH_4"
+      ],
+      "preferredDomains": [
+        1,
+        7,
+        11,
+        3
+      ],
+      "optionalDare": {
+        "dareId": "dare_act2_conservatory_nolife",
+        "sponsor": "VELVET_SOCIETY",
+        "description": "Outduel Dr. Priya Nair in the glass atrium without spending a single lifeline.",
+        "conditionKind": "NO_LIFELINES_USED",
+        "bonusPurseUsd": 7500,
+        "bonusViewers": 2000
+      },
+      "onWinUnlockIds": [
+        "act2_m4",
+        "act2_v2"
+      ],
+      "onLossUnlockIds": [
+        "act2_r3"
+      ],
+      "preMatchSceneId": "scene_velvet_salon_3_priya"
+    },
+    {
+      "nodeId": "act2_g1",
+      "actNumber": 2,
+      "tierNumber": 3,
+      "lane": "RIVAL_GRUDGE",
+      "ephemeraStyle": "CALL_SHEET_CLIP",
+      "pinX": 31,
+      "pinY": 57,
+      "tiltDeg": -4.0,
+      "cityStamp": "CHANNEL 7 STUDIO B",
+      "venueName": "Studio B After Sign-Off",
+      "showTitle": "Hot-Mic Off-Air Grudge",
+      "hookBlurb": "No cameras, no hairspray: Spotlight Roulette grudge match against Trevor Blake for Trevor's Hot Mic charm.",
+      "challengerId": "trevor_blake",
+      "boardCols": 5,
+      "boardRows": 4,
+      "maxTurns": 11,
+      "topology": "SPOTLIGHT_ROULETTE",
+      "boardTwistId": "spotlight_roulette",
+      "entryFeeUsd": 1000,
+      "purseUsd": 14000,
+      "baseAudience": 1200,
+      "soloTargetScore": 3600,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "PINPOINT_DIAL",
+        "MULTI_STRIKE"
+      ],
+      "preferredDomains": [
+        4,
+        2,
+        5,
+        3
+      ],
+      "rewardCharmId": "trevors_hot_mic",
+      "onWinUnlockIds": [
+        "act2_m4"
+      ],
+      "onLossUnlockIds": [
+        "act2_r3"
+      ],
+      "preMatchSceneId": "scene_trevor_hotmic_grudge"
+    },
+    {
+      "nodeId": "act2_r3",
+      "actNumber": 2,
+      "tierNumber": 3,
+      "lane": "REDEMPTION_GRIT",
+      "ephemeraStyle": "BOARDING_PASS",
+      "pinX": 14,
+      "pinY": 54,
+      "tiltDeg": 6.0,
+      "cityStamp": "TRI-STATE HIGHWAY",
+      "venueName": "Regional Broadcast Truck",
+      "showTitle": "Bus-Station Wildcard Blitz",
+      "hookBlurb": "Time-Bomb Hot Potato road qualifier: survive the live fuse truck and win the Screw Shield charm to block rival traps.",
+      "challengerId": "trevor_blake",
+      "boardCols": 5,
+      "boardRows": 4,
+      "maxTurns": 11,
+      "topology": "SPOTLIGHT_ROULETTE",
+      "boardTwistId": "time_bomb_hot_potato",
+      "entryFeeUsd": 0,
+      "purseUsd": 11000,
+      "baseAudience": 62000,
+      "soloTargetScore": 3500,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "SORT_4",
+        "MULTI_STRIKE",
+        "VISUAL_SPOTTER"
+      ],
+      "preferredDomains": [
+        2,
+        5,
+        4,
+        8
+      ],
+      "rewardCharmId": "screw_shield",
+      "onWinUnlockIds": [
+        "act2_m4"
+      ],
+      "onLossUnlockIds": [
+        "act2_m4"
+      ],
+      "preMatchSceneId": "scene_act2_regional_wildcard"
+    },
+    {
+      "nodeId": "act2_m4",
+      "actNumber": 2,
+      "tierNumber": 3,
+      "lane": "MAIN_STAGE",
+      "ephemeraStyle": "POLAROID_SNAPSHOT",
+      "pinX": 50,
+      "pinY": 50,
+      "tiltDeg": -1.5,
+      "cityStamp": "REGIONAL TV CENTER",
+      "venueName": "Channel 7 Studio B",
+      "showTitle": "Day 15: Breaking the Streak",
+      "hookBlurb": "Tier 3 Climax: 240,000 lunch breaks tuned in! Master Spotlight Roulette jumps to snap Trevor's 14-day streak.",
+      "challengerId": "trevor_blake",
+      "boardCols": 5,
+      "boardRows": 4,
+      "maxTurns": 12,
+      "topology": "SPOTLIGHT_ROULETTE",
+      "boardTwistId": "spotlight_roulette",
+      "entryFeeUsd": 1500,
+      "purseUsd": 25000,
+      "baseAudience": 240000,
+      "soloTargetScore": 4100,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "SORT_4",
+        "PINPOINT_DIAL",
+        "CLUE_ESCALATOR",
+        "VISUAL_SPOTTER"
+      ],
+      "preferredDomains": [
+        4,
+        2,
+        5,
+        1,
+        3
+      ],
+      "optionalDare": {
+        "dareId": "dare_act2_day15_sweep",
+        "sponsor": "APEX_NETWORK",
+        "description": "Sweep an entire row or column on Day 15 for a televised +300 Jackpot.",
+        "conditionKind": "CLEAR_FULL_LINE",
+        "bonusPurseUsd": 8000,
+        "bonusViewers": 90000
+      },
+      "onWinUnlockIds": [
+        "act2_m5",
+        "act2_s2"
+      ],
+      "onLossUnlockIds": [
+        "act2_r4"
+      ],
+      "preMatchSceneId": "scene_trevor_spotlight_intro",
+      "postWinSceneId": "scene_trevor_streak_broken",
+      "postLossSceneId": "scene_trevor_streak_loss"
+    },
+    {
+      "nodeId": "act2_r4",
+      "actNumber": 2,
+      "tierNumber": 4,
+      "lane": "REDEMPTION_GRIT",
+      "ephemeraStyle": "TORN_PUB_FLYER",
+      "pinX": 17,
+      "pinY": 42,
+      "tiltDeg": -5.0,
+      "cityStamp": "TERMINAL B LOUNGE",
+      "venueName": "Red-Eye Satellite Desk",
+      "showTitle": "Coast-to-Coast Red-Eye Play-In",
+      "hookBlurb": "Fog-of-War Spotlight midnight qualifier: illuminate hidden tiles from the center out to earn your prime-time badge.",
+      "challengerId": null,
+      "boardCols": 5,
+      "boardRows": 4,
+      "maxTurns": 11,
+      "topology": "FOG_EXPLORER",
+      "boardTwistId": "fog_spotlight",
+      "entryFeeUsd": 0,
+      "purseUsd": 18000,
+      "baseAudience": 820000,
+      "soloTargetScore": 4000,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "PINPOINT_DIAL",
+        "CLUE_ESCALATOR"
+      ],
+      "preferredDomains": [
+        2,
+        1,
+        6,
+        0
+      ],
+      "onWinUnlockIds": [
+        "act2_m5",
+        "act2_m6"
+      ],
+      "onLossUnlockIds": [
+        "act2_r5"
+      ],
+      "preMatchSceneId": "scene_redeye_playin"
+    },
+    {
+      "nodeId": "act2_m5",
+      "actNumber": 2,
+      "tierNumber": 4,
+      "lane": "MAIN_STAGE",
+      "ephemeraStyle": "POLAROID_SNAPSHOT",
+      "pinX": 49,
+      "pinY": 38,
+      "tiltDeg": 2.5,
+      "cityStamp": "NATIONAL NETWORK",
+      "venueName": "Starlight Broadcast Center",
+      "showTitle": "Eight O'Clock Prime-Time Debut",
+      "hookBlurb": "Gold Fever Contagion debut: 5.2M live! Hot streaks spread 2x gold glow to adjacent tiles opposite Dr. Priya Nair.",
+      "challengerId": "priya_nair",
+      "boardCols": 5,
+      "boardRows": 4,
+      "maxTurns": 12,
+      "topology": "CROSSROADS_HYBRID",
+      "boardTwistId": "gold_fever_contagion",
+      "entryFeeUsd": 2500,
+      "purseUsd": 40000,
+      "baseAudience": 5200000,
+      "soloTargetScore": 4400,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "PINPOINT_DIAL",
+        "SORT_4",
+        "CLUE_ESCALATOR"
+      ],
+      "preferredDomains": [
+        1,
+        7,
+        11,
+        5
+      ],
+      "onWinUnlockIds": [
+        "act2_m6",
+        "act2_s2"
+      ],
+      "onLossUnlockIds": [
+        "act2_r5"
+      ],
+      "preMatchSceneId": "scene_priya_primetime_walkout"
+    },
+    {
+      "nodeId": "act2_s2",
+      "actNumber": 2,
+      "tierNumber": 4,
+      "lane": "SPONSOR_SHOWCASE",
+      "ephemeraStyle": "CALL_SHEET_CLIP",
+      "pinX": 82,
+      "pinY": 48,
+      "tiltDeg": -4.0,
+      "cityStamp": "NATIONAL NETWORK",
+      "venueName": "Starlight Studio One",
+      "showTitle": "Apex Prime-Time Minefield",
+      "hookBlurb": "Power-Play Minefield debut: four concealed wagers buried across prime-time brass tiles — win a wager to cash Apex's dare.",
+      "challengerId": null,
+      "boardCols": 5,
+      "boardRows": 4,
+      "maxTurns": 12,
+      "topology": "SPOTLIGHT_ROULETTE",
+      "boardTwistId": "power_play_minefield",
+      "entryFeeUsd": 3000,
+      "purseUsd": 55000,
+      "baseAudience": 6800000,
+      "soloTargetScore": 4550,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "PINPOINT_DIAL",
+        "MULTI_STRIKE",
+        "MATCH_4"
+      ],
+      "preferredDomains": [
+        6,
+        1,
+        4,
+        8
+      ],
+      "optionalDare": {
+        "dareId": "dare_act2_minefield_pp",
+        "sponsor": "APEX_NETWORK",
+        "description": "Trigger a buried Power Play in the Minefield and win your wager live.",
+        "conditionKind": "WIN_POWER_PLAY",
+        "bonusPurseUsd": 18000,
+        "bonusViewers": 1200000
+      },
+      "onWinUnlockIds": [
+        "act2_m7"
+      ],
+      "onLossUnlockIds": [
+        "act2_r5"
+      ],
+      "preMatchSceneId": "scene_act2_minefield_intro"
+    },
+    {
+      "nodeId": "act2_r5",
+      "actNumber": 2,
+      "tierNumber": 4,
+      "lane": "REDEMPTION_GRIT",
+      "ephemeraStyle": "TORN_PUB_FLYER",
+      "pinX": 16,
+      "pinY": 29,
+      "tiltDeg": 4.5,
+      "cityStamp": "MIDTOWN STUDIOS",
+      "venueName": "Starlight Studio 6B",
+      "showTitle": "Late-Night Comedy Wildcard",
+      "hookBlurb": "Time-Bomb Hot Potato after midnight: trade jokes with Trevor Blake on late-night TV to reclaim prime-time momentum.",
+      "challengerId": "trevor_blake",
+      "boardCols": 5,
+      "boardRows": 4,
+      "maxTurns": 11,
+      "topology": "SPOTLIGHT_ROULETTE",
+      "boardTwistId": "time_bomb_hot_potato",
+      "entryFeeUsd": 0,
+      "purseUsd": 32000,
+      "baseAudience": 3100000,
+      "soloTargetScore": 4300,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "MULTI_STRIKE",
+        "PINPOINT_DIAL"
+      ],
+      "preferredDomains": [
+        4,
+        5,
+        9,
+        2
+      ],
+      "onWinUnlockIds": [
+        "act2_m7",
+        "act2_g2"
+      ],
+      "onLossUnlockIds": [
+        "act2_r6"
+      ],
+      "preMatchSceneId": "scene_latenight_comedy_wildcard"
+    },
+    {
+      "nodeId": "act2_m6",
+      "actNumber": 2,
+      "tierNumber": 4,
+      "lane": "MAIN_STAGE",
+      "ephemeraStyle": "POLAROID_SNAPSHOT",
+      "pinX": 65,
+      "pinY": 34,
+      "tiltDeg": -3.0,
+      "cityStamp": "NATIONAL NETWORK",
+      "venueName": "Starlight Broadcast Center",
+      "showTitle": "Triage Under 8 Million Eyes",
+      "hookBlurb": "Pyramid Ascent in prime time: scale chained clinical foundations faster than an ER trauma surgeon under studio lights.",
+      "challengerId": "priya_nair",
+      "boardCols": 5,
+      "boardRows": 4,
+      "maxTurns": 12,
+      "topology": "PADLOCK_NEIGHBORS",
+      "boardTwistId": "pyramid_ascent",
+      "entryFeeUsd": 3500,
+      "purseUsd": 55000,
+      "baseAudience": 8400000,
+      "soloTargetScore": 4700,
+      "featuredFormats": [
+        "CLUE_ESCALATOR",
+        "SORT_4",
+        "PINPOINT_DIAL",
+        "VISUAL_SPOTTER",
+        "MULTIPLE_CHOICE"
+      ],
+      "preferredDomains": [
+        1,
+        7,
+        11,
+        0
+      ],
+      "onWinUnlockIds": [
+        "act2_m7",
+        "act2_v2"
+      ],
+      "onLossUnlockIds": [
+        "act2_r5"
+      ],
+      "secretUnlockIds": [
+        "act2_v2"
+      ],
+      "preMatchSceneId": "scene_priya_triage_match"
+    },
+    {
+      "nodeId": "act2_m7",
+      "actNumber": 2,
+      "tierNumber": 4,
+      "lane": "MAIN_STAGE",
+      "ephemeraStyle": "POLAROID_SNAPSHOT",
+      "pinX": 46,
+      "pinY": 27,
+      "tiltDeg": 2.0,
+      "cityStamp": "NATIONAL NETWORK",
+      "venueName": "Starlight Broadcast Center",
+      "showTitle": "Ice & Fire: National Semifinal",
+      "hookBlurb": "Ice & Fire Columns debut on 6 columns: when Priya freezes your best lane, solve a Flame tile to thaw it for +200!",
+      "challengerId": "priya_nair",
+      "boardCols": 6,
+      "boardRows": 4,
+      "maxTurns": 13,
+      "topology": "CROSSROADS_HYBRID",
+      "boardTwistId": "ice_fire_columns",
+      "entryFeeUsd": 4000,
+      "purseUsd": 65000,
+      "baseAudience": 10800000,
+      "soloTargetScore": 5100,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "SORT_4",
+        "PINPOINT_DIAL",
+        "MULTI_STRIKE"
+      ],
+      "preferredDomains": [
+        1,
+        7,
+        5,
+        9,
+        11
+      ],
+      "optionalDare": {
+        "dareId": "dare_act2_icefire_streak4",
+        "sponsor": "INDEPENDENT",
+        "description": "Ride a 4-question hot streak across all 6 prime-time columns.",
+        "conditionKind": "REACH_STREAK_4",
+        "bonusPurseUsd": 15000,
+        "bonusViewers": 1600000
+      },
+      "onWinUnlockIds": [
+        "act2_m8",
+        "act2_g2"
+      ],
+      "onLossUnlockIds": [
+        "act2_r6"
+      ],
+      "preMatchSceneId": "scene_priya_icefire_intro"
+    },
+    {
+      "nodeId": "act2_v2",
+      "actNumber": 2,
+      "tierNumber": 4,
+      "lane": "VELVET_SALON",
+      "ephemeraStyle": "VELVET_WAX_INVITE",
+      "pinX": 84,
+      "pinY": 31,
+      "tiltDeg": 5.0,
+      "cityStamp": "STARLIGHT PENTHOUSE",
+      "venueName": "Penthouse Library Salon",
+      "showTitle": "The Transatlantic Parlor",
+      "hookBlurb": "Fog-of-War Spotlight exhibition: Oxford's Lord Alistair Finch flies in early to test America's rising star in candlelit fog.",
+      "challengerId": "alistair_finch",
+      "boardCols": 6,
+      "boardRows": 4,
+      "maxTurns": 12,
+      "topology": "FOG_EXPLORER",
+      "boardTwistId": "fog_spotlight",
+      "entryFeeUsd": 5000,
+      "purseUsd": 80000,
+      "baseAudience": 950,
+      "soloTargetScore": 5200,
+      "featuredFormats": [
+        "CLUE_ESCALATOR",
+        "SORT_4",
+        "MATCH_4",
+        "VISUAL_SPOTTER",
+        "MULTIPLE_CHOICE"
+      ],
+      "preferredDomains": [
+        0,
+        3,
+        10,
+        8
+      ],
+      "optionalDare": {
+        "dareId": "dare_act2_oxford_pure",
+        "sponsor": "VELVET_SOCIETY",
+        "description": "Earn Lord Alistair's respect by clearing the Fog Salon with zero lifelines.",
+        "conditionKind": "NO_LIFELINES_USED",
+        "bonusPurseUsd": 22000,
+        "bonusViewers": 4000
+      },
+      "onWinUnlockIds": [
+        "act2_m8"
+      ],
+      "onLossUnlockIds": [
+        "act2_r6"
+      ],
+      "preMatchSceneId": "scene_velvet_salon_4_alistair"
+    },
+    {
+      "nodeId": "act2_g2",
+      "actNumber": 2,
+      "tierNumber": 4,
+      "lane": "RIVAL_GRUDGE",
+      "ephemeraStyle": "CALL_SHEET_CLIP",
+      "pinX": 30,
+      "pinY": 23,
+      "tiltDeg": -5.5,
+      "cityStamp": "STARLIGHT BACKSTAGE",
+      "venueName": "Dressing Room Four",
+      "showTitle": "Grand Rounds: Speed Duel",
+      "hookBlurb": "Gold Fever Contagion sparring duel with Dr. Priya Nair: beat the buzzer to unlock Priya's Adrenaline Patch charm.",
+      "challengerId": "priya_nair",
+      "boardCols": 6,
+      "boardRows": 4,
+      "maxTurns": 12,
+      "topology": "CROSSROADS_HYBRID",
+      "boardTwistId": "gold_fever_contagion",
+      "entryFeeUsd": 3000,
+      "purseUsd": 60000,
+      "baseAudience": 5400,
+      "soloTargetScore": 4950,
+      "featuredFormats": [
+        "PINPOINT_DIAL",
+        "CLUE_ESCALATOR",
+        "MATCH_4",
+        "MULTIPLE_CHOICE"
+      ],
+      "preferredDomains": [
+        1,
+        7,
+        11,
+        9
+      ],
+      "rewardCharmId": "priyas_adrenaline",
+      "onWinUnlockIds": [
+        "act2_m8"
+      ],
+      "onLossUnlockIds": [
+        "act2_r6"
+      ],
+      "preMatchSceneId": "scene_priya_sparring_call"
+    },
+    {
+      "nodeId": "act2_s3",
+      "actNumber": 2,
+      "tierNumber": 4,
+      "lane": "SPONSOR_SHOWCASE",
+      "ephemeraStyle": "CALL_SHEET_CLIP",
+      "pinX": 78,
+      "pinY": 16,
+      "tiltDeg": -3.5,
+      "cityStamp": "NATIONAL NETWORK",
+      "venueName": "Starlight Arena Floor",
+      "showTitle": "All-Star Minefield Exhibition",
+      "hookBlurb": "Power-Play Minefield charity showcase opposite Trevor Blake: four buried wagers and a 2x Double Down payday.",
+      "challengerId": "trevor_blake",
+      "boardCols": 6,
+      "boardRows": 4,
+      "maxTurns": 12,
+      "topology": "SPOTLIGHT_ROULETTE",
+      "boardTwistId": "power_play_minefield",
+      "entryFeeUsd": 3500,
+      "purseUsd": 75000,
+      "baseAudience": 9600000,
+      "soloTargetScore": 5100,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "SORT_4",
+        "PINPOINT_DIAL",
+        "MULTI_STRIKE"
+      ],
+      "preferredDomains": [
+        4,
+        2,
+        5,
+        6
+      ],
+      "optionalDare": {
+        "dareId": "dare_act2_allstar_double",
+        "sponsor": "APEX_NETWORK",
+        "description": "Throw 2x Double Down under arena lights and cash the prime-time bonus.",
+        "conditionKind": "WIN_DOUBLE_DOWN",
+        "bonusPurseUsd": 20000,
+        "bonusViewers": 2100000
+      },
+      "onWinUnlockIds": [
+        "act2_m9"
+      ],
+      "onLossUnlockIds": [
+        "act2_r6"
+      ]
+    },
+    {
+      "nodeId": "act2_r6",
+      "actNumber": 2,
+      "tierNumber": 4,
+      "lane": "REDEMPTION_GRIT",
+      "ephemeraStyle": "BOARDING_PASS",
+      "pinX": 14,
+      "pinY": 15,
+      "tiltDeg": 5.5,
+      "cityStamp": "JFK INTERNATIONAL",
+      "venueName": "Gate 14 Pop-Up Stage",
+      "showTitle": "Atlantic Standby Wildcard",
+      "hookBlurb": "Tug-of-War Turf beside the tarmac: win to storm Starlight's finale, or fail-forward onto London's Redemption flight.",
+      "challengerId": "priya_nair",
+      "boardCols": 6,
+      "boardRows": 4,
+      "maxTurns": 12,
+      "topology": "CROSSROADS_HYBRID",
+      "boardTwistId": "tug_of_war_turf",
+      "entryFeeUsd": 0,
+      "purseUsd": 45000,
+      "baseAudience": 4400000,
+      "soloTargetScore": 4800,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "PINPOINT_DIAL",
+        "CLUE_ESCALATOR",
+        "VISUAL_SPOTTER"
+      ],
+      "preferredDomains": [
+        2,
+        8,
+        1,
+        4
+      ],
+      "onWinUnlockIds": [
+        "act2_m9"
+      ],
+      "onLossUnlockIds": [
+        "act3_r1"
+      ],
+      "preMatchSceneId": "scene_jfk_standby_wildcard"
+    },
+    {
+      "nodeId": "act2_m8",
+      "actNumber": 2,
+      "tierNumber": 4,
+      "lane": "MAIN_STAGE",
+      "ephemeraStyle": "POLAROID_SNAPSHOT",
+      "pinX": 62,
+      "pinY": 21,
+      "tiltDeg": -2.0,
+      "cityStamp": "NATIONAL NETWORK",
+      "venueName": "Starlight Broadcast Center",
+      "showTitle": "America's Smartest: Passport Match",
+      "hookBlurb": "Spiral Labyrinth at 12.5M viewers: carve through 24 outer tiles to crack the 1000-pt Core for the final prime-time berth.",
+      "challengerId": "priya_nair",
+      "boardCols": 6,
+      "boardRows": 4,
+      "maxTurns": 13,
+      "topology": "FOG_EXPLORER",
+      "boardTwistId": "spiral_labyrinth",
+      "entryFeeUsd": 5000,
+      "purseUsd": 85000,
+      "baseAudience": 12500000,
+      "soloTargetScore": 5400,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "SORT_4",
+        "PINPOINT_DIAL",
+        "CLUE_ESCALATOR",
+        "MULTI_STRIKE"
+      ],
+      "preferredDomains": [
+        0,
+        1,
+        2,
+        7,
+        11
+      ],
+      "optionalDare": {
+        "dareId": "dare_act2_passport_wedges",
+        "sponsor": "INDEPENDENT",
+        "description": "Claim 3 Jewel Wedges on the 6-column prime-time medallion.",
+        "conditionKind": "EARN_3_WEDGES",
+        "bonusPurseUsd": 18000,
+        "bonusViewers": 1800000
+      },
+      "onWinUnlockIds": [
+        "act2_m9",
+        "act2_s3"
+      ],
+      "onLossUnlockIds": [
+        "act2_r6"
+      ]
+    },
+    {
+      "nodeId": "act2_m9",
+      "actNumber": 2,
+      "tierNumber": 4,
+      "lane": "MAIN_STAGE",
+      "ephemeraStyle": "BOARDING_PASS",
+      "pinX": 48,
+      "pinY": 9,
+      "tiltDeg": 1.5,
+      "cityStamp": "NATIONAL FINALE -> LONDON",
+      "venueName": "Starlight Broadcast Center",
+      "showTitle": "Starlight Finale: Ticket to London",
+      "hookBlurb": "Act II Climax: 14,000,000 live, all 7 formats, Gold Fever Contagion, and your transatlantic ticket to London's Grand Rotunda.",
+      "challengerId": "priya_nair",
+      "boardCols": 6,
+      "boardRows": 4,
+      "maxTurns": 14,
+      "topology": "FINALE_GAUNTLET",
+      "boardTwistId": "gold_fever_contagion",
+      "entryFeeUsd": 6000,
+      "purseUsd": 100000,
+      "baseAudience": 14000000,
+      "soloTargetScore": 5800,
+      "featuredFormats": [
+        "MULTIPLE_CHOICE",
+        "MATCH_4",
+        "SORT_4",
+        "PINPOINT_DIAL",
+        "CLUE_ESCALATOR",
+        "MULTI_STRIKE",
+        "VISUAL_SPOTTER"
+      ],
+      "preferredDomains": [
+        0,
+        1,
+        2,
+        4,
+        7,
+        11
+      ],
+      "optionalDare": {
+        "dareId": "dare_act2_finale_sweep",
+        "sponsor": "APEX_NETWORK",
+        "description": "Sweep any full row or column in front of 14 million coast-to-coast viewers.",
+        "conditionKind": "CLEAR_FULL_LINE",
+        "bonusPurseUsd": 25000,
+        "bonusViewers": 3500000
+      },
+      "onWinUnlockIds": [
+        "act3_m1"
+      ],
+      "onLossUnlockIds": [
+        "act3_r1"
+      ],
+      "preMatchSceneId": "scene_act2_climax_walkout",
+      "postWinSceneId": "scene_act2_climax_win",
+      "postLossSceneId": "scene_act2_climax_loss"
+    }
+  ],
+  "scenes": [
+    {
+      "sceneId": "scene_cold_open",
+      "kind": "COLD_OPEN",
+      "title": "The Open Call",
+      "locationSubhead": "Oakridge Community Hall, Brooklyn - 42 Folding Chairs",
+      "backdropUrl": "./assets/v5/story/story_open_call.webp",
+      "featuredChallengerId": "frankie_russo",
+      "beats": [
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Every broadcast network on Earth pooled ten million dollars to crown The World's Smartest - and we start right here out of the Brooklyn rain, in front of forty-two squeaky folding chairs.",
+          "voiceClipId": "vo_cold_1",
+          "hostPose": "welcome",
+          "backdropUrl": "./assets/v5/story/story_open_call.webp"
+        },
+        {
+          "speaker": "producer_sam",
+          "speakerName": "Producer Sam",
+          "speakerRole": "Backstage Showrunner",
+          "text": "Grab a wet poncho and sign the clipboard, kid. Our studio symphony doesn't show up until downtown, so tonight's soundtrack is one radiator and a buzzing neon sign.",
+          "voiceClipId": "vo_cold_2",
+          "backdropUrl": "./assets/v5/story/story_open_call.webp"
+        },
+        {
+          "speaker": "frankie_russo",
+          "speakerName": "Frankie \"Last Call\" Russo",
+          "speakerRole": "Unbeaten Oakridge Pub Champ",
+          "text": "Six years undefeated behind this bar, kid. Put your $250 pride on the wood or head home before the pretzels go stale.",
+          "voiceClipId": "vo_cold_3",
+          "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Easy, Frankie. First rule of my stage: the brass clock gives you a free two-second untimed Read-In before a single tick drains. Stuck? Spend your heavy brass 50/50 or Clue coins on the ledge.",
+          "voiceClipId": "vo_cold_4",
+          "hostPose": "welcome",
+          "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Feeling brave? Flip that steel 2x Double Down throw-switch before you lock in - double points if you nail it, half-tile bite if you miss. Expect braided cable switchboards and spinning analog brass dials too.",
+          "voiceClipId": "vo_cold_5",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Grab Crown tiles across all six colors to light your 6-Wedge Jewel Medallion, and sweep any full row or column for a +300 Stage Jackpot. Step up to the mic - Frankie's waiting.",
+          "voiceClipId": "vo_cold_6",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp"
+        }
+      ],
+      "choices": [
+        {
+          "attitude": "RUTHLESS_CONFIDENCE",
+          "label": "Keep the tab open - this won't take long.",
+          "playerSpokenText": "Keep the tab open, Frankie. I'm taking that oak crown before the rain lets up.",
+          "rivalReplyText": "Ooh, we got a live wire! Somebody tell the kitchen to hold the wings, this kid wants smoke.",
+          "rivalReplyVoiceId": "vo_frankie_reply_bold",
+          "hostReplyText": "Now THAT is television! Even the forty-two folding chairs just leaned forward.",
+          "hostReplyVoiceId": "vo_max_board_welcome_1",
+          "rivalAffinityDelta": -8,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 12,
+            "INDEPENDENT": 4
+          },
+          "bankrollDeltaUsd": 50
+        },
+        {
+          "attitude": "WARM_RESPECT",
+          "label": "May the sharpest memory win, Frankie.",
+          "playerSpokenText": "Six years undefeated deserves respect, Frankie. Let's give Oakridge a show worth remembering.",
+          "rivalReplyText": "Alright, class act! Win or lose, first ginger ale's on the house - just don't expect me to go easy.",
+          "rivalReplyVoiceId": "vo_frankie_reply_respect",
+          "hostReplyText": "Heartwarming sportsmanship in Brooklyn! Somebody check the thermostat, I think hell froze over.",
+          "hostReplyVoiceId": "vo_max_board_welcome_2",
+          "rivalAffinityDelta": 18,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 15
+          }
+        },
+        {
+          "attitude": "SHARP_WIT",
+          "label": "Do I still get free pretzels if I sweep?",
+          "playerSpokenText": "Quick legal question before I light up your board: do free pretzels come with a full-column sweep?",
+          "rivalReplyText": "Ha! Sweep a whole column on me and I'll throw in the whole jar of pickled eggs, smart-mouth.",
+          "rivalReplyVoiceId": "vo_frankie_reply_witty",
+          "hostReplyText": "Quick tongue, sharper nerves. Let's open the oak stage and see what you've got!",
+          "hostReplyVoiceId": "vo_max_board_welcome_3",
+          "rivalAffinityDelta": 10,
+          "sponsorRepDelta": {
+            "VELVET_SOCIETY": 10,
+            "INDEPENDENT": 8
+          }
+        }
+      ],
+      "closingBeats": [
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Spotlight on! Clear this rainy-night tryout board and your Contestant Pass gets its very first stamp.",
+          "voiceClipId": "vo_max_read_in_tip_1",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_sam_trunk_intro",
+      "kind": "GREEN_ROOM_CALL",
+      "title": "The Contender's Tour Trunk",
+      "locationSubhead": "Oakridge Backstage - Green Room",
+      "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp",
+      "beats": [
+        {
+          "speaker": "producer_sam",
+          "speakerName": "Producer Sam",
+          "speakerRole": "Backstage Showrunner",
+          "text": "Not bad for a rainstorm walk-in! Here is your cognac-leather Tour Trunk - gold yarn tracks the Main Stage, crimson yarn marks Late-Night Redemption, and plum silk leads to Secret Velvet Salons.",
+          "voiceClipId": "vo_sam_1",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp"
+        },
+        {
+          "speaker": "producer_sam",
+          "speakerName": "Producer Sam",
+          "speakerRole": "Backstage Showrunner",
+          "text": "See those three recessed brass cups below the corkboard? Every rival ally or midnight salon can earn you a Podium Lucky Charm. Equip up to three before you step under the lights.",
+          "voiceClipId": "vo_sam_2",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "One more thing: three competing backers are already peeking through the curtain - Hometown Grassroots, Apex Network cash, and the mysterious Velvet Society. Who catches your eye first?",
+          "voiceClipId": "vo_max_match_win_1",
+          "hostPose": "welcome",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp"
+        }
+      ],
+      "choices": [
+        {
+          "attitude": "RUTHLESS_CONFIDENCE",
+          "label": "Apex Network - put me where the big checks live.",
+          "playerSpokenText": "Tell Apex Network I'm camera-ready. Bring on the Showman Dares and the fattest purses.",
+          "rivalReplyText": "Bold call. Apex pays huge when you hit their on-air stunts - just don't blink when the red light turns on.",
+          "rivalReplyVoiceId": "vo_sam_3",
+          "hostReplyText": "Ambition smells like freshly ironed tuxedo lapels. Love it.",
+          "hostReplyVoiceId": "vo_max_double_down_1",
+          "rivalAffinityDelta": 0,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 18
+          },
+          "bankrollDeltaUsd": 100
+        },
+        {
+          "attitude": "WARM_RESPECT",
+          "label": "Oakridge Independent - keep my soul untagged.",
+          "playerSpokenText": "I walked in off a Brooklyn sidewalk. Let's stay Independent and earn every dollar the honest way.",
+          "rivalReplyText": "Tighter travel budget, zero corporate strings, and crowds will walk through walls for you. Respect.",
+          "rivalReplyVoiceId": "vo_sam_4",
+          "hostReplyText": "A hometown folk hero already! The folding chairs are crying happy tears.",
+          "hostReplyVoiceId": "vo_max_board_welcome_2",
+          "rivalAffinityDelta": 6,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 20
+          }
+        },
+        {
+          "attitude": "SHARP_WIT",
+          "label": "Velvet Society - tell me about those wax seals.",
+          "playerSpokenText": "Midnight bookshops and crimson wax seals? Point me toward the Velvet Society before I die of boredom.",
+          "rivalReplyText": "Dangerous taste. Their underground salons break normal TV rules - and drop the rarest Lucky Charms in the game.",
+          "rivalReplyVoiceId": "vo_sam_5",
+          "hostReplyText": "Ooh, eccentric high-IQ underground society! Remember to pinky-up when you buzz in.",
+          "hostReplyVoiceId": "vo_max_power_play_1",
+          "rivalAffinityDelta": 4,
+          "sponsorRepDelta": {
+            "VELVET_SOCIETY": 20
+          }
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_act1_redemption_diner",
+      "kind": "REDEMPTION_BEAT",
+      "title": "2 AM Neon at Lou's Diner",
+      "locationSubhead": "Lou's 24-Hour Diner, Brooklyn - Redemption Circuit",
+      "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp",
+      "featuredChallengerId": "frankie_russo",
+      "beats": [
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Rough audition! Good news: on my show, losing never slams a dead Game Over wall in your face. It drops you onto the crimson-yarn Redemption Circuit.",
+          "voiceClipId": "vo_max_redemption_1",
+          "hostPose": "wince",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp"
+        },
+        {
+          "speaker": "frankie_russo",
+          "speakerName": "Frankie \"Last Call\" Russo",
+          "speakerRole": "Unbeaten Oakridge Pub Champ",
+          "text": "Slide into Booth Four, kid. Coffee's burnt, pie's fresh, and half the night shift plays for cash here at 2 AM. Beat my diner board and you're right back on Oakridge's main card.",
+          "voiceClipId": "vo_frankie_ally_call",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp"
+        }
+      ],
+      "choices": [
+        {
+          "attitude": "RUTHLESS_CONFIDENCE",
+          "label": "Deal the tiles - nobody keeps me down twice.",
+          "playerSpokenText": "Pour the burnt coffee and deal the tiles, Frankie. That tryout was just me checking the mic.",
+          "rivalReplyText": "That's the Brooklyn grit I like to see! Let's wake up the fry cook.",
+          "rivalReplyVoiceId": "vo_frankie_reply_bold",
+          "hostReplyText": "A comeback story starts with cheap coffee and zero fear!",
+          "hostReplyVoiceId": "vo_max_redemption_2",
+          "rivalAffinityDelta": 6,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 8,
+            "INDEPENDENT": 8
+          }
+        },
+        {
+          "attitude": "WARM_RESPECT",
+          "label": "Thanks for not letting my run end in the rain.",
+          "playerSpokenText": "Appreciate you pulling me into Booth Four, Frankie. I owe you a real match.",
+          "rivalReplyText": "Hey, I choked my first three pub nights back in 2018. Stick with it - you've got fast eyes.",
+          "rivalReplyVoiceId": "vo_frankie_reply_respect",
+          "hostReplyText": "Look at that: a rivalry turning into a midnight corner-man partnership.",
+          "hostReplyVoiceId": "vo_max_read_in_tip_2",
+          "rivalAffinityDelta": 16,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 14
+          }
+        },
+        {
+          "attitude": "SHARP_WIT",
+          "label": "If I win, I'm taking the cherry pie too.",
+          "playerSpokenText": "Just so we're clear on the contract: my win purse includes a slice of that spinning-case cherry pie.",
+          "rivalReplyText": "Ha! Beat me under fluorescent bulbs and Lou will name a waffle after you.",
+          "rivalReplyVoiceId": "vo_frankie_reply_witty",
+          "hostReplyText": "High-stakes breakfast wagering! That's the Redemption Circuit magic.",
+          "hostReplyVoiceId": "vo_max_board_welcome_3",
+          "rivalAffinityDelta": 12,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 10,
+            "VELVET_SOCIETY": 6
+          }
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_act1_diner_walkout",
+      "kind": "STAGE_WALKOUT",
+      "title": "Booth Four: Coffee, Pie & Trivia",
+      "locationSubhead": "Lou's 24-Hour Diner - 2:15 AM",
+      "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp",
+      "featuredChallengerId": "frankie_russo",
+      "beats": [
+        {
+          "speaker": "frankie_russo",
+          "speakerName": "Frankie \"Last Call\" Russo",
+          "speakerRole": "Unbeaten Oakridge Pub Champ",
+          "text": "Rules in Lou's diner are simple: use your two-second Read-In, spin the brass dial cleanly, and prove you belong back on Oakridge's main stage.",
+          "voiceClipId": "vo_frankie_walkout",
+          "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Win here and you snag the Underdog Chip charm - +100 comeback bonus every time you rally from behind!",
+          "voiceClipId": "vo_max_redemption_2",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_act1_diner_comeback",
+      "kind": "REDEMPTION_BEAT",
+      "title": "Back on the Main Board",
+      "locationSubhead": "Lou's 24-Hour Diner - Dawn",
+      "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp",
+      "featuredChallengerId": "frankie_russo",
+      "beats": [
+        {
+          "speaker": "frankie_russo",
+          "speakerName": "Frankie \"Last Call\" Russo",
+          "speakerRole": "Unbeaten Oakridge Pub Champ",
+          "text": "Boom! Look at the night shift cheering! Pocket that Underdog Chip, kid - you just clawed right back onto Tuesday's main bracket.",
+          "voiceClipId": "vo_frankie_defeat",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp"
+        },
+        {
+          "speaker": "producer_sam",
+          "speakerName": "Producer Sam",
+          "speakerRole": "Backstage Showrunner",
+          "text": "Pin your new Polaroid onto the Tour Trunk and snap that Underdog Chip into a podium brass cup. Cinderella arcs sell twice as many tickets.",
+          "voiceClipId": "vo_sam_2",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_frankie_first_match",
+      "kind": "STAGE_WALKOUT",
+      "title": "Forty-Seven Straight Tuesdays",
+      "locationSubhead": "Oakridge Community Hall - 86 Locals Watching",
+      "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp",
+      "featuredChallengerId": "frankie_russo",
+      "beats": [
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Your first true head-to-head! Frankie Russo has ruled forty-seven straight Tuesday nights on Pop Culture, Sports, and Food - just don't ask him to spell mitochondria.",
+          "voiceClipId": "vo_max_board_welcome_1",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp"
+        },
+        {
+          "speaker": "frankie_russo",
+          "speakerName": "Frankie \"Last Call\" Russo",
+          "speakerRole": "Unbeaten Oakridge Pub Champ",
+          "text": "Hey, I know plenty of science! Mostly how long ice lasts in a rocks glass. Ready to see why nobody takes my microphone?",
+          "voiceClipId": "vo_frankie_walkout",
+          "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp"
+        }
+      ],
+      "choices": [
+        {
+          "attitude": "RUTHLESS_CONFIDENCE",
+          "label": "Hope you brushed up on Physics, bartender.",
+          "playerSpokenText": "I'm steering this whole board straight into Science and Logic, Frankie. Hope you brought a lab coat.",
+          "rivalReplyText": "Low blow! Alright, gloves off - I'm claiming every Sports and Cinema tile before you blink.",
+          "rivalReplyVoiceId": "vo_frankie_reply_bold",
+          "hostReplyText": "Tactical warfare in a rec center! Watch those Science columns.",
+          "hostReplyVoiceId": "vo_max_double_down_2",
+          "rivalAffinityDelta": -10,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 10
+          }
+        },
+        {
+          "attitude": "WARM_RESPECT",
+          "label": "Forty-seven straight is legendary. Bring it.",
+          "playerSpokenText": "Forty-seven straight wins is no fluke, Frankie. Teach me how Oakridge plays.",
+          "rivalReplyText": "Now you're talking! Watch the Crown Wedge tiles - light up that six-color medallion early.",
+          "rivalReplyVoiceId": "vo_frankie_reply_respect",
+          "hostReplyText": "Mutual respect and free tactical scouting! Frankie's getting soft on us.",
+          "hostReplyVoiceId": "vo_max_wedge_earned_1",
+          "rivalAffinityDelta": 16,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 12
+          }
+        },
+        {
+          "attitude": "SHARP_WIT",
+          "label": "Mitochondria is the powerhouse of this pub.",
+          "playerSpokenText": "Don't sweat biology, Frankie - everyone knows the mitochondria is the powerhouse of the pretzel bowl.",
+          "rivalReplyText": "Hah! Okay, I'm stealing that line for Friday happy hour. Let's play!",
+          "rivalReplyVoiceId": "vo_frankie_reply_witty",
+          "hostReplyText": "Comedy gold on a folding-chair budget! Roll the first tile.",
+          "hostReplyVoiceId": "vo_max_board_welcome_3",
+          "rivalAffinityDelta": 10,
+          "sponsorRepDelta": {
+            "VELVET_SOCIETY": 8,
+            "INDEPENDENT": 6
+          }
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_act1_radio_dare",
+      "kind": "GREEN_ROOM_CALL",
+      "title": "WOKR 98.7: Live On-Air Dare",
+      "locationSubhead": "WOKR Glass Studio Booth - 310 Listeners",
+      "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp",
+      "beats": [
+        {
+          "speaker": "producer_sam",
+          "speakerName": "Producer Sam",
+          "speakerRole": "Backstage Showrunner",
+          "text": "Welcome to your first Sponsor Showcase! Neighborhood station WOKR wants a live Showman Dare: throw the 2x Double Down switch and nail the answer while the Time-Bomb fuse ticks.",
+          "voiceClipId": "vo_sam_3",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Win this booth blitz and you walk out with the Grassroots Megaphone charm - an extra brass Clue coin in every single future match!",
+          "voiceClipId": "vo_max_double_down_1",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_act1_timebomb_intro",
+      "kind": "REDEMPTION_BEAT",
+      "title": "Defuse the Fuse in Red Hook",
+      "locationSubhead": "Copper Kettle Taproom - Late-Night Play-In",
+      "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp",
+      "beats": [
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Smell that hops and ozone? This brewery play-in runs our Time-Bomb Hot Potato twist: one tile on the board has a live burning fuse.",
+          "voiceClipId": "vo_max_buzzer_beater_1",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp"
+        },
+        {
+          "speaker": "producer_sam",
+          "speakerName": "Producer Sam",
+          "speakerRole": "Backstage Showrunner",
+          "text": "Defuse the ticking tile fast for bonus voltage before it jumps and scorches your score. Clear the taproom and your main-stage comeback stays alive!",
+          "voiceClipId": "vo_sam_4",
+          "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_frankie_screw_intro",
+      "kind": "STAGE_WALKOUT",
+      "title": "Meet the Big Red Button",
+      "locationSubhead": "Oakridge Community Hall - 135 Watching",
+      "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp",
+      "featuredChallengerId": "frankie_russo",
+      "beats": [
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Notice the glossy crimson dome bolted onto your podium? That is the SCREW RIVAL! buzzer - inspired by the finest traditions of petty television.",
+          "voiceClipId": "vo_max_screw_slammed_1",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Once per match, slam SCREW RIVAL! on an open tile you suspect Frankie hates, forcing HIM to answer live. If he chokes, you steal 100% of the tile. If he nails it, he pockets the cash and gloats.",
+          "voiceClipId": "vo_max_screw_slammed_2",
+          "hostPose": "welcome",
+          "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp"
+        },
+        {
+          "speaker": "frankie_russo",
+          "speakerName": "Frankie \"Last Call\" Russo",
+          "speakerRole": "Unbeaten Oakridge Pub Champ",
+          "text": "Hey, wait a second - I got a red dome on my podium too! Touch my Chemistry column and I'm slamming yours straight into 1970s baseball stats!",
+          "voiceClipId": "vo_frankie_screw_taunt",
+          "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp"
+        }
+      ],
+      "choices": [
+        {
+          "attitude": "RUTHLESS_CONFIDENCE",
+          "label": "Save your breath - I'm hitting Science first.",
+          "playerSpokenText": "Keep your eye on the 800-point Science tile, Frankie. My palm's already hovering over the red dome.",
+          "rivalReplyText": "Oh, you ruthless little shark! Fine - let's see how you like a fastball from my side of the board.",
+          "rivalReplyVoiceId": "vo_frankie_reply_bold",
+          "hostReplyText": "Brass sparks flying already! Watch out for each other's Screw tokens.",
+          "hostReplyVoiceId": "vo_max_screw_slammed_3",
+          "rivalAffinityDelta": -12,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 14
+          }
+        },
+        {
+          "attitude": "WARM_RESPECT",
+          "label": "Fair warning - I'll only press it when it counts.",
+          "playerSpokenText": "No cheap shots, Frankie. If I slam that red button, you'll know I respected your lead enough to need it.",
+          "rivalReplyText": "Respect! Though between us, if an Astrophysics tile pops up, I'd slam it on me too.",
+          "rivalReplyVoiceId": "vo_frankie_reply_respect",
+          "hostReplyText": "Honest rivalry at its finest! Let's light up the hall.",
+          "hostReplyVoiceId": "vo_max_board_welcome_2",
+          "rivalAffinityDelta": 15,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 12
+          }
+        },
+        {
+          "attitude": "SHARP_WIT",
+          "label": "Who installed an arcade button on oak mahogany?",
+          "playerSpokenText": "Honestly, I just admire whoever bolted a nuclear launch button onto a community-center podium.",
+          "rivalReplyText": "That was Sam with a cordless drill twenty minutes ago! Now quit stalling and pick a tile!",
+          "rivalReplyVoiceId": "vo_frankie_reply_witty",
+          "hostReplyText": "Zero OSHA violations on this stage, folks - purely theatrical chaos!",
+          "hostReplyVoiceId": "vo_max_board_welcome_1",
+          "rivalAffinityDelta": 10,
+          "sponsorRepDelta": {
+            "VELVET_SOCIETY": 6,
+            "INDEPENDENT": 8
+          }
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_velvet_salon_1",
+      "kind": "STAGE_WALKOUT",
+      "title": "Wax Seal Behind the Bookshop",
+      "locationSubhead": "Aldine Rare Books Back Parlor - Secret Velvet Salon",
+      "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp",
+      "featuredChallengerId": "denise_park",
+      "beats": [
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Lower your voice - you just slipped through a sliding bookcase into a Secret Velvet Society Salon. Tonight's board runs Velvet X-Crossroads: both glowing diagonals pay double.",
+          "voiceClipId": "vo_max_power_play_2",
+          "hostPose": "welcome",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp"
+        },
+        {
+          "speaker": "denise_park",
+          "speakerName": "Denise Park",
+          "speakerRole": "Retired AP History Legend",
+          "text": "So you're the pub prodigy everyone whispered about. Sit up straight, keep your elbows off the baize, and let's see if you know anything older than last Tuesday's box office.",
+          "voiceClipId": "vo_denise_walkout",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp"
+        }
+      ],
+      "choices": [
+        {
+          "attitude": "RUTHLESS_CONFIDENCE",
+          "label": "I'll skip the lecture and take the diagonal sweep.",
+          "playerSpokenText": "Save the syllabus for downtown, Denise. I'm taking both 2x diagonals and the Velvet purse.",
+          "rivalReplyText": "My, such bold posture for someone who hasn't survived a single nineteenth-century treaty clue yet.",
+          "rivalReplyVoiceId": "vo_denise_reply_bold",
+          "hostReplyText": "Candlelight and ice-cold stares! The Velvet patrons are eating this up.",
+          "hostReplyVoiceId": "vo_max_double_down_3",
+          "rivalAffinityDelta": -12,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 10,
+            "VELVET_SOCIETY": 8
+          }
+        },
+        {
+          "attitude": "WARM_RESPECT",
+          "label": "An honor to share a salon table with a legend.",
+          "playerSpokenText": "Thirty-four years teaching AP History, Ms. Park - I'll consider tonight an advanced seminar.",
+          "rivalReplyText": "Proper address AND attentive posture! Perhaps the neighborhood circuit isn't entirely hopeless after all.",
+          "rivalReplyVoiceId": "vo_denise_reply_respect",
+          "hostReplyText": "Look at that faint smile - you just earned an A-minus before question one.",
+          "hostReplyVoiceId": "vo_max_board_welcome_2",
+          "rivalAffinityDelta": 18,
+          "sponsorRepDelta": {
+            "VELVET_SOCIETY": 16,
+            "INDEPENDENT": 6
+          }
+        },
+        {
+          "attitude": "SHARP_WIT",
+          "label": "Is there a pop-quiz penalty for bad grammar?",
+          "playerSpokenText": "Quick question: if I win with 'less' mistakes instead of 'fewer', do you dock my score?",
+          "rivalReplyText": "I'll dock your pride, dear - and yes, it is strictly 'fewer'. Charming nerve, though.",
+          "rivalReplyVoiceId": "vo_denise_reply_witty",
+          "hostReplyText": "Grammar warfare by candlelight! Clear those diagonals without lifelines for the Velvet bonus.",
+          "hostReplyVoiceId": "vo_max_stage_sweep_1",
+          "rivalAffinityDelta": 10,
+          "sponsorRepDelta": {
+            "VELVET_SOCIETY": 18
+          }
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_frankie_sparring_call",
+      "kind": "GREEN_ROOM_CALL",
+      "title": "After Hours at Frankie's Tap",
+      "locationSubhead": "Frankie's Corner Tap - Closing Time",
+      "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp",
+      "featuredChallengerId": "frankie_russo",
+      "beats": [
+        {
+          "speaker": "frankie_russo",
+          "speakerName": "Frankie \"Last Call\" Russo",
+          "speakerRole": "Unbeaten Oakridge Pub Champ",
+          "text": "Chairs are up on the tables, kid. Just you, me, and a fresh padlocked practice board before the big Oakridge final. Beat me here and my embossed Lucky Coaster goes straight onto your podium.",
+          "voiceClipId": "vo_frankie_ally_call",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Frankie's Lucky Coaster is pure gold: your very first missed 2x Double Down in any match loses ZERO points. Play bold without the bruise!",
+          "voiceClipId": "vo_max_double_down_2",
+          "hostPose": "welcome",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp"
+        }
+      ],
+      "choices": [
+        {
+          "attitude": "RUTHLESS_CONFIDENCE",
+          "label": "I don't plan on missing - hand it over anyway.",
+          "playerSpokenText": "I'm taking that coaster as a trophy, Frankie, even if I never need the safety net.",
+          "rivalReplyText": "Cocky to the bone! Earn it on the wood then - let's run the practice rack.",
+          "rivalReplyVoiceId": "vo_frankie_reply_bold",
+          "rivalAffinityDelta": -4,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 8
+          }
+        },
+        {
+          "attitude": "WARM_RESPECT",
+          "label": "You're the best corner-man in Brooklyn, Frankie.",
+          "playerSpokenText": "Keeping the taproom open to drill me? Win or lose, you're coming with me to the big leagues.",
+          "rivalReplyText": "Aw, shut up before I tear up into the limes. Here - take the Lucky Coaster right now, and still try to beat my score!",
+          "rivalReplyVoiceId": "vo_frankie_reply_respect",
+          "rivalAffinityDelta": 22,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 14
+          },
+          "unlockCharmId": "frankies_coaster"
+        },
+        {
+          "attitude": "SHARP_WIT",
+          "label": "Is this coaster magically immune to ring stains?",
+          "playerSpokenText": "Does Frankie's Lucky Coaster also protect mahogany podiums from nervous sweat?",
+          "rivalReplyText": "Guaranteed since 1998! Beat me tonight and I'll polish the brass rim myself.",
+          "rivalReplyVoiceId": "vo_frankie_reply_witty",
+          "rivalAffinityDelta": 12,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 8,
+            "VELVET_SOCIETY": 6
+          }
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_act1_wildcard_grit",
+      "kind": "REDEMPTION_BEAT",
+      "title": "Subway Rumble Wildcard",
+      "locationSubhead": "Brooklyn Civic Annex Basement - 11:45 PM",
+      "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp",
+      "featuredChallengerId": "frankie_russo",
+      "beats": [
+        {
+          "speaker": "producer_sam",
+          "speakerName": "Producer Sam",
+          "speakerRole": "Backstage Showrunner",
+          "text": "Every time the express train shakes the ceiling, a Time-Bomb tile flickers. Last wildcard seat into the Oakridge Crown Showdown - leave nothing on the table!",
+          "voiceClipId": "vo_sam_5",
+          "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp"
+        },
+        {
+          "speaker": "frankie_russo",
+          "speakerName": "Frankie \"Last Call\" Russo",
+          "speakerRole": "Unbeaten Oakridge Pub Champ",
+          "text": "You got more lives than an alley cat, kid. Show the basement crowd you're ready for my main stage!",
+          "voiceClipId": "vo_frankie_trap_taunt",
+          "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_frankie_climax_walkout",
+      "kind": "STAGE_WALKOUT",
+      "title": "Standing Room Only in Oakridge",
+      "locationSubhead": "Oakridge Community Hall - 180 Packed Crowd",
+      "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp",
+      "featuredChallengerId": "frankie_russo",
+      "beats": [
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Look at this room! A hundred and eighty neighbors jammed past the folding chairs, a cable van idling out front, and chained 800-point vaults guarding Oakridge's belt!",
+          "voiceClipId": "vo_max_chain_shatter_1",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp"
+        },
+        {
+          "speaker": "frankie_russo",
+          "speakerName": "Frankie \"Last Call\" Russo",
+          "speakerRole": "Unbeaten Oakridge Pub Champ",
+          "text": "Apron's off, towel's folded, and the whole block bet their rent on a classic. Take my belt if you can, kid - I ain't handing it over cheap!",
+          "voiceClipId": "vo_frankie_walkout",
+          "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp"
+        }
+      ],
+      "choices": [
+        {
+          "attitude": "RUTHLESS_CONFIDENCE",
+          "label": "Make room in the trophy case - it's coming with me.",
+          "playerSpokenText": "Tell the cable van to keep rolling, Frankie. Tonight a new name owns Oakridge.",
+          "rivalReplyText": "Ooh, big talk under bright lights! Let's shatter some iron chains and settle it!",
+          "rivalReplyVoiceId": "vo_frankie_reply_bold",
+          "hostReplyText": "Electric energy in Brooklyn! Shatter those adjacent locks and chase three Jewel Wedges!",
+          "hostReplyVoiceId": "vo_max_stage_sweep_2",
+          "rivalAffinityDelta": -6,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 12
+          }
+        },
+        {
+          "attitude": "WARM_RESPECT",
+          "label": "Whatever happens, Oakridge wins tonight.",
+          "playerSpokenText": "You built this room from forty-two chairs into a circus, Frankie. Let's give everyone here a match for the ages.",
+          "rivalReplyText": "Now I'm proud to share the mic with ya. Alright - touch gloves and shatter that board!",
+          "rivalReplyVoiceId": "vo_frankie_reply_respect",
+          "hostReplyText": "Chills! Even the coffee urn stopped rattling to watch this showdown.",
+          "hostReplyVoiceId": "vo_max_wedge_earned_2",
+          "rivalAffinityDelta": 20,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 16
+          }
+        },
+        {
+          "attitude": "SHARP_WIT",
+          "label": "Last call for the reigning champ!",
+          "playerSpokenText": "Check your watch, Frankie - looks like it's finally Last Call for the defending champ.",
+          "rivalReplyText": "Hah! Using my own nickname against me in my own building?! Oh, you're getting Screwed on turn two!",
+          "rivalReplyVoiceId": "vo_frankie_reply_witty",
+          "hostReplyText": "The crowd LOVES it! Hands on buzzers - the Oakridge Crown is live!",
+          "hostReplyVoiceId": "vo_max_board_welcome_1",
+          "rivalAffinityDelta": 10,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 8,
+            "VELVET_SOCIETY": 8
+          }
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_frankie_crown_win",
+      "kind": "ACT_CLIMAX",
+      "title": "The Belt Leaves Brooklyn",
+      "locationSubhead": "Oakridge Community Hall - Standing Ovation",
+      "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp",
+      "featuredChallengerId": "frankie_russo",
+      "beats": [
+        {
+          "speaker": "frankie_russo",
+          "speakerName": "Frankie \"Last Call\" Russo",
+          "speakerRole": "Unbeaten Oakridge Pub Champ",
+          "text": "Well I'll be! You actually took the belt right off my apron. Don't forget these folding chairs when the velvet balconies hit downtown - call me if you ever need backup!",
+          "voiceClipId": "vo_frankie_defeat",
+          "backdropUrl": "./assets/v5/venues/tier1_oakridge.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "From a rainy sidewalk to Oakridge Champion! Pack your Tour Trunk - next stop is the Downtown Lyric Theater, fourteen hundred velvet seats, and a chamber symphony warming up in the pit.",
+          "voiceClipId": "vo_max_match_win_2",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier2_lyric.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_frankie_crown_loss",
+      "kind": "REDEMPTION_BEAT",
+      "title": "Cable 56 Wants an Underdog",
+      "locationSubhead": "Oakridge Alleyway - Rain & Neon",
+      "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp",
+      "featuredChallengerId": "frankie_russo",
+      "beats": [
+        {
+          "speaker": "frankie_russo",
+          "speakerName": "Frankie \"Last Call\" Russo",
+          "speakerRole": "Unbeaten Oakridge Pub Champ",
+          "text": "Still the king of Oakridge! Hey - keep your chin up, kid. You pushed me closer to the cliff than anybody in six years.",
+          "voiceClipId": "vo_frankie_win",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp"
+        },
+        {
+          "speaker": "producer_sam",
+          "speakerName": "Producer Sam",
+          "speakerRole": "Backstage Showrunner",
+          "text": "Good news: the civic cable truck loved your fire. Channel 56's basement wildcard goes live in an hour - win there and you storm straight into Downtown Lyric Theater through the back door!",
+          "voiceClipId": "vo_sam_6",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_public_access_wildcard",
+      "kind": "REDEMPTION_BEAT",
+      "title": "Channel 56 Basement Live",
+      "locationSubhead": "Channel 56 Public Access - 620 Night Owls",
+      "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp",
+      "beats": [
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Right between local polka and an earnest puppet show, welcome to the Channel 56 Wildcard! Defuse the Time-Bomb tiles and claim your velvet seat at the Lyric.",
+          "voiceClipId": "vo_max_redemption_1",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_denise_padlocks_intro",
+      "kind": "STAGE_WALKOUT",
+      "title": "Prerequisites Before the Vault",
+      "locationSubhead": "Downtown Lyric Theater - 1400 Velvet Seats",
+      "backdropUrl": "./assets/v5/venues/tier2_lyric.webp",
+      "featuredChallengerId": "denise_park",
+      "beats": [
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Smell that mahogany polish and rosin? Hear the chamber strings tuning below the apron? Welcome to the Downtown Lyric Theater - and meet its undisputed dean, Denise Park!",
+          "voiceClipId": "vo_max_board_welcome_2",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier2_lyric.webp"
+        },
+        {
+          "speaker": "denise_park",
+          "speakerName": "Denise Park",
+          "speakerRole": "Retired AP History Legend",
+          "text": "Welcome to my classroom, challenger. Notice the heavy iron chains and brass padlocks binding the 400 and 800-point vaults? You do NOT skip straight to the thesis without passing the prerequisites.",
+          "voiceClipId": "vo_denise_walkout",
+          "backdropUrl": "./assets/v5/venues/tier2_lyric.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "That's 3D Chain-Reaction Padlocks in action! Solve any open neighboring tile and lightning arcs straight into adjacent locks, shattering those brass chains in flying sparks!",
+          "voiceClipId": "vo_max_chain_shatter_2",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier2_lyric.webp"
+        }
+      ],
+      "choices": [
+        {
+          "attitude": "RUTHLESS_CONFIDENCE",
+          "label": "Watch me shatter your syllabus in five turns.",
+          "playerSpokenText": "Keep your red pen capped, Denise. I'm blowing through those padlocks and rewriting the city record.",
+          "rivalReplyText": "Bravado rarely survives a primary-source History question, dear. Take your seat at the podium.",
+          "rivalReplyVoiceId": "vo_denise_reply_bold",
+          "hostReplyText": "Ooh, sharp brass chords from the pit! The balcony is loving this tension.",
+          "hostReplyVoiceId": "vo_max_chain_shatter_3",
+          "rivalAffinityDelta": -12,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 14
+          }
+        },
+        {
+          "attitude": "WARM_RESPECT",
+          "label": "I did the reading, Ms. Park. Test me.",
+          "playerSpokenText": "Thirty-four years of discipline against a neighborhood rookie - I did my homework, Ms. Park.",
+          "rivalReplyText": "Refreshingly prepared! Remember: break locks beside your strongest category first, and keep your posture straight.",
+          "rivalReplyVoiceId": "vo_denise_reply_respect",
+          "hostReplyText": "A tactical tip from Denise Park herself?! Somebody alert the City Gazette!",
+          "hostReplyVoiceId": "vo_max_read_in_tip_2",
+          "rivalAffinityDelta": 18,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 12,
+            "VELVET_SOCIETY": 8
+          }
+        },
+        {
+          "attitude": "SHARP_WIT",
+          "label": "Do shattered padlocks count as extra credit?",
+          "playerSpokenText": "Quick grading policy check: if my chain reaction shatters three padlocks at once, do I get extra credit?",
+          "rivalReplyText": "Only if your spelling holds up under pressure! Clever retort - I'll allow an A-minus for spirit.",
+          "rivalReplyVoiceId": "vo_denise_reply_witty",
+          "hostReplyText": "Sharp wit echoing off velvet balconies! Break open those chains!",
+          "hostReplyVoiceId": "vo_max_board_welcome_3",
+          "rivalAffinityDelta": 12,
+          "sponsorRepDelta": {
+            "VELVET_SOCIETY": 12,
+            "INDEPENDENT": 6
+          }
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_apex_sponsor_pitch",
+      "kind": "GREEN_ROOM_CALL",
+      "title": "The Apex Network Suit",
+      "locationSubhead": "Lyric Mezzanine Press Lounge - 2100 Cable Streamers",
+      "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp",
+      "beats": [
+        {
+          "speaker": "producer_sam",
+          "speakerName": "Producer Sam",
+          "speakerRole": "Backstage Showrunner",
+          "text": "Good news or a trap, depending on your soul: Apex Network's talent scouts loved your Oakridge clips. They booked a Spotlight Roulette screen test right here in the mezzanine.",
+          "voiceClipId": "vo_sam_3",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "On a Spotlight Roulette board, the overhead beam occasionally spins wild and forces your next tile. Chain a four-answer hot streak on camera and Apex drops a $900 Showman Dare bonus!",
+          "voiceClipId": "vo_max_streak_4_1",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp"
+        }
+      ],
+      "choices": [
+        {
+          "attitude": "RUTHLESS_CONFIDENCE",
+          "label": "Tell Apex to print my headshot bigger.",
+          "playerSpokenText": "Roll tape and get my good side. I'll hit their four-streak dare and take every dime they're offering.",
+          "rivalReplyText": "Music to corporate ears. Just remember: Apex loves drama even more than dignity.",
+          "rivalReplyVoiceId": "vo_sam_4",
+          "rivalAffinityDelta": 0,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 20
+          },
+          "bankrollDeltaUsd": 200
+        },
+        {
+          "attitude": "WARM_RESPECT",
+          "label": "I'll take the screen test, not the leash.",
+          "playerSpokenText": "I'll play their spotlight board fair and square, Sam - but nobody scripts what I say at the mic.",
+          "rivalReplyText": "Smart boundaries. Keep the check, keep your voice.",
+          "rivalReplyVoiceId": "vo_sam_1",
+          "rivalAffinityDelta": 4,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 16,
+            "APEX_NETWORK": 6
+          }
+        },
+        {
+          "attitude": "SHARP_WIT",
+          "label": "Only if the Spotlight hits my best angles.",
+          "playerSpokenText": "Forced spotlight jumps? Fine, just tell the lighting guy I look deeply intellectual in sapphire.",
+          "rivalReplyText": "Ha! The Velvet scouts in the corner just scribbled your name in fountain ink too.",
+          "rivalReplyVoiceId": "vo_sam_5",
+          "rivalAffinityDelta": 6,
+          "sponsorRepDelta": {
+            "VELVET_SOCIETY": 12,
+            "APEX_NETWORK": 8
+          }
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_denise_library_redemption",
+      "kind": "REDEMPTION_BEAT",
+      "title": "After-Hours Detention Play-In",
+      "locationSubhead": "Downtown Civic Library - Past Closing",
+      "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp",
+      "featuredChallengerId": "denise_park",
+      "beats": [
+        {
+          "speaker": "denise_park",
+          "speakerName": "Denise Park",
+          "speakerRole": "Retired AP History Legend",
+          "text": "Stumbled under the Lyric chandelier? Nonsense - even Churchill bombed an early speech. Meet me in the reading room; shatter these practice locks and earn your Lyric rematch.",
+          "voiceClipId": "vo_denise_ally_call",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Whisper-quiet stacks, thunderous chain shatters! Nail this comeback board and jump right back into the city race.",
+          "voiceClipId": "vo_max_redemption_2",
+          "hostPose": "welcome",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_denise_pyramid_intro",
+      "kind": "STAGE_WALKOUT",
+      "title": "Climb the Syllabus",
+      "locationSubhead": "Downtown Lyric Theater - 2400 Watching",
+      "backdropUrl": "./assets/v5/venues/tier2_lyric.webp",
+      "featuredChallengerId": "denise_park",
+      "beats": [
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Fresh board twist tonight: Pyramid Ascent! Only the broad base row sits unlocked - every tile you conquer cracks the stone above it until the golden Apex Vault opens.",
+          "voiceClipId": "vo_max_chain_shatter_3",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier2_lyric.webp"
+        },
+        {
+          "speaker": "denise_park",
+          "speakerName": "Denise Park",
+          "speakerRole": "Retired AP History Legend",
+          "text": "Foundation first, summit second - precisely how civilization works. Watch my Sort-4 timelines, challenger; I've memorized every century since Rome.",
+          "voiceClipId": "vo_denise_trap_taunt",
+          "backdropUrl": "./assets/v5/venues/tier2_lyric.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_trevor_lyric_crash",
+      "kind": "STAGE_WALKOUT",
+      "title": "Channel 7 Crashes the Stage Door",
+      "locationSubhead": "Lyric Stage Door - Live Local Broadcast",
+      "backdropUrl": "./assets/v5/venues/tier2_lyric.webp",
+      "featuredChallengerId": "trevor_blake",
+      "beats": [
+        {
+          "speaker": "trevor_blake",
+          "speakerName": "Trevor \"14-Day\" Blake",
+          "speakerRole": "14-Day Channel 7 Streak Holder",
+          "text": "Careful looking straight at my smile under these bulbs! My dentist calls it Broadcast White. Heard a pub rookie was making noise downtown, so I brought Channel 7's camera truck to ruin the fairy tale early!",
+          "voiceClipId": "vo_trevor_walkout",
+          "backdropUrl": "./assets/v5/venues/tier2_lyric.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Unscheduled exhibition ambush! Trevor's hijacked a Time-Bomb Hot Potato board live for four thousand afternoon viewers. Show daytime TV you don't flinch!",
+          "voiceClipId": "vo_max_buzzer_beater_2",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier2_lyric.webp"
+        }
+      ],
+      "choices": [
+        {
+          "attitude": "RUTHLESS_CONFIDENCE",
+          "label": "Better check your parking spot - I'm coming for Day 15.",
+          "playerSpokenText": "Enjoy that painted studio parking spot while it lasts, Trevor. Your streak ends the second I hit Channel 7.",
+          "rivalReplyText": "Ooh, cameras get that?! Producers, clip that soundbite for the promo reel - this kid's writing checks their brain can't cash!",
+          "rivalReplyVoiceId": "vo_trevor_reply_bold",
+          "hostReplyText": "Instant ratings wildfire! The cable truck just doubled its bandwidth.",
+          "hostReplyVoiceId": "vo_max_screw_slammed_1",
+          "rivalAffinityDelta": -16,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 18
+          }
+        },
+        {
+          "attitude": "WARM_RESPECT",
+          "label": "Fourteen straight on live TV takes serious nerve.",
+          "playerSpokenText": "Fourteen straight afternoons on live television isn't luck, Trevor. Let's give your viewers a real preview.",
+          "rivalReplyText": "Whoa - actual manners from a challenger? Almost makes me feel bad about burying you before the noon weather.",
+          "rivalReplyVoiceId": "vo_trevor_reply_respect",
+          "hostReplyText": "Even Trevor's hairspray relaxed a millimeter! Let's light the Time-Bomb.",
+          "hostReplyVoiceId": "vo_max_board_welcome_1",
+          "rivalAffinityDelta": 14,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 12
+          }
+        },
+        {
+          "attitude": "SHARP_WIT",
+          "label": "Did your dentist sign a waiver for that glare?",
+          "playerSpokenText": "Should I put on sunglasses before we start, or is Broadcast White rated safe for indoor viewing?",
+          "rivalReplyText": "Hah! Okay, writers' room, steal that joke - just don't expect mercy when the fuse jumps!",
+          "rivalReplyVoiceId": "vo_trevor_reply_witty",
+          "hostReplyText": "Quickest tongue since Cookie Masterson! Stage lights hot - let's roll!",
+          "hostReplyVoiceId": "vo_max_double_down_1",
+          "rivalAffinityDelta": 8,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 10,
+            "VELVET_SOCIETY": 8
+          }
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_velvet_salon_2",
+      "kind": "STAGE_WALKOUT",
+      "title": "Mezzanine Box Zero",
+      "locationSubhead": "Lyric Clocktower Private Box - Velvet Salon",
+      "backdropUrl": "./assets/v5/venues/tier2_lyric.webp",
+      "featuredChallengerId": "denise_park",
+      "beats": [
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Above the chandelier sits Box Zero - and our Spiral Labyrinth board! Cut inward from the outer perimeter tiles to crack the blazing thousand-point Core.",
+          "voiceClipId": "vo_max_power_play_1",
+          "hostPose": "welcome",
+          "backdropUrl": "./assets/v5/venues/tier2_lyric.webp"
+        },
+        {
+          "speaker": "denise_park",
+          "speakerName": "Denise Park",
+          "speakerRole": "Retired AP History Legend",
+          "text": "Conquer this spiral and the Society awards the Velvet Wax Seal - granting a SECOND Screw Rival token in every match. Use such mischief responsibly, dear.",
+          "voiceClipId": "vo_denise_screw_taunt",
+          "backdropUrl": "./assets/v5/venues/tier2_lyric.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_denise_office_hours",
+      "kind": "GREEN_ROOM_CALL",
+      "title": "Office Hours: Red Ink & Respect",
+      "locationSubhead": "Lyric Rehearsal Hall - Before Dress Rehearsal",
+      "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp",
+      "featuredChallengerId": "denise_park",
+      "beats": [
+        {
+          "speaker": "denise_park",
+          "speakerName": "Denise Park",
+          "speakerRole": "Retired AP History Legend",
+          "text": "Sit down. Before the City Championship curtain rises, I want to know whether you rely on flash or true mastery. Beat my rehearsal rack and you earn my Red Fountain Pen.",
+          "voiceClipId": "vo_denise_ally_call",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp"
+        },
+        {
+          "speaker": "producer_sam",
+          "speakerName": "Producer Sam",
+          "speakerRole": "Backstage Showrunner",
+          "text": "Trust me, you want Denise's Red Pen on your podium: it automatically crosses out one wrong choice on every History and Literature question!",
+          "voiceClipId": "vo_sam_2",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_local.webp"
+        }
+      ],
+      "choices": [
+        {
+          "attitude": "RUTHLESS_CONFIDENCE",
+          "label": "Grade me on the scoreboard, not the syllabus.",
+          "playerSpokenText": "I didn't come to pass a midterm, Denise - I came to win ten million dollars. Set up the board.",
+          "rivalReplyText": "Fierce, impatient, and slightly terrifying. Very well - show me what ambition looks like.",
+          "rivalReplyVoiceId": "vo_denise_reply_bold",
+          "rivalAffinityDelta": -4,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 10
+          }
+        },
+        {
+          "attitude": "WARM_RESPECT",
+          "label": "You've made me sharper every single round.",
+          "playerSpokenText": "Honestly, Ms. Park, nobody's pushed my mind harder since high school. I'd be honored to carry your pen to television.",
+          "rivalReplyText": "Oh, stop - you'll ruin my stern reputation. Take the Red Fountain Pen now, and promise you'll still beat me cleanly on stage.",
+          "rivalReplyVoiceId": "vo_denise_reply_respect",
+          "rivalAffinityDelta": 22,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 12,
+            "VELVET_SOCIETY": 10
+          },
+          "unlockCharmId": "denises_red_pen"
+        },
+        {
+          "attitude": "SHARP_WIT",
+          "label": "Will it fix my split infinitives on live TV?",
+          "playerSpokenText": "If I equip Denise's Red Pen, does it zap me whenever I casually split an infinitive on camera?",
+          "rivalReplyText": "I certainly hope so! Crisp phrasing, crisp timing - now step up and earn it.",
+          "rivalReplyVoiceId": "vo_denise_reply_witty",
+          "rivalAffinityDelta": 14,
+          "sponsorRepDelta": {
+            "VELVET_SOCIETY": 12
+          }
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_act1_final_wildcard",
+      "kind": "REDEMPTION_BEAT",
+      "title": "Last-Train Civic Play-In",
+      "locationSubhead": "Grand Concourse Kiosk - Midnight Broadcast",
+      "backdropUrl": "./assets/v5/venues/tier2_lyric.webp",
+      "featuredChallengerId": "trevor_blake",
+      "beats": [
+        {
+          "speaker": "producer_sam",
+          "speakerName": "Producer Sam",
+          "speakerRole": "Backstage Showrunner",
+          "text": "Commuters are stopping mid-stride to watch the concourse monitors! Ride this Spotlight Roulette wildcard straight into the Lyric City Championship.",
+          "voiceClipId": "vo_sam_6",
+          "backdropUrl": "./assets/v5/venues/tier2_lyric.webp"
+        },
+        {
+          "speaker": "trevor_blake",
+          "speakerName": "Trevor \"14-Day\" Blake",
+          "speakerRole": "14-Day Channel 7 Streak Holder",
+          "text": "Still fighting through the late-night bracket? Hey, I respect the hustle - just try not to miss the train to real television!",
+          "voiceClipId": "vo_trevor_trap_taunt",
+          "backdropUrl": "./assets/v5/venues/tier2_lyric.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_act1_climax_walkout",
+      "kind": "ACT_CLIMAX",
+      "title": "Balcony of Brass: City Championship",
+      "locationSubhead": "Downtown Lyric Theater - 6,500 Live & Cable",
+      "backdropUrl": "./assets/v5/venues/tier2_lyric.webp",
+      "featuredChallengerId": "denise_park",
+      "beats": [
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Sixty-five hundred live and cable viewers, brass spotlights cutting the velvet, and strings soaring from the pit! Win tonight and your passport to live Channel 7 television is signed in ink!",
+          "voiceClipId": "vo_max_stage_sweep_3",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier2_lyric.webp"
+        },
+        {
+          "speaker": "denise_park",
+          "speakerName": "Denise Park",
+          "speakerRole": "Retired AP History Legend",
+          "text": "Twenty tiles, iron padlocks, and six formats standing between Oakridge and television. Stand tall, challenger - give this grand old theater a finale worthy of its rafters.",
+          "voiceClipId": "vo_denise_walkout",
+          "backdropUrl": "./assets/v5/venues/tier2_lyric.webp"
+        }
+      ],
+      "choices": [
+        {
+          "attitude": "RUTHLESS_CONFIDENCE",
+          "label": "Television starts tonight - class dismissed.",
+          "playerSpokenText": "You taught a great masterclass, Denise, but the bell just rang. I'm taking Channel 7 tonight.",
+          "rivalReplyText": "Using my own catchphrase under my own chandelier? Bold move - let's see if your recall matches your nerve!",
+          "rivalReplyVoiceId": "vo_denise_reply_bold",
+          "hostReplyText": "Symphony brass at full volume! Let the City Championship begin!",
+          "hostReplyVoiceId": "vo_max_chain_shatter_1",
+          "rivalAffinityDelta": -8,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 16
+          }
+        },
+        {
+          "attitude": "WARM_RESPECT",
+          "label": "Save me a front-row seat when we hit TV.",
+          "playerSpokenText": "Win or lose, sharing this stage with you made me a real contender, Denise. Keep your posture tall.",
+          "rivalReplyText": "Splendid grace under the lights! Now forget sentiment for twelve turns and show me brilliance.",
+          "rivalReplyVoiceId": "vo_denise_reply_respect",
+          "hostReplyText": "Not a dry eye in the mezzanine! Shatter those locks and claim the city crown!",
+          "hostReplyVoiceId": "vo_max_wedge_earned_2",
+          "rivalAffinityDelta": 20,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 18,
+            "VELVET_SOCIETY": 8
+          }
+        },
+        {
+          "attitude": "SHARP_WIT",
+          "label": "No pop quizzes on the Channel 7 shuttle, deal?",
+          "playerSpokenText": "Deal's simple: if I win the Lyric Crown, you promise zero surprise grammar quizzes on the ride to Studio B.",
+          "rivalReplyText": "Ha! Beat me across six formats and I'll even let you end a sentence with a preposition. Once.",
+          "rivalReplyVoiceId": "vo_denise_reply_witty",
+          "hostReplyText": "Historical linguistic concessions on live cable! Fire up the board!",
+          "hostReplyVoiceId": "vo_max_board_welcome_3",
+          "rivalAffinityDelta": 14,
+          "sponsorRepDelta": {
+            "VELVET_SOCIETY": 14,
+            "INDEPENDENT": 10
+          }
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_act1_climax_win",
+      "kind": "ACT_CLIMAX",
+      "title": "Television Calling",
+      "locationSubhead": "Lyric Stage Door - Act I Victory",
+      "backdropUrl": "./assets/v5/story/story_scout_breakthrough.webp",
+      "featuredChallengerId": "denise_park",
+      "beats": [
+        {
+          "speaker": "denise_park",
+          "speakerName": "Denise Park",
+          "speakerRole": "Retired AP History Legend",
+          "text": "Extraordinary work! Put me down for a front-row ticket when you hit television - and for heaven's sake, keep your shoulders back when Trevor Blake tries his cheap camera tricks.",
+          "voiceClipId": "vo_denise_defeat",
+          "backdropUrl": "./assets/v5/story/story_scout_breakthrough.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "From forty-two folding chairs in the rain to City Champion! Your Channel 7 boarding pass is stamped - seventy-eight thousand daytime viewers are about to learn your name!",
+          "voiceClipId": "vo_max_match_win_3",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/story/story_scout_breakthrough.webp"
+        },
+        {
+          "speaker": "producer_sam",
+          "speakerName": "Producer Sam",
+          "speakerRole": "Backstage Showrunner",
+          "text": "Act II is unlocked on your Tour Trunk! Grab your Lucky Charms - Trevor '14-Day' Blake is already hogging the makeup mirror at Studio B.",
+          "voiceClipId": "vo_sam_1",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_act1_climax_loss",
+      "kind": "REDEMPTION_BEAT",
+      "title": "The 3 AM Satellite Detour",
+      "locationSubhead": "Channel 7 Parking Lot - Act II Redemption Entry",
+      "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp",
+      "featuredChallengerId": "denise_park",
+      "beats": [
+        {
+          "speaker": "denise_park",
+          "speakerName": "Denise Park",
+          "speakerRole": "Retired AP History Legend",
+          "text": "Class dismissed - by a razor-thin margin! Take this red-penciled scouting card anyway; Channel 7 needs someone with actual substance.",
+          "voiceClipId": "vo_denise_win",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp"
+        },
+        {
+          "speaker": "producer_sam",
+          "speakerName": "Producer Sam",
+          "speakerRole": "Backstage Showrunner",
+          "text": "No dead ends here! I traded three favors to land you Channel 7's 3 AM Infomercial-Slot Scramble. Claw out of the graveyard shift and hijack Trevor's daytime ratings anyway!",
+          "voiceClipId": "vo_sam_6",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_trevor_turf_intro",
+      "kind": "STAGE_WALKOUT",
+      "title": "Live After the Noon Weather",
+      "locationSubhead": "Channel 7 Studio B - 78,000 Watching Live",
+      "backdropUrl": "./assets/v5/venues/tier3_channel7.webp",
+      "featuredChallengerId": "trevor_blake",
+      "beats": [
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Seventy-eight thousand lunch breaks just stopped chewing! Welcome to Channel 7 Studio B, where studio brass is blazing and the board runs Tug-of-War Territory Turf!",
+          "voiceClipId": "vo_max_board_welcome_1",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier3_channel7.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Here is the turf twist: every tile you claim paints studio territory in your color. Hold the majority of the board when the clock hits zero and bank a massive +500 Territory Bonus!",
+          "voiceClipId": "vo_max_stage_sweep_1",
+          "hostPose": "welcome",
+          "backdropUrl": "./assets/v5/venues/tier3_channel7.webp"
+        },
+        {
+          "speaker": "trevor_blake",
+          "speakerName": "Trevor \"14-Day\" Blake",
+          "speakerRole": "14-Day Regional TV Streak Holder",
+          "text": "Fourteen straight afternoons on Channel 7, baby! Wave to Oakridge before the commercial break - my smile owns more square footage in this studio than the weather map.",
+          "voiceClipId": "vo_trevor_walkout",
+          "backdropUrl": "./assets/v5/venues/tier3_channel7.webp"
+        }
+      ],
+      "choices": [
+        {
+          "attitude": "RUTHLESS_CONFIDENCE",
+          "label": "Enjoy the noon weather - a cold front just arrived.",
+          "playerSpokenText": "Hope the Channel 7 weatherman warned you, Trevor - I'm claiming every column on this floor.",
+          "rivalReplyText": "Ooh, studio crowd went 'oooooh'! Somebody get me extra powder, we're going viral before 1 PM!",
+          "rivalReplyVoiceId": "vo_trevor_reply_bold",
+          "hostReplyText": "Pure daytime television electricity! Claim that turf!",
+          "hostReplyVoiceId": "vo_max_double_down_1",
+          "rivalAffinityDelta": -12,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 16
+          }
+        },
+        {
+          "attitude": "WARM_RESPECT",
+          "label": "You built this audience - let's earn their cheers.",
+          "playerSpokenText": "You're the reason seventy-eight thousand people tune in at lunch, Trevor. Let's give them a clean war.",
+          "rivalReplyText": "Wait, stop saying nice things on live TV! You're messing up my villain edit!",
+          "rivalReplyVoiceId": "vo_trevor_reply_respect",
+          "hostReplyText": "Breaking news: Trevor Blake almost blushed through bronze stage makeup!",
+          "hostReplyVoiceId": "vo_max_board_welcome_2",
+          "rivalAffinityDelta": 16,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 14
+          }
+        },
+        {
+          "attitude": "SHARP_WIT",
+          "label": "Is hairspray taxed separately from the $8,000 purse?",
+          "playerSpokenText": "Quick network accounting question: does your hairspray budget come out of my $8,000 winner's check?",
+          "rivalReplyText": "Hey, this volume is an investment in broadcast journalism! Wait till I steal your turf!",
+          "rivalReplyVoiceId": "vo_trevor_reply_witty",
+          "hostReplyText": "The cameraman is shaking from laughing! Lights hot - take your first tile!",
+          "hostReplyVoiceId": "vo_max_board_welcome_3",
+          "rivalAffinityDelta": 10,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 8,
+            "VELVET_SOCIETY": 10
+          }
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_act2_graveyard_redemption",
+      "kind": "REDEMPTION_BEAT",
+      "title": "Static, Coffee & Frankie on Speakerphone",
+      "locationSubhead": "Channel 7 Parking Lot - Satellite Van #4 (3:00 AM)",
+      "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp",
+      "featuredChallengerId": "frankie_russo",
+      "beats": [
+        {
+          "speaker": "producer_sam",
+          "speakerName": "Producer Sam",
+          "speakerRole": "Backstage Showrunner",
+          "text": "You're live between a miracle-mop commercial and 3 AM jazz. Defuse this Time-Bomb board in the satellite van and you're back in Studio B by lunchtime.",
+          "voiceClipId": "vo_sam_4",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp"
+        },
+        {
+          "speaker": "frankie_russo",
+          "speakerName": "Frankie \"Last Call\" Russo",
+          "speakerRole": "Brooklyn Ally on Speakerphone",
+          "text": "Yo, kid! Just finished wiping the bar in Oakridge and saw you on Channel 7's graveyard feed! Don't sweat Trevor's teeth - hammer Science and Arts, he folds like a cheap lawn chair!",
+          "voiceClipId": "vo_frankie_ally_call",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp"
+        }
+      ],
+      "choices": [
+        {
+          "attitude": "RUTHLESS_CONFIDENCE",
+          "label": "Watch me hijack the morning news by sunrise.",
+          "playerSpokenText": "Keep the TV on behind the bar, Frankie. I'm burning through this satellite bracket before dawn.",
+          "rivalReplyText": "Atta kid! Whole neighborhood's staying up past last call for ya!",
+          "rivalReplyVoiceId": "vo_frankie_reply_bold",
+          "rivalAffinityDelta": 8,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 8,
+            "INDEPENDENT": 10
+          }
+        },
+        {
+          "attitude": "WARM_RESPECT",
+          "label": "Hearing Oakridge on the line means everything.",
+          "playerSpokenText": "Thanks for calling at 3 AM, Frankie. That scouting tip on Science and Arts just saved my week.",
+          "rivalReplyText": "Hey, Oakridge sticks together! Now go defuse that clock and get your daytime seat back.",
+          "rivalReplyVoiceId": "vo_frankie_reply_respect",
+          "rivalAffinityDelta": 16,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 16
+          }
+        },
+        {
+          "attitude": "SHARP_WIT",
+          "label": "Should I buy a miracle mop while I'm live?",
+          "playerSpokenText": "Honestly, if I sweep this van board, I'm ordering three miracle mops on the network tab.",
+          "rivalReplyText": "Hah! Send one to Brooklyn - the radiator leaked again. Go get 'em!",
+          "rivalReplyVoiceId": "vo_frankie_reply_witty",
+          "rivalAffinityDelta": 12,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 12,
+            "VELVET_SOCIETY": 6
+          }
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_apex_ratings_contract",
+      "kind": "GREEN_ROOM_CALL",
+      "title": "The Golden Dice Clause",
+      "locationSubhead": "Channel 7 Commercial Stage - 110,000 Watching",
+      "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp",
+      "beats": [
+        {
+          "speaker": "producer_sam",
+          "speakerName": "Producer Sam",
+          "speakerRole": "Backstage Showrunner",
+          "text": "Apex Network brass just slid a fresh Call Sheet under our dressing-room door. Nail a 2x Double Down dare on their Spotlight Roulette set and they'll pay $4,500 extra on top of the purse.",
+          "voiceClipId": "vo_sam_3",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Even sweeter: win this showcase and you unlock the Syndicate Golden Dice charm - boosting EVERY future Power Play wager payout by +25%!",
+          "voiceClipId": "vo_max_power_play_3",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_act2_spiral_intro",
+      "kind": "STAGE_WALKOUT",
+      "title": "Center of the Teleprompter",
+      "locationSubhead": "Channel 7 Studio B - 115,000 Watching Live",
+      "backdropUrl": "./assets/v5/venues/tier3_channel7.webp",
+      "featuredChallengerId": "trevor_blake",
+      "beats": [
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Over a hundred thousand viewers live for our Spiral Labyrinth broadcast! Start at the outer studio rim, wind inward through fogged corridors, and crack the blazing thousand-point Core!",
+          "voiceClipId": "vo_max_power_play_1",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier3_channel7.webp"
+        },
+        {
+          "speaker": "trevor_blake",
+          "speakerName": "Trevor \"14-Day\" Blake",
+          "speakerRole": "14-Day Regional TV Streak Holder",
+          "text": "Camera Two, stay tight on my jawline while I carve a straight path into that center jackpot. Try not to get dizzy out on the cheap outer tiles, rookie!",
+          "voiceClipId": "vo_trevor_trap_taunt",
+          "backdropUrl": "./assets/v5/venues/tier3_channel7.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_denise_greenroom_call",
+      "kind": "GREEN_ROOM_CALL",
+      "title": "The Night-Shift Pop Quiz",
+      "locationSubhead": "UHF Studio 44, Newark - Overnight Repeater",
+      "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp",
+      "featuredChallengerId": "denise_park",
+      "beats": [
+        {
+          "speaker": "denise_park",
+          "speakerName": "Denise Park",
+          "speakerRole": "City Rival Turned Mentor",
+          "text": "Yes, I took the commuter train to Newark at midnight because I refused to watch Trevor Blake strut across television unchecked. Sit up straight - we're climbing a Pyramid Ascent comeback!",
+          "voiceClipId": "vo_denise_ally_call",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "When your toughest Tier 2 rival shows up in a Newark UHF studio to drill your timelines, you know this tournament just got personal!",
+          "voiceClipId": "vo_max_redemption_2",
+          "hostPose": "welcome",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp"
+        }
+      ],
+      "choices": [
+        {
+          "attitude": "RUTHLESS_CONFIDENCE",
+          "label": "Watch me tear down Trevor's set by Friday.",
+          "playerSpokenText": "Give me twenty minutes on this Pyramid board, Denise - by Friday Trevor won't have a streak left to brag about.",
+          "rivalReplyText": "Properly fierce! Just make sure your ambition remembers the dates of the Renaissance.",
+          "rivalReplyVoiceId": "vo_denise_reply_bold",
+          "rivalAffinityDelta": 4,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 10
+          }
+        },
+        {
+          "attitude": "WARM_RESPECT",
+          "label": "Thank you for making the trip, Ms. Park.",
+          "playerSpokenText": "You took a midnight train just to coach me out of Redemption? I'm never forgetting this, Denise.",
+          "rivalReplyText": "Good teachers never abandon a promising scholar mid-semester. Now go dismantle that daytime peacock!",
+          "rivalReplyVoiceId": "vo_denise_reply_respect",
+          "rivalAffinityDelta": 20,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 14,
+            "VELVET_SOCIETY": 8
+          }
+        },
+        {
+          "attitude": "SHARP_WIT",
+          "label": "Is Newark UHF officially on the AP syllabus?",
+          "playerSpokenText": "Tell me honestly: did you grade the station manager's grammar on the way through security?",
+          "rivalReplyText": "He wrote 'there studio' on a whiteboard, dear - I had no choice but to intervene in red ink!",
+          "rivalReplyVoiceId": "vo_denise_reply_witty",
+          "rivalAffinityDelta": 14,
+          "sponsorRepDelta": {
+            "VELVET_SOCIETY": 12
+          }
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_trevor_screw_ambush",
+      "kind": "STAGE_WALKOUT",
+      "title": "Sweeps Week Sabotage",
+      "locationSubhead": "Channel 7 Studio B - 165,000 Watching Live",
+      "backdropUrl": "./assets/v5/venues/tier3_channel7.webp",
+      "featuredChallengerId": "trevor_blake",
+      "beats": [
+        {
+          "speaker": "trevor_blake",
+          "speakerName": "Trevor \"14-Day\" Blake",
+          "speakerRole": "14-Day Regional TV Streak Holder",
+          "text": "Hey producers, zoom in tight! I checked your Career Stats backstage, found your absolute worst category, and my hand is resting right on my red SCREW RIVAL! dome!",
+          "voiceClipId": "vo_trevor_screw_taunt",
+          "backdropUrl": "./assets/v5/venues/tier3_channel7.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Sweeps Week pettiness at its peak! Remember: Trevor hates Science and Fine Arts - slam YOUR red dome on one of those tiles and steal his lunch money on live TV!",
+          "voiceClipId": "vo_max_screw_slammed_2",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier3_channel7.webp"
+        }
+      ],
+      "choices": [
+        {
+          "attitude": "RUTHLESS_CONFIDENCE",
+          "label": "Go ahead - watch me nail your trap and Screw you back.",
+          "playerSpokenText": "Drop your worst category on me, Trevor. I'll answer it clean and slam an Art History bomb straight back onto your podium.",
+          "rivalReplyText": "Ooh, the floor director just fainted from pure drama! Bring it, Sweeps Week!",
+          "rivalReplyVoiceId": "vo_trevor_reply_bold",
+          "hostReplyText": "Apex Network executives are weeping tears of Nielsen joy!",
+          "hostReplyVoiceId": "vo_max_screw_slammed_3",
+          "rivalAffinityDelta": -14,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 18
+          }
+        },
+        {
+          "attitude": "WARM_RESPECT",
+          "label": "Smart homework, Trevor - now brace for mine.",
+          "playerSpokenText": "Checking my career radar backstage is sharp gamesmanship, Trevor. Just don't assume I skipped studying yours.",
+          "rivalReplyText": "Wait - you studied MY stats?! Okay, slight sweat forming under the collar now.",
+          "rivalReplyVoiceId": "vo_trevor_reply_respect",
+          "hostReplyText": "Chess with buzzers! Territory Turf and Screw tokens live!",
+          "hostReplyVoiceId": "vo_max_board_welcome_2",
+          "rivalAffinityDelta": 10,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 12
+          }
+        },
+        {
+          "attitude": "SHARP_WIT",
+          "label": "Careful - slamming that button might smudge your tan.",
+          "playerSpokenText": "Hit the red dome gently, Trevor - wouldn't want spray-tan residue messing up Channel 7's circuitry.",
+          "rivalReplyText": "That is 100% organic Orlando sunlight, pal, and I'm about to bury you on live broadcast!",
+          "rivalReplyVoiceId": "vo_trevor_reply_witty",
+          "hostReplyText": "Shots fired across Studio B! Let the Sweeps Week battle begin!",
+          "hostReplyVoiceId": "vo_max_double_down_2",
+          "rivalAffinityDelta": 6,
+          "sponsorRepDelta": {
+            "VELVET_SOCIETY": 10,
+            "APEX_NETWORK": 8
+          }
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_velvet_salon_3_priya",
+      "kind": "STAGE_WALKOUT",
+      "title": "Midnight in the Glass Conservatory",
+      "locationSubhead": "Botanical Club Atrium - Secret Velvet Salon",
+      "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp",
+      "featuredChallengerId": "priya_nair",
+      "beats": [
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Orchids, moonlight, and Velvet X-Crossroads - where both diagonals pay double. And stepping across the conservatory tile in pressed surgical scrubs is Starlight Prime-Time's reigning ace, Dr. Priya Nair!",
+          "voiceClipId": "vo_max_power_play_2",
+          "hostPose": "welcome",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp"
+        },
+        {
+          "speaker": "priya_nair",
+          "speakerName": "Dr. Priya Nair",
+          "speakerRole": "ER Trauma Physician & Prime-Time Ace",
+          "text": "Just finished a twelve-hour Boston ER shift on four hours of sleep. Thought I'd relax by seeing whether the Oakridge sensation survives Velvet rules without a single lifeline.",
+          "voiceClipId": "vo_priya_walkout",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp"
+        }
+      ],
+      "choices": [
+        {
+          "attitude": "RUTHLESS_CONFIDENCE",
+          "label": "Save the stethoscope - your lead's about to flatline.",
+          "playerSpokenText": "Hope you brought caffeine, Doctor. I'm sweeping both Velvet diagonals before you finish checking my vitals.",
+          "rivalReplyText": "Bold diagnosis for someone who hasn't seen my recall speed in Science and Logic. Let's check your pulse.",
+          "rivalReplyVoiceId": "vo_priya_reply_bold",
+          "hostReplyText": "Ice-cold composure meeting unstoppable swagger under the glass dome!",
+          "hostReplyVoiceId": "vo_max_double_down_3",
+          "rivalAffinityDelta": -10,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 12,
+            "VELVET_SOCIETY": 10
+          }
+        },
+        {
+          "attitude": "WARM_RESPECT",
+          "label": "Twelve hours in trauma and still sharp? True respect.",
+          "playerSpokenText": "Walking off an ER shift straight into a midnight Velvet Salon takes superhuman focus, Dr. Nair. Honored to share this board.",
+          "rivalReplyText": "Thank you. Honestly, thirty seconds on a brass shot clock feels like a vacation compared to Friday night triage. Shall we?",
+          "rivalReplyVoiceId": "vo_priya_reply_respect",
+          "hostReplyText": "Genuine admiration between future prime-time titans!",
+          "hostReplyVoiceId": "vo_max_read_in_tip_2",
+          "rivalAffinityDelta": 20,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 10,
+            "VELVET_SOCIETY": 14
+          }
+        },
+        {
+          "attitude": "SHARP_WIT",
+          "label": "Do you solve Sunday crosswords in surgical ink too?",
+          "playerSpokenText": "Rumor says you finish Sunday crosswords in pen during coffee breaks - please tell me you at least blink occasionally.",
+          "rivalReplyText": "Once every ninety seconds, strictly between clues. Sharp ears - let's see if your buzzers match your wit.",
+          "rivalReplyVoiceId": "vo_priya_reply_witty",
+          "hostReplyText": "Two brilliant minds clashing by moonlight! Clear those diagonals!",
+          "hostReplyVoiceId": "vo_max_stage_sweep_2",
+          "rivalAffinityDelta": 14,
+          "sponsorRepDelta": {
+            "VELVET_SOCIETY": 18
+          }
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_trevor_hotmic_grudge",
+      "kind": "GREEN_ROOM_CALL",
+      "title": "Studio B After Sign-Off",
+      "locationSubhead": "Channel 7 Studio B - Work Lights Only",
+      "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp",
+      "featuredChallengerId": "trevor_blake",
+      "beats": [
+        {
+          "speaker": "trevor_blake",
+          "speakerName": "Trevor \"14-Day\" Blake",
+          "speakerRole": "14-Day Regional TV Streak Holder",
+          "text": "Cameras are off, studio's empty. Look - before this streak, I was selling discount mattresses at 2 AM in Orlando. I'm not giving up this desk without knowing you're the real deal. Beat me off-air and my vintage Hot Mic is yours.",
+          "voiceClipId": "vo_trevor_ally_call",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp"
+        },
+        {
+          "speaker": "producer_sam",
+          "speakerName": "Producer Sam",
+          "speakerRole": "Backstage Showrunner",
+          "text": "Trevor's Hot Mic adds +75 bonus heat to every hot-streak answer on your podium! Worth every ounce of off-air grit.",
+          "voiceClipId": "vo_sam_5",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp"
+        }
+      ],
+      "choices": [
+        {
+          "attitude": "RUTHLESS_CONFIDENCE",
+          "label": "Only room for one headliner on Channel 7.",
+          "playerSpokenText": "No hard feelings, Trevor, but prime-time doesn't hand out participation trophies. Let's run the board.",
+          "rivalReplyText": "Fair enough! Cold as studio AC - let's settle it under the work lights.",
+          "rivalReplyVoiceId": "vo_trevor_reply_bold",
+          "rivalAffinityDelta": -6,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 12
+          }
+        },
+        {
+          "attitude": "WARM_RESPECT",
+          "label": "You earned this desk from scratch - I respect the grind.",
+          "playerSpokenText": "From 2 AM mattress ads to fourteen straight days on Channel 7? You're an underdog too, Trevor. Let's play our hearts out.",
+          "rivalReplyText": "Man... nobody at Apex ever says that. Take my Hot Mic right now - and if you beat me tomorrow, go wreck prime-time for both of us.",
+          "rivalReplyVoiceId": "vo_trevor_reply_respect",
+          "rivalAffinityDelta": 22,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 14
+          },
+          "unlockCharmId": "trevors_hot_mic"
+        },
+        {
+          "attitude": "SHARP_WIT",
+          "label": "To be fair, your mattress pitch probably sold out.",
+          "playerSpokenText": "With a Broadcast White smile like yours, I bet Orlando ran completely out of queen-size pillow-tops.",
+          "rivalReplyText": "Ha! Moved forty-two Sertas in one weekend, pal! Alright - fire up the board!",
+          "rivalReplyVoiceId": "vo_trevor_reply_witty",
+          "rivalAffinityDelta": 14,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 8,
+            "APEX_NETWORK": 8
+          }
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_act2_regional_wildcard",
+      "kind": "REDEMPTION_BEAT",
+      "title": "Highway Broadcast Wildcard",
+      "locationSubhead": "Tri-State Mobile Studio Truck - 62,000 Watching",
+      "backdropUrl": "./assets/v5/venues/tier3_channel7.webp",
+      "featuredChallengerId": "trevor_blake",
+      "beats": [
+        {
+          "speaker": "producer_sam",
+          "speakerName": "Producer Sam",
+          "speakerRole": "Backstage Showrunner",
+          "text": "Live from a regional broadcast truck off the turnpike! Survive this Time-Bomb qualifier and you earn the Screw Shield charm - blocking one Rival Screw or Column Freeze every single match!",
+          "voiceClipId": "vo_sam_6",
+          "backdropUrl": "./assets/v5/venues/tier3_channel7.webp"
+        },
+        {
+          "speaker": "trevor_blake",
+          "speakerName": "Trevor \"14-Day\" Blake",
+          "speakerRole": "14-Day Regional TV Streak Holder",
+          "text": "Hey, if you claw out of a highway truck and win a Screw Shield, even I have to applaud. Good luck catching the fuse!",
+          "voiceClipId": "vo_trevor_screwed_react",
+          "backdropUrl": "./assets/v5/venues/tier3_channel7.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_trevor_spotlight_intro",
+      "kind": "STAGE_WALKOUT",
+      "title": "Day Fifteen: Spotlight Roulette",
+      "locationSubhead": "Channel 7 Studio B - 240,000 Watching Live",
+      "backdropUrl": "./assets/v5/venues/tier3_channel7.webp",
+      "featuredChallengerId": "trevor_blake",
+      "beats": [
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Two hundred and forty thousand viewers tuned in for Day Fifteen! Tonight's Championship Board runs full Spotlight Roulette - overhead searchlights spin wild and force dramatic tile jumps live on air!",
+          "voiceClipId": "vo_max_stage_sweep_3",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier3_channel7.webp"
+        },
+        {
+          "speaker": "trevor_blake",
+          "speakerName": "Trevor \"14-Day\" Blake",
+          "speakerRole": "14-Day Regional TV Streak Holder",
+          "text": "Fourteen straight days, twenty-five thousand dollars on the desk, and a ticket to National Prime-Time waiting backstage. Show me if Oakridge can dance when the spotlight spins!",
+          "voiceClipId": "vo_trevor_walkout",
+          "backdropUrl": "./assets/v5/venues/tier3_channel7.webp"
+        }
+      ],
+      "choices": [
+        {
+          "attitude": "RUTHLESS_CONFIDENCE",
+          "label": "Day Fifteen belongs to me - pack up your mug.",
+          "playerSpokenText": "Grab a cardboard box for your Channel 7 mug, Trevor. Your streak stops cold in twelve turns.",
+          "rivalReplyText": "Oh, the audience just gasped so loud the boom mic clipped! Let's spin that spotlight!",
+          "rivalReplyVoiceId": "vo_trevor_reply_bold",
+          "hostReplyText": "Daytime television history about to be written live!",
+          "hostReplyVoiceId": "vo_max_streak_4_2",
+          "rivalAffinityDelta": -10,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 16
+          }
+        },
+        {
+          "attitude": "WARM_RESPECT",
+          "label": "Fourteen days is iconic - let's make Day 15 unforgettable.",
+          "playerSpokenText": "Whatever the scoreboard says in ten minutes, nobody's topping this streak battle, Trevor.",
+          "rivalReplyText": "Appreciate that, champ-in-waiting. Now let's blow the roof off Channel 7!",
+          "rivalReplyVoiceId": "vo_trevor_reply_respect",
+          "hostReplyText": "Electric poise under blinding studio wattage! Roll Day Fifteen!",
+          "hostReplyVoiceId": "vo_max_board_welcome_1",
+          "rivalAffinityDelta": 18,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 16
+          }
+        },
+        {
+          "attitude": "SHARP_WIT",
+          "label": "Don't worry - I hear the Channel 7 tote bag is nice.",
+          "playerSpokenText": "Look on the bright side, Trevor: if I end the streak today, at least you've got fifteen Channel 7 tote bags.",
+          "rivalReplyText": "Hah! Actually they only give you ONE tote bag, which is criminal! Now watch me sweep!",
+          "rivalReplyVoiceId": "vo_trevor_reply_witty",
+          "hostReplyText": "Comedic gold right before a $25,000 showdown! Spotlight spinning!",
+          "hostReplyVoiceId": "vo_max_board_welcome_3",
+          "rivalAffinityDelta": 12,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 10,
+            "VELVET_SOCIETY": 8
+          }
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_trevor_streak_broken",
+      "kind": "ACT_CLIMAX",
+      "title": "Prime-Time Calls Your Name",
+      "locationSubhead": "Channel 7 Green Room - Trending Nationwide",
+      "backdropUrl": "./assets/v5/story/story_scout_breakthrough.webp",
+      "featuredChallengerId": "trevor_blake",
+      "beats": [
+        {
+          "speaker": "trevor_blake",
+          "speakerName": "Trevor \"14-Day\" Blake",
+          "speakerRole": "Former 14-Day TV Streak Champ",
+          "text": "Wait, my streak is actually over?! Hand me a tissue - and honestly, go crush Starlight Prime-Time so I can brag on every podcast that I only lost to The World's Smartest!",
+          "voiceClipId": "vo_trevor_defeat",
+          "backdropUrl": "./assets/v5/story/story_scout_breakthrough.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "The clip just hit five million views before the evening news! Grab your tuxedo - Starlight Broadcast Center booked you for Eight O'Clock Eastern, backed by a full prime-time symphony orchestra!",
+          "voiceClipId": "vo_max_match_win_2",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier4_primetime.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_trevor_streak_loss",
+      "kind": "REDEMPTION_BEAT",
+      "title": "Red-Eye to Prime-Time",
+      "locationSubhead": "Terminal B Airport Lounge - Coast-to-Coast Play-In",
+      "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp",
+      "featuredChallengerId": "trevor_blake",
+      "beats": [
+        {
+          "speaker": "trevor_blake",
+          "speakerName": "Trevor \"14-Day\" Blake",
+          "speakerRole": "15-Day Regional TV Streak Holder",
+          "text": "Day Fifteen in the books! Hey - keep that chin high, rookie. Half of Twitter is screaming for a rematch already.",
+          "voiceClipId": "vo_trevor_win",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp"
+        },
+        {
+          "speaker": "producer_sam",
+          "speakerName": "Producer Sam",
+          "speakerRole": "Backstage Showrunner",
+          "text": "That nail-biter went viral coast to coast! Starlight's producers gave us an emergency midnight Red-Eye Play-In at Terminal B - win through the Fog Spotlight and crash Eight O'Clock Prime-Time anyway!",
+          "voiceClipId": "vo_sam_6",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_redeye_playin",
+      "kind": "REDEMPTION_BEAT",
+      "title": "Fog Over the Tarmac",
+      "locationSubhead": "Terminal B Satellite Desk - 820,000 Live Streamers",
+      "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp",
+      "beats": [
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Midnight fog on the runway and Fog-of-War Spotlight on the board! Only the center tiles glow lit - every answer illuminates neighboring clues through the mist until your path to Prime-Time is clear!",
+          "voiceClipId": "vo_max_redemption_1",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_priya_primetime_walkout",
+      "kind": "STAGE_WALKOUT",
+      "title": "Eight O'Clock Eastern",
+      "locationSubhead": "Starlight Broadcast Center - 5.2 Million Watching Live",
+      "backdropUrl": "./assets/v5/venues/tier4_primetime.webp",
+      "featuredChallengerId": "priya_nair",
+      "beats": [
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Five point two million households coast to coast, sweeping jib cranes, and a full symphony brass overture! Welcome to Starlight Prime-Time - and tonight's sizzling twist: Gold Fever Contagion!",
+          "voiceClipId": "vo_max_streak_5_1",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier4_primetime.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "String answers into a hot streak and golden fever spreads straight into adjacent tiles, supercharging them with contagious 2x glow! Standing opposite you: Boston ER legend Dr. Priya Nair!",
+          "voiceClipId": "vo_max_double_down_3",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier4_primetime.webp"
+        },
+        {
+          "speaker": "priya_nair",
+          "speakerName": "Dr. Priya Nair",
+          "speakerRole": "ER Trauma Physician & Prime-Time Ace",
+          "text": "Oakridge to Starlight in one season - impressive vitals, challenger. Nothing personal, I just prefer fast buzzers, zero panic, and a surgical victory before the nine o'clock drama.",
+          "voiceClipId": "vo_priya_walkout",
+          "backdropUrl": "./assets/v5/venues/tier4_primetime.webp"
+        }
+      ],
+      "choices": [
+        {
+          "attitude": "RUTHLESS_CONFIDENCE",
+          "label": "Hope you prepped the ER - I'm bringing Gold Fever.",
+          "playerSpokenText": "Steady hands won't save you once my Gold Fever streak catches fire across this whole stage, Doctor.",
+          "rivalReplyText": "A fever spike on live television? Good thing I'm board-certified in cooling overheated challengers down.",
+          "rivalReplyVoiceId": "vo_priya_reply_bold",
+          "hostReplyText": "Five million couches just sat bolt upright! Prime-Time is LIVE!",
+          "hostReplyVoiceId": "vo_max_streak_4_1",
+          "rivalAffinityDelta": -10,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 18
+          }
+        },
+        {
+          "attitude": "WARM_RESPECT",
+          "label": "Facing the sharpest mind in America is why I came.",
+          "playerSpokenText": "You're the gold standard of prime-time, Dr. Nair. Let's give five million people a masterclass.",
+          "rivalReplyText": "Calm pulse, sharp eyes. Honestly, you'd hold up brilliantly on a Friday night trauma floor. Good luck.",
+          "rivalReplyVoiceId": "vo_priya_reply_respect",
+          "hostReplyText": "Pure class under ten-thousand-watt arc lamps! Let's ignite the board!",
+          "hostReplyVoiceId": "vo_max_board_welcome_2",
+          "rivalAffinityDelta": 18,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 16
+          }
+        },
+        {
+          "attitude": "SHARP_WIT",
+          "label": "Does health insurance cover getting Screwed on TV?",
+          "playerSpokenText": "Quick medical question before tip-off: is getting hit by a red SCREW RIVAL! buzzer covered in-network?",
+          "rivalReplyText": "Only if you survive the Science column first. Crisp bedside humor - let's begin!",
+          "rivalReplyVoiceId": "vo_priya_reply_witty",
+          "hostReplyText": "Even the symphonic conductor cracked a grin! Stage hot!",
+          "hostReplyVoiceId": "vo_max_board_welcome_3",
+          "rivalAffinityDelta": 12,
+          "sponsorRepDelta": {
+            "VELVET_SOCIETY": 12,
+            "INDEPENDENT": 8
+          }
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_act2_minefield_intro",
+      "kind": "GREEN_ROOM_CALL",
+      "title": "Four Buried Wagers",
+      "locationSubhead": "Starlight Studio One - 6.8 Million Watching",
+      "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp",
+      "beats": [
+        {
+          "speaker": "producer_sam",
+          "speakerName": "Producer Sam",
+          "speakerRole": "Backstage Showrunner",
+          "text": "Apex Network dropped fifty-five grand on the table for a prime-time stunt board: Power-Play Minefield! Four concealed Power-Play wagers are buried under those brass tiles.",
+          "voiceClipId": "vo_sam_3",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Uncover one, spin the brass wager dial, and stick the answer live to pocket an extra $18,000 Showman Dare bonus! Fortune favors the fearless.",
+          "voiceClipId": "vo_max_power_play_3",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_latenight_comedy_wildcard",
+      "kind": "REDEMPTION_BEAT",
+      "title": "Midnight Desk Comeback",
+      "locationSubhead": "Starlight Studio 6B - 3.1 Million Late-Night Viewers",
+      "backdropUrl": "./assets/v5/venues/tier4_primetime.webp",
+      "featuredChallengerId": "trevor_blake",
+      "beats": [
+        {
+          "speaker": "trevor_blake",
+          "speakerName": "Trevor \"14-Day\" Blake",
+          "speakerRole": "Guest Late-Night Rival",
+          "text": "Look who bumped the stand-up comedian off the midnight slot! Defuse this Time-Bomb board beside me and you're right back in Dr. Nair's prime-time crosshairs.",
+          "voiceClipId": "vo_trevor_ally_call",
+          "backdropUrl": "./assets/v5/venues/tier4_primetime.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Even when you stumble in prime time, America refuses to change the channel! Own this midnight comeback!",
+          "voiceClipId": "vo_max_redemption_2",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier4_primetime.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_priya_triage_match",
+      "kind": "STAGE_WALKOUT",
+      "title": "Triage Under Eight Million Eyes",
+      "locationSubhead": "Starlight Broadcast Center - 8.4 Million Live",
+      "backdropUrl": "./assets/v5/venues/tier4_primetime.webp",
+      "featuredChallengerId": "priya_nair",
+      "beats": [
+        {
+          "speaker": "priya_nair",
+          "speakerName": "Dr. Priya Nair",
+          "speakerRole": "ER Trauma Physician & Prime-Time Ace",
+          "text": "Pyramid Ascent at eight million viewers. Watch closely: I'm racing straight up the Biology and Logic flank before you even unlock row three.",
+          "voiceClipId": "vo_priya_trap_taunt",
+          "backdropUrl": "./assets/v5/venues/tier4_primetime.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Hint from your favorite host: Priya rarely watches Sports or Food television - steer the pyramid base there and watch her frown for the first time all season!",
+          "voiceClipId": "vo_max_chain_shatter_2",
+          "hostPose": "welcome",
+          "backdropUrl": "./assets/v5/venues/tier4_primetime.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_priya_icefire_intro",
+      "kind": "STAGE_WALKOUT",
+      "title": "Ice & Fire on Six Columns",
+      "locationSubhead": "Starlight Broadcast Center - 10.8 Million Live",
+      "backdropUrl": "./assets/v5/venues/tier4_primetime.webp",
+      "featuredChallengerId": "priya_nair",
+      "beats": [
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Welcome to your first sprawling SIX-COLUMN championship stage - and our dazzling Ice & Fire Columns twist! When a rival freezes your favorite lane solid, hunt down a blazing Flame tile!",
+          "voiceClipId": "vo_max_stage_sweep_2",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier4_primetime.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Nail that Flame tile to shatter the frost across the entire frozen column AND pocket a scorching +200 Thaw Bonus!",
+          "voiceClipId": "vo_max_chain_shatter_3",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier4_primetime.webp"
+        },
+        {
+          "speaker": "priya_nair",
+          "speakerName": "Dr. Priya Nair",
+          "speakerRole": "ER Trauma Physician & Prime-Time Ace",
+          "text": "Putting your strongest column in quarantine is standard triage, challenger. Show ten million people how fast you thaw under pressure.",
+          "voiceClipId": "vo_priya_screw_taunt",
+          "backdropUrl": "./assets/v5/venues/tier4_primetime.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_velvet_salon_4_alistair",
+      "kind": "STAGE_WALKOUT",
+      "title": "The Visitor from Oxford",
+      "locationSubhead": "Starlight Penthouse Library - Transatlantic Velvet Salon",
+      "backdropUrl": "./assets/v5/greenroom/greenroom_global.webp",
+      "featuredChallengerId": "alistair_finch",
+      "beats": [
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Fifty floors above the studio roar, the Velvet Society flew in a surprise transatlantic guest for a Fog-of-War exhibition: Oxford Classics Fellow Lord Alistair Finch - London's Tier 5 champion!",
+          "voiceClipId": "vo_max_power_play_1",
+          "hostPose": "welcome",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_global.webp"
+        },
+        {
+          "speaker": "alistair_finch",
+          "speakerName": "Lord Alistair Finch",
+          "speakerRole": "Bone-Dry Oxford Classics Fellow",
+          "text": "Do forgive me if I blink at American stage lighting; I still regard television as a loud passing fad. Still, rumors of a Brooklyn prodigy reached Oxford - let us clear a little fog together.",
+          "voiceClipId": "vo_alistair_walkout",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_global.webp"
+        }
+      ],
+      "choices": [
+        {
+          "attitude": "RUTHLESS_CONFIDENCE",
+          "label": "Save your scones - I'm sweeping London next.",
+          "playerSpokenText": "Enjoy the scouting trip, Alistair. Next week I'm flying across the Atlantic and taking your Rotunda too.",
+          "rivalReplyText": "Good heavens, colonials never do whisper, do they? Delightfully brash - let us see if your History survives the fog.",
+          "rivalReplyVoiceId": "vo_alistair_reply_bold",
+          "hostReplyText": "Atlantic sparks flying a whole Act early! Watch out for Alistair's Arts and History traps.",
+          "hostReplyVoiceId": "vo_max_double_down_2",
+          "rivalAffinityDelta": -10,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 14,
+            "VELVET_SOCIETY": 8
+          }
+        },
+        {
+          "attitude": "WARM_RESPECT",
+          "label": "An honor to test myself against Oxford's finest.",
+          "playerSpokenText": "Crossing an ocean just to share a candlelit Fog board? Truly honored, Lord Finch.",
+          "rivalReplyText": "Splendid manners! Perhaps the rumors understated you. Mind the Classical Literature tiles - I rarely miss them.",
+          "rivalReplyVoiceId": "vo_alistair_reply_respect",
+          "hostReplyText": "You just made a powerful friend ahead of Act III London!",
+          "hostReplyVoiceId": "vo_max_board_welcome_2",
+          "rivalAffinityDelta": 20,
+          "sponsorRepDelta": {
+            "VELVET_SOCIETY": 18,
+            "INDEPENDENT": 8
+          }
+        },
+        {
+          "attitude": "SHARP_WIT",
+          "label": "Wait till you see our Pop Culture questions, Lord Finch.",
+          "playerSpokenText": "No offense to ancient Greece, Alistair, but wait until a 1990s boy-band clue pops out of this fog.",
+          "rivalReplyText": "Dear me, what a barbaric threat! Though I confess I did once hear a Spice Girls record by accident.",
+          "rivalReplyVoiceId": "vo_alistair_reply_witty",
+          "hostReplyText": "Oxford dry wit meets Brooklyn cheek! Illuminate the Penthouse Fog!",
+          "hostReplyVoiceId": "vo_max_board_welcome_3",
+          "rivalAffinityDelta": 14,
+          "sponsorRepDelta": {
+            "VELVET_SOCIETY": 20
+          }
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_priya_sparring_call",
+      "kind": "GREEN_ROOM_CALL",
+      "title": "Grand Rounds in Dressing Room Four",
+      "locationSubhead": "Starlight Backstage - Before the National Finale",
+      "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp",
+      "featuredChallengerId": "priya_nair",
+      "beats": [
+        {
+          "speaker": "priya_nair",
+          "speakerName": "Dr. Priya Nair",
+          "speakerRole": "ER Trauma Physician & Prime-Time Ace",
+          "text": "Black coffee, two buzzers, and zero cameras before the National Finale. Grandmaster Viktor Volkov has held the World Crown three straight years - whoever boards that London flight has to be razor-sharp.",
+          "voiceClipId": "vo_priya_ally_call",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp"
+        },
+        {
+          "speaker": "producer_sam",
+          "speakerName": "Producer Sam",
+          "speakerRole": "Backstage Showrunner",
+          "text": "Win this backstage speed duel and Dr. Nair awards Priya's Adrenaline Patch - delivering a massive +120 clutch bonus whenever you lock in with five seconds or less!",
+          "voiceClipId": "vo_sam_2",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_tv.webp"
+        }
+      ],
+      "choices": [
+        {
+          "attitude": "RUTHLESS_CONFIDENCE",
+          "label": "Volkov can wait - I'm going through you first.",
+          "playerSpokenText": "I'm not flying to London to make friends, Priya. Deal the tiles and let's see who breaks first.",
+          "rivalReplyText": "Pure adrenaline, zero hesitation. Alright - show me championship speed.",
+          "rivalReplyVoiceId": "vo_priya_reply_bold",
+          "rivalAffinityDelta": -4,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 12
+          }
+        },
+        {
+          "attitude": "WARM_RESPECT",
+          "label": "Whoever wins tomorrow, Volkov won't see us coming.",
+          "playerSpokenText": "Training with you is the only way either of us catches Viktor Volkov in the Finale, Priya. Let's sharpen each other.",
+          "rivalReplyText": "Now THAT is the mind of a World Champion. Take my Adrenaline Patch right now - and let's still run this speed rack at full throttle!",
+          "rivalReplyVoiceId": "vo_priya_reply_respect",
+          "rivalAffinityDelta": 22,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 14,
+            "VELVET_SOCIETY": 8
+          },
+          "unlockCharmId": "priyas_adrenaline"
+        },
+        {
+          "attitude": "SHARP_WIT",
+          "label": "Is an Adrenaline Patch technically performance-enhancing?",
+          "playerSpokenText": "Just checking before legal shows up: is Priya's Adrenaline Patch approved by the International Trivia Board?",
+          "rivalReplyText": "Strictly espresso and steady nerves - completely legal on every continent. Now try to keep up!",
+          "rivalReplyVoiceId": "vo_priya_reply_witty",
+          "rivalAffinityDelta": 14,
+          "sponsorRepDelta": {
+            "VELVET_SOCIETY": 10,
+            "INDEPENDENT": 8
+          }
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_jfk_standby_wildcard",
+      "kind": "REDEMPTION_BEAT",
+      "title": "Atlantic Standby Wildcard",
+      "locationSubhead": "JFK International Gate 14 - 4.4 Million Watching",
+      "backdropUrl": "./assets/v5/greenroom/greenroom_global.webp",
+      "featuredChallengerId": "priya_nair",
+      "beats": [
+        {
+          "speaker": "producer_sam",
+          "speakerName": "Producer Sam",
+          "speakerRole": "Backstage Showrunner",
+          "text": "Our transatlantic flight boards in forty minutes, and Apex set up two mahogany podiums right beside Gate 14! Win here to crash the Starlight Finale - or even on a thriller loss, grab the standby seat to London's Redemption Play-In!",
+          "voiceClipId": "vo_sam_6",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_global.webp"
+        },
+        {
+          "speaker": "priya_nair",
+          "speakerName": "Dr. Priya Nair",
+          "speakerRole": "ER Trauma Physician & Prime-Time Ace",
+          "text": "Tug-of-War Turf beside an international boarding gate? Only on this show. Hold your nerve and claim the turf!",
+          "voiceClipId": "vo_priya_screwed_react",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_global.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_act2_climax_walkout",
+      "kind": "ACT_CLIMAX",
+      "title": "Fourteen Million Eyes: Ticket to London",
+      "locationSubhead": "Starlight Broadcast Center - 14,000,000 Live Coast-to-Coast",
+      "backdropUrl": "./assets/v5/venues/tier4_primetime.webp",
+      "featuredChallengerId": "priya_nair",
+      "beats": [
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Fourteen million viewers from Brooklyn to San Diego! Full symphony horns blasting, all SEVEN tactile formats live across six columns, Gold Fever Contagion blazing - and a first-class boarding pass to London's Grand Rotunda on the pedestal!",
+          "voiceClipId": "vo_max_ending_crown_1",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier4_primetime.webp"
+        },
+        {
+          "speaker": "producer_sam",
+          "speakerName": "Producer Sam",
+          "speakerRole": "Backstage Showrunner",
+          "text": "Quick backstage whisper in your ear: Oakridge Hall is packed wall-to-wall watching on a projector, Denise is grading your posture from row three, and Frankie already bet the bar tab on you!",
+          "voiceClipId": "vo_sam_1",
+          "backdropUrl": "./assets/v5/venues/tier4_primetime.webp"
+        },
+        {
+          "speaker": "priya_nair",
+          "speakerName": "Dr. Priya Nair",
+          "speakerRole": "ER Trauma Physician & Prime-Time Ace",
+          "text": "Six columns, a hundred thousand dollars, and the whole country watching. No holding back, no wasted seconds - let's find out who deserves to face Europe!",
+          "voiceClipId": "vo_priya_walkout",
+          "backdropUrl": "./assets/v5/venues/tier4_primetime.webp"
+        }
+      ],
+      "choices": [
+        {
+          "attitude": "RUTHLESS_CONFIDENCE",
+          "label": "London's already got my name on the marquee.",
+          "playerSpokenText": "Fourteen million people are about to watch a coronation, Priya. Keep the jet engines warm for London.",
+          "rivalReplyText": "Bold words under prime-time wattage! Let's see if your recall holds up across all seven formats!",
+          "rivalReplyVoiceId": "vo_priya_reply_bold",
+          "hostReplyText": "Thunderous brass fanfare! The National Prime-Time Finale is UNDERWAY!",
+          "hostReplyVoiceId": "vo_max_streak_5_2",
+          "rivalAffinityDelta": -8,
+          "sponsorRepDelta": {
+            "APEX_NETWORK": 20
+          }
+        },
+        {
+          "attitude": "WARM_RESPECT",
+          "label": "From Oakridge to Boston - let's give America a classic.",
+          "playerSpokenText": "Every mile from forty-two folding chairs led to this podium, Priya. Let's give fourteen million people a match they'll quote for years.",
+          "rivalReplyText": "I couldn't ask for a finer opponent under these lights. Steady breath - let's make television history.",
+          "rivalReplyVoiceId": "vo_priya_reply_respect",
+          "hostReplyText": "Goosebumps across four time zones! Fourteen turns for $100,000 and London!",
+          "hostReplyVoiceId": "vo_max_wedge_earned_2",
+          "rivalAffinityDelta": 22,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 20
+          }
+        },
+        {
+          "attitude": "SHARP_WIT",
+          "label": "If I win, I'm finally buying Oakridge a new coffee urn.",
+          "playerSpokenText": "Tell Brooklyn I promised them a brand-new coffee urn out of this $100,000 check - so no pressure, Doctor.",
+          "rivalReplyText": "Ha! Now I actually feel guilty trying to block Oakridge's caffeine upgrade. Almost. Let's play!",
+          "rivalReplyVoiceId": "vo_priya_reply_witty",
+          "hostReplyText": "America's favorite underdog just stole the room! Fire up the six-column gauntlet!",
+          "hostReplyVoiceId": "vo_max_board_welcome_1",
+          "rivalAffinityDelta": 15,
+          "sponsorRepDelta": {
+            "INDEPENDENT": 12,
+            "VELVET_SOCIETY": 12
+          }
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_act2_climax_win",
+      "kind": "ACT_CLIMAX",
+      "title": "Passport Stamped: London Next",
+      "locationSubhead": "Starlight VIP Departure Lounge - Act II Victory",
+      "backdropUrl": "./assets/v5/venues/tier5_london.webp",
+      "featuredChallengerId": "priya_nair",
+      "beats": [
+        {
+          "speaker": "priya_nair",
+          "speakerName": "Dr. Priya Nair",
+          "speakerRole": "ER Trauma Physician & Prime-Time Ace",
+          "text": "You out-calmed an ER surgeon in front of fourteen million people! Take that transatlantic boarding pass, go give Lord Alistair Finch a proper headache in London, and keep my phone number handy for Cairo!",
+          "voiceClipId": "vo_priya_defeat",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_global.webp"
+        },
+        {
+          "speaker": "max_sterling",
+          "speakerName": "Max Sterling",
+          "speakerRole": "Host & Showrunner",
+          "text": "Forty-two folding chairs in the rain... to National Prime-Time Champion! Pack your Tour Trunk and your sharpest Lucky Charms - Act III opens inside London's marble Grand Rotunda, with thirty-four million global viewers waiting!",
+          "voiceClipId": "vo_max_match_win_3",
+          "hostPose": "hype",
+          "backdropUrl": "./assets/v5/venues/tier5_london.webp"
+        }
+      ]
+    },
+    {
+      "sceneId": "scene_act2_climax_loss",
+      "kind": "REDEMPTION_BEAT",
+      "title": "Standby Boarding for Heathrow",
+      "locationSubhead": "JFK Departure Gate -> London Redemption Circuit",
+      "backdropUrl": "./assets/v5/greenroom/greenroom_global.webp",
+      "featuredChallengerId": "priya_nair",
+      "beats": [
+        {
+          "speaker": "priya_nair",
+          "speakerName": "Dr. Priya Nair",
+          "speakerRole": "ER Trauma Physician & National Champ",
+          "text": "What a war! You forced my pulse above ninety for the first time in three years. Don't unpack that Tour Trunk - I have a feeling London hasn't seen the last of you.",
+          "voiceClipId": "vo_priya_win",
+          "backdropUrl": "./assets/v5/greenroom/greenroom_global.webp"
+        },
+        {
+          "speaker": "producer_sam",
+          "speakerName": "Producer Sam",
+          "speakerRole": "Backstage Showrunner",
+          "text": "Not even close to over! Fourteen million viewers flooded the global poll demanding you on the plane - grab this crimson boarding pass for London's International Redemption Wildcard and crash Act III from the undercard!",
+          "voiceClipId": "vo_sam_6",
+          "backdropUrl": "./assets/v5/venues/tier5_london.webp"
+        }
+      ]
+    }
+  ]
+}
