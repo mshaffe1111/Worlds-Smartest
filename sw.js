@@ -5,8 +5,8 @@
  * Zero hardcoded leading-slash paths — every URL derives from registration.scope
  * ============================================================================ */
 
-const SHELL_CACHE = 'ws-meridian-shell-v5';
-const DATA_CACHE = 'ws-meridian-data-v5';
+const SHELL_CACHE = 'ws-meridian-shell-v5-r2';
+const DATA_CACHE = 'ws-meridian-data-v5-r2';
 const VALID_CACHES = new Set([SHELL_CACHE, DATA_CACHE]);
 
 const NAVIGATION_TIMEOUT_MS = 2500;
@@ -625,7 +625,11 @@ async function handleNavigationRequest(request) {
   const rootHref = resolveScopeUrl('./');
 
   try {
-    const networkResponse = await fetchWithTimeout(request, undefined, NAVIGATION_TIMEOUT_MS);
+    const networkResponse = await fetchWithTimeout(
+      request,
+      { cache: 'no-store' },
+      NAVIGATION_TIMEOUT_MS,
+    );
     if (networkResponse && networkResponse.status === 200) {
       const contentType = (networkResponse.headers.get('content-type') || '').toLowerCase();
       if (contentType.includes('text/html')) {
