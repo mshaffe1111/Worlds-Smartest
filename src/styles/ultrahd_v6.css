@@ -2225,10 +2225,12 @@ body:has(#ui-root.v6-ultrahd-root),
   }
 
   .v6-hub-header-block {
+    display: contents;
+  }
+
+  .v6-hub-screen .v6-topbar {
     grid-column: 1 / -1;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+    grid-row: 1;
   }
 
   .v6-hub-marquee {
@@ -2239,6 +2241,8 @@ body:has(#ui-root.v6-ultrahd-root),
     grid-column: 1;
     grid-row: 2;
     align-self: start;
+    justify-self: start;
+    max-width: 100%;
     z-index: 2;
     padding: 4px 8px;
     border-radius: 6px;

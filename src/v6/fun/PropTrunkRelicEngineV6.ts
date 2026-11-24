@@ -845,9 +845,51 @@ function ensurePropTrunkStyles(): void {
   overflow: hidden;
 }
 .v6tr-item-card svg {
-  width: clamp(18px, 3.2dvh, 28px);
-  height: clamp(18px, 3.2dvh, 28px);
+  width: clamp(16px, 2.8dvh, 24px);
+  height: clamp(16px, 2.8dvh, 24px);
   flex-shrink: 0;
+}
+.v6tr-root.v6tr-landscape .v6tr-item-card svg {
+  display: none;
+}
+.v6tr-root.v6tr-landscape .v6tr-sub {
+  -webkit-line-clamp: 1;
+}
+.v6tr-item-name {
+  font-size: clamp(9.5px, 1.55dvh, 10.5px);
+  font-weight: 900;
+  line-height: 1.08;
+  color: #ffffff;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.v6tr-item-eff {
+  font-size: clamp(8px, 1.35dvh, 9px);
+  color: #ead0d8;
+  line-height: 1.1;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.v6tr-root.v6tr-landscape .v6tr-item-name,
+.v6tr-root.v6tr-landscape .v6tr-item-eff {
+  -webkit-line-clamp: 1;
+}
+.v6tr-root.v6tr-landscape {
+  padding: 5px 10px !important;
+  gap: 4px !important;
+}
+.v6tr-root.v6tr-landscape .v6tr-shop-panel,
+.v6tr-root.v6tr-landscape .v6tr-shop-grid {
+  gap: 4px;
+}
+.v6tr-root.v6tr-landscape .v6tr-cta,
+.v6tr-root.v6tr-landscape .v6tr-reroll {
+  padding: 4px 10px;
+  font-size: 10.5px;
 }
 .v6tr-item-card.foil {
   --hx: 50%;
@@ -1057,10 +1099,10 @@ export function mountPropTrunkViewV6(
               const canBuy = state.bankrollCash >= r.costCash && state.equippedRelicIds.length < state.maxRelicSlots;
               return `
                 <div class="v6tr-item-card">
-                  <div style="font-size:8.5px;font-weight:900;color:#ffe082;letter-spacing:0.08em;">${r.rarity} RELIC</div>
+                  <div style="font-size:8px;font-weight:900;color:#ffe082;letter-spacing:0.06em;flex-shrink:0;">${r.rarity} RELIC</div>
                   ${renderRelicSvgIcon(r.meshArchetype, r.rarity)}
-                  <div style="font-size:10.5px;font-weight:900;line-height:1.12;">${escapeHtml(r.name)}</div>
-                  <div style="font-size:9px;color:#ead0d8;line-height:1.15;">${escapeHtml(r.shortEffect)}</div>
+                  <div class="v6tr-item-name">${escapeHtml(r.name)}</div>
+                  <div class="v6tr-item-eff">${escapeHtml(r.shortEffect)}</div>
                   <button type="button" class="v6tr-buy-btn" data-buy-relic="${r.relicId}" ${canBuy ? '' : 'disabled'}>BUY $${r.costCash}</button>
                 </div>
               `;
@@ -1071,9 +1113,9 @@ export function mountPropTrunkViewV6(
               const canBuy = state.bankrollCash >= f.costCash && state.ownedFoilCardIds.length < state.maxFoilSlots;
               return `
                 <div class="v6tr-item-card foil" data-foil-card="${f.cardId}">
-                  <div style="font-size:8.5px;font-weight:900;color:#9cecff;letter-spacing:0.1em;">HOLO FOIL TRICK</div>
-                  <div style="font-size:10.5px;font-weight:900;color:#ffffff;">${escapeHtml(f.name)}</div>
-                  <div style="font-size:9px;color:#d6e9ff;line-height:1.15;">${escapeHtml(f.shortEffect)}</div>
+                  <div style="font-size:8px;font-weight:900;color:#9cecff;letter-spacing:0.08em;flex-shrink:0;">HOLO FOIL TRICK</div>
+                  <div class="v6tr-item-name">${escapeHtml(f.name)}</div>
+                  <div class="v6tr-item-eff" style="color:#d6e9ff;">${escapeHtml(f.shortEffect)}</div>
                   <button type="button" class="v6tr-buy-btn" data-buy-foil="${f.cardId}" ${canBuy ? '' : 'disabled'}>TUCK $${f.costCash}</button>
                 </div>
               `;

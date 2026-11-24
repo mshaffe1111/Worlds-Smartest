@@ -899,6 +899,11 @@ const DIRECTOR_SHELL_CSS = `
   border-radius: 4px;
   background: rgba(0, 0, 0, 0.42);
 }
+@media (max-width: 440px) {
+  .v6-meta-pill {
+    display: none;
+  }
+}
 .v6-bar-btn {
   appearance: none;
   border: 1px solid var(--v6-hud-border, #d4a34a);

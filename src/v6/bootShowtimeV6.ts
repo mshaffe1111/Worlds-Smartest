@@ -182,17 +182,17 @@ const INTEGRATION_CSS = `
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
+  gap: 5px;
   min-width: 0;
   max-width: 100%;
-  flex: 1 1 260px;
+  flex: 1 1 220px;
 }
 
 .v6-board-score-chip {
   font-family: var(--v6-font-mono, monospace);
-  font-size: clamp(10px, 2.7vw, 11.5px);
+  font-size: clamp(9.5px, 2.5vw, 11.5px);
   font-weight: 800;
-  padding: 3px 7px;
+  padding: 3px 6px;
   border-radius: 8px;
   background: rgba(8, 10, 14, 0.88);
   border: 1px solid rgba(255, 255, 255, 0.16);
@@ -200,6 +200,7 @@ const INTEGRATION_CSS = `
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  flex: 0 1 auto;
   min-width: 0;
 }
 
@@ -217,10 +218,14 @@ const INTEGRATION_CSS = `
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  overflow: hidden;
   gap: 0;
 }
 
+.v6-board-rival-cameo > * > :nth-child(n+2),
 .v6-board-rival-cameo span,
 .v6-board-rival-cameo small,
 .v6-board-rival-cameo figcaption {
@@ -341,22 +346,32 @@ const INTEGRATION_CSS = `
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
+  gap: 4px;
+  min-width: 0;
+  width: 100%;
 }
 
 .v6-board-tactical-btn {
   appearance: none;
   border: 1.5px solid var(--v6-stage-border, #d8a547);
   border-radius: 9px;
-  padding: 6px 10px;
-  font-size: 10.5px;
+  padding: 5px 7px;
+  font-size: clamp(9px, 2.4vw, 10.5px);
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   cursor: pointer;
   color: #161006;
   background: var(--v6-grad-brass-rim, linear-gradient(180deg, #f5cd75, #b8842b));
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1 1 0;
+}
+
+.v6-board-tactical-btn[data-node-id] {
+  flex: 0 0 auto;
 }
 
 .v6-board-tactical-btn.is-secondary {

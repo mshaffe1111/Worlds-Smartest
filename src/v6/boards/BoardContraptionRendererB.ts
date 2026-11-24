@@ -1024,9 +1024,9 @@ export class BoardContraptionRendererB implements BoardRendererContractV6 {
         );
         const capMesh = new THREE.Mesh(capGeo, capMat);
         capMesh.rotation.x = -Math.PI / 2;
-        capMesh.position.y = def.family === 'ASTRAL_QUANTUM' ? 0.64 : 0.38;
+        capMesh.position.y = def.family === 'ASTRAL_QUANTUM' ? 0.39 : 0.125;
         capMesh.userData = { nodeId: node.nodeId };
-        group.add(capMesh);
+        gemMesh.add(capMesh);
       }
     }
 
