@@ -1,11 +1,12 @@
 /// <reference types="vite/client" />
 // ============================================================================
-// WORLD'S SMARTEST — Master Entry Point (`src/main.ts`)
-// Sovereign Modernism Three.js r172 PBR + Million-Scale Forge + 20hr Thriller
+// WORLD'S SMARTEST v4.0 — Master Prime-Time Entry Point (`src/main.ts`)
+// 7 Interactive Formats · Living Gimmick Boards · 42 Viewers -> 1.4B Live Tour
 // ============================================================================
 
 import './styles/sovereign.css';
-import { SovereignMasterController } from './ui/SovereignMasterController';
+import './styles/gameshow_v4.css';
+import { GameShowMasterController } from './v4/GameShowMasterController';
 
 interface OfflineSwClientModule {
   registerOfflineServiceWorker?: () => Promise<unknown>;
@@ -65,7 +66,7 @@ function bootstrap(): void {
     throw new Error('Missing #canvas-root, #vfx-canvas, or #ui-root mount elements in index.html.');
   }
 
-  const master = new SovereignMasterController(canvasRoot, vfxCanvas, uiRoot);
+  const master = new GameShowMasterController(canvasRoot, vfxCanvas, uiRoot);
 
   window.addEventListener('beforeunload', () => {
     master.dispose();
