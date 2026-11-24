@@ -1,0 +1,2448 @@
+/* ============================================================================
+   WORLD'S SMARTEST v6.0 — 3x Super Retina Ultra-HD Zero-Scroll Stylesheet
+   Tactile Broadcast Instrument · Rupert Neve / Nagra IV-S Hardware Craft
+   Monnaie de Paris Museum Vitrine · Proscenium Brass-and-Glass Architecture
+
+   HARD LAWS (NON-NEGOTIABLE):
+   1) ZERO vertical scroll on phones: 360x560, 390x660, 660x340, 844x390+
+   2) RAZOR-SHARP OS subpixel typography (0 SVG text, 0 text blur, 0 strokes)
+   3) ZERO backdrop-filter blur over WebGL2 (preserves 60fps PBR clarity)
+   4) ZERO generic Tailwind/SaaS cards or native browser range sliders
+   5) Dynamic StageAtmosphereThemeV6 + ColorVisionLensV6 + TextScale + ThumbDock
+   ============================================================================ */
+
+:root {
+  /* Typography Stacks (3x Super Retina Subpixel Precision) */
+  --v6-font-display: var(--v6-stage-font-heading, 'Cinzel', Georgia, 'Times New Roman', serif);
+  --v6-font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --v6-font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', 'SFMono-Regular', monospace;
+
+  /* Live Text Scale Multiplier (driven by data-v6-text-scale) */
+  --v6-text-scale: 1;
+
+  /* Dynamic Stage Atmosphere Tokens (injected from StageAtmosphereThemeV6.hudTheme) */
+  --v6-stage-surface: rgba(15, 11, 14, 0.9);
+  --v6-stage-surface-deep: rgba(8, 6, 9, 0.96);
+  --v6-stage-border: #cfa049;
+  --v6-stage-accent: #f3ca72;
+  --v6-stage-badge-bg: #3d0f1a;
+  --v6-stage-badge-text: #fff5de;
+
+  /* Machined Industrial Hardware Palette (Neve 80-Series & Nagra IV-S) */
+  --v6-chassis-dark: #101216;
+  --v6-chassis-mid: #1a1d23;
+  --v6-chassis-bezel: #272b33;
+  --v6-chassis-groove: #07080b;
+  --v6-brass-specular: #fff3c7;
+  --v6-brass-bright: #ecc264;
+  --v6-brass-mid: #b8842b;
+  --v6-brass-deep: #6b4812;
+  --v6-ivory: #f8f4ea;
+  --v6-ivory-muted: #c2bcaf;
+  --v6-ivory-dim: #848078;
+
+  /* Semantic Stage Signal Colors (overridden cleanly by ColorVisionLensV6) */
+  --v6-signal-good: #35d495;
+  --v6-signal-warn: #f4a638;
+  --v6-signal-danger: #e84c5c;
+  --v6-signal-info: #4ec4ff;
+  --v6-vu-amber: #ffbe55;
+  --v6-vu-peak: #ff4f4f;
+
+  /* Safe Area Insets */
+  --v6-safe-top: max(6px, env(safe-area-inset-top, 0px));
+  --v6-safe-right: max(8px, env(safe-area-inset-right, 0px));
+  --v6-safe-bottom: max(6px, env(safe-area-inset-bottom, 0px));
+  --v6-safe-left: max(8px, env(safe-area-inset-left, 0px));
+
+  /* Tactile Motion Curves */
+  --v6-ease-detent: cubic-bezier(0.2, 0.9, 0.25, 1);
+  --v6-ease-drawer: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Machined Surface Gradients (0 backdrop-filter) */
+  --v6-grad-brass-rim: linear-gradient(
+    180deg,
+    #fff4c8 0%,
+    #e6bc61 24%,
+    #9f6d20 54%,
+    #d6a648 84%,
+    #66410d 100%
+  );
+  --v6-grad-glass-plate: linear-gradient(
+    180deg,
+    rgba(28, 24, 29, 0.86) 0%,
+    rgba(14, 12, 17, 0.92) 52%,
+    rgba(9, 8, 12, 0.96) 100%
+  );
+  --v6-grad-brushed-metal: repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.018) 0px,
+      rgba(255, 255, 255, 0.018) 1px,
+      rgba(0, 0, 0, 0.04) 1px,
+      rgba(0, 0, 0, 0.04) 3px
+    ),
+    linear-gradient(180deg, #1f232a 0%, #14171c 56%, #0d0f13 100%);
+  --v6-grad-velvet-vitrine: radial-gradient(
+    ellipse at 50% 34%,
+    rgba(38, 22, 30, 0.65) 0%,
+    rgba(13, 9, 14, 0.92) 64%,
+    rgba(6, 5, 9, 0.98) 100%
+  );
+  --v6-shadow-plate: 0 6px 18px rgba(0, 0, 0, 0.56), inset 0 1px 0 rgba(255, 244, 204, 0.22);
+  --v6-shadow-inset: inset 0 2px 6px rgba(0, 0, 0, 0.78), inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* ============================================================================
+   1. DYNAMIC ACCESSIBILITY, TEXT SCALE, VISION LENS & HANDEDNESS TOKENS
+   ============================================================================ */
+
+#ui-root.v6-ultrahd-root[data-v6-text-scale='0.95'],
+.v6-ultrahd-root[data-v6-text-scale='0.95'] {
+  --v6-text-scale: 0.95;
+}
+
+#ui-root.v6-ultrahd-root[data-v6-text-scale='1'],
+.v6-ultrahd-root[data-v6-text-scale='1'] {
+  --v6-text-scale: 1;
+}
+
+#ui-root.v6-ultrahd-root[data-v6-text-scale='1.12'],
+.v6-ultrahd-root[data-v6-text-scale='1.12'] {
+  --v6-text-scale: 1.1;
+}
+
+/* Perceptually Verified Colorblind Stage Lenses (Okabe-Ito / Tol High-Contrast) */
+#ui-root.v6-ultrahd-root[data-v6-vision='DEUTERANOPIA'],
+.v6-ultrahd-root[data-v6-vision='DEUTERANOPIA'] {
+  --v6-signal-good: #42b8ff;
+  --v6-signal-warn: #f5cc38;
+  --v6-signal-danger: #f06e1e;
+  --v6-signal-info: #93b4ff;
+  --v6-vu-amber: #f7d458;
+  --v6-vu-peak: #ff7a22;
+}
+
+#ui-root.v6-ultrahd-root[data-v6-vision='PROTANOPIA'],
+.v6-ultrahd-root[data-v6-vision='PROTANOPIA'] {
+  --v6-signal-good: #52c6ff;
+  --v6-signal-warn: #ffd54a;
+  --v6-signal-danger: #d68d1a;
+  --v6-signal-info: #89a8ff;
+  --v6-vu-amber: #ffe066;
+  --v6-vu-peak: #e09a28;
+}
+
+#ui-root.v6-ultrahd-root[data-v6-vision='TRITANOPIA'],
+.v6-ultrahd-root[data-v6-vision='TRITANOPIA'] {
+  --v6-signal-good: #3ee2d8;
+  --v6-signal-warn: #ff9f8e;
+  --v6-signal-danger: #ff476c;
+  --v6-signal-info: #62e3e8;
+  --v6-vu-amber: #ff9c87;
+  --v6-vu-peak: #ff3a66;
+}
+
+/* ============================================================================
+   2. HARD-LOCKED ZERO-SCROLL VIEWPORT & ULTRA-HD TYPOGRAPHY LAW
+   ============================================================================ */
+
+html:has(#ui-root.v6-ultrahd-root),
+body:has(#ui-root.v6-ultrahd-root),
+#app:has(#ui-root.v6-ultrahd-root) {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#ui-root.v6-ultrahd-root,
+.v6-ultrahd-root {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  max-width: 100vw !important;
+  max-height: 100dvh !important;
+  overflow: hidden !important;
+  pointer-events: none;
+  z-index: 30;
+  font-family: var(--v6-font-ui);
+  color: var(--v6-ivory);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+  font-kerning: normal;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.v6-ultrahd-root *,
+.v6-ultrahd-root *::before,
+.v6-ultrahd-root *::after {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.v6-screen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: var(--v6-safe-top) var(--v6-safe-right) var(--v6-safe-bottom) var(--v6-safe-left);
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 200ms var(--v6-ease-detent);
+}
+
+.v6-screen.is-hidden {
+  opacity: 0;
+  pointer-events: none !important;
+  visibility: hidden;
+}
+
+.v6-interactive {
+  pointer-events: auto;
+}
+
+.v6-tabular {
+  font-family: var(--v6-font-mono);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.v6-svg-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ============================================================================
+   3. SHARED INDUSTRIAL HARDWARE PRIMITIVES (BEVELED BRASS, LEDS, PILLS)
+   ============================================================================ */
+
+.v6-topbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-height: clamp(32px, 5dvh, 42px);
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  pointer-events: auto;
+  z-index: 4;
+}
+
+.v6-topbar-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.v6-hardware-pill {
+  appearance: none;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: clamp(30px, 4.4dvh, 36px);
+  padding: 0 clamp(8px, 2vw, 13px);
+  border-radius: 4px;
+  border: 1px solid color-mix(in srgb, var(--v6-stage-border) 68%, #2a2216);
+  background: var(--v6-grad-glass-plate);
+  color: var(--v6-ivory);
+  font-family: var(--v6-font-mono);
+  font-size: calc(clamp(10px, 1.55vw, 11.5px) * var(--v6-text-scale));
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow:
+    0 3px 10px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 245, 210, 0.24),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.65);
+  transition: transform 90ms var(--v6-ease-detent), border-color 140ms ease, color 140ms ease;
+}
+
+.v6-hardware-pill:hover {
+  border-color: var(--v6-stage-accent);
+  color: var(--v6-brass-specular);
+}
+
+.v6-hardware-pill:active {
+  transform: translateY(1px);
+  box-shadow:
+    0 1px 4px rgba(0, 0, 0, 0.6),
+    inset 0 2px 5px rgba(0, 0, 0, 0.65);
+}
+
+.v6-hardware-pill.is-active {
+  border-color: var(--v6-stage-accent);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--v6-stage-badge-bg) 82%, #24190c) 0%,
+    rgba(15, 11, 12, 0.96) 100%
+  );
+  color: var(--v6-stage-accent);
+}
+
+.v6-led-jewel {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: #3d424b;
+  border: 1px solid rgba(0, 0, 0, 0.85);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.35);
+}
+
+.v6-led-jewel.is-on {
+  background: var(--v6-signal-good);
+  box-shadow:
+    0 0 8px color-mix(in srgb, var(--v6-signal-good) 75%, transparent),
+    inset 0 1px 1px rgba(255, 255, 255, 0.7);
+}
+
+.v6-led-jewel.is-amber {
+  background: var(--v6-signal-warn);
+  box-shadow:
+    0 0 8px color-mix(in srgb, var(--v6-signal-warn) 75%, transparent),
+    inset 0 1px 1px rgba(255, 255, 255, 0.65);
+}
+
+.v6-led-jewel.is-danger {
+  background: var(--v6-signal-danger);
+  box-shadow:
+    0 0 9px color-mix(in srgb, var(--v6-signal-danger) 85%, transparent),
+    inset 0 1px 1px rgba(255, 255, 255, 0.6);
+}
+
+/* Machined Beveled Brass-and-Glass Action Plate */
+.v6-brass-plate {
+  appearance: none;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: clamp(7px, 1.3dvh, 11px) clamp(10px, 2.2vw, 14px);
+  border-radius: 5px;
+  border: 1px solid color-mix(in srgb, var(--v6-stage-border) 74%, #3d2c12);
+  background: var(--v6-grad-glass-plate);
+  color: var(--v6-ivory);
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow:
+    0 5px 14px rgba(0, 0, 0, 0.56),
+    inset 0 1px 0 rgba(255, 244, 206, 0.28),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.75);
+  transition:
+    transform 95ms var(--v6-ease-detent),
+    border-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.v6-brass-plate::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 232, 168, 0.11);
+  pointer-events: none;
+}
+
+.v6-brass-plate:hover {
+  border-color: var(--v6-stage-accent);
+  box-shadow:
+    0 7px 20px rgba(0, 0, 0, 0.68),
+    0 0 0 1px color-mix(in srgb, var(--v6-stage-accent) 32%, transparent),
+    inset 0 1px 0 rgba(255, 248, 222, 0.44);
+}
+
+.v6-brass-plate:active {
+  transform: translateY(1px);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.65),
+    inset 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.v6-brass-plate--hero {
+  border-width: 1.5px;
+  border-color: var(--v6-stage-accent);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--v6-stage-badge-bg) 88%, #3c260a) 0%,
+    color-mix(in srgb, var(--v6-stage-surface-deep) 88%, #1e1307) 100%
+  );
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.68),
+    0 0 22px color-mix(in srgb, var(--v6-stage-accent) 22%, transparent),
+    inset 0 1px 0 rgba(255, 248, 214, 0.48),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.68);
+}
+
+.v6-brass-plate--hero::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--v6-grad-brass-rim);
+}
+
+.v6-plate-title {
+  font-family: var(--v6-font-display);
+  font-size: calc(clamp(11.5px, 1.85vw, 14px) * var(--v6-text-scale));
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.15;
+  color: var(--v6-ivory);
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.v6-brass-plate--hero .v6-plate-title {
+  font-size: calc(clamp(13px, 2.2vw, 16px) * var(--v6-text-scale));
+  color: var(--v6-brass-specular);
+}
+
+.v6-plate-sub {
+  font-family: var(--v6-font-mono);
+  font-size: calc(clamp(9.5px, 1.35vw, 11px) * var(--v6-text-scale));
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  line-height: 1.15;
+  color: var(--v6-ivory-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.v6-plate-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.v6-plate-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(24px, 3.6vw, 30px);
+  height: clamp(24px, 3.6vw, 30px);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.42);
+  border: 1px solid color-mix(in srgb, var(--v6-stage-border) 48%, transparent);
+  color: var(--v6-stage-accent);
+  font-size: clamp(13px, 2vw, 16px);
+  flex-shrink: 0;
+}
+
+.v6-plate-tag {
+  font-family: var(--v6-font-mono);
+  font-size: calc(clamp(9px, 1.25vw, 10.5px) * var(--v6-text-scale));
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--v6-stage-badge-bg) 85%, #000);
+  color: var(--v6-stage-badge-text);
+  border: 1px solid color-mix(in srgb, var(--v6-stage-border) 55%, transparent);
+  flex-shrink: 0;
+}
+
+/* ============================================================================
+   4. GRAND LOBBY HUB V6 (TRANSPARENT PROSCENIUM + 10-STAGE CAROUSEL DRAWER)
+   ============================================================================ */
+
+.v6-hub-screen {
+  justify-content: space-between;
+  background:
+    linear-gradient(180deg, rgba(6, 5, 9, 0.72) 0%, rgba(6, 5, 9, 0) 22%),
+    linear-gradient(0deg, rgba(6, 5, 9, 0.9) 0%, rgba(6, 5, 9, 0.52) 34%, rgba(6, 5, 9, 0) 54%);
+}
+
+.v6-hub-header-block {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(3px, 0.7dvh, 7px);
+  width: 100%;
+}
+
+.v6-hub-marquee {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  pointer-events: none;
+  padding: 2px 8px 0;
+}
+
+.v6-hub-eyebrow {
+  font-family: var(--v6-font-mono);
+  font-size: calc(clamp(9px, 1.3vw, 11px) * var(--v6-text-scale));
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--v6-stage-accent);
+}
+
+.v6-hub-wordmark {
+  margin: 0;
+  font-family: var(--v6-font-display);
+  font-size: calc(clamp(20px, 4.4vw, 38px) * var(--v6-text-scale));
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  line-height: 1.05;
+  color: var(--v6-ivory);
+  text-transform: uppercase;
+  text-shadow: 0 3px 16px rgba(0, 0, 0, 0.85);
+}
+
+.v6-hub-stage-ribbon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+  padding: 2px 10px;
+  border-top: 1px solid color-mix(in srgb, var(--v6-stage-border) 55%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--v6-stage-border) 35%, transparent);
+  font-family: var(--v6-font-mono);
+  font-size: calc(clamp(9.5px, 1.4vw, 11px) * var(--v6-text-scale));
+  letter-spacing: 0.08em;
+  color: var(--v6-ivory-muted);
+}
+
+.v6-hub-stage-ribbon strong {
+  color: var(--v6-stage-accent);
+  font-weight: 700;
+}
+
+/* Open 3D Stage Aperture (pointer-events pass-through to live 3D podium!) */
+.v6-hub-stage-aperture {
+  flex: 1 1 auto;
+  min-height: 12dvh;
+  pointer-events: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+/* Bottom Brass-and-Glass Launch Console */
+.v6-hub-deck {
+  flex: 0 0 auto;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(5px, 0.9dvh, 8px);
+  pointer-events: auto;
+}
+
+.v6-hub-telemetry-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: rgba(9, 8, 13, 0.86);
+  border-top: 1px solid color-mix(in srgb, var(--v6-stage-border) 48%, transparent);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-family: var(--v6-font-mono);
+  font-size: calc(clamp(9.5px, 1.35vw, 11px) * var(--v6-text-scale));
+  color: var(--v6-ivory-muted);
+}
+
+.v6-hub-telemetry-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.v6-hub-telemetry-item strong {
+  color: var(--v6-stage-accent);
+  font-weight: 700;
+}
+
+.v6-hub-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(5px, 0.85dvh, 8px);
+}
+
+.v6-hub-actions-grid .v6-brass-plate--hero {
+  grid-column: 1 / -1;
+}
+
+.v6-hub-actions-grid .v6-plate-wide {
+  grid-column: 1 / -1;
+}
+
+/* One-Handed Thumb Dock Ergonomics */
+.v6-ultrahd-root[data-v6-thumb='LEFT_HAND'] .v6-hub-deck {
+  margin-left: 0;
+  margin-right: auto;
+  max-width: min(92vw, 680px);
+}
+
+.v6-ultrahd-root[data-v6-thumb='RIGHT_HAND'] .v6-hub-deck {
+  margin-left: auto;
+  margin-right: 0;
+  max-width: min(92vw, 680px);
+}
+
+/* 10-Stage World & Episode Carousel Drawer (Zero-Scroll!) */
+.v6-world-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: var(--v6-safe-top) var(--v6-safe-right) var(--v6-safe-bottom) var(--v6-safe-left);
+  background: rgba(5, 5, 9, 0.72);
+  pointer-events: auto;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 180ms var(--v6-ease-drawer), visibility 180ms;
+}
+
+.v6-world-drawer-backdrop.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.v6-world-drawer {
+  width: 100%;
+  max-width: 920px;
+  max-height: calc(100dvh - var(--v6-safe-top) - var(--v6-safe-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: clamp(6px, 1.1dvh, 10px);
+  padding: clamp(10px, 1.6dvh, 16px) clamp(10px, 2vw, 18px);
+  border-radius: 6px;
+  border: 1.5px solid var(--v6-stage-border);
+  background: var(--v6-grad-brushed-metal);
+  box-shadow:
+    0 20px 56px rgba(0, 0, 0, 0.85),
+    inset 0 1px 0 rgba(255, 244, 200, 0.28);
+  transform: translateY(18px);
+  transition: transform 220ms var(--v6-ease-drawer);
+  overflow: hidden;
+}
+
+.v6-world-drawer-backdrop.is-open .v6-world-drawer {
+  transform: translateY(0);
+}
+
+.v6-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: clamp(5px, 0.9dvh, 8px);
+}
+
+.v6-drawer-title {
+  margin: 0;
+  font-family: var(--v6-font-display);
+  font-size: calc(clamp(13px, 2.2vw, 17px) * var(--v6-text-scale));
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  color: var(--v6-stage-accent);
+  text-transform: uppercase;
+}
+
+.v6-world-stage-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(10px, 2.2vw, 16px);
+  padding: clamp(9px, 1.5dvh, 14px);
+  border-radius: 5px;
+  border: 1px solid color-mix(in srgb, var(--v6-stage-border) 72%, #2a241b);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--v6-stage-surface) 94%, #000) 0%,
+    rgba(10, 10, 14, 0.96) 100%
+  );
+  box-shadow: var(--v6-shadow-inset);
+}
+
+.v6-world-crest-frame {
+  width: clamp(56px, 12vw, 84px);
+  height: clamp(56px, 12vw, 84px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--v6-stage-accent);
+  background: radial-gradient(
+    circle at 35% 30%,
+    color-mix(in srgb, var(--v6-stage-badge-bg) 80%, #2b1d0b) 0%,
+    #0b0a0e 85%
+  );
+  color: var(--v6-stage-accent);
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 245, 210, 0.35);
+}
+
+.v6-world-crest-frame svg {
+  width: 62%;
+  height: 62%;
+}
+
+.v6-world-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.v6-world-kicker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--v6-font-mono);
+  font-size: calc(clamp(9.5px, 1.4vw, 11px) * var(--v6-text-scale));
+  letter-spacing: 0.08em;
+  color: var(--v6-stage-accent);
+}
+
+.v6-world-name {
+  margin: 0;
+  font-family: var(--v6-font-display);
+  font-size: calc(clamp(15px, 2.8vw, 22px) * var(--v6-text-scale));
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  color: var(--v6-ivory);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.v6-world-era {
+  margin: 0;
+  font-size: calc(clamp(10.5px, 1.6vw, 12.5px) * var(--v6-text-scale));
+  color: var(--v6-ivory-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.v6-world-symphony-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
+  font-family: var(--v6-font-mono);
+  font-size: calc(clamp(9.5px, 1.35vw, 11px) * var(--v6-text-scale));
+  color: var(--v6-stage-badge-text);
+  background: color-mix(in srgb, var(--v6-stage-badge-bg) 82%, #000);
+  border: 1px solid color-mix(in srgb, var(--v6-stage-border) 50%, transparent);
+  padding: 2px 7px;
+  border-radius: 3px;
+  width: fit-content;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.v6-episode-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(6px, 1.2vw, 10px);
+}
+
+.v6-world-rail {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.v6-world-pips {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 4px;
+  flex: 1 1 auto;
+}
+
+.v6-world-pip {
+  appearance: none;
+  height: clamp(26px, 3.8dvh, 32px);
+  padding: 0;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(12, 13, 18, 0.9);
+  color: var(--v6-ivory-dim);
+  font-family: var(--v6-font-mono);
+  font-size: calc(clamp(9px, 1.3vw, 11px) * var(--v6-text-scale));
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 120ms ease, color 120ms ease, background 120ms ease;
+}
+
+.v6-world-pip.is-active {
+  border-color: var(--v6-stage-accent);
+  background: var(--v6-stage-badge-bg);
+  color: var(--v6-brass-specular);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--v6-stage-accent) 30%, transparent);
+}
+
+.v6-world-pip.is-locked {
+  opacity: 0.45;
+}
+
+/* ============================================================================
+   5. 3D TROPHY & CAST MEDAL VAULT V6 (36 PBR HONORS + INTERACTIVE TURNTABLE)
+   ============================================================================ */
+
+.v6-vault-screen {
+  background: var(--v6-grad-velvet-vitrine);
+  gap: clamp(5px, 0.9dvh, 8px);
+}
+
+.v6-vault-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-rows: minmax(150px, 1fr) auto auto;
+  gap: clamp(5px, 0.9dvh, 8px);
+  pointer-events: auto;
+}
+
+.v6-turntable-stage {
+  position: relative;
+  min-height: 0;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--v6-stage-border) 62%, #241b10);
+  background: radial-gradient(
+    ellipse at 50% 42%,
+    rgba(48, 34, 24, 0.42) 0%,
+    rgba(11, 10, 15, 0.94) 68%,
+    rgba(5, 5, 8, 0.99) 100%
+  );
+  overflow: hidden;
+  touch-action: none;
+  cursor: grab;
+  box-shadow: var(--v6-shadow-inset);
+}
+
+.v6-turntable-stage:active {
+  cursor: grabbing;
+}
+
+.v6-turntable-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.v6-turntable-hud-tl,
+.v6-turntable-hud-tr,
+.v6-turntable-hud-bl {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  pointer-events: none;
+}
+
+.v6-turntable-hud-tl {
+  top: 7px;
+  left: 8px;
+}
+
+.v6-turntable-hud-tr {
+  top: 7px;
+  right: 8px;
+  pointer-events: auto;
+}
+
+.v6-turntable-hud-bl {
+  bottom: 7px;
+  left: 8px;
+  right: 8px;
+  justify-content: space-between;
+}
+
+.v6-spec-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  background: rgba(9, 10, 14, 0.84);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-family: var(--v6-font-mono);
+  font-size: calc(clamp(9px, 1.25vw, 10.5px) * var(--v6-text-scale));
+  letter-spacing: 0.07em;
+  color: var(--v6-ivory-muted);
+  text-transform: uppercase;
+}
+
+.v6-spec-chip strong {
+  color: var(--v6-stage-accent);
+}
+
+.v6-mini-ctrl-btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 7px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(12, 13, 18, 0.88);
+  color: var(--v6-ivory);
+  font-family: var(--v6-font-mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.v6-mini-ctrl-btn.is-active {
+  border-color: var(--v6-stage-accent);
+  color: var(--v6-stage-accent);
+}
+
+/* Engraved Brass Museum Plaque */
+.v6-museum-plaque {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: clamp(7px, 1.2dvh, 11px) clamp(10px, 1.8vw, 14px);
+  border-radius: 5px;
+  border: 1px solid color-mix(in srgb, var(--v6-stage-border) 78%, #3c290c);
+  background: linear-gradient(
+    180deg,
+    rgba(28, 22, 16, 0.94) 0%,
+    rgba(14, 11, 10, 0.98) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 240, 190, 0.25),
+    0 4px 12px rgba(0, 0, 0, 0.55);
+}
+
+.v6-plaque-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.v6-plaque-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.v6-plaque-name {
+  margin: 0;
+  font-family: var(--v6-font-display);
+  font-size: calc(clamp(13px, 2.2vw, 17px) * var(--v6-text-scale));
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--v6-brass-specular);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.v6-plaque-engraving {
+  margin: 0;
+  font-size: calc(clamp(10.5px, 1.55vw, 12.5px) * var(--v6-text-scale));
+  color: var(--v6-ivory);
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.v6-plaque-req {
+  font-family: var(--v6-font-mono);
+  font-size: calc(clamp(9.5px, 1.3vw, 10.5px) * var(--v6-text-scale));
+  color: var(--v6-ivory-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.v6-plaque-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+/* Zero-Scroll Paged Specimen Drawer */
+.v6-vault-tray {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(5px, 0.8dvh, 7px);
+  padding: clamp(6px, 1dvh, 9px);
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--v6-grad-brushed-metal);
+}
+
+.v6-vault-tray-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.v6-filter-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.v6-filter-tab {
+  appearance: none;
+  height: clamp(24px, 3.4dvh, 28px);
+  padding: 0 clamp(5px, 1.1vw, 9px);
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(10, 11, 15, 0.86);
+  color: var(--v6-ivory-muted);
+  font-family: var(--v6-font-mono);
+  font-size: calc(clamp(8.5px, 1.15vw, 10px) * var(--v6-text-scale));
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.v6-filter-tab.is-active {
+  border-color: var(--v6-stage-accent);
+  background: var(--v6-stage-badge-bg);
+  color: var(--v6-brass-specular);
+}
+
+.v6-pager-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.v6-specimen-grid {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(4px, 0.8vw, 6px);
+  align-content: stretch;
+}
+
+.v6-specimen-slot {
+  appearance: none;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2px;
+  min-height: clamp(44px, 6.8dvh, 56px);
+  padding: 5px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(11, 12, 17, 0.92);
+  color: var(--v6-ivory);
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 120ms ease, transform 90ms ease;
+}
+
+.v6-specimen-slot.is-selected {
+  border-color: var(--v6-stage-accent);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--v6-stage-badge-bg) 72%, #181410) 0%,
+    rgba(13, 11, 15, 0.96) 100%
+  );
+  box-shadow: inset 0 1px 0 rgba(255, 240, 195, 0.3);
+}
+
+.v6-specimen-slot.is-locked {
+  opacity: 0.62;
+}
+
+.v6-specimen-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  font-family: var(--v6-font-mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: var(--v6-ivory-dim);
+}
+
+.v6-specimen-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.v6-tier-CAST_BRONZE { background: #b87442; }
+.v6-tier-CLOISONNE_ENAMEL { background: #36b5c4; }
+.v6-tier-STERLING_SILVER { background: #d4dce6; }
+.v6-tier-GOLD_24K { background: #f4c652; }
+.v6-tier-OBSIDIAN_RUBY { background: #e33658; }
+
+.v6-specimen-label {
+  font-family: var(--v6-font-ui);
+  font-size: calc(clamp(9.5px, 1.3vw, 11px) * var(--v6-text-scale));
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--v6-ivory);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.v6-pin-badge {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--v6-signal-good);
+  box-shadow: 0 0 6px var(--v6-signal-good);
+}
+
+/* ============================================================================
+   6. 4-BAY BROADCAST OPTIONS CONSOLE V6 (RUPERT NEVE / NAGRA MIXING DESK)
+   ============================================================================ */
+
+.v6-console-screen {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(42, 34, 24, 0.45) 0%, rgba(10, 11, 15, 0.96) 55%),
+    #0a0b0f;
+  gap: clamp(5px, 0.9dvh, 8px);
+}
+
+.v6-console-chassis {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  max-width: 1060px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(6px, 1dvh, 9px);
+  padding: clamp(7px, 1.2dvh, 12px);
+  border-radius: 6px;
+  border: 1.5px solid color-mix(in srgb, var(--v6-stage-border) 68%, #2e2518);
+  background: var(--v6-grad-brushed-metal);
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 rgba(255, 245, 210, 0.2);
+  pointer-events: auto;
+  overflow: hidden;
+}
+
+/* 4-Bay Hardware Latch Strip */
+.v6-bay-tabs {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(4px, 0.8vw, 7px);
+}
+
+.v6-bay-latch {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: clamp(32px, 4.8dvh, 38px);
+  padding: 0 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(180deg, #1b1f27 0%, #101218 100%);
+  color: var(--v6-ivory-muted);
+  font-family: var(--v6-font-mono);
+  font-size: calc(clamp(9px, 1.35vw, 11px) * var(--v6-text-scale));
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.v6-bay-latch.is-active {
+  border-color: var(--v6-stage-accent);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--v6-stage-badge-bg) 82%, #291e0d) 0%,
+    #141114 100%
+  );
+  color: var(--v6-brass-specular);
+  box-shadow:
+    0 0 12px color-mix(in srgb, var(--v6-stage-accent) 20%, transparent),
+    inset 0 1px 0 rgba(255, 245, 210, 0.35);
+}
+
+.v6-bay-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: none;
+  flex-direction: column;
+  gap: clamp(6px, 1dvh, 9px);
+  overflow: hidden;
+}
+
+.v6-bay-panel.is-active {
+  display: flex;
+}
+
+/* Sub-module recessed console strips (NO Tailwind cards!) */
+.v6-module-rack {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  gap: clamp(6px, 1dvh, 9px);
+}
+
+.v6-module-strip {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: clamp(5px, 0.8dvh, 8px);
+  padding: clamp(7px, 1.1dvh, 11px) clamp(8px, 1.4vw, 12px);
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(11, 13, 17, 0.88);
+  box-shadow: var(--v6-shadow-inset);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.v6-strip-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-family: var(--v6-font-mono);
+  font-size: calc(clamp(9px, 1.25vw, 10.5px) * var(--v6-text-scale));
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--v6-stage-accent);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 3px;
+}
+
+/* Bay 1: Rupert Neve Linear Faders + Dual Amber VU Bridge + Audition Turntable */
+.v6-bay1-grid {
+  grid-template-rows: auto minmax(120px, 1fr) auto;
+}
+
+.v6-vu-bridge {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.v6-vu-meter {
+  position: relative;
+  height: clamp(44px, 7.6dvh, 62px);
+  border-radius: 4px;
+  border: 1.5px solid #4c3b20;
+  background:
+    radial-gradient(ellipse at 50% 90%, rgba(255, 198, 92, 0.44) 0%, rgba(164, 98, 22, 0.25) 56%, rgba(28, 18, 8, 0.96) 100%),
+    #1c1308;
+  overflow: hidden;
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 rgba(255, 226, 150, 0.28);
+}
+
+.v6-vu-scale {
+  position: absolute;
+  inset: 4px 6px 14px;
+  border-top: 1px dashed rgba(255, 222, 145, 0.45);
+  border-radius: 90% 90% 0 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 4px 0;
+  font-family: var(--v6-font-mono);
+  font-size: 8px;
+  font-weight: 700;
+  color: rgba(255, 232, 176, 0.85);
+}
+
+.v6-vu-scale .is-red {
+  color: var(--v6-vu-peak);
+}
+
+.v6-vu-needle {
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  width: 2px;
+  height: 82%;
+  margin-left: -1px;
+  background: linear-gradient(180deg, #fff2cc 0%, #ff7f32 55%, #2b1808 100%);
+  transform-origin: 50% 100%;
+  transform: rotate(-42deg);
+  box-shadow: 0 0 6px rgba(255, 180, 72, 0.65);
+  will-change: transform;
+}
+
+.v6-vu-pivot {
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #f5d27a, #4d330c);
+  border: 1px solid #090807;
+}
+
+.v6-vu-ch {
+  position: absolute;
+  left: 6px;
+  bottom: 3px;
+  font-family: var(--v6-font-mono);
+  font-size: 8.5px;
+  font-weight: 700;
+  color: var(--v6-vu-amber);
+}
+
+.v6-bus-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.v6-fader-bank {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(4px, 1vw, 8px);
+  min-height: 0;
+  height: 100%;
+}
+
+.v6-fader-channel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 5px 4px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, #161920 0%, #0d0f14 100%);
+  min-height: 0;
+}
+
+.v6-fader-val {
+  font-family: var(--v6-font-mono);
+  font-size: calc(clamp(9px, 1.25vw, 10.5px) * var(--v6-text-scale));
+  font-weight: 700;
+  color: var(--v6-stage-accent);
+}
+
+.v6-fader-track {
+  position: relative;
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: 44px;
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+  cursor: ns-resize;
+}
+
+.v6-fader-slot {
+  position: relative;
+  width: 6px;
+  height: 100%;
+  border-radius: 3px;
+  background: #050608;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.95);
+}
+
+.v6-fader-fill {
+  position: absolute;
+  left: 1px;
+  right: 1px;
+  bottom: 1px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--v6-stage-accent), var(--v6-brass-deep));
+}
+
+.v6-fader-ticks {
+  position: absolute;
+  inset: 4px 2px;
+  background-image: repeating-linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.24) 0px,
+    rgba(255, 255, 255, 0.24) 1px,
+    transparent 1px,
+    transparent 10px
+  );
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+.v6-fader-cap {
+  position: absolute;
+  left: 50%;
+  width: clamp(26px, 4.6vw, 34px);
+  height: clamp(16px, 2.6dvh, 21px);
+  transform: translate(-50%, 50%);
+  border-radius: 3px;
+  border: 1px solid #f7dc92;
+  background: linear-gradient(
+    180deg,
+    #4c4333 0%,
+    #252019 36%,
+    #f2cb6d 48%,
+    #f2cb6d 52%,
+    #1f1b15 64%,
+    #3d3528 100%
+  );
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.82),
+    inset 0 1px 0 rgba(255, 248, 220, 0.45);
+  pointer-events: none;
+}
+
+.v6-fader-name {
+  font-family: var(--v6-font-mono);
+  font-size: calc(clamp(8.5px, 1.15vw, 10px) * var(--v6-text-scale));
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--v6-ivory-muted);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* 14-Track Live Symphony Audition Turntable */
+.v6-turntable-deck {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: clamp(6px, 1dvh, 9px) clamp(8px, 1.4vw, 12px);
+  border-radius: 4px;
+  border: 1px solid color-mix(in srgb, var(--v6-stage-border) 55%, #2a241b);
+  background: linear-gradient(180deg, #161419 0%, #0c0b0f 100%);
+}
+
+.v6-vinyl-platter {
+  width: clamp(32px, 5dvh, 42px);
+  height: clamp(32px, 5dvh, 42px);
+  border-radius: 50%;
+  border: 1.5px solid var(--v6-stage-accent);
+  background:
+    radial-gradient(circle at center, var(--v6-stage-accent) 0 18%, #101116 19% 25%, #23252d 26% 32%, #111218 33% 56%, #24262f 57% 62%, #0c0d11 63% 100%);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.v6-vinyl-platter::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  width: 2px;
+  height: 8px;
+  margin-left: -1px;
+  background: var(--v6-brass-specular);
+}
+
+.v6-vinyl-platter.is-spinning {
+  animation: v6-spin-platter 2.4s linear infinite;
+}
+
+@keyframes v6-spin-platter {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.v6-track-readout {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.v6-track-title {
+  font-family: var(--v6-font-display);
+  font-size: calc(clamp(11px, 1.75vw, 13.5px) * var(--v6-text-scale));
+  font-weight: 700;
+  color: var(--v6-brass-specular);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.v6-track-sub {
+  font-family: var(--v6-font-mono);
+  font-size: calc(clamp(9px, 1.25vw, 10.5px) * var(--v6-text-scale));
+  color: var(--v6-ivory-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.v6-transport-btns {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Detented Selector Bank & Marconi Rotary Indicator (Bays 2 & 3) */
+.v6-bay2-grid,
+.v6-bay3-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: stretch;
+}
+
+.v6-detent-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.v6-marconi-knob {
+  position: relative;
+  width: clamp(32px, 5dvh, 42px);
+  height: clamp(32px, 5dvh, 42px);
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1.5px solid var(--v6-stage-border);
+  background:
+    radial-gradient(circle at 32% 28%, #4b4f58 0%, #23262e 48%, #101216 100%);
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.72),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: transform 180ms var(--v6-ease-detent);
+}
+
+.v6-marconi-knob::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  width: 2.5px;
+  height: 11px;
+  margin-left: -1.25px;
+  border-radius: 2px;
+  background: var(--v6-stage-accent);
+  box-shadow: 0 0 6px var(--v6-stage-accent);
+}
+
+.v6-detent-rail {
+  flex: 1 1 auto;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 4px;
+}
+
+.v6-detent-btn {
+  appearance: none;
+  min-height: clamp(28px, 4.2dvh, 36px);
+  padding: 3px 5px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(14, 16, 21, 0.94);
+  color: var(--v6-ivory-muted);
+  font-family: var(--v6-font-mono);
+  font-size: calc(clamp(8.5px, 1.25vw, 10.5px) * var(--v6-text-scale));
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  line-height: 1.15;
+  text-align: center;
+  transition: border-color 110ms ease, color 110ms ease, background 110ms ease;
+}
+
+.v6-detent-btn.is-active {
+  border-color: var(--v6-stage-accent);
+  background: var(--v6-stage-badge-bg);
+  color: var(--v6-brass-specular);
+  box-shadow: inset 0 1px 0 rgba(255, 244, 200, 0.35);
+}
+
+/* Live Hardware Readout Window (Bay 2) */
+.v6-telemetry-window {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.v6-nixie-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 4px;
+  border-radius: 3px;
+  background: #07080b;
+  border: 1px solid rgba(255, 210, 120, 0.22);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.9);
+}
+
+.v6-nixie-val {
+  font-family: var(--v6-font-mono);
+  font-size: calc(clamp(12px, 2vw, 15px) * var(--v6-text-scale));
+  font-weight: 700;
+  color: var(--v6-vu-amber);
+}
+
+.v6-nixie-lbl {
+  font-family: var(--v6-font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.09em;
+  color: var(--v6-ivory-dim);
+  text-transform: uppercase;
+}
+
+.v6-vision-swatches {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.v6-vision-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 3px 4px;
+  border-radius: 3px;
+  background: #0a0b0f;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: var(--v6-font-mono);
+  font-size: 8.5px;
+  color: var(--v6-ivory-muted);
+}
+
+.v6-vision-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+/* Bay 4: 1.27M Corpus Bitset Gauge, Difficulty Curve & Flip-Cover Safety Switches */
+.v6-bay4-grid {
+  grid-template-rows: auto minmax(86px, 1fr) auto;
+}
+
+.v6-bitset-meter {
+  height: 12px;
+  width: 100%;
+  border-radius: 3px;
+  background: #06070a;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+.v6-bitset-fill {
+  height: 100%;
+  min-width: 2px;
+  background: linear-gradient(90deg, var(--v6-signal-info), var(--v6-stage-accent));
+  transition: width 260ms var(--v6-ease-detent);
+}
+
+.v6-curve-box {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 54px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.v6-curve-svg-wrap {
+  flex: 1 1 auto;
+  min-height: 46px;
+  display: flex;
+}
+
+.v6-curve-svg {
+  width: 100%;
+  height: 100%;
+  min-height: 46px;
+  display: block;
+}
+
+.v6-curve-axis {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--v6-font-mono);
+  font-size: 8.5px;
+  color: var(--v6-ivory-dim);
+}
+
+.v6-safety-bay {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.v6-safety-housing {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid color-mix(in srgb, var(--v6-signal-danger) 48%, #2a1518);
+  background: linear-gradient(180deg, #1b1013 0%, #10090b 100%);
+  overflow: hidden;
+}
+
+.v6-safety-switch-well {
+  position: relative;
+  height: clamp(34px, 5dvh, 42px);
+  border-radius: 3px;
+  background: #080507;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.v6-safety-fire-btn {
+  appearance: none;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: linear-gradient(180deg, #a61c2d 0%, #630d18 100%);
+  color: #fff6ea;
+  font-family: var(--v6-font-mono);
+  font-size: calc(clamp(9px, 1.3vw, 11px) * var(--v6-text-scale));
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.v6-safety-fire-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.v6-flip-cover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  border: 1px solid color-mix(in srgb, var(--v6-signal-danger) 85%, #ff8888);
+  background: repeating-linear-gradient(
+      -45deg,
+      rgba(232, 76, 92, 0.32) 0px,
+      rgba(232, 76, 92, 0.32) 6px,
+      rgba(20, 8, 10, 0.88) 6px,
+      rgba(20, 8, 10, 0.88) 12px
+    );
+  color: #ffdce0;
+  font-family: var(--v6-font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transform-origin: top center;
+  transition: transform 220ms var(--v6-ease-detent), opacity 200ms ease;
+}
+
+.v6-safety-housing.is-armed .v6-flip-cover {
+  transform: perspective(260px) rotateX(86deg);
+  opacity: 0.14;
+  pointer-events: none;
+}
+
+/* ============================================================================
+   7. POST-MATCH CEREMONY V6 (+CHIPS x MULT + 3D HONOR SPOTLIGHT)
+   ============================================================================ */
+
+.v6-ceremony-screen {
+  background:
+    radial-gradient(ellipse at 50% 24%, color-mix(in srgb, var(--v6-stage-badge-bg) 62%, transparent) 0%, rgba(7, 6, 10, 0.96) 66%),
+    #07060a;
+  justify-content: space-between;
+  gap: clamp(6px, 1dvh, 10px);
+}
+
+.v6-ceremony-shell {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: clamp(6px, 1dvh, 10px);
+  pointer-events: auto;
+}
+
+.v6-ceremony-banner {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.v6-ceremony-verdict {
+  margin: 0;
+  font-family: var(--v6-font-display);
+  font-size: calc(clamp(19px, 4.2vw, 32px) * var(--v6-text-scale));
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--v6-brass-specular);
+  text-transform: uppercase;
+}
+
+.v6-ceremony-main {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: clamp(6px, 1.2vw, 12px);
+}
+
+.v6-score-ledger {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: clamp(4px, 0.75dvh, 7px);
+  padding: clamp(8px, 1.3dvh, 14px);
+  border-radius: 5px;
+  border: 1px solid color-mix(in srgb, var(--v6-stage-border) 68%, #2e2212);
+  background: var(--v6-grad-brushed-metal);
+  box-shadow: var(--v6-shadow-plate);
+  min-height: 0;
+}
+
+.v6-ledger-equation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  padding: clamp(6px, 1.1dvh, 10px);
+  border-radius: 4px;
+  background: #08090d;
+  border: 1px solid rgba(255, 224, 150, 0.24);
+}
+
+.v6-eq-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px;
+  border-radius: 3px;
+}
+
+.v6-eq-box--chips {
+  background: rgba(78, 196, 255, 0.14);
+  border: 1px solid color-mix(in srgb, var(--v6-signal-info) 55%, transparent);
+}
+
+.v6-eq-box--mult {
+  background: rgba(244, 166, 56, 0.15);
+  border: 1px solid color-mix(in srgb, var(--v6-signal-warn) 60%, transparent);
+}
+
+.v6-eq-num {
+  font-family: var(--v6-font-mono);
+  font-size: calc(clamp(16px, 3vw, 24px) * var(--v6-text-scale));
+  font-weight: 700;
+  color: var(--v6-ivory);
+}
+
+.v6-eq-lbl {
+  font-family: var(--v6-font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--v6-ivory-muted);
+  text-transform: uppercase;
+}
+
+.v6-eq-times {
+  font-family: var(--v6-font-display);
+  font-size: clamp(16px, 2.8vw, 22px);
+  font-weight: 800;
+  color: var(--v6-stage-accent);
+}
+
+.v6-ledger-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.v6-ledger-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  font-family: var(--v6-font-mono);
+  font-size: calc(clamp(10px, 1.45vw, 12px) * var(--v6-text-scale));
+  color: var(--v6-ivory-muted);
+}
+
+.v6-ledger-row strong {
+  color: var(--v6-ivory);
+}
+
+.v6-ledger-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-top: 4px;
+  border-top: 1.5px solid var(--v6-stage-border);
+}
+
+.v6-ledger-total-val {
+  font-family: var(--v6-font-mono);
+  font-size: calc(clamp(18px, 3.2vw, 26px) * var(--v6-text-scale));
+  font-weight: 700;
+  color: var(--v6-signal-good);
+}
+
+.v6-ceremony-spotlight {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 5px;
+  padding: clamp(7px, 1.1dvh, 11px);
+  border-radius: 5px;
+  border: 1px solid color-mix(in srgb, var(--v6-stage-border) 68%, #2e2212);
+  background: var(--v6-grad-velvet-vitrine);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.v6-spotlight-canvas-wrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 82px;
+  border-radius: 4px;
+  background: radial-gradient(circle at 50% 45%, rgba(64, 45, 22, 0.45), rgba(6, 5, 9, 0.94));
+  border: 1px solid rgba(255, 226, 150, 0.2);
+  overflow: hidden;
+}
+
+.v6-ceremony-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto;
+  gap: clamp(5px, 1vw, 8px);
+}
+
+/* ============================================================================
+   8. RESPONSIVE ZERO-SCROLL BREAKPOINTS (390x660, 360x560, 660x340, 844x390)
+   ============================================================================ */
+
+/* Compact narrow phones (<= 460px width: 360x560 & 390x660) */
+@media (max-width: 460px) {
+  .v6-hide-xs {
+    display: none !important;
+  }
+
+  .v6-hardware-pill {
+    padding: 0 7px;
+    gap: 4px;
+    font-size: calc(9.2px * var(--v6-text-scale));
+    letter-spacing: 0.03em;
+  }
+
+  .v6-bay-latch {
+    gap: 3px;
+    padding: 0 3px;
+    font-size: calc(8.8px * var(--v6-text-scale));
+    letter-spacing: 0.02em;
+  }
+
+  .v6-bay-latch .v6-led-jewel {
+    width: 5px;
+    height: 5px;
+  }
+
+  .v6-hub-actions-grid .v6-brass-plate:not(.v6-brass-plate--hero):not(.v6-plate-wide) {
+    padding: 7px 8px;
+    gap: 6px;
+  }
+
+  .v6-hub-actions-grid .v6-brass-plate:not(.v6-brass-plate--hero):not(.v6-plate-wide) .v6-plate-tag {
+    display: none;
+  }
+
+  .v6-hub-actions-grid .v6-brass-plate:not(.v6-brass-plate--hero):not(.v6-plate-wide) .v6-plate-title {
+    font-size: calc(10.5px * var(--v6-text-scale));
+    letter-spacing: 0.03em;
+    white-space: normal;
+    line-height: 1.1;
+  }
+
+  .v6-episode-pair .v6-brass-plate {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 7px 8px;
+  }
+
+  .v6-episode-pair .v6-plate-title {
+    white-space: normal;
+    line-height: 1.12;
+    font-size: calc(10.5px * var(--v6-text-scale));
+  }
+
+  .v6-vault-tray-bar {
+    gap: 3px;
+  }
+
+  .v6-filter-tabs {
+    gap: 3px;
+  }
+
+  .v6-filter-tab {
+    padding: 0 5px;
+    font-size: 8.5px;
+    letter-spacing: 0.02em;
+  }
+
+  .v6-pager-group .v6-spec-chip {
+    padding: 2px 5px;
+    font-size: 8.5px;
+  }
+
+  .v6-pager-group .v6-mini-ctrl-btn {
+    padding: 0 5px;
+    height: 22px;
+  }
+}
+
+/* Portrait phones under 700px height (390x660 mobile browser chrome) */
+@media (orientation: portrait) and (max-height: 700px) {
+  .v6-ceremony-main {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .v6-bay2-grid,
+  .v6-bay3-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .v6-ceremony-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .v6-ceremony-actions .v6-brass-plate--hero {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Ultra-tight Android / iOS browser chrome portrait (360x560) */
+@media (orientation: portrait) and (max-height: 590px) {
+  .v6-screen {
+    padding: 4px 6px 5px;
+  }
+
+  .v6-topbar {
+    min-height: 30px;
+  }
+
+  .v6-hardware-pill {
+    height: 28px;
+    padding: 0 7px;
+  }
+
+  .v6-brass-plate {
+    padding: 6px 8px;
+  }
+
+  .v6-hub-wordmark {
+    font-size: calc(18px * var(--v6-text-scale));
+  }
+
+  .v6-hub-stage-aperture {
+    min-height: 8dvh;
+  }
+
+  .v6-specimen-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .v6-specimen-slot {
+    min-height: 38px;
+    padding: 4px 5px;
+  }
+
+  .v6-vu-meter {
+    height: 38px;
+  }
+
+  .v6-fader-track {
+    min-height: 52px;
+  }
+
+  .v6-bay-latch {
+    height: 28px;
+  }
+
+  .v6-world-crest-frame {
+    width: 48px;
+    height: 48px;
+  }
+
+  .v6-world-pips {
+    gap: 2px;
+  }
+
+  .v6-world-pip {
+    height: 24px;
+  }
+}
+
+/* Mobile Landscape Split-Stage (844x390 & 660x340 — ZERO VERTICAL SCROLL!) */
+@media (orientation: landscape) and (max-height: 460px) {
+  .v6-screen {
+    padding: 4px var(--v6-safe-right) 4px var(--v6-safe-left);
+    gap: 4px;
+  }
+
+  .v6-topbar {
+    min-height: 28px;
+  }
+
+  .v6-hardware-pill {
+    height: 26px;
+    padding: 0 8px;
+  }
+
+  /* Hub Landscape: Left open 3D stage + Right brass launch console */
+  .v6-hub-screen {
+    display: grid;
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    column-gap: 10px;
+    row-gap: 4px;
+    background:
+      linear-gradient(90deg, rgba(6, 5, 9, 0.14) 0%, rgba(6, 5, 9, 0.72) 52%, rgba(6, 5, 9, 0.94) 100%);
+  }
+
+  .v6-hub-header-block {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .v6-hub-marquee {
+    display: none;
+  }
+
+  .v6-hub-stage-aperture {
+    grid-column: 1;
+    grid-row: 2;
+    min-height: 0;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding-bottom: 6px;
+  }
+
+  .v6-hub-deck {
+    grid-column: 2;
+    grid-row: 2;
+    justify-content: flex-end;
+    margin: 0;
+    max-width: none;
+    gap: 4px;
+  }
+
+  .v6-hub-actions-grid {
+    gap: 4px;
+  }
+
+  .v6-brass-plate {
+    padding: 5px 8px;
+  }
+
+  .v6-hub-actions-grid .v6-brass-plate:not(.v6-brass-plate--hero):not(.v6-plate-wide) .v6-plate-tag {
+    display: none;
+  }
+
+  .v6-hub-actions-grid .v6-brass-plate:not(.v6-brass-plate--hero):not(.v6-plate-wide) .v6-plate-title {
+    font-size: calc(10.2px * var(--v6-text-scale));
+    letter-spacing: 0.03em;
+  }
+
+  /* Vault Landscape: Left 3D Turntable / Right Plaque + Paged Tray */
+  .v6-vault-body {
+    grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    column-gap: 8px;
+    row-gap: 5px;
+  }
+
+  .v6-turntable-stage {
+    grid-column: 1;
+    grid-row: 1 / 3;
+  }
+
+  .v6-turntable-stage .v6-spec-chip,
+  .v6-turntable-stage .v6-mini-ctrl-btn {
+    font-size: 8.5px;
+    padding: 2px 5px;
+    height: 21px;
+  }
+
+  .v6-museum-plaque {
+    grid-column: 2;
+    grid-row: 1;
+    padding: 6px 8px;
+  }
+
+  .v6-vault-tray {
+    grid-column: 2;
+    grid-row: 2;
+    gap: 5px;
+    padding: 5px 6px;
+  }
+
+  .v6-filter-tab {
+    padding: 0 5px;
+    font-size: 8.5px;
+    letter-spacing: 0.02em;
+  }
+
+  .v6-specimen-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .v6-specimen-slot {
+    min-height: 36px;
+    padding: 4px 6px;
+  }
+
+  /* Options Console Landscape compression */
+  .v6-console-chassis {
+    padding: 5px 7px;
+    gap: 5px;
+  }
+
+  .v6-bay-latch {
+    height: 26px;
+  }
+
+  .v6-bay1-grid {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .v6-vu-bridge {
+    grid-column: 1;
+    grid-row: 1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .v6-bus-toggles {
+    grid-column: 1 / -1;
+    flex-direction: row;
+  }
+
+  .v6-turntable-deck {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: end;
+    grid-template-columns: auto minmax(0, 1fr);
+    row-gap: 5px;
+  }
+
+  .v6-turntable-deck .v6-transport-btns {
+    grid-column: 1 / -1;
+    justify-content: space-between;
+  }
+
+  .v6-turntable-deck .v6-transport-btns .v6-hardware-pill:nth-child(2) {
+    flex: 1 1 auto;
+  }
+
+  .v6-fader-bank {
+    grid-column: 2;
+    grid-row: 1 / 3;
+  }
+
+  .v6-vu-meter {
+    height: 38px;
+  }
+
+  .v6-fader-track {
+    min-height: 44px;
+  }
+
+  .v6-bay4-grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .v6-safety-bay {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    grid-template-columns: 1fr;
+  }
+
+  /* Post-Match Ceremony Landscape */
+  .v6-ceremony-banner {
+    flex-direction: row;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .v6-ceremony-verdict {
+    font-size: calc(16px * var(--v6-text-scale));
+  }
+
+  .v6-ceremony-actions {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto;
+  }
+}
+
+/* Extreme compact landscape (660x340) */
+@media (orientation: landscape) and (max-height: 360px) {
+  .v6-plate-sub,
+  .v6-plaque-req {
+    display: none;
+  }
+
+  .v6-hub-telemetry-strip {
+    padding: 2px 7px;
+  }
+
+  .v6-brass-plate {
+    padding: 4px 7px;
+  }
+
+  .v6-world-drawer {
+    padding: 6px 8px;
+    gap: 5px;
+  }
+
+  .v6-world-crest-frame {
+    width: 44px;
+    height: 44px;
+  }
+
+  .v6-curve-svg {
+    height: 40px;
+  }
+}
+
+/* Desktop / Tablet Grand Showcase */
+@media (min-width: 900px) and (min-height: 620px) {
+  .v6-hub-actions-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .v6-hub-actions-grid .v6-plate-wide {
+    grid-column: span 1;
+  }
+
+  .v6-vault-body {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    column-gap: 12px;
+    row-gap: 10px;
+  }
+
+  .v6-turntable-stage {
+    grid-column: 1;
+    grid-row: 1 / 3;
+  }
+
+  .v6-museum-plaque {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .v6-vault-tray {
+    grid-column: 2;
+    grid-row: 2;
+    justify-content: space-between;
+  }
+
+  .v6-specimen-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
