@@ -1,0 +1,575 @@
+{
+  "schemaVersion": "5.0.0",
+  "generator": "tools/build_v5_stage_symphonies.py",
+  "soundfontSource": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/gh-pages/MusyngKite",
+  "oscillatorCount": 0,
+  "broadcastTarget": {
+    "loudnorm": "I=-17.5:TP=-1.8:LRA=9",
+    "maxTruePeakDbfs": -1.5,
+    "bitrate": "128k",
+    "sampleRateHz": 44100,
+    "channels": 2
+  },
+  "summary": {
+    "themeCount": 8,
+    "uniqueRealInstruments": 27,
+    "instrumentRoster": [
+      "acoustic_grand_piano",
+      "acoustic_guitar_nylon",
+      "bassoon",
+      "brass_section",
+      "celesta",
+      "cello",
+      "clarinet",
+      "contrabass",
+      "flute",
+      "french_horn",
+      "harpsichord",
+      "koto",
+      "marimba",
+      "muted_trumpet",
+      "oboe",
+      "orchestral_harp",
+      "pizzicato_strings",
+      "shakuhachi",
+      "string_ensemble_1",
+      "string_ensemble_2",
+      "taiko_drum",
+      "timpani",
+      "tremolo_strings",
+      "trombone",
+      "trumpet",
+      "tubular_bells",
+      "vibraphone"
+    ],
+    "totalSizeBytes": 2532755,
+    "totalSizeKb": 2473.4
+  },
+  "laneOverrides": {
+    "REDEMPTION_GRIT": "theme_branch_redemption",
+    "VELVET_SALON": "theme_branch_velvet"
+  },
+  "tierDefaults": {
+    "1": "theme_stage1_oakridge",
+    "2": "theme_stage1_oakridge",
+    "3": "theme_stage3_broadcast",
+    "4": "theme_stage3_broadcast",
+    "5": "theme_stage5_london",
+    "6": "theme_stage6_tokyo",
+    "7": "theme_stage7_cairo",
+    "8": "theme_stage8_finale"
+  },
+  "themes": [
+    {
+      "id": "theme_stage1_oakridge",
+      "file": "./assets/audio/themes/theme_stage1_oakridge.mp3",
+      "filename": "theme_stage1_oakridge.mp3",
+      "title": "Oakridge Hall & Lyric Warmth",
+      "subtitle": "Hometown Underdog — Tiers 1–2",
+      "storyEmotion": "Cozy scrappy warmth, acoustic parlor heart, underdog optimism",
+      "bpm": 104.0,
+      "timeSignature": "4/4",
+      "beatsPerBar": 4,
+      "totalBars": 9,
+      "keyMode": "G Major / E minor warmth (bVII Fmaj7 lift)",
+      "form": "9-bar asymmetric chamber period (4-bar clarinet antecedent + 5-bar solo cello consequent & bVII turnaround)",
+      "venueAcoustics": "Oakridge Timber Community Hall",
+      "instruments": [
+        "acoustic_grand_piano",
+        "acoustic_guitar_nylon",
+        "cello",
+        "clarinet",
+        "contrabass",
+        "marimba"
+      ],
+      "routing": {
+        "tiers": [
+          1,
+          2
+        ],
+        "lanes": [
+          "MAIN_STAGE",
+          "SPONSOR_SHOWCASE",
+          "RIVAL_GRUDGE"
+        ],
+        "acts": [
+          1
+        ],
+        "cities": [
+          "OAKRIDGE, BROOKLYN",
+          "DOWNTOWN CIVIC"
+        ],
+        "rivals": [
+          "frankie_russo",
+          "denise_park"
+        ],
+        "priority": 50
+      },
+      "audio": {
+        "format": "mp3",
+        "bitrateKbps": 128,
+        "sampleRateHz": 44100,
+        "channels": 2,
+        "seamlessLoop": true,
+        "durationSec": 20.769,
+        "sizeBytes": 333574,
+        "sizeKb": 325.8,
+        "integratedLufs": -17.95,
+        "truePeakDbfs": -3.35,
+        "lraLu": 4.5,
+        "seamDelta": 0.00081,
+        "recommendedVolumeScale": 0.92
+      }
+    },
+    {
+      "id": "theme_stage3_broadcast",
+      "file": "./assets/audio/themes/theme_stage3_broadcast.mp3",
+      "filename": "theme_stage3_broadcast.mp3",
+      "title": "Channel 7 Prime-Time Breakthrough",
+      "subtitle": "Televised Breakthrough — Tiers 3–4",
+      "storyEmotion": "Gleaming live-TV electricity, brass showmanship, prime-time momentum",
+      "bpm": 120.0,
+      "timeSignature": "4/4",
+      "beatsPerBar": 4,
+      "totalBars": 10,
+      "keyMode": "Bb Major -> Db Major chromatic mediant -> Eb Lydian",
+      "form": "10-bar prime-time showcase arc (4-bar brass fanfare + 4-bar soaring string chromatic-mediant lift + 2-bar live-TV tag)",
+      "venueAcoustics": "Starlight Live Broadcast Soundstage",
+      "instruments": [
+        "brass_section",
+        "contrabass",
+        "flute",
+        "french_horn",
+        "string_ensemble_1",
+        "string_ensemble_2",
+        "timpani",
+        "trumpet",
+        "vibraphone"
+      ],
+      "routing": {
+        "tiers": [
+          3,
+          4
+        ],
+        "lanes": [
+          "MAIN_STAGE",
+          "SPONSOR_SHOWCASE",
+          "RIVAL_GRUDGE"
+        ],
+        "acts": [
+          2
+        ],
+        "cities": [
+          "REGIONAL TV CENTER",
+          "NATIONAL NETWORK",
+          "STARLIGHT BACKSTAGE"
+        ],
+        "rivals": [
+          "trevor_blake",
+          "priya_nair"
+        ],
+        "priority": 50
+      },
+      "audio": {
+        "format": "mp3",
+        "bitrateKbps": 128,
+        "sampleRateHz": 44100,
+        "channels": 2,
+        "seamlessLoop": true,
+        "durationSec": 20.0,
+        "sizeBytes": 321035,
+        "sizeKb": 313.5,
+        "integratedLufs": -17.94,
+        "truePeakDbfs": -5.95,
+        "lraLu": 4.5,
+        "seamDelta": 0.00236,
+        "recommendedVolumeScale": 0.92
+      }
+    },
+    {
+      "id": "theme_stage5_london",
+      "file": "./assets/audio/themes/theme_stage5_london.mp3",
+      "filename": "theme_stage5_london.mp3",
+      "title": "Grand Rotunda Counterpoint",
+      "subtitle": "Grand Rotunda, London — Lord Alistair Finch",
+      "storyEmotion": "Witty Edwardian intellect, razor-sharp Baroque duel, aristocratic poise",
+      "bpm": 112.0,
+      "timeSignature": "4/4",
+      "beatsPerBar": 4,
+      "totalBars": 9,
+      "keyMode": "D Minor -> F Major -> Bb Major -> A7",
+      "form": "9-bar asymmetric contrapuntal invention (4-bar chromatic-bass oboe/bassoon sparring + 5-bar Edwardian horn-crowned development)",
+      "venueAcoustics": "Grand Rotunda Oak & Marble Hall",
+      "instruments": [
+        "bassoon",
+        "cello",
+        "french_horn",
+        "harpsichord",
+        "oboe",
+        "pizzicato_strings",
+        "string_ensemble_1"
+      ],
+      "routing": {
+        "tiers": [
+          5
+        ],
+        "lanes": [
+          "MAIN_STAGE",
+          "SPONSOR_SHOWCASE",
+          "RIVAL_GRUDGE"
+        ],
+        "acts": [
+          3
+        ],
+        "cities": [
+          "LONDON, UK",
+          "WESTMINSTER, LONDON"
+        ],
+        "rivals": [
+          "alistair_finch"
+        ],
+        "priority": 50
+      },
+      "audio": {
+        "format": "mp3",
+        "bitrateKbps": 128,
+        "sampleRateHz": 44100,
+        "channels": 2,
+        "seamlessLoop": true,
+        "durationSec": 19.286,
+        "sizeBytes": 309750,
+        "sizeKb": 302.5,
+        "integratedLufs": -17.94,
+        "truePeakDbfs": -5.08,
+        "lraLu": 6.1,
+        "seamDelta": 0.00041,
+        "recommendedVolumeScale": 0.92
+      }
+    },
+    {
+      "id": "theme_stage6_tokyo",
+      "file": "./assets/audio/themes/theme_stage6_tokyo.mp3",
+      "filename": "theme_stage6_tokyo.mp3",
+      "title": "Shibuya Rain-Lit Sky-Dome",
+      "subtitle": "Shibuya Sky-Dome, Tokyo — Kenji Takahashi",
+      "storyEmotion": "Sleek cyber-symphonic precision, rain-glass stillness, agile odd-meter focus",
+      "bpm": 126.0,
+      "timeSignature": "5/4",
+      "beatsPerBar": 5,
+      "totalBars": 8,
+      "keyMode": "E Hirajoshi (E-F#-G-B-C) / A Hirajoshi",
+      "form": "8-bar 5/4 (3+2) cyber-symphonic Hirajoshi cycle: koto cascades & celesta rain beneath meditative shakuhachi 'ma' phrasing",
+      "venueAcoustics": "Shibuya Glass & Steel Sky-Dome",
+      "instruments": [
+        "celesta",
+        "contrabass",
+        "koto",
+        "pizzicato_strings",
+        "shakuhachi",
+        "string_ensemble_1",
+        "taiko_drum",
+        "tremolo_strings"
+      ],
+      "routing": {
+        "tiers": [
+          6
+        ],
+        "lanes": [
+          "MAIN_STAGE",
+          "SPONSOR_SHOWCASE",
+          "RIVAL_GRUDGE"
+        ],
+        "acts": [
+          3
+        ],
+        "cities": [
+          "SHIBUYA, TOKYO"
+        ],
+        "rivals": [
+          "kenji_takahashi"
+        ],
+        "priority": 50
+      },
+      "audio": {
+        "format": "mp3",
+        "bitrateKbps": 128,
+        "sampleRateHz": 44100,
+        "channels": 2,
+        "seamlessLoop": true,
+        "durationSec": 19.048,
+        "sizeBytes": 305989,
+        "sizeKb": 298.8,
+        "integratedLufs": -17.95,
+        "truePeakDbfs": -5.26,
+        "lraLu": 4.1,
+        "seamDelta": 0.0009,
+        "recommendedVolumeScale": 0.92
+      }
+    },
+    {
+      "id": "theme_stage7_cairo",
+      "file": "./assets/audio/themes/theme_stage7_cairo.mp3",
+      "filename": "theme_stage7_cairo.mp3",
+      "title": "Great Starlight Pavilion at Giza",
+      "subtitle": "Great Starlight Pavilion, Giza — Nadia Al-Mansoor",
+      "storyEmotion": "Desert starlight grandeur, ancient astronomical poise, modal mystique",
+      "bpm": 108.0,
+      "timeSignature": "4/4 (3+3+2 Maqsum)",
+      "beatsPerBar": 4,
+      "totalBars": 9,
+      "keyMode": "D Hijaz (Phrygian Dominant: D-Eb-F#-G-A-Bb-C)",
+      "form": "9-bar asymmetric modal starlight arc (4-bar Giza pedal & ornamented oboe call + 5-bar oboe/flute/horn constellation elevation)",
+      "venueAcoustics": "Giza Open-Air Sandstone Starlight Pavilion",
+      "instruments": [
+        "acoustic_guitar_nylon",
+        "cello",
+        "contrabass",
+        "flute",
+        "french_horn",
+        "oboe",
+        "orchestral_harp",
+        "taiko_drum",
+        "timpani"
+      ],
+      "routing": {
+        "tiers": [
+          7
+        ],
+        "lanes": [
+          "MAIN_STAGE",
+          "SPONSOR_SHOWCASE",
+          "RIVAL_GRUDGE"
+        ],
+        "acts": [
+          4
+        ],
+        "cities": [
+          "GIZA, EGYPT",
+          "CAIRO, EGYPT"
+        ],
+        "rivals": [
+          "nadia_al_mansoor"
+        ],
+        "priority": 50
+      },
+      "audio": {
+        "format": "mp3",
+        "bitrateKbps": 128,
+        "sampleRateHz": 44100,
+        "channels": 2,
+        "seamlessLoop": true,
+        "durationSec": 20.0,
+        "sizeBytes": 321035,
+        "sizeKb": 313.5,
+        "integratedLufs": -17.94,
+        "truePeakDbfs": -3.61,
+        "lraLu": 4.5,
+        "seamDelta": 0.00099,
+        "recommendedVolumeScale": 0.92
+      }
+    },
+    {
+      "id": "theme_stage8_finale",
+      "file": "./assets/audio/themes/theme_stage8_finale.mp3",
+      "filename": "theme_stage8_finale.mp3",
+      "title": "1.4-Billion Worldwide Simulcast",
+      "subtitle": "Global Championship Finale — Grandmaster Viktor Volkov",
+      "storyEmotion": "Colossal full-orchestra championship climax, towering brass majesty, historic stakes",
+      "bpm": 132.0,
+      "timeSignature": "4/4",
+      "beatsPerBar": 4,
+      "totalBars": 11,
+      "keyMode": "C Minor -> Ab Major -> Eb Major -> Db Neapolitan -> G7",
+      "form": "11-bar symphonic summit (4-bar heroic brass anthem + 4-bar global simulcast ascent + 3-bar Neapolitan cathedral-bell climax)",
+      "venueAcoustics": "Grand Global Symphony Concert Hall",
+      "instruments": [
+        "brass_section",
+        "cello",
+        "contrabass",
+        "french_horn",
+        "orchestral_harp",
+        "string_ensemble_1",
+        "string_ensemble_2",
+        "taiko_drum",
+        "timpani",
+        "tremolo_strings",
+        "trombone",
+        "trumpet",
+        "tubular_bells"
+      ],
+      "routing": {
+        "tiers": [
+          8
+        ],
+        "lanes": [
+          "MAIN_STAGE",
+          "SPONSOR_SHOWCASE",
+          "RIVAL_GRUDGE"
+        ],
+        "acts": [
+          5
+        ],
+        "cities": [
+          "WORLDWIDE SIMULCAST"
+        ],
+        "rivals": [
+          "viktor_volkov"
+        ],
+        "priority": 50
+      },
+      "audio": {
+        "format": "mp3",
+        "bitrateKbps": 128,
+        "sampleRateHz": 44100,
+        "channels": 2,
+        "seamlessLoop": true,
+        "durationSec": 20.0,
+        "sizeBytes": 321035,
+        "sizeKb": 313.5,
+        "integratedLufs": -17.95,
+        "truePeakDbfs": -4.58,
+        "lraLu": 4.6,
+        "seamDelta": 0.00278,
+        "recommendedVolumeScale": 0.92
+      }
+    },
+    {
+      "id": "theme_branch_redemption",
+      "file": "./assets/audio/themes/theme_branch_redemption.mp3",
+      "filename": "theme_branch_redemption.mp3",
+      "title": "2 AM Underdog Redemption Circuit",
+      "subtitle": "Fail-Forward Redemption Branch",
+      "storyEmotion": "Gritty 2 AM diner-and-basement jazz heart, bruised pride, quiet comeback fire",
+      "bpm": 88.0,
+      "timeSignature": "4/4 (12/8 triplet swing)",
+      "beatsPerBar": 4,
+      "totalBars": 7,
+      "keyMode": "C Minor / C Dorian Noir (G7#9 -> G7alt)",
+      "form": "7-bar asymmetric noir blues-chamber period (4-bar smoky muted-trumpet confession + 3-bar cello/bass defiant turnaround)",
+      "venueAcoustics": "2 AM Brick-Walled Cellar Jazz Lounge",
+      "instruments": [
+        "acoustic_grand_piano",
+        "cello",
+        "contrabass",
+        "muted_trumpet",
+        "string_ensemble_2"
+      ],
+      "routing": {
+        "tiers": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "lanes": [
+          "REDEMPTION_GRIT"
+        ],
+        "acts": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "cities": [
+          "BROOKLYN, NY",
+          "SOHO, LONDON",
+          "SHINJUKU, TOKYO",
+          "CAIRO, EGYPT",
+          "GENEVA, SWITZERLAND"
+        ],
+        "rivals": [],
+        "priority": 100
+      },
+      "audio": {
+        "format": "mp3",
+        "bitrateKbps": 128,
+        "sampleRateHz": 44100,
+        "channels": 2,
+        "seamlessLoop": true,
+        "durationSec": 19.091,
+        "sizeBytes": 306407,
+        "sizeKb": 299.2,
+        "integratedLufs": -17.95,
+        "truePeakDbfs": -4.93,
+        "lraLu": 4.6,
+        "seamDelta": 0.00098,
+        "recommendedVolumeScale": 0.92
+      }
+    },
+    {
+      "id": "theme_branch_velvet",
+      "file": "./assets/audio/themes/theme_branch_velvet.mp3",
+      "filename": "theme_branch_velvet.mp3",
+      "title": "Candlelight Salon Waltz",
+      "subtitle": "Secret Velvet Society Salons — Wax-Sealed Branch",
+      "storyEmotion": "Mysterious 3/4 candlelight elegance, whispered conspiracy, baroque parlor intrigue",
+      "bpm": 138.0,
+      "timeSignature": "3/4",
+      "beatsPerBar": 3,
+      "totalBars": 15,
+      "keyMode": "F# Minor -> A Major -> C#7b9",
+      "form": "15-bar asymmetric 3/4 Baroque waltz (4+4+4+3) with Viennese beat-2 lilt, celesta/harp shimmer & wry bassoon counterpoint",
+      "venueAcoustics": "Velvet Cloister Candlelight Parlor",
+      "instruments": [
+        "bassoon",
+        "celesta",
+        "cello",
+        "harpsichord",
+        "oboe",
+        "orchestral_harp",
+        "pizzicato_strings"
+      ],
+      "routing": {
+        "tiers": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "lanes": [
+          "VELVET_SALON"
+        ],
+        "acts": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "cities": [
+          "BROOKLYN HEIGHTS",
+          "OXFORD, UK",
+          "KYOTO, JAPAN",
+          "ALEXANDRIA, EGYPT",
+          "GENEVA, SWITZERLAND"
+        ],
+        "rivals": [],
+        "priority": 100
+      },
+      "audio": {
+        "format": "mp3",
+        "bitrateKbps": 128,
+        "sampleRateHz": 44100,
+        "channels": 2,
+        "seamlessLoop": true,
+        "durationSec": 19.565,
+        "sizeBytes": 313930,
+        "sizeKb": 306.6,
+        "integratedLufs": -17.94,
+        "truePeakDbfs": -4.85,
+        "lraLu": 3.7,
+        "seamDelta": 0.00118,
+        "recommendedVolumeScale": 0.92
+      }
+    }
+  ]
+}
