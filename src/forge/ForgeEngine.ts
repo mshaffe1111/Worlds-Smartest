@@ -1,10 +1,10 @@
 // ============================================================================
-// WORLD'S SMARTEST — MILLION-SCALE FORGE & LAZY SHARD ENGINE
-// Implements docs/PITCH_BIBLE.md §6:
-//   • Streams 20,165 pure-factual Tier-1 human questions + shard_manifest.json
-//   • Lazily streams 929,564 verified fact-graph shard Qs (<150ms per domain)
-//   • Synthesizes 50,400 deterministic Codex Dual-Ring triplets -> 1,000,129 Qs
-//   • Exact 128 KB RoaringSeenTracker + 30-Q microTopicId & L0 anti-repeat guards
+// WORLD'S SMARTEST v5.0 — 1.27M+ CLEAN CORPUS FORGE & LAZY SHARD ENGINE
+// Implements docs/PITCH_BIBLE.md §6 + v5.0 1.25M+ Clean Playable Guarantee:
+//   • Streams clean curated Tier-1 packs (100% of QIDs 4,965..20,165 MMLU/BoolQ/ARC quarantined!)
+//   • Lazily streams 1,221,277 verified fact-graph + specialist subcat shard Qs (12 domains, 157 L2s)
+//   • Synthesizes 50,400 deterministic Codex Dual-Ring triplets -> 1,279,000+ clean playable Qs!
+//   • Exact RoaringSeenTracker (3.14M QID capacity) + 30-Q microTopicId & L0 anti-repeat guards
 //   • 2PL/GRM 12-Domain IRT Skill Vector + Strict 8-City Campaign Curve + Daily Seed
 // ============================================================================
 
@@ -29,10 +29,13 @@ import {
   decodeShardRawQuestion,
   fnv1a32,
   formatCleanTriviaNumber,
+  hasRoboticWhyExplanation,
+  isBenchmarkOrExamSlop,
   isCleanShardCandidate,
   isShardRowFamousEnoughForTier,
   normalizeToPrismQuestion,
   normalizeVisualAssetUrl,
+  sanitizeTriviaCopy,
   sharedCryptoRng,
   synthesizeShardCodexQuestion,
   type RngLike,
@@ -1236,14 +1239,42 @@ export class ForgeEngine {
 
     for (const card of rawList) {
       if (!card || !card.prompt || !card.format) continue;
+      if (
+        isBenchmarkOrExamSlop({
+          qid: typeof card.qid === 'number' ? card.qid : 1_090_001,
+          l0Domain: card.domainId,
+          prompt: card.prompt,
+          whyExplanation: card.funFactWhy,
+        }) ||
+        hasRoboticWhyExplanation(card.funFactWhy)
+      ) {
+        continue;
+      }
       const qid =
-        typeof card.qid === 'number' && card.qid >= 1_090_000 && !existingIds.has(card.qid)
+        typeof card.qid === 'number' &&
+        card.qid >= 1_090_000 &&
+        !(card.qid >= 4_965 && card.qid <= 20_165) &&
+        !existingIds.has(card.qid)
           ? Math.trunc(card.qid)
           : (() => {
               while (existingIds.has(nextQid) || this.byQid.has(nextQid)) nextQid++;
               return nextQid++;
             })();
-      const cleanCard: QuestionCardV4 = { ...card, qid };
+      const cleanCard: QuestionCardV4 = {
+        ...card,
+        qid,
+        prompt: sanitizeTriviaCopy(card.prompt),
+        funFactWhy: sanitizeTriviaCopy(card.funFactWhy),
+        helpfulHint: sanitizeTriviaCopy(card.helpfulHint),
+        ...(card.visualSpotter?.imageUrl
+          ? {
+              visualSpotter: {
+                ...card.visualSpotter,
+                imageUrl: normalizeVisualAssetUrl(card.visualSpotter.imageUrl),
+              },
+            }
+          : {}),
+      };
       existingIds.add(qid);
       this.curatedV4Cards.push(cleanCard);
       added++;
@@ -1380,6 +1411,7 @@ export class ForgeEngine {
         typeof candidate === 'number' &&
         candidate >= 1 &&
         candidate <= MAX_QID &&
+        !(candidate >= 4_965 && candidate <= 20_165) &&
         !this.byQid.has(candidate)
       ) {
         return Math.trunc(candidate);
@@ -1434,6 +1466,7 @@ export class ForgeEngine {
         typeof candidate === 'number' &&
         candidate >= 1 &&
         candidate <= MAX_QID &&
+        !(candidate >= 4_965 && candidate <= 20_165) &&
         !this.byQid.has(candidate)
       ) {
         return Math.trunc(candidate);
@@ -1602,6 +1635,7 @@ export class ForgeEngine {
         typeof candidateQid === 'number' &&
         candidateQid >= 1 &&
         candidateQid < 60_000 &&
+        !(candidateQid >= 4_965 && candidateQid <= 20_165) &&
         !this.byQid.has(candidateQid)
       ) {
         return candidateQid;
@@ -1750,23 +1784,37 @@ export class ForgeEngine {
 
     const loadTask = (async () => {
       try {
-        const chunks = await Promise.all(
-          domEntry.files.map((f) =>
-            this.fetchJson<ShardChunkData>(`${this.dataBaseUrl}/shards/${f.path}`),
+        const subcatEntries = this.subcatFileIndex.filter((e) => e.domainId === d);
+        const [chunks, subcatResults] = await Promise.all([
+          Promise.all(
+            domEntry.files.map((f) =>
+              this.fetchJson<ShardChunkData>(`${this.dataBaseUrl}/shards/${f.path}`),
+            ),
           ),
-        );
+          Promise.allSettled(
+            subcatEntries.map((e) => this.ensureExtraShardFileLoaded(e.path, d)),
+          ),
+        ]);
         const validChunks = chunks.filter(
           (c): c is ShardChunkData => Boolean(c && Array.isArray(c.t) && Array.isArray(c.p)),
         );
+        const loadedSubcatChunks = subcatResults
+          .filter(
+            (r): r is PromiseFulfilledResult<ShardChunkData | null> => r.status === 'fulfilled',
+          )
+          .map((r) => r.value)
+          .filter((c): c is ShardChunkData => Boolean(c && Array.isArray(c.t) && Array.isArray(c.p)));
+
         if (validChunks.length > 0) {
           this.primaryDomainShardLoaded.add(d);
           const alreadyAttached = (this.loadedShardsByDomain.get(d) ?? []).filter(
-            (c) => !validChunks.includes(c),
+            (c) => !validChunks.includes(c) && !loadedSubcatChunks.includes(c),
           );
-          const merged = [...validChunks, ...alreadyAttached];
+          const merged = [...validChunks, ...loadedSubcatChunks, ...alreadyAttached];
           this.loadedShardsByDomain.set(d, merged);
+          const subcatBonus = this.subcatShardBonusByDomain.get(d) ?? 0;
           for (const cb of this.shardLoadListeners) {
-            cb(d, domEntry.questions);
+            cb(d, domEntry.questions + subcatBonus);
           }
           return merged;
         }
@@ -2340,17 +2388,33 @@ export class ForgeEngine {
   }
 
   /**
-   * Returns live per-domain & total verified counts across all 12 domains:
-   *   • 20,165 pure-factual Tier-1 human questions
-   *   • 929,564 CC0/PD/CC-BY/MIT fact-graph shard questions (= 949,729 unique verified!)
-   *   • +50,400 deterministic graded Codex/Synthesis pairings (= 1,000,129 dense playable QIDs!)
+   * Returns live per-domain & total clean playable counts across all 12 domains & 157 subcategories:
+   *   • Clean curated Tier-1 packs (Gold Core + Gold Venue + Jeopardy Signature + Visual/Globe +
+   *     Curated v5 Witty Multi-Format Pack; 100% of QIDs 4,965..20,165 MMLU/BoolQ/ARC quarantined!)
+   *   • 929,564 main fact-graph shard Qs + 291,713 specialist subcat shard Qs (= 1,221,277 shard Qs!)
+   *   • +50,400 deterministic graded Codex/Synthesis pairings (= 1,279,000+ clean playable Qs!)
    */
   public getDomainCounts(): ForgeUniverseCounts {
     const manifest = this.shardManifest;
     const hasManifest = Boolean(manifest && manifest.totalQuestions > 0);
+    // Count multi-format curated_v4_witty_pack cards not already bridged into this.byQid (zero double-counting!)
+    const nonBridgedCuratedByDomain = new Map<DomainId, QuestionCardV4[]>();
+    for (const card of this.curatedV4Cards) {
+      if (this.byQid.has(card.qid)) continue;
+      const cd = clamp(Math.trunc(card.domainId), 0, 11) as DomainId;
+      let list = nonBridgedCuratedByDomain.get(cd);
+      if (!list) {
+        list = [];
+        nonBridgedCuratedByDomain.set(cd, list);
+      }
+      list.push(card);
+    }
+
     const byDomain: DomainCountEntry[] = FORGE_DOMAINS.map((meta) => {
       const d = meta.id;
-      const tier1Count = this.byDomain.get(d)?.length ?? 0;
+      const tier1List = this.byDomain.get(d) ?? [];
+      const extraCuratedV4 = nonBridgedCuratedByDomain.get(d) ?? [];
+      const tier1Count = tier1List.length + extraCuratedV4.length;
       const domManifest = manifest?.domains.find((m) => m.l0Domain === d);
       const subcatBonus = this.subcatShardBonusByDomain.get(d) ?? 0;
       const shardFactCount = (domManifest?.questions ?? 0) + subcatBonus;
@@ -2370,9 +2434,11 @@ export class ForgeEngine {
           seenInDomainEst += this.seenTracker.countSeenInRange(lo, hi);
         }
       }
-      const tier1List = this.byDomain.get(d) ?? [];
       for (let i = 0; i < tier1List.length; i++) {
         if (this.seenTracker.hasSeen(tier1List[i].qid)) seenInDomainEst++;
+      }
+      for (let i = 0; i < extraCuratedV4.length; i++) {
+        if (this.seenTracker.hasSeen(extraCuratedV4[i].qid)) seenInDomainEst++;
       }
 
       return {
@@ -2392,7 +2458,7 @@ export class ForgeEngine {
       };
     });
 
-    const tier1HumanTotal = this.tier1Questions.length;
+    const tier1HumanTotal = byDomain.reduce((acc, item) => acc + item.tier1HumanCount, 0);
     const shardFactTotal = byDomain.reduce((acc, item) => acc + item.shardFactCount, 0);
     const verifiedUniqueTotal = tier1HumanTotal + shardFactTotal;
     const codexSynthesisTotal = byDomain.reduce((acc, item) => acc + item.codexSynthesisCount, 0);
@@ -3696,6 +3762,10 @@ export class ForgeEngine {
     qid: number,
     opts: { timerSec?: number; facetCount?: 4 | 5 | 6; shuffleSalt?: number } = {},
   ): PrismQuestion | null {
+    // Hard quarantine: never serve MMLU / BoolQ / AI2 ARC benchmark rows (QIDs 4,965..20,165) or quarantined QIDs!
+    if ((qid >= 4_965 && qid <= 20_165) || this.quarantinedQids.has(qid)) {
+      return null;
+    }
     const t1 = this.byQid.get(qid) ?? this.coldOpenByQid.get(qid);
     if (t1) {
       return normalizeToPrismQuestion(t1, {

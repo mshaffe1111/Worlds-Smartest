@@ -214,10 +214,10 @@ const STOPWORD_TOKENS = new Set<string>([
 const YEAR_UNIT_RE = /^(?:ce|bce|ad|bc|c\.e\.|b\.c\.e\.|a\.d\.|b\.c\.|year|yr)$/i;
 
 const YEAR_PROMPT_RE =
-  /\b(what year|which year|in what year|when was|when did|born|died|founded|opened|inducted|established|debuted|world series|season|released in|published in|fought in)\b/i;
+  /\b(what year|which year|in what year|when was|when did|born|died|founded|opened|inducted|established|debuted|made its debut|world series|season|released in|published in|fought in|launched|premiered|formed|built|completed|discovered|invented|signed|enacted|decided|patented|crowned|elected|ratified|chartered|first flight|first game|started|began|ended|landed|flew)\b/i;
 
 const YEAR_COL_RE =
-  /^(?:year|yr|debut|born|died|founded|opened|inducted|established|birth_year|death_year|release_year|start_year|end_year)$/i;
+  /^(?:year|yr|debut|born|died|founded|opened|inducted|established|birth_year|death_year|release_year|start_year|end_year|year_founded|year_built|launch_year|pub_year|first_year|last_year|era_year|season)$/i;
 
 /**
  * Determines whether a numeric trivia value represents a calendar year/date
@@ -445,9 +445,9 @@ function stripCalendarYearCommas(text: string): string {
   s = s.replace(/\b([12]),(\d{3})(?!,\d{3}|\d)\s+(CE|AD|C\.E\.|A\.D\.)\b/gi, '$1$2 $3');
   // 2. Era / circa prefixes ("AD 1,066" -> "AD 1066", "c. 1,450" -> "c. 1450")
   s = s.replace(/\b(AD|CE|A\.D\.|C\.E\.|circa|ca\.|c\.)\s+([12]),(\d{3})(?!,\d{3}|\d)\b/gi, '$1 $2$3');
-  // 3. Parenthesized years ("(1,903)" -> "(1903)", "(b. 1,879)" -> "(b. 1879)")
+  // 3. Parenthesized years ("(1,903)" -> "(1903)", "(b. 1,879)" -> "(b. 1879)", "(USA, 1,969)" -> "(USA, 1969)")
   s = s.replace(
-    /(\(\s*(?:(?:b\.|d\.|born|died|founded|opened|established|est\.|debut|inducted|released|published|formed|launched|built|c\.|circa|MLB games from|first MLB game)\s+)?)([12]),(\d{3})(?=\s*(?:\)|[–—-]\s*[12],?\d{3}|\s*(?:CE|BCE|AD|BC)\b))/gi,
+    /(\(\s*(?:[^()]{0,44},\s*)?(?:(?:b\.|d\.|born|died|founded|opened|established|est\.|debut|inducted|released|published|formed|launched|built|introduced|enacted|decided|c\.|circa|MLB games from|first MLB game)\s+)?)([12]),(\d{3})(?=\s*(?:\)|[–—-]\s*[12],?\d{3}|\s*(?:CE|BCE|AD|BC)\b|,\s*[A-Za-z]))/gi,
     '$1$2$3',
   );
   // 4. Year ranges ("1,914–1,918" -> "1914–1918", "1,939–45" -> "1939–45")
@@ -458,8 +458,8 @@ function stripCalendarYearCommas(text: string): string {
       return `${y1.replace(',', '')}${dash}${y2.replace(',', '')}`;
     },
   );
-  // 5. Decades ("1,960s" -> "1960s")
-  s = s.replace(/\b(1,\d{2}0|2,0\d0)s\b/g, (_m, y: string) => `${y.replace(',', '')}s`);
+  // 5. Decades & era-prefixed decades ("1,960s" -> "1960s", "mid-1,960s" -> "mid-1960s")
+  s = s.replace(/(?:(?<=\b)|(?<=(?:early|mid|late)-))(1,\d{2}0|2,0\d0)s\b/gi, (_m, y: string) => `${y.replace(',', '')}s`);
   // 6. Month [day,] year ("July 20, 1,969" -> "July 20, 1969")
   s = s.replace(
     /\b(January|February|March|April|May|June|July|August|September|October|November|December|Jan\.?|Feb\.?|Mar\.?|Apr\.?|Jun\.?|Jul\.?|Aug\.?|Sep\.?|Sept\.?|Oct\.?|Nov\.?|Dec\.?)(\s+(?:\d{1,2}(?:st|nd|rd|th)?,?\s+)?)(1,\d{3}|2,0\d{2}|2,1[01]\d|2,120)(?!,\d{3}|\d)\b/gi,
@@ -467,7 +467,7 @@ function stripCalendarYearCommas(text: string): string {
   );
   // 7. Preposition/verb + year ("in 1,984" -> "in 1984", "between 1,960 and 2,005" -> "between 1960 and 2005")
   s = s.replace(
-    /\b(in|on|born|died|founded|opened|established|inducted|debut|debuted|released|published|fought|signed|launched|premiered|formed|created|built|completed|discovered|invented|dated|since|until|before|after|by|around|year|season|between|from)(\s+)(1,\d{3}|2,0\d{2}|2,1[01]\d|2,120)(?!,\d{3}|\d)(?:(\s+(?:and|to|through)\s+)(1,\d{3}|2,0\d{2}|2,1[01]\d|2,120)(?!,\d{3}|\d))?\b/gi,
+    /\b(in|on|born|died|founded|opened|established|inducted|debut|debuted|released|published|fought|signed|launched|premiered|formed|created|built|completed|discovered|invented|dated|since|until|before|after|by|around|year|season|introduced|enacted|decided|patented|crowned|elected|ratified|chartered|between|from)(\s+(?:the\s+year\s+)?)(1,\d{3}|2,0\d{2}|2,1[01]\d|2,120)(?!,\d{3}|\d)(?:(\s+(?:and|to|through)\s+)(1,\d{3}|2,0\d{2}|2,1[01]\d|2,120)(?!,\d{3}|\d))?\b/gi,
     (
       m,
       prep: string,
@@ -809,7 +809,7 @@ const BENCHMARK_SLOP_QID_MIN = 4_965;
 const BENCHMARK_SLOP_QID_MAX = 20_165;
 
 const RE_EXAM_STEM_SLOP =
-  /\b(?:which of the following|all of the following except|none of the above|all of the above|which statement best|which option best|which sentence best|select the correct statement|choose the correct option|the best answer is|statement 1\s*\||statement 2\s*\|)\b/i;
+  /\b(?:which of the following|all of the following except|none of the above|all of the above|which statement best|which option best|which sentence best|select the correct statement|choose the correct option|the best answer is|identify the verified entity|statement 1\s*\||statement 2\s*\|)\b/i;
 
 const RE_FILL_IN_BLANK = /_{3,}|\[\s*blank\s*\]|\(\s*blank\s*\)/i;
 
@@ -1459,8 +1459,10 @@ function describeCenturyFromYear(rawYear: string | number | undefined): string |
 }
 
 /**
- * Rewrites dry dictionary shard stems into lively, broadcast-ready game-show phrasing
- * while keeping exact factual meaning and deterministic variation per QID.
+ * Rewrites dry dictionary shard stems into crisp, witty, broadcast-ready game-show clues
+ * (Jeopardy! 2-clause craft × You Don't Know Jack energy — ZERO "Identify the verified entity",
+ * ZERO "associated with", ZERO "Check this ... result:", ZERO "Estimate the exact value:")
+ * while keeping exact factual accuracy and deterministic variation per QID!
  */
 function polishShardBroadcastPrompt(
   prompt: string,
@@ -1470,27 +1472,405 @@ function polishShardBroadcastPrompt(
   qid: number,
 ): string {
   let out = sanitizeTriviaCopy(prompt);
-  const v = fnv1a32(`V4_REWRITE:${qid}:${angleId}`) % 4;
+  const v = fnv1a32(`V5_REWRITE:${qid}:${typeId}:${angleId}`) % 4;
   const name = String(ctx.name ?? ctx.title ?? '').trim();
   const country = String(ctx.country ?? '').trim();
   const year = ctx.year !== undefined ? String(ctx.year).trim() : '';
   const role = String(ctx.role ?? ctx.field ?? ctx.discipline ?? ctx.craft ?? '').trim();
+  const yearTag = year && /^-?\d{2,4}$/.test(year) ? ` (born ${year})` : '';
+  const roleLower = role ? role.toLowerCase() : '';
+  const rolePrefix = roleLower ? `${roleLower} ` : '';
 
-  // Rewrite dry "Which country [or realm] was [historical figure / scientist / role] X associated with?"
-  if (/which country(?: or realm)? was /i.test(out) && /associated with\??$/i.test(out) && name) {
-    const roleBit = role ? `${role.toLowerCase()} ` : '';
-    const yearBit = year && /^\d{3,4}$/.test(year) ? ` (born ${year})` : '';
+  // 1. Specific dry/robotic "Identify the..." & table-angle broadcast rewrites
+  if (/^Identify\b/i.test(out)) {
+    if (typeId === 'sci_element' && angleId === 'se_sym' && name) {
+      const variants = [
+        `Periodic-table pulse check: which official chemical symbol stands for ${name}?`,
+        `Lab coat on—what one- or two-letter symbol represents ${name} on the periodic table?`,
+        `Quick chemistry buzzer: which symbol belongs to ${name}?`,
+        `Spell it like a chemist—what symbol marks ${name} on the elemental chart?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'sci_chemical' && angleId === 'sc_rev' && ctx.formula) {
+      const variants = [
+        `Lab-notebook cipher: which chemical compound goes by the formula ${ctx.formula}?`,
+        `Decode the beaker—what substance wears the chemical formula ${ctx.formula}?`,
+        `Chemist's shorthand: which compound hides behind ${ctx.formula}?`,
+        `Spot the molecule: ${ctx.formula} is the formula for which substance?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'sci_space' && angleId === 'sm_rev' && ctx.agency) {
+      const variants = [
+        `Mission Control check: which of these space missions flew under ${ctx.agency}'s banner?`,
+        `Launchpad roll call—which spacecraft here was operated by ${ctx.agency}?`,
+        `Only one of these missions belongs on ${ctx.agency}'s flight log. Which is it?`,
+        `Orbit check: which of these spaceflight milestones was guided by ${ctx.agency}?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'geo_city' && angleId === 'gc_rev' && country) {
+      const variants = [
+        `Stamp your passport for ${country}—which of these cities sits inside its borders?`,
+        `No GPS allowed: touch down in ${country} and you could visit which of these cities?`,
+        `Atlas showdown: only one of these cities calls ${country} home. Which one?`,
+        `Border check! Which of these four cities belongs on a map of ${country}?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'geo_airport' && angleId === 'ga_code' && ctx.airport) {
+      const cityBit = ctx.city ? ` in ${ctx.city}` : '';
+      const variants = [
+        `Check the baggage tag! What three-letter IATA code marks ${ctx.airport}${cityBit}?`,
+        `Boarding call: which airport code gets stamped on luggage headed for ${ctx.airport}${cityBit}?`,
+        `Pilot's logbook check—what IATA code belongs to ${ctx.airport}${cityBit}?`,
+        `Departure board quiz: which three letters represent ${ctx.airport}${cityBit}?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'geo_river' && angleId === 'gr_rev' && country) {
+      const variants = [
+        `Go with the flow: which of these rivers winds through ${country}?`,
+        `Watershed check—which waterway here flows across ${country}?`,
+        `Pack a paddle for ${country}: which of these rivers belongs on its map?`,
+        `Atlas current check: which one of these four rivers runs through ${country}?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'pop_tv' && angleId === 'pt_rev' && country) {
+      const variants = [
+        `Grab the remote—which of these television series was produced in ${country}?`,
+        `Prime-time passport: which TV show here hails from ${country}?`,
+        `Channel-surfing check: only one of these series originated in ${country}. Which is it?`,
+        `Broadcast trivia: which of these shows debuted on television in ${country}?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'pop_band' && angleId === 'pb_rev' && country) {
+      const variants = [
+        `Crank the amp! Which of these musical acts got its start in ${country}?`,
+        `Backstage pass check: which band or artist here formed in ${country}?`,
+        `Soundcheck showdown—only one of these musical acts hails from ${country}. Who is it?`,
+        `Cue the encore: which of these acts traces its origins to ${country}?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'sport_athlete' && angleId === 'spa_rev' && ctx.sport) {
+      const variants = [
+        `Hall-of-Fame roll call: which standout here made headlines in ${ctx.sport}?`,
+        `Step into the arena—which athlete among these four starred in ${ctx.sport}?`,
+        `Buzzer-beater check: only one of these stars built their legend in ${ctx.sport}. Who?`,
+        `Sports-desk trivia: which of these competitors is famous for ${ctx.sport}?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'sport_stadium' && angleId === 'sps_rev' && country) {
+      const variants = [
+        `Pack the stands! Which of these sports venues welcomes fans in ${country}?`,
+        `Home-field advantage: which arena or stadium here sits inside ${country}?`,
+        `Ticket-stub check—only one of these venues is located in ${country}. Which one?`,
+        `Stadium tour: which of these sporting landmarks calls ${country} home?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'tech_company' && angleId === 'tc_rev' && country) {
+      const variants = [
+        `Follow the headquarters: which of these companies calls ${country} home?`,
+        `Silicon-atlas check—which enterprise here is headquartered in ${country}?`,
+        `Boardroom passport: only one of these companies originated in ${country}. Which one?`,
+        `Tech-ticker quiz: which of these firms is rooted in ${country}?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'tech_software' && angleId === 'ts_rev' && ctx.sw_type) {
+      const variants = [
+        `Tech-stack check: which of these made its name as a ${ctx.sw_type}?`,
+        `Open the terminal—which computing milestone here fits under ${ctx.sw_type}?`,
+        `Ctrl+Alt+Trivia: only one of these entries belongs to the ${ctx.sw_type} shelf. Which?`,
+        `Byte-sized spotlight: which of these technologies is a ${ctx.sw_type}?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'soc_country' && angleId === 'scn_rev' && ctx.capital) {
+      const variants = [
+        `Embassy roll call: ${ctx.capital} serves as the official capital of which nation?`,
+        `Check the diplomatic pouch—which country governs from ${ctx.capital}?`,
+        `Capital connection: fly into ${ctx.capital} and you've landed in which nation's capital?`,
+        `World-affairs buzzer: which sovereign nation names ${ctx.capital} its capital?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'soc_university' && angleId === 'su_rev' && country) {
+      const variants = [
+        `Campus tour: which of these universities welcomes students in ${country}?`,
+        `Cap-and-gown atlas—which historic university here sits in ${country}?`,
+        `Dean's list check: only one of these institutions is located in ${country}. Which?`,
+        `Lecture-hall trivia: which of these universities calls ${country} home?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'food_item' && angleId === 'fi_rev' && country) {
+      const variants = [
+        `Pull up a chair in ${country}—which of these dishes or drinks belongs on its menu?`,
+        `Check, please! Which culinary classic here traces its roots to ${country}?`,
+        `Tasting-menu test: only one of these specialties hails from ${country}. Which one?`,
+        `Chef's spotlight: which of these traditional favorites comes from ${country}?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'food_brand' && angleId === 'fb_rev' && country) {
+      const variants = [
+        `Heritage label check: which of these iconic brands traces its roots to ${country}?`,
+        `Window-shopping atlas—which famous house or brand here began in ${country}?`,
+        `Maker's mark quiz: only one of these brands hails from ${country}. Which one?`,
+        `Craft & commerce: which of these celebrated names was born in ${country}?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'lit_myth' && angleId === 'lm_rev' && ctx.tradition) {
+      const variants = [
+        `Open the myth anthology: which figure or creature steps straight out of ${ctx.tradition}?`,
+        `Lore-keeper check—which legendary name here belongs to ${ctx.tradition}?`,
+        `Campfire-epic quiz: only one of these mythic figures hails from ${ctx.tradition}. Who?`,
+        `Pantheon spotlight: which of these legends comes from ${ctx.tradition}?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'sub_bb_pitcher' && angleId === 'bbp_rev' && ctx.team) {
+      const variants = [
+        `Step to the mound: which MLB pitcher logged their longest career stretch with the ${ctx.team}?`,
+        `Bullpen check—which hurler here spent the bulk of their career pitching for the ${ctx.team}?`,
+        `Diamond ledger: which of these pitchers is best remembered on the mound for the ${ctx.team}?`,
+        `Check the box score: which MLB arm spent their longest stint with the ${ctx.team}?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'sub_bb_world_series' && angleId === 'bbw_lose' && ctx.winner && ctx.series_lbl) {
+      const variants = [
+        `October heartbreak: which World Series opponent fell to the ${ctx.winner} in the ${ctx.series_lbl}?`,
+        `Fall Classic rewind—who did the ${ctx.winner} defeat to capture the ${ctx.series_lbl}?`,
+        `Championship ledger: which club came up short against the ${ctx.winner} in the ${ctx.series_lbl}?`,
+        `Final out check: whom did the ${ctx.winner} topple in the ${ctx.series_lbl}?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'sub_bb_ballpark' && angleId === 'bbk_team' && ctx.park) {
+      const variants = [
+        `Play ball! Which baseball club called ${ctx.park} its home diamond?`,
+        `Turnstile nostalgia—which franchise hosted home games at ${ctx.park}?`,
+        `Seventh-inning stretch check: which team played its home slate at ${ctx.park}?`,
+        `Ballpark blueprint quiz: which club's fans packed the seats at ${ctx.park}?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'sub_hist_dynasty' && angleId === 'shd_rev' && ctx.dynasty) {
+      const variants = [
+        `Royal family tree: which historical figure belonged to the ${ctx.dynasty}?`,
+        `Crown & chronicle—which ruler or noble here came from the ${ctx.dynasty}?`,
+        `Palace archives: only one of these figures carried the ${ctx.dynasty} lineage. Who?`,
+        `Lineage check: which of these names sits on the family tree of the ${ctx.dynasty}?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'sub_sci_solar_body' && angleId === 'ssb_rev' && ctx.discoverer) {
+      const variants = [
+        `Aim the telescope: which minor planet, comet, or moon is credited to ${ctx.discoverer}?`,
+        `Observatory logbook—which celestial discovery belongs to ${ctx.discoverer}?`,
+        `Deep-space credit roll: which of these solar-system bodies did ${ctx.discoverer} spot?`,
+        `Night-sky trivia: ${ctx.discoverer} earned discovery honors for which cosmic body?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'sub_sci_laureate' && angleId === 'ssl_awd' && name) {
+      const almaBit = ctx.alma ? ` (${ctx.alma})` : '';
+      const variants = [
+        `Black-tie science gala: which landmark honor was awarded to ${name}${almaBit}?`,
+        `Trophy-case check—which major scientific prize did ${name}${almaBit} claim?`,
+        `Laureate spotlight: what prestigious award crowned the career of ${name}${almaBit}?`,
+        `Podium applause: which top scientific prize honored ${name}${almaBit}?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'sub_geo_us_city' && angleId === 'sgu_rev' && ctx.state) {
+      const variants = [
+        `Cross-country road trip: which of these American cities sits inside ${ctx.state}?`,
+        `Highway-sign check—cross into ${ctx.state} and you could visit which of these cities?`,
+        `Fifty-state showdown: only one of these cities belongs in ${ctx.state}. Which one?`,
+        `U.S. map pulse check: which city here calls ${ctx.state} home?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'sub_art_classical' && angleId === 'sac_rev' && ctx.composer) {
+      const variants = [
+        `Cue the orchestra! Which of these works flowed from the pen of ${ctx.composer}?`,
+        `Concert-hall program check—which musical piece here was composed by ${ctx.composer}?`,
+        `Raise the baton: only one of these works carries ${ctx.composer}'s signature. Which?`,
+        `Symphony spotlight: which of these classical works did ${ctx.composer} write?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'sub_pop_actor' && angleId === 'spa_rev' && country) {
+      const variants = [
+        `Red-carpet roll call: which screen actor here hails from ${country}?`,
+        `Casting-couch atlas—only one of these performers traces their roots to ${country}. Who?`,
+        `Spotlight on ${country}: which of these film actors comes from there?`,
+        `Box-office passport: which of these screen stars hails from ${country}?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'sub_pro_player' && angleId === 'spp_pos' && name) {
+      const sportBit = ctx.sport_tag ? `${ctx.sport_tag} standout ` : '';
+      const metaBit = country ? ` (${country}${year ? `, born ${year}` : ''})` : yearTag;
+      const variants = [
+        `Check the lineup card: what primary position did ${sportBit}${name}${metaBit} play?`,
+        `Chalkboard tactics—where on the field or court did ${sportBit}${name}${metaBit} line up?`,
+        `Scouting report: which position made ${sportBit}${name}${metaBit} famous?`,
+        `Game-day roster check: what signature role did ${sportBit}${name}${metaBit} play?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'sub_vg_genre' && angleId === 'svg_dev2' && ctx.title) {
+      const gBit = ctx.genre ? `${String(ctx.genre).toLowerCase()} ` : '';
+      const yBit = year ? `${year} ` : '';
+      const variants = [
+        `Press Start! Which studio developed the ${yBit}${gBit}game "${ctx.title}"?`,
+        `Opening credits check—which developer built "${ctx.title}" (${ctx.genre}, ${year})?`,
+        `Controller in hand: who created the ${yBit}${gBit}title "${ctx.title}"?`,
+        `Arcade hall of fame: which studio stands behind "${ctx.title}" (${year})?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'sub_nat_iucn' && angleId === 'sni_sts' && name) {
+      const sciBit = ctx.sci ? ` (${ctx.sci})` : '';
+      const variants = [
+        `Field-guide alert: what IUCN Red List status currently applies to the ${name}${sciBit}?`,
+        `Wildlife watch—where does the ${name}${sciBit} rank on the IUCN Red List?`,
+        `Conservation check: how is the ${name}${sciBit} classified on the IUCN Red List?`,
+        `Eco-ledger quiz: which IUCN conservation category covers the ${name}${sciBit}?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'sub_nat_breed' && angleId === 'snb_rev' && country) {
+      const animalBit = ctx.animal ? `${String(ctx.animal).toLowerCase()} ` : '';
+      const variants = [
+        `Pedigree check: which ${animalBit}breed traces its origins to ${country}?`,
+        `Best-in-show atlas—which of these ${animalBit}breeds was developed in ${country}?`,
+        `Breed spotlight: only one of these ${animalBit}lineages comes from ${country}. Which?`,
+        `Animal-heritage quiz: which ${animalBit}breed got its start in ${country}?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'sub_food_atelier' && angleId === 'sfa_rev' && ctx.founder) {
+      const yBit = year ? ` in ${year}` : '';
+      const variants = [
+        `Atelier spotlight: which heritage house did ${ctx.founder} launch${yBit}?`,
+        `Craftsmanship check—what famed label or house did ${ctx.founder} found${yBit}?`,
+        `Founder's signature: which celebrated brand bears the legacy of ${ctx.founder}${yBit}?`,
+        `Luxury-ledger quiz: which house got its start under ${ctx.founder}${yBit}?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    // Universal anti-"Identify the..." fallback so NO shard prompt ever reads like a dry worksheet!
+    const stripped = out
+      .replace(/^Identify the\s+/i, '')
+      .replace(/\bverified\s+/gi, '')
+      .replace(/\bassociated with\b/gi, 'linked to')
+      .replace(/\.$/, '');
+    const genericLeads = [
+      `Spotlight check: which ${stripped}?`,
+      `Put it on the board—which ${stripped}?`,
+      `Buzzer call: which ${stripped}?`,
+      `Name the match: which ${stripped}?`,
+    ];
+    return sanitizeTriviaCopy(genericLeads[v]);
+  }
+
+  // 2. Rewrite dry "Which country / nation / realm ... associated with?" (all figure/scientist/creator/pioneer/org/leader/author/math tables)
+  if (
+    /(?:which country|which nation|with which country|with which jurisdiction|which country's)/i.test(out) &&
+    /associated/i.test(out) &&
+    name
+  ) {
+    if (typeId === 'soc_org' && ctx.org_type) {
+      const yBit = year ? `, est. ${year}` : '';
+      const variants = [
+        `Follow the charter: which nation is home to ${name} (${ctx.org_type}${yBit})?`,
+        `Headquarters check—which country claims ${name} (${ctx.org_type}${yBit})?`,
+        `Global desk trivia: where is ${name} (${ctx.org_type}${yBit}) rooted?`,
+        `Which nation's flag flies alongside ${name} (${ctx.org_type}${yBit})?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    if (typeId === 'sub_soc_law' && ctx.ltype) {
+      const yBit = year ? `, ${year}` : '';
+      const variants = [
+        `Gavel check: which country or jurisdiction produced ${name} (${ctx.ltype}${yBit})?`,
+        `Courtroom atlas—where in the world was ${name} (${ctx.ltype}${yBit}) enacted or decided?`,
+        `Legal landmark quiz: which nation's law books include ${name} (${ctx.ltype}${yBit})?`,
+        `Order in the court! Which jurisdiction does ${name} (${ctx.ltype}${yBit}) belong to?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+    const eraBit = ctx.era_tag ? ` (${ctx.era_tag})` : '';
     const variants = [
-      `Passport check: which nation can claim ${roleBit}${name}${yearBit} as part of its story?`,
-      `Which country's flag belongs beside ${roleBit}${name}${yearBit} in the history books?`,
-      `Put ${roleBit}${name}${yearBit} on the map—which country or realm did they hail from?`,
-      `Which country shaped the legacy of ${roleBit}${name}${yearBit}?`,
+      `Passport check: which nation claims ${rolePrefix}${name}${yearTag}${eraBit} as part of its story?`,
+      `Which country's flag belongs beside ${rolePrefix}${name}${yearTag}${eraBit} in the history books?`,
+      `Put ${rolePrefix}${name}${yearTag}${eraBit} on the map—which country or realm did they hail from?`,
+      `Which homeland shaped the legacy of ${rolePrefix}${name}${yearTag}${eraBit}?`,
     ];
     return sanitizeTriviaCopy(variants[v]);
   }
 
-  // Rewrite dry "Which of these ... was associated with {country}?"
-  if (/which of these .* was associated with /i.test(out) && country) {
+  // 3. Rewrite "Born in {year}, ... is associated with ... which country/nation" & "In mathematical history, ... is associated with which nation?"
+  if (/\bis associated with\b/i.test(out) && /\bwhich (?:country|nation)/i.test(out) && name) {
+    const variants = [
+      `Passport check: which nation claims ${rolePrefix}${name}${yearTag} in its hall of fame?`,
+      `Pin ${rolePrefix}${name}${yearTag} on the map—which country do they hail from?`,
+      `Which homeland's story includes ${rolePrefix}${name}${yearTag}?`,
+      `Follow the biography: which nation shaped ${rolePrefix}${name}${yearTag}?`,
+    ];
+    return sanitizeTriviaCopy(variants[v]);
+  }
+
+  // 4. Rewrite "On hydrological maps, {name} ({len_km} km) is associated with which nation?"
+  if (typeId === 'geo_river' && /hydrological maps|associated with/i.test(out) && name) {
+    const kmBit = ctx.len_km ? ` (${ctx.len_km} km)` : '';
+    const variants = [
+      `Follow the current: the ${name}${kmBit} winds through which nation?`,
+      `River-atlas check—which country claims the ${name}${kmBit} on its map?`,
+      `Pack a paddle: through which nation does the ${name}${kmBit} flow?`,
+      `Watershed showdown: the ${name}${kmBit} cuts across which country?`,
+    ];
+    return sanitizeTriviaCopy(variants[v]);
+  }
+
+  // 5. Rewrite "Which civilization or culture is historically associated with {name} in {country}?"
+  if (typeId === 'sub_hist_arch_site' && /associated with/i.test(out) && name) {
+    const cBit = country ? ` in ${country}` : '';
+    const variants = [
+      `Brush off the archaeologist's trowel: which civilization left its mark on ${name}${cBit}?`,
+      `Time-machine dig—which culture built or shaped ${name}${cBit}?`,
+      `Excavation spotlight: ${name}${cBit} belongs to which historic civilization?`,
+      `Ruins & relics: which culture's signature survives at ${name}${cBit}?`,
+    ];
+    return sanitizeTriviaCopy(variants[v]);
+  }
+
+  // 6. Rewrite "What primary public role is associated with {name} ({country}, b. {year})?"
+  if (typeId === 'soc_leader' && angleId === 'sl_role' && name) {
+    const metaBit = country ? ` (${country}${year ? `, born ${year}` : ''})` : yearTag;
+    const variants = [
+      `Check the résumé: what primary public role made ${name}${metaBit} famous?`,
+      `Headline bio—in what public capacity did ${name}${metaBit} leave their mark?`,
+      `Civic spotlight: what defining role did ${name}${metaBit} hold?`,
+      `History-desk check: how is ${name}${metaBit} primarily remembered in public life?`,
+    ];
+    return sanitizeTriviaCopy(variants[v]);
+  }
+
+  // 7. Rewrite dry "Which of these ... was/is associated with {country}?"
+  if (/which of these .* (?:was|is) associated with /i.test(out) && country) {
     const variants = [
       `Spotlight on ${country}: which of these notable names belongs to its heritage?`,
       `Step onto ${country}'s stage—which one of these figures comes from there?`,
@@ -1500,27 +1880,61 @@ function polishShardBroadcastPrompt(
     return sanitizeTriviaCopy(variants[v]);
   }
 
-  // Rewrite dry "was directly associated with {country}" / "was associated with {country}" T/F statements
-  if (/\bwas (?:directly )?associated with\b/i.test(out)) {
+  // 8. Rewrite dry "In chemical notation, {formula} is the verified formula for {name}."
+  if (typeId === 'sci_chemical' && /verified formula/i.test(out)) {
+    out = out.replace(/\bthe verified formula\b/gi, 'the official chemical formula');
+    out = out.replace(/^In chemical notation,\s*/i, 'Lab check: ');
+  }
+
+  // 9. Rewrite dry "was/is [directly] associated with" T/F statements
+  if (/\b(?:was|is) (?:directly )?associated with\b/i.test(out)) {
     out = out.replace(/\bwas directly associated with\b/gi, 'left its mark on');
     out = out.replace(/\bwas associated with\b/gi, 'hailed from');
+    out = out.replace(/\bis historically associated with\b/gi, 'traces its roots to');
+    out = out.replace(/\bis associated with\b/gi, 'calls home');
+    out = out.replace(/\bcalls home\s+([^.]+)\./i, 'traces its roots to $1.');
   }
 
-  // Rewrite dry "Check this {cat} result: {stmt}? Answer: {ans}."
-  if (/^Check this .* (?:result|puzzle):/i.test(out) && ctx.stmt && ctx.ans !== undefined) {
-    const cat = String(ctx.cat ?? 'Logic').trim();
+  // 10. Rewrite dry math / logic stems ("Compute the exact answer:", "Check this ... result:", "Verify (...):", "Estimate/Dial the exact value:")
+  if (/^Compute the exact answer:/i.test(out) && ctx.stmt) {
     const stmt = String(ctx.stmt).replace(/\?+$/, '').trim();
-    const ansText = String(ctx.fake ?? ctx.ans).trim();
-    return sanitizeTriviaCopy(`Quick ${cat} check: "${stmt}?" — Does that come out to ${ansText}?`);
+    const variants = [
+      `Mental-math buzzer: ${stmt}?`,
+      `Put away the calculator—${stmt}?`,
+      `Quick brain-teaser: ${stmt}?`,
+      `Numbers don't lie: ${stmt}?`,
+    ];
+    return sanitizeTriviaCopy(variants[v]);
   }
-
-  // Rewrite dry "Estimate the exact value: {stmt}?"
-  if (/^Estimate the exact value:/i.test(out) && ctx.stmt) {
+  if (/^(?:Check this .* (?:result|puzzle)|Verify(?:\s*\([^)]+\)|\s+this\s+[^:]+)):/i.test(out) && ctx.stmt) {
+    const cat = String(ctx.topic ?? ctx.cat ?? 'Logic').trim();
     const stmt = String(ctx.stmt).replace(/\?+$/, '').trim();
-    return sanitizeTriviaCopy(`Lock the dial on this number: ${stmt}?`);
+    const ansText = String(ctx.fake ?? ctx.ans ?? '').trim();
+    if (ansText) {
+      const variants = [
+        `Quick ${cat} fact-check: "${stmt}?" — does it really come out to ${ansText}?`,
+        `${cat} buzzer call: "${stmt}?" True or bogus — is the answer ${ansText}?`,
+        `Check the math on this ${cat} clue: "${stmt}?" Claimed answer: ${ansText}.`,
+        `Put ${cat} to the test: "${stmt}?" Does that land cleanly on ${ansText}?`,
+      ];
+      return sanitizeTriviaCopy(variants[v]);
+    }
+  }
+  if (/^(?:Estimate|Dial) the exact value:/i.test(out) && ctx.stmt) {
+    const stmt = String(ctx.stmt).replace(/\?+$/, '').trim();
+    const variants = [
+      `Spin the brass dial to nail this number: ${stmt}?`,
+      `Zero in without a calculator: ${stmt}?`,
+      `Lock the needle on the right mark: ${stmt}?`,
+      `Close counts, bullseye pays big: ${stmt}?`,
+    ];
+    return sanitizeTriviaCopy(variants[v]);
   }
 
-  // Capitalize leading lowercase species/chemical names cleanly
+  // 11. Strip any lingering "verified" word in prompts so nothing ever reads like database boilerplate
+  out = out.replace(/\bverified (?:entity|record|answer|solution|formula|result)\b/gi, 'match');
+
+  // 12. Capitalize leading lowercase species/chemical names cleanly
   if (typeId === 'nat_species' || typeId === 'sci_chemical') {
     out = out.replace(/^([a-z])/, (_m, c: string) => c.toUpperCase());
   }
@@ -1630,18 +2044,42 @@ function polishShardWhyExplanation(
   cleanAnswer: string,
 ): string {
   let out = sanitizeTriviaCopy(why);
-  if (!out || /^exact (?:answer|value):|^verified solution:/i.test(out) || hasRoboticWhyExplanation(out)) {
-    const cat = String(ctx.cat ?? spec.l1Category).trim();
+  const cat = String(ctx.topic ?? ctx.cat ?? spec.l1Category).trim();
+  // Clean dry "True! The verified solution is X." / "False! The verified solution is X, not Y."
+  if (/^(?:True|False)!\s+The\s+(?:exact\s+|verified\s+)?(?:answer|result|solution)\s+is\s+/i.test(out)) {
+    const isTrueLead = /^True!/i.test(out);
+    const ansText = String(ctx.ans ?? cleanAnswer).trim();
+    const fakeText = String(ctx.fake ?? '').trim();
+    if (isTrueLead && ansText) {
+      return sanitizeTriviaCopy(
+        `Spot on! Working through this ${cat.toLowerCase()} brain-teaser lands right on ${ansText}.`,
+      );
+    }
+    if (!isTrueLead && ansText && fakeText) {
+      return sanitizeTriviaCopy(
+        `Nice catch! This ${cat.toLowerCase()} calculation actually lands on ${ansText}, not ${fakeText}.`,
+      );
+    }
+  }
+  if (
+    !out ||
+    /^(?:exact (?:verified )?(?:answer|value|result)|verified (?:solution|answer|result)):/i.test(out) ||
+    hasRoboticWhyExplanation(out)
+  ) {
     if (spec.l0Domain === 11 && ctx.stmt && cleanAnswer) {
-      return sanitizeTriviaCopy(`Working through this ${cat.toLowerCase()} puzzle lands cleanly on ${cleanAnswer}.`);
+      return sanitizeTriviaCopy(
+        `Working through this ${cat.toLowerCase()} puzzle lands cleanly on ${cleanAnswer}.`,
+      );
     }
     const subj = String(ctx.name ?? ctx.title ?? '').trim();
     if (subj && cleanAnswer && cleanAnswer !== 'TRUE' && cleanAnswer !== 'FALSE') {
-      return sanitizeTriviaCopy(`In ${spec.l1Category}, ${subj} pairs directly with ${cleanAnswer}.`);
+      return sanitizeTriviaCopy(`In ${spec.l1Category}, ${subj} connects directly to ${cleanAnswer}.`);
     }
   }
-  out = out.replace(/\bwas associated with\b/gi, 'made a lasting mark in');
   out = out.replace(/\bwas directly associated with\b/gi, 'shaped the history of');
+  out = out.replace(/\bwas associated with\b/gi, 'made a lasting mark in');
+  out = out.replace(/\bis associated with\b/gi, 'belongs to the heritage of');
+  out = out.replace(/\bverified (?:solution|answer|result|formula)\b/gi, 'true answer');
   return sanitizeTriviaCopy(out);
 }
 
@@ -2038,7 +2476,12 @@ export function decodeShardRawQuestion(
         `Pair each ${spec.l1Category.toLowerCase()} headline with its true partner—watch out for the odd-one-out decoy.`,
       qid,
     );
-    out.prompt = sanitizeTriviaCopy(formatTemplate(codexPromptTpl, ctx));
+    out.prompt = sanitizeTriviaCopy(
+      formatTemplate(codexPromptTpl, ctx)
+        .replace(/^Align each /i, 'Connect each ')
+        .replace(/\bon the upper ring\s+/gi, '')
+        .replace(/\bbelow\.$/i, '—watch out for the odd-one-out decoy.'),
+    );
     out.answerCorrect = `3/3 ${spec.l1Category} Matches`;
     const candidateClues = [
       angle.clue1 ? formatTemplate(angle.clue1, ctx) : '',
@@ -2398,7 +2841,7 @@ function buildCalibratorSpec(raw: RawQuestionRecord): CalibratorDialSpec {
     Math.max(wideMargin > step ? step : 0, sharpMargin - step),
   );
 
-  const cleanPrompt = sanitizeTriviaCopy(raw.prompt);
+  const cleanPrompt = sanitizeTriviaCopy(raw.prompt).replace(/^Identify the\s+/i, 'Name the ');
   const cones: [CalibratorToleranceCone, CalibratorToleranceCone, CalibratorToleranceCone] = [
     {
       id: 'WIDE',
@@ -2568,9 +3011,13 @@ export const REGIONAL_GLOBE_ANCHORS: ReadonlyArray<{ label: string; lat: number;
   { label: 'Monterrey, Mexico', lat: 25.6866, lon: -100.3161 },
   { label: 'Cancun, Mexico', lat: 21.1619, lon: -86.8515 },
   { label: 'Havana, Cuba', lat: 23.1136, lon: -82.3666 },
+  { label: 'Kingston, Jamaica', lat: 17.9712, lon: -76.7928 },
+  { label: 'Santo Domingo, Dominican Republic', lat: 18.4861, lon: -69.9312 },
+  { label: 'Nassau, Bahamas', lat: 25.0343, lon: -77.3963 },
   { label: 'San Juan, Puerto Rico', lat: 18.4655, lon: -66.1057 },
   { label: 'Panama City, Panama', lat: 8.9824, lon: -79.5199 },
   { label: 'San Jose, Costa Rica', lat: 9.9281, lon: -84.0907 },
+  { label: 'Guatemala City, Guatemala', lat: 14.6349, lon: -90.5069 },
   // South America
   { label: 'Bogota, Colombia', lat: 4.711, lon: -74.0721 },
   { label: 'Quito, Ecuador', lat: -0.1807, lon: -78.4678 },
@@ -2628,15 +3075,28 @@ export const REGIONAL_GLOBE_ANCHORS: ReadonlyArray<{ label: string; lat: number;
   { label: 'Saint Petersburg, Russia', lat: 59.9311, lon: 30.3609 },
   { label: 'Kyiv, Ukraine', lat: 50.4501, lon: 30.5234 },
   { label: 'Bucharest, Romania', lat: 44.4268, lon: 26.1025 },
+  { label: 'Belgrade, Serbia', lat: 44.7866, lon: 20.4489 },
+  { label: 'Zagreb, Croatia', lat: 45.815, lon: 15.9819 },
+  { label: 'Sofia, Bulgaria', lat: 42.6977, lon: 23.3219 },
+  { label: 'Riga, Latvia', lat: 56.9496, lon: 24.1052 },
+  { label: 'Tallinn, Estonia', lat: 59.437, lon: 24.7536 },
+  { label: 'Vilnius, Lithuania', lat: 54.6872, lon: 25.2797 },
+  { label: 'Tbilisi, Georgia', lat: 41.7151, lon: 44.8271 },
+  { label: 'Baku, Azerbaijan', lat: 40.4093, lon: 49.8671 },
   // Africa & Middle East
   { label: 'Cairo, Egypt', lat: 30.0444, lon: 31.2357 },
   { label: 'Casablanca, Morocco', lat: 33.5731, lon: -7.5898 },
+  { label: 'Marrakech, Morocco', lat: 31.6295, lon: -7.9811 },
   { label: 'Tunis, Tunisia', lat: 36.8065, lon: 10.1815 },
   { label: 'Algiers, Algeria', lat: 36.7538, lon: 3.0588 },
+  { label: 'Tripoli, Libya', lat: 32.8872, lon: 13.1913 },
+  { label: 'Khartoum, Sudan', lat: 15.5007, lon: 32.5599 },
   { label: 'Lagos, Nigeria', lat: 6.5244, lon: 3.3792 },
+  { label: 'Abidjan, Ivory Coast', lat: 5.36, lon: -4.0083 },
   { label: 'Accra, Ghana', lat: 5.6037, lon: -0.187 },
   { label: 'Dakar, Senegal', lat: 14.7167, lon: -17.4677 },
   { label: 'Addis Ababa, Ethiopia', lat: 9.032, lon: 38.7469 },
+  { label: 'Antananarivo, Madagascar', lat: -18.8792, lon: 47.5079 },
   { label: 'Nairobi, Kenya', lat: -1.2921, lon: 36.8219 },
   { label: 'Kampala, Uganda', lat: 0.3476, lon: 32.5825 },
   { label: 'Kigali, Rwanda', lat: -1.9441, lon: 30.0619 },
@@ -2655,10 +3115,13 @@ export const REGIONAL_GLOBE_ANCHORS: ReadonlyArray<{ label: string; lat: number;
   { label: 'Amman, Jordan', lat: 31.9454, lon: 35.9284 },
   { label: 'Beirut, Lebanon', lat: 33.8938, lon: 35.5018 },
   { label: 'Riyadh, Saudi Arabia', lat: 24.7136, lon: 46.6753 },
+  { label: 'Doha, Qatar', lat: 25.2854, lon: 51.531 },
+  { label: 'Muscat, Oman', lat: 23.588, lon: 58.3829 },
   { label: 'Dubai, UAE', lat: 25.2048, lon: 55.2708 },
   { label: 'Tehran, Iran', lat: 35.6892, lon: 51.389 },
   { label: 'Baghdad, Iraq', lat: 33.3152, lon: 44.3661 },
   { label: 'Tashkent, Uzbekistan', lat: 41.2995, lon: 69.2401 },
+  { label: 'Bishkek, Kyrgyzstan', lat: 42.8746, lon: 74.5698 },
   { label: 'Almaty, Kazakhstan', lat: 43.222, lon: 76.8512 },
   { label: 'Ulaanbaatar, Mongolia', lat: 47.8864, lon: 106.9057 },
   { label: 'Novosibirsk, Russia', lat: 55.0084, lon: 82.9357 },
@@ -3006,7 +3469,7 @@ export function normalizeToPrismQuestion(
           ? 'FACT_GRAPH_SHARD'
           : 'VERIFIED_BENCHMARK');
 
-  const cleanPrompt = sanitizeTriviaCopy(raw.prompt);
+  const cleanPrompt = sanitizeTriviaCopy(raw.prompt).replace(/^Identify the\s+/i, 'Name the ');
   const globePin = arch === 'GLOBE_PIN_DROP' ? buildGlobePinSpec(raw, salt) : undefined;
   const visualPlate = buildVisualPlateSpec(raw);
 

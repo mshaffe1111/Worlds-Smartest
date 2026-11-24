@@ -1,10 +1,10 @@
 {
   "schemaVersion": "WS_V4_WITTY_PACK_1",
-  "generatedAt": "2026-11-23T23:46:18.478Z",
-  "totalCount": 276,
+  "generatedAt": "2026-11-24T01:51:35.608Z",
+  "totalCount": 408,
   "qidRange": [
     1090001,
-    1090276
+    1090408
   ],
   "cards": [
     {
@@ -10147,6 +10147,4772 @@
           "One longer, two-sided loop with two full twists",
           "Two interlinked untwisted rings",
           "Four disconnected paper ribbons"
+        ],
+        "correctIndex": 1
+      }
+    },
+    {
+      "qid": 1090277,
+      "format": "MULTIPLE_CHOICE",
+      "domainId": 0,
+      "wedgeId": "GOLD_HISTORY",
+      "categoryLabel": "Ancient Blunders",
+      "wittyHeader": "Horse-Whisperer Senator",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Which Roman emperor reportedly planned to appoint his favorite stallion, Incitatus, as a consul?",
+      "funFactWhy": "Ancient biographers Suetonius and Cassius Dio claimed Caligula housed the horse in a marble stall with an ivory manger—most modern historians view it as a wicked political insult to the Senate.",
+      "helpfulHint": "His nickname literally means \"Little Boots,\" earned from the miniature soldier sandals he wore as a boy in army camps.",
+      "choices": [
+        "Tiberius",
+        "Nero",
+        "Caligula",
+        "Commodus"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "qid": 1090278,
+      "format": "MULTIPLE_CHOICE",
+      "domainId": 0,
+      "wedgeId": "GOLD_HISTORY",
+      "categoryLabel": "Renaissance Printing",
+      "wittyHeader": "Hot Off the Press",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 12,
+      "readInGraceSec": 2,
+      "prompt": "Who pioneered Europe’s movable-type printing press?",
+      "funFactWhy": "Johannes Gutenberg adapted wine-press screw mechanics and a tin-lead-antimony alloy in Mainz around 1440—then promptly lost his workshop in a lawsuit to his financier.",
+      "helpfulHint": "His 42-line Latin Bible from the 1450s bears his surname.",
+      "choices": [
+        "William Caxton",
+        "Galileo Galilei",
+        "Aldus Manutius",
+        "Johannes Gutenberg"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "qid": 1090279,
+      "format": "MATCH_4",
+      "domainId": 0,
+      "wedgeId": "GOLD_HISTORY",
+      "categoryLabel": "Famous Last Words",
+      "wittyHeader": "Historic Mic Drops",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 35,
+      "readInGraceSec": 2,
+      "prompt": "Wire each legendary historical quotation to the figure who made it famous.",
+      "funFactWhy": "Julius Caesar probably spoke Greek (\"Let the die be cast\" from playwright Menander) when crossing the Rubicon in 49 BCE, though history prefers the punchier Latin version.",
+      "helpfulHint": "Match the Rubicon river crossing to Rome and the wartime radio speech to Britain first.",
+      "match4": {
+        "instruction": "Connect each quote to its historic speaker",
+        "pairs": [
+          {
+            "pairId": "p1",
+            "leftPrompt": "\"The die is cast\"",
+            "rightAnswer": "Julius Caesar"
+          },
+          {
+            "pairId": "p2",
+            "leftPrompt": "\"We shall fight on the beaches\"",
+            "rightAnswer": "Winston Churchill"
+          },
+          {
+            "pairId": "p3",
+            "leftPrompt": "\"Give me liberty, or give me death!\"",
+            "rightAnswer": "Patrick Henry"
+          },
+          {
+            "pairId": "p4",
+            "leftPrompt": "\"Speak softly and carry a big stick\"",
+            "rightAnswer": "Theodore Roosevelt"
+          }
+        ],
+        "shuffledRight": [
+          {
+            "pairId": "p3",
+            "text": "Patrick Henry"
+          },
+          {
+            "pairId": "p4",
+            "text": "Theodore Roosevelt"
+          },
+          {
+            "pairId": "p1",
+            "text": "Julius Caesar"
+          },
+          {
+            "pairId": "p2",
+            "text": "Winston Churchill"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090280,
+      "format": "MATCH_4",
+      "domainId": 0,
+      "wedgeId": "GOLD_HISTORY",
+      "categoryLabel": "Exile Destinations",
+      "wittyHeader": "One-Way Island Tickets",
+      "difficultyTier": "COLLEGE",
+      "recommendedSec": 35,
+      "readInGraceSec": 2,
+      "prompt": "Connect each famous exile or prisoner to the island or landmark that kept them far from the capital.",
+      "funFactWhy": "After escaping Elba in 1815 for his Hundred Days comeback, Britain made sure Napoleon’s second exile on Saint Helena sat 1,900 kilometers from the nearest mainland.",
+      "helpfulHint": "Pair the French emperor with the South Atlantic rock and the South African leader with Cape Town’s offshore prison.",
+      "match4": {
+        "instruction": "Link each figure to their famed place of exile or detention",
+        "pairs": [
+          {
+            "pairId": "p1",
+            "leftPrompt": "Napoleon Bonaparte (final exile)",
+            "rightAnswer": "Saint Helena"
+          },
+          {
+            "pairId": "p2",
+            "leftPrompt": "Nelson Mandela (18 years)",
+            "rightAnswer": "Robben Island"
+          },
+          {
+            "pairId": "p3",
+            "leftPrompt": "Alfred Dreyfus",
+            "rightAnswer": "Devil’s Island"
+          },
+          {
+            "pairId": "p4",
+            "leftPrompt": "Al Capone (1934–1939)",
+            "rightAnswer": "Alcatraz Island"
+          }
+        ],
+        "shuffledRight": [
+          {
+            "pairId": "p2",
+            "text": "Robben Island"
+          },
+          {
+            "pairId": "p4",
+            "text": "Alcatraz Island"
+          },
+          {
+            "pairId": "p1",
+            "text": "Saint Helena"
+          },
+          {
+            "pairId": "p3",
+            "text": "Devil’s Island"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090281,
+      "format": "SORT_4",
+      "domainId": 0,
+      "wedgeId": "GOLD_HISTORY",
+      "categoryLabel": "Revolutionary Moments",
+      "wittyHeader": "Overthrow Schedule",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 30,
+      "readInGraceSec": 2,
+      "prompt": "Stack these four world-shaking historical turning points from earliest year to latest.",
+      "funFactWhy": "The printing press took centuries to spread ideas across Europe, yet the fall of the Berlin Wall was broadcast live to living rooms around the globe the same night.",
+      "helpfulHint": "Start in 1776 North America and finish as the Soviet bloc opened its border in the late 1980s.",
+      "sort4": {
+        "orderDirectionLabel": "Earliest Year -> Latest Year",
+        "correctOrder": [
+          {
+            "itemId": "s1",
+            "label": "U.S. Declaration of Independence",
+            "numericValue": 1776,
+            "formattedValue": "1776"
+          },
+          {
+            "itemId": "s2",
+            "label": "Battle of Waterloo",
+            "numericValue": 1815,
+            "formattedValue": "1815"
+          },
+          {
+            "itemId": "s3",
+            "label": "Russian October Revolution",
+            "numericValue": 1917,
+            "formattedValue": "1917"
+          },
+          {
+            "itemId": "s4",
+            "label": "Fall of the Berlin Wall",
+            "numericValue": 1989,
+            "formattedValue": "1989"
+          }
+        ],
+        "initialOrder": [
+          {
+            "itemId": "s3",
+            "label": "Russian October Revolution",
+            "numericValue": 1917,
+            "formattedValue": "1917"
+          },
+          {
+            "itemId": "s1",
+            "label": "U.S. Declaration of Independence",
+            "numericValue": 1776,
+            "formattedValue": "1776"
+          },
+          {
+            "itemId": "s4",
+            "label": "Fall of the Berlin Wall",
+            "numericValue": 1989,
+            "formattedValue": "1989"
+          },
+          {
+            "itemId": "s2",
+            "label": "Battle of Waterloo",
+            "numericValue": 1815,
+            "formattedValue": "1815"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090282,
+      "format": "MULTI_STRIKE",
+      "domainId": 0,
+      "wedgeId": "GOLD_HISTORY",
+      "categoryLabel": "Age of Exploration",
+      "wittyHeader": "Wrong Century, Captain",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Three of these famous explorers sailed during the 1400s or 1500s—spot the 1 imposter who lived centuries later!",
+      "funFactWhy": "Roald Amundsen beat Robert Falcon Scott to the South Pole in December 1911—nearly four centuries after Magellan’s expedition circled the globe.",
+      "helpfulHint": "One of these navigators traded wooden caravels for dogsleds across Antarctica in the 20th century.",
+      "multiStrike": {
+        "strikeMode": "SPOT_THE_IMPOSTER",
+        "targetCount": 1,
+        "options": [
+          {
+            "optionId": "o1",
+            "label": "Vasco da Gama",
+            "isTarget": false
+          },
+          {
+            "optionId": "o2",
+            "label": "Ferdinand Magellan",
+            "isTarget": false
+          },
+          {
+            "optionId": "o3",
+            "label": "Roald Amundsen",
+            "isTarget": true
+          },
+          {
+            "optionId": "o4",
+            "label": "Zheng He",
+            "isTarget": false
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090283,
+      "format": "MULTI_STRIKE",
+      "domainId": 0,
+      "wedgeId": "GOLD_HISTORY",
+      "categoryLabel": "Ancient Civilizations",
+      "wittyHeader": "Mesopotamian Mix-Up",
+      "difficultyTier": "COLLEGE",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Tap all 3 ancient civilizations or empires that flourished in Mesopotamia between the Tigris and Euphrates.",
+      "funFactWhy": "Sumer, Babylon, and Assyria all rose inside Iraq’s fertile river basin, while Carthage ruled Tunisia’s coast, Aksum thrived in East Africa, and the Olmec sculpted giant stone heads in Mexico.",
+      "helpfulHint": "Think ziggurats, cuneiform clay tablets, and the Hanging Gardens—skip North Africa and Mesoamerica.",
+      "multiStrike": {
+        "strikeMode": "PICK_ALL_TRUE",
+        "targetCount": 3,
+        "options": [
+          {
+            "optionId": "o1",
+            "label": "Sumer",
+            "isTarget": true
+          },
+          {
+            "optionId": "o2",
+            "label": "Carthage",
+            "isTarget": false
+          },
+          {
+            "optionId": "o3",
+            "label": "Babylonia",
+            "isTarget": true
+          },
+          {
+            "optionId": "o4",
+            "label": "Olmec Civilization",
+            "isTarget": false
+          },
+          {
+            "optionId": "o5",
+            "label": "Assyria",
+            "isTarget": true
+          },
+          {
+            "optionId": "o6",
+            "label": "Kingdom of Aksum",
+            "isTarget": false
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090284,
+      "format": "PINPOINT_DIAL",
+      "domainId": 0,
+      "wedgeId": "GOLD_HISTORY",
+      "categoryLabel": "Medieval History",
+      "wittyHeader": "Norman Conquest Clock",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "In what landmark year did William the Conqueror triumph at the Battle of Hastings and claim the English crown?",
+      "funFactWhy": "The 1066 Norman victory stitched French vocabulary permanently into English—giving us \"pork\" and \"beef\" on the dining table while Anglo-Saxon farmers still tended \"pigs\" and \"cows.\"",
+      "helpfulHint": "It is arguably the single most famous four-digit date in British history—just after the midpoint of the 11th century.",
+      "pinpoint": {
+        "minVal": 1000,
+        "maxVal": 1150,
+        "step": 1,
+        "exactVal": 1066,
+        "unitLabel": "",
+        "bullseyeRadius": 3,
+        "winRadius": 12
+      }
+    },
+    {
+      "qid": 1090285,
+      "format": "PINPOINT_DIAL",
+      "domainId": 0,
+      "wedgeId": "GOLD_HISTORY",
+      "categoryLabel": "Space Age History",
+      "wittyHeader": "Tranquility Base Clock",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "In what year did Apollo 11’s Eagle touch down on the Sea of Tranquility, letting Neil Armstrong step onto the Moon?",
+      "funFactWhy": "An estimated 650 million television viewers watched the July 20, 1969 moonwalk live—using an onboard guidance computer with less memory than a modern musical greeting card.",
+      "helpfulHint": "The very final year of the swinging 1960s—fulfilling JFK’s decade deadline with five months to spare.",
+      "pinpoint": {
+        "minVal": 1945,
+        "maxVal": 1995,
+        "step": 1,
+        "exactVal": 1969,
+        "unitLabel": "",
+        "bullseyeRadius": 1,
+        "winRadius": 5
+      }
+    },
+    {
+      "qid": 1090286,
+      "format": "CLUE_ESCALATOR",
+      "domainId": 0,
+      "wedgeId": "GOLD_HISTORY",
+      "categoryLabel": "Ancient Disasters",
+      "wittyHeader": "Ash-Covered Time Capsule",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 32,
+      "readInGraceSec": 2,
+      "prompt": "Name the ancient city frozen in volcanic history across these three escalating clues.",
+      "funFactWhy": "Excavators uncovered bakery loaves still stamped with the baker’s mark and snappy street graffiti reviewing local taverns and gladiators.",
+      "helpfulHint": "Pliny the Younger watched the pine-tree-shaped ash cloud rise from across the Bay of Naples in 79 CE.",
+      "escalator": {
+        "clues": [
+          "Its excavated streets still display carbonized loaves of bread, election slogans, and a famous \"Beware of the Dog\" floor mosaic.",
+          "In 79 CE, a catastrophic eruption buried this thriving Roman resort town beneath meters of pumice and pyroclastic ash.",
+          "Located near modern Naples in the shadow of Mount Vesuvius, it is the world’s most famous buried Roman city."
+        ],
+        "choices": [
+          "Pompeii",
+          "Carthage",
+          "Ephesus",
+          "Ostia Antica"
+        ],
+        "correctIndex": 0
+      }
+    },
+    {
+      "qid": 1090287,
+      "format": "VISUAL_SPOTTER",
+      "domainId": 0,
+      "wedgeId": "GOLD_HISTORY",
+      "categoryLabel": "Maritime History",
+      "wittyHeader": "Zero Locks Needed",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Inspect this 193.3-kilometer sea-level canal blueprint opened in 1869 with zero locks and a central salt lake. Which waterway is it?",
+      "funFactWhy": "Unlike the Panama Canal’s towering stair-step locks, the Mediterranean and Red Seas sit nearly level, letting the Suez Canal run completely lock-free through the Great Bitter Lake.",
+      "helpfulHint": "Look at the opening year (1869) and the \"0 LOCKS · SEA LEVEL\" callout linking a northern sea to a southern gulf.",
+      "visualSpotter": {
+        "visualKind": "SVG_DIAGRAM",
+        "imageUrl": "./assets/visuals/map_suez_canal.svg",
+        "caption": "193.3 km Sea-Level Maritime Corridor Blueprint",
+        "choices": [
+          "Suez Canal",
+          "Corinth Canal",
+          "Kiel Canal",
+          "Panama Canal"
+        ],
+        "correctIndex": 0
+      }
+    },
+    {
+      "qid": 1090288,
+      "format": "MULTIPLE_CHOICE",
+      "domainId": 1,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Extreme Astrophysics",
+      "wittyHeader": "Heavy Teaspoon",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Packing more mass than our Sun into a city-sized sphere, a single teaspoon of which collapsed stellar remnant would weigh roughly as much as Mount Everest?",
+      "funFactWhy": "When a massive star explodes as a supernova, gravity crushes its core protons and electrons together into a ball of solid neutrons barely 20 kilometers across.",
+      "helpfulHint": "Named for the uncharged subatomic particle left behind after protons and electrons fuse under gravity.",
+      "choices": [
+        "Red giant",
+        "White dwarf",
+        "Neutron star",
+        "Brown dwarf"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "qid": 1090289,
+      "format": "MULTIPLE_CHOICE",
+      "domainId": 1,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Chemistry Basics",
+      "wittyHeader": "Liquid Metal Mood",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 12,
+      "readInGraceSec": 2,
+      "prompt": "Which metal is liquid at room temperature?",
+      "funFactWhy": "Mercury’s chemical symbol Hg comes from the Greek \"hydrargyrum,\" meaning liquid silver—and its electrons race so close to light speed that relativistic effects weaken its atomic bonds.",
+      "helpfulHint": "It shares its name with the innermost planet and used to rise inside glass fever thermometers.",
+      "choices": [
+        "Mercury",
+        "Lead",
+        "Cobalt",
+        "Gallium"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "qid": 1090290,
+      "format": "MATCH_4",
+      "domainId": 1,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Elemental Aliases",
+      "wittyHeader": "Latin Name-Drop",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 35,
+      "readInGraceSec": 2,
+      "prompt": "Connect each sneaky chemical symbol to the everyday element hiding behind its Latin name.",
+      "funFactWhy": "Sodium’s symbol Na honors natron (ancient Egyptian soda ash), while Potassium’s K comes from kalium—Arabic \"al-qalyah\" for plant ashes.",
+      "helpfulHint": "Think \"aurum\" for gold jewelry and \"ferrum\" for ferrous iron magnets.",
+      "match4": {
+        "instruction": "Pair each periodic-table symbol with its element",
+        "pairs": [
+          {
+            "pairId": "p1",
+            "leftPrompt": "Au",
+            "rightAnswer": "Gold"
+          },
+          {
+            "pairId": "p2",
+            "leftPrompt": "Fe",
+            "rightAnswer": "Iron"
+          },
+          {
+            "pairId": "p3",
+            "leftPrompt": "Na",
+            "rightAnswer": "Sodium"
+          },
+          {
+            "pairId": "p4",
+            "leftPrompt": "K",
+            "rightAnswer": "Potassium"
+          }
+        ],
+        "shuffledRight": [
+          {
+            "pairId": "p2",
+            "text": "Iron"
+          },
+          {
+            "pairId": "p4",
+            "text": "Potassium"
+          },
+          {
+            "pairId": "p1",
+            "text": "Gold"
+          },
+          {
+            "pairId": "p3",
+            "text": "Sodium"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090291,
+      "format": "SORT_4",
+      "domainId": 1,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Speed Limits",
+      "wittyHeader": "Need for Cosmic Speed",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 30,
+      "readInGraceSec": 2,
+      "prompt": "Rank these four speeds from slowest to fastest—from highway cruise to the universe’s ultimate limit.",
+      "funFactWhy": "Light blasts through a vacuum nearly 880,000 times faster than sound travels through air—which is why lightning always spoils thunder’s entrance.",
+      "helpfulHint": "Start with a bullet train on rails and finish with photons zipping through empty space.",
+      "sort4": {
+        "orderDirectionLabel": "Slowest -> Fastest (km/h)",
+        "correctOrder": [
+          {
+            "itemId": "s1",
+            "label": "Shinkansen Bullet Train",
+            "numericValue": 320,
+            "formattedValue": "320 km/h"
+          },
+          {
+            "itemId": "s2",
+            "label": "Speed of Sound in Air (Mach 1)",
+            "numericValue": 1235,
+            "formattedValue": "1,235 km/h"
+          },
+          {
+            "itemId": "s3",
+            "label": "International Space Station Orbit",
+            "numericValue": 27600,
+            "formattedValue": "27,600 km/h"
+          },
+          {
+            "itemId": "s4",
+            "label": "Speed of Light in a Vacuum",
+            "numericValue": 1079252849,
+            "formattedValue": "1,079,252,849 km/h"
+          }
+        ],
+        "initialOrder": [
+          {
+            "itemId": "s3",
+            "label": "International Space Station Orbit",
+            "numericValue": 27600,
+            "formattedValue": "27,600 km/h"
+          },
+          {
+            "itemId": "s1",
+            "label": "Shinkansen Bullet Train",
+            "numericValue": 320,
+            "formattedValue": "320 km/h"
+          },
+          {
+            "itemId": "s4",
+            "label": "Speed of Light in a Vacuum",
+            "numericValue": 1079252849,
+            "formattedValue": "1,079,252,849 km/h"
+          },
+          {
+            "itemId": "s2",
+            "label": "Speed of Sound in Air (Mach 1)",
+            "numericValue": 1235,
+            "formattedValue": "1,235 km/h"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090292,
+      "format": "SORT_4",
+      "domainId": 1,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Earth’s Layers",
+      "wittyHeader": "Journey to the Center",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 30,
+      "readInGraceSec": 2,
+      "prompt": "Stack Earth’s four main interior layers starting from the surface you stand on down to the center.",
+      "funFactWhy": "Earth’s solid inner core burns roughly as hot as the surface of the Sun, yet crushing pressure locks its iron-nickel alloy into solid crystal.",
+      "helpfulHint": "Begin with the thin rocky shell beneath your sneakers and dig straight inward.",
+      "sort4": {
+        "orderDirectionLabel": "Outermost Surface -> Deepest Core",
+        "correctOrder": [
+          {
+            "itemId": "s1",
+            "label": "Crust",
+            "numericValue": 1,
+            "formattedValue": "0–70 km"
+          },
+          {
+            "itemId": "s2",
+            "label": "Mantle",
+            "numericValue": 2,
+            "formattedValue": "70–2,900 km"
+          },
+          {
+            "itemId": "s3",
+            "label": "Liquid Outer Core",
+            "numericValue": 3,
+            "formattedValue": "2,900–5,150 km"
+          },
+          {
+            "itemId": "s4",
+            "label": "Solid Inner Core",
+            "numericValue": 4,
+            "formattedValue": "5,150–6,371 km"
+          }
+        ],
+        "initialOrder": [
+          {
+            "itemId": "s2",
+            "label": "Mantle",
+            "numericValue": 2,
+            "formattedValue": "70–2,900 km"
+          },
+          {
+            "itemId": "s4",
+            "label": "Solid Inner Core",
+            "numericValue": 4,
+            "formattedValue": "5,150–6,371 km"
+          },
+          {
+            "itemId": "s1",
+            "label": "Crust",
+            "numericValue": 1,
+            "formattedValue": "0–70 km"
+          },
+          {
+            "itemId": "s3",
+            "label": "Liquid Outer Core",
+            "numericValue": 3,
+            "formattedValue": "2,900–5,150 km"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090293,
+      "format": "MULTI_STRIKE",
+      "domainId": 1,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Solar System Moons",
+      "wittyHeader": "Wrong Planet’s Entourage",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Three of these giant moons orbit Jupiter (spotted by Galileo in 1610)—spot the 1 Saturnian imposter!",
+      "funFactWhy": "Titan orbits Saturn and boasts a thick nitrogen atmosphere plus liquid methane lakes, whereas Io, Europa, and Ganymede belong to Jupiter’s famous Galilean quartet.",
+      "helpfulHint": "The imposter is Saturn’s largest moon, visited by the Huygens lander in 2005.",
+      "multiStrike": {
+        "strikeMode": "SPOT_THE_IMPOSTER",
+        "targetCount": 1,
+        "options": [
+          {
+            "optionId": "o1",
+            "label": "Io",
+            "isTarget": false
+          },
+          {
+            "optionId": "o2",
+            "label": "Europa",
+            "isTarget": false
+          },
+          {
+            "optionId": "o3",
+            "label": "Titan",
+            "isTarget": true
+          },
+          {
+            "optionId": "o4",
+            "label": "Ganymede",
+            "isTarget": false
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090294,
+      "format": "PINPOINT_DIAL",
+      "domainId": 1,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Astrophysics",
+      "wittyHeader": "Sunlight Delivery Time",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "To the nearest whole minute, how many minutes does sunlight take to travel from the Sun to Earth?",
+      "funFactWhy": "Light sprints across the 150-million-kilometer Sun-Earth gap in about 8 minutes and 20 seconds—so whenever you glance at a sunset, you are watching an 8-minute tape delay.",
+      "helpfulHint": "Think single digits: under a quarter of an hour, right around the time it takes to soft-boil an egg.",
+      "pinpoint": {
+        "minVal": 1,
+        "maxVal": 25,
+        "step": 1,
+        "exactVal": 8,
+        "unitLabel": "min",
+        "bullseyeRadius": 1,
+        "winRadius": 2
+      }
+    },
+    {
+      "qid": 1090295,
+      "format": "PINPOINT_DIAL",
+      "domainId": 1,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Physics History",
+      "wittyHeader": "Miracle Year Math",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "In what \"miracle year\" did a 26-year-old patent clerk named Albert Einstein publish special relativity and E = mc²?",
+      "funFactWhy": "During his 1905 \"Annus Mirabilis\" in Bern, Einstein published four landmark papers on the photoelectric effect, Brownian motion, special relativity, and mass-energy equivalence.",
+      "helpfulHint": "It was right at the dawn of the 20th century—five years after 1900.",
+      "pinpoint": {
+        "minVal": 1880,
+        "maxVal": 1940,
+        "step": 1,
+        "exactVal": 1905,
+        "unitLabel": "",
+        "bullseyeRadius": 2,
+        "winRadius": 6
+      }
+    },
+    {
+      "qid": 1090296,
+      "format": "CLUE_ESCALATOR",
+      "domainId": 1,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Space Observatories",
+      "wittyHeader": "Golden Honeycomb Eye",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 32,
+      "readInGraceSec": 2,
+      "prompt": "Name the record-shattering space observatory revealed across these three escalating clues.",
+      "funFactWhy": "Parked 1.5 million kilometers from Earth at Lagrange Point L2, its tennis-court-sized five-layer sunshield keeps its infrared sensors chilled below minus 220 degrees Celsius.",
+      "helpfulHint": "Launched on Christmas Day 2021, it carries 18 gold-coated hexagonal beryllium mirror segments.",
+      "escalator": {
+        "clues": [
+          "It orbits the Sun a million miles past Earth behind a five-layer Kapton sunshield the size of a tennis court.",
+          "Its primary mirror unfolds like origami from 18 gold-plated hexagonal segments tuned for deep infrared light.",
+          "Launched in December 2021 as Hubble’s successor, NASA named this telescope after its Apollo-era administrator."
+        ],
+        "choices": [
+          "Spitzer Space Telescope",
+          "Kepler Space Telescope",
+          "James Webb Space Telescope",
+          "Chandra X-ray Observatory"
+        ],
+        "correctIndex": 2
+      }
+    },
+    {
+      "qid": 1090297,
+      "format": "VISUAL_SPOTTER",
+      "domainId": 1,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Organic Chemistry",
+      "wittyHeader": "Willow-Bark Remedy",
+      "difficultyTier": "COLLEGE",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Examine this 1897 ester blueprint (C₉H₈O₄) derived from willow bark. Which medicine-cabinet classic are you looking at?",
+      "funFactWhy": "Ancient Egyptians and Hippocrates chewed willow bark for fever and pain millennia before Felix Hoffmann synthesized stable acetylsalicylic acid at Bayer in 1897.",
+      "helpfulHint": "Notice the \"WILLOW BARK DERIV.\" and \"SYNTHESIZED 1897\" notes—it is the world’s original over-the-counter headache tablet.",
+      "visualSpotter": {
+        "visualKind": "SVG_DIAGRAM",
+        "imageUrl": "./assets/visuals/mol_aspirin.svg",
+        "caption": "Acetylsalicylic Ester Blueprint (C9H8O4)",
+        "choices": [
+          "Penicillin",
+          "Aspirin",
+          "Acetaminophen",
+          "Ibuprofen"
+        ],
+        "correctIndex": 1
+      }
+    },
+    {
+      "qid": 1090298,
+      "format": "VISUAL_SPOTTER",
+      "domainId": 1,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Night Sky Navigation",
+      "wittyHeader": "Follow the Pointer Stars",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Inspect this northern sky chart whose two outer bowl stars point straight toward Polaris. Which constellation contains this famous asterism?",
+      "funFactWhy": "The Big Dipper is technically just the brightest seven stars of Ursa Major—and following the line through Merak and Dubhe five times their spacing lands squarely on the North Star.",
+      "helpfulHint": "Its Latin name translates to \"Great Bear,\" and its famous spoon-shaped dipper never sets in northern latitudes.",
+      "visualSpotter": {
+        "visualKind": "SVG_DIAGRAM",
+        "imageUrl": "./assets/visuals/star_ursa_major.svg",
+        "caption": "Northern Circumpolar Pointer-Star Chart",
+        "choices": [
+          "Draco",
+          "Orion",
+          "Ursa Major",
+          "Cygnus"
+        ],
+        "correctIndex": 2
+      }
+    },
+    {
+      "qid": 1090299,
+      "format": "MULTIPLE_CHOICE",
+      "domainId": 2,
+      "wedgeId": "SAPPHIRE_GEO",
+      "categoryLabel": "Border Oddities",
+      "wittyHeader": "No River Required",
+      "difficultyTier": "COLLEGE",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Covering over two million square kilometers of desert peninsula, which is the largest country on Earth without a single permanent river?",
+      "funFactWhy": "Saudi Arabia has dry wadi valleys that flash-flood after rare storms, relying heavily on massive coastal desalination plants and ancient underground aquifers.",
+      "helpfulHint": "Picture the vast Arabian Peninsula stretching between the Red Sea and the Persian Gulf.",
+      "choices": [
+        "Libya",
+        "Oman",
+        "Mongolia",
+        "Saudi Arabia"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "qid": 1090300,
+      "format": "MULTIPLE_CHOICE",
+      "domainId": 2,
+      "wedgeId": "SAPPHIRE_GEO",
+      "categoryLabel": "World Capitals",
+      "wittyHeader": "Northernmost Seat",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 12,
+      "readInGraceSec": 2,
+      "prompt": "What is the world’s northernmost sovereign capital?",
+      "funFactWhy": "Sitting at 64 degrees North in Iceland, Reykjavik translates roughly to \"Smoky Bay\"—named by Viking settlers for the billowing steam of its geothermal hot springs.",
+      "helpfulHint": "It heats its sidewalks with volcanic hot water on a North Atlantic island.",
+      "choices": [
+        "Oslo",
+        "Reykjavik",
+        "Stockholm",
+        "Helsinki"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "qid": 1090301,
+      "format": "MATCH_4",
+      "domainId": 2,
+      "wedgeId": "SAPPHIRE_GEO",
+      "categoryLabel": "Strategic Straits",
+      "wittyHeader": "Maritime Pinch Points",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 35,
+      "readInGraceSec": 2,
+      "prompt": "Wire each famous narrow strait to the two landmasses or seas it squeezes between.",
+      "funFactWhy": "At the Strait of Gibraltar, Europe and Africa come within 14 kilometers of touching—close enough to spot Moroccan mountains from southern Spain on a crisp afternoon.",
+      "helpfulHint": "Pair Gibraltar with Spain and Morocco first, then match Dover to the English Channel.",
+      "match4": {
+        "instruction": "Connect each strait to the regions it separates",
+        "pairs": [
+          {
+            "pairId": "p1",
+            "leftPrompt": "Strait of Gibraltar",
+            "rightAnswer": "Spain & Morocco"
+          },
+          {
+            "pairId": "p2",
+            "leftPrompt": "Bering Strait",
+            "rightAnswer": "Alaska & Russia"
+          },
+          {
+            "pairId": "p3",
+            "leftPrompt": "Strait of Dover",
+            "rightAnswer": "England & France"
+          },
+          {
+            "pairId": "p4",
+            "leftPrompt": "Strait of Hormuz",
+            "rightAnswer": "Iran & Oman"
+          }
+        ],
+        "shuffledRight": [
+          {
+            "pairId": "p4",
+            "text": "Iran & Oman"
+          },
+          {
+            "pairId": "p1",
+            "text": "Spain & Morocco"
+          },
+          {
+            "pairId": "p2",
+            "text": "Alaska & Russia"
+          },
+          {
+            "pairId": "p3",
+            "text": "England & France"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090302,
+      "format": "SORT_4",
+      "domainId": 2,
+      "wedgeId": "SAPPHIRE_GEO",
+      "categoryLabel": "Island Giants",
+      "wittyHeader": "Island Real Estate",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 30,
+      "readInGraceSec": 2,
+      "prompt": "Rank these four islands from smallest land area to largest (skipping continental Australia!).",
+      "funFactWhy": "Greenland dwarfs every other island on Earth at 2.16 million square kilometers—nearly ten times the size of Great Britain, even without Mercator map distortion.",
+      "helpfulHint": "Start with Great Britain and finish with the icy Arctic giant at the top of the Atlantic.",
+      "sort4": {
+        "orderDirectionLabel": "Smallest -> Largest Island",
+        "correctOrder": [
+          {
+            "itemId": "s1",
+            "label": "Great Britain",
+            "numericValue": 209331,
+            "formattedValue": "209,331 km²"
+          },
+          {
+            "itemId": "s2",
+            "label": "Madagascar",
+            "numericValue": 587041,
+            "formattedValue": "587,041 km²"
+          },
+          {
+            "itemId": "s3",
+            "label": "New Guinea",
+            "numericValue": 785753,
+            "formattedValue": "785,753 km²"
+          },
+          {
+            "itemId": "s4",
+            "label": "Greenland",
+            "numericValue": 2166086,
+            "formattedValue": "2,166,086 km²"
+          }
+        ],
+        "initialOrder": [
+          {
+            "itemId": "s3",
+            "label": "New Guinea",
+            "numericValue": 785753,
+            "formattedValue": "785,753 km²"
+          },
+          {
+            "itemId": "s1",
+            "label": "Great Britain",
+            "numericValue": 209331,
+            "formattedValue": "209,331 km²"
+          },
+          {
+            "itemId": "s4",
+            "label": "Greenland",
+            "numericValue": 2166086,
+            "formattedValue": "2,166,086 km²"
+          },
+          {
+            "itemId": "s2",
+            "label": "Madagascar",
+            "numericValue": 587041,
+            "formattedValue": "587,041 km²"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090303,
+      "format": "MULTI_STRIKE",
+      "domainId": 2,
+      "wedgeId": "SAPPHIRE_GEO",
+      "categoryLabel": "Landlocked Nations",
+      "wittyHeader": "No Beachfront Property",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Tap all 3 completely landlocked countries—zero ocean coastline allowed!",
+      "funFactWhy": "Bolivia still celebrates an annual \"Day of the Sea\" and maintains a small navy on Lake Titicaca, more than a century after losing its Pacific coast in 1884.",
+      "helpfulHint": "One sits high in the Andes, one in the Alps, and one in Central Asia; the other three all boast famous harbors.",
+      "multiStrike": {
+        "strikeMode": "PICK_ALL_TRUE",
+        "targetCount": 3,
+        "options": [
+          {
+            "optionId": "o1",
+            "label": "Bolivia",
+            "isTarget": true
+          },
+          {
+            "optionId": "o2",
+            "label": "Uruguay",
+            "isTarget": false
+          },
+          {
+            "optionId": "o3",
+            "label": "Austria",
+            "isTarget": true
+          },
+          {
+            "optionId": "o4",
+            "label": "Croatia",
+            "isTarget": false
+          },
+          {
+            "optionId": "o5",
+            "label": "Nepal",
+            "isTarget": true
+          },
+          {
+            "optionId": "o6",
+            "label": "Vietnam",
+            "isTarget": false
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090304,
+      "format": "MULTI_STRIKE",
+      "domainId": 2,
+      "wedgeId": "SAPPHIRE_GEO",
+      "categoryLabel": "Nordic Geography",
+      "wittyHeader": "Not Scandinavian!",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Three of these capitals sit in Nordic nations—spot the 1 Baltic imposter!",
+      "funFactWhy": "Tallinn is the medieval walled capital of Estonia—just a two-hour ferry ride south of Helsinki across the Gulf of Finland, yet geographically part of the Baltic states.",
+      "helpfulHint": "Sweden, Norway, and Denmark are classic Nordic neighbors; look for Estonia’s capital.",
+      "multiStrike": {
+        "strikeMode": "SPOT_THE_IMPOSTER",
+        "targetCount": 1,
+        "options": [
+          {
+            "optionId": "o1",
+            "label": "Copenhagen",
+            "isTarget": false
+          },
+          {
+            "optionId": "o2",
+            "label": "Oslo",
+            "isTarget": false
+          },
+          {
+            "optionId": "o3",
+            "label": "Tallinn",
+            "isTarget": true
+          },
+          {
+            "optionId": "o4",
+            "label": "Stockholm",
+            "isTarget": false
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090305,
+      "format": "PINPOINT_DIAL",
+      "domainId": 2,
+      "wedgeId": "SAPPHIRE_GEO",
+      "categoryLabel": "Planetary Scale",
+      "wittyHeader": "Around the Waistline",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "To the nearest 500 kilometers, what is Earth’s circumference around the Equator?",
+      "funFactWhy": "Ancient Greek librarian Eratosthenes estimated Earth’s circumference using noon shadows in Syene and Alexandria around 240 BCE and landed remarkably close to today’s 40,075 km figure.",
+      "helpfulHint": "Because the meter was originally defined as one ten-millionth of the pole-to-equator quadrant, the full loop lands right near a tidy multiple of 10,000 km!",
+      "pinpoint": {
+        "minVal": 25000,
+        "maxVal": 55000,
+        "step": 500,
+        "exactVal": 40000,
+        "unitLabel": "km",
+        "bullseyeRadius": 1000,
+        "winRadius": 3500
+      }
+    },
+    {
+      "qid": 1090306,
+      "format": "CLUE_ESCALATOR",
+      "domainId": 2,
+      "wedgeId": "SAPPHIRE_GEO",
+      "categoryLabel": "Natural Wonders",
+      "wittyHeader": "Deadly Buoyancy",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 32,
+      "readInGraceSec": 2,
+      "prompt": "Name the hyper-salty geographic wonder revealed across these three escalating clues.",
+      "funFactWhy": "At roughly 34% salinity—nearly ten times saltier than ocean water—its dense brine lets swimmers recline and read a newspaper without treading water.",
+      "helpfulHint": "Its shoreline marks the lowest land elevation on Earth, more than 430 meters below sea level.",
+      "escalator": {
+        "clues": [
+          "Its shoreline sits more than 430 meters below sea level, making it the lowest exposed land elevation on Earth.",
+          "Roughly ten times saltier than the ocean, its dense mineral brine lets visitors float effortlessly on their backs.",
+          "Fed by the Jordan River between Jordan and Israel, this famous salt lake carries a rather grim English name."
+        ],
+        "choices": [
+          "Aral Sea",
+          "Dead Sea",
+          "Great Salt Lake",
+          "Caspian Sea"
+        ],
+        "correctIndex": 1
+      }
+    },
+    {
+      "qid": 1090307,
+      "format": "CLUE_ESCALATOR",
+      "domainId": 2,
+      "wedgeId": "SAPPHIRE_GEO",
+      "categoryLabel": "Microstates",
+      "wittyHeader": "Mountaintop Republic",
+      "difficultyTier": "GRADUATE",
+      "recommendedSec": 32,
+      "readInGraceSec": 2,
+      "prompt": "Name the tiny sovereign enclave revealed across these three escalating clues.",
+      "funFactWhy": "Claiming foundation by a stonemason in 301 CE, San Marino elects two Captains Regent every six months—keeping an ancient Roman-style dual-executive tradition alive.",
+      "helpfulHint": "Completely surrounded by northern Italy, it perches atop Monte Titano near the Adriatic coast.",
+      "escalator": {
+        "clues": [
+          "Governed by two co-equal Captains Regent elected every six months, its 1600 constitution is among the oldest still in force.",
+          "Three medieval stone towers crown the rugged ridge of Monte Titano above this 61-square-kilometer republic.",
+          "Completely landlocked inside north-central Italy near Rimini, it claims to be the world’s oldest surviving republic."
+        ],
+        "choices": [
+          "Liechtenstein",
+          "Monaco",
+          "Andorra",
+          "San Marino"
+        ],
+        "correctIndex": 3
+      }
+    },
+    {
+      "qid": 1090308,
+      "format": "VISUAL_SPOTTER",
+      "domainId": 2,
+      "wedgeId": "SAPPHIRE_GEO",
+      "categoryLabel": "World Flags",
+      "wittyHeader": "Sunburst Banner",
+      "difficultyTier": "COLLEGE",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Inspect this bold 1996 flag blueprint with five oblique bands radiating from the lower-left hoist. Which Indian Ocean island nation flies it?",
+      "funFactWhy": "Adopted in 1996, the five radiating stripes of Seychelles symbolize a dynamic young nation moving into the future: blue for sky and sea, yellow for sun, red for people, white for justice, and green for the land.",
+      "helpfulHint": "Picture an East African archipelago of granite islands northeast of Madagascar—the only national flag with this five-ray fan geometry.",
+      "visualSpotter": {
+        "visualKind": "SVG_DIAGRAM",
+        "imageUrl": "./assets/visuals/flag_seychelles.svg",
+        "caption": "Five Oblique Radiating Bands · Adopted 1996",
+        "choices": [
+          "Comoros",
+          "Seychelles",
+          "Mauritius",
+          "Maldives"
+        ],
+        "correctIndex": 1
+      }
+    },
+    {
+      "qid": 1090309,
+      "format": "VISUAL_SPOTTER",
+      "domainId": 2,
+      "wedgeId": "SAPPHIRE_GEO",
+      "categoryLabel": "World Crossroads",
+      "wittyHeader": "Equatorial Hub",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Pinpoint the island city-state at the southern tip of the Malay Peninsula, guarding the vital shipping lane between the Indian Ocean and South China Sea.",
+      "funFactWhy": "Sitting just 137 kilometers north of the Equator, Singapore transformed from a 19th-century trading port into one of the busiest container ports and garden cities on the planet.",
+      "helpfulHint": "Look at the very bottom tip of the Malay Peninsula, just across a narrow strait from Malaysia and Indonesia.",
+      "visualSpotter": {
+        "visualKind": "WORLD_REGION_MAP",
+        "caption": "Southeast Asia · Southern tip of the Malay Peninsula (1.35° N, 103.82° E)",
+        "targetLat": 1.3521,
+        "targetLon": 103.8198,
+        "choices": [
+          "Jakarta, Indonesia",
+          "Ho Chi Minh City, Vietnam",
+          "Bangkok, Thailand",
+          "Singapore"
+        ],
+        "correctIndex": 3
+      }
+    },
+    {
+      "qid": 1090310,
+      "format": "MULTIPLE_CHOICE",
+      "domainId": 3,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Sculpture & Marble",
+      "wittyHeader": "Leftover Block, Iconic Statue",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Two earlier sculptors abandoned a tall, narrow block of Carrara marble as too flawed before a 26-year-old Renaissance prodigy carved what 17-foot masterpiece out of it?",
+      "funFactWhy": "Michelangelo worked in secret for over two years on \"David\" (1501–1504), making the statue’s right hand and head slightly oversized so they would look proportional from ground level.",
+      "helpfulHint": "The biblical underdog stands in Florence’s Galleria dell’Accademia holding a sling over his shoulder.",
+      "choices": [
+        "Winged Victory of Samothrace",
+        "Michelangelo’s David",
+        "Venus de Milo",
+        "The Thinker"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "qid": 1090311,
+      "format": "MULTIPLE_CHOICE",
+      "domainId": 3,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Japanese Printmaking",
+      "wittyHeader": "Prussian Blue Swell",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 12,
+      "readInGraceSec": 2,
+      "prompt": "Who created \"The Great Wave off Kanagawa\"?",
+      "funFactWhy": "Katsushika Hokusai created the woodblock print around 1831 in his seventies using newly imported synthetic Prussian blue pigment—and tucked Mount Fuji calmly in the background.",
+      "helpfulHint": "His series \"Thirty-Six Views of Mount Fuji\" inspired Claude Debussy and Vincent van Gogh.",
+      "choices": [
+        "Utagawa Hiroshige",
+        "Kitagawa Utamaro",
+        "Katsushika Hokusai",
+        "Takashi Murakami"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "qid": 1090312,
+      "format": "MATCH_4",
+      "domainId": 3,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Artistic Signatures",
+      "wittyHeader": "Spot the Brushstroke",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 35,
+      "readInGraceSec": 2,
+      "prompt": "Connect each unmistakable visual obsession to the celebrated artist who made it their signature.",
+      "funFactWhy": "Claude Monet actually diverted a local river in Giverny to build his water-lily pond—over his neighbors’ protests—and painted it roughly 250 times.",
+      "helpfulHint": "Match the Giverny lilies to Monet and the Campbell’s soup cans to Pop Art’s king.",
+      "match4": {
+        "instruction": "Link each signature motif to its artist",
+        "pairs": [
+          {
+            "pairId": "p1",
+            "leftPrompt": "Water lilies at Giverny",
+            "rightAnswer": "Claude Monet"
+          },
+          {
+            "pairId": "p2",
+            "leftPrompt": "Campbell’s Soup Cans",
+            "rightAnswer": "Andy Warhol"
+          },
+          {
+            "pairId": "p3",
+            "leftPrompt": "Drip-painted canvas webs",
+            "rightAnswer": "Jackson Pollock"
+          },
+          {
+            "pairId": "p4",
+            "leftPrompt": "Primary-color grid rectangles",
+            "rightAnswer": "Piet Mondrian"
+          }
+        ],
+        "shuffledRight": [
+          {
+            "pairId": "p3",
+            "text": "Jackson Pollock"
+          },
+          {
+            "pairId": "p1",
+            "text": "Claude Monet"
+          },
+          {
+            "pairId": "p4",
+            "text": "Piet Mondrian"
+          },
+          {
+            "pairId": "p2",
+            "text": "Andy Warhol"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090313,
+      "format": "SORT_4",
+      "domainId": 3,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Painted Centuries",
+      "wittyHeader": "Canvas Chronology",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 30,
+      "readInGraceSec": 2,
+      "prompt": "Arrange these four world-famous paintings from earliest creation year to latest.",
+      "funFactWhy": "More than four centuries separate Botticelli’s mythological Renaissance tempera from Picasso’s furious 1937 anti-war mural painted in just 35 days.",
+      "helpfulHint": "Start in 1480s Renaissance Florence and finish with Picasso’s 1937 protest mural.",
+      "sort4": {
+        "orderDirectionLabel": "Earliest Painted -> Latest Painted",
+        "correctOrder": [
+          {
+            "itemId": "s1",
+            "label": "The Birth of Venus (Botticelli)",
+            "numericValue": 1485,
+            "formattedValue": "c. 1485"
+          },
+          {
+            "itemId": "s2",
+            "label": "The Night Watch (Rembrandt)",
+            "numericValue": 1642,
+            "formattedValue": "1642"
+          },
+          {
+            "itemId": "s3",
+            "label": "The Starry Night (Van Gogh)",
+            "numericValue": 1889,
+            "formattedValue": "1889"
+          },
+          {
+            "itemId": "s4",
+            "label": "Guernica (Picasso)",
+            "numericValue": 1937,
+            "formattedValue": "1937"
+          }
+        ],
+        "initialOrder": [
+          {
+            "itemId": "s3",
+            "label": "The Starry Night (Van Gogh)",
+            "numericValue": 1889,
+            "formattedValue": "1889"
+          },
+          {
+            "itemId": "s1",
+            "label": "The Birth of Venus (Botticelli)",
+            "numericValue": 1485,
+            "formattedValue": "c. 1485"
+          },
+          {
+            "itemId": "s4",
+            "label": "Guernica (Picasso)",
+            "numericValue": 1937,
+            "formattedValue": "1937"
+          },
+          {
+            "itemId": "s2",
+            "label": "The Night Watch (Rembrandt)",
+            "numericValue": 1642,
+            "formattedValue": "1642"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090314,
+      "format": "MULTI_STRIKE",
+      "domainId": 3,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Classical Columns",
+      "wittyHeader": "Architectural Imposter",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Three of these are classic Greek architectural column orders—spot the 1 medieval imposter!",
+      "funFactWhy": "Doric (plain), Ionic (ram-horn scrolls), and Corinthian (acanthus leaves) defined classical Greek temples, whereas Gothic pointed arches soared across medieval Europe over a millennium later.",
+      "helpfulHint": "Think of the three ancient Greek column tops—and spot the medieval cathedral style sneaking in.",
+      "multiStrike": {
+        "strikeMode": "SPOT_THE_IMPOSTER",
+        "targetCount": 1,
+        "options": [
+          {
+            "optionId": "o1",
+            "label": "Doric",
+            "isTarget": false
+          },
+          {
+            "optionId": "o2",
+            "label": "Ionic",
+            "isTarget": false
+          },
+          {
+            "optionId": "o3",
+            "label": "Corinthian",
+            "isTarget": false
+          },
+          {
+            "optionId": "o4",
+            "label": "Gothic",
+            "isTarget": true
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090315,
+      "format": "PINPOINT_DIAL",
+      "domainId": 3,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "World Landmarks",
+      "wittyHeader": "Iron Lady’s Debut",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "In what year did Gustave Eiffel’s iron tower open as the centerpiece of the Paris World’s Fair?",
+      "funFactWhy": "Originally licensed to stand for just 20 years, the 1889 Eiffel Tower saved itself from the scrapyard by proving indispensable as a radio telegraph antenna.",
+      "helpfulHint": "It was erected to mark the exact 100th anniversary of the 1789 French Revolution.",
+      "pinpoint": {
+        "minVal": 1850,
+        "maxVal": 1930,
+        "step": 1,
+        "exactVal": 1889,
+        "unitLabel": "",
+        "bullseyeRadius": 2,
+        "winRadius": 7
+      }
+    },
+    {
+      "qid": 1090316,
+      "format": "PINPOINT_DIAL",
+      "domainId": 3,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Ancient Wonders",
+      "wittyHeader": "Last Wonder Standing",
+      "difficultyTier": "COLLEGE",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "When completed around 2560 BCE, roughly how many meters tall did the Great Pyramid of Giza originally stand?",
+      "funFactWhy": "At 146.6 meters, the Great Pyramid held the record as humanity’s tallest structure for over 3,800 years until England’s Lincoln Cathedral raised its central spire in 1311.",
+      "helpfulHint": "Think roughly the height of a modern 45-story skyscraper—just under 150 meters.",
+      "pinpoint": {
+        "minVal": 60,
+        "maxVal": 260,
+        "step": 1,
+        "exactVal": 147,
+        "unitLabel": "m",
+        "bullseyeRadius": 6,
+        "winRadius": 18
+      }
+    },
+    {
+      "qid": 1090317,
+      "format": "CLUE_ESCALATOR",
+      "domainId": 3,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Modernist Icons",
+      "wittyHeader": "Spiral Art Ramp",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 32,
+      "readInGraceSec": 2,
+      "prompt": "Name the famous museum building revealed across these three escalating clues.",
+      "funFactWhy": "Critics initially joked it looked like an upside-down oatmeal bowl or giant washing machine, yet Frank Lloyd Wright’s spiraling concrete ribbon became a UNESCO World Heritage landmark.",
+      "helpfulHint": "Visitors take an elevator to the top of this Fifth Avenue landmark and stroll gently down a continuous spiral gallery.",
+      "escalator": {
+        "clues": [
+          "Its architect imagined visitors riding an elevator to the top and gliding gently down a continuous quarter-mile spiral ramp.",
+          "Completed in 1959, its coiled white concrete exterior stands in striking contrast to Manhattan’s boxy grid.",
+          "Designed by Frank Lloyd Wright along New York’s Fifth Avenue, this museum bears the surname of a mining-magnate art collector."
+        ],
+        "choices": [
+          "Guggenheim Museum",
+          "Getty Center",
+          "Whitney Museum",
+          "Tate Modern"
+        ],
+        "correctIndex": 0
+      }
+    },
+    {
+      "qid": 1090318,
+      "format": "VISUAL_SPOTTER",
+      "domainId": 3,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Sacred Architecture",
+      "wittyHeader": "Still Waiting on Contractors",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Study this hyperboloid basilica elevation begun in 1882 with 18 spindle spires and catenary vaulting. Which Barcelona landmark is it?",
+      "funFactWhy": "Antoni Gaudi modeled his soaring gravity-defying vaults upside-down using weighted hanging chains and mirrors—and joked that his client \"is not in a hurry.\"",
+      "helpfulHint": "Look at the 18 spires and 1882 start date—it is Barcelona’s famous still-rising basilica.",
+      "visualSpotter": {
+        "visualKind": "SVG_DIAGRAM",
+        "imageUrl": "./assets/visuals/arch_sagrada_familia.svg",
+        "caption": "18 Spindle Spires · Catenary Vault Elevation (Begun 1882)",
+        "choices": [
+          "Notre-Dame de Paris",
+          "St. Basil’s Cathedral",
+          "Milan Cathedral",
+          "Sagrada Familia"
+        ],
+        "correctIndex": 3
+      }
+    },
+    {
+      "qid": 1090319,
+      "format": "VISUAL_SPOTTER",
+      "domainId": 3,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Expressionist Architecture",
+      "wittyHeader": "Sails Sliced From One Sphere",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Inspect this 1973 harbor-peninsula blueprint built from precast spherical shell vaults (R = 75.2 m). Which iconic performing-arts center is it?",
+      "funFactWhy": "Danish architect Jorn Utzon solved the impossible construction geometry by slicing every soaring white shell from the surface of a single imaginary sphere of identical radius.",
+      "helpfulHint": "Opened in 1973 on Bennelong Point, its glistening tiled sails define Australia’s most famous harbor.",
+      "visualSpotter": {
+        "visualKind": "SVG_DIAGRAM",
+        "imageUrl": "./assets/visuals/arch_sydney_opera.svg",
+        "caption": "Spherical Precast Shell Vaults · Opened 1973",
+        "choices": [
+          "Walt Disney Concert Hall",
+          "Elbphilharmonie",
+          "Oslo Opera House",
+          "Sydney Opera House"
+        ],
+        "correctIndex": 3
+      }
+    },
+    {
+      "qid": 1090320,
+      "format": "VISUAL_SPOTTER",
+      "domainId": 3,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Mughal Architecture",
+      "wittyHeader": "Four Leaning Minarets",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Examine this symmetric 1632–1653 marble mausoleum elevation rising 73 meters tall with four framing minarets. Which monument is shown?",
+      "funFactWhy": "Mughal builders tilted the four outer minarets slightly outward on purpose—so if an earthquake ever toppled them, they would fall away from the central marble dome.",
+      "helpfulHint": "Commissioned in Agra by Emperor Shah Jahan for his beloved wife Mumtaz Mahal.",
+      "visualSpotter": {
+        "visualKind": "SVG_DIAGRAM",
+        "imageUrl": "./assets/visuals/arch_taj_mahal.svg",
+        "caption": "Symmetric Elevation · 73 m Dome & 4 Minarets (1632–1653)",
+        "choices": [
+          "Taj Mahal",
+          "Sheikh Zayed Grand Mosque",
+          "Blue Mosque",
+          "Humayun’s Tomb"
+        ],
+        "correctIndex": 0
+      }
+    },
+    {
+      "qid": 1090321,
+      "format": "MULTIPLE_CHOICE",
+      "domainId": 4,
+      "wedgeId": "MAGENTA_POP",
+      "categoryLabel": "Movie Magic",
+      "wittyHeader": "No Foley Budget Needed",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "When sound designer Ben Burtt needed the menacing mechanical breathing of Darth Vader in 1977, what everyday piece of sports gear did he stick a tiny microphone inside?",
+      "funFactWhy": "Burtt taped a miniature microphone inside a scuba regulator mouthpiece and recorded himself breathing—turning backyard dive gear into cinema’s most chilling sound effect.",
+      "helpfulHint": "Think of underwater gear that lets divers inhale and exhale with a pressurized hiss.",
+      "choices": [
+        "A trombone mute",
+        "A bicycle air pump",
+        "An accordion bellows",
+        "A scuba regulator"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "qid": 1090322,
+      "format": "MULTIPLE_CHOICE",
+      "domainId": 4,
+      "wedgeId": "MAGENTA_POP",
+      "categoryLabel": "Rock Legends",
+      "wittyHeader": "Bohemian Tracklist",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 12,
+      "readInGraceSec": 2,
+      "prompt": "Which British band recorded \"Bohemian Rhapsody\"?",
+      "funFactWhy": "Record executives insisted a six-minute operatic rock single with no chorus would flop on radio—until DJ Kenny Everett played it 14 times in one weekend and sparked a nine-week UK #1 run.",
+      "helpfulHint": "Fronted by Freddie Mercury, their name is royal.",
+      "choices": [
+        "The Rolling Stones",
+        "Led Zeppelin",
+        "The Who",
+        "Queen"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "qid": 1090323,
+      "format": "MATCH_4",
+      "domainId": 4,
+      "wedgeId": "MAGENTA_POP",
+      "categoryLabel": "Film Composers",
+      "wittyHeader": "Cue the Orchestra!",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 35,
+      "readInGraceSec": 2,
+      "prompt": "Wire each unforgettable movie score to the legendary composer who wrote it.",
+      "funFactWhy": "Ennio Morricone recorded coyote howls, cracking whips, and a two-note ocarina motif for \"The Good, the Bad and the Ugly\"—forever defining the sound of the Spaghetti Western.",
+      "helpfulHint": "Match the Western standoff to Morricone and the Studio Ghibli spirit bathhouse to Joe Hisaishi.",
+      "match4": {
+        "instruction": "Connect each iconic score to its composer",
+        "pairs": [
+          {
+            "pairId": "p1",
+            "leftPrompt": "Inception / Interstellar",
+            "rightAnswer": "Hans Zimmer"
+          },
+          {
+            "pairId": "p2",
+            "leftPrompt": "The Good, the Bad and the Ugly",
+            "rightAnswer": "Ennio Morricone"
+          },
+          {
+            "pairId": "p3",
+            "leftPrompt": "Spirited Away",
+            "rightAnswer": "Joe Hisaishi"
+          },
+          {
+            "pairId": "p4",
+            "leftPrompt": "The Lord of the Rings trilogy",
+            "rightAnswer": "Howard Shore"
+          }
+        ],
+        "shuffledRight": [
+          {
+            "pairId": "p3",
+            "text": "Joe Hisaishi"
+          },
+          {
+            "pairId": "p4",
+            "text": "Howard Shore"
+          },
+          {
+            "pairId": "p1",
+            "text": "Hans Zimmer"
+          },
+          {
+            "pairId": "p2",
+            "text": "Ennio Morricone"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090324,
+      "format": "MATCH_4",
+      "domainId": 4,
+      "wedgeId": "MAGENTA_POP",
+      "categoryLabel": "Fictional Hangouts",
+      "wittyHeader": "Table for Four, Please",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 35,
+      "readInGraceSec": 2,
+      "prompt": "Link each beloved TV hangout spot to the show where the cast practically lived there.",
+      "funFactWhy": "Monk’s Café on \"Seinfeld\" used exterior shots of the real-life Tom’s Restaurant on Manhattan’s Upper West Side—which also inspired Suzanne Vega’s hit song \"Tom’s Diner.\"",
+      "helpfulHint": "Pair the orange coffee-shop sofa with \"Friends\" and the Boston bar with \"Cheers\" first.",
+      "match4": {
+        "instruction": "Connect each TV hangout to its sitcom",
+        "pairs": [
+          {
+            "pairId": "p1",
+            "leftPrompt": "Central Perk",
+            "rightAnswer": "Friends"
+          },
+          {
+            "pairId": "p2",
+            "leftPrompt": "Monk’s Café",
+            "rightAnswer": "Seinfeld"
+          },
+          {
+            "pairId": "p3",
+            "leftPrompt": "Moe’s Tavern",
+            "rightAnswer": "The Simpsons"
+          },
+          {
+            "pairId": "p4",
+            "leftPrompt": "Luke’s Diner",
+            "rightAnswer": "Gilmore Girls"
+          }
+        ],
+        "shuffledRight": [
+          {
+            "pairId": "p2",
+            "text": "Seinfeld"
+          },
+          {
+            "pairId": "p4",
+            "text": "Gilmore Girls"
+          },
+          {
+            "pairId": "p1",
+            "text": "Friends"
+          },
+          {
+            "pairId": "p3",
+            "text": "The Simpsons"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090325,
+      "format": "SORT_4",
+      "domainId": 4,
+      "wedgeId": "MAGENTA_POP",
+      "categoryLabel": "Animation Milestones",
+      "wittyHeader": "Frame by Frame",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 30,
+      "readInGraceSec": 2,
+      "prompt": "Order these four landmark animated features from earliest theatrical release to latest.",
+      "funFactWhy": "Toy Story took four years and a 117-computer render farm in 1995 to become the first fully computer-animated feature film—each frame took up to 15 hours to compute.",
+      "helpfulHint": "Start with Disney’s 1940 musical experiment and finish with Miles Morales leaping across the Spider-Verse.",
+      "sort4": {
+        "orderDirectionLabel": "Earliest Release -> Latest Release",
+        "correctOrder": [
+          {
+            "itemId": "s1",
+            "label": "Fantasia",
+            "numericValue": 1940,
+            "formattedValue": "1940"
+          },
+          {
+            "itemId": "s2",
+            "label": "The Lion King",
+            "numericValue": 1994,
+            "formattedValue": "1994"
+          },
+          {
+            "itemId": "s3",
+            "label": "Spirited Away",
+            "numericValue": 2001,
+            "formattedValue": "2001"
+          },
+          {
+            "itemId": "s4",
+            "label": "Spider-Man: Into the Spider-Verse",
+            "numericValue": 2018,
+            "formattedValue": "2018"
+          }
+        ],
+        "initialOrder": [
+          {
+            "itemId": "s3",
+            "label": "Spirited Away",
+            "numericValue": 2001,
+            "formattedValue": "2001"
+          },
+          {
+            "itemId": "s1",
+            "label": "Fantasia",
+            "numericValue": 1940,
+            "formattedValue": "1940"
+          },
+          {
+            "itemId": "s4",
+            "label": "Spider-Man: Into the Spider-Verse",
+            "numericValue": 2018,
+            "formattedValue": "2018"
+          },
+          {
+            "itemId": "s2",
+            "label": "The Lion King",
+            "numericValue": 1994,
+            "formattedValue": "1994"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090326,
+      "format": "MULTI_STRIKE",
+      "domainId": 4,
+      "wedgeId": "MAGENTA_POP",
+      "categoryLabel": "Symphony Sections",
+      "wittyHeader": "Wrong Section, Maestro!",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Three of these instruments belong to the symphony’s brass section—spot the 1 sneaky woodwind imposter!",
+      "funFactWhy": "Even though saxophones gleam in polished brass, they produce sound with a single wooden reed—putting them squarely in the woodwind family alongside clarinets.",
+      "helpfulHint": "Forget what metal it is made of and ask which instrument uses a reed in its mouthpiece.",
+      "multiStrike": {
+        "strikeMode": "SPOT_THE_IMPOSTER",
+        "targetCount": 1,
+        "options": [
+          {
+            "optionId": "o1",
+            "label": "French Horn",
+            "isTarget": false
+          },
+          {
+            "optionId": "o2",
+            "label": "Trombone",
+            "isTarget": false
+          },
+          {
+            "optionId": "o3",
+            "label": "Saxophone",
+            "isTarget": true
+          },
+          {
+            "optionId": "o4",
+            "label": "Tuba",
+            "isTarget": false
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090327,
+      "format": "MULTI_STRIKE",
+      "domainId": 4,
+      "wedgeId": "MAGENTA_POP",
+      "categoryLabel": "Cinema Classics",
+      "wittyHeader": "Directed by Hitchcock",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Tap all 3 classic suspense thrillers directed by Alfred Hitchcock!",
+      "funFactWhy": "Hitchcock made brief silent cameos in 39 of his own films—and in \"Lifeboat,\" set entirely on a tiny raft, he sneaked his face into a newspaper weight-loss ad.",
+      "helpfulHint": "Skip Orson Welles’s noir border classic, Billy Wilder’s sunset mansion, and Fritz Lang’s silent metropolis.",
+      "multiStrike": {
+        "strikeMode": "PICK_ALL_TRUE",
+        "targetCount": 3,
+        "options": [
+          {
+            "optionId": "o1",
+            "label": "Vertigo",
+            "isTarget": true
+          },
+          {
+            "optionId": "o2",
+            "label": "Sunset Boulevard",
+            "isTarget": false
+          },
+          {
+            "optionId": "o3",
+            "label": "Rear Window",
+            "isTarget": true
+          },
+          {
+            "optionId": "o4",
+            "label": "Touch of Evil",
+            "isTarget": false
+          },
+          {
+            "optionId": "o5",
+            "label": "North by Northwest",
+            "isTarget": true
+          },
+          {
+            "optionId": "o6",
+            "label": "Metropolis",
+            "isTarget": false
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090328,
+      "format": "PINPOINT_DIAL",
+      "domainId": 4,
+      "wedgeId": "MAGENTA_POP",
+      "categoryLabel": "Music Television",
+      "wittyHeader": "Video Killed the Radio Star",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "In what year did MTV sign on the air for the first time with the Buggles’ \"Video Killed the Radio Star\"?",
+      "funFactWhy": "Launching at 12:01 a.m. on August 1, 1981, MTV initially reached only a few thousand cable households in New Jersey—not even Manhattan could watch its own debut.",
+      "helpfulHint": "Think of the very early 1980s, right after the decade flipped from 1979.",
+      "pinpoint": {
+        "minVal": 1970,
+        "maxVal": 1995,
+        "step": 1,
+        "exactVal": 1981,
+        "unitLabel": "",
+        "bullseyeRadius": 1,
+        "winRadius": 4
+      }
+    },
+    {
+      "qid": 1090329,
+      "format": "CLUE_ESCALATOR",
+      "domainId": 4,
+      "wedgeId": "MAGENTA_POP",
+      "categoryLabel": "Pop Royalty",
+      "wittyHeader": "Walk on the Moon",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 32,
+      "readInGraceSec": 2,
+      "prompt": "Name the record-shattering 1982 album revealed across these three escalating clues.",
+      "funFactWhy": "Produced by Quincy Jones, seven of the album’s nine tracks became Billboard Top 10 hits, and Eddie Van Halen recorded his blazing guitar solo on \"Beat It\" for free as a favor.",
+      "helpfulHint": "Its 14-minute zombie music video directed by John Landis became the first music video inducted into the National Film Registry.",
+      "escalator": {
+        "clues": [
+          "Eddie Van Halen laid down a scorching guitar solo on one of its tracks for free in under half an hour.",
+          "Produced by Quincy Jones, seven of its nine songs climbed into the Billboard Top 10.",
+          "Anchored by \"Billie Jean,\" \"Beat It,\" and a spooky Vincent Price narration, this Michael Jackson LP is the best-selling album of all time."
+        ],
+        "choices": [
+          "Bad",
+          "Off the Wall",
+          "Purple Rain",
+          "Thriller"
+        ],
+        "correctIndex": 3
+      }
+    },
+    {
+      "qid": 1090330,
+      "format": "CLUE_ESCALATOR",
+      "domainId": 4,
+      "wedgeId": "MAGENTA_POP",
+      "categoryLabel": "Classical Masters",
+      "wittyHeader": "Ode to Defiance",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 32,
+      "readInGraceSec": 2,
+      "prompt": "Name the legendary composer revealed across these three escalating clues.",
+      "funFactWhy": "At the 1824 Vienna premiere of his Ninth Symphony, he kept conducting a few beats past the end—completely deaf—until contralto Caroline Unger gently turned him around to see the roaring ovation.",
+      "helpfulHint": "His Fifth Symphony opens with the four most recognizable warning-knock notes in Western music.",
+      "escalator": {
+        "clues": [
+          "At the 1824 premiere of his final symphony, a soloist had to physically turn him around so he could see the audience applauding.",
+          "Born in Bonn before conquering Vienna, he bridged the Classical era and Romanticism despite losing his hearing.",
+          "He composed the \"Moonlight Sonata,\" the Fifth Symphony, and the choral \"Ode to Joy.\""
+        ],
+        "choices": [
+          "Ludwig van Beethoven",
+          "Wolfgang Amadeus Mozart",
+          "Franz Schubert",
+          "Johannes Brahms"
+        ],
+        "correctIndex": 0
+      }
+    },
+    {
+      "qid": 1090331,
+      "format": "VISUAL_SPOTTER",
+      "domainId": 4,
+      "wedgeId": "MAGENTA_POP",
+      "categoryLabel": "Music Theory",
+      "wittyHeader": "Three Notes, Zero Sharps",
+      "difficultyTier": "COLLEGE",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Read this treble-clef triad blueprint: 0 sharps, 0 flats, stacking +4 semitones then +3 semitones from its root. Which major chord is shown?",
+      "funFactWhy": "A major third (+4 semitones) topped by a minor third (+3 semitones) in a key signature with zero sharps or flats spells C–E–G, the foundational C major triad.",
+      "helpfulHint": "Zero sharps and zero flats points straight to the all-white-key major scale.",
+      "visualSpotter": {
+        "visualKind": "SVG_DIAGRAM",
+        "imageUrl": "./assets/visuals/music_treble_chords.svg",
+        "caption": "Root-Position Major Triad · 0 Sharps / 0 Flats",
+        "choices": [
+          "C major",
+          "G major",
+          "F major",
+          "A minor"
+        ],
+        "correctIndex": 0
+      }
+    },
+    {
+      "qid": 1090332,
+      "format": "MULTIPLE_CHOICE",
+      "domainId": 5,
+      "wedgeId": "ORANGE_SPORTS",
+      "categoryLabel": "Olympic Quirks",
+      "wittyHeader": "No Gold in the Gold Medal",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "The 1912 Stockholm Games were the last Olympics to hand out solid-gold medals—today, what metal makes up more than 92% of an Olympic gold medal?",
+      "funFactWhy": "IOC rules require gold medals to be at least 92.5% sterling silver plated with a minimum of 6 grams of pure gold—otherwise a modern solid-gold medal would cost tens of thousands of dollars apiece.",
+      "helpfulHint": "Think of the precious metal directly one step down on the podium.",
+      "choices": [
+        "Brass",
+        "Bronze",
+        "Silver",
+        "Copper"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "qid": 1090333,
+      "format": "MULTIPLE_CHOICE",
+      "domainId": 5,
+      "wedgeId": "ORANGE_SPORTS",
+      "categoryLabel": "Video Game Lore",
+      "wittyHeader": "Pizza-Slice Inspiration",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 12,
+      "readInGraceSec": 2,
+      "prompt": "Which arcade icon was inspired by a pizza?",
+      "funFactWhy": "Namco designer Toru Iwatani got the idea for Pac-Man’s shape while staring at a pizza missing two slices—and originally named him \"Puck-Man\" in Japan before American arcades worried about vandalism.",
+      "helpfulHint": "He chomps glowing pellets while dodging Blinky, Pinky, Inky, and Clyde.",
+      "choices": [
+        "Kirby",
+        "Pac-Man",
+        "Mega Man",
+        "Q*bert"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "qid": 1090334,
+      "format": "MATCH_4",
+      "domainId": 5,
+      "wedgeId": "ORANGE_SPORTS",
+      "categoryLabel": "Championship Venues",
+      "wittyHeader": "Sacred Turf & Clay",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 35,
+      "readInGraceSec": 2,
+      "prompt": "Wire each legendary tournament to the iconic venue or playing surface where champions are crowned.",
+      "funFactWhy": "Roland-Garros’s famous red clay is actually crushed white limestone topped with just a couple millimeters of powdered red brick dust.",
+      "helpfulHint": "Match the French Open to red clay and the Masters green jacket to Georgia’s azaleas.",
+      "match4": {
+        "instruction": "Pair each major event with its signature home",
+        "pairs": [
+          {
+            "pairId": "p1",
+            "leftPrompt": "The Masters (Golf)",
+            "rightAnswer": "Augusta National"
+          },
+          {
+            "pairId": "p2",
+            "leftPrompt": "French Open (Tennis)",
+            "rightAnswer": "Roland-Garros (Red Clay)"
+          },
+          {
+            "pairId": "p3",
+            "leftPrompt": "Kentucky Derby",
+            "rightAnswer": "Churchill Downs"
+          },
+          {
+            "pairId": "p4",
+            "leftPrompt": "Monaco Grand Prix",
+            "rightAnswer": "Circuit de Monaco"
+          }
+        ],
+        "shuffledRight": [
+          {
+            "pairId": "p3",
+            "text": "Churchill Downs"
+          },
+          {
+            "pairId": "p1",
+            "text": "Augusta National"
+          },
+          {
+            "pairId": "p4",
+            "text": "Circuit de Monaco"
+          },
+          {
+            "pairId": "p2",
+            "text": "Roland-Garros (Red Clay)"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090335,
+      "format": "SORT_4",
+      "domainId": 5,
+      "wedgeId": "ORANGE_SPORTS",
+      "categoryLabel": "Console History",
+      "wittyHeader": "Blow on the Cartridge",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 30,
+      "readInGraceSec": 2,
+      "prompt": "Stack these four milestone video-game consoles from earliest original launch year to latest.",
+      "funFactWhy": "Sony originally partnered with Nintendo to build a CD add-on for the Super NES—when Nintendo abruptly backed out in 1991, Sony turned the prototype into the original PlayStation.",
+      "helpfulHint": "Start with Atari’s wood-grain classic in the late 1970s and end with Nintendo’s hybrid handheld.",
+      "sort4": {
+        "orderDirectionLabel": "Earliest Launch -> Latest Launch",
+        "correctOrder": [
+          {
+            "itemId": "s1",
+            "label": "Atari 2600",
+            "numericValue": 1977,
+            "formattedValue": "1977"
+          },
+          {
+            "itemId": "s2",
+            "label": "Nintendo Game Boy",
+            "numericValue": 1989,
+            "formattedValue": "1989"
+          },
+          {
+            "itemId": "s3",
+            "label": "Sony PlayStation (PS1)",
+            "numericValue": 1994,
+            "formattedValue": "1994"
+          },
+          {
+            "itemId": "s4",
+            "label": "Nintendo Switch",
+            "numericValue": 2017,
+            "formattedValue": "2017"
+          }
+        ],
+        "initialOrder": [
+          {
+            "itemId": "s2",
+            "label": "Nintendo Game Boy",
+            "numericValue": 1989,
+            "formattedValue": "1989"
+          },
+          {
+            "itemId": "s4",
+            "label": "Nintendo Switch",
+            "numericValue": 2017,
+            "formattedValue": "2017"
+          },
+          {
+            "itemId": "s1",
+            "label": "Atari 2600",
+            "numericValue": 1977,
+            "formattedValue": "1977"
+          },
+          {
+            "itemId": "s3",
+            "label": "Sony PlayStation (PS1)",
+            "numericValue": 1994,
+            "formattedValue": "1994"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090336,
+      "format": "MULTI_STRIKE",
+      "domainId": 5,
+      "wedgeId": "ORANGE_SPORTS",
+      "categoryLabel": "Chess Tactics",
+      "wittyHeader": "Illegal Move, Grandmaster",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Tap all 3 official chess terms—ignore the 3 fake or wrong-game imposters!",
+      "funFactWhy": "Zugzwang (\"compulsion to move\") describes a cruel chess position where any legal move you make wrecks your own defense—you would rather pass, if only the rules allowed it.",
+      "helpfulHint": "Keep the French pawn capture, the German forced-move trap, and the opening sacrifice; skip poker, baseball, and billiards.",
+      "multiStrike": {
+        "strikeMode": "PICK_ALL_TRUE",
+        "targetCount": 3,
+        "options": [
+          {
+            "optionId": "o1",
+            "label": "En passant",
+            "isTarget": true
+          },
+          {
+            "optionId": "o2",
+            "label": "Balk",
+            "isTarget": false
+          },
+          {
+            "optionId": "o3",
+            "label": "Zugzwang",
+            "isTarget": true
+          },
+          {
+            "optionId": "o4",
+            "label": "Masse shot",
+            "isTarget": false
+          },
+          {
+            "optionId": "o5",
+            "label": "Gambit",
+            "isTarget": true
+          },
+          {
+            "optionId": "o6",
+            "label": "Check-raise",
+            "isTarget": false
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090337,
+      "format": "PINPOINT_DIAL",
+      "domainId": 5,
+      "wedgeId": "ORANGE_SPORTS",
+      "categoryLabel": "Baseball History",
+      "wittyHeader": "Number 42 Takes First",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "In what historic year did Jackie Robinson debut for the Brooklyn Dodgers, breaking Major League Baseball’s modern color barrier?",
+      "funFactWhy": "Jackie Robinson won the inaugural MLB Rookie of the Year Award in 1947, and every April 15 every player across baseball wears his retired number 42.",
+      "helpfulHint": "Two springs after World War II ended—right in the late 1940s.",
+      "pinpoint": {
+        "minVal": 1920,
+        "maxVal": 1975,
+        "step": 1,
+        "exactVal": 1947,
+        "unitLabel": "",
+        "bullseyeRadius": 1,
+        "winRadius": 5
+      }
+    },
+    {
+      "qid": 1090338,
+      "format": "PINPOINT_DIAL",
+      "domainId": 5,
+      "wedgeId": "ORANGE_SPORTS",
+      "categoryLabel": "Track & Field",
+      "wittyHeader": "Sub-Four Barrier",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "In what year did British medical student Roger Bannister shatter the mythic four-minute mile in Oxford?",
+      "funFactWhy": "For decades doctors argued the human heart could not survive a sub-four-minute mile—yet just 46 days after Bannister ran 3:59.4 in May 1954, Australian John Landy broke it too.",
+      "helpfulHint": "Think mid-1950s—one year after Hillary and Tenzing summited Everest.",
+      "pinpoint": {
+        "minVal": 1925,
+        "maxVal": 1985,
+        "step": 1,
+        "exactVal": 1954,
+        "unitLabel": "",
+        "bullseyeRadius": 2,
+        "winRadius": 6
+      }
+    },
+    {
+      "qid": 1090339,
+      "format": "CLUE_ESCALATOR",
+      "domainId": 5,
+      "wedgeId": "ORANGE_SPORTS",
+      "categoryLabel": "Hockey Legends",
+      "wittyHeader": "The Great One’s Math",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 32,
+      "readInGraceSec": 2,
+      "prompt": "Name the sporting icon revealed across these three escalating clues.",
+      "funFactWhy": "Even if you erased all 894 of Wayne Gretzky’s NHL goals, his 1,963 assists alone would STILL make him the highest-scoring player in NHL history.",
+      "helpfulHint": "His sweater number 99 is retired across every single NHL franchise.",
+      "escalator": {
+        "clues": [
+          "Even if every single goal he ever scored were erased, his assists alone would still top his league’s all-time points leaderboard.",
+          "He won four Stanley Cups in Edmonton before a seismic 1988 trade sent him to Los Angeles.",
+          "Nicknamed \"The Great One,\" his number 99 is retired league-wide across the NHL."
+        ],
+        "choices": [
+          "Wayne Gretzky",
+          "Mario Lemieux",
+          "Gordie Howe",
+          "Bobby Orr"
+        ],
+        "correctIndex": 0
+      }
+    },
+    {
+      "qid": 1090340,
+      "format": "CLUE_ESCALATOR",
+      "domainId": 5,
+      "wedgeId": "ORANGE_SPORTS",
+      "categoryLabel": "Board Game Classics",
+      "wittyHeader": "Ancient Strategy Grid",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 32,
+      "readInGraceSec": 2,
+      "prompt": "Name the ancient tabletop strategy game revealed across these three escalating clues.",
+      "funFactWhy": "Played on a 19-by-19 grid of intersections, Go has more legal board positions than there are atoms in the observable universe—making DeepMind’s AlphaGo victory in 2016 a landmark in AI.",
+      "helpfulHint": "Players place black and white stones on line intersections rather than inside squares.",
+      "escalator": {
+        "clues": [
+          "It has more legal board positions than atoms in the observable universe, long making it the ultimate grand challenge for artificial intelligence.",
+          "Originating in ancient China more than 2,500 years ago, players surround territory by placing black and white stones on a 19×19 grid.",
+          "Known as Weiqi in China and Baduk in Korea, its English name is a brisk two-letter verb."
+        ],
+        "choices": [
+          "Mancala",
+          "Mahjong",
+          "Go",
+          "Shogi"
+        ],
+        "correctIndex": 2
+      }
+    },
+    {
+      "qid": 1090341,
+      "format": "VISUAL_SPOTTER",
+      "domainId": 5,
+      "wedgeId": "ORANGE_SPORTS",
+      "categoryLabel": "Ballpark Blueprints",
+      "wittyHeader": "Ivy League Outfield",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Study this 1914 ballpark survey marked \"BRICK + VINE\" with symmetric 368-foot power alleys and 400 feet to dead center. Which Chicago shrine is it?",
+      "funFactWhy": "Bill Veeck planted 350 Japanese bittersweet and Boston ivy vines along the brick outfield wall in 1937—and any batted ball lost inside the leaves is an automatic ground-rule double.",
+      "helpfulHint": "Opened in 1914 on Chicago’s North Side, its ivy-covered brick wall is unique in Major League Baseball.",
+      "visualSpotter": {
+        "visualKind": "SVG_DIAGRAM",
+        "imageUrl": "./assets/visuals/bp_wrigley.svg",
+        "caption": "Brick & Vine Outfield Survey · Opened 1914",
+        "choices": [
+          "Wrigley Field",
+          "Dodger Stadium",
+          "Yankee Stadium",
+          "Fenway Park"
+        ],
+        "correctIndex": 0
+      }
+    },
+    {
+      "qid": 1090342,
+      "format": "VISUAL_SPOTTER",
+      "domainId": 5,
+      "wedgeId": "ORANGE_SPORTS",
+      "categoryLabel": "Ballpark Blueprints",
+      "wittyHeader": "Kayaks Ready in Right Field",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Inspect this 2000 waterfront ballpark survey featuring a 309-foot right-field foul line, a 24-foot brick wall, and a tidal cove right behind it. Name the park!",
+      "funFactWhy": "Fans bob in kayaks outside San Francisco’s Oracle Park hoping to scoop up a \"Splash Hit\" home run—and the 24-foot right-field wall honors Willie Mays’s retired jersey number 24.",
+      "helpfulHint": "Opened in 2000 on San Francisco Bay, left-handed sluggers launch baseballs straight into McCovey Cove.",
+      "visualSpotter": {
+        "visualKind": "SVG_DIAGRAM",
+        "imageUrl": "./assets/visuals/bp_oracle.svg",
+        "caption": "Tidal Cove & 24-ft Right-Field Brick Wall · Opened 2000",
+        "choices": [
+          "Oracle Park",
+          "PNC Park",
+          "Camden Yards",
+          "Petco Park"
+        ],
+        "correctIndex": 0
+      }
+    },
+    {
+      "qid": 1090343,
+      "format": "MULTIPLE_CHOICE",
+      "domainId": 6,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Everyday Inventions",
+      "wittyHeader": "Sticky Mistake, Huge Payout",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "In 1968, 3M chemist Spencer Silver accidentally brewed an adhesive that barely stuck to anything—leading colleague Art Fry to invent what bright-yellow office staple?",
+      "funFactWhy": "Art Fry wanted bookmarks that wouldn’t slip out of his church choir hymnal without ripping the pages, and 3M’s canary-yellow shade happened only because the lab next door had scrap yellow paper.",
+      "helpfulHint": "You have probably stuck one of these peelable paper squares onto the edge of a monitor.",
+      "choices": [
+        "Post-it Notes",
+        "Duct tape",
+        "Velcro straps",
+        "Correction fluid"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "qid": 1090344,
+      "format": "MULTIPLE_CHOICE",
+      "domainId": 6,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Computing Basics",
+      "wittyHeader": "Binary Vocabulary",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 12,
+      "readInGraceSec": 2,
+      "prompt": "How many bits make up one standard byte?",
+      "funFactWhy": "Early computers experimented with 6-bit and 7-bit bytes before IBM’s 1964 System/360 locked in the 8-bit standard—and yes, computer scientists really do call half a byte (4 bits) a \"nybble.\"",
+      "helpfulHint": "It is a small power of two—the same count as legs on an octopus.",
+      "choices": [
+        "4",
+        "16",
+        "8",
+        "32"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "qid": 1090345,
+      "format": "MATCH_4",
+      "domainId": 6,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Tech Origins",
+      "wittyHeader": "Borrowed From Nature",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 35,
+      "readInGraceSec": 2,
+      "prompt": "Connect each famous piece of human engineering to the creature or plant that inspired it.",
+      "funFactWhy": "Swiss engineer George de Mestral invented Velcro in 1941 after pulling prickly burdock burrs off his hunting dog’s fur and spotting their microscopic hooks under a microscope.",
+      "helpfulHint": "Pair the bullet-train nose with the diving kingfisher and hook-and-loop fasteners with burdock burrs.",
+      "match4": {
+        "instruction": "Wire each invention to its natural inspiration",
+        "pairs": [
+          {
+            "pairId": "p1",
+            "leftPrompt": "Velcro hook-and-loop",
+            "rightAnswer": "Burdock plant burrs"
+          },
+          {
+            "pairId": "p2",
+            "leftPrompt": "Shinkansen 500 bullet-train nose",
+            "rightAnswer": "Kingfisher beak"
+          },
+          {
+            "pairId": "p3",
+            "leftPrompt": "Sonar underwater ranging",
+            "rightAnswer": "Dolphin & bat echolocation"
+          },
+          {
+            "pairId": "p4",
+            "leftPrompt": "Self-cleaning hydrophobic paint",
+            "rightAnswer": "Lotus leaf microstructure"
+          }
+        ],
+        "shuffledRight": [
+          {
+            "pairId": "p3",
+            "text": "Dolphin & bat echolocation"
+          },
+          {
+            "pairId": "p1",
+            "text": "Burdock plant burrs"
+          },
+          {
+            "pairId": "p4",
+            "text": "Lotus leaf microstructure"
+          },
+          {
+            "pairId": "p2",
+            "text": "Kingfisher beak"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090346,
+      "format": "MATCH_4",
+      "domainId": 6,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Acronym Decoder",
+      "wittyHeader": "Spell Out the Tech",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 35,
+      "readInGraceSec": 2,
+      "prompt": "Wire each everyday tech acronym to the real thing it actually stands for.",
+      "funFactWhy": "Despite urban legend, Wi-Fi does NOT stand for \"Wireless Fidelity\"—marketing firm Interbrand invented the catchy pun on \"Hi-Fi\" in 1999 to replace IEEE 802.11b Direct Sequence.",
+      "helpfulHint": "Match LASER to stimulated emission of radiation and CAPTCHA to telling humans and bots apart.",
+      "match4": {
+        "instruction": "Connect each acronym to its true expansion",
+        "pairs": [
+          {
+            "pairId": "p1",
+            "leftPrompt": "LASER",
+            "rightAnswer": "Stimulated Light Amplification"
+          },
+          {
+            "pairId": "p2",
+            "leftPrompt": "RADAR",
+            "rightAnswer": "Radio Detection & Ranging"
+          },
+          {
+            "pairId": "p3",
+            "leftPrompt": "SCUBA",
+            "rightAnswer": "Underwater Breathing Apparatus"
+          },
+          {
+            "pairId": "p4",
+            "leftPrompt": "USB",
+            "rightAnswer": "Universal Serial Bus"
+          }
+        ],
+        "shuffledRight": [
+          {
+            "pairId": "p4",
+            "text": "Universal Serial Bus"
+          },
+          {
+            "pairId": "p3",
+            "text": "Underwater Breathing Apparatus"
+          },
+          {
+            "pairId": "p1",
+            "text": "Stimulated Light Amplification"
+          },
+          {
+            "pairId": "p2",
+            "text": "Radio Detection & Ranging"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090347,
+      "format": "SORT_4",
+      "domainId": 6,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Communication Era",
+      "wittyHeader": "Can You Hear Me Now?",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 30,
+      "readInGraceSec": 2,
+      "prompt": "Stack these four communication breakthroughs from earliest debut year to latest.",
+      "funFactWhy": "The very first SMS text message—sent on December 3, 1992 by British engineer Neil Papworth from a PC to a Vodafone handset—simply read \"Merry Christmas.\"",
+      "helpfulHint": "Start with Samuel Morse’s wire clicks in the 1840s and finish with the first SMS in the 1990s.",
+      "sort4": {
+        "orderDirectionLabel": "Earliest Milestone -> Latest Milestone",
+        "correctOrder": [
+          {
+            "itemId": "s1",
+            "label": "First Morse Telegraph Line",
+            "numericValue": 1844,
+            "formattedValue": "1844"
+          },
+          {
+            "itemId": "s2",
+            "label": "Alexander Graham Bell’s Telephone Patent",
+            "numericValue": 1876,
+            "formattedValue": "1876"
+          },
+          {
+            "itemId": "s3",
+            "label": "First Handheld Mobile Phone Call",
+            "numericValue": 1973,
+            "formattedValue": "1973"
+          },
+          {
+            "itemId": "s4",
+            "label": "First SMS Text Message Sent",
+            "numericValue": 1992,
+            "formattedValue": "1992"
+          }
+        ],
+        "initialOrder": [
+          {
+            "itemId": "s3",
+            "label": "First Handheld Mobile Phone Call",
+            "numericValue": 1973,
+            "formattedValue": "1973"
+          },
+          {
+            "itemId": "s1",
+            "label": "First Morse Telegraph Line",
+            "numericValue": 1844,
+            "formattedValue": "1844"
+          },
+          {
+            "itemId": "s4",
+            "label": "First SMS Text Message Sent",
+            "numericValue": 1992,
+            "formattedValue": "1992"
+          },
+          {
+            "itemId": "s2",
+            "label": "Alexander Graham Bell’s Telephone Patent",
+            "numericValue": 1876,
+            "formattedValue": "1876"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090348,
+      "format": "MULTI_STRIKE",
+      "domainId": 6,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Image Formats",
+      "wittyHeader": "Corrupted Extension",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Three of these are real lossless or vector image formats—spot the 1 audio file imposter!",
+      "funFactWhy": "FLAC (Free Lossless Audio Codec) shrinks studio music files without discarding a single audible sample—great for symphonies, useless for opening a vacation photo.",
+      "helpfulHint": "PNG, SVG, and WebP show up inside browser img tags; one of these four belongs in a music player.",
+      "multiStrike": {
+        "strikeMode": "SPOT_THE_IMPOSTER",
+        "targetCount": 1,
+        "options": [
+          {
+            "optionId": "o1",
+            "label": "PNG",
+            "isTarget": false
+          },
+          {
+            "optionId": "o2",
+            "label": "SVG",
+            "isTarget": false
+          },
+          {
+            "optionId": "o3",
+            "label": "FLAC",
+            "isTarget": true
+          },
+          {
+            "optionId": "o4",
+            "label": "WebP",
+            "isTarget": false
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090349,
+      "format": "PINPOINT_DIAL",
+      "domainId": 6,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Aviation History",
+      "wittyHeader": "Twelve Seconds at Kitty Hawk",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "In what year did Orville and Wilbur Wright lift off the windy dunes of Kitty Hawk for humanity’s first powered airplane flight?",
+      "funFactWhy": "Orville’s opening hop on December 17, 1903 lasted just 12 seconds and covered 120 feet—shorter than the wingspan of a modern Boeing 747.",
+      "helpfulHint": "Right at the very start of the 1900s—just three years into the 20th century.",
+      "pinpoint": {
+        "minVal": 1880,
+        "maxVal": 1930,
+        "step": 1,
+        "exactVal": 1903,
+        "unitLabel": "",
+        "bullseyeRadius": 1,
+        "winRadius": 5
+      }
+    },
+    {
+      "qid": 1090350,
+      "format": "PINPOINT_DIAL",
+      "domainId": 6,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Codebreaking History",
+      "wittyHeader": "Bletchley Park Clock",
+      "difficultyTier": "COLLEGE",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "In what year did Alan Turing publish his landmark paper \"Computing Machinery and Intelligence,\" introducing the famous Imitation Game?",
+      "funFactWhy": "Writing in the journal Mind in 1950, Turing opened with \"I propose to consider the question, Can machines think?\"—sparking the Turing Test that still frames AI debates today.",
+      "helpfulHint": "Published right at the exact halfway mark of the 20th century.",
+      "pinpoint": {
+        "minVal": 1930,
+        "maxVal": 1975,
+        "step": 1,
+        "exactVal": 1950,
+        "unitLabel": "",
+        "bullseyeRadius": 2,
+        "winRadius": 6
+      }
+    },
+    {
+      "qid": 1090351,
+      "format": "CLUE_ESCALATOR",
+      "domainId": 6,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Software Pioneers",
+      "wittyHeader": "Compiler Queen",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 32,
+      "readInGraceSec": 2,
+      "prompt": "Name the trailblazing computer scientist and Navy rear admiral revealed across these three escalating clues.",
+      "funFactWhy": "Grace Hopper famously handed out 11.8-inch pieces of wire—the distance light travels in one nanosecond—so generals could literally hold a nanosecond in their hands.",
+      "helpfulHint": "She championed English-like programming languages, helped inspire COBOL, and taped a famous moth into a 1947 logbook.",
+      "escalator": {
+        "clues": [
+          "She kept 11.8-inch lengths of wire in her pocket to show executives how far electricity travels in a single nanosecond.",
+          "Her team famously taped an actual moth into the Harvard Mark II logbook as the \"first actual case of bug being found.\"",
+          "A U.S. Navy Rear Admiral who built the first linker and shaped COBOL, she is nicknamed \"Amazing Grace.\""
+        ],
+        "choices": [
+          "Grace Hopper",
+          "Margaret Hamilton",
+          "Katherine Johnson",
+          "Hedy Lamarr"
+        ],
+        "correctIndex": 0
+      }
+    },
+    {
+      "qid": 1090352,
+      "format": "CLUE_ESCALATOR",
+      "domainId": 6,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Hardware Wonders",
+      "wittyHeader": "Tiny Switch, Giant World",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 32,
+      "readInGraceSec": 2,
+      "prompt": "Name the microscopic electronic invention revealed across these three escalating clues.",
+      "funFactWhy": "First demonstrated at Bell Labs in December 1947, today’s smartphone processors pack more than 15 billion transistors onto a fingernail-sized sliver of silicon.",
+      "helpfulHint": "Replacing hot, fragile vacuum tubes, its name blends \"transfer\" and \"resistor.\"",
+      "escalator": {
+        "clues": [
+          "Born at Bell Labs in December 1947, it replaced bulky, glowing glass vacuum tubes and earned its trio of inventors the 1956 Nobel Prize.",
+          "Modern smartphone chips squeeze more than ten billion of these microscopic semiconductor switches onto a square centimeter of silicon.",
+          "Its name mashes together \"transfer\" and \"resistor,\" and it gave portable 1950s pocket radios their nickname."
+        ],
+        "choices": [
+          "Diode",
+          "Resistor",
+          "Transistor",
+          "Capacitor"
+        ],
+        "correctIndex": 2
+      }
+    },
+    {
+      "qid": 1090353,
+      "format": "VISUAL_SPOTTER",
+      "domainId": 6,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Big Science Hubs",
+      "wittyHeader": "Where the Web Was Born",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Pinpoint the European lakeside city hosting CERN—where Tim Berners-Lee invented the World Wide Web and protons race around a 27-kilometer underground ring.",
+      "funFactWhy": "Straddling the Franco-Swiss border outside Geneva, CERN’s Large Hadron Collider sits 100 meters underground and cools its superconducting magnets colder than deep outer space.",
+      "helpfulHint": "Look at the southwestern tip of Switzerland right beside the French border and the Alps.",
+      "visualSpotter": {
+        "visualKind": "WORLD_REGION_MAP",
+        "caption": "Alpine Crossroads · Franco-Swiss Border (46.20° N, 6.14° E)",
+        "targetLat": 46.2044,
+        "targetLon": 6.1432,
+        "choices": [
+          "Barcelona, Spain",
+          "Paris, France",
+          "Munich, Germany",
+          "Geneva, Switzerland"
+        ],
+        "correctIndex": 3
+      }
+    },
+    {
+      "qid": 1090354,
+      "format": "MULTIPLE_CHOICE",
+      "domainId": 7,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Weird Wildlife",
+      "wittyHeader": "Sleeping on the Wing",
+      "difficultyTier": "COLLEGE",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Which acrobatic migratory bird can stay continuously airborne for up to ten months straight—eating, drinking, and even napping in midair without landing once?",
+      "funFactWhy": "GPS loggers attached by Swedish biologists revealed common swifts flying nonstop between Europe and sub-Saharan Africa for 300+ days, catching micro-naps while gliding on night thermals.",
+      "helpfulHint": "Named for its blazing speed, its tiny legs are so short that its Latin family name literally means \"footless.\"",
+      "choices": [
+        "Snowy owl",
+        "Atlantic puffin",
+        "Emperor penguin",
+        "Common swift"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "qid": 1090355,
+      "format": "MULTIPLE_CHOICE",
+      "domainId": 7,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Botany Basics",
+      "wittyHeader": "Solar-Powered Salad",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 12,
+      "readInGraceSec": 2,
+      "prompt": "Which pigment gives green plants their color?",
+      "funFactWhy": "Chlorophyll greedily absorbs red and blue wavelengths of sunlight to fuel photosynthesis while bouncing green light straight back to your eyes.",
+      "helpfulHint": "Its name literally comes from the Greek words for \"green\" and \"leaf.\"",
+      "choices": [
+        "Melanin",
+        "Keratin",
+        "Hemoglobin",
+        "Chlorophyll"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "qid": 1090356,
+      "format": "MATCH_4",
+      "domainId": 7,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Collective Nouns",
+      "wittyHeader": "Group-Chat Zoology",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 35,
+      "readInGraceSec": 2,
+      "prompt": "Connect each delightfully dramatic collective noun to the animal group it describes.",
+      "funFactWhy": "Most poetic animal group names—like a \"parliament of owls\" and a \"murder of crows\"—trace back to quirky 15th-century English hunting manuals like the Book of Saint Albans.",
+      "helpfulHint": "Pair \"murder\" with crows and \"parliament\" with wise owls first.",
+      "match4": {
+        "instruction": "Link each collective noun to its animal",
+        "pairs": [
+          {
+            "pairId": "p1",
+            "leftPrompt": "A murder of...",
+            "rightAnswer": "Crows"
+          },
+          {
+            "pairId": "p2",
+            "leftPrompt": "A parliament of...",
+            "rightAnswer": "Owls"
+          },
+          {
+            "pairId": "p3",
+            "leftPrompt": "A crash of...",
+            "rightAnswer": "Rhinoceroses"
+          },
+          {
+            "pairId": "p4",
+            "leftPrompt": "A dazzle of...",
+            "rightAnswer": "Zebras"
+          }
+        ],
+        "shuffledRight": [
+          {
+            "pairId": "p4",
+            "text": "Zebras"
+          },
+          {
+            "pairId": "p1",
+            "text": "Crows"
+          },
+          {
+            "pairId": "p2",
+            "text": "Owls"
+          },
+          {
+            "pairId": "p3",
+            "text": "Rhinoceroses"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090357,
+      "format": "SORT_4",
+      "domainId": 7,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Animal Lifespans",
+      "wittyHeader": "Birthday Candle Count",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 30,
+      "readInGraceSec": 2,
+      "prompt": "Rank these four animals from shortest typical maximum lifespan to longest verified longevity!",
+      "funFactWhy": "Radiocarbon dating of eye lenses revealed Greenland sharks swimming in icy Arctic depths for around 400 years—meaning some alive today were born before Isaac Newton.",
+      "helpfulHint": "Start with a tiny buzzing garden insect and finish with a slow-swimming Arctic shark.",
+      "sort4": {
+        "orderDirectionLabel": "Shortest -> Longest Lifespan",
+        "correctOrder": [
+          {
+            "itemId": "s1",
+            "label": "Honeybee Worker (summer)",
+            "numericValue": 1,
+            "formattedValue": "~6 weeks"
+          },
+          {
+            "itemId": "s2",
+            "label": "Domestic Dog",
+            "numericValue": 15,
+            "formattedValue": "~12–15 yrs"
+          },
+          {
+            "itemId": "s3",
+            "label": "Galápagos Giant Tortoise",
+            "numericValue": 175,
+            "formattedValue": "~175+ yrs"
+          },
+          {
+            "itemId": "s4",
+            "label": "Greenland Shark",
+            "numericValue": 400,
+            "formattedValue": "~400 yrs"
+          }
+        ],
+        "initialOrder": [
+          {
+            "itemId": "s3",
+            "label": "Galápagos Giant Tortoise",
+            "numericValue": 175,
+            "formattedValue": "~175+ yrs"
+          },
+          {
+            "itemId": "s1",
+            "label": "Honeybee Worker (summer)",
+            "numericValue": 1,
+            "formattedValue": "~6 weeks"
+          },
+          {
+            "itemId": "s4",
+            "label": "Greenland Shark",
+            "numericValue": 400,
+            "formattedValue": "~400 yrs"
+          },
+          {
+            "itemId": "s2",
+            "label": "Domestic Dog",
+            "numericValue": 15,
+            "formattedValue": "~12–15 yrs"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090358,
+      "format": "MULTI_STRIKE",
+      "domainId": 7,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Marsupial Roll Call",
+      "wittyHeader": "No Pouch Found!",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Three of these creatures are true pouched marsupials—spot the 1 imposter!",
+      "funFactWhy": "Armadillos are placental mammals armored in bony plates from the Americas—meanwhile the Virginia opossum is North America’s only native marsupial.",
+      "helpfulHint": "Koalas, kangaroos, and opossums all carry young in pouches; spot the plated burrower.",
+      "multiStrike": {
+        "strikeMode": "SPOT_THE_IMPOSTER",
+        "targetCount": 1,
+        "options": [
+          {
+            "optionId": "o1",
+            "label": "Koala",
+            "isTarget": false
+          },
+          {
+            "optionId": "o2",
+            "label": "Virginia Opossum",
+            "isTarget": false
+          },
+          {
+            "optionId": "o3",
+            "label": "Wombat",
+            "isTarget": false
+          },
+          {
+            "optionId": "o4",
+            "label": "Armadillo",
+            "isTarget": true
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090359,
+      "format": "MULTI_STRIKE",
+      "domainId": 7,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Flightless Birds",
+      "wittyHeader": "Grounded Forever",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Tap all 3 completely flightless birds—skip the 3 frequent flyers!",
+      "funFactWhy": "Kiwis, ostriches, and penguins all traded flight for specialized running or underwater swimming, whereas albatrosses glide thousands of miles across open oceans.",
+      "helpfulHint": "Keep the tuxedoed swimmer, the New Zealand nocturnal runner, and the world’s tallest bird.",
+      "multiStrike": {
+        "strikeMode": "PICK_ALL_TRUE",
+        "targetCount": 3,
+        "options": [
+          {
+            "optionId": "o1",
+            "label": "Kiwi",
+            "isTarget": true
+          },
+          {
+            "optionId": "o2",
+            "label": "Wandering Albatross",
+            "isTarget": false
+          },
+          {
+            "optionId": "o3",
+            "label": "Emperor Penguin",
+            "isTarget": true
+          },
+          {
+            "optionId": "o4",
+            "label": "Peregrine Falcon",
+            "isTarget": false
+          },
+          {
+            "optionId": "o5",
+            "label": "Ostrich",
+            "isTarget": true
+          },
+          {
+            "optionId": "o6",
+            "label": "Flamingo",
+            "isTarget": false
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090360,
+      "format": "PINPOINT_DIAL",
+      "domainId": 7,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Human Genetics",
+      "wittyHeader": "Pair Up Your Chromosomes",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "How many total chromosomes sit inside a typical human body cell (counting both halves of every pair)?",
+      "funFactWhy": "Humans carry 23 pairs—46 chromosomes in total—while humble goldfish pack around 100 and the adder’s-tongue fern flexes more than 1,200!",
+      "helpfulHint": "Double the famous 23 pairs you inherited from mom and dad.",
+      "pinpoint": {
+        "minVal": 16,
+        "maxVal": 80,
+        "step": 1,
+        "exactVal": 46,
+        "unitLabel": "chromosomes",
+        "bullseyeRadius": 2,
+        "winRadius": 6
+      }
+    },
+    {
+      "qid": 1090361,
+      "format": "CLUE_ESCALATOR",
+      "domainId": 7,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Ocean Legends",
+      "wittyHeader": "Unicorn of the Arctic",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 32,
+      "readInGraceSec": 2,
+      "prompt": "Name the real-life ocean creature revealed across these three escalating clues.",
+      "funFactWhy": "A narwhal’s spiraled tusk is actually an elongated upper-left canine tooth packed with up to 10 million nerve endings that sense water salinity and temperature.",
+      "helpfulHint": "Medieval merchants once sold its spiraled ivory tooth across Europe as genuine unicorn horn.",
+      "escalator": {
+        "clues": [
+          "Medieval European royalty paid fortunes in gold for its spiraled ivory trophy, believing it could neutralize poison.",
+          "That iconic three-meter lance is actually an inside-out canine tooth threaded with millions of sensory nerve endings.",
+          "Cruising beneath Arctic sea ice, this toothed whale is affectionately dubbed the \"unicorn of the sea.\""
+        ],
+        "choices": [
+          "Swordfish",
+          "Orca",
+          "Narwhal",
+          "Beluga whale"
+        ],
+        "correctIndex": 2
+      }
+    },
+    {
+      "qid": 1090362,
+      "format": "CLUE_ESCALATOR",
+      "domainId": 7,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Forest Giants",
+      "wittyHeader": "Living Skyscrapers",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 32,
+      "readInGraceSec": 2,
+      "prompt": "Name the towering botanical species revealed across these three escalating clues.",
+      "funFactWhy": "The tallest living coast redwood, Hyperion, towers 116 meters high in California—and park rangers keep its exact GPS coordinates secret so foot traffic won’t crush its shallow roots.",
+      "helpfulHint": "Thriving along California’s foggy northern coast, its thick tannin-rich bark resists both fire and beetles.",
+      "escalator": {
+        "clues": [
+          "Park rangers keep the exact coordinates of its tallest living individual—named Hyperion—secret to protect its delicate root mat.",
+          "It literally drinks summer ocean fog straight through its upper needles, growing over 115 meters tall along California’s northern coast.",
+          "Clad in thick, cinnamon-colored fire-resistant bark, this towering conifer is Earth’s tallest tree species."
+        ],
+        "choices": [
+          "Sitka spruce",
+          "Baobab",
+          "Coast redwood",
+          "Bristlecone pine"
+        ],
+        "correctIndex": 2
+      }
+    },
+    {
+      "qid": 1090363,
+      "format": "VISUAL_SPOTTER",
+      "domainId": 7,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Molecular Biology",
+      "wittyHeader": "Twisted Ladder of Life",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Inspect this antiparallel 5’–3’ biopolymer blueprint showing 10.5 base pairs per full 3.4 nm turn and hydrogen-bonded rungs. What famous molecule is this?",
+      "funFactWhy": "Rosalind Franklin’s crisp X-ray diffraction image (\"Photo 51\") revealed the helical geometry that Watson and Crick modeled in 1953.",
+      "helpfulHint": "Notice the 5’ to 3’ antiparallel strands and major groove—it carries the genetic blueprint inside your cells.",
+      "visualSpotter": {
+        "visualKind": "SVG_DIAGRAM",
+        "imageUrl": "./assets/visuals/mol_dna_helix.svg",
+        "caption": "Antiparallel Biopolymer · 3.4 nm Helical Pitch (10.5 bp)",
+        "choices": [
+          "Collagen triple helix",
+          "DNA double helix",
+          "Hemoglobin",
+          "Cellulose fiber"
+        ],
+        "correctIndex": 1
+      }
+    },
+    {
+      "qid": 1090364,
+      "format": "VISUAL_SPOTTER",
+      "domainId": 7,
+      "wedgeId": "EMERALD_SCIENCE",
+      "categoryLabel": "Biochemistry",
+      "wittyHeader": "Sweet Cellular Fuel",
+      "difficultyTier": "COLLEGE",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Examine this six-carbon aldohexose ring (C₆H₁₂O₆, molar mass 180.16 g/mol). Which primary blood sugar fuels your brain right now?",
+      "funFactWhy": "Even though your brain accounts for only about 2% of your body weight, its hungry neurons burn roughly 20% of all the glucose circulating in your bloodstream.",
+      "helpfulHint": "C₆H₁₂O₆ is the headline sugar built by plants during photosynthesis and burned by human cells.",
+      "visualSpotter": {
+        "visualKind": "SVG_DIAGRAM",
+        "imageUrl": "./assets/visuals/mol_glucose.svg",
+        "caption": "Aldohexose Ring · Haworth Projection (C6H12O6)",
+        "choices": [
+          "Glucose",
+          "Cholesterol",
+          "Ethanol",
+          "Caffeine"
+        ],
+        "correctIndex": 0
+      }
+    },
+    {
+      "qid": 1090365,
+      "format": "MULTIPLE_CHOICE",
+      "domainId": 8,
+      "wedgeId": "GOLD_HISTORY",
+      "categoryLabel": "Diplomatic Quirks",
+      "wittyHeader": "World’s Politest Border War",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "For nearly 50 years until 2022, Canada and Denmark waged the friendly \"Whisky War\" over barren Hans Island—swapping flags and leaving behind bottles of rye whisky and what Danish spirit?",
+      "funFactWhy": "Whenever Canadian or Danish naval patrols landed on the tiny Arctic rock, they politely lowered the rival flag, raised their own, and left a bottle of Canadian whisky or Danish schnapps before splitting the island cleanly down the middle in 2022.",
+      "helpfulHint": "Think of Scandinavia’s classic chilled herbal spirit—often spelled with an \"s-c-h.\"",
+      "choices": [
+        "Tequila",
+        "Pisco",
+        "Schnapps",
+        "Sake"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "qid": 1090366,
+      "format": "MULTIPLE_CHOICE",
+      "domainId": 8,
+      "wedgeId": "GOLD_HISTORY",
+      "categoryLabel": "Global Currencies",
+      "wittyHeader": "Pocket Change Check",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 12,
+      "readInGraceSec": 2,
+      "prompt": "What is the official currency of Japan?",
+      "funFactWhy": "Introduced in 1871 during the Meiji Restoration, the word \"yen\" literally means \"round object\"—a nod to the circular silver coins replacing older rectangular Edo ingots.",
+      "helpfulHint": "Its three-letter currency code is JPY and its symbol looks like a Y with two horizontal bars.",
+      "choices": [
+        "Yen",
+        "Yuan",
+        "Won",
+        "Baht"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "qid": 1090367,
+      "format": "MATCH_4",
+      "domainId": 8,
+      "wedgeId": "GOLD_HISTORY",
+      "categoryLabel": "World Parliaments",
+      "wittyHeader": "Name That Legislature",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 35,
+      "readInGraceSec": 2,
+      "prompt": "Wire each distinctive national parliament name to the country where lawmakers debate inside it.",
+      "funFactWhy": "Iceland’s Althing first assembled outdoors on the volcanic rift plains of Thingvellir in 930 CE, making it one of the oldest surviving parliamentary institutions on Earth.",
+      "helpfulHint": "Match Bundestag to Germany and Knesset to Israel first, then connect Japan’s Diet.",
+      "match4": {
+        "instruction": "Pair each legislature with its home nation",
+        "pairs": [
+          {
+            "pairId": "p1",
+            "leftPrompt": "Bundestag",
+            "rightAnswer": "Germany"
+          },
+          {
+            "pairId": "p2",
+            "leftPrompt": "National Diet",
+            "rightAnswer": "Japan"
+          },
+          {
+            "pairId": "p3",
+            "leftPrompt": "Knesset",
+            "rightAnswer": "Israel"
+          },
+          {
+            "pairId": "p4",
+            "leftPrompt": "Althing",
+            "rightAnswer": "Iceland"
+          }
+        ],
+        "shuffledRight": [
+          {
+            "pairId": "p4",
+            "text": "Iceland"
+          },
+          {
+            "pairId": "p3",
+            "text": "Israel"
+          },
+          {
+            "pairId": "p1",
+            "text": "Germany"
+          },
+          {
+            "pairId": "p2",
+            "text": "Japan"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090368,
+      "format": "SORT_4",
+      "domainId": 8,
+      "wedgeId": "GOLD_HISTORY",
+      "categoryLabel": "Economic Milestones",
+      "wittyHeader": "Follow the Money",
+      "difficultyTier": "COLLEGE",
+      "recommendedSec": 30,
+      "readInGraceSec": 2,
+      "prompt": "Put these four landmark economic and currency milestones in chronological order from earliest to latest.",
+      "funFactWhy": "On January 1, 2002, twelve European countries swapped over 14 billion banknotes and 52 billion coins in the largest peacetime currency changeover in human history.",
+      "helpfulHint": "Begin with Adam Smith’s 1776 treatise and finish with euro bills and coins hitting European wallets in 2002.",
+      "sort4": {
+        "orderDirectionLabel": "Earliest Year -> Latest Year",
+        "correctOrder": [
+          {
+            "itemId": "s1",
+            "label": "Adam Smith publishes The Wealth of Nations",
+            "numericValue": 1776,
+            "formattedValue": "1776"
+          },
+          {
+            "itemId": "s2",
+            "label": "Bretton Woods Conference creates IMF & World Bank",
+            "numericValue": 1944,
+            "formattedValue": "1944"
+          },
+          {
+            "itemId": "s3",
+            "label": "World Trade Organization (WTO) launches",
+            "numericValue": 1995,
+            "formattedValue": "1995"
+          },
+          {
+            "itemId": "s4",
+            "label": "Physical Euro banknotes enter circulation",
+            "numericValue": 2002,
+            "formattedValue": "2002"
+          }
+        ],
+        "initialOrder": [
+          {
+            "itemId": "s3",
+            "label": "World Trade Organization (WTO) launches",
+            "numericValue": 1995,
+            "formattedValue": "1995"
+          },
+          {
+            "itemId": "s1",
+            "label": "Adam Smith publishes The Wealth of Nations",
+            "numericValue": 1776,
+            "formattedValue": "1776"
+          },
+          {
+            "itemId": "s4",
+            "label": "Physical Euro banknotes enter circulation",
+            "numericValue": 2002,
+            "formattedValue": "2002"
+          },
+          {
+            "itemId": "s2",
+            "label": "Bretton Woods Conference creates IMF & World Bank",
+            "numericValue": 1944,
+            "formattedValue": "1944"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090369,
+      "format": "MULTI_STRIKE",
+      "domainId": 8,
+      "wedgeId": "GOLD_HISTORY",
+      "categoryLabel": "Eurozone Check",
+      "wittyHeader": "Keep Your Own Coins!",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Three of these European Union countries use the euro—spot the 1 EU member that kept its own krona!",
+      "funFactWhy": "Sweden joined the European Union in 1995, but Swedish voters rejected adopting the euro in a 2003 referendum and still pay in Swedish kronor.",
+      "helpfulHint": "Ireland, Finland, and Portugal all switched to euros; look toward Stockholm.",
+      "multiStrike": {
+        "strikeMode": "SPOT_THE_IMPOSTER",
+        "targetCount": 1,
+        "options": [
+          {
+            "optionId": "o1",
+            "label": "Ireland",
+            "isTarget": false
+          },
+          {
+            "optionId": "o2",
+            "label": "Finland",
+            "isTarget": false
+          },
+          {
+            "optionId": "o3",
+            "label": "Sweden",
+            "isTarget": true
+          },
+          {
+            "optionId": "o4",
+            "label": "Portugal",
+            "isTarget": false
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090370,
+      "format": "MULTI_STRIKE",
+      "domainId": 8,
+      "wedgeId": "GOLD_HISTORY",
+      "categoryLabel": "UN Official Languages",
+      "wittyHeader": "Translator’s Headset",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Tap all 3 official United Nations working languages—ignore the 3 widely spoken languages not on the UN’s six-language roster!",
+      "funFactWhy": "The United Nations operates in six official languages: Arabic, Chinese, English, French, Russian, and Spanish—leaving Portuguese, German, and Japanese outside the official six.",
+      "helpfulHint": "Think of the six classic UN translation booth channels: English, French, Spanish, Russian, Chinese, and Arabic.",
+      "multiStrike": {
+        "strikeMode": "PICK_ALL_TRUE",
+        "targetCount": 3,
+        "options": [
+          {
+            "optionId": "o1",
+            "label": "Arabic",
+            "isTarget": true
+          },
+          {
+            "optionId": "o2",
+            "label": "German",
+            "isTarget": false
+          },
+          {
+            "optionId": "o3",
+            "label": "Spanish",
+            "isTarget": true
+          },
+          {
+            "optionId": "o4",
+            "label": "Portuguese",
+            "isTarget": false
+          },
+          {
+            "optionId": "o5",
+            "label": "Russian",
+            "isTarget": true
+          },
+          {
+            "optionId": "o6",
+            "label": "Japanese",
+            "isTarget": false
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090371,
+      "format": "PINPOINT_DIAL",
+      "domainId": 8,
+      "wedgeId": "GOLD_HISTORY",
+      "categoryLabel": "Human Rights",
+      "wittyHeader": "Universal Charter Year",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "In what year did the UN General Assembly adopt the Universal Declaration of Human Rights in Paris, championed by Eleanor Roosevelt?",
+      "funFactWhy": "Adopted on December 10, 1948 without a single dissenting vote, the 30-article declaration now holds the Guinness record as the most translated document in human history.",
+      "helpfulHint": "Three years after the United Nations itself was founded in 1945.",
+      "pinpoint": {
+        "minVal": 1925,
+        "maxVal": 1975,
+        "step": 1,
+        "exactVal": 1948,
+        "unitLabel": "",
+        "bullseyeRadius": 1,
+        "winRadius": 5
+      }
+    },
+    {
+      "qid": 1090372,
+      "format": "PINPOINT_DIAL",
+      "domainId": 8,
+      "wedgeId": "GOLD_HISTORY",
+      "categoryLabel": "U.S. Civics",
+      "wittyHeader": "Amendment Count",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "How many total constitutional amendments have been ratified to the U.S. Constitution (including the original ten in the Bill of Rights)?",
+      "funFactWhy": "The 27th Amendment—barring congressional pay raises from taking effect until after the next election—was proposed by James Madison in 1789 and waited 202 years before final ratification in 1992!",
+      "helpfulHint": "Start with 10 in the Bill of Rights and add 17 more ratified since 1795.",
+      "pinpoint": {
+        "minVal": 10,
+        "maxVal": 50,
+        "step": 1,
+        "exactVal": 27,
+        "unitLabel": "amendments",
+        "bullseyeRadius": 1,
+        "winRadius": 4
+      }
+    },
+    {
+      "qid": 1090373,
+      "format": "CLUE_ESCALATOR",
+      "domainId": 8,
+      "wedgeId": "GOLD_HISTORY",
+      "categoryLabel": "International Law",
+      "wittyHeader": "Rules in Wartime",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 32,
+      "readInGraceSec": 2,
+      "prompt": "Name the landmark set of international humanitarian treaties revealed across these three escalating clues.",
+      "funFactWhy": "Sparked by Swiss businessman Henry Dunant’s horrified eyewitness account of the 1859 Battle of Solferino, the treaties now carry universal ratification across every UN member state.",
+      "helpfulHint": "Named for the Swiss lakeside city where twelve nations signed the first medical-neutrality accord in 1864.",
+      "escalator": {
+        "clues": [
+          "Inspired by Henry Dunant’s 1862 memoir of the bloody Battle of Solferino, its first version protected battlefield medics and ambulances.",
+          "Expanded dramatically in 1949 into four core treaties covering wounded troops, prisoners of war, and civilians.",
+          "Named for a neutral Swiss city on Lake Léman, these accords form the bedrock of international humanitarian law."
+        ],
+        "choices": [
+          "Kyoto Protocol",
+          "Magna Carta",
+          "Geneva Conventions",
+          "Treaty of Lisbon"
+        ],
+        "correctIndex": 2
+      }
+    },
+    {
+      "qid": 1090374,
+      "format": "VISUAL_SPOTTER",
+      "domainId": 8,
+      "wedgeId": "GOLD_HISTORY",
+      "categoryLabel": "Flag Law & Heraldry",
+      "wittyHeader": "Hip to Be Square",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Study this exact 1:1 square flag blueprint (32 × 32 units)—one of only two square sovereign national flags on Earth. Which neutral Alpine nation flies it?",
+      "funFactWhy": "Only Switzerland and Vatican City fly legally square national flags—and Swiss federal law specifies exact 7:6 arm proportions for its bold white cross.",
+      "helpfulHint": "Its white cross on red was inverted to create the emblem of the Red Cross.",
+      "visualSpotter": {
+        "visualKind": "SVG_DIAGRAM",
+        "imageUrl": "./assets/visuals/flag_switzerland.svg",
+        "caption": "Statutory 1:1 Square National Flag · 7:6 Cross Arm Ratio",
+        "choices": [
+          "Switzerland",
+          "Norway",
+          "Austria",
+          "Denmark"
+        ],
+        "correctIndex": 0
+      }
+    },
+    {
+      "qid": 1090375,
+      "format": "VISUAL_SPOTTER",
+      "domainId": 8,
+      "wedgeId": "GOLD_HISTORY",
+      "categoryLabel": "National Emblems",
+      "wittyHeader": "Four Trigrams & Balance",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Inspect this 2:3 flag blueprint pairing a central red-and-blue harmony disc with four corner trigrams for heaven, earth, fire, and water. Which nation’s flag is it?",
+      "funFactWhy": "Known as the Taegeukgi, South Korea’s flag sets red (yang) over blue (um) inside a white field symbolizing peace, framed by four I Ching trigrams representing harmony in motion.",
+      "helpfulHint": "Its name is the Taegeukgi—an East Asian democracy whose capital is Seoul.",
+      "visualSpotter": {
+        "visualKind": "SVG_DIAGRAM",
+        "imageUrl": "./assets/visuals/flag_south_korea.svg",
+        "caption": "2:3 Flag Geometry · Central Duality Disc & 4 Trigrams",
+        "choices": [
+          "Japan",
+          "South Korea",
+          "Taiwan",
+          "Mongolia"
+        ],
+        "correctIndex": 1
+      }
+    },
+    {
+      "qid": 1090376,
+      "format": "MULTIPLE_CHOICE",
+      "domainId": 9,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Culinary Myths",
+      "wittyHeader": "Wait, Where’s That Cookie From?",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Despite arriving with every American Chinese-takeout check, crispy paper-stuffed fortune cookies were actually popularized in the early 1900s by Japanese-American bakeries in which U.S. state?",
+      "funFactWhy": "Modeled after Kyoto’s miso-and-sesame \"tsujiura senbei\" crackers, fortune cookies caught on in California (both San Francisco’s Japanese Tea Garden and Los Angeles’s Hong Kong Noodle Company) before World War II.",
+      "helpfulHint": "Think Golden Gate Park in San Francisco and Los Angeles—America’s Pacific Coast heavyweight.",
+      "choices": [
+        "New York",
+        "Texas",
+        "Massachusetts",
+        "California"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "qid": 1090377,
+      "format": "MULTIPLE_CHOICE",
+      "domainId": 9,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Kitchen Chemistry",
+      "wittyHeader": "Unspoilable Sweetener",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 12,
+      "readInGraceSec": 2,
+      "prompt": "Which natural sweetener never spoils in sealed jars?",
+      "funFactWhy": "Archaeologists have pulled 3,000-year-old jars of honey out of ancient Egyptian tombs that remained chemically edible thanks to honey’s super-low moisture, acidity, and natural hydrogen peroxide.",
+      "helpfulHint": "Busy bees evaporate nectar down until microbes cannot survive inside it.",
+      "choices": [
+        "Agave nectar",
+        "Molasses",
+        "Honey",
+        "Maple syrup"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "qid": 1090378,
+      "format": "MATCH_4",
+      "domainId": 9,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "World Street Food",
+      "wittyHeader": "Passport on a Paper Plate",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 35,
+      "readInGraceSec": 2,
+      "prompt": "Wire each beloved street-food classic to the country that perfected it.",
+      "funFactWhy": "Vietnamese banh mi fuses French colonial crusty baguettes with pickled daikon, cilantro, jalapeño, and savory Vietnamese fillings into one of the globe’s greatest sandwiches.",
+      "helpfulHint": "Match takoyaki octopus balls to Japan and crispy corn arepas to Colombia/Venezuela first.",
+      "match4": {
+        "instruction": "Connect each street food to its home country",
+        "pairs": [
+          {
+            "pairId": "p1",
+            "leftPrompt": "Bánh mì",
+            "rightAnswer": "Vietnam"
+          },
+          {
+            "pairId": "p2",
+            "leftPrompt": "Takoyaki",
+            "rightAnswer": "Japan"
+          },
+          {
+            "pairId": "p3",
+            "leftPrompt": "Poutine",
+            "rightAnswer": "Canada"
+          },
+          {
+            "pairId": "p4",
+            "leftPrompt": "Pastel de nata",
+            "rightAnswer": "Portugal"
+          }
+        ],
+        "shuffledRight": [
+          {
+            "pairId": "p3",
+            "text": "Canada"
+          },
+          {
+            "pairId": "p4",
+            "text": "Portugal"
+          },
+          {
+            "pairId": "p1",
+            "text": "Vietnam"
+          },
+          {
+            "pairId": "p2",
+            "text": "Japan"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090379,
+      "format": "MATCH_4",
+      "domainId": 9,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Iconic Typography",
+      "wittyHeader": "Judge a Book by Its Font",
+      "difficultyTier": "COLLEGE",
+      "recommendedSec": 35,
+      "readInGraceSec": 2,
+      "prompt": "Connect each famous typeface to the era or iconic place where it became legendary.",
+      "funFactWhy": "Times New Roman debuted on October 3, 1932 when London’s The Times newspaper commissioned Stanley Morison to design a crisper, narrower font that saved newsprint ink.",
+      "helpfulHint": "Pair Times New Roman with the London newspaper and Garamond with 16th-century French books.",
+      "match4": {
+        "instruction": "Link each classic typeface to its claim to fame",
+        "pairs": [
+          {
+            "pairId": "p1",
+            "leftPrompt": "Times New Roman",
+            "rightAnswer": "1932 London newspaper redesign"
+          },
+          {
+            "pairId": "p2",
+            "leftPrompt": "Futura",
+            "rightAnswer": "Apollo 11 lunar plaque lettering"
+          },
+          {
+            "pairId": "p3",
+            "leftPrompt": "Johnston Sans",
+            "rightAnswer": "London Underground signage"
+          },
+          {
+            "pairId": "p4",
+            "leftPrompt": "Comic Sans",
+            "rightAnswer": "1994 Microsoft Bob speech bubbles"
+          }
+        ],
+        "shuffledRight": [
+          {
+            "pairId": "p2",
+            "text": "Apollo 11 lunar plaque lettering"
+          },
+          {
+            "pairId": "p4",
+            "text": "1994 Microsoft Bob speech bubbles"
+          },
+          {
+            "pairId": "p1",
+            "text": "1932 London newspaper redesign"
+          },
+          {
+            "pairId": "p3",
+            "text": "London Underground signage"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090380,
+      "format": "SORT_4",
+      "domainId": 9,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Caffeine Scale",
+      "wittyHeader": "Buzz-O-Meter",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 30,
+      "readInGraceSec": 2,
+      "prompt": "Rank these four classic beverages from lowest typical caffeine per standard 8 oz (240 ml) cup to highest!",
+      "funFactWhy": "Many people assume a single espresso shot packs more caffeine than a full mug of drip coffee—per ounce it is way stronger, yet an 8-ounce brewed mug delivers roughly 95 mg versus 63 mg in a 1-ounce shot.",
+      "helpfulHint": "Start with a naturally caffeine-free herbal infusion and end with a full mug of drip coffee.",
+      "sort4": {
+        "orderDirectionLabel": "Lowest -> Highest Caffeine",
+        "correctOrder": [
+          {
+            "itemId": "s1",
+            "label": "Chamomile Herbal Tea (8 oz)",
+            "numericValue": 0,
+            "formattedValue": "0 mg"
+          },
+          {
+            "itemId": "s2",
+            "label": "Green Tea (8 oz)",
+            "numericValue": 28,
+            "formattedValue": "~28 mg"
+          },
+          {
+            "itemId": "s3",
+            "label": "Black Tea (8 oz)",
+            "numericValue": 47,
+            "formattedValue": "~47 mg"
+          },
+          {
+            "itemId": "s4",
+            "label": "Brewed Drip Coffee (8 oz)",
+            "numericValue": 95,
+            "formattedValue": "~95 mg"
+          }
+        ],
+        "initialOrder": [
+          {
+            "itemId": "s3",
+            "label": "Black Tea (8 oz)",
+            "numericValue": 47,
+            "formattedValue": "~47 mg"
+          },
+          {
+            "itemId": "s1",
+            "label": "Chamomile Herbal Tea (8 oz)",
+            "numericValue": 0,
+            "formattedValue": "0 mg"
+          },
+          {
+            "itemId": "s4",
+            "label": "Brewed Drip Coffee (8 oz)",
+            "numericValue": 95,
+            "formattedValue": "~95 mg"
+          },
+          {
+            "itemId": "s2",
+            "label": "Green Tea (8 oz)",
+            "numericValue": 28,
+            "formattedValue": "~28 mg"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090381,
+      "format": "SORT_4",
+      "domainId": 9,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Design Icons",
+      "wittyHeader": "Form Follows Chronology",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 30,
+      "readInGraceSec": 2,
+      "prompt": "Stack these four legendary everyday design breakthroughs from earliest debut year to latest.",
+      "funFactWhy": "Danish carpenter Ole Kirk Christiansen patented the modern interlocking tube-and-stud LEGO brick in 1958—and bricks molded that very afternoon still snap snugly onto bricks made today.",
+      "helpfulHint": "Start with Levi’s copper-riveted denim in the 1870s and end with Sony’s cassette Walkman in 1979.",
+      "sort4": {
+        "orderDirectionLabel": "Earliest Debut -> Latest Debut",
+        "correctOrder": [
+          {
+            "itemId": "s1",
+            "label": "Levi’s Riveted Blue Jeans Patent",
+            "numericValue": 1873,
+            "formattedValue": "1873"
+          },
+          {
+            "itemId": "s2",
+            "label": "Classic Contour Coca-Cola Bottle",
+            "numericValue": 1915,
+            "formattedValue": "1915"
+          },
+          {
+            "itemId": "s3",
+            "label": "Modern Interlocking LEGO Brick Patent",
+            "numericValue": 1958,
+            "formattedValue": "1958"
+          },
+          {
+            "itemId": "s4",
+            "label": "Sony Walkman TPS-L2",
+            "numericValue": 1979,
+            "formattedValue": "1979"
+          }
+        ],
+        "initialOrder": [
+          {
+            "itemId": "s2",
+            "label": "Classic Contour Coca-Cola Bottle",
+            "numericValue": 1915,
+            "formattedValue": "1915"
+          },
+          {
+            "itemId": "s4",
+            "label": "Sony Walkman TPS-L2",
+            "numericValue": 1979,
+            "formattedValue": "1979"
+          },
+          {
+            "itemId": "s1",
+            "label": "Levi’s Riveted Blue Jeans Patent",
+            "numericValue": 1873,
+            "formattedValue": "1873"
+          },
+          {
+            "itemId": "s3",
+            "label": "Modern Interlocking LEGO Brick Patent",
+            "numericValue": 1958,
+            "formattedValue": "1958"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090382,
+      "format": "MULTI_STRIKE",
+      "domainId": 9,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Spice Rack Secrets",
+      "wittyHeader": "Not a Tree Bark!",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Tap all 3 spices that come from dried flower buds, stigmas, or fruits—skip the 3 roots and tree barks!",
+      "funFactWhy": "Cloves are unopened dried flower buds, vanilla beans are cured orchid seed pods, and black peppercorns are dried berries—whereas ginger and turmeric are underground rhizomes and cinnamon is inner tree bark.",
+      "helpfulHint": "Keep the orchid pod, the nail-shaped flower bud, and the dried berry; skip underground roots and rolled bark.",
+      "multiStrike": {
+        "strikeMode": "PICK_ALL_TRUE",
+        "targetCount": 3,
+        "options": [
+          {
+            "optionId": "o1",
+            "label": "Clove",
+            "isTarget": true
+          },
+          {
+            "optionId": "o2",
+            "label": "Cinnamon",
+            "isTarget": false
+          },
+          {
+            "optionId": "o3",
+            "label": "Vanilla bean",
+            "isTarget": true
+          },
+          {
+            "optionId": "o4",
+            "label": "Ginger",
+            "isTarget": false
+          },
+          {
+            "optionId": "o5",
+            "label": "Black peppercorn",
+            "isTarget": true
+          },
+          {
+            "optionId": "o6",
+            "label": "Turmeric",
+            "isTarget": false
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090383,
+      "format": "PINPOINT_DIAL",
+      "domainId": 9,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Pastry & Chocolate",
+      "wittyHeader": "Toll House Happy Accident",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "In what year did Massachusetts innkeeper Ruth Wakefield invent the chocolate chip cookie at the Toll House Inn?",
+      "funFactWhy": "Ruth Wakefield chopped up a Nestlé semi-sweet chocolate bar expecting it to melt into chocolate dough—instead it held its gooey chunks, and Nestlé later traded her a lifetime supply of chocolate for the recipe!",
+      "helpfulHint": "Late Great Depression era—just before World War II began in Europe.",
+      "pinpoint": {
+        "minVal": 1910,
+        "maxVal": 1965,
+        "step": 1,
+        "exactVal": 1938,
+        "unitLabel": "",
+        "bullseyeRadius": 2,
+        "winRadius": 6
+      }
+    },
+    {
+      "qid": 1090384,
+      "format": "CLUE_ESCALATOR",
+      "domainId": 9,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Fermentation Craft",
+      "wittyHeader": "Bubbles Under Pressure",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 32,
+      "readInGraceSec": 2,
+      "prompt": "Name the celebrated sparkling beverage revealed across these three escalating clues.",
+      "funFactWhy": "A standard corked bottle holds roughly 6 atmospheres of pressure—about three times the air pressure inside a car tire—which is why early winemakers nicknamed exploding bottles \"the devil’s wine.\"",
+      "helpfulHint": "Legally, only bottles produced in a chalky northeastern French region may carry its protected name.",
+      "escalator": {
+        "clues": [
+          "Its bottle traps roughly three times the air pressure of a car tire—earning early exploding vintages the nickname \"the devil’s wine.\"",
+          "A Benedictine cellar master named Dom Pérignon spent decades perfecting blending and thicker glass bottles to tame its fizz.",
+          "Protected by strict French appellation law, only sparkling wine grown northeast of Paris may bear this celebratory name."
+        ],
+        "choices": [
+          "Cava",
+          "Sauternes",
+          "Champagne",
+          "Prosecco"
+        ],
+        "correctIndex": 2
+      }
+    },
+    {
+      "qid": 1090385,
+      "format": "CLUE_ESCALATOR",
+      "domainId": 9,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Textile Craft",
+      "wittyHeader": "Woven in Blue",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 32,
+      "readInGraceSec": 2,
+      "prompt": "Name the sturdy cotton fabric revealed across these three escalating clues.",
+      "funFactWhy": "Its English name comes from the French town of Nîmes (\"serge de Nîmes\"), while \"jeans\" traces back to Genoese sailors in Italy who wore tough indigo-dyed work trousers.",
+      "helpfulHint": "Dyed with indigo on only the warp threads so the underside stays white and fades stylishly with wear.",
+      "escalator": {
+        "clues": [
+          "Its name is a shortened English mash-up of \"serge de Nîmes,\" honoring a medieval French textile town.",
+          "Weavers dye only the lengthwise warp yarns in indigo while leaving the crosswise weft white, creating its signature faded look.",
+          "Reinforced with copper rivets for Gold Rush miners in 1873, this rugged twill fabric makes up your favorite blue jeans."
+        ],
+        "choices": [
+          "Tweed",
+          "Canvas",
+          "Denim",
+          "Corduroy"
+        ],
+        "correctIndex": 2
+      }
+    },
+    {
+      "qid": 1090386,
+      "format": "VISUAL_SPOTTER",
+      "domainId": 9,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Culinary & Craft Capitals",
+      "wittyHeader": "Matcha & Silk Sanctuary",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Pinpoint Japan’s former imperial capital—world-famous for Uji matcha tea ceremonies, multi-course kaiseki cuisine, and hand-woven Nishijin silk.",
+      "funFactWhy": "Serving as Japan’s imperial seat for over a thousand years (794–1868), Kyoto’s artisans refined tea ceremony ceramics, lacquerware, and seasonal kaiseki dining into living national treasures.",
+      "helpfulHint": "Located in Japan’s Kansai region, just northeast of Osaka and west of Tokyo.",
+      "visualSpotter": {
+        "visualKind": "WORLD_REGION_MAP",
+        "caption": "Kansai Region, Honshu · Former Imperial Capital (35.01° N, 135.77° E)",
+        "targetLat": 35.0116,
+        "targetLon": 135.7681,
+        "choices": [
+          "Kyoto, Japan",
+          "Sapporo, Japan",
+          "Taipei, Taiwan",
+          "Seoul, South Korea"
+        ],
+        "correctIndex": 0
+      }
+    },
+    {
+      "qid": 1090387,
+      "format": "MULTIPLE_CHOICE",
+      "domainId": 10,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Literary Feats",
+      "wittyHeader": "Missing One Very Common Vowel",
+      "difficultyTier": "COLLEGE",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "French author Georges Perec wrote his entire 300-page 1969 mystery novel \"La Disparition\" (\"A Void\")—and Gilbert Adair translated it into English—without using which single letter even once?",
+      "funFactWhy": "A book written while deliberately banning a letter is called a lipogram—and somehow Perec pulled off a gripping noir mystery without the most frequent letter in both French and English!",
+      "helpfulHint": "It is the most common letter in the English alphabet—and oddly absent from this very hint’s final word: \"skip.\" Wait—check the letter after D!",
+      "choices": [
+        "The letter A",
+        "The letter T",
+        "The letter S",
+        "The letter E"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "qid": 1090388,
+      "format": "MULTIPLE_CHOICE",
+      "domainId": 10,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Greek Mythology",
+      "wittyHeader": "Wax Wings Warning",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 12,
+      "readInGraceSec": 2,
+      "prompt": "Who flew too close to the Sun?",
+      "funFactWhy": "Master craftsman Daedalus warned his son Icarus not to fly too low (where sea spray would soak the feathers) or too high (where solar heat would melt the beeswax)—classic teenage listening skills followed.",
+      "helpfulHint": "He escaped the Cretan Labyrinth with wings of feathers and wax.",
+      "choices": [
+        "Icarus",
+        "Perseus",
+        "Bellerophon",
+        "Orpheus"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "qid": 1090389,
+      "format": "MATCH_4",
+      "domainId": 10,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Literary Pen Names",
+      "wittyHeader": "Who’s Behind the Alias?",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 35,
+      "readInGraceSec": 2,
+      "prompt": "Wire each famous literary pen name to the real-life author typing behind the curtain.",
+      "funFactWhy": "Samuel Clemens picked \"Mark Twain\" from Mississippi riverboat slang shouting that the water was two fathoms (12 feet) deep—just barely safe to steer through.",
+      "helpfulHint": "Connect Mark Twain to Samuel Clemens and George Orwell to Eric Arthur Blair first.",
+      "match4": {
+        "instruction": "Link each pen name to the author’s birth name",
+        "pairs": [
+          {
+            "pairId": "p1",
+            "leftPrompt": "Mark Twain",
+            "rightAnswer": "Samuel Clemens"
+          },
+          {
+            "pairId": "p2",
+            "leftPrompt": "George Orwell",
+            "rightAnswer": "Eric Arthur Blair"
+          },
+          {
+            "pairId": "p3",
+            "leftPrompt": "Lewis Carroll",
+            "rightAnswer": "Charles Lutwidge Dodgson"
+          },
+          {
+            "pairId": "p4",
+            "leftPrompt": "George Eliot",
+            "rightAnswer": "Mary Ann Evans"
+          }
+        ],
+        "shuffledRight": [
+          {
+            "pairId": "p3",
+            "text": "Charles Lutwidge Dodgson"
+          },
+          {
+            "pairId": "p4",
+            "text": "Mary Ann Evans"
+          },
+          {
+            "pairId": "p1",
+            "text": "Samuel Clemens"
+          },
+          {
+            "pairId": "p2",
+            "text": "Eric Arthur Blair"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090390,
+      "format": "SORT_4",
+      "domainId": 10,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Fantasy & Sci-Fi Shelf",
+      "wittyHeader": "World-Building Timeline",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 30,
+      "readInGraceSec": 2,
+      "prompt": "Stack these four genre-defining speculative novels from earliest original publication year to latest.",
+      "funFactWhy": "J.R.R. Tolkien originally invented Middle-earth’s Elvish languages as a private philology hobby and then needed a whole mythology so his languages would have someone to speak them.",
+      "helpfulHint": "Start with H.G. Wells’s Martian invasion in the 1890s and end with Arrakis’s giant sandworms in 1965.",
+      "sort4": {
+        "orderDirectionLabel": "Earliest Published -> Latest Published",
+        "correctOrder": [
+          {
+            "itemId": "s1",
+            "label": "The War of the Worlds (H.G. Wells)",
+            "numericValue": 1898,
+            "formattedValue": "1898"
+          },
+          {
+            "itemId": "s2",
+            "label": "The Hobbit (J.R.R. Tolkien)",
+            "numericValue": 1937,
+            "formattedValue": "1937"
+          },
+          {
+            "itemId": "s3",
+            "label": "The Lion, the Witch & Wardrobe (Lewis)",
+            "numericValue": 1950,
+            "formattedValue": "1950"
+          },
+          {
+            "itemId": "s4",
+            "label": "Dune (Frank Herbert)",
+            "numericValue": 1965,
+            "formattedValue": "1965"
+          }
+        ],
+        "initialOrder": [
+          {
+            "itemId": "s3",
+            "label": "The Lion, the Witch & Wardrobe (Lewis)",
+            "numericValue": 1950,
+            "formattedValue": "1950"
+          },
+          {
+            "itemId": "s1",
+            "label": "The War of the Worlds (H.G. Wells)",
+            "numericValue": 1898,
+            "formattedValue": "1898"
+          },
+          {
+            "itemId": "s4",
+            "label": "Dune (Frank Herbert)",
+            "numericValue": 1965,
+            "formattedValue": "1965"
+          },
+          {
+            "itemId": "s2",
+            "label": "The Hobbit (J.R.R. Tolkien)",
+            "numericValue": 1937,
+            "formattedValue": "1937"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090391,
+      "format": "MULTI_STRIKE",
+      "domainId": 10,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Norse Mythology",
+      "wittyHeader": "Wrong Pantheon, Buddy!",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Three of these legendary beings dwell in Norse mythology—spot the 1 Egyptian imposter!",
+      "funFactWhy": "Anubis is the jackal-headed Egyptian guardian of the underworld who weighed hearts, whereas Odin, Freya, and the giant wolf Fenrir all hail from Norse lore.",
+      "helpfulHint": "Skip the Asgard crowd and spot the jackal-headed god from the Nile.",
+      "multiStrike": {
+        "strikeMode": "SPOT_THE_IMPOSTER",
+        "targetCount": 1,
+        "options": [
+          {
+            "optionId": "o1",
+            "label": "Odin",
+            "isTarget": false
+          },
+          {
+            "optionId": "o2",
+            "label": "Freya",
+            "isTarget": false
+          },
+          {
+            "optionId": "o3",
+            "label": "Anubis",
+            "isTarget": true
+          },
+          {
+            "optionId": "o4",
+            "label": "Fenrir",
+            "isTarget": false
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090392,
+      "format": "MULTI_STRIKE",
+      "domainId": 10,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Detective Fiction",
+      "wittyHeader": "Agatha’s Suspect List",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Tap all 3 famous mystery novels written by Agatha Christie—ignore the 3 rival crime classics!",
+      "funFactWhy": "Only William Shakespeare and the Bible outsell Agatha Christie’s detective novels—and her play \"The Mousetrap\" has run in London since 1952.",
+      "helpfulHint": "Follow Hercule Poirot on a train and down the Nile, plus ten guests on a rocky island; skip Sherlock Holmes, Sam Spade, and Philip Marlowe.",
+      "multiStrike": {
+        "strikeMode": "PICK_ALL_TRUE",
+        "targetCount": 3,
+        "options": [
+          {
+            "optionId": "o1",
+            "label": "Murder on the Orient Express",
+            "isTarget": true
+          },
+          {
+            "optionId": "o2",
+            "label": "The Maltese Falcon",
+            "isTarget": false
+          },
+          {
+            "optionId": "o3",
+            "label": "And Then There Were None",
+            "isTarget": true
+          },
+          {
+            "optionId": "o4",
+            "label": "The Hound of the Baskervilles",
+            "isTarget": false
+          },
+          {
+            "optionId": "o5",
+            "label": "Death on the Nile",
+            "isTarget": true
+          },
+          {
+            "optionId": "o6",
+            "label": "The Big Sleep",
+            "isTarget": false
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090393,
+      "format": "PINPOINT_DIAL",
+      "domainId": 10,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Dystopian Classics",
+      "wittyHeader": "Big Brother’s Publication Date",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "George Orwell finished typing \"Nineteen Eighty-Four\" on a remote Scottish island by flipping the last two digits of what publication year?",
+      "funFactWhy": "Orwell originally titled his bleak masterpiece \"The Last Man in Europe\" before inverting the digits of 1948—the year he completed the manuscript—into 1984 (published in June 1949)!",
+      "helpfulHint": "He wrote it in 1948, and publishers put it on bookshelves the very next summer.",
+      "pinpoint": {
+        "minVal": 1925,
+        "maxVal": 1975,
+        "step": 1,
+        "exactVal": 1949,
+        "unitLabel": "",
+        "bullseyeRadius": 1,
+        "winRadius": 5
+      }
+    },
+    {
+      "qid": 1090394,
+      "format": "PINPOINT_DIAL",
+      "domainId": 10,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Epic Poetry",
+      "wittyHeader": "Circles of the Inferno",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "In Dante Alighieri’s \"Inferno,\" how many concentric circles of Hell must Dante and Virgil descend through?",
+      "funFactWhy": "Dante built the entire Divine Comedy around the number three and its square: 3 canticles, 3-line terza rima stanzas, 33 cantos each (plus 1 intro = 100), and 9 concentric circles of Hell.",
+      "helpfulHint": "Think three times three—a tidy single-digit square number.",
+      "pinpoint": {
+        "minVal": 1,
+        "maxVal": 24,
+        "step": 1,
+        "exactVal": 9,
+        "unitLabel": "circles",
+        "bullseyeRadius": 1,
+        "winRadius": 3
+      }
+    },
+    {
+      "qid": 1090395,
+      "format": "CLUE_ESCALATOR",
+      "domainId": 10,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Gothic Classics",
+      "wittyHeader": "No Mirror Needed",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 32,
+      "readInGraceSec": 2,
+      "prompt": "Name the iconic 1897 epistolary novel revealed across these three escalating clues.",
+      "funFactWhy": "Irish theatre manager Bram Stoker never once set foot in Transylvania—he stitched together his eerie Carpathian castle atmosphere entirely from travel books at the British Library.",
+      "helpfulHint": "Told through Jonathan Harker’s diaries, newspaper clippings, and phonograph logs, it stars a Transylvanian count.",
+      "escalator": {
+        "clues": [
+          "Its Irish author never once visited Romania, researching the Carpathian Mountains exclusively inside London’s British Library.",
+          "The entire story unfolds through diary entries, ship logs, telegrams, and wax-cylinder recordings hunted by Professor Van Helsing.",
+          "Published by Bram Stoker in 1897, it introduced pop culture’s most famous Transylvanian vampire."
+        ],
+        "choices": [
+          "Carmilla",
+          "Frankenstein",
+          "Dracula",
+          "The Picture of Dorian Gray"
+        ],
+        "correctIndex": 2
+      }
+    },
+    {
+      "qid": 1090396,
+      "format": "CLUE_ESCALATOR",
+      "domainId": 10,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Egyptian Myth",
+      "wittyHeader": "Fourteen Scattered Pieces",
+      "difficultyTier": "COLLEGE",
+      "recommendedSec": 32,
+      "readInGraceSec": 2,
+      "prompt": "Name the ancient Egyptian deity revealed across these three escalating clues.",
+      "funFactWhy": "Depicted with lush green skin symbolizing Nile rebirth, Osiris was tricked into a gilded coffin by his jealous brother Set before Isis pieced him back together as ruler of the afterlife.",
+      "helpfulHint": "Green-skinned husband of Isis and father of Horus, he presides over the underworld hall of judgment.",
+      "escalator": {
+        "clues": [
+          "Tricked into lying inside a custom-fitted jeweled chest at a banquet by his jealous brother Set, he was cast adrift down the Nile.",
+          "Portrayed with verdant green skin symbolizing renewal, he holds the royal crook and flail.",
+          "Husband of Isis and father of Horus, he rules as the Egyptian lord of the underworld and rebirth."
+        ],
+        "choices": [
+          "Thoth",
+          "Ra",
+          "Osiris",
+          "Sobek"
+        ],
+        "correctIndex": 2
+      }
+    },
+    {
+      "qid": 1090397,
+      "format": "VISUAL_SPOTTER",
+      "domainId": 10,
+      "wedgeId": "VIOLET_ARTS",
+      "categoryLabel": "Mythic Constellations",
+      "wittyHeader": "Vanity Written in Stars",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Inspect this northern sky chart of a bold 5-star W-shaped asterism. Which boastful Ethiopian queen from Greek myth was sentenced to circle the pole upside-down in her throne?",
+      "funFactWhy": "After Queen Cassiopeia bragged that she and her daughter Andromeda were lovelier than the sea nymphs, Poseidon chained her throne to the northern sky so she hangs head-down half of every night.",
+      "helpfulHint": "Spot the unmistakable five-star \"W\" (or \"M\") spinning opposite the Big Dipper around Polaris.",
+      "visualSpotter": {
+        "visualKind": "SVG_DIAGRAM",
+        "imageUrl": "./assets/visuals/star_cassiopeia.svg",
+        "caption": "5-Star Circumpolar W-Asterism · Northern Sky",
+        "choices": [
+          "Andromeda",
+          "Cassiopeia",
+          "Perseus",
+          "Lyra"
+        ],
+        "correctIndex": 1
+      }
+    },
+    {
+      "qid": 1090398,
+      "format": "MULTIPLE_CHOICE",
+      "domainId": 11,
+      "wedgeId": "ORANGE_SPORTS",
+      "categoryLabel": "Probability Traps",
+      "wittyHeader": "Casino Mindset Check",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "A fair coin has just landed Heads five times in a row. What is the exact probability that the sixth flip lands Tails?",
+      "funFactWhy": "Coins have zero memory! Believing a streak makes the opposite outcome \"overdue\" is the Gambler’s Fallacy—infamously displayed at a Monte Carlo roulette wheel in 1913 when black hit 26 times straight and bettors lost millions.",
+      "helpfulHint": "Ignore the first five flips completely—the coin has no idea what happened five seconds ago.",
+      "choices": [
+        "50% (1/2)",
+        "96.9% (31/32)",
+        "75% (3/4)",
+        "25% (1/4)"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "qid": 1090399,
+      "format": "MULTIPLE_CHOICE",
+      "domainId": 11,
+      "wedgeId": "ORANGE_SPORTS",
+      "categoryLabel": "Mental Math",
+      "wittyHeader": "Zero-Factorial Surprise",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 12,
+      "readInGraceSec": 2,
+      "prompt": "In mathematics, what does 0! (zero factorial) equal?",
+      "funFactWhy": "There is exactly one way to arrange zero objects in a line (doing nothing at all!), and defining 0! = 1 keeps every combinatorics formula and power series working smoothly.",
+      "helpfulHint": "Careful—it is NOT zero! Think of the multiplicative identity.",
+      "choices": [
+        "1",
+        "Infinity",
+        "Undefined",
+        "0"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "qid": 1090400,
+      "format": "MATCH_4",
+      "domainId": 11,
+      "wedgeId": "ORANGE_SPORTS",
+      "categoryLabel": "Polygon Names",
+      "wittyHeader": "Count the Corners",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 35,
+      "readInGraceSec": 2,
+      "prompt": "Wire each Greek-rooted polygon name to its exact number of sides.",
+      "funFactWhy": "Bees build hexagonal honeycomb cells because a hexagon packs the largest storage area for the least beeswax perimeter—a 2,000-year-old geometry theorem formally proven only in 1999!",
+      "helpfulHint": "Match the stop-sign octagon to 8 and the honeybee hexagon to 6 first.",
+      "match4": {
+        "instruction": "Pair each polygon with its side count",
+        "pairs": [
+          {
+            "pairId": "p1",
+            "leftPrompt": "Hexagon",
+            "rightAnswer": "6 sides"
+          },
+          {
+            "pairId": "p2",
+            "leftPrompt": "Octagon",
+            "rightAnswer": "8 sides"
+          },
+          {
+            "pairId": "p3",
+            "leftPrompt": "Decagon",
+            "rightAnswer": "10 sides"
+          },
+          {
+            "pairId": "p4",
+            "leftPrompt": "Dodecagon",
+            "rightAnswer": "12 sides"
+          }
+        ],
+        "shuffledRight": [
+          {
+            "pairId": "p3",
+            "text": "10 sides"
+          },
+          {
+            "pairId": "p1",
+            "text": "6 sides"
+          },
+          {
+            "pairId": "p4",
+            "text": "12 sides"
+          },
+          {
+            "pairId": "p2",
+            "text": "8 sides"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090401,
+      "format": "SORT_4",
+      "domainId": 11,
+      "wedgeId": "ORANGE_SPORTS",
+      "categoryLabel": "Famous Constants",
+      "wittyHeader": "Decimal Lineup",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 30,
+      "readInGraceSec": 2,
+      "prompt": "Order these four mathematical superstars from smallest numerical value to largest!",
+      "funFactWhy": "All four numbers are irrational—their decimals wander on forever without ever repeating a pattern—yet they neatly slot between 1.4 and 3.15.",
+      "helpfulHint": "Square root of 2 sits around 1.41, the golden ratio near 1.62, Euler’s e near 2.72, and pi just past 3.14.",
+      "sort4": {
+        "orderDirectionLabel": "Smallest -> Largest Value",
+        "correctOrder": [
+          {
+            "itemId": "s1",
+            "label": "Square root of 2 (√2)",
+            "numericValue": 1.414,
+            "formattedValue": "≈ 1.414"
+          },
+          {
+            "itemId": "s2",
+            "label": "Golden Ratio (φ)",
+            "numericValue": 1.618,
+            "formattedValue": "≈ 1.618"
+          },
+          {
+            "itemId": "s3",
+            "label": "Euler’s Number (e)",
+            "numericValue": 2.718,
+            "formattedValue": "≈ 2.718"
+          },
+          {
+            "itemId": "s4",
+            "label": "Pi (π)",
+            "numericValue": 3.142,
+            "formattedValue": "≈ 3.142"
+          }
+        ],
+        "initialOrder": [
+          {
+            "itemId": "s3",
+            "label": "Euler’s Number (e)",
+            "numericValue": 2.718,
+            "formattedValue": "≈ 2.718"
+          },
+          {
+            "itemId": "s1",
+            "label": "Square root of 2 (√2)",
+            "numericValue": 1.414,
+            "formattedValue": "≈ 1.414"
+          },
+          {
+            "itemId": "s4",
+            "label": "Pi (π)",
+            "numericValue": 3.142,
+            "formattedValue": "≈ 3.142"
+          },
+          {
+            "itemId": "s2",
+            "label": "Golden Ratio (φ)",
+            "numericValue": 1.618,
+            "formattedValue": "≈ 1.618"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090402,
+      "format": "SORT_4",
+      "domainId": 11,
+      "wedgeId": "ORANGE_SPORTS",
+      "categoryLabel": "Big Numbers",
+      "wittyHeader": "Zeroes Out of Control",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 30,
+      "readInGraceSec": 2,
+      "prompt": "Stack these four big numbers from smallest count to truly mind-meltingly huge!",
+      "funFactWhy": "Nine-year-old Milton Sirotta coined the word \"googol\" (1 followed by 100 zeroes) in 1920 for his mathematician uncle—exceeding the estimated number of atoms in the observable universe!",
+      "helpfulHint": "Start with a humble million and finish with a 100-zero giant that inspired a famous search engine’s misspelled name.",
+      "sort4": {
+        "orderDirectionLabel": "Smallest -> Largest Number",
+        "correctOrder": [
+          {
+            "itemId": "s1",
+            "label": "One Million (10⁶)",
+            "numericValue": 6,
+            "formattedValue": "10⁶ (6 zeroes)"
+          },
+          {
+            "itemId": "s2",
+            "label": "One Billion (10⁹)",
+            "numericValue": 9,
+            "formattedValue": "10⁹ (9 zeroes)"
+          },
+          {
+            "itemId": "s3",
+            "label": "One Trillion (10¹²)",
+            "numericValue": 12,
+            "formattedValue": "10¹² (12 zeroes)"
+          },
+          {
+            "itemId": "s4",
+            "label": "One Googol (10¹⁰⁰)",
+            "numericValue": 100,
+            "formattedValue": "10¹⁰⁰ (100 zeroes)"
+          }
+        ],
+        "initialOrder": [
+          {
+            "itemId": "s2",
+            "label": "One Billion (10⁹)",
+            "numericValue": 9,
+            "formattedValue": "10⁹ (9 zeroes)"
+          },
+          {
+            "itemId": "s4",
+            "label": "One Googol (10¹⁰⁰)",
+            "numericValue": 100,
+            "formattedValue": "10¹⁰⁰ (100 zeroes)"
+          },
+          {
+            "itemId": "s1",
+            "label": "One Million (10⁶)",
+            "numericValue": 6,
+            "formattedValue": "10⁶ (6 zeroes)"
+          },
+          {
+            "itemId": "s3",
+            "label": "One Trillion (10¹²)",
+            "numericValue": 12,
+            "formattedValue": "10¹² (12 zeroes)"
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090403,
+      "format": "MULTI_STRIKE",
+      "domainId": 11,
+      "wedgeId": "ORANGE_SPORTS",
+      "categoryLabel": "Number Theory",
+      "wittyHeader": "Sneaky Fake Prime",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Three of these odd numbers are true primes—spot the 1 composite imposter wearing a prime disguise!",
+      "funFactWhy": "51 looks stubbornly prime at a quick glance, yet its digits add up to 6 (divisible by 3!): 51 = 3 × 17, making it one of math trivia’s favorite trick numbers.",
+      "helpfulHint": "Use the sum-of-digits trick: if a number’s digits add up to a multiple of 3, it divides cleanly by 3!",
+      "multiStrike": {
+        "strikeMode": "SPOT_THE_IMPOSTER",
+        "targetCount": 1,
+        "options": [
+          {
+            "optionId": "o1",
+            "label": "41",
+            "isTarget": false
+          },
+          {
+            "optionId": "o2",
+            "label": "47",
+            "isTarget": false
+          },
+          {
+            "optionId": "o3",
+            "label": "51",
+            "isTarget": true
+          },
+          {
+            "optionId": "o4",
+            "label": "59",
+            "isTarget": false
+          }
+        ]
+      }
+    },
+    {
+      "qid": 1090404,
+      "format": "PINPOINT_DIAL",
+      "domainId": 11,
+      "wedgeId": "ORANGE_SPORTS",
+      "categoryLabel": "Geometry Basics",
+      "wittyHeader": "Three Corners Total",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "On a flat Euclidean plane, what do the three interior angles of ANY triangle always add up to (in degrees)?",
+      "funFactWhy": "On a flat sheet of paper it is always 180 degrees—yet draw a giant triangle on Earth’s curved globe from the North Pole to two Equator spots and you can easily build a triangle with three 90-degree corners (270 degrees)!",
+      "helpfulHint": "Exactly half of a full 360-degree spin.",
+      "pinpoint": {
+        "minVal": 60,
+        "maxVal": 360,
+        "step": 5,
+        "exactVal": 180,
+        "unitLabel": "°",
+        "bullseyeRadius": 5,
+        "winRadius": 20
+      }
+    },
+    {
+      "qid": 1090405,
+      "format": "PINPOINT_DIAL",
+      "domainId": 11,
+      "wedgeId": "ORANGE_SPORTS",
+      "categoryLabel": "Card Combinatorics",
+      "wittyHeader": "Standard Deck Count",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Excluding Jokers, how many cards are in a standard Anglo-American playing deck (and how many weeks fill a calendar year)?",
+      "funFactWhy": "Because 52! (52 factorial) equals roughly 8 followed by 67 zeroes, every time you thoroughly shuffle a standard deck of cards, you almost certainly create an exact order that has never existed before in human history.",
+      "helpfulHint": "Multiply 4 suits by 13 ranks—Ace through King.",
+      "pinpoint": {
+        "minVal": 24,
+        "maxVal": 80,
+        "step": 1,
+        "exactVal": 52,
+        "unitLabel": "cards",
+        "bullseyeRadius": 1,
+        "winRadius": 5
+      }
+    },
+    {
+      "qid": 1090406,
+      "format": "CLUE_ESCALATOR",
+      "domainId": 11,
+      "wedgeId": "ORANGE_SPORTS",
+      "categoryLabel": "Cryptography History",
+      "wittyHeader": "Spinning Cipher Rotors",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 32,
+      "readInGraceSec": 2,
+      "prompt": "Name the infamous electromechanical cipher device revealed across these three escalating clues.",
+      "funFactWhy": "One fatal design flaw doomed Enigma: its reflector wheel meant a letter could NEVER encrypt to itself—a tiny loophole that Polish mathematicians and Alan Turing’s Bletchley Park team exploited brilliantly.",
+      "helpfulHint": "Named for the Greek word for \"riddle,\" its spinning rotors scrambled German World War II radio traffic.",
+      "escalator": {
+        "clues": [
+          "Its fatal mathematical flaw was that no letter could ever encrypt to itself, giving codebreakers a priceless wedge.",
+          "Polish cryptanalysts first cracked its wiring in the 1930s before Alan Turing’s Bombe machines broke its daily keys at Bletchley Park.",
+          "Looking like a wooden typewriter fitted with glowing bulbs and spinning rotors, its name literally means \"riddle.\""
+        ],
+        "choices": [
+          "Antikythera mechanism",
+          "Lorenz cipher",
+          "Difference Engine",
+          "Enigma machine"
+        ],
+        "correctIndex": 3
+      }
+    },
+    {
+      "qid": 1090407,
+      "format": "VISUAL_SPOTTER",
+      "domainId": 11,
+      "wedgeId": "ORANGE_SPORTS",
+      "categoryLabel": "Sacred Geometry",
+      "wittyHeader": "Nature’s Favorite Spiral",
+      "difficultyTier": "HIGH_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Study this tiled square blueprint (1, 1, 2, 3, 5, 8, 13) curving outward at the ratio ≈ 1.618034. What famous mathematical curve is drawn here?",
+      "funFactWhy": "Every quarter turn multiplies the Golden Spiral’s radius by phi (≈ 1.618)—the same self-similar proportion approximated by sunflower seed spirals and pinecone scales.",
+      "helpfulHint": "Built from consecutive Fibonacci squares, it shares its gleaming name with the ratio 1.618.",
+      "visualSpotter": {
+        "visualKind": "SVG_DIAGRAM",
+        "imageUrl": "./assets/visuals/geo_golden_spiral.svg",
+        "caption": "Fibonacci Square Tiling · Ratio ≈ 1.618034",
+        "choices": [
+          "Golden spiral",
+          "Koch snowflake",
+          "Sine wave",
+          "Archimedean spiral"
+        ],
+        "correctIndex": 0
+      }
+    },
+    {
+      "qid": 1090408,
+      "format": "VISUAL_SPOTTER",
+      "domainId": 11,
+      "wedgeId": "ORANGE_SPORTS",
+      "categoryLabel": "Classical Geometry",
+      "wittyHeader": "Right-Triangle Squares",
+      "difficultyTier": "MIDDLE_SCHOOL",
+      "recommendedSec": 28,
+      "readInGraceSec": 2,
+      "prompt": "Inspect this classic visual proof showing squares of areas 9 and 16 summing neatly to a 25-unit square on the hypotenuse. Whose theorem is demonstrated?",
+      "funFactWhy": "Babylonian clay tablet Plimpton 322 recorded Pythagorean triples like 3–4–5 and 119–120–169 more than a thousand years before Pythagoras was even born—and U.S. President James Garfield even published his own original proof!",
+      "helpfulHint": "Look right at the formula a² + b² = c² built on a 3–4–5 right triangle.",
+      "visualSpotter": {
+        "visualKind": "SVG_DIAGRAM",
+        "imageUrl": "./assets/visuals/geo_pythagoras.svg",
+        "caption": "Euclidean Area Proof · 3² + 4² = 5² (9 + 16 = 25)",
+        "choices": [
+          "Binomial theorem",
+          "Pythagorean theorem",
+          "Fermat’s Last Theorem",
+          "Bayes’ theorem"
         ],
         "correctIndex": 1
       }
