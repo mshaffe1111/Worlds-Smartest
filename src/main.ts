@@ -1,13 +1,14 @@
 /// <reference types="vite/client" />
 // ============================================================================
-// WORLD'S SMARTEST v5.0 — Master Theatrical Showtime Entry Point (`src/main.ts`)
-// Diegetic Green Room · 14-Twist Octagonal Boards · 88-Node Voiced Story ·
-// Real MusyngKite Symphony Orchestra + 8 Stage Symphonies · 1.27M+ Questions
+// WORLD'S SMARTEST v6.0 — Master Ultra-HD 3D Showtime Entry Point (`src/main.ts`)
+// 10 Architectural 3D Stage Worlds · 100 3D Twist Boards · 100 Zero-Scroll Toys ·
+// 4K Natural Earth Relief Globe · 36 3D Trophies & Medals · 4-Bay Neve Desk ·
+// 14 Original Abbey-Road Symphonies · 1.28M Calibrated Zero-Repeat Clues
 // ============================================================================
 
 import './styles/sovereign.css';
-import './styles/showtime_v5.css';
-import { ShowtimeMasterControllerV5 } from './v5/ShowtimeMasterControllerV5';
+import './styles/ultrahd_v6.css';
+import { bootShowtimeV6 } from './v6/bootShowtimeV6';
 
 interface OfflineSwClientModule {
   registerOfflineServiceWorker?: () => Promise<unknown>;
@@ -17,7 +18,7 @@ const offlineSwClientLoaders = import.meta.glob<OfflineSwClientModule>(
   './pwa/OfflineServiceWorkerClient.ts',
 );
 
-const SW_UPGRADE_RELOAD_KEY = 'ws_sw_upgraded_v5_r2';
+const SW_UPGRADE_RELOAD_KEY = 'ws_sw_upgraded_v6_r1';
 
 function scheduleOfflineServiceWorkerRegistration(): void {
   if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
@@ -30,7 +31,6 @@ function scheduleOfflineServiceWorkerRegistration(): void {
     // Ignore malformed search strings
   }
 
-  // Force immediate SW update check & clean one-shot reload when replacing a stale SW
   const hadController = Boolean(navigator.serviceWorker.controller);
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (!hadController) return;
@@ -77,14 +77,14 @@ function bootstrap(): void {
   const vfxCanvas = document.getElementById('vfx-canvas') as HTMLCanvasElement | null;
   const uiRoot = document.getElementById('ui-root');
 
-  if (!canvasRoot || !vfxCanvas || !uiRoot) {
-    throw new Error('Missing #canvas-root, #vfx-canvas, or #ui-root mount elements in index.html.');
+  if (!canvasRoot || !uiRoot) {
+    throw new Error('Missing #canvas-root or #ui-root mount elements in index.html.');
   }
 
-  const master = new ShowtimeMasterControllerV5(canvasRoot, vfxCanvas, uiRoot);
+  const app = bootShowtimeV6(canvasRoot, vfxCanvas, uiRoot);
 
   window.addEventListener('beforeunload', () => {
-    master.dispose();
+    app.dispose();
   });
 
   scheduleOfflineServiceWorkerRegistration();
