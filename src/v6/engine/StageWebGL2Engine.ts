@@ -17,7 +17,12 @@ import type {
   StageWorldIdV6,
 } from '../contracts_v6';
 import { CameraDirectorV6 } from './CameraDirectorV6';
-import { disposeObject3DTree, GpuSparkBurst } from './HorologyCADKit';
+import {
+  createPresenterPodiumMesh,
+  disposeObject3DTree,
+  GpuSparkBurst,
+  type PresenterPodiumHandleV6,
+} from './HorologyCADKit';
 import {
   applyStageHudThemeCssVars,
   getStageThemeV6,
@@ -69,6 +74,8 @@ export class StageWebGL2Engine {
   public readonly toyMount: THREE.Group;
   public readonly trophyMount: THREE.Group;
   public readonly relicMount: THREE.Group;
+  public readonly presenterPodium: PresenterPodiumHandleV6;
+  private podiumManualOverride: boolean | null = null;
 
   private readonly pmremGenerator: THREE.PMREMGenerator;
   private readonly envCache = new Map<StageWorldIdV6, THREE.WebGLRenderTarget>();
@@ -192,6 +199,15 @@ export class StageWebGL2Engine {
 
     this.scene.add(this.boardMount, this.toyMount, this.trophyMount, this.relicMount);
 
+    // 5b. Built-in Sculpted Brushed-Brass & Obsidian Presenter Podium (Hero in Lobby & Victory zones)
+    this.presenterPodium = createPresenterPodiumMesh({
+      trimMetalHex: this.activeTheme.materials.trimMetalHex,
+      accentJewelHex: this.activeTheme.materials.jewelPrimaryHex,
+      scale: 1.05,
+    });
+    this.presenterPodium.group.position.set(0, 0.01, 0.35);
+    this.scene.add(this.presenterPodium.group);
+
     // 6. Shared GPU Ballistic Spark Emitter
     this.sparks = new GpuSparkBurst(360);
     this.scene.add(this.sparks.points);
@@ -201,7 +217,9 @@ export class StageWebGL2Engine {
     this.applyShadowQuality(this.shadowQuality);
     this.resize(width, height);
     this.setStageWorld(this.activeStageId);
-    this.cameraDirector.setZone(config.initialZone ?? 'LOBBY_PROSCENIUM', { immediate: true });
+    const startZone = config.initialZone ?? 'LOBBY_PROSCENIUM';
+    this.cameraDirector.setZone(startZone, { immediate: true });
+    this.syncPodiumVisibility(startZone);
 
     // 8. Responsive Resize & Pointer Parallax Listeners
     this.onWindowResizeBound = () => this.handleResize();
@@ -337,6 +355,7 @@ export class StageWebGL2Engine {
     if (prevTrapdoorOpen > 0.5) {
       built.setTrapdoorOpen(true);
     }
+    this.presenterPodium.setPalette(theme.materials.trimMetalHex, theme.materials.jewelPrimaryHex);
 
     if (this.syncHudThemeVars) {
       applyStageHudThemeCssVars(theme);
@@ -362,6 +381,25 @@ export class StageWebGL2Engine {
     options?: { immediate?: boolean; customLookOffset?: [number, number, number] }
   ): void {
     this.cameraDirector.setZone(zone, options);
+    this.syncPodiumVisibility(zone);
+  }
+
+  /**
+   * Explicitly overrides Presenter Podium visibility (pass `null` to restore automatic zone logic,
+   * where the podium shines in `LOBBY_PROSCENIUM` and `VICTORY_PODIUM_CEREMONY`).
+   */
+  public setPresenterPodiumVisible(visible: boolean | null): void {
+    this.podiumManualOverride = visible;
+    this.syncPodiumVisibility(this.cameraDirector.getActiveZone());
+  }
+
+  private syncPodiumVisibility(zone: CameraStageZoneV6): void {
+    if (this.podiumManualOverride !== null) {
+      this.presenterPodium.group.visible = this.podiumManualOverride;
+      return;
+    }
+    this.presenterPodium.group.visible =
+      zone === 'LOBBY_PROSCENIUM' || zone === 'VICTORY_PODIUM_CEREMONY';
   }
 
   public emitSparks(
@@ -525,6 +563,7 @@ export class StageWebGL2Engine {
     }
 
     this.sparks.dispose();
+    disposeObject3DTree(this.presenterPodium.group);
     disposeObject3DTree(this.boardMount);
     disposeObject3DTree(this.toyMount);
     disposeObject3DTree(this.trophyMount);

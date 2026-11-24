@@ -246,48 +246,51 @@ export function getProceduralPbrTextureSet(
 
       switch (kind) {
         case 'MAHOGANY_PLANKS': {
-          normalStrength = 1.45;
-          const planks = 6;
+          normalStrength = 0.58;
+          const planks = 7;
           const plankRow = Math.floor(v * planks);
           const localV = fract(v * planks);
           const stagger = (plankRow % 2) * 0.5 + hash2D(plankRow, 7, 11) * 0.28;
-          const localU = fract(u * 2 + stagger);
-          const plankTone = 0.85 + 0.3 * hash2D(plankRow, Math.floor(u * 2 + stagger), 3);
+          const localU = fract(u + stagger);
+          const plankTone = 0.86 + 0.28 * hash2D(plankRow, Math.floor(u + stagger), 3);
 
-          const grooveV = smoothstep(0.0, 0.032, localV) * smoothstep(0.0, 0.032, 1.0 - localV);
-          const grooveU = smoothstep(0.0, 0.016, localU) * smoothstep(0.0, 0.016, 1.0 - localU);
-          const groove = grooveV * grooveU;
+          // Satin French-polished Broadway stage planks — fine hairline seams, zero choppy brick-bump
+          const grooveV = smoothstep(0.0, 0.022, localV) * smoothstep(0.0, 0.022, 1.0 - localV);
+          const grooveU = smoothstep(0.0, 0.008, localU) * smoothstep(0.0, 0.008, 1.0 - localU);
+          const groove = 0.25 + 0.75 * grooveV * grooveU;
 
-          const warp = tileFbm(u, v, 4, 3, 17) * 0.12;
-          const grain = Math.sin((localV * 14 + warp * 18 + tileFbm(u * 0.5, v * 4, 8, 3, 29) * 3.0) * Math.PI);
-          const fineFiber = tileNoise(u, v, 32, 41);
-          const scuff = tileFbm(u, v, 6, 3, 88);
+          const warp = tileFbm(u, v, 3, 3, 17) * 0.1;
+          const grain = Math.sin((localV * 10 + warp * 14 + tileFbm(u * 0.5, v * 3, 6, 3, 29) * 2.2) * Math.PI);
+          const fineFiber = tileNoise(u, v, 24, 41);
+          const polish = tileFbm(u, v, 4, 3, 88);
 
-          const woodVal = clamp01(0.5 + 0.24 * grain + 0.08 * fineFiber);
-          r = lerp(38, 126, woodVal) * plankTone * (0.3 + 0.7 * groove);
-          g = lerp(16, 56, woodVal) * plankTone * (0.3 + 0.7 * groove);
-          b = lerp(10, 32, woodVal) * plankTone * (0.3 + 0.7 * groove);
-          h = groove * (0.62 + 0.16 * grain + 0.04 * fineFiber);
-          rough = lerp(0.32, 0.58, clamp01(0.38 + scuff * 0.4 + (1 - groove) * 0.42));
+          const woodVal = clamp01(0.5 + 0.22 * grain + 0.06 * fineFiber);
+          r = lerp(42, 134, woodVal) * plankTone * groove;
+          g = lerp(19, 64, woodVal) * plankTone * groove;
+          b = lerp(11, 34, woodVal) * plankTone * groove;
+          h = 0.52 + 0.14 * groove + 0.06 * grain;
+          rough = lerp(0.24, 0.44, clamp01(0.32 + polish * 0.38 + (1 - groove) * 0.35));
           break;
         }
 
         case 'CARRARA_MARBLE': {
-          normalStrength = 1.6;
-          const w1 = tileFbm(u, v, 4, 4, 13);
-          const w2 = tileFbm(u + w1 * 0.35, v + w1 * 0.25, 4, 4, 31);
-          const veinWave = Math.abs(Math.sin((u * 3.0 + v * 2.0 + w2 * 3.2) * Math.PI));
-          const primaryVein = Math.pow(1.0 - veinWave, 7.5);
-          const secondaryWave = Math.abs(Math.sin((u * 5.0 - v * 4.0 + w1 * 4.1) * Math.PI));
-          const fineVein = Math.pow(1.0 - secondaryWave, 14.0) * 0.65;
-          const vein = clamp01(primaryVein + fineVein);
-          const baseCloud = tileFbm(u, v, 8, 3, 55);
+          normalStrength = 1.25;
+          const w1 = tileFbm(u, v, 3, 4, 13);
+          const w2 = tileFbm(u + w1 * 0.42, v + w1 * 0.3, 4, 4, 31);
+          const veinWave = Math.abs(Math.sin((u * 3.0 + v * 2.0 + w2 * 3.5) * Math.PI));
+          const primaryVein = Math.pow(1.0 - veinWave, 5.2);
+          const secondaryWave = Math.abs(Math.sin((u * 5.0 - v * 4.0 + w1 * 4.2) * Math.PI));
+          const fineVein = Math.pow(1.0 - secondaryWave, 10.5) * 0.72;
+          const goldTrace = Math.pow(1.0 - Math.abs(Math.sin((u * 2.0 - v * 3.0 + w2 * 3.8) * Math.PI)), 18.0);
+          const vein = clamp01(primaryVein * 0.92 + fineVein);
+          const baseCloud = tileFbm(u, v, 6, 3, 55);
 
-          r = lerp(244 - baseCloud * 14, 142, vein);
-          g = lerp(241 - baseCloud * 14, 146, vein);
-          b = lerp(236 - baseCloud * 12, 155, vein);
-          h = 0.62 - vein * 0.26 + baseCloud * 0.04;
-          rough = lerp(0.14, 0.42, clamp01(vein * 0.8 + baseCloud * 0.18));
+          // Rich museum Carrara tone (205..224 ivory base with unmistakable slate-blue & subtle gold veins!)
+          r = lerp(222 - baseCloud * 20, 102, vein) + goldTrace * 58;
+          g = lerp(218 - baseCloud * 18, 109, vein) + goldTrace * 44;
+          b = lerp(213 - baseCloud * 15, 124, vein) + goldTrace * 12;
+          h = 0.6 - vein * 0.22 + baseCloud * 0.04;
+          rough = lerp(0.18, 0.44, clamp01(vein * 0.75 + baseCloud * 0.2));
           break;
         }
 
@@ -443,14 +446,20 @@ export function getProceduralPbrTextureSet(
         }
 
         case 'ALABASTER_STONE': {
-          normalStrength = 1.5;
+          normalStrength = 1.25;
           const cloud = tileFbm(u, v, 4, 4, 701);
-          const vein = Math.pow(1 - Math.abs(Math.sin((u * 2.0 + v * 3.0 + cloud * 2.6) * Math.PI)), 10);
-          r = lerp(234, 198, cloud * 0.4 + vein * 0.5);
-          g = lerp(231, 200, cloud * 0.38 + vein * 0.46);
-          b = lerp(240, 214, cloud * 0.35 + vein * 0.4);
-          h = 0.58 - vein * 0.15 + cloud * 0.08;
-          rough = lerp(0.18, 0.36, cloud * 0.6 + vein * 0.3);
+          const w2 = tileFbm(u + cloud * 0.35, v - cloud * 0.28, 4, 4, 719);
+          const veinA = Math.pow(1 - Math.abs(Math.sin((u * 2.0 + v * 3.0 + w2 * 3.2) * Math.PI)), 5.8);
+          const veinB = Math.pow(1 - Math.abs(Math.sin((u * 4.0 - v * 2.0 + cloud * 3.8) * Math.PI)), 12.0) * 0.65;
+          const vein = clamp01(veinA + veinB);
+          const copperFleck = Math.pow(1 - Math.abs(Math.sin((u * 3.0 + v * 4.0 + w2 * 2.8) * Math.PI)), 16.0);
+
+          // Rich twilight alabaster stone (never clips to flat white; veins & copper flecks shine!)
+          r = lerp(206 - cloud * 24, 114, vein) + copperFleck * 46;
+          g = lerp(204 - cloud * 22, 120, vein) + copperFleck * 26;
+          b = lerp(218 - cloud * 18, 146, vein) + copperFleck * 14;
+          h = 0.58 - vein * 0.18 + cloud * 0.06;
+          rough = lerp(0.2, 0.44, cloud * 0.55 + vein * 0.35);
           break;
         }
 
@@ -1871,7 +1880,191 @@ export function createRelicArtifactMesh(
 }
 
 // ----------------------------------------------------------------------------
-// 9. Second-Order Sub-Stepped Spring Kinematics (`SpringDamper1D`, `SpringDamper3D`)
+// 9. Sculpted Brushed-Brass & Obsidian Presenter Podium (`createPresenterPodiumMesh`)
+// ----------------------------------------------------------------------------
+
+export interface PresenterPodiumOptionsV6 {
+  trimMetalHex?: number;
+  accentJewelHex?: number;
+  scale?: number;
+}
+
+export interface PresenterPodiumHandleV6 {
+  group: THREE.Group;
+  setPalette(trimMetalHex: number, accentJewelHex: number): void;
+}
+
+/**
+ * Builds the prestige sculpted Brushed-Brass & Mirror-Obsidian Presenter Podium
+ * with fluted vertical brass columns, beveled lectern crown, warm reading-lamp glow,
+ * and twin curved brass gooseneck broadcast microphones.
+ */
+export function createPresenterPodiumMesh(opts: PresenterPodiumOptionsV6 = {}): PresenterPodiumHandleV6 {
+  const trimMetalHex = opts.trimMetalHex ?? 0xd9a74a;
+  const accentJewelHex = opts.accentJewelHex ?? 0xf4be4e;
+  const scale = opts.scale ?? 1.0;
+
+  const group = new THREE.Group();
+  group.name = 'SculptedPresenterPodium';
+  group.scale.setScalar(scale);
+
+  const brassMat = new THREE.MeshPhysicalMaterial({
+    color: trimMetalHex,
+    roughness: 0.2,
+    metalness: 0.96,
+    clearcoat: 0.35,
+    clearcoatRoughness: 0.14,
+  });
+  const brushedGoldTrimMat = new THREE.MeshStandardMaterial({
+    color: trimMetalHex,
+    roughness: 0.28,
+    metalness: 0.92,
+  });
+  const obsidianMat = new THREE.MeshPhysicalMaterial({
+    color: 0x0f1014,
+    roughness: 0.08,
+    metalness: 0.22,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.05,
+    reflectivity: 1.0,
+  });
+  const darkMicMeshMat = new THREE.MeshStandardMaterial({
+    color: 0x1c1e24,
+    roughness: 0.45,
+    metalness: 0.85,
+  });
+  const lampGlowMat = new THREE.MeshStandardMaterial({
+    color: 0xfff0cc,
+    emissive: accentJewelHex,
+    emissiveIntensity: 2.2,
+    roughness: 0.2,
+  });
+
+  // 1. Stepped Chamfered Brass & Obsidian Plinth Base (Y = 0 .. 0.16)
+  const basePlate = new THREE.Mesh(new THREE.BoxGeometry(1.02, 0.07, 0.72), brassMat);
+  basePlate.position.y = 0.035;
+  basePlate.castShadow = true;
+  basePlate.receiveShadow = true;
+  group.add(basePlate);
+
+  const baseStep = new THREE.Mesh(new THREE.BoxGeometry(0.88, 0.09, 0.58), obsidianMat);
+  baseStep.position.y = 0.115;
+  baseStep.castShadow = true;
+  baseStep.receiveShadow = true;
+  group.add(baseStep);
+
+  const baseCollar = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.028, 0.62), brassMat);
+  baseCollar.position.y = 0.168;
+  group.add(baseCollar);
+
+  // 2. Mirror-Obsidian Curved/Faceted Central Column Body (Y = 0.18 .. 1.24)
+  const coreBody = new THREE.Mesh(new THREE.BoxGeometry(0.56, 1.06, 0.46), obsidianMat);
+  coreBody.position.y = 0.71;
+  coreBody.castShadow = true;
+  coreBody.receiveShadow = true;
+  group.add(coreBody);
+
+  // Inset curved obsidian front shield panel
+  const frontShield = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 1.02, 16, 1, false, -0.75, 1.5), obsidianMat);
+  frontShield.position.set(0, 0.71, 0.08);
+  frontShield.castShadow = true;
+  group.add(frontShield);
+
+  // Subtle brass horizontal inlay accents on obsidian plinth
+  for (const py of [0.24, 1.18]) {
+    const strip = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.022, 0.5), brushedGoldTrimMat);
+    strip.position.y = py;
+    group.add(strip);
+  }
+
+  // 3. Four Vertical Fluted Brushed-Brass Side Columns flanking the Obsidian Centerpiece
+  const colGeom = new THREE.CylinderGeometry(0.068, 0.072, 1.06, 16);
+  const colPositions: Array<[number, number]> = [
+    [-0.36, 0.18],
+    [-0.27, 0.21],
+    [0.27, 0.21],
+    [0.36, 0.18],
+    [-0.34, -0.18],
+    [0.34, -0.18],
+  ];
+  for (const [cx, cz] of colPositions) {
+    const col = new THREE.Mesh(colGeom, brassMat);
+    col.position.set(cx, 0.71, cz);
+    col.castShadow = true;
+    col.receiveShadow = true;
+    group.add(col);
+  }
+
+  // Side obsidian wings neatly capping left/right profiles
+  for (const sx of [-0.39, 0.39]) {
+    const wing = new THREE.Mesh(new THREE.BoxGeometry(0.05, 1.04, 0.42), obsidianMat);
+    wing.position.set(sx, 0.71, 0);
+    group.add(wing);
+  }
+
+  // 4. Flared Beveled Brushed-Brass Lectern Crown & Desk Deck (Y = 1.24 .. 1.40)
+  const neckCollar = new THREE.Mesh(new THREE.BoxGeometry(0.94, 0.045, 0.62), brassMat);
+  neckCollar.position.y = 1.26;
+  neckCollar.castShadow = true;
+  group.add(neckCollar);
+
+  const lecternTop = new THREE.Mesh(new THREE.BoxGeometry(1.08, 0.075, 0.74), brassMat);
+  lecternTop.position.y = 1.32;
+  lecternTop.castShadow = true;
+  lecternTop.receiveShadow = true;
+  group.add(lecternTop);
+
+  // Sloped obsidian script pad + warm amber reading-light bar tucked under lip
+  const scriptPad = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.03, 0.56), obsidianMat);
+  scriptPad.position.set(0, 1.365, -0.02);
+  scriptPad.rotation.x = 0.14;
+  group.add(scriptPad);
+
+  const lipRim = new THREE.Mesh(new THREE.BoxGeometry(1.04, 0.026, 0.036), lampGlowMat);
+  lipRim.position.set(0, 1.352, 0.34);
+  group.add(lipRim);
+
+  // 5. Twin Graceful Curved Brass Gooseneck Broadcast Microphones!
+  for (const sign of [-1, 1] as const) {
+    const mountCollar = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.04, 0.04, 14), brassMat);
+    mountCollar.position.set(sign * 0.34, 1.375, 0.16);
+    group.add(mountCollar);
+
+    const neckCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(sign * 0.34, 1.39, 0.16),
+      new THREE.Vector3(sign * 0.36, 1.56, 0.14),
+      new THREE.Vector3(sign * 0.28, 1.71, 0.09),
+      new THREE.Vector3(sign * 0.16, 1.77, 0.04),
+    ]);
+    const neckMesh = new THREE.Mesh(new THREE.TubeGeometry(neckCurve, 20, 0.011, 8, false), brassMat);
+    neckMesh.castShadow = true;
+    group.add(neckMesh);
+
+    // Condenser mic capsule + dark acoustic windscreen tip angled smoothly inward
+    const micHead = new THREE.Group();
+    micHead.position.set(sign * 0.145, 1.778, 0.035);
+    micHead.rotation.z = sign * 1.12;
+    micHead.rotation.y = sign * 0.25;
+
+    const capsuleBody = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.015, 0.07, 12), brassMat);
+    const windscreen = new THREE.Mesh(new THREE.CapsuleGeometry(0.022, 0.042, 6, 12), darkMicMeshMat);
+    windscreen.position.y = 0.052;
+    micHead.add(capsuleBody, windscreen);
+    group.add(micHead);
+  }
+
+  return {
+    group,
+    setPalette(newTrimHex: number, newAccentHex: number) {
+      brassMat.color.setHex(newTrimHex);
+      brushedGoldTrimMat.color.setHex(newTrimHex);
+      lampGlowMat.emissive.setHex(newAccentHex);
+    },
+  };
+}
+
+// ----------------------------------------------------------------------------
+// 10. Second-Order Sub-Stepped Spring Kinematics (`SpringDamper1D`, `SpringDamper3D`)
 // ----------------------------------------------------------------------------
 
 export class SpringDamper1D {

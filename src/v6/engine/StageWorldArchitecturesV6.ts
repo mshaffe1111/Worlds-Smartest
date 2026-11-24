@@ -151,7 +151,7 @@ function createAuroraSkyDome(): { mesh: THREE.Mesh; uniforms: { uTime: { value: 
   return { mesh, uniforms };
 }
 
-/** Volumetric Fresnel-faded theatrical light shaft cones */
+/** Volumetric Fresnel-faded theatrical light shaft cones with rich inner beam core */
 function createVolumetricShaftMesh(
   topRadius: number,
   bottomRadius: number,
@@ -159,7 +159,7 @@ function createVolumetricShaftMesh(
   colorHex: number,
   opacity: number
 ): THREE.Mesh {
-  const geom = new THREE.CylinderGeometry(topRadius, bottomRadius, height, 24, 1, true);
+  const geom = new THREE.CylinderGeometry(topRadius, bottomRadius, height, 28, 1, true);
   const mat = new THREE.ShaderMaterial({
     transparent: true,
     depthWrite: false,
@@ -191,16 +191,90 @@ function createVolumetricShaftMesh(
       varying vec3 vViewPos;
       void main() {
         float fresnel = abs(dot(normalize(vNormalView), normalize(vViewPos)));
-        float edge = pow(fresnel, 1.65);
-        float vertical = smoothstep(0.0, 0.28, vUv.y) * smoothstep(1.0, 0.45, vUv.y);
-        float dust = 0.88 + 0.12 * sin(vUv.y * 18.0 - uTime * 1.2 + vUv.x * 12.0);
-        gl_FragColor = vec4(uColor, edge * vertical * dust * uOpacity);
+        float softCone = pow(fresnel, 1.45);
+        float hotCore = pow(fresnel, 4.2) * 0.65;
+        float vertical = smoothstep(0.0, 0.24, vUv.y) * smoothstep(1.0, 0.35, vUv.y);
+        float dust = 0.86 + 0.14 * sin(vUv.y * 16.0 - uTime * 1.15 + vUv.x * 12.0);
+        float beam = (softCone + hotCore) * vertical * dust;
+        vec3 col = mix(uColor, vec3(1.0, 0.96, 0.86), hotCore * 0.55);
+        gl_FragColor = vec4(col, beam * uOpacity);
       }
     `,
   });
   const mesh = new THREE.Mesh(geom, mat);
   mesh.name = 'VolumetricLightShaft';
   return mesh;
+}
+
+/** Radial stage spotlight pool & moody perimeter floor vignette overlay */
+function createStageFloorVignetteOverlay(outerRadius: number, tintHex: number, edgeDarkness = 0.68): THREE.Mesh {
+  const geom = new THREE.CircleGeometry(outerRadius, 48);
+  geom.rotateX(-Math.PI * 0.5);
+  const mat = new THREE.ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    uniforms: {
+      uEdgeColor: { value: new THREE.Color(tintHex) },
+      uEdgeDarkness: { value: edgeDarkness },
+    },
+    vertexShader: /* glsl */ `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv * 2.0 - 1.0;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: /* glsl */ `
+      uniform vec3 uEdgeColor;
+      uniform float uEdgeDarkness;
+      varying vec2 vUv;
+      void main() {
+        float r = length(vUv);
+        float vig = smoothstep(0.32, 0.98, r);
+        gl_FragColor = vec4(uEdgeColor, vig * uEdgeDarkness);
+      }
+    `,
+  });
+  const mesh = new THREE.Mesh(geom, mat);
+  mesh.position.y = 0.007;
+  mesh.name = 'StageFloorVignette';
+  return mesh;
+}
+
+/** Warm backlit theatrical haze cyclorama plane (Stage 01 Orchestra Pit glow) */
+function createTheatricalHazeBackdrop(width: number, height: number, colorHex: number): THREE.Mesh {
+  const geom = new THREE.PlaneGeometry(width, height);
+  const mat = new THREE.ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    uniforms: {
+      uColor: { value: new THREE.Color(colorHex) },
+      uTime: { value: 0 },
+    },
+    vertexShader: /* glsl */ `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: /* glsl */ `
+      uniform vec3 uColor;
+      uniform float uTime;
+      varying vec2 vUv;
+      void main() {
+        vec2 c = (vUv - vec2(0.5, 0.28)) * vec2(1.15, 1.55);
+        float glow = exp(-dot(c, c) * 2.9);
+        float mist = 0.88 + 0.12 * sin(vUv.x * 11.0 + uTime * 0.45) * cos(vUv.y * 8.0 - uTime * 0.35);
+        float bottomBoost = exp(-pow((vUv.y - 0.14) * 5.2, 2.0)) * exp(-pow((vUv.x - 0.5) * 2.2, 2.0));
+        float a = clamp((glow * 0.32 + bottomBoost * 0.34) * mist, 0.0, 0.62);
+        vec3 col = mix(uColor, vec3(1.0, 0.86, 0.56), bottomBoost * 0.45);
+        gl_FragColor = vec4(col, a);
+      }
+    `,
+  });
+  return new THREE.Mesh(geom, mat);
 }
 
 /** Stage 08: Dual-layer animated underwater Voronoi caustic overlay */
@@ -358,17 +432,15 @@ function createPhosphorRadarDisc(radius: number): {
   return { mesh, uniforms };
 }
 
-/** Stage 10: Sovereign Colosseum Living Flickering Brazier Fire Shader */
+/** Stage 10: Sovereign Colosseum 3-Ribbon Intersecting Organic Turbulent GLSL Brazier Flames */
 function createBrazierFlameMesh(scale = 1.0): {
-  mesh: THREE.Mesh;
+  mesh: THREE.Group;
   uniforms: { uTime: { value: number }; uSeed: { value: number } };
 } {
   const uniforms = {
     uTime: { value: 0 },
     uSeed: { value: Math.random() * 10 },
   };
-  const geom = new THREE.ConeGeometry(0.42 * scale, 1.35 * scale, 16, 12, true);
-  geom.translate(0, 0.62 * scale, 0);
   const mat = new THREE.ShaderMaterial({
     transparent: true,
     depthWrite: false,
@@ -382,10 +454,13 @@ function createBrazierFlameMesh(scale = 1.0): {
       void main() {
         vUv = uv;
         vec3 pos = position;
-        float sway = sin(uTime * 6.5 + pos.y * 4.5 + uSeed) * 0.08 * uv.y;
-        float swayZ = cos(uTime * 5.2 + pos.y * 3.8 + uSeed * 1.7) * 0.08 * uv.y;
-        pos.x += sway;
-        pos.z += swayZ;
+        float h = uv.y;
+        // Organic curling vertical flame ribbons swaying asymmetrically with height
+        float curlX = sin(uTime * 5.8 + h * 5.4 + uSeed) * 0.14 * h
+                    + sin(uTime * 9.3 - h * 8.2 + uSeed * 2.1) * 0.05 * h * h;
+        float curlZ = cos(uTime * 4.9 + h * 4.7 + uSeed * 1.3) * 0.11 * h;
+        pos.x += curlX;
+        pos.z += curlZ;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
       }
     `,
@@ -395,21 +470,46 @@ function createBrazierFlameMesh(scale = 1.0): {
       varying vec2 vUv;
       void main() {
         float y = vUv.y;
-        float lick = sin(vUv.x * 18.84 + uTime * 7.0 + uSeed) * 0.14
-                   + sin(vUv.x * 31.4 - uTime * 10.5 + y * 8.0) * 0.08;
-        float shape = smoothstep(0.98, 0.12, y + lick);
-        float core = smoothstep(0.65, 0.0, y);
-        vec3 crimson = vec3(0.95, 0.18, 0.03);
-        vec3 orange  = vec3(1.0, 0.56, 0.08);
-        vec3 yellow  = vec3(1.0, 0.96, 0.72);
-        vec3 col = mix(crimson, orange, smoothstep(0.85, 0.25, y));
-        col = mix(col, yellow, core * 0.85);
-        float alpha = shape * smoothstep(0.0, 0.14, y) * 0.92;
-        gl_FragColor = vec4(col * 1.45, alpha);
+        float x = (vUv.x - 0.5) * 2.0;
+
+        // Multi-octave organic flame contour with licking tongues separating near tips
+        float wave1 = sin(y * 7.5 - uTime * 7.2 + uSeed) * 0.22;
+        float wave2 = sin(y * 14.0 - uTime * 11.4 + x * 4.2 + uSeed * 1.9) * 0.14;
+        float wave3 = cos(y * 21.0 - uTime * 15.0 - x * 6.0) * 0.07;
+
+        float displacedX = x + (wave1 + wave2 * 0.7) * y;
+        float widthEnvelope = mix(0.82, 0.06, pow(y, 0.82)) + wave2 * 0.35 + wave3 * 0.25;
+        float body = smoothstep(widthEnvelope, widthEnvelope * 0.18, abs(displacedX));
+
+        // Wispy licking flame breakup near upper tips
+        float wisps = smoothstep(0.15, 0.78, sin(x * 7.5 + y * 11.0 - uTime * 9.5 + uSeed) * 0.5 + 0.5);
+        float tipMask = mix(1.0, wisps, smoothstep(0.45, 0.95, y));
+        float shape = body * tipMask * smoothstep(0.0, 0.12, y) * smoothstep(1.0, 0.58, y);
+        if (shape < 0.015) discard;
+
+        float hotCore = exp(-pow(displacedX * 2.4, 2.0)) * smoothstep(0.68, 0.04, y);
+        vec3 deepCrimson = vec3(0.92, 0.14, 0.02);
+        vec3 moltenOrange = vec3(1.0, 0.48, 0.06);
+        vec3 goldenWhite = vec3(1.0, 0.95, 0.72);
+
+        vec3 col = mix(deepCrimson, moltenOrange, smoothstep(0.92, 0.24, y));
+        col = mix(col, goldenWhite, hotCore * 0.92);
+        gl_FragColor = vec4(col * 1.45, shape * 0.88);
       }
     `,
   });
-  return { mesh: new THREE.Mesh(geom, mat), uniforms };
+
+  const group = new THREE.Group();
+  const ribbonGeom = new THREE.PlaneGeometry(1.18 * scale, 1.72 * scale, 6, 16);
+  ribbonGeom.translate(0, 0.76 * scale, 0);
+
+  // 3 intersecting organic flame ribbons at 0°, 60°, 120° — full 360° volumetric fire silhouette!
+  for (let i = 0; i < 3; i++) {
+    const plane = new THREE.Mesh(ribbonGeom, mat);
+    plane.rotation.y = (i * Math.PI) / 3;
+    group.add(plane);
+  }
+  return { mesh: group, uniforms };
 }
 
 // ----------------------------------------------------------------------------
@@ -616,16 +716,17 @@ function buildStageFloorWithTrapdoorPit(
     repeatY: tileRepeat,
     size: 256,
   });
+  const floorNormalStrength = floorSurface === 'MAHOGANY_PLANKS' ? 0.36 : 0.48;
   const floorMat = new THREE.MeshPhysicalMaterial({
     color: 0xffffff,
     map: floorPbr.map,
     normalMap: floorPbr.normalMap,
-    normalScale: new THREE.Vector2(0.55, 0.55),
+    normalScale: new THREE.Vector2(floorNormalStrength, floorNormalStrength),
     roughnessMap: floorPbr.roughnessMap,
     roughness: theme.materials.floorRoughness,
     metalness: theme.materials.floorMetalness,
     clearcoat: floorClearcoat,
-    clearcoatRoughness: 0.08,
+    clearcoatRoughness: 0.12,
   });
 
   // 4-Slab floor deck framing a true open 2.2m x 1.8m central trapdoor shaft (ZERO z-fighting!)
@@ -647,6 +748,15 @@ function buildStageFloorWithTrapdoorPit(
   const widthSide = outerHalf - holeHalfX;
   makeSlab(widthSide, holeHalfZ * 2, -(holeHalfX + widthSide * 0.5), 0);
   makeSlab(widthSide, holeHalfZ * 2, holeHalfX + widthSide * 0.5, 0);
+
+  // Radial theatrical spotlight vignette darkening stage floor edges into moody cinema depth
+  const vignetteStrength =
+    theme.stageId === 'STAGE_02_GENEVA_CONSERVATORY'
+      ? 0.44
+      : theme.stageId === 'STAGE_09_ASTRAL_OBSERVATORY'
+        ? 0.56
+        : 0.64;
+  root.add(createStageFloorVignetteOverlay(outerHalf * 1.15, theme.lighting.fogHex, vignetteStrength));
 
   // Stage-matched recessed brass/metal trapdoor coaming frame & hinges
   const trimMat = new THREE.MeshStandardMaterial({
@@ -727,46 +837,125 @@ function buildStageFloorWithTrapdoorPit(
   const pitGroup = new THREE.Group();
   pitGroup.name = 'ClockworkTrapdoorPit';
   const shaftWallMat = new THREE.MeshStandardMaterial({
-    color: 0x16171c,
+    color: 0x15141a,
     roughness: 0.65,
     metalness: 0.72,
     side: THREE.BackSide,
   });
-  const shaftCylinder = new THREE.Mesh(new THREE.CylinderGeometry(3.2, 3.4, 7.2, 8, 1, true), shaftWallMat);
+  const shaftCylinder = new THREE.Mesh(new THREE.CylinderGeometry(3.85, 4.05, 7.4, 12, 1, true), shaftWallMat);
   shaftCylinder.position.y = -3.8;
   pitGroup.add(shaftCylinder);
 
-  // Industrial steel shaft rings
+  // Structural shaft ribs kept strictly ABOVE (-1.1, -2.2) & BELOW (-6.9) camera sightlines — ZERO occlusion!
   const steelRibMat = new THREE.MeshStandardMaterial({
     color: 0x353942,
     roughness: 0.42,
     metalness: 0.85,
   });
-  for (let y = -1.1; y >= -6.3; y -= 1.3) {
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(3.05, 0.09, 8, 24), steelRibMat);
+  for (const ry of [-1.1, -2.25, -6.95]) {
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(3.7, 0.085, 8, 28), steelRibMat);
     ring.rotation.x = Math.PI * 0.5;
-    ring.position.y = y;
+    ring.position.y = ry;
     pitGroup.add(ring);
   }
 
-  // Pit arena survival floor at Y = -6.9
+  // Pit base floor at Y = -7.35
   const pitFloorMat = new THREE.MeshStandardMaterial({
-    color: 0x202229,
-    roughness: 0.48,
+    color: 0x161418,
+    roughness: 0.55,
     metalness: 0.68,
   });
-  const pitFloor = new THREE.Mesh(new THREE.CylinderGeometry(3.35, 3.35, 0.3, 16), pitFloorMat);
-  pitFloor.position.y = -7.05;
+  const pitFloor = new THREE.Mesh(new THREE.CylinderGeometry(4.0, 4.0, 0.3, 16), pitFloorMat);
+  pitFloor.position.y = -7.45;
   pitFloor.receiveShadow = true;
   pitGroup.add(pitFloor);
+
+  // DRAMATICALLY SPOTLIGHTED MAHOGANY & MESHING-BRASS-GEARS SURVIVAL PIT WORKTABLE (Y = -6.85)!
+  const worktableGroup = new THREE.Group();
+  worktableGroup.position.set(0, -6.92, -0.1);
+
+  const tableMahogPbr = getProceduralPbrTextureSet('MAHOGANY_PLANKS', { repeatX: 2, repeatY: 2, size: 256 });
+  const tableWoodMat = new THREE.MeshPhysicalMaterial({
+    color: 0x8f4324,
+    map: tableMahogPbr.map,
+    normalMap: tableMahogPbr.normalMap,
+    normalScale: new THREE.Vector2(0.32, 0.32),
+    roughnessMap: tableMahogPbr.roughnessMap,
+    roughness: 0.34,
+    metalness: 0.06,
+    clearcoat: 0.55,
+  });
+  const tableBrassMat = new THREE.MeshStandardMaterial({
+    color: 0xe3b149,
+    roughness: 0.2,
+    metalness: 0.96,
+  });
+  const hazardBulbMat = new THREE.MeshStandardMaterial({
+    color: 0xff5a24,
+    emissive: 0xff3b14,
+    emissiveIntensity: 3.4,
+  });
+
+  // Heavy industrial cast-iron pedestal + octagonal mahogany survival tabletop
+  const tablePed = new THREE.Mesh(new THREE.CylinderGeometry(1.05, 1.38, 0.55, 8), steelRibMat);
+  tablePed.position.y = -0.22;
+  worktableGroup.add(tablePed);
+
+  const tableTop = new THREE.Mesh(new THREE.CylinderGeometry(2.15, 2.25, 0.18, 8), tableWoodMat);
+  tableTop.position.y = 0.02;
+  tableTop.receiveShadow = true;
+  tableTop.castShadow = true;
+  worktableGroup.add(tableTop);
+
+  // Bolted brass coaming collar & glowing crimson-amber hazard warning studs around worktable rim
+  const tableRim = new THREE.Mesh(new THREE.TorusGeometry(2.16, 0.075, 10, 8), tableBrassMat);
+  tableRim.rotation.x = Math.PI * 0.5;
+  tableRim.rotation.z = Math.PI / 8;
+  tableRim.position.y = 0.11;
+  worktableGroup.add(tableRim);
+
+  const innerRing = new THREE.Mesh(new THREE.TorusGeometry(1.42, 0.04, 8, 32), tableBrassMat);
+  innerRing.rotation.x = Math.PI * 0.5;
+  innerRing.position.y = 0.12;
+  worktableGroup.add(innerRing);
+
+  for (let i = 0; i < 8; i++) {
+    const a = (i / 8) * Math.PI * 2 + Math.PI / 8;
+    const stud = new THREE.Mesh(new THREE.SphereGeometry(0.065, 8, 8), hazardBulbMat);
+    stud.position.set(Math.cos(a) * 1.98, 0.145, Math.sin(a) * 1.98);
+    worktableGroup.add(stud);
+  }
+
+  // Three live meshing brass horological gears recessed into the survival worktable deck!
+  const pitTableGears: Array<{ mesh: THREE.Object3D; speed: number }> = [];
+  const tableGearSpecs: Array<{ x: number; z: number; r: number; teeth: number; speed: number }> = [
+    { x: 0.0, z: 0.0, r: 0.72, teeth: 20, speed: 0.95 },
+    { x: -1.16, z: -0.35, r: 0.52, teeth: 14, speed: -1.35 },
+    { x: 1.16, z: -0.35, r: 0.52, teeth: 14, speed: -1.35 },
+  ];
+  for (const tg of tableGearSpecs) {
+    const g = createInvoluteBrassGear({
+      radius: tg.r,
+      teeth: tg.teeth,
+      thickness: 0.08,
+      spokes: 5,
+      metalColorHex: 0xedb94e,
+      hubColorHex: 0x99201e,
+      includeRubyBearing: true,
+    });
+    g.position.set(tg.x, 0.135, tg.z);
+    worktableGroup.add(g);
+    pitTableGears.push({ mesh: g, speed: tg.speed });
+  }
+  pitGroup.add(worktableGroup);
 
   // 4 Counter-rotating Involute Brass Clockwork Gears lining the shaft walls!
   const pitGears: Array<{ mesh: THREE.Object3D; speed: number }> = [];
   const gearSpecs: Array<{ pos: [number, number, number]; rotY: number; radius: number; teeth: number; speed: number }> = [
-    { pos: [-2.6, -2.2, -1.2], rotY: 0.4, radius: 1.15, teeth: 22, speed: 0.65 },
-    { pos: [2.6, -3.4, -1.0], rotY: -0.45, radius: 1.25, teeth: 24, speed: -0.58 },
-    { pos: [-2.4, -4.9, 1.1], rotY: 2.5, radius: 1.05, teeth: 18, speed: -0.78 },
-    { pos: [2.5, -5.6, 1.0], rotY: -2.5, radius: 0.95, teeth: 16, speed: 0.88 },
+    { pos: [-3.1, -2.5, -1.5], rotY: 0.42, radius: 1.15, teeth: 22, speed: 0.65 },
+    { pos: [3.1, -3.6, -1.4], rotY: -0.45, radius: 1.25, teeth: 24, speed: -0.58 },
+    { pos: [-3.0, -5.4, -1.6], rotY: 0.52, radius: 1.15, teeth: 18, speed: -0.82 },
+    { pos: [3.0, -5.4, -1.6], rotY: -0.52, radius: 1.15, teeth: 18, speed: 0.82 },
   ];
   for (const gs of gearSpecs) {
     const gear = createInvoluteBrassGear({
@@ -784,14 +973,26 @@ function buildStageFloorWithTrapdoorPit(
     pitGears.push({ mesh: gear, speed: gs.speed });
   }
 
-  // Warm/crimson pulsing hazard beacon lamps inside the trapdoor pit
-  const pitLight = new THREE.PointLight(recipe.pitBeaconHex, 0.0, 11.5, 1.5);
-  pitLight.position.set(0, -3.4, 0.6);
-  pitGroup.add(pitLight);
+  // Dramatic Crimson & Warm-Amber Pit Worktable Lighting + Volumetric Overhead Cone!
+  const pitAmberKey = new THREE.PointLight(0xffb852, 0.0, 12.0, 1.35);
+  pitAmberKey.position.set(0.0, -4.4, 0.6);
+  pitGroup.add(pitAmberKey);
+
+  const pitCrimsonRim = new THREE.PointLight(0xff2a20, 0.0, 11.0, 1.45);
+  pitCrimsonRim.position.set(-2.2, -5.2, -1.8);
+  pitGroup.add(pitCrimsonRim);
+
+  const pitRightAccent = new THREE.PointLight(0xff6b24, 0.0, 11.0, 1.45);
+  pitRightAccent.position.set(2.2, -5.2, -1.8);
+  pitGroup.add(pitRightAccent);
+
+  const pitShaftBeam = createVolumetricShaftMesh(0.85, 2.35, 5.8, 0xff9e42, 0.16);
+  pitShaftBeam.position.set(0, -4.05, -0.1);
+  pitGroup.add(pitShaftBeam);
 
   const pitMount = new THREE.Group();
   pitMount.name = 'TrapdoorPitMount';
-  pitMount.position.set(0, -6.85, 0);
+  pitMount.position.set(0, -6.78, -0.1);
   pitGroup.add(pitMount);
   root.add(pitGroup);
 
@@ -818,14 +1019,23 @@ function buildStageFloorWithTrapdoorPit(
       leafLeftPivot.rotation.z = -angle;
       leafRightPivot.rotation.z = angle;
 
-      // Spin pit gears faster when trapdoor is open!
+      // Spin wall & worktable clockwork gears dynamically
       const speedMult = 0.28 + openVal * 1.65;
       for (const g of pitGears) {
         g.mesh.rotation.x += g.speed * speedMult * dtSec;
       }
+      for (const tg of pitTableGears) {
+        tg.mesh.rotation.y += tg.speed * (0.4 + openVal * 1.2) * dtSec;
+      }
 
-      // Illuminate clockwork pit smoothly as trapdoor swings open
-      pitLight.intensity = openVal * (7.5 + Math.sin(elapsedSec * 7.5) * 1.8);
+      // Illuminate survival worktable dramatically in warm amber & crimson as trapdoor opens
+      const pulse = Math.sin(elapsedSec * 7.2) * 1.6;
+      pitAmberKey.intensity = openVal * (14.5 + pulse);
+      pitCrimsonRim.intensity = openVal * (10.5 - pulse * 0.8);
+      pitRightAccent.intensity = openVal * (8.5 + pulse * 0.6);
+      pitShaftBeam.visible = openVal > 0.05;
+      (pitShaftBeam.material as THREE.ShaderMaterial).uniforms.uTime.value = elapsedSec;
+      (pitShaftBeam.material as THREE.ShaderMaterial).uniforms.uOpacity.value = 0.16 * openVal;
     },
   };
 }
@@ -847,20 +1057,30 @@ function buildStage01VaudevillePalace(
     roughness: 0.22,
     metalness: 0.94,
   });
-  const velvetPbr = getProceduralPbrTextureSet('PLEATED_VELVET', { repeatX: 3, repeatY: 1, size: 256 });
+  const velvetPbr = getProceduralPbrTextureSet('PLEATED_VELVET', { repeatX: 4, repeatY: 1, size: 256 });
   const velvetMat = new THREE.MeshStandardMaterial({
-    color: 0xffffff,
+    color: 0xb82230,
     map: velvetPbr.map,
     normalMap: velvetPbr.normalMap,
-    normalScale: new THREE.Vector2(1.4, 1.4),
+    normalScale: new THREE.Vector2(1.15, 1.15),
     roughnessMap: velvetPbr.roughnessMap,
-    roughness: 0.86,
+    roughness: 0.88,
     metalness: 0.04,
+    side: THREE.DoubleSide,
+  });
+  const deepVelvetMat = new THREE.MeshStandardMaterial({
+    color: 0x5c0c16,
+    map: velvetPbr.map,
+    normalMap: velvetPbr.normalMap,
+    normalScale: new THREE.Vector2(1.0, 1.0),
+    roughness: 0.9,
+    metalness: 0.04,
+    side: THREE.DoubleSide,
   });
   const plasterMat = new THREE.MeshStandardMaterial({
-    color: 0x3b171b,
-    roughness: 0.65,
-    metalness: 0.12,
+    color: 0x2e1316,
+    roughness: 0.62,
+    metalness: 0.14,
   });
   const bulbMat = new THREE.MeshStandardMaterial({
     color: 0xfff0c4,
@@ -870,117 +1090,245 @@ function buildStage01VaudevillePalace(
   });
 
   // Curved brass stage-apron trim ring
-  const apronTrim = new THREE.Mesh(new THREE.TorusGeometry(4.55, 0.065, 12, 48), brassMat);
+  const apronTrim = new THREE.Mesh(new THREE.TorusGeometry(4.45, 0.055, 12, 48), brassMat);
   apronTrim.rotation.x = Math.PI * 0.5;
-  apronTrim.position.y = 0.03;
+  apronTrim.position.y = 0.028;
   sceneGroup.add(apronTrim);
 
-  // Scalloped Brass Edison Shell Footlights along the curved front-side apron
-  const shellGeom = new THREE.CylinderGeometry(0.16, 0.21, 0.18, 12, 1, false, 0, Math.PI);
-  const filamentGeom = new THREE.SphereGeometry(0.068, 10, 10);
+  // Scalloped Brass Edison Shell Footlights along the curved front apron
+  const shellGeom = new THREE.CylinderGeometry(0.15, 0.2, 0.16, 12, 1, false, 0, Math.PI);
+  const filamentGeom = new THREE.SphereGeometry(0.06, 10, 10);
   const footlightMatList: THREE.MeshStandardMaterial[] = [];
   for (let i = 0; i < 11; i++) {
-    const a = -0.88 + (i / 10) * 1.76; // front semicircle
+    const a = -0.88 + (i / 10) * 1.76;
     const r = 3.92;
     const x = Math.sin(a) * r;
     const z = Math.cos(a) * r;
     const shell = new THREE.Mesh(shellGeom, brassMat);
-    shell.position.set(x, 0.09, z);
+    shell.position.set(x, 0.08, z);
     shell.rotation.y = a + Math.PI;
     sceneGroup.add(shell);
 
     const bMat = bulbMat.clone();
     footlightMatList.push(bMat);
     const bulb = new THREE.Mesh(filamentGeom, bMat);
-    bulb.position.set(Math.sin(a) * (r - 0.09), 0.11, Math.cos(a) * (r - 0.09));
+    bulb.position.set(Math.sin(a) * (r - 0.09), 0.1, Math.cos(a) * (r - 0.09));
     sceneGroup.add(bulb);
   }
 
-  // Grand 1928 Broadway Gilded Proscenium Arch behind the board (Z = -5.6)
+  // Grand 1928 Broadway Gilded Proscenium Arch behind the stage (Z = -5.6)
   const prosceniumGroup = new THREE.Group();
   prosceniumGroup.position.set(0, 0, -5.6);
 
-  // Asymmetric left/right fluted gilded columns & pilasters
-  for (const sx of [-5.8, 5.8]) {
-    const pilaster = new THREE.Mesh(new THREE.BoxGeometry(1.35, 8.2, 1.1), plasterMat);
-    pilaster.position.set(sx, 4.1, 0);
+  // Ornate stepped gilded proscenium pilasters flanking left & right
+  for (const sx of [-5.7, 5.7]) {
+    const pilaster = new THREE.Mesh(new THREE.BoxGeometry(1.4, 8.6, 1.15), plasterMat);
+    pilaster.position.set(sx, 4.3, 0);
     pilaster.castShadow = true;
     pilaster.receiveShadow = true;
     prosceniumGroup.add(pilaster);
 
-    const giltTrim = new THREE.Mesh(new THREE.BoxGeometry(0.24, 8.2, 1.24), brassMat);
-    giltTrim.position.set(sx - Math.sign(sx) * 0.56, 4.1, 0.05);
-    prosceniumGroup.add(giltTrim);
+    const innerColumn = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.28, 8.2, 16), brassMat);
+    innerColumn.position.set(sx - Math.sign(sx) * 0.62, 4.1, 0.36);
+    prosceniumGroup.add(innerColumn);
 
-    const cap = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.45, 1.45), brassMat);
-    cap.position.set(sx, 8.05, 0.05);
+    const cap = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.42, 1.48), brassMat);
+    cap.position.set(sx, 8.25, 0.12);
     prosceniumGroup.add(cap);
   }
 
-  // Sweeping gilded proscenium arch crown
-  const archRing = new THREE.Mesh(new THREE.TorusGeometry(5.9, 0.36, 12, 40, Math.PI), brassMat);
-  archRing.position.set(0, 4.6, 0.15);
-  prosceniumGroup.add(archRing);
+  // Sweeping gilded Art-Deco double proscenium arch + ornate keystone cartouche
+  const outerArch = new THREE.Mesh(new THREE.TorusGeometry(5.85, 0.34, 14, 48, Math.PI), brassMat);
+  outerArch.position.set(0, 3.15, 0.24);
+  const innerArch = new THREE.Mesh(new THREE.TorusGeometry(5.32, 0.14, 10, 44, Math.PI), brassMat);
+  innerArch.position.set(0, 3.15, 0.38);
+  prosceniumGroup.add(outerArch, innerArch);
 
-  const keystone = new THREE.Mesh(new THREE.OctahedronGeometry(0.68, 0), brassMat);
-  keystone.scale.set(1.2, 0.85, 0.45);
-  keystone.position.set(0, 10.45, 0.25);
+  const keystone = new THREE.Mesh(new THREE.OctahedronGeometry(0.64, 0), brassMat);
+  keystone.scale.set(1.25, 0.88, 0.45);
+  keystone.position.set(0, 8.95, 0.35);
   prosceniumGroup.add(keystone);
 
-  // Heavy pleated crimson velvet side drapes & swagged top valance (snugly wrapped tie-backs)
-  const leftCurtain = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.48, 8.8, 22, 6, true, -0.45, Math.PI * 1.25), velvetMat);
-  leftCurtain.material.side = THREE.DoubleSide;
-  leftCurtain.position.set(-4.65, 4.4, 0.55);
-  const rightCurtain = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.48, 8.8, 22, 6, true, Math.PI * 0.2, Math.PI * 1.25), velvetMat);
-  rightCurtain.position.set(4.65, 4.4, 0.55);
-  prosceniumGroup.add(leftCurtain, rightCurtain);
+  // RICH MULTI-FOLD SCALLOPED SWAGGED VELVET PROSCENIUM VALANCES WITH GOLD BULLION FRINGE!
+  const buildSwagFestoon = (cx: number, cy: number, spanW: number, dipH: number, zOff: number) => {
+    const swagGroup = new THREE.Group();
+    const layers = 4;
+    for (let l = 0; l < layers; l++) {
+      const frac = (l + 1) / layers;
+      const pts: THREE.Vector3[] = [];
+      const segs = 16;
+      for (let s = 0; s <= segs; s++) {
+        const t = s / segs;
+        const x = cx + (t - 0.5) * spanW;
+        const sag = Math.sin(t * Math.PI) * dipH * frac;
+        const y = cy - sag;
+        const z = zOff + Math.sin(t * Math.PI) * 0.22 * frac;
+        pts.push(new THREE.Vector3(x, y, z));
+      }
+      const curve = new THREE.CatmullRomCurve3(pts);
+      const fold = new THREE.Mesh(
+        new THREE.TubeGeometry(curve, 24, 0.28 + frac * 0.12, 10, false),
+        l % 2 === 0 ? velvetMat : deepVelvetMat
+      );
+      fold.scale.set(1, 1.25, 0.65);
+      swagGroup.add(fold);
 
-  // Gold bullion tie-back ropes cinched tightly around each curtain waist
-  for (const sx of [-4.65, 4.65]) {
-    const tie = new THREE.Mesh(new THREE.TorusGeometry(1.32, 0.075, 8, 24), brassMat);
+      // Shimmering gold bullion fringe along the deepest outer swag hem
+      if (l === layers - 1) {
+        const fringePts = pts.map((p) => new THREE.Vector3(p.x, p.y - 0.34, p.z + 0.08));
+        const fringeCurve = new THREE.CatmullRomCurve3(fringePts);
+        const fringe = new THREE.Mesh(new THREE.TubeGeometry(fringeCurve, 24, 0.065, 8, false), brassMat);
+        swagGroup.add(fringe);
+      }
+    }
+    prosceniumGroup.add(swagGroup);
+  };
+  // Center grand theatre swag + two flanking arched swags visible cleanly in both portrait & 16:9!
+  buildSwagFestoon(0.0, 7.85, 6.2, 2.05, 0.18);
+  buildSwagFestoon(-3.65, 7.15, 3.8, 1.55, 0.26);
+  buildSwagFestoon(3.65, 7.15, 3.8, 1.55, 0.26);
+
+  // Softly gathered multi-fold side wing drapery (tapered inward at tie-back waist, zero stiff tubes!)
+  for (const sign of [-1, 1] as const) {
+    const wingPts = [
+      new THREE.Vector2(0.92, 0.0),
+      new THREE.Vector2(0.84, 1.2),
+      new THREE.Vector2(0.54, 2.85), // cinched smoothly at bullion tie-back waist
+      new THREE.Vector2(0.95, 5.4),
+      new THREE.Vector2(1.12, 8.4),
+    ];
+    const wingGeom = new THREE.LatheGeometry(wingPts, 18, 0, Math.PI * 1.15);
+    const wingDrape = new THREE.Mesh(wingGeom, deepVelvetMat);
+    wingDrape.position.set(sign * 4.82, 0.0, 0.32);
+    wingDrape.rotation.y = sign < 0 ? -0.45 : Math.PI - 0.7;
+    prosceniumGroup.add(wingDrape);
+
+    const tie = new THREE.Mesh(new THREE.TorusGeometry(0.58, 0.065, 8, 22), brassMat);
     tie.rotation.x = Math.PI * 0.5;
-    tie.rotation.y = sx < 0 ? 0.14 : -0.14;
-    tie.position.set(sx, 2.85, 0.55);
+    tie.position.set(sign * 4.82, 2.85, 0.36);
     prosceniumGroup.add(tie);
   }
 
-  // Upper velvet pelmet valance
-  const valance = new THREE.Mesh(new THREE.BoxGeometry(12.2, 1.35, 0.55), velvetMat);
-  valance.position.set(0, 8.15, 0.65);
-  prosceniumGroup.add(valance);
+  // Deep matte theatrical backdrop + Warm Radiant Golden Backlight Haze Plane!
+  const darkBackWall = new THREE.Mesh(
+    new THREE.PlaneGeometry(18, 12),
+    new THREE.MeshStandardMaterial({ color: 0x16090a, roughness: 0.96, metalness: 0.02 })
+  );
+  darkBackWall.position.set(0, 5.2, -2.4);
+  prosceniumGroup.add(darkBackWall);
 
-  // Rear velvet cyclorama backdrop deep behind arch
-  const backdrop = new THREE.Mesh(new THREE.PlaneGeometry(18, 12), velvetMat);
-  backdrop.position.set(0, 5.2, -2.8);
-  prosceniumGroup.add(backdrop);
+  const goldenHaze = createTheatricalHazeBackdrop(12.6, 8.8, 0xffad48);
+  goldenHaze.position.set(0, 3.7, -1.55);
+  prosceniumGroup.add(goldenHaze);
   sceneGroup.add(prosceniumGroup);
 
-  // Orchestra box balconies flanking left & right
+  // WARMLY BACKLIT SYMPHONY ORCHESTRA PIT SILHOUETTE (Z = -4.2, framing behind the Presenter Podium!)
+  const pitSilGroup = new THREE.Group();
+  pitSilGroup.position.set(0, 0, -4.2);
+
+  const silhouetteMat = new THREE.MeshStandardMaterial({
+    color: 0x1a100c,
+    roughness: 0.65,
+    metalness: 0.35,
+  });
+  const standLampMat = new THREE.MeshStandardMaterial({
+    color: 0xffe9a8,
+    emissive: 0xffa638,
+    emissiveIntensity: 3.6,
+  });
+
+  // Low dark mahogany orchestra pit parapet rail
+  const pitRail = new THREE.Mesh(new THREE.BoxGeometry(8.6, 0.42, 0.22), plasterMat);
+  pitRail.position.set(0, 0.21, 0.45);
+  const pitRailTrim = new THREE.Mesh(new THREE.BoxGeometry(8.65, 0.06, 0.26), brassMat);
+  pitRailTrim.position.set(0, 0.43, 0.45);
+  pitSilGroup.add(pitRail, pitRailTrim);
+
+  // 9 Sculpted Orchestra Musicians (Violins, Cellos, Double Basses & Music Stands with warm amber stand lamps)
+  const musicianOffsets = [-3.6, -2.75, -1.95, -1.15, 0.0, 1.15, 1.95, 2.75, 3.6];
+  for (let i = 0; i < musicianOffsets.length; i++) {
+    const mx = musicianOffsets[i];
+    const mz = Math.abs(mx) * 0.14 - 0.2;
+    const player = new THREE.Group();
+    player.position.set(mx, 0.05, mz);
+
+    const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.2, 0.68, 10), silhouetteMat);
+    torso.position.y = 0.64;
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.135, 10, 10), silhouetteMat);
+    head.position.y = 1.12;
+    player.add(torso, head);
+
+    // Music stand + warm glowing amber score light right in front of each player
+    const standPole = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.022, 0.85, 6), silhouetteMat);
+    standPole.position.set(0, 0.44, 0.32);
+    const desk = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.24, 0.03), silhouetteMat);
+    desk.position.set(0, 0.86, 0.32);
+    desk.rotation.x = -0.35;
+    const lamp = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.035, 0.045), standLampMat);
+    lamp.position.set(0, 0.99, 0.34);
+    player.add(standPole, desk, lamp);
+
+    // Instrument silhouette (Violin bows on left, Cellos & Upright Basses on right!)
+    if (i < 4) {
+      const violin = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.09, 0.12), silhouetteMat);
+      violin.position.set(0.14, 0.96, 0.12);
+      violin.rotation.z = 0.28;
+      const bow = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.56, 6), brassMat);
+      bow.position.set(0.24, 1.05, 0.16);
+      bow.rotation.z = -0.68;
+      player.add(violin, bow);
+    } else if (i > 4) {
+      const cello = new THREE.Mesh(new THREE.CapsuleGeometry(0.16, 0.68, 6, 10), silhouetteMat);
+      cello.position.set(0.18, 0.72, 0.16);
+      cello.rotation.z = -0.22;
+      const scroll = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.032, 0.52, 6), silhouetteMat);
+      scroll.position.set(0.28, 1.32, 0.14);
+      scroll.rotation.z = -0.22;
+      player.add(cello, scroll);
+    }
+    pitSilGroup.add(player);
+  }
+
+  // Dedicated warm golden orchestra backlight washing behind the silhouettes
+  const pitBackLight = new THREE.PointLight(0xffb44c, 8.2, 12.0, 1.5);
+  pitBackLight.position.set(0, 1.55, -1.25);
+  pitSilGroup.add(pitBackLight);
+  sceneGroup.add(pitSilGroup);
+
+  // Double-Tier Ornate Broadway Opera Box Balconies flanking left & right
   const mahogPbr = getProceduralPbrTextureSet('MAHOGANY_PLANKS', { repeatX: 2, repeatY: 1, size: 256 });
   const balconyMat = new THREE.MeshStandardMaterial({
     map: mahogPbr.map,
     normalMap: mahogPbr.normalMap,
-    roughness: 0.45,
+    normalScale: new THREE.Vector2(0.35, 0.35),
+    roughness: 0.44,
   });
-  for (const sx of [-7.6, 7.6]) {
-    const box = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.35, 6.5), balconyMat);
-    box.position.set(sx, 3.6, -0.8);
-    box.rotation.y = sx < 0 ? 0.22 : -0.22;
-    sceneGroup.add(box);
+  for (const sx of [-7.2, 7.2]) {
+    for (const tierY of [2.4, 5.2]) {
+      const box = new THREE.Mesh(new THREE.BoxGeometry(1.75, 1.15, 6.2), balconyMat);
+      box.position.set(sx, tierY, -1.2);
+      box.rotation.y = sx < 0 ? 0.24 : -0.24;
+      sceneGroup.add(box);
 
-    const rail = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.12, 6.55), brassMat);
-    rail.position.set(sx - Math.sign(sx) * 0.88, 4.35, -0.8);
-    rail.rotation.y = sx < 0 ? 0.22 : -0.22;
-    sceneGroup.add(rail);
+      const rail = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.14, 6.28), brassMat);
+      rail.position.set(sx - Math.sign(sx) * 0.84, tierY + 0.62, -1.2);
+      rail.rotation.y = sx < 0 ? 0.24 : -0.24;
+      sceneGroup.add(rail);
+
+      const lowerGilt = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.12, 6.28), brassMat);
+      lowerGilt.position.set(sx - Math.sign(sx) * 0.84, tierY - 0.52, -1.2);
+      lowerGilt.rotation.y = sx < 0 ? 0.24 : -0.24;
+      sceneGroup.add(lowerGilt);
+    }
   }
 
-  // Twin warm Broadway volumetric spotlight beams
-  const beamL = createVolumetricShaftMesh(0.45, 2.5, 10.5, 0xffcc78, 0.14);
-  beamL.position.set(-2.4, 4.8, -1.6);
-  beamL.rotation.z = -0.32;
-  const beamR = createVolumetricShaftMesh(0.45, 2.5, 10.5, 0xffad66, 0.12);
-  beamR.position.set(2.8, 4.8, -1.4);
-  beamR.rotation.z = 0.28;
+  // TWIN DRAMATIC OVERHEAD VOLUMETRIC TUNGSTEN SPOTLIGHT CONES converging onto the Presenter Podium!
+  const beamL = createVolumetricShaftMesh(0.42, 2.2, 11.2, 0xffd282, 0.24);
+  beamL.position.set(-2.35, 5.05, -0.45);
+  beamL.rotation.z = 0.42;
+  const beamR = createVolumetricShaftMesh(0.42, 2.2, 11.2, 0xffc670, 0.24);
+  beamR.position.set(2.35, 5.05, -0.45);
+  beamR.rotation.z = -0.42;
   sceneGroup.add(beamL, beamR);
 
   animators.push((_dt, elapsed) => {
@@ -989,6 +1337,7 @@ function buildStage01VaudevillePalace(
     }
     (beamL.material as THREE.ShaderMaterial).uniforms.uTime.value = elapsed;
     (beamR.material as THREE.ShaderMaterial).uniforms.uTime.value = elapsed + 1.4;
+    (goldenHaze.material as THREE.ShaderMaterial).uniforms.uTime.value = elapsed;
   });
 }
 
@@ -1029,15 +1378,21 @@ function buildStage02GenevaConservatory(
     roughness: 0.22,
   });
 
-  // Inlaid rose-gold & blued-steel horological chapter rings on the Carrara marble deck
-  const chapterRing = new THREE.Mesh(new THREE.RingGeometry(4.15, 4.42, 64), roseGoldMat);
-  chapterRing.rotation.x = -Math.PI * 0.5;
-  chapterRing.position.y = 0.012;
-  sceneGroup.add(chapterRing);
+  // Concentric inlaid rose-gold & blued-steel horological meridian rings on the Carrara marble deck
+  for (const [rIn, rOut, mat] of [
+    [2.35, 2.48, bluedSteelMat],
+    [4.12, 4.42, roseGoldMat],
+    [5.85, 6.02, roseGoldMat],
+  ] as const) {
+    const ring = new THREE.Mesh(new THREE.RingGeometry(rIn, rOut, 64), mat);
+    ring.rotation.x = -Math.PI * 0.5;
+    ring.position.y = 0.012;
+    sceneGroup.add(ring);
+  }
 
   for (let i = 0; i < 12; i++) {
     const a = (i / 12) * Math.PI * 2;
-    const tick = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.018, 0.48), bluedSteelMat);
+    const tick = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.018, 0.52), bluedSteelMat);
     tick.position.set(Math.sin(a) * 4.28, 0.014, Math.cos(a) * 4.28);
     tick.rotation.y = a;
     sceneGroup.add(tick);
@@ -1896,11 +2251,24 @@ function buildStage09AstralObservatory(
   const aurora = createAuroraSkyDome();
   sceneGroup.add(aurora.mesh);
 
-  // Brass right-ascension degree ring inlaid on alabaster deck
-  const degreeRing = new THREE.Mesh(new THREE.RingGeometry(4.2, 4.46, 64), brassMat);
-  degreeRing.rotation.x = -Math.PI * 0.5;
-  degreeRing.position.y = 0.015;
-  sceneGroup.add(degreeRing);
+  // Concentric brass right-ascension & meridian degree rings inlaid on twilight alabaster deck
+  for (const [rIn, rOut] of [
+    [2.38, 2.5],
+    [4.15, 4.42],
+    [5.8, 5.95],
+  ]) {
+    const degreeRing = new THREE.Mesh(new THREE.RingGeometry(rIn, rOut, 64), brassMat);
+    degreeRing.rotation.x = -Math.PI * 0.5;
+    degreeRing.position.y = 0.015;
+    sceneGroup.add(degreeRing);
+  }
+  for (let i = 0; i < 16; i++) {
+    const a = (i / 16) * Math.PI * 2;
+    const ray = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.014, 1.5), brassMat);
+    ray.position.set(Math.sin(a) * 5.1, 0.014, Math.cos(a) * 5.1);
+    ray.rotation.y = a;
+    sceneGroup.add(ray);
+  }
 
   // SPLIT OPEN HAMMERED-COPPER OBSERVATORY TELESCOPE DOME
   // Parted wide along the -Z stage-center axis so the live Aurora Borealis fills the entire rear sky!
@@ -1924,16 +2292,104 @@ function buildStage09AstralObservatory(
     sceneGroup.add(shutterRib);
   }
 
-  // Asymmetric Equatorial Refractor Telescope Tube angled toward the Aurora!
-  const scopeGroup = new THREE.Group();
-  scopeGroup.position.set(-4.8, 2.6, -5.2);
-  scopeGroup.rotation.set(-0.62, 0.32, 0.12);
-  const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.54, 5.2, 20), copperMat);
-  const lensRim = new THREE.Mesh(new THREE.TorusGeometry(0.46, 0.07, 10, 24), brassMat);
-  lensRim.rotation.x = Math.PI * 0.5;
-  lensRim.position.y = 2.6;
-  scopeGroup.add(tube, lensRim);
-  sceneGroup.add(scopeGroup);
+  // PROPER VICTORIAN BRASS & COPPER EQUATORIAL REFRACTING TELESCOPE ON PEDESTAL MOUNT!
+  const darkIronMat = new THREE.MeshStandardMaterial({ color: 0x222630, roughness: 0.44, metalness: 0.85 });
+  const lensGlassMat = new THREE.MeshPhysicalMaterial({
+    color: 0x7ae4ff,
+    emissive: 0x2688c2,
+    emissiveIntensity: 0.55,
+    roughness: 0.05,
+    metalness: 0.1,
+    clearcoat: 1.0,
+    ior: 1.56,
+  });
+
+  const telescopeAssembly = new THREE.Group();
+  telescopeAssembly.position.set(-4.35, 0, -4.65);
+  telescopeAssembly.rotation.y = 0.48;
+
+  // Stepped octagonal alabaster base + heavy cast-iron equatorial pier + tripod strut ribs
+  const pedBase = new THREE.Mesh(new THREE.CylinderGeometry(0.68, 0.82, 0.36, 8), alabasterMat);
+  pedBase.position.y = 0.18;
+  const pierCol = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.36, 2.05, 16), darkIronMat);
+  pierCol.position.y = 1.38;
+  pierCol.castShadow = true;
+  telescopeAssembly.add(pedBase, pierCol);
+
+  for (let leg = 0; leg < 3; leg++) {
+    const la = (leg / 3) * Math.PI * 2;
+    const strut = new THREE.Mesh(new THREE.BoxGeometry(0.11, 1.35, 0.16), darkIronMat);
+    strut.position.set(Math.cos(la) * 0.42, 0.82, Math.sin(la) * 0.42);
+    strut.rotation.y = -la;
+    strut.rotation.z = 0.34;
+    telescopeAssembly.add(strut);
+  }
+
+  // Equatorial brass setting circle & forked yoke head
+  const settingCircle = new THREE.Mesh(new THREE.TorusGeometry(0.46, 0.045, 10, 28), brassMat);
+  settingCircle.position.set(0, 2.45, 0);
+  settingCircle.rotation.y = Math.PI * 0.5;
+  telescopeAssembly.add(settingCircle);
+
+  const yokeHub = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.56, 16), brassMat);
+  yokeHub.rotation.z = Math.PI * 0.5;
+  yokeHub.position.set(0, 2.58, 0);
+  telescopeAssembly.add(yokeHub);
+
+  // Counterweight shaft & twin brass calibration discs
+  const cwShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.032, 1.15, 10), brassMat);
+  cwShaft.position.set(0.55, 2.38, 0);
+  cwShaft.rotation.z = 1.22;
+  const cwDisc1 = new THREE.Mesh(new THREE.CylinderGeometry(0.19, 0.19, 0.14, 18), brassMat);
+  cwDisc1.position.set(0.86, 2.26, 0);
+  cwDisc1.rotation.z = 1.22;
+  const cwDisc2 = cwDisc1.clone();
+  cwDisc2.position.set(1.04, 2.2, 0);
+  telescopeAssembly.add(cwShaft, cwDisc1, cwDisc2);
+
+  // Main tapered hammered-copper optical tube aimed gracefully skyward through the Aurora slit!
+  const opticalTubeGroup = new THREE.Group();
+  opticalTubeGroup.position.set(-0.22, 2.68, 0);
+  opticalTubeGroup.rotation.x = -0.68;
+
+  const mainTube = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.32, 3.85, 22), copperMat);
+  mainTube.castShadow = true;
+  opticalTubeGroup.add(mainTube);
+
+  // Brass reinforcement collars along optical tube
+  for (const ty of [-1.25, -0.35, 0.55, 1.5]) {
+    const collar = new THREE.Mesh(new THREE.TorusGeometry(0.295 - ty * 0.018, 0.036, 10, 24), brassMat);
+    collar.rotation.x = Math.PI * 0.5;
+    collar.position.y = ty;
+    opticalTubeGroup.add(collar);
+  }
+
+  // Flared brass objective dew-shield & glowing blue-coated glass lens at upper aperture
+  const dewShield = new THREE.Mesh(new THREE.CylinderGeometry(0.29, 0.25, 0.72, 22), brassMat);
+  dewShield.position.y = 2.24;
+  const objLens = new THREE.Mesh(new THREE.CylinderGeometry(0.255, 0.255, 0.05, 22), lensGlassMat);
+  objLens.position.y = 2.52;
+  opticalTubeGroup.add(dewShield, objLens);
+
+  // Rear brass focuser drawtube & eyepiece
+  const drawTube = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.16, 0.65, 16), brassMat);
+  drawTube.position.y = -2.18;
+  const eyepiece = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.085, 0.26, 14), darkIronMat);
+  eyepiece.position.y = -2.56;
+  opticalTubeGroup.add(drawTube, eyepiece);
+
+  // Parallel brass finder scope mounted on twin rings
+  const finderTube = new THREE.Mesh(new THREE.CylinderGeometry(0.052, 0.062, 1.65, 14), brassMat);
+  finderTube.position.set(0.36, 0.35, 0);
+  opticalTubeGroup.add(finderTube);
+  for (const fy of [-0.25, 0.85]) {
+    const bracket = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.05, 0.05), brassMat);
+    bracket.position.set(0.24, fy, 0);
+    opticalTubeGroup.add(bracket);
+  }
+
+  telescopeAssembly.add(opticalTubeGroup);
+  sceneGroup.add(telescopeAssembly);
 
   // 4 Tall Alabaster Piers crowned with Rainbow Optical Dispersion Prisms!
   const prismColors = [0x45f0a8, 0x9970ff, 0x45c8ff, 0xffd066];
@@ -2093,18 +2549,16 @@ function buildStage10SovereignColosseum(
     coals.position.set(bx, 1.82, bz);
     sceneGroup.add(coals);
 
-    const flame = createBrazierFlameMesh(1.1);
-    flame.mesh.position.set(bx, 1.85, bz);
+    const flame = createBrazierFlameMesh(1.18);
+    flame.mesh.position.set(bx, 1.82, bz);
     sceneGroup.add(flame.mesh);
     flameUniformsList.push(flame.uniforms);
 
-    // Pair dynamic orange firelights on the two front-flanking braziers for authentic dancing highlights
-    if (i < 2) {
-      const fLight = new THREE.PointLight(0xff6b22, 9.5, 14, 1.55);
-      fLight.position.set(bx, 2.75, bz);
-      sceneGroup.add(fLight);
-      fireLights.push({ light: fLight, phase: i * 2.3 });
-    }
+    // Every brazier casts warm flickering orange firelight onto the flanking Nero-gold columns!
+    const fLight = new THREE.PointLight(0xff6b22, i < 2 ? 11.5 : 8.5, 14.5, 1.5);
+    fLight.position.set(bx, 2.85, bz);
+    sceneGroup.add(fLight);
+    fireLights.push({ light: fLight, phase: i * 1.9 });
   }
 
   const crownBeam = createVolumetricShaftMesh(1.1, 3.6, 11.5, 0xffd57a, 0.14);
