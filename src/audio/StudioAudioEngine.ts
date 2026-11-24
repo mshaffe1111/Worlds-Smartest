@@ -1,15 +1,20 @@
 // ============================================================================
-// WORLD'S SMARTEST v4.0 — Broadcast Studio Audio Engine (ZERO Procedural Oscillators!)
+// WORLD'S SMARTEST v5.0 — Broadcast Studio Audio Engine (ZERO Procedural Oscillators!)
 // Plays:
-//  1) Adaptive Prime-Time Broadcast Music Score (ON by default via `ws_v4_music_enabled`,
-//     seamless WebAudio dual-deck crossfades, -18 LUFS mastered stereo MP3 loops)
-//  2) Harmonically Ascending Musical Streak Stingers (Cmaj9 -> Dmaj9 -> Emaj9 -> Gmaj9 -> Fanfare)
+//  1) Adaptive Prime-Time Symphonic Score (ON by default via `ws_v4_music_enabled`,
+//     seamless WebAudio dual-deck crossfades, -17.5 LUFS mastered stereo MP3 loops,
+//     including v5 `'greenroom'` backstage chamber nocturne)
+//  2) Harmonically Ascending Symphonic Streak Stingers (Cmaj9 -> Dmaj9 -> Emaj9 -> Gmaj9 -> Fanfare)
 //  3) Horological Countdown Clock Ticks, Urgent Double-Pulse & Broadcast Timeout Chime
 //  4) World-Search Escalating Crowd Energy (Small Hall -> TV Studio -> Global Arena + Gasp)
-//  5) Tactile Board & Game-Show Cues (`playBoardCue`) + Legacy Physical Foley Cues
-//  6) Click-Free Voice Engine (80ms smooth ramp-down in `stopVoice()`, dual Music 0.30x +
-//     Crowd 0.35x WebAudio voice ducking, and `playVerifiedVoice()` mismatch guard)
+//  5) Tactile Board & v5 Stage Prop Cues (`playBoardCue`: `screw_slam`, `jackpot_sweep`,
+//     `polaroid_pin`, `switch_clack` + all v4/v3 Foley cues)
+//  6) Click-Free Voice Engine (80ms smooth ramp-down in `stopVoice()`, dual Music 0.30x [-10dB]
+//     + Crowd 0.35x WebAudio voice ducking, lazy-cached `v5_voice_manifest.json` via
+//     `playV5Voice()` & non-repeating `playRandomHostCategoryVoice()`, plus v4 `playVerifiedVoice()`)
 // ============================================================================
+
+import type { VoiceClipEntryV5, VoiceManifestV5 } from '../v5/contracts_v5';
 
 export type SfxCueId =
   | 'ui_tap'
@@ -42,10 +47,15 @@ export type SfxCueId =
   | 'wedge_earned'
   | 'rival_trap'
   | 'lock_in'
-  | 'wrong_answer';
+  | 'wrong_answer'
+  | 'screw_slam'
+  | 'jackpot_sweep'
+  | 'polaroid_pin'
+  | 'switch_clack';
 
 export type MusicCueId =
   | 'title'
+  | 'greenroom'
   | 'board'
   | 'thinking'
   | 'tension'
@@ -63,7 +73,29 @@ export type BoardCueKind =
   | 'wedge_earned'
   | 'rival_trap'
   | 'lock_in'
-  | 'wrong_answer';
+  | 'wrong_answer'
+  | 'screw_slam'
+  | 'jackpot_sweep'
+  | 'polaroid_pin'
+  | 'switch_clack';
+
+export type HostVoiceCategoryV5 =
+  | 'board_welcome'
+  | 'read_in_tip'
+  | 'double_down'
+  | 'power_play'
+  | 'chain_shatter'
+  | 'stage_sweep'
+  | 'screw_slammed'
+  | 'streak_3'
+  | 'streak_4'
+  | 'streak_5'
+  | 'buzzer_beater'
+  | 'tough_miss'
+  | 'match_win'
+  | 'redemption'
+  | 'wedge_earned'
+  | 'ending_crown';
 
 export interface StudioAudioManifest {
   musicApproved?: boolean;
@@ -123,6 +155,11 @@ const SFX_CANDIDATES: Record<SfxCueId, string[]> = {
   rival_trap: ['./assets/audio/sfx_rival_trap.mp3'],
   lock_in: ['./assets/audio/sfx_lock_in.mp3'],
   wrong_answer: ['./assets/audio/sfx_wrong_answer.mp3'],
+  // Tactile v5 stage prop & jackpot cues
+  screw_slam: ['./assets/audio/sfx_screw_slam.mp3'],
+  jackpot_sweep: ['./assets/audio/sfx_jackpot_sweep.mp3'],
+  polaroid_pin: ['./assets/audio/sfx_polaroid_pin.mp3'],
+  switch_clack: ['./assets/audio/sfx_switch_clack.mp3'],
 };
 
 // Loudness-calibrated against exact 48kHz PCM peak/RMS profiles of public/assets/audio/*.mp3
@@ -158,6 +195,10 @@ const SFX_VOLUMES: Record<SfxCueId, number> = {
   rival_trap: 0.62,
   lock_in: 0.58,
   wrong_answer: 0.58,
+  screw_slam: 0.72,
+  jackpot_sweep: 0.70,
+  polaroid_pin: 0.56,
+  switch_clack: 0.54,
 };
 
 // Rapid-duplicate dedupe windows (prevents phase flanging & +6dB double-triggers)
@@ -193,6 +234,10 @@ const CUE_DEDUPE_MS: Record<SfxCueId, number> = {
   rival_trap: 160,
   lock_in: 85,
   wrong_answer: 140,
+  screw_slam: 220,
+  jackpot_sweep: 260,
+  polaroid_pin: 65,
+  switch_clack: 55,
 };
 
 const CROWD_CUES = new Set<SfxCueId>([
@@ -205,6 +250,7 @@ const CROWD_CUES = new Set<SfxCueId>([
 // Equal-loudness broadcast trim per music stem & venue room-air bed
 const MUSIC_TRACK_VOLUME_SCALE: Record<string, number> = {
   './assets/audio/music_title_showtime.mp3': 1.0,
+  './assets/audio/music_greenroom_lounge.mp3': 0.88,
   './assets/audio/music_board_groove.mp3': 0.90,
   './assets/audio/music_thinking_bed.mp3': 0.82,
   './assets/audio/music_finale_tension.mp3': 0.94,
@@ -217,11 +263,67 @@ const MUSIC_TRACK_VOLUME_SCALE: Record<string, number> = {
 
 const DEFAULT_V4_MUSIC_MAP: Record<Exclude<MusicCueId, 'ambient'>, string> = {
   title: './assets/audio/music_title_showtime.mp3',
+  greenroom: './assets/audio/music_greenroom_lounge.mp3',
   board: './assets/audio/music_board_groove.mp3',
   thinking: './assets/audio/music_thinking_bed.mp3',
   tension: './assets/audio/music_finale_tension.mp3',
   finale: './assets/audio/music_finale_tension.mp3',
   mystery: './assets/audio/music_thinking_bed.mp3',
+};
+
+const V5_VOICE_MANIFEST_URL = './data/v5_voice_manifest.json';
+
+const V5_HOST_CATEGORY_ALIASES: Record<string, HostVoiceCategoryV5> = {
+  board_welcome: 'board_welcome',
+  welcome: 'board_welcome',
+  episode_intro: 'board_welcome',
+  read_in: 'read_in_tip',
+  read_in_tip: 'read_in_tip',
+  double_down: 'double_down',
+  double_down_win: 'double_down',
+  double_down_arm: 'double_down',
+  double_down_hype: 'double_down',
+  power_play: 'power_play',
+  power_play_win: 'power_play',
+  power_play_stakes: 'power_play',
+  chain_shatter: 'chain_shatter',
+  padlock_break: 'chain_shatter',
+  shatter: 'chain_shatter',
+  stage_sweep: 'stage_sweep',
+  jackpot_sweep: 'stage_sweep',
+  line_sweep: 'stage_sweep',
+  sweep: 'stage_sweep',
+  screw_slammed: 'screw_slammed',
+  screw_slam: 'screw_slammed',
+  screw_rival: 'screw_slammed',
+  screw: 'screw_slammed',
+  streak_3: 'streak_3',
+  streak3: 'streak_3',
+  streak_4: 'streak_4',
+  streak4: 'streak_4',
+  streak_hot: 'streak_4',
+  streak_5: 'streak_5',
+  streak5: 'streak_5',
+  streak_5_plus: 'streak_5',
+  buzzer_beater: 'buzzer_beater',
+  clutch: 'buzzer_beater',
+  tough_miss: 'tough_miss',
+  gentle_miss: 'tough_miss',
+  miss: 'tough_miss',
+  double_down_blow: 'tough_miss',
+  power_play_miss: 'tough_miss',
+  match_win: 'match_win',
+  victory: 'match_win',
+  win: 'match_win',
+  redemption: 'redemption',
+  underdog_redemption: 'redemption',
+  match_loss: 'redemption',
+  loss: 'redemption',
+  wedge_earned: 'wedge_earned',
+  crown_wedge_earned: 'wedge_earned',
+  wedge: 'wedge_earned',
+  ending_crown: 'ending_crown',
+  finale_win: 'ending_crown',
 };
 
 interface ActiveMusicDeck {
@@ -311,8 +413,9 @@ function computeTranscriptSimilarity(subtitleText: string, expectedText: string)
 function isLegacyV1V2VoiceUrl(normalizedUrl: string): boolean {
   const lower = normalizedUrl.toLowerCase();
   if (!lower.includes('/assets/voice/')) return false;
+  if (lower.includes('/assets/voice/v5/')) return false;
   const basename = lower.slice(lower.lastIndexOf('/') + 1);
-  return !basename.startsWith('v4_');
+  return !basename.startsWith('v4_') && !basename.startsWith('vo_');
 }
 
 /**
@@ -427,6 +530,9 @@ export class StudioAudioEngine {
   private retiringVoiceCleanups = new Map<HTMLAudioElement, () => void>();
   private verifiedVoiceTranscripts = new Map<string, string>();
   private lastBlockedVoiceReason: string | null = null;
+  private v5VoiceManifest: VoiceManifestV5 | null = null;
+  private v5VoiceManifestPromise: Promise<VoiceManifestV5 | null> | null = null;
+  private v5HostCategoryHistory = new Map<string, string[]>();
 
   // WebAudio dual-deck crossfade music state (+ HTMLAudio fallback for minimal environments)
   private activeMusicDeck: ActiveMusicDeck | null = null;
@@ -743,6 +849,10 @@ export class StudioAudioEngine {
       'power_play',
       'wedge_earned',
       'rival_trap',
+      'screw_slam',
+      'jackpot_sweep',
+      'polaroid_pin',
+      'switch_clack',
     ];
     for (const cue of coreCues) {
       void this.loadCueBuffer(cue);
@@ -1265,6 +1375,220 @@ export class StudioAudioEngine {
     return true;
   }
 
+  /**
+   * Lazily loads & caches `public/data/v5_voice_manifest.json` (`VoiceManifestV5`).
+   * Hydrates `verifiedVoiceTranscripts` for all 132 v5 cast clips on first load.
+   */
+  public async loadV5VoiceManifest(): Promise<VoiceManifestV5 | null> {
+    if (this.v5VoiceManifest) return this.v5VoiceManifest;
+    if (this.v5VoiceManifestPromise) return this.v5VoiceManifestPromise;
+    if (typeof fetch !== 'function') return null;
+
+    const loader = (async (): Promise<VoiceManifestV5 | null> => {
+      try {
+        const resp = await fetch(V5_VOICE_MANIFEST_URL);
+        if (!resp.ok) return null;
+        const contentType = resp.headers?.get?.('content-type') ?? '';
+        if (contentType.includes('text/html')) return null;
+        const data = (await resp.json()) as VoiceManifestV5;
+        if (!data || !data.clips || typeof data.clips !== 'object') return null;
+
+        this.v5VoiceManifest = data;
+        for (const entry of Object.values(data.clips)) {
+          if (entry?.url && entry?.transcript) {
+            this.verifiedVoiceTranscripts.set(normalizeAssetUrl(entry.url), entry.transcript);
+          }
+        }
+        return data;
+      } catch {
+        return null;
+      } finally {
+        if (!this.v5VoiceManifest) {
+          this.v5VoiceManifestPromise = null;
+        }
+      }
+    })();
+
+    this.v5VoiceManifestPromise = loader;
+    return loader;
+  }
+
+  private resolveV5ClipEntry(manifest: VoiceManifestV5, rawClipId: string): VoiceClipEntryV5 | null {
+    const trimmed = rawClipId.trim();
+    if (!trimmed) return null;
+
+    let cleanId = trimmed;
+    const slashIdx = cleanId.lastIndexOf('/');
+    if (slashIdx >= 0) {
+      cleanId = cleanId.slice(slashIdx + 1);
+    }
+    if (cleanId.toLowerCase().endsWith('.mp3')) {
+      cleanId = cleanId.slice(0, -4);
+    }
+
+    const direct = manifest.clips[cleanId];
+    if (direct) return direct;
+
+    // Resilient suffix alias resolution for peer callers (`_intro` -> `_walkout`, `_clap_*` -> `_reply_*`, etc.)
+    const aliasRules: ReadonlyArray<[RegExp, string]> = [
+      [/_intro$/, '_walkout'],
+      [/_clap_bold$/, '_reply_bold'],
+      [/_clap_respect$/, '_reply_respect'],
+      [/_clap_witty$/, '_reply_witty'],
+      [/_trap$/, '_trap_taunt'],
+      [/_screwed$/, '_screwed_react'],
+      [/^vo_cold_open_(\d+)$/, 'vo_cold_$1'],
+      [/^vo_sam_brief_(\d+)$/, 'vo_sam_$1'],
+    ];
+    for (const [pattern, replacement] of aliasRules) {
+      if (pattern.test(cleanId)) {
+        const candidate = cleanId.replace(pattern, replacement);
+        if (manifest.clips[candidate]) {
+          return manifest.clips[candidate];
+        }
+      }
+    }
+
+    return null;
+  }
+
+  /** Returns cached metadata for a v5 voice clip if `v5_voice_manifest.json` has been loaded. */
+  public getV5VoiceClipMeta(clipId: string): VoiceClipEntryV5 | null {
+    if (!this.v5VoiceManifest || !clipId) return null;
+    return this.resolveV5ClipEntry(this.v5VoiceManifest, clipId);
+  }
+
+  /**
+   * Plays a studio-mastered v5 cast voice clip from `public/data/v5_voice_manifest.json`
+   * with lazy-cached manifest lookup, optional `expectedSubstring` transcript guard,
+   * -10dB WebAudio music ducking, and 80ms click-free fade handoff.
+   */
+  public async playV5Voice(
+    clipId: string,
+    expectedSubstring?: string,
+    onEnded?: () => void,
+  ): Promise<boolean> {
+    const fireEndedAsync = () => {
+      if (onEnded) {
+        queueMicrotask(() => {
+          if (!this.disposed) onEnded();
+        });
+      }
+    };
+
+    if (this.disposed || !clipId || !clipId.trim()) {
+      this.lastBlockedVoiceReason = 'v5_empty_clip_id';
+      fireEndedAsync();
+      return false;
+    }
+
+    const manifest = await this.loadV5VoiceManifest();
+    if (this.disposed || !manifest) {
+      this.lastBlockedVoiceReason = 'v5_manifest_unavailable';
+      fireEndedAsync();
+      return false;
+    }
+
+    const entry = this.resolveV5ClipEntry(manifest, clipId);
+    if (!entry || !entry.url) {
+      this.lastBlockedVoiceReason = `v5_clip_not_found:${clipId}`;
+      fireEndedAsync();
+      return false;
+    }
+
+    if (expectedSubstring !== undefined && expectedSubstring.trim().length > 0) {
+      const normSub = normalizeTranscriptText(expectedSubstring);
+      const normTranscript = normalizeTranscriptText(entry.transcript);
+      const isSubstringMatch = normSub.length > 0 && normTranscript.includes(normSub);
+      const similarity = isSubstringMatch
+        ? 1.0
+        : computeTranscriptSimilarity(expectedSubstring, entry.transcript);
+      if (!isSubstringMatch && similarity < 0.6) {
+        this.lastBlockedVoiceReason = `v5_transcript_mismatch:${entry.clipId}`;
+        fireEndedAsync();
+        return false;
+      }
+    }
+
+    if (!this.voiceEnabled) {
+      this.lastBlockedVoiceReason = 'voice_disabled';
+      fireEndedAsync();
+      return false;
+    }
+
+    this.lastBlockedVoiceReason = null;
+    this.playVoice(entry.url, onEnded);
+    return true;
+  }
+
+  /**
+   * Plays a non-repeating random Host Max Sterling voice clip for the requested gameplay
+   * category (Hades-style anti-fatigue ring buffer; supports lowercase v5 categories AND
+   * v4 `SituationalQuipCategory` uppercase aliases).
+   */
+  public async playRandomHostCategoryVoice(
+    category: HostVoiceCategoryV5 | string,
+    onEnded?: () => void,
+  ): Promise<boolean> {
+    if (this.disposed || !category || !category.trim()) {
+      if (onEnded) {
+        queueMicrotask(() => {
+          if (!this.disposed) onEnded();
+        });
+      }
+      return false;
+    }
+
+    const manifest = await this.loadV5VoiceManifest();
+    if (this.disposed || !manifest) {
+      if (onEnded) {
+        queueMicrotask(() => {
+          if (!this.disposed) onEnded();
+        });
+      }
+      return false;
+    }
+
+    const rawKey = category.trim().toLowerCase().replace(/[\s-]+/g, '_');
+    const canonical: string = V5_HOST_CATEGORY_ALIASES[rawKey] ?? rawKey;
+    const prefix = `vo_max_${canonical}_`;
+    const exactId = `vo_max_${canonical}`;
+
+    const candidates = Object.values(manifest.clips).filter(
+      (c) =>
+        c.speaker === 'max_sterling' &&
+        (c.clipId.startsWith(prefix) || c.clipId === exactId),
+    );
+
+    if (candidates.length === 0) {
+      this.lastBlockedVoiceReason = `v5_host_category_empty:${category}`;
+      if (onEnded) {
+        queueMicrotask(() => {
+          if (!this.disposed) onEnded();
+        });
+      }
+      return false;
+    }
+
+    const seen = this.v5HostCategoryHistory.get(canonical) ?? [];
+    let fresh = candidates.filter((c) => !seen.includes(c.clipId));
+    if (fresh.length === 0) {
+      // Exhausted category pool: reset ring while avoiding immediate back-to-back repeat
+      const lastClip = seen[seen.length - 1];
+      seen.length = 0;
+      fresh =
+        candidates.length > 1 && lastClip
+          ? candidates.filter((c) => c.clipId !== lastClip)
+          : candidates;
+    }
+
+    const picked = fresh[Math.floor(Math.random() * fresh.length) % fresh.length];
+    seen.push(picked.clipId);
+    this.v5HostCategoryHistory.set(canonical, seen);
+
+    return this.playV5Voice(picked.clipId, undefined, onEnded);
+  }
+
   public playVoice(clipOrUrl: string, onEnded?: () => void): void {
     const url = normalizeAssetUrl(clipOrUrl);
     if (this.disposed || !url) {
@@ -1543,21 +1867,29 @@ export class StudioAudioEngine {
       ch: './assets/audio/ambience_chamber_room.mp3',
       studio: './assets/audio/ambience_chamber_room.mp3',
       tier1_community_hall: './assets/audio/ambience_chamber_room.mp3',
+      tier1_oakridge: './assets/audio/ambience_chamber_room.mp3',
       tier2_civic_theater: './assets/audio/ambience_chamber_room.mp3',
+      tier2_lyric: './assets/audio/ambience_chamber_room.mp3',
       tier3_regional_tv: './assets/audio/ambience_chamber_room.mp3',
+      tier3_channel7: './assets/audio/ambience_chamber_room.mp3',
       tier4_national_arena: './assets/audio/ambience_chamber_room.mp3',
+      tier4_primetime: './assets/audio/ambience_chamber_room.mp3',
       gb: './assets/audio/ambience_london_rain.mp3',
       br: './assets/audio/ambience_london_rain.mp3',
       tier5_london_rotunda: './assets/audio/ambience_london_rain.mp3',
+      tier5_london: './assets/audio/ambience_london_rain.mp3',
       jp: './assets/audio/ambience_tokyo_neon_rain.mp3',
       sg: './assets/audio/ambience_tokyo_neon_rain.mp3',
       tier6_tokyo_skydome: './assets/audio/ambience_tokyo_neon_rain.mp3',
+      tier6_tokyo: './assets/audio/ambience_tokyo_neon_rain.mp3',
       eg: './assets/audio/ambience_cairo_vault_air.mp3',
       is: './assets/audio/ambience_cairo_vault_air.mp3',
       ledger: './assets/audio/ambience_cairo_vault_air.mp3',
       tier7_cairo_pavilion: './assets/audio/ambience_cairo_vault_air.mp3',
+      tier7_cairo: './assets/audio/ambience_cairo_vault_air.mp3',
       global: './assets/audio/ambience_ocean_storm_air.mp3',
       tier8_global_finale: './assets/audio/ambience_ocean_storm_air.mp3',
+      tier8_finale: './assets/audio/ambience_ocean_storm_air.mp3',
     };
     this.activeVenueAmbienceUrl = map[code] ?? './assets/audio/ambience_chamber_room.mp3';
     this.manifest.roomTone = this.activeVenueAmbienceUrl;
@@ -1568,13 +1900,14 @@ export class StudioAudioEngine {
 
   /**
    * Smoothly crossfades to the requested broadcast music stem:
-   *   - `'title'`    -> Warm prime-time game-show theme (`music_title_showtime.mp3`)
-   *   - `'board'`    -> Light rhythmic board-selection groove (`music_board_groove.mp3`)
-   *   - `'thinking'` -> Subtle Jeopardy!/Millionaire contemplation pulse (`music_thinking_bed.mp3`)
-   *   - `'tension'`  -> High-stakes championship heartbeat & pad (`music_finale_tension.mp3`)
-   *   - `'finale'`   -> High-stakes championship heartbeat & pad (`music_finale_tension.mp3`)
-   *   - `'mystery'`  -> Focused contemplation bed (`music_thinking_bed.mp3`)
-   *   - `'ambient'`  -> Venue-matched acoustic room-air bed
+   *   - `'title'`     -> Grand Symphonic Overture (`music_title_showtime.mp3`)
+   *   - `'greenroom'` -> Warm Chamber Symphony Nocturne (`music_greenroom_lounge.mp3`)
+   *   - `'board'`     -> Scherzo Podium Promenade (`music_board_groove.mp3`)
+   *   - `'thinking'`  -> Symphonic Clockwork Suspense (`music_thinking_bed.mp3`)
+   *   - `'tension'`   -> 1.4-Billion Championship Symphony (`music_finale_tension.mp3`)
+   *   - `'finale'`    -> 1.4-Billion Championship Symphony (`music_finale_tension.mp3`)
+   *   - `'mystery'`   -> Focused contemplation bed (`music_thinking_bed.mp3`)
+   *   - `'ambient'`   -> Venue-matched acoustic room-air bed
    */
   public setMusicCue(cue: MusicCueId): void {
     this.currentMusicCue = cue;
