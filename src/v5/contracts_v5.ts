@@ -1,20 +1,32 @@
 // ============================================================================
-// WORLD'S SMARTEST v5.0 — AAA Showtime, 3D Globe, Story & Voiced Cast Contracts
-// Zero CSS Dashboard Boxes · Bespoke Painted Art · 3D Globe · Real Sampled Audio
+// WORLD'S SMARTEST v5.0 — True AAA Diegetic Showtime, 20h Branching Story,
+// Tactile Tour Trunk Overworld (ZERO 3D Globe! ZERO CSS Boxes!) & Voiced Cast
 // ============================================================================
 
-import type { ChallengerIdV4, TierNumberV4, WedgeColorId } from '../v4/contracts';
+import type { DomainId } from '../narrative';
+import type { QuestionFormatV4, WedgeColorId } from '../v4/contracts';
+
+export type TierNumberV5 = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+
+export type ChallengerIdV5 =
+  | 'frankie_russo'
+  | 'denise_park'
+  | 'trevor_blake'
+  | 'priya_nair'
+  | 'alistair_finch'
+  | 'kenji_takahashi'
+  | 'nadia_al_mansoor'
+  | 'viktor_volkov';
 
 export type HostPoseV5 = 'welcome' | 'hype' | 'wince';
 
-export interface CastAssetPathsV5 {
-  readonly maxWelcome: string;
-  readonly maxHype: string;
-  readonly maxWince: string;
-  readonly challengers: Readonly<Record<ChallengerIdV4, string>>;
-}
+export type GreenRoomEraV5 = 'LOCAL_PUB' | 'TV_DRESSING_ROOM' | 'GLOBAL_VIP_SUITE';
 
-export const V5_CAST_ASSETS: CastAssetPathsV5 = {
+// ============================================================================
+// 1. BESPOKE PAINTED ART & TRANSPARENT-ALPHA STAGE ACTOR PATHS
+// ============================================================================
+
+export const V5_CAST_CUTOUTS = {
   maxWelcome: './assets/v5/cast/max_welcome.webp',
   maxHype: './assets/v5/cast/max_hype.webp',
   maxWince: './assets/v5/cast/max_wince.webp',
@@ -27,10 +39,10 @@ export const V5_CAST_ASSETS: CastAssetPathsV5 = {
     kenji_takahashi: './assets/v5/cast/kenji.webp',
     nadia_al_mansoor: './assets/v5/cast/nadia.webp',
     viktor_volkov: './assets/v5/cast/viktor.webp',
-  },
-};
+  } as Readonly<Record<ChallengerIdV5, string>>,
+} as const;
 
-export const V5_VENUE_STAGE_ASSETS: Readonly<Record<TierNumberV4, string>> = {
+export const V5_VENUE_STAGES: Readonly<Record<TierNumberV5, string>> = {
   1: './assets/v5/venues/tier1_oakridge.webp',
   2: './assets/v5/venues/tier2_lyric.webp',
   3: './assets/v5/venues/tier3_channel7.webp',
@@ -41,68 +53,231 @@ export const V5_VENUE_STAGE_ASSETS: Readonly<Record<TierNumberV4, string>> = {
   8: './assets/v5/venues/tier8_finale.webp',
 };
 
-export const V5_STORY_ART_ASSETS = {
+export const V5_GREENROOM_BACKDROPS: Readonly<Record<GreenRoomEraV5, string>> = {
+  LOCAL_PUB: './assets/v5/greenroom/greenroom_local.webp',
+  TV_DRESSING_ROOM: './assets/v5/greenroom/greenroom_tv.webp',
+  GLOBAL_VIP_SUITE: './assets/v5/greenroom/greenroom_global.webp',
+};
+
+export const V5_TOUR_TRUNK_SURFACE = './assets/v5/greenroom/tour_corkboard_bg.webp';
+
+export const V5_STORY_PLATES = {
   openCall: './assets/v5/story/story_open_call.webp',
   scoutBreakthrough: './assets/v5/story/story_scout_breakthrough.webp',
   worldCoronation: './assets/v5/story/story_world_coronation.webp',
 } as const;
 
-export interface GlobeVenueNodeV5 {
-  readonly tierNumber: TierNumberV4;
-  readonly cityLabel: string;
-  readonly venueName: string;
-  readonly lat: number;
-  readonly lon: number;
+// ============================================================================
+// 2. EQUIPABLE PODIUM LUCKY CHARMS / STAGE EDGES (Balatro x Queen's Gambit)
+// Earned via Rival Alliances, Underground Velvet Salons & Sponsor Dares!
+// Up to 3 Charms sit physically on your Stage Podium during matches.
+// ============================================================================
+
+export type CharmIdV5 =
+  | 'frankies_coaster'
+  | 'denises_red_pen'
+  | 'trevors_hot_mic'
+  | 'priyas_adrenaline'
+  | 'alistairs_pocketwatch'
+  | 'kenjis_cyber_link'
+  | 'nadias_astrolabe'
+  | 'grassroots_megaphone'
+  | 'syndicate_golden_dice'
+  | 'velvet_wax_seal'
+  | 'underdog_chip'
+  | 'screw_shield';
+
+export interface PodiumCharmSpecV5 {
+  readonly charmId: CharmIdV5;
+  readonly name: string;
+  readonly tagline: string;
+  readonly effectSummary: string;
+  readonly originSource: string;
   readonly accentHex: string;
-  readonly viewerLabel: string;
-  readonly purseLabel: string;
-  readonly unlocked: boolean;
-  readonly completed: boolean;
-  readonly isCurrent: boolean;
+  readonly svgEmblemKind:
+    | 'coaster'
+    | 'fountain_pen'
+    | 'mic'
+    | 'pulse'
+    | 'watch'
+    | 'circuit'
+    | 'astrolabe'
+    | 'megaphone'
+    | 'dice'
+    | 'seal'
+    | 'chip'
+    | 'shield';
 }
 
-export const WORLD_TOUR_GLOBE_COORDS_V5: Readonly<
-  Record<TierNumberV4, { readonly cityLabel: string; readonly lat: number; readonly lon: number; readonly accentHex: string }>
-> = {
-  1: { cityLabel: 'Oakridge, Ohio', lat: 41.4, lon: -81.7, accentHex: '#ffb84d' },
-  2: { cityLabel: 'Chicago, USA', lat: 41.88, lon: -87.63, accentHex: '#ff6b8b' },
-  3: { cityLabel: 'Atlanta Studio B', lat: 33.75, lon: -84.39, accentHex: '#47d7ff' },
-  4: { cityLabel: 'Los Angeles Live', lat: 34.05, lon: -118.24, accentHex: '#ffd86b' },
-  5: { cityLabel: 'London Rotunda', lat: 51.51, lon: -0.13, accentHex: '#a78bfa' },
-  6: { cityLabel: 'Shibuya, Tokyo', lat: 35.66, lon: 139.7, accentHex: '#38f2e6' },
-  7: { cityLabel: 'Giza Plateau, Cairo', lat: 29.98, lon: 31.13, accentHex: '#ffc252' },
-  8: { cityLabel: 'Geneva Global Apex', lat: 46.2, lon: 6.14, accentHex: '#ffe999' },
-};
-
 // ============================================================================
-// VOICE MANIFEST CONTRACTS (`public/data/v5_voice_manifest.json`)
-// Every voiced line has a deterministic `clipId` and verified `transcript`!
+// 3. 20+ HOUR FAIL-FORWARD BRANCHING TOURNAMENT STORY (Pyre x 80 Days x Queen's Gambit)
 // ============================================================================
 
-export type VoiceSpeakerIdV5 = 'max_sterling' | ChallengerIdV4;
+export type SponsorFactionIdV5 = 'INDEPENDENT' | 'APEX_NETWORK' | 'VELVET_SOCIETY';
+
+export type CampaignBracketLaneV5 =
+  | 'MAIN_STAGE'        // Prime-time winner's bracket
+  | 'REDEMPTION_GRIT'   // Fail-forward underdog circuit (late-night / pub / wildcard play-ins!)
+  | 'VELVET_SALON'      // Secret underground high-stakes intellectual salons
+  | 'SPONSOR_SHOWCASE'  // High-purse exhibition matches with spicy on-air Dares
+  | 'RIVAL_GRUDGE';     // Personal score-settling / sparring matches
+
+export type TourEphemeraStyleV5 =
+  | 'POLAROID_SNAPSHOT'
+  | 'BOARDING_PASS'
+  | 'VELVET_WAX_INVITE'
+  | 'TORN_PUB_FLYER'
+  | 'CALL_SHEET_CLIP';
+
+export type DialogueAttitudeV5 = 'WARM_RESPECT' | 'SHARP_WIT' | 'RUTHLESS_CONFIDENCE';
+
+export interface StoryChoiceConsequenceV5 {
+  readonly attitude: DialogueAttitudeV5;
+  readonly label: string;
+  readonly playerSpokenText: string;
+  readonly rivalReplyText: string;
+  readonly rivalReplyVoiceId?: string;
+  readonly hostReplyText?: string;
+  readonly hostReplyVoiceId?: string;
+  readonly rivalAffinityDelta: number; // + builds Ally (unlocks coaching & Charm!), - builds Grudge!
+  readonly sponsorRepDelta?: Partial<Record<SponsorFactionIdV5, number>>;
+  readonly bankrollDeltaUsd?: number;
+  readonly unlockCharmId?: CharmIdV5;
+}
+
+export interface ShowmanDareV5 {
+  readonly dareId: string;
+  readonly sponsor: SponsorFactionIdV5;
+  readonly description: string;
+  readonly conditionKind:
+    | 'WIN_POWER_PLAY'
+    | 'WIN_DOUBLE_DOWN'
+    | 'REACH_STREAK_4'
+    | 'USE_SCREW_SUCCESSFULLY'
+    | 'EARN_3_WEDGES'
+    | 'CLEAR_FULL_LINE'
+    | 'NO_LIFELINES_USED';
+  readonly bonusPurseUsd: number;
+  readonly bonusViewers: number;
+}
+
+export interface CampaignNodeV5 {
+  readonly nodeId: string;
+  readonly actNumber: 1 | 2 | 3 | 4 | 5;
+  readonly tierNumber: TierNumberV5;
+  readonly lane: CampaignBracketLaneV5;
+  readonly ephemeraStyle: TourEphemeraStyleV5;
+  /** Pinboard coordinates (0..100%) & organic tilt (-7deg..+7deg) on the Tour Trunk Corkboard! */
+  readonly pinX: number;
+  readonly pinY: number;
+  readonly tiltDeg: number;
+  readonly cityStamp: string;
+  readonly venueName: string;
+  readonly showTitle: string;
+  readonly hookBlurb: string;
+  readonly challengerId: ChallengerIdV5 | null;
+  readonly boardCols: 4 | 5 | 6;
+  readonly boardRows: 3 | 4;
+  readonly maxTurns: number;
+  readonly topology:
+    | 'OPEN_TRYOUT'
+    | 'PADLOCK_NEIGHBORS'
+    | 'FOG_EXPLORER'
+    | 'SPOTLIGHT_ROULETTE'
+    | 'CROSSROADS_HYBRID'
+    | 'FINALE_GAUNTLET';
+  readonly entryFeeUsd: number;
+  readonly purseUsd: number;
+  readonly baseAudience: number;
+  readonly soloTargetScore: number;
+  readonly featuredFormats: readonly QuestionFormatV4[];
+  readonly preferredDomains?: readonly DomainId[];
+  readonly optionalDare?: ShowmanDareV5;
+  readonly rewardCharmId?: CharmIdV5;
+  /** Branching graph edges: Winning advances along `onWinUnlockIds`, Losing branches to `onLossUnlockIds`! */
+  readonly initialUnlocked?: boolean;
+  readonly onWinUnlockIds: readonly string[];
+  readonly onLossUnlockIds: readonly string[];
+  readonly secretUnlockIds?: readonly string[];
+  readonly preMatchSceneId?: string;
+  readonly postWinSceneId?: string;
+  readonly postLossSceneId?: string;
+}
+
+export interface VoicedDialogueBeatV5 {
+  readonly speaker: 'max_sterling' | 'producer_sam' | ChallengerIdV5 | 'narrator';
+  readonly speakerName: string;
+  readonly speakerRole?: string;
+  readonly text: string;
+  readonly voiceClipId?: string;
+  readonly hostPose?: HostPoseV5;
+  readonly backdropUrl?: string;
+}
+
+export interface InteractiveStorySceneV5 {
+  readonly sceneId: string;
+  readonly kind: 'COLD_OPEN' | 'GREEN_ROOM_CALL' | 'STAGE_WALKOUT' | 'ACT_CLIMAX' | 'REDEMPTION_BEAT' | 'ENDING';
+  readonly title: string;
+  readonly locationSubhead: string;
+  readonly backdropUrl: string;
+  readonly featuredChallengerId?: ChallengerIdV5;
+  readonly beats: readonly VoicedDialogueBeatV5[];
+  readonly choices?: readonly StoryChoiceConsequenceV5[];
+  readonly closingBeats?: readonly VoicedDialogueBeatV5[];
+}
+
+export type EndingIdV5 =
+  | 'PEOPLES_CHAMPION'
+  | 'NETWORK_SOVEREIGN'
+  | 'VELVET_GRANDMASTER'
+  | 'CINDERELLA_REDEMPTION';
+
+export interface BranchingCampaignSaveStateV5 {
+  readonly version: '5.0';
+  contestantName: string;
+  coldOpenCompleted: boolean;
+  currentAct: 1 | 2 | 3 | 4 | 5;
+  currentNodeId: string;
+  unlockedNodeIds: string[];
+  wonNodeIds: string[];
+  lostNodeIds: string[];
+  nodeStars: Record<string, 0 | 1 | 2 | 3>;
+  nodeHighScores: Record<string, number>;
+  bankrollUsd: number;
+  careerEarningsUsd: number;
+  liveWorldAudience: number;
+  activeSponsor: SponsorFactionIdV5;
+  sponsorRep: Record<SponsorFactionIdV5, number>;
+  /** -100 (Bitter Grudge) .. +100 (Sworn Ally / Sparring Partner) */
+  rivalAffinity: Record<ChallengerIdV5, number>;
+  unlockedCharms: CharmIdV5[];
+  equippedCharms: CharmIdV5[]; // max 3 on podium
+  seenSceneIds: string[];
+  inboxCallsQueue: string[]; // Pending Green-Room phone/note scenes from Allies, Rivals, or Sponsors!
+  pressClippings: Array<{
+    readonly outlet: string;
+    readonly headline: string;
+    readonly subline: string;
+    readonly nodeId: string;
+    readonly won: boolean;
+  }>;
+  totalMatchesPlayed: number;
+  totalMatchesWon: number;
+  comebackWinsFromRedemption: number;
+  unlockedEndings: EndingIdV5[];
+  updatedAtIso: string;
+}
+
+// ============================================================================
+// 4. VOICE MANIFEST CONTRACT (`public/data/v5_voice_manifest.json`)
+// ============================================================================
 
 export interface VoiceClipEntryV5 {
   readonly clipId: string;
-  readonly speaker: VoiceSpeakerIdV5;
+  readonly speaker: 'max_sterling' | 'producer_sam' | ChallengerIdV5;
   readonly url: string;
   readonly transcript: string;
   readonly durationSec: number;
-  readonly category:
-    | 'cold_open'
-    | 'welcome'
-    | 'host_hit'
-    | 'host_streak'
-    | 'host_miss'
-    | 'host_power_play'
-    | 'host_ buzzer'
-    | 'host_victory'
-    | 'host_defeat'
-    | 'rival_intro'
-    | 'rival_clapback_reply'
-    | 'rival_trap'
-    | 'rival_win'
-    | 'rival_lose'
-    | 'tier_promo';
 }
 
 export interface VoiceManifestV5 {
@@ -112,99 +287,21 @@ export interface VoiceManifestV5 {
 }
 
 // ============================================================================
-// STORY DIRECTOR CONTRACTS (`public/data/v5_story_scenes.json`)
+// 5. HIGH-Z-INDEX STAGE VFX & LIVING BOARD EVENTS
 // ============================================================================
 
-export type DialogueToneV5 = 'BOLD' | 'WITTY' | 'HUMBLE';
-
-export interface PlayerClapbackOptionV5 {
-  readonly tone: DialogueToneV5;
-  readonly playerLine: string;
-  readonly speakerReplyText: string;
-  readonly speakerReplyClipId?: string;
-  readonly hostReactionText?: string;
-  readonly hostReactionClipId?: string;
+export interface ShatterArcTargetV5 {
+  readonly xPx: number;
+  readonly yPx: number;
 }
 
-export interface StoryBeatLineV5 {
-  readonly speaker: VoiceSpeakerIdV5 | 'narrator';
-  readonly speakerDisplayName: string;
-  readonly speakerSubtitle?: string;
-  readonly text: string;
-  readonly voiceClipId?: string;
-  readonly hostPose?: HostPoseV5;
-  readonly backgroundArt?: string;
-}
-
-export interface ChallengerWalkoutSceneV5 {
-  readonly tierNumber: TierNumberV4;
-  readonly challengerId: ChallengerIdV4;
-  readonly venueBackdropUrl: string;
-  readonly stageHeadline: string;
-  readonly openingBeats: readonly StoryBeatLineV5[];
-  readonly playerChoices: readonly [
-    PlayerClapbackOptionV5,
-    PlayerClapbackOptionV5,
-    PlayerClapbackOptionV5,
-  ];
-}
-
-export interface TierPromotionCutsceneV5 {
-  readonly completedTier: TierNumberV4;
-  readonly nextTier: TierNumberV4 | null;
-  readonly title: string;
-  readonly subtitle: string;
-  readonly artworkUrl: string;
-  readonly beats: readonly StoryBeatLineV5[];
-}
-
-export interface ColdOpenStorySpecV5 {
-  readonly title: string;
-  readonly subtitle: string;
-  readonly openingBeats: readonly StoryBeatLineV5[];
-  readonly frankieChallengeChoices: readonly [
-    PlayerClapbackOptionV5,
-    PlayerClapbackOptionV5,
-    PlayerClapbackOptionV5,
-  ];
-  readonly postAuditionBeats: readonly StoryBeatLineV5[];
-}
-
-export interface StoryScenesBundleV5 {
-  readonly version: '5.0';
-  readonly coldOpen: ColdOpenStorySpecV5;
-  readonly walkouts: Readonly<Record<string, ChallengerWalkoutSceneV5>>;
-  readonly promotions: Readonly<Record<string, TierPromotionCutsceneV5>>;
-}
-
-// ============================================================================
-// 3D STAGE & VFX DIRECTOR INTERFACE (`src/v5/Stage3DShowDirector.ts`)
-// ============================================================================
-
-export type Stage3DModeV5 = 'HOME_TROPHY' | 'WORLD_GLOBE' | 'LIVE_STAGE' | 'HIDDEN';
-
-export interface Stage3DVfxBurstOptions {
-  readonly xNorm?: number; // 0..1 viewport X
-  readonly yNorm?: number; // 0..1 viewport Y
-  readonly toXNorm?: number;
-  readonly toYNorm?: number;
-  readonly wedgeColor?: WedgeColorId;
-  readonly intensity?: number;
-}
-
-export interface IStage3DShowDirectorV5 {
-  mount(canvasContainer: HTMLElement, vfxCanvas: HTMLCanvasElement): Promise<void>;
-  setMode(mode: Stage3DModeV5): void;
-  setVenueTier(tier: TierNumberV4): void;
-  setGlobeNodes(
-    nodes: readonly GlobeVenueNodeV5[],
-    selectedTier: TierNumberV4,
-    onSelectTier: (tier: TierNumberV4) => void,
-  ): void;
-  focusGlobeTier(tier: TierNumberV4): void;
-  triggerChainShatter(fromXNorm: number, fromYNorm: number, targets: ReadonlyArray<{ x: number; y: number }>): void;
-  triggerWedgeBurst(wedgeColor: WedgeColorId, xNorm?: number, yNorm?: number): void;
-  triggerStageJackpot(label?: string): void;
-  triggerAnswerPulse(correct: boolean): void;
+export interface StageVfxApiV5 {
+  mount(canvas: HTMLCanvasElement): void;
+  setStageMood(tier: TierNumberV5, intensity: 'calm' | 'board' | 'hotseat' | 'jackpot'): void;
+  fireChainShatter(originX: number, originY: number, unlockedTargets: readonly ShatterArcTargetV5[]): void;
+  fireScrewSlam(targetX: number, targetY: number, byPlayer: boolean): void;
+  fireWedgeCrystal(x: number, y: number, wedge: WedgeColorId): void;
+  fireLineJackpotSweep(pointsLabel: string): void;
+  fireConfettiOvation(durationMs?: number): void;
   dispose(): void;
 }
