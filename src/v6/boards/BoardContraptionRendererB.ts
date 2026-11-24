@@ -159,6 +159,7 @@ export class BoardContraptionRendererB implements BoardRendererContractV6 {
   // Disposal tracking
   private ownedGeometries: THREE.BufferGeometry[] = [];
   private ownedMaterials: THREE.Material[] = [];
+  private ownedTextures: THREE.Texture[] = [];
 
   public mountBoard(
     parent: THREE.Object3D,
@@ -507,8 +508,12 @@ export class BoardContraptionRendererB implements BoardRendererContractV6 {
     for (const mat of this.ownedMaterials) {
       mat.dispose();
     }
+    for (const tex of this.ownedTextures) {
+      tex.dispose();
+    }
     this.ownedGeometries = [];
     this.ownedMaterials = [];
+    this.ownedTextures = [];
     this.nodeRigs.clear();
     this.hitMeshes = [];
     this.ringPivots = [];
@@ -702,21 +707,35 @@ export class BoardContraptionRendererB implements BoardRendererContractV6 {
       kind === 'ZIGGURAT_TERRACE' ||
       kind === 'HIGH_STRIKER_TOWER'
     ) {
+      const terraceMat = this.trackMat(
+        new THREE.MeshStandardMaterial({
+          color: 0x261d15,
+          roughness: 0.58,
+          metalness: 0.32,
+        }),
+      );
+      const apexMat = this.trackMat(
+        new THREE.MeshStandardMaterial({
+          color: 0x7c5821,
+          roughness: 0.42,
+          metalness: 0.62,
+        }),
+      );
       const steps = 4;
       for (let s = 0; s < steps; s++) {
-        const w = 6.2 - s * 1.28;
-        const d = 3.8 - s * 0.65;
-        const geo = this.trackGeo(new THREE.BoxGeometry(w, 0.34, d));
-        const mesh = new THREE.Mesh(geo, s === steps - 1 ? mats.accentBrass : mats.stageStone);
-        mesh.position.set(0, s * 0.78 - 1.15, (steps - 1 - s) * 0.42 - 0.6);
+        const w = 5.6 - s * 1.18;
+        const d = 3.5 - s * 0.6;
+        const geo = this.trackGeo(new THREE.BoxGeometry(w, 0.32, d));
+        const mesh = new THREE.Mesh(geo, s === steps - 1 ? apexMat : terraceMat);
+        mesh.position.set(0, s * 0.74 - 1.1, (steps - 1 - s) * 0.42 - 0.55);
         mesh.castShadow = true;
         mesh.receiveShadow = true;
         pivot.add(mesh);
 
         // Gilded trim cornice around each terrace
-        const trimGeo = this.trackGeo(new THREE.BoxGeometry(w + 0.12, 0.06, d + 0.12));
+        const trimGeo = this.trackGeo(new THREE.BoxGeometry(w + 0.1, 0.055, d + 0.1));
         const trim = new THREE.Mesh(trimGeo, mats.trimMetal);
-        trim.position.set(0, mesh.position.y + 0.18, mesh.position.z);
+        trim.position.set(0, mesh.position.y + 0.17, mesh.position.z);
         pivot.add(trim);
       }
       return;
@@ -777,20 +796,21 @@ export class BoardContraptionRendererB implements BoardRendererContractV6 {
 
     // 3. Vertical 3D Carousel Ferris Wheel & Roller-Coaster Loop!
     if (kind === 'FERRIS_GONDOLA_WHEEL' || kind === 'COASTER_LOOP') {
-      // Twin A-frame pier support legs
-      for (const zSide of [-0.65, 0.65]) {
-        for (const tilt of [-0.34, 0.34]) {
-          const legGeo = this.trackGeo(new THREE.CylinderGeometry(0.08, 0.12, 3.8, 12));
+      // Twin A-frame pier support legs scaled cleanly to fit portrait FOV
+      for (const zSide of [-0.48, 0.48]) {
+        for (const tilt of [-0.32, 0.32]) {
+          const legGeo = this.trackGeo(new THREE.CylinderGeometry(0.065, 0.1, 2.85, 12));
           const leg = new THREE.Mesh(legGeo, mats.trimMetal);
-          leg.position.set(tilt * 2.5, -1.25, zSide);
+          leg.position.set(tilt * 1.85, -0.95, zSide);
           leg.rotation.z = tilt;
           pivot.add(leg);
         }
       }
 
-      // Rotating spoked Ferris wheel assembly
+      // Rotating spoked Ferris wheel assembly (0.72x scale fits portrait 100%)
       this.wheelPivot = new THREE.Group();
-      this.wheelPivot.position.set(0, 0.35, 0);
+      this.wheelPivot.position.set(0, 0.12, 0);
+      this.wheelPivot.scale.setScalar(0.72);
       pivot.add(this.wheelPivot);
 
       for (const zOff of [-0.28, 0.28]) {
@@ -962,6 +982,53 @@ export class BoardContraptionRendererB implements BoardRendererContractV6 {
     gemMesh.castShadow = true;
     gemMesh.userData = { nodeId: node.nodeId };
     group.add(gemMesh);
+
+    // Crisp 256x256 CanvasTexture Top-Cap Category + $Chips Plaque
+    if (typeof document !== 'undefined') {
+      const cvs = document.createElement('canvas');
+      cvs.width = 256;
+      cvs.height = 256;
+      const c2d = cvs.getContext('2d');
+      if (c2d) {
+        c2d.fillStyle = '#120e16';
+        c2d.beginPath();
+        c2d.arc(128, 128, 118, 0, Math.PI * 2);
+        c2d.fill();
+        c2d.strokeStyle = '#f2ca6b';
+        c2d.lineWidth = 10;
+        c2d.stroke();
+
+        c2d.fillStyle = '#fff5dc';
+        c2d.textAlign = 'center';
+        c2d.textBaseline = 'middle';
+        c2d.font = '800 30px "Inter", "Segoe UI", sans-serif';
+        const shortCat = (node.categoryLabel || 'TRIVIA').toUpperCase().slice(0, 8);
+        c2d.fillText(shortCat, 128, 102);
+
+        c2d.fillStyle = '#f8cf6a';
+        c2d.font = '900 40px "JetBrains Mono", monospace';
+        c2d.fillText(`$${node.baseChips}`, 128, 154);
+
+        const tex = new THREE.CanvasTexture(cvs);
+        tex.colorSpace = THREE.SRGBColorSpace;
+        tex.needsUpdate = true;
+        this.ownedTextures.push(tex);
+
+        const capGeo = this.trackGeo(new THREE.CircleGeometry(0.28, 24));
+        const capMat = this.trackMat(
+          new THREE.MeshBasicMaterial({
+            map: tex,
+            polygonOffset: true,
+            polygonOffsetFactor: -2,
+          }),
+        );
+        const capMesh = new THREE.Mesh(capGeo, capMat);
+        capMesh.rotation.x = -Math.PI / 2;
+        capMesh.position.y = def.family === 'ASTRAL_QUANTUM' ? 0.64 : 0.38;
+        capMesh.userData = { nodeId: node.nodeId };
+        group.add(capMesh);
+      }
+    }
 
     // Generous invisible raycast hit target for crisp finger/mouse tapping
     const hitGeo = this.trackGeo(new THREE.CylinderGeometry(0.55, 0.55, 0.65, 12));

@@ -1606,6 +1606,16 @@ export class TrophyMedalVault3DV6 {
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
+
+    const nextPageSize = this.getPageSize();
+    if (this.gridEl && this.gridEl.childElementCount > 0 && this.gridEl.childElementCount !== nextPageSize) {
+      const items = this.getFilteredAwards();
+      const pageCount = Math.max(1, Math.ceil(items.length / nextPageSize));
+      if (this.pageIndex >= pageCount) {
+        this.pageIndex = pageCount - 1;
+      }
+      this.renderSpecimenPage();
+    }
   }
 
   private startLoop(): void {

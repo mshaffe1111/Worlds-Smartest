@@ -181,19 +181,26 @@ const INTEGRATION_CSS = `
 .v6-board-duel-strip {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+  flex: 1 1 260px;
 }
 
 .v6-board-score-chip {
   font-family: var(--v6-font-mono, monospace);
-  font-size: 11.5px;
+  font-size: clamp(10px, 2.7vw, 11.5px);
   font-weight: 800;
-  padding: 4px 9px;
+  padding: 3px 7px;
   border-radius: 8px;
   background: rgba(8, 10, 14, 0.88);
   border: 1px solid rgba(255, 255, 255, 0.16);
   color: #f8f4ea;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .v6-board-score-chip.is-you {
@@ -209,7 +216,43 @@ const INTEGRATION_CSS = `
 .v6-board-rival-cameo {
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  flex-shrink: 0;
+  gap: 0;
+}
+
+.v6-board-rival-cameo span,
+.v6-board-rival-cameo small,
+.v6-board-rival-cameo figcaption {
+  display: none !important;
+}
+
+@media (max-height: 430px) {
+  .v6-board-hud-shell {
+    padding: 3px 8px 4px;
+  }
+  .v6-board-top-deck {
+    padding: 4px 8px;
+    gap: 4px;
+    flex-wrap: nowrap;
+  }
+  .v6-board-title {
+    font-size: 13px;
+  }
+  .v6-board-rule-pill {
+    font-size: 9.5px;
+    padding: 1px 6px;
+  }
+  .v6-board-duel-strip {
+    flex: 0 1 auto;
+  }
+  .v6-board-bottom-dock {
+    padding: 4px 8px;
+    gap: 4px;
+  }
+  .v6-board-node-btn {
+    padding: 3px 5px;
+  }
 }
 
 .v6-board-stage-window {
@@ -607,7 +650,14 @@ export function bootShowtimeV6(
                 .join('')}
             </div>
             <div class="v6-board-controls-row">
-              <button type="button" class="v6-board-tactical-btn is-secondary" data-act="rotate-ring">ROTATE 3D RING</button>
+              ${
+                state.definition.family === 'CLOCKWORK_ROTARY' ||
+                state.definition.family === 'STEALTH_OPTICS_RADAR' ||
+                state.definition.family === 'CARNIVAL_ARCADE' ||
+                state.definition.family === 'ASTRAL_QUANTUM'
+                  ? `<button type="button" class="v6-board-tactical-btn is-secondary" data-act="rotate-ring">ROTATE 3D RING</button>`
+                  : ''
+              }
               ${heldFoils
                 .slice(0, 2)
                 .map(

@@ -24,6 +24,19 @@ export default defineConfig({
             }
             return 'vendor';
           }
+          if (normalized.includes('/src/v6/engine/')) return 'v6-engine';
+          if (normalized.includes('/src/v6/boards/')) return 'v6-boards';
+          if (normalized.includes('/src/v6/toys/')) return 'v6-toys';
+          if (
+            normalized.includes('/src/v6/ui/') ||
+            normalized.includes('/src/v6/fun/') ||
+            normalized.includes('/src/v6/story/')
+          ) {
+            return 'v6-ui-fun';
+          }
+          if (normalized.includes('/src/v6/corpus/') || normalized.includes('/src/v6/audio/')) {
+            return 'v6-corpus-audio';
+          }
           if (normalized.includes('/src/cinema/')) return 'cinema';
           if (normalized.includes('/src/meta/')) return 'meta';
           if (normalized.includes('/src/narrative/')) return 'narrative';

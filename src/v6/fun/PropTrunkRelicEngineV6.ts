@@ -685,8 +685,13 @@ function ensurePropTrunkStyles(): void {
   letter-spacing: 0.04em;
 }
 .v6tr-sub {
-  font-size: 10.5px;
+  font-size: 10px;
+  line-height: 1.18;
   color: #e6c6cf;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 .v6tr-cash-pill {
   font-family: "Courier New", monospace;
@@ -740,21 +745,21 @@ function ensurePropTrunkStyles(): void {
 }
 .v6tr-slots {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--v6tr-slot-cols, 4), minmax(0, 1fr));
   gap: 5px;
 }
 .v6tr-slot {
   border: 1.5px solid #b5893a;
   border-radius: 8px;
   background: linear-gradient(180deg, #3a111e 0%, #1c060d 100%);
-  padding: 5px 4px;
+  padding: 4px 3px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  gap: 3px;
+  gap: 2px;
   text-align: center;
-  min-height: 82px;
+  min-height: clamp(46px, 8.2dvh, 72px);
   cursor: grab;
 }
 .v6tr-slot.empty {
@@ -829,14 +834,20 @@ function ensurePropTrunkStyles(): void {
   border: 1.5px solid #c99a44;
   border-radius: 10px;
   background: linear-gradient(160deg, #33101b 0%, #17050a 100%);
-  padding: 6px;
+  padding: clamp(3px, 0.7dvh, 6px) 5px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
   text-align: center;
-  gap: 3px;
+  gap: 2px;
+  min-height: 0;
   overflow: hidden;
+}
+.v6tr-item-card svg {
+  width: clamp(18px, 3.2dvh, 28px);
+  height: clamp(18px, 3.2dvh, 28px);
+  flex-shrink: 0;
 }
 .v6tr-item-card.foil {
   --hx: 50%;
@@ -849,13 +860,14 @@ function ensurePropTrunkStyles(): void {
 .v6tr-buy-btn {
   appearance: none;
   width: 100%;
+  flex-shrink: 0;
   border: 1.5px solid #ffe074;
-  border-radius: 7px;
+  border-radius: 6px;
   background: linear-gradient(180deg, #f0be4a 0%, #b57a16 100%);
   color: #190f04;
-  font-size: 10.5px;
+  font-size: clamp(9px, 1.45dvh, 10.5px);
   font-weight: 900;
-  padding: 4px 6px;
+  padding: clamp(2px, 0.45dvh, 4px) 5px;
   cursor: pointer;
 }
 .v6tr-buy-btn:disabled {
@@ -1032,7 +1044,7 @@ export function mountPropTrunkViewV6(
             <span>L→R ORDER SIM (200 CHIPS): ${sim.finalChips} × ${sim.finalMult.toFixed(2)}</span>
             <span style="color:#6df7b8;">= $${sim.totalPayout.toLocaleString('en-US')}</span>
           </div>
-          <div class="v6tr-slots" id="v6trSlots">${slotsHtml}</div>
+          <div class="v6tr-slots" id="v6trSlots" style="--v6tr-slot-cols:${state.maxRelicSlots};">${slotsHtml}</div>
           <div style="display:flex;justify-content:space-between;font-size:10px;color:#d9b5c0;font-weight:700;">
             <span>FOIL HAND: ${state.ownedFoilCardIds.length}/${state.maxFoilSlots} (${state.ownedFoilCardIds.map((id) => FOIL_CARDS_BY_ID.get(id)?.name ?? '').filter(Boolean).join(', ') || 'EMPTY'})</span>
             <span>HEAT ${state.stageHeat}</span>

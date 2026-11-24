@@ -5,8 +5,8 @@
  * Zero hardcoded leading-slash paths — every URL derives from registration.scope
  * ============================================================================ */
 
-const SHELL_CACHE = 'ws-meridian-shell-v6-r1';
-const DATA_CACHE = 'ws-meridian-data-v6-r1';
+const SHELL_CACHE = 'ws-meridian-shell-v6-r2';
+const DATA_CACHE = 'ws-meridian-data-v6-r2';
 const VALID_CACHES = new Set([SHELL_CACHE, DATA_CACHE]);
 
 const NAVIGATION_TIMEOUT_MS = 2500;

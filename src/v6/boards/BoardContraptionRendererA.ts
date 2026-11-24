@@ -2298,7 +2298,8 @@ export class BoardContraptionRendererA {
           metalness: 0.5,
         })
       );
-      for (const [bx, bz] of grav.bumperPositions ?? []) {
+      for (const [rawBx, bz] of grav.bumperPositions ?? []) {
+        const bx = Math.abs(rawBx) < 0.32 ? (rawBx >= 0 ? 0.56 : -0.56) : rawBx;
         const bumper = new THREE.Mesh(bumperGeo, bumperCapMat);
         bumper.position.set(bx, 0.34 - bz * Math.sin(tiltRad), bz);
         bumper.castShadow = true;
@@ -2717,8 +2718,9 @@ export class BoardContraptionRendererA {
       bodyMesh = new THREE.Mesh(this.trackGeo(createBeveledHexGeometry(0.4, 0.14)), this.crystalMat);
       rimMesh = new THREE.Mesh(this.trackGeo(createBeveledHexGeometry(0.43, 0.07)), rimMat);
       rimMesh.position.y = -0.02;
-      plaqueMesh = new THREE.Mesh(this.trackGeo(new THREE.CylinderGeometry(0.28, 0.28, 0.02, 6)), plaqueMat);
-      plaqueMesh.position.y = 0.165;
+      plaqueMesh = new THREE.Mesh(this.trackGeo(new THREE.CircleGeometry(0.28, 6)), plaqueMat);
+      plaqueMesh.rotation.x = -Math.PI / 2;
+      plaqueMesh.position.y = 0.148;
     } else if (visualKind === 'STANDING_DOMINO') {
       const domGeo = this.trackGeo(new THREE.BoxGeometry(0.36, 0.62, 0.12));
       domGeo.translate(0, 0.31, 0); // Pivot at bottom edge for realistic rigid-body toppling!

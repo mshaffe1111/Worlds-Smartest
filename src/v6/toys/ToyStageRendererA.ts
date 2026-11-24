@@ -566,16 +566,19 @@ function ensureStylesInjected(): void {
   overflow: hidden;
 }
 .v6ta-cat-tag {
-  font-size: clamp(9.5px, 2.2vw, 11px);
+  font-size: clamp(9px, 2vw, 10.5px);
   font-weight: 800;
-  letter-spacing: 0.11em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #110d05;
   background: linear-gradient(135deg, #f6d57d 0%, #d29f42 100%);
-  padding: 2px 7px;
+  padding: 2px 6px;
   border-radius: 4px;
   white-space: nowrap;
-  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 118px;
+  flex-shrink: 1;
 }
 .v6ta-callout {
   font-family: 'Cinzel', Georgia, serif;
@@ -902,24 +905,25 @@ function ensureStylesInjected(): void {
 }
 .v6ta-wire-visual {
   position: relative;
-  width: clamp(54px, 16vw, 96px);
-  height: 22px;
+  width: clamp(66px, 18vw, 108px);
+  height: 24px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
 }
 .v6ta-wire-cable {
   width: 100%;
-  height: 11px;
-  border-radius: 6px;
+  height: 13px;
+  border-radius: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
   background-image: repeating-linear-gradient(
     45deg,
-    rgba(255, 255, 255, 0.22) 0px,
-    rgba(255, 255, 255, 0.22) 4px,
-    rgba(0, 0, 0, 0.25) 4px,
-    rgba(0, 0, 0, 0.25) 8px
+    rgba(255, 255, 255, 0.28) 0px,
+    rgba(255, 255, 255, 0.28) 4px,
+    rgba(0, 0, 0, 0.34) 4px,
+    rgba(0, 0, 0, 0.34) 8px
   );
-  box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.35), 0 3px 6px rgba(0, 0, 0, 0.65);
+  box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.45), 0 4px 8px rgba(0, 0, 0, 0.72);
   transition: transform 0.2s ease, opacity 0.2s ease;
   position: relative;
 }

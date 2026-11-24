@@ -615,26 +615,13 @@ const WORLD_GEO_TUPLES_V6: readonly GeoTupleV6[] = [
   ['Waterloo', 50.6806, 4.412, 'Belgium'],
   ['Normandy', 49.3697, -0.8711, 'Northern France'],
   ['Thermopylae', 38.7966, 22.5367, 'Central Greece'],
-  ['Ancient Rome', 41.9028, 12.4964, 'Italian Peninsula'],
-  ['Ancient Egypt', 30.0444, 31.2357, 'Nile Valley'],
-  ['Ancient Greece', 37.9838, 23.7275, 'Aegean Basin'],
-  ['Byzantine Empire', 41.0082, 28.9784, 'Constantinople / Eastern Med'],
-  ['Ottoman Empire', 41.0082, 28.9784, 'Anatolia / Istanbul'],
-  ['Inca Empire', -13.5319, -71.9675, 'Andean South America'],
-  ['Aztec Empire', 19.4326, -99.1332, 'Central Mexico'],
-  ['British Empire', 51.5074, -0.1278, 'London, UK'],
-  ['Roman Empire', 41.9028, 12.4964, 'Rome / Mediterranean'],
-  ['Mongol Empire', 47.2, 102.85, 'Central Asian Steppe'],
-  ['Ming Dynasty', 39.9042, 116.4074, 'China'],
-  ['Gupta Empire', 25.5941, 85.1376, 'Northern India'],
   ['U.S.A.', 38.9072, -77.0369, 'North America'],
   ['USA', 38.9072, -77.0369, 'North America'],
   ['UK', 51.5074, -0.1278, 'Western Europe'],
   ['UAE', 24.4539, 54.3773, 'Middle East'],
-  ['Soviet Union', 55.7558, 37.6173, 'Eurasia'],
   ['Prussia', 52.52, 13.405, 'Northern Germany'],
-  ['Republic of Venice', 45.4408, 12.3155, 'Northern Italy'],
-  ['Republic of Florence', 43.7696, 11.2558, 'Tuscany, Italy'],
+  ['Venice', 45.4408, 12.3155, 'Northern Italy'],
+  ['Florence', 43.7696, 11.2558, 'Tuscany, Italy'],
 ];
 
 const GEO_LOOKUP_MAP_V6 = new Map<string, GeoCoordV6>();
@@ -725,9 +712,9 @@ export const HOST_CLUE_FRAMERS_V6: readonly HostClueFramerV6[] = [
   { id: 'dia_02', toyFamily: 'DIALS_CRYPTEX_LOCKS', build: (c) => `Vault's bolted shut—lock in the ${c.relationLabel} that unlocks ${c.subject}!` },
   { id: 'dia_03', toyFamily: 'DIALS_CRYPTEX_LOCKS', build: (c) => `Turn the safe wheel until it clicks: lock the ${c.relationLabel} for ${c.subject}.` },
   { id: 'dia_04', toyFamily: 'DIALS_CRYPTEX_LOCKS', requires: 'CRYPTEX', build: (c) => `Cryptex challenge on ${c.category}: spell out ${c.subject}'s ${c.relationLabel} to spring the latch!` },
-  { id: 'dia_05', toyFamily: 'DIALS_CRYPTEX_LOCKS', requires: 'NUMERIC', build: (c) => `Higher or lower, no peeking—zero the brass needle on ${c.subject}${c.eraBit}!` },
+  { id: 'dia_05', toyFamily: 'DIALS_CRYPTEX_LOCKS', requires: 'NUMERIC', build: (c) => (!c.unit || /year/i.test(c.unit) ? `Zero the brass needle: in what year did ${c.subject} make history?` : `Zero the brass gauge: what is the ${c.unit} for ${c.subject}?`) },
   { id: 'dia_06', toyFamily: 'DIALS_CRYPTEX_LOCKS', build: (c) => `Locksmith's spotlight: line up the ${c.relationLabel} that matches ${c.subject}.` },
-  { id: 'dia_07', toyFamily: 'DIALS_CRYPTEX_LOCKS', requires: 'NUMERIC', build: (c) => `Close wins chips, bullseye wins glory—spin the dial for ${c.subject}!` },
+  { id: 'dia_07', toyFamily: 'DIALS_CRYPTEX_LOCKS', requires: 'NUMERIC', build: (c) => (!c.unit || /year/i.test(c.unit) ? `Close wins chips, bullseye wins glory—dial the landmark year for ${c.subject}!` : `Spin the brass dial to the exact ${c.unit} of ${c.subject}!`) },
   { id: 'dia_08', toyFamily: 'DIALS_CRYPTEX_LOCKS', build: (c) => `Click the combination into place: what ${c.relationLabel} belongs to ${c.subject}?` },
   { id: 'dia_09', toyFamily: 'DIALS_CRYPTEX_LOCKS', build: (c) => `Crack the studio safe! Give me the ${c.relationLabel} behind ${c.subject}${c.eraBit}.` },
 
@@ -750,6 +737,8 @@ export const HOST_CLUE_FRAMERS_V6: readonly HostClueFramerV6[] = [
   { id: 'chr_06', toyFamily: 'WAGER_SCALE_CHRONOLOGY', requires: 'CHRONOLOGY', build: (c) => `Four rungs, one true sequence: anchor the oldest ${c.category} milestone at the bottom!` },
   { id: 'chr_07', toyFamily: 'WAGER_SCALE_CHRONOLOGY', build: (c) => `Weigh your instincts on ${c.subject}—which ${c.relationLabel} balances the studio scale?` },
   { id: 'chr_08', toyFamily: 'WAGER_SCALE_CHRONOLOGY', build: (c) => `Set your wager on ${c.category}: lock in the true ${c.relationLabel} of ${c.subject}${c.eraBit}!` },
+  { id: 'chr_09', toyFamily: 'WAGER_SCALE_CHRONOLOGY', requires: 'NUMERIC', build: (c) => (!c.unit || /year/i.test(c.unit) ? `Stop before the cliff! Dial the exact year ${c.subject} made history.` : `Stop before the cliff! Dial the exact ${c.unit} for ${c.subject}.`) },
+  { id: 'chr_10', toyFamily: 'WAGER_SCALE_CHRONOLOGY', requires: 'NUMERIC', build: (c) => (!c.unit || /year/i.test(c.unit) ? `Pin the timeline! What landmark year belongs to ${c.subject}?` : `Weigh it to the mark: what is the ${c.unit} of ${c.subject}?`) },
 
   // === 6. FORENSIC_DETECTIVE (8 Spot-the-Host's-Lie Framers) ===
   { id: 'for_01', toyFamily: 'FORENSIC_DETECTIVE', requires: 'LIE', build: (c) => `The host slipped ONE sneaky fib into this ${c.category} cue card—tap the lying word!` },
@@ -1707,15 +1696,71 @@ export class QuestionEngineV6 {
     return { stageNumber, targetBand, minStar, maxStar, toyFamily };
   }
 
+  private normalizeDrawOptionsForToy(opts: DrawClueOptionsV6): DrawClueOptionsV6 {
+    const toyId = (opts.toyId ?? '').toLowerCase();
+    const numericToyIds = new Set([
+      'toy_23_brass_tachometer_270',
+      'toy_27_combination_padlock',
+      'toy_29_vernier_caliper_gauge',
+      'toy_47_year_vise_clamp',
+      'toy_51_yodel_cliffhanger',
+      'toy_52_higher_lower_cards',
+      'toy_59_century_timeline_pin',
+      'toy_60_exact_change_tray',
+    ]);
+    const cryptexToyIds = new Set([
+      'toy_21_brass_cryptex_tumbler',
+      'toy_21_brass_cryptex',
+      'toy_25_missing_vowel_marquee',
+      'toy_26_anagram_brass_rail',
+    ]);
+    const binaryToyIds = new Set([
+      'toy_31_spring_paddles_dis_dat',
+      'toy_34_conveyor_lr_sorter',
+      'toy_40_hot_mic_rapid_blitz',
+      'toy_58_venn_sorter',
+      'toy_95_defibrillator_blitz',
+      'toy_98_bidding_war_rival',
+    ]);
+    const chronologyToyIds = new Set([
+      'toy_53_chronology_snap',
+      'toy_57_tower_stack',
+    ]);
+    const lieToyIds = new Set([
+      'toy_91_spot_hosts_lie',
+    ]);
+
+    const isAtlas =
+      Boolean(opts.requireGeoTarget) ||
+      opts.toyFamily === 'ATLAS_RELIEF_SPATIAL' ||
+      /^toy_1\d_|^toy_20_/.test(toyId);
+
+    return {
+      ...opts,
+      requireGeoTarget: isAtlas || opts.requireGeoTarget,
+      requireNumericTarget: opts.requireNumericTarget ?? numericToyIds.has(toyId),
+      requireCryptexWord: opts.requireCryptexWord ?? cryptexToyIds.has(toyId),
+      requireBinaryPair: opts.requireBinaryPair ?? binaryToyIds.has(toyId),
+      requireChronology: opts.requireChronology ?? chronologyToyIds.has(toyId),
+      requireCorruptedLie: opts.requireCorruptedLie ?? lieToyIds.has(toyId),
+    };
+  }
+
   private matchesToyRequirements(clue: CalibratedClueV6, opts: DrawClueOptionsV6): boolean {
     if (opts.requireGeoTarget || opts.toyFamily === 'ATLAS_RELIEF_SPATIAL') {
       if (!clue.geoTarget) return false;
+      if (/^what (title|rank|office|currency|word|term)\b/i.test(clue.prompt.trim())) return false;
     }
     if (opts.requireCryptexWord) {
       if (!clue.cryptexWord || !/^[A-Z]{4,8}$/.test(clue.cryptexWord)) return false;
     }
     if (opts.requireNumericTarget) {
       if (clue.numericTarget === undefined || !Number.isFinite(clue.numericTarget)) return false;
+      const roundedAbs = Math.abs(Math.round(clue.numericTarget));
+      if (new RegExp(`\\b${roundedAbs}\\b`).test(clue.prompt)) return false;
+      if (opts.toyId === 'toy_27_combination_padlock' && (clue.numericTarget < 0 || clue.numericTarget > 9999)) {
+        return false;
+      }
     }
     if (opts.requireChronology) {
       if (!clue.chronologyItems || clue.chronologyItems.length < 4) return false;
@@ -1725,6 +1770,10 @@ export class QuestionEngineV6 {
     }
     if (opts.requireCorruptedLie) {
       if (!clue.corruptedLieWord) return false;
+      const { sentenceWithLie, lieToken } = clue.corruptedLieWord;
+      if (!sentenceWithLie || !lieToken) return false;
+      if (/answer to this spotlight clue/i.test(sentenceWithLie)) return false;
+      if (!sentenceWithLie.toLowerCase().includes(lieToken.toLowerCase())) return false;
     }
     return true;
   }
@@ -1766,11 +1815,17 @@ export class QuestionEngineV6 {
         if (pass === 0 && (clue.difficultyScore < minStar - 0.35 || clue.difficultyScore > maxStar + 0.35)) {
           continue;
         }
-        if (opts.toyId && clue.recommendedToyIds && clue.recommendedToyIds.length > 0 && pass === 0) {
-          if (!clue.recommendedToyIds.includes(opts.toyId)) continue;
+        if (opts.requireNumericTarget && pass === 0) {
+          const ans = clue.choices[clue.correctIndex] ?? '';
+          const asksNumber =
+            /\d/.test(ans) ||
+            /\b(how many|what year|which year|in what year|how old|how long|how tall|how deep|what number|what percentage|what speed)\b/i.test(
+              clue.prompt,
+            );
+          if (!asksNumber) continue;
         }
         if (!this.matchesToyRequirements(clue, opts)) continue;
-        return this.enrichClueForActiveToy(clue, opts.toyFamily ?? 'DEFUSAL_ELIMINATION', rng);
+        return this.enrichClueForActiveToy(clue, opts.toyFamily ?? 'DEFUSAL_ELIMINATION', rng, opts);
       }
     }
     return null;
@@ -2094,6 +2149,7 @@ export class QuestionEngineV6 {
 
     // Synthesize Spot-the-Host's-Lie sentence corruptor (100% verbatim lieToken!)
     const eraTag = yearVal !== undefined && !isMathInline ? ` (${yearVal})` : '';
+    const eraTagForPrompt = opts.requireNumericTarget ? '' : eraTag;
     const lieToken = distractors[0];
     const sentenceWithLie = sanitizeTriviaCopy(sem.humanFactSentence(subject, lieToken, eraTag));
     const corruptedLieWord =
@@ -2105,26 +2161,29 @@ export class QuestionEngineV6 {
           }
         : undefined;
 
-    // Select a punchy Human TV-Host Stage Clue Framer strictly synchronized to populated payloads!
+    // Select a punchy Human TV-Host Stage Clue Framer strictly synchronized to the ACTIVE toy mechanic!
     const isFramerCompatible = (f: HostClueFramerV6): boolean => {
       if (!f.requires) return true;
       switch (f.requires) {
         case 'NUMERIC':
-          return numericTarget !== undefined;
+          return Boolean(opts.requireNumericTarget) && numericTarget !== undefined;
         case 'CRYPTEX':
-          return Boolean(cryptexWord);
+          return Boolean(opts.requireCryptexWord) && Boolean(cryptexWord);
         case 'BINARY':
-          return Boolean(binaryPair && binaryPair.optionA && binaryPair.optionB);
+          return Boolean(opts.requireBinaryPair) && Boolean(binaryPair && binaryPair.optionA && binaryPair.optionB);
         case 'CHRONOLOGY':
-          return Boolean(chronologyItems && chronologyItems.length >= 4);
+          return Boolean(opts.requireChronology) && Boolean(chronologyItems && chronologyItems.length >= 4);
         case 'GEO':
-          return Boolean(geoTarget);
+          return Boolean(opts.requireGeoTarget || toyFamily === 'ATLAS_RELIEF_SPATIAL') && Boolean(geoTarget);
         case 'LIE':
-          return Boolean(corruptedLieWord);
+          return Boolean(opts.requireCorruptedLie) && Boolean(corruptedLieWord);
       }
     };
     const specializedFramers = HOST_CLUE_FRAMERS_V6.filter(
-      (f) => f.toyFamily === toyFamily && f.requires !== undefined && isFramerCompatible(f),
+      (f) =>
+        (f.toyFamily === toyFamily || (opts.requireNumericTarget && f.requires === 'NUMERIC') || (opts.requireCorruptedLie && f.requires === 'LIE')) &&
+        f.requires !== undefined &&
+        isFramerCompatible(f),
     );
     const compatibleFamilyFramers =
       specializedFramers.length > 0
@@ -2134,7 +2193,7 @@ export class QuestionEngineV6 {
       compatibleFamilyFramers.length > 0
         ? compatibleFamilyFramers
         : HOST_CLUE_FRAMERS_V6.filter((f) => !f.requires);
-    const framer = framerPool[fnv1a32(`V6_FRAMER:${denseQid}:${toyFamily}`) % framerPool.length];
+    const framer = framerPool[fnv1a32(`V6_FRAMER:${denseQid}:${toyFamily}:${opts.toyId ?? ''}`) % framerPool.length];
 
     let prompt: string;
     if (isMathInline) {
@@ -2151,7 +2210,7 @@ export class QuestionEngineV6 {
         framer.build({
           subject,
           relationLabel: sem.relationLabel,
-          eraBit: eraTag,
+          eraBit: eraTagForPrompt,
           category: meta.categoryLabel,
           answer,
           unit: numericUnit,
@@ -2427,7 +2486,7 @@ export class QuestionEngineV6 {
             regionHint: gp.regionHint,
             landmarkLabel: gp.targetLabel ?? answer,
           }
-        : lookupGeoCoordV6(answer, prompt);
+        : lookupGeoCoordV6(answer);
 
     const cal = (rec.calibratorExt ?? rec.pinpoint) as
       | { exactVal?: number; minVal?: number; maxVal?: number; unit?: string; unitLabel?: string }
@@ -2439,7 +2498,8 @@ export class QuestionEngineV6 {
 
     const cryptexWord = extractCleanCryptexWordV6(answer);
     const lieToken = distractors[0];
-    const sentenceWithLie = sanitizeTriviaCopy(`In ${catRaw.toLowerCase()}, the answer to this spotlight clue is ${lieToken}.`);
+    const cleanLead = prompt.replace(/\?+$/, '').trim().slice(0, 82);
+    const sentenceWithLie = sanitizeTriviaCopy(`${cleanLead} — Julian's cue card insists the answer is ${lieToken} tonight.`);
 
     const rawClues = Array.isArray(rec.clues) ? (rec.clues as string[]) : [];
     const h1 = sanitizeTriviaCopy(rawClues[0] ?? String(rec.helpfulHint ?? `Category check: ${catRaw}.`));
@@ -2486,8 +2546,9 @@ export class QuestionEngineV6 {
 
   private enrichClueForActiveToy(
     clue: CalibratedClueV6,
-    _toyFamily: ToyFamilyIdV6,
+    toyFamily: ToyFamilyIdV6,
     _rng: FastRngV6,
+    opts?: DrawClueOptionsV6,
   ): CalibratedClueV6 {
     const correctIdx = Math.max(0, Math.min(clue.choices.length - 1, clue.correctIndex));
     const wrongWireIndices =
@@ -2496,11 +2557,33 @@ export class QuestionEngineV6 {
         : [0, 1, 2, 3].filter((i) => i !== correctIdx);
     const ans = clue.choices[correctIdx] ?? '';
     const cryptexWord = clue.cryptexWord ?? extractCleanCryptexWordV6(ans);
-    const geoTarget = clue.geoTarget ?? lookupGeoCoordV6(ans, clue.prompt);
+    const geoTarget = clue.geoTarget ?? lookupGeoCoordV6(ans);
     const asidePool = WITTY_ASIDES_BY_DOMAIN_V6[clue.domainId] ?? WITTY_ASIDES_BY_DOMAIN_V6[0];
+
+    let framedPrompt = clue.prompt;
+    if (opts?.requireNumericTarget && clue.numericTarget !== undefined) {
+      const asksNumberAlready =
+        /\d/.test(ans) ||
+        /\b(how many|what year|which year|in what year|how old|how long|how tall|how deep|what number|what percentage|what speed|dial the|zero the|spin the brass)\b/i.test(
+          framedPrompt,
+        );
+      if (!asksNumberAlready) {
+        const isYear = !clue.numericUnit || /year|ad|ce/i.test(clue.numericUnit);
+        framedPrompt = isYear
+          ? `Dial the landmark year tied to ${ans}: ${framedPrompt}`
+          : `Dial the exact ${clue.numericUnit} for ${ans}: ${framedPrompt}`;
+      }
+    } else if (
+      (opts?.requireGeoTarget || toyFamily === 'ATLAS_RELIEF_SPATIAL') &&
+      geoTarget &&
+      !/\b(where|pin|pinpoint|locate|globe|map|coordinates|latitude|hemisphere|bearing|utc)\b/i.test(framedPrompt)
+    ) {
+      framedPrompt = `${framedPrompt.replace(/\.\s*$/, '')} — Pinpoint it on the globe!`;
+    }
+
     return {
       ...clue,
-      prompt: clampPrompt140(clue.prompt),
+      prompt: clampPrompt140(framedPrompt),
       wrongWireIndices,
       ...(cryptexWord ? { cryptexWord } : {}),
       ...(geoTarget ? { geoTarget } : {}),
@@ -2518,10 +2601,11 @@ export class QuestionEngineV6 {
    *  - Interleaves `prime_time_witty_clues_v6.json` + `1.27M` fame-calibrated shards + curated packs
    *  - Immediately marks every served `qid` in the 160 KB `SeenQuestionBitsetLedger` (0 repeats!)
    */
-  public async drawClue(opts: DrawClueOptionsV6 = {}): Promise<CalibratedClueV6> {
+  public async drawClue(rawOpts: DrawClueOptionsV6 = {}): Promise<CalibratedClueV6> {
     if (!this.initialized) {
       await this.init();
     }
+    const opts = this.normalizeDrawOptionsForToy(rawOpts);
     const rng = new FastRngV6(opts.seed);
     const { stageNumber, targetBand, minStar, maxStar, toyFamily } = this.resolveTargetWindow(opts);
     const shouldMark = opts.markSeen !== false;
@@ -2630,7 +2714,8 @@ export class QuestionEngineV6 {
   }
 
   /** Synchronous 0ms clue drawer (uses already-loaded shards/prime-time cache or warm built-in deck). */
-  public drawClueSync(opts: DrawClueOptionsV6 = {}): CalibratedClueV6 {
+  public drawClueSync(rawOpts: DrawClueOptionsV6 = {}): CalibratedClueV6 {
+    const opts = this.normalizeDrawOptionsForToy(rawOpts);
     const rng = new FastRngV6(opts.seed);
     const { stageNumber, targetBand, minStar, maxStar, toyFamily } = this.resolveTargetWindow(opts);
     const shouldMark = opts.markSeen !== false;

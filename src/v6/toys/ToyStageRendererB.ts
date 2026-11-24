@@ -85,10 +85,15 @@ function seededRand(seed: number): () => number {
 export function formatStageNumberV6(val: number, unit = '', min = 0, max = 2500): string {
   const safe = Number.isFinite(val) ? Math.round(val) : 0;
   const u = unit.trim();
-  const isYear = (u === '' || u.toLowerCase() === 'ce' || u.toLowerCase() === 'ad' || u.toLowerCase() === 'yr')
-    && min >= 400 && max <= 2400 && safe >= 400 && safe <= 2400;
+  const ul = u.toLowerCase();
+  const isYear =
+    (u === '' || ul === 'ce' || ul === 'ad' || ul === 'yr' || ul === 'year' || ul === 'years') &&
+    min >= 400 &&
+    max <= 2400 &&
+    safe >= 400 &&
+    safe <= 2400;
   const numStr = isYear ? String(safe) : safe.toLocaleString('en-US');
-  if (!u) return numStr;
+  if (!u || (isYear && (ul === 'year' || ul === 'years' || ul === 'yr'))) return numStr;
   if (u === '%' || u === '°' || u === '°C' || u === '°F') return `${numStr}${u}`;
   return `${numStr} ${u}`;
 }
@@ -258,8 +263,27 @@ interface DerivedLiePayload {
 
 function deriveHostLiePayload(clue: CalibratedClueV6): DerivedLiePayload {
   if (clue.corruptedLieWord && clue.corruptedLieWord.sentenceWithLie && clue.corruptedLieWord.lieToken) {
-    const rawTokens = clue.corruptedLieWord.sentenceWithLie.split(/\s+/).filter(Boolean);
-    const needle = clue.corruptedLieWord.lieToken.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const sentence = clue.corruptedLieWord.sentenceWithLie.trim();
+    const phrase = clue.corruptedLieWord.lieToken.trim();
+    const lowerSent = sentence.toLowerCase();
+    const lowerPhrase = phrase.toLowerCase();
+    const matchPos = lowerSent.indexOf(lowerPhrase);
+
+    if (matchPos >= 0 && phrase.length > 0) {
+      const before = sentence.slice(0, matchPos).trim().split(/\s+/).filter(Boolean);
+      const exactSpan = sentence.slice(matchPos, matchPos + phrase.length).trim();
+      const after = sentence.slice(matchPos + phrase.length).trim().split(/\s+/).filter(Boolean);
+      const combined = [...before, exactSpan, ...after];
+      return {
+        tokens: combined,
+        lieIndex: before.length,
+        lieToken: exactSpan,
+        truthCorrection: clue.corruptedLieWord.truthCorrection,
+      };
+    }
+
+    const rawTokens = sentence.split(/\s+/).filter(Boolean);
+    const needle = lowerPhrase.replace(/[^a-z0-9]/g, '');
     let lieIdx = rawTokens.findIndex(
       (t) => t.toLowerCase().replace(/[^a-z0-9]/g, '') === needle,
     );
@@ -418,22 +442,25 @@ function ensureToyBStyles(): void {
   overflow: hidden;
 }
 .v6tb-toy-tag {
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 2px 7px;
+  padding: 2px 6px;
   border-radius: 999px;
   background: linear-gradient(180deg, #f3ca67 0%, #b88425 100%);
   color: #181006;
   white-space: nowrap;
-  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 132px;
+  flex-shrink: 1;
 }
 .v6tb-twist-pill {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 900;
-  letter-spacing: 0.07em;
-  padding: 2px 6px;
+  letter-spacing: 0.06em;
+  padding: 2px 5px;
   border-radius: 999px;
   background: #c92642;
   color: #fff6f7;
@@ -984,7 +1011,10 @@ function buildCliffhangerDial(ctx: ToyBuildContext): void {
   const maxSteps = 25;
 
   ctx.stageEl.innerHTML = `
-    <div class="v6tb-visual-bay" style="flex-direction:column;padding:6px;">
+    <div class="v6tb-visual-bay" style="position:relative;flex-direction:column;padding:6px;">
+      <div id="v6chStatus" style="position:absolute;top:8px;left:12px;z-index:2;font-size:10px;font-weight:900;color:#ffe5a3;letter-spacing:0.04em;">STEP 0 / 25 — SET YOUR ESTIMATE</div>
+      <div style="position:absolute;top:8px;right:12px;z-index:2;font-size:9px;font-weight:900;color:#ff7583;">DROP &gt;25</div>
+      <div style="position:absolute;bottom:8px;right:68px;z-index:2;font-size:8.5px;font-weight:800;color:#ffe18c;">SAFE EDGE</div>
       <svg viewBox="0 0 360 118" width="100%" height="100%" style="max-height:145px;">
         <defs>
           <linearGradient id="v6chSky" x1="0" y1="0" x2="0" y2="1">
@@ -997,15 +1027,12 @@ function buildCliffhangerDial(ctx: ToyBuildContext): void {
         <rect x="0" y="0" width="360" height="118" fill="url(#v6chSky)" rx="6"/>
         <polygon points="10,112 292,22 292,112" fill="url(#v6chMtn)" stroke="#d9aa4d" stroke-width="2"/>
         <line x1="292" y1="22" x2="352" y2="22" stroke="#ff4757" stroke-width="1.5" stroke-dasharray="4 3"/>
-        <text x="322" y="16" fill="#ff7583" font-size="9" font-weight="900" text-anchor="middle">DROP 25</text>
-        <text x="292" y="108" fill="#ffe18c" font-size="9" font-weight="800" text-anchor="end">SAFE EDGE</text>
         <g id="v6chTicks"></g>
         <g id="v6chClimber" transform="translate(18, 102)">
           <circle cx="0" cy="-14" r="5" fill="#ffe3a3" stroke="#181006" stroke-width="1.5"/>
           <path d="M-5,-8 L5,-8 L7,2 L-7,2 Z" fill="#e63946" stroke="#fff3c4" stroke-width="1"/>
           <line x1="6" y1="-10" x2="11" y2="3" stroke="#f0c453" stroke-width="2"/>
         </g>
-        <text id="v6chStatus" x="14" y="20" fill="#ffe5a3" font-size="11" font-weight="800">STEP 0 / 25 — SET YOUR ESTIMATE</text>
       </svg>
     </div>
     <div class="v6tb-row" style="justify-content:center;gap:8px;">
@@ -1024,7 +1051,7 @@ function buildCliffhangerDial(ctx: ToyBuildContext): void {
 
   const readoutEl = ctx.stageEl.querySelector<HTMLElement>('#v6chReadout')!;
   const climberEl = ctx.stageEl.querySelector<SVGGElement>('#v6chClimber')!;
-  const statusEl = ctx.stageEl.querySelector<SVGTextElement>('#v6chStatus')!;
+  const statusEl = ctx.stageEl.querySelector<HTMLElement>('#v6chStatus')!;
   const lockBtn = ctx.stageEl.querySelector<HTMLButtonElement>('#v6chLock')!;
 
   const span = Math.max(1, num.max - num.min);
@@ -1304,7 +1331,9 @@ function buildApothecaryBalance(ctx: ToyBuildContext): void {
       tiltDeg = choices[placedIdx].isCorrect ? 0 : (placedIdx % 2 === 0 ? 11 : -8);
     }
     ctx.stageEl.innerHTML = `
-      <div class="v6tb-visual-bay" style="padding:4px;">
+      <div class="v6tb-visual-bay" style="position:relative;padding:4px;">
+        <div style="position:absolute;top:6px;left:12px;font-size:9.5px;font-weight:900;color:#fff3cf;">LEFT PAN: CLUE</div>
+        <div style="position:absolute;top:6px;right:12px;font-size:9.5px;font-weight:900;color:#5cf2be;">RIGHT PAN: ${placedIdx === null ? 'EMPTY' : `WT #${placedIdx + 1}`}</div>
         <svg viewBox="0 0 340 105" width="100%" height="100%" style="max-height:130px;">
           <line x1="170" y1="22" x2="170" y2="96" stroke="#d8a846" stroke-width="6" stroke-linecap="round"/>
           <rect x="132" y="92" width="76" height="8" rx="4" fill="#a87622"/>
@@ -1313,11 +1342,9 @@ function buildApothecaryBalance(ctx: ToyBuildContext): void {
             <line x1="65" y1="28" x2="50" y2="66" stroke="#c89a40" stroke-width="1.5"/>
             <line x1="65" y1="28" x2="80" y2="66" stroke="#c89a40" stroke-width="1.5"/>
             <path d="M38 66 Q65 82 92 66 Z" fill="#b88425" stroke="#ffe599" stroke-width="1.5"/>
-            <text x="65" y="60" fill="#fff3cf" font-size="9" font-weight="900" text-anchor="middle">CLUE</text>
             <line x1="275" y1="28" x2="260" y2="66" stroke="#c89a40" stroke-width="1.5"/>
             <line x1="275" y1="28" x2="290" y2="66" stroke="#c89a40" stroke-width="1.5"/>
             <path d="M248 66 Q275 82 302 66 Z" fill="#b88425" stroke="#ffe599" stroke-width="1.5"/>
-            <text x="275" y="60" fill="#5cf2be" font-size="9" font-weight="900" text-anchor="middle">${placedIdx === null ? 'EMPTY' : `WT #${placedIdx + 1}`}</text>
           </g>
           <circle cx="170" cy="28" r="6" fill="#ffe494" stroke="#3a2308" stroke-width="2"/>
         </svg>
@@ -1376,21 +1403,21 @@ function buildBraidedSwitchboard(ctx: ToyBuildContext): void {
     const cordPath = `M 42 55 C 125 55, 130 ${endY}, 238 ${endY}`;
     ctx.stageEl.innerHTML = `
       <div class="v6tb-row" style="flex:1 1 0;min-height:0;align-items:stretch;">
-        <div class="v6tb-visual-bay" style="flex:0 0 46%;min-height:0;">
+        <div class="v6tb-visual-bay" style="position:relative;flex:0 0 46%;min-height:0;">
+          <div style="position:absolute;bottom:6px;left:10px;font-size:9px;font-weight:900;color:#f7d58b;">${patchedIdx !== null ? `PATCHED → J${patchedIdx + 1}` : 'TAP A JACK →'}</div>
           <svg viewBox="0 0 260 112" width="100%" height="100%">
             <circle cx="34" cy="55" r="14" fill="#3a2811" stroke="#f4c458" stroke-width="3"/>
             <circle cx="34" cy="55" r="5" fill="#38e49b"/>
-            <text x="34" y="84" fill="#f7d58b" font-size="9" font-weight="900" text-anchor="middle">LIVE CLUE</text>
             ${[0, 1, 2, 3].map((i) => {
               const cy = 16 + i * 28;
               const active = patchedIdx === i;
-              return `<circle cx="238" cy="${cy}" r="9" fill="${active ? '#28c77f' : '#261a10'}" stroke="#e6b64c" stroke-width="2.5"/><text x="220" y="${cy + 3}" fill="#e9d2a2" font-size="9" font-weight="900" text-anchor="end">J${i + 1}</text>`;
+              return `<circle cx="238" cy="${cy}" r="9" fill="${active ? '#28c77f' : '#261a10'}" stroke="#e6b64c" stroke-width="2.5"/>`;
             }).join('')}
             ${patchedIdx !== null ? `
               <path d="${cordPath}" fill="none" stroke="rgba(56,228,155,0.35)" stroke-width="11" stroke-linecap="round"/>
               <path d="${cordPath}" fill="none" stroke="#38e49b" stroke-width="5" stroke-linecap="round"/>
               <path d="${cordPath}" fill="none" stroke="#fff3c4" stroke-width="1.5" stroke-dasharray="6 4"/>
-            ` : `<text x="135" y="59" fill="#c7b28a" font-size="10" font-weight="800" text-anchor="middle">TAP A JACK TO PATCH →</text>`}
+            ` : `<line x1="52" y1="55" x2="218" y2="55" stroke="rgba(244,196,88,0.28)" stroke-width="2" stroke-dasharray="4 4"/>`}
           </svg>
         </div>
         <div class="v6tb-stack" style="flex:1;justify-content:center;">
@@ -1536,13 +1563,17 @@ function buildVennSorter(ctx: ToyBuildContext): void {
         <div style="font-size:clamp(15px,2.5dvh,20px);font-weight:900;color:#fff7e0;text-align:center;padding:4px 10px;border:1.5px solid #f0c458;border-radius:8px;background:#1e1710;">
           ${escapeHtml(item.text)}
         </div>
-        <svg viewBox="0 0 300 72" width="100%" style="max-height:72px;">
-          <circle cx="112" cy="36" r="32" fill="rgba(56,228,155,0.22)" stroke="#38e49b" stroke-width="2"/>
-          <circle cx="188" cy="36" r="32" fill="rgba(240,196,88,0.22)" stroke="#f0c458" stroke-width="2"/>
-          <text x="90" y="39" fill="#9cf7ce" font-size="9" font-weight="900" text-anchor="middle">${escapeHtml(bin.optionA.slice(0, 11))}</text>
-          <text x="150" y="39" fill="#fff" font-size="8.5" font-weight="900" text-anchor="middle">BOTH</text>
-          <text x="210" y="39" fill="#ffe7a3" font-size="9" font-weight="900" text-anchor="middle">${escapeHtml(bin.optionB.slice(0, 11))}</text>
-        </svg>
+        <div style="position:relative;width:100%;max-height:72px;">
+          <svg viewBox="0 0 300 72" width="100%" style="max-height:72px;display:block;">
+            <circle cx="112" cy="36" r="32" fill="rgba(56,228,155,0.22)" stroke="#38e49b" stroke-width="2"/>
+            <circle cx="188" cy="36" r="32" fill="rgba(240,196,88,0.22)" stroke="#f0c458" stroke-width="2"/>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:14px;pointer-events:none;font-size:9.5px;font-weight:900;letter-spacing:0.04em;">
+            <span style="color:#9cf7ce;max-width:78px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(bin.optionA.slice(0, 11))}</span>
+            <span style="color:#ffffff;font-size:8.5px;">BOTH</span>
+            <span style="color:#ffe7a3;max-width:78px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(bin.optionB.slice(0, 11))}</span>
+          </div>
+        </div>
       </div>
       <div class="v6tb-grid-3">
         <button type="button" class="v6tb-lever-btn emerald" data-z="0">${escapeHtml(bin.optionA.slice(0, 12))}</button>
@@ -1728,10 +1759,10 @@ function buildTrapdoorChipSplit(ctx: ToyBuildContext): void {
               <div style="font-size:10px;font-weight:900;color:#d6c08d;">DOOR ${i + 1}</div>
               <div style="font-size:12px;font-weight:800;color:#fff7e6;line-height:1.2;">${escapeHtml(d.label)}</div>
               <div class="v6tb-nixie" style="font-size:17px;padding:2px 6px;">${stakes[i]}</div>
-              <div class="v6tb-row" style="justify-content:center;gap:4px;">
-                <button type="button" class="v6tb-knob-btn" data-door="${i}:-20" style="padding:4px 6px;min-width:28px;">-20</button>
-                <button type="button" class="v6tb-knob-btn" data-door="${i}:20" style="padding:4px 6px;min-width:28px;">+20</button>
-                <button type="button" class="v6tb-knob-btn" data-door="${i}:100" style="padding:4px 6px;min-width:28px;">ALL</button>
+              <div class="v6tb-row" style="justify-content:center;gap:3px;">
+                <button type="button" class="v6tb-knob-btn" data-door="${i}:-20" style="padding:3px 3px;min-width:0;flex:1 1 0;font-size:9.5px;letter-spacing:0;">-20</button>
+                <button type="button" class="v6tb-knob-btn" data-door="${i}:20" style="padding:3px 3px;min-width:0;flex:1 1 0;font-size:9.5px;letter-spacing:0;">+20</button>
+                <button type="button" class="v6tb-knob-btn" data-door="${i}:100" style="padding:3px 3px;min-width:0;flex:1 1 0;font-size:9.5px;letter-spacing:0;">ALL</button>
               </div>
             </div>
           `;
@@ -2761,9 +2792,9 @@ function buildKineticSelectorContraption(
               <line x1="-32" y1="0" x2="32" y2="0" stroke="#e8b852" stroke-width="4"/>
               <circle cx="0" cy="-24" r="5" fill="#45e3cf"/>
             </g>
-            <text x="160" y="84" fill="#ffe082" font-size="10" font-weight="900" text-anchor="middle">CHAMBER #${aimIdx + 1} ALIGNED${mode === 'AIRLOCK' ? ` · BOLTS ${boltsSealed}/2` : ''}</text>
           `}
         </svg>
+        ${mode !== 'PRISM_BEAM' && mode !== 'CALLIOPE' && mode !== 'AURORA' ? `<div style="font-size:10px;font-weight:900;color:#ffe082;letter-spacing:0.06em;text-align:center;">CHAMBER #${aimIdx + 1} ALIGNED${mode === 'AIRLOCK' ? ` · BOLTS ${boltsSealed}/2` : ''}</div>` : ''}
       </div>
       <div class="v6tb-grid-2">
         ${choices.map((c, idx) => `

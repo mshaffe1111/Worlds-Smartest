@@ -274,7 +274,7 @@ function ensureTrapdoorStyles(): void {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  background: radial-gradient(circle at 50% 25%, #34100d 0%, #170606 72%, #0b0303 100%);
+  background: radial-gradient(circle at 50% 35%, rgba(46, 12, 10, 0.42) 0%, rgba(18, 5, 5, 0.72) 76%, rgba(10, 3, 3, 0.88) 100%);
   color: #fff6e8;
   border: 2.5px solid #e65138;
   border-radius: 14px;
@@ -282,7 +282,7 @@ function ensureTrapdoorStyles(): void {
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
-  box-shadow: inset 0 0 42px rgba(230, 52, 34, 0.35), 0 14px 36px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0 0 38px rgba(230, 52, 34, 0.28), 0 14px 36px rgba(0, 0, 0, 0.75);
 }
 .v6pit-root *, .v6pit-root *::before, .v6pit-root *::after {
   box-sizing: border-box;
@@ -698,8 +698,8 @@ export function mountStageTrapdoorGambitV6(
                 <line x1="70" y1="70" x2="70" y2="18" stroke="#ffe074" stroke-width="5" stroke-linecap="round"/>
                 <circle cx="70" cy="70" r="14" fill="#d9a136" stroke="#fff4cc" stroke-width="2"/>
               </g>
-              <text x="70" y="102" fill="#ffe499" font-size="11" font-weight="900" text-anchor="middle">LOCK ${targetIdx + 1}/3 · ${dialDeg}°</text>
             </svg>
+            <div style="position:absolute;bottom:6px;left:50%;transform:translateX(-50%);z-index:3;font-size:10.5px;font-weight:900;color:#ffe499;background:rgba(16,8,4,0.88);padding:2px 8px;border-radius:999px;border:1px solid #d9a136;white-space:nowrap;">LOCK ${targetIdx + 1}/3 · ${dialDeg}°</div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:8px;">
             <button type="button" class="v6pit-btn" id="v6sdL">◀ -15°</button>

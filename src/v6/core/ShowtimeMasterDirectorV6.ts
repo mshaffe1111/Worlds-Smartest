@@ -389,7 +389,7 @@ export function parseDeepLinkParamsV6(search: string): ShowtimeDeepLinkParamsV6 
   const view = rawView && VALID_VIEWS.has(rawView) ? (rawView as DeepLinkViewKeyV6) : null;
   const rawTwist = params.get('twist')?.toUpperCase().trim() ?? null;
   const twistId = rawTwist && VALID_TWISTS.has(rawTwist) ? (rawTwist as BoardTwistMutationIdV6) : null;
-  const rawCeremony = params.get('ceremony')?.toLowerCase().trim() ?? null;
+  const rawCeremony = (params.get('outcome') ?? params.get('ceremony'))?.toLowerCase().trim() ?? null;
   const ceremonyOutcome = rawCeremony === 'win' || rawCeremony === 'loss' ? rawCeremony : null;
 
   return {
@@ -869,26 +869,31 @@ const DIRECTOR_SHELL_CSS = `
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 3px 8px;
+  padding: 3px 7px;
   border-radius: 4px;
   background: var(--v6-hud-badge-bg, #5c1922);
   color: var(--v6-hud-badge-text, #fff6e0);
   border: 1px solid var(--v6-hud-border, #d4a34a);
   font-family: var(--v6-hud-heading-font, "Cinzel", Georgia, serif);
-  font-size: clamp(10px, 2.3vw, 12px);
+  font-size: clamp(9.5px, 2.2vw, 12px);
   font-weight: 700;
   letter-spacing: 0.04em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 100%;
+  flex-shrink: 0;
+  max-width: min(52vw, 280px);
 }
 .v6-meta-pill {
   font-family: "JetBrains Mono", monospace;
-  font-size: clamp(10px, 2.2vw, 12px);
+  font-size: clamp(9.5px, 2.1vw, 12px);
   font-weight: 600;
   color: var(--v6-hud-accent, #f4c76b);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex-shrink: 1;
   padding: 2px 6px;
   border: 1px solid rgba(255, 232, 180, 0.25);
   border-radius: 4px;
@@ -1438,30 +1443,58 @@ export class ShowtimeMasterDirectorV6 {
   private refreshTopStageBar(): void {
     const meta = getStageMetaByIdV6(this.activeStageId);
     const state = this.career.getState();
+    const isCompact = typeof window !== 'undefined' && window.innerWidth < 540;
+    const shortTitle = meta.title.split(/\s+/).slice(0, 2).join(' ').toUpperCase();
 
-    this.stagePillEl.textContent = `STAGE ${String(meta.stageNumber).padStart(2, '0')}/10 • ${meta.title.toUpperCase()}`;
+    this.stagePillEl.textContent = isCompact
+      ? `S${String(meta.stageNumber).padStart(2, '0')} · ${shortTitle}`
+      : `STAGE ${String(meta.stageNumber).padStart(2, '0')}/10 • ${meta.title.toUpperCase()}`;
+
+    const activeEpNum = this.activeEpisode?.episodeNumber ?? state.currentEpisode;
 
     if (this.phase === 'BOARD_TURN' || this.phase === 'TOY_ENCOUNTER' || this.phase === 'TWIST_MUTATION') {
       const turnStr = this.boardState
-        ? `TURN ${this.boardState.turnNumber}/${this.boardState.maxTurns}`
-        : `EP ${String(this.activeEpisode.episodeNumber).padStart(2, '0')}`;
+        ? isCompact
+          ? `T${this.boardState.turnNumber}/${this.boardState.maxTurns}`
+          : `TURN ${this.boardState.turnNumber}/${this.boardState.maxTurns}`
+        : `EP ${String(activeEpNum).padStart(2, '0')}`;
       this.metaPillEl.textContent =
         this.playMode === 'QUICK_SHOW'
-          ? `QUICK • ${turnStr}`
-          : `EP ${String(this.activeEpisode.episodeNumber).padStart(2, '0')} • ${turnStr}`;
+          ? isCompact
+            ? turnStr
+            : `QUICK • ${turnStr}`
+          : isCompact
+            ? `EP${String(activeEpNum).padStart(2, '0')} · ${turnStr}`
+            : `EP ${String(activeEpNum).padStart(2, '0')} • ${turnStr}`;
     } else if (this.phase === 'TRAPDOOR_GAMBIT') {
-      this.metaPillEl.textContent = 'TRAPDOOR PIT • 8S SURVIVAL';
+      this.metaPillEl.textContent = isCompact ? '8S PIT' : 'TRAPDOOR PIT • 8S SURVIVAL';
     } else {
-      this.metaPillEl.textContent = `EP ${String(state.currentEpisode).padStart(2, '0')}/20 • ★ ${meta.difficultyBand[0].toFixed(1)}-${meta.difficultyBand[1].toFixed(1)}`;
+      this.metaPillEl.textContent = isCompact
+        ? `EP ${String(activeEpNum).padStart(2, '0')}/20`
+        : `EP ${String(activeEpNum).padStart(2, '0')}/20 • ★ ${meta.difficultyBand[0].toFixed(1)}-${meta.difficultyBand[1].toFixed(1)}`;
     }
 
     this.cashPillEl.textContent = `$${state.bankrollCash.toLocaleString()}`;
+    this.backBtnEl.textContent = isCompact ? 'HUB' : 'STAGE HUB';
     this.backBtnEl.style.display = this.phase === 'LOBBY_HUB' ? 'none' : 'inline-flex';
-    this.soundBtnEl.textContent = state.options.musicEnabled ? 'SCORE: ON' : 'SCORE: OFF';
+    this.soundBtnEl.textContent = state.options.musicEnabled
+      ? isCompact
+        ? 'SND'
+        : 'SCORE: ON'
+      : isCompact
+        ? 'MUTE'
+        : 'SCORE: OFF';
   }
 
   private refreshFullscreenLabel(): void {
-    this.fullscreenBtnEl.textContent = isDocumentFullscreenV6() ? 'EXIT FS' : 'FULLSCREEN';
+    const isCompact = typeof window !== 'undefined' && window.innerWidth < 540;
+    this.fullscreenBtnEl.textContent = isDocumentFullscreenV6()
+      ? isCompact
+        ? 'EXIT'
+        : 'EXIT FS'
+      : isCompact
+        ? 'FS'
+        : 'FULLSCREEN';
   }
 
   private showLiveQuip(speaker: string, line: string, durationMs = 3400): void {
@@ -1705,7 +1738,9 @@ export class ShowtimeMasterDirectorV6 {
     this.playSymphony('backstage_velvet');
 
     const career = this.career.getState();
-    const nextEp = getEpisodeBlueprintV6(career.currentEpisode);
+    const nextEp = getEpisodeBlueprintV6(this.activeEpisode?.episodeNumber ?? career.currentEpisode);
+    this.activeStageId = nextEp.stageMeta.stageId;
+    this.refreshTopStageBar();
     const theme = this.getStageTheme(nextEp.stageMeta.stageId);
     const upcomingTwist = FALLBACK_TWISTS_BY_STAGE[(nextEp.stageMeta.stageNumber - 1) % 10];
     const beat = this.deps.showrunner?.pickBackstageBeat(career.matchMemory) ?? null;
@@ -2428,6 +2463,9 @@ export class ShowtimeMasterDirectorV6 {
       expandedRelicSlots: outcome.expandedRelicSlots,
     };
     this.lastCeremony = summary;
+    if (this.playMode === 'CAMPAIGN' && won) {
+      this.activeEpisode = getEpisodeBlueprintV6(this.career.getState().currentEpisode);
+    }
     this.announceUnlockedAwards(outcome.newlyUnlockedAwards);
     await this.enterEpisodeCeremony(summary);
   }
