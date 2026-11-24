@@ -1,0 +1,2052 @@
+{
+  "schemaVersion": "6.0.0",
+  "seasonTitle": "Clause 14-B",
+  "seasonPremise": "Meridian Network greenlit ten condemned soundstages as a $180M tax write-off, but FCC Bond 14-B forbids cancelling once ON AIR—so Standards VP Sloane Mercer has to beat you legally before Episode 20 triggers the uninsured $10M Sovereign Payout.",
+  "coreCast": {
+    "JULIAN": {
+      "speakerId": "JULIAN",
+      "displayName": "Julian Sterling",
+      "shortName": "Julian",
+      "roleTag": "30-Year Host",
+      "signatureAccentHex": "#D9A441",
+      "portraitKey": "julian_sterling"
+    },
+    "FRANKIE": {
+      "speakerId": "FRANKIE",
+      "displayName": "Frankie \"The Fixer\" DeLuca",
+      "shortName": "Frankie",
+      "roleTag": "Local 52 Prop Master",
+      "signatureAccentHex": "#C85A32",
+      "portraitKey": "frankie_deluca"
+    },
+    "SLOANE": {
+      "speakerId": "SLOANE",
+      "displayName": "Sloane Mercer",
+      "shortName": "Sloane",
+      "roleTag": "VP Standards & Ratings",
+      "signatureAccentHex": "#4C8FA8",
+      "portraitKey": "sloane_mercer"
+    }
+  },
+  "stageChampions": [
+    {
+      "championId": "rival_01_barnaby",
+      "stageWorldId": "STAGE_01_VAUDEVILLE_PALACE",
+      "stageNumber": 1,
+      "displayName": "Barnaby \"Two-Takes\" Vance",
+      "shortName": "Barnaby Vance",
+      "roleTag": "1987 Soap-Opera Runner-Up",
+      "comicFlaw": "Treats every trivia round like a Broadway revival and refuses right-profile camera angles.",
+      "tacticalTell": "Hogs center-stage tiles so Camera One stays on his left clavicle.",
+      "screwHabit": "Slams a Screw card the instant the audience laughs at someone else's joke.",
+      "signatureAccentHex": "#B83A4B",
+      "portraitKey": "rival_01_barnaby",
+      "introQuip": "Kindly keep to my right. My left clavicle is union-insured.",
+      "screwQuip": "You stepped on my applause line. Enjoy the sabotage, darling.",
+      "defeatQuip": "Terrible lighting. Tell my agent the teleprompter had glare.",
+      "victoryQuip": "Still got it. Hold the curtain—I have three encores prepared."
+    },
+    {
+      "championId": "rival_02_sabine",
+      "stageWorldId": "STAGE_02_GENEVA_CONSERVATORY",
+      "stageNumber": 2,
+      "displayName": "Dr. Sabine Vogt",
+      "shortName": "Dr. Sabine Vogt",
+      "roleTag": "Ex-CERN Master Horologist",
+      "comicFlaw": "Measures human worth in milliseconds and visibly twitches at imprecise metaphors.",
+      "tacticalTell": "Locks concentric gear rings early to force mathematically rigid tie states.",
+      "screwHabit": "Triggers Screw cards exclusively on exact fifteen-second clock intervals.",
+      "signatureAccentHex": "#D49B7A",
+      "portraitKey": "rival_02_sabine",
+      "introQuip": "You arrived four hundred milliseconds late. Already sloppy.",
+      "screwQuip": "Fifteen-second mark. Your rhythm was offending the escapement.",
+      "defeatQuip": "Statistical noise. My Swiss chronometer still outranks your pulse.",
+      "victoryQuip": "Predictable to the hundredth of a second. Next specimen, please."
+    },
+    {
+      "championId": "rival_03_mireille",
+      "stageWorldId": "STAGE_03_MONTE_CARLO_SALON",
+      "stageNumber": 3,
+      "displayName": "Countess Mireille de Valois",
+      "shortName": "Countess Mireille",
+      "roleTag": "Disinherited Riviera Heiress",
+      "comicFlaw": "Pretends not to recognize paper cash while aggressively counting your chip stack under the felt.",
+      "tacticalTell": "Over-bets Blackjack and push-your-luck felt tiles to bait greedy busts past 21.",
+      "screwHabit": "Drops velvet-gloved Screws while ordering vintage champagne on Meridian's corporate tab.",
+      "signatureAccentHex": "#2F9E77",
+      "portraitKey": "rival_03_mireille",
+      "introQuip": "How quaint—you still carry paper money in your pocket.",
+      "screwQuip": "Waiter, another bottle on Network Legal, and freeze their felt.",
+      "defeatQuip": "Vulgar luck. Do not ask me to split the valet tip.",
+      "victoryQuip": "My yacht club will accept these chips by Tuesday, darling."
+    },
+    {
+      "championId": "rival_04_alistair",
+      "stageWorldId": "STAGE_04_CARTOGRAPHIC_ROTUNDA",
+      "stageNumber": 4,
+      "displayName": "Capt. Alistair Finch-Harrow",
+      "shortName": "Capt. Finch-Harrow",
+      "roleTag": "Disputed Expedition Author",
+      "comicFlaw": "Brags about surviving jungle fever on an Amazon trek quietly filmed in New Jersey.",
+      "tacticalTell": "Claims perimeter compass tiles to seal off your navigation routes early.",
+      "screwHabit": "Screws vindictively whenever a geography clue exposes his 1954 atlas.",
+      "signatureAccentHex": "#3A8D8C",
+      "portraitKey": "rival_04_alistair",
+      "introQuip": "I crossed worse terrain near the Amazon—mostly off Exit Eleven.",
+      "screwQuip": "Check my memoirs, chapter four. Now take that detoured route.",
+      "defeatQuip": "Cartographic slander. Those borders were completely accurate in fifty-four.",
+      "victoryQuip": "Another fine afternoon for rugged field science and brisk tailoring."
+    },
+    {
+      "championId": "rival_05_walter",
+      "stageWorldId": "STAGE_05_ANALOG_BUNKER_1969",
+      "stageNumber": 5,
+      "displayName": "Walter \"Redline\" Kowalski",
+      "shortName": "Walter Kowalski",
+      "roleTag": "Sub-Level 5 Radar Squatter",
+      "comicFlaw": "Lives rent-free in the 1969 bunker and believes the breakroom microwave reads dental fillings.",
+      "tacticalTell": "Rotates optical laser mirrors out of line and camps high-voltage radar sectors.",
+      "screwHabit": "Fires Blackout or Fog Jammer Screws the moment you hit a three-streak.",
+      "signatureAccentHex": "#D9792B",
+      "portraitKey": "rival_05_walter",
+      "introQuip": "Keep your shoes off my linoleum. I just waxed sector four.",
+      "screwQuip": "Cutting the busbar. Let's see your fillings read in the dark.",
+      "defeatQuip": "Fine. Take the points, leave my nineteen-seventy-one soup thermos alone.",
+      "victoryQuip": "Thirty-year lease holds. Now climb back upstairs, tourist."
+    },
+    {
+      "championId": "rival_06_kenzo",
+      "stageWorldId": "STAGE_06_KYOTO_LACQUER_PAVILION",
+      "stageNumber": 6,
+      "displayName": "Kenzo Taniguchi",
+      "shortName": "Kenzo Taniguchi",
+      "roleTag": "Michelin-Snubbed Critic",
+      "comicFlaw": "Critiques opponents' answers like lukewarm soup while pruning a travel bonsai at his podium.",
+      "tacticalTell": "Builds silent stone bridges straight through the center to slice your territory.",
+      "screwHabit": "Holds his silence until Turn 5, then drops a surgical iron-chain Screw.",
+      "signatureAccentHex": "#C73E2D",
+      "portraitKey": "rival_06_kenzo",
+      "introQuip": "Your last answer tasted over-salted and deeply derivative.",
+      "screwQuip": "A necessary reduction. Your board lacked balance anyway.",
+      "defeatQuip": "Two stars at best. Service was rushed, lighting was loud.",
+      "victoryQuip": "Clean finish. Send my compliments to nobody in this room."
+    },
+    {
+      "championId": "rival_07_delilah",
+      "stageWorldId": "STAGE_07_CARNIVAL_CURIOSITIES",
+      "stageNumber": 7,
+      "displayName": "Delilah \"Nickel-Slot\" Kerr",
+      "shortName": "Delilah Kerr",
+      "roleTag": "Blacklisted Pier Hustler",
+      "comicFlaw": "Compulsively pockets studio props and blames coastal fog every time a ball bounces funny.",
+      "tacticalTell": "Targets kinetic chaos—pinball bumpers, moving tin ducks, and Ferris gondolas.",
+      "screwHabit": "Slams Screw cards mid-drop solely to spoil your split-second reflex window.",
+      "signatureAccentHex": "#D48834",
+      "portraitKey": "rival_07_delilah",
+      "introQuip": "Check your pockets before we start, sugar. Just friendly advice.",
+      "screwQuip": "Oops—coastal damp tilted your bumper. Happens every Tuesday.",
+      "defeatQuip": "Keep the trophy, kid. I already pocketed Julian's cufflink.",
+      "victoryQuip": "Boardwalk rules, sweetheart. Never blink at the copper duck."
+    },
+    {
+      "championId": "rival_08_henrik",
+      "stageWorldId": "STAGE_08_SUNKEN_BATHYSPHERE",
+      "stageNumber": 8,
+      "displayName": "Dr. Henrik Lindholm",
+      "shortName": "Dr. Henrik Lindholm",
+      "roleTag": "Tax-Exile Deep-Sea Salvager",
+      "comicFlaw": "Narrates himself in hushed documentary whispers while nervously checking the leaking bilge seam.",
+      "tacticalTell": "Hoards pressure-locked vaults while letting the rising flood swallow your safe tiles.",
+      "screwHabit": "Saves Screws for low-clock turns to shove you straight into the Trapdoor.",
+      "signatureAccentHex": "#3A88A8",
+      "portraitKey": "rival_08_henrik",
+      "introQuip": "Observe the amateur—unaware the hull pressure already favors me.",
+      "screwQuip": "Nature is cruel at three hundred fathoms, and so is Maritime Law.",
+      "defeatQuip": "Unfortunate. Also, nobody tell the Swedish Revenue Service I was here.",
+      "victoryQuip": "The sea keeps its secrets. Especially my offshore shell accounts."
+    },
+    {
+      "championId": "rival_09_nadia",
+      "stageWorldId": "STAGE_09_ASTRAL_OBSERVATORY",
+      "stageNumber": 9,
+      "displayName": "Nadia Okafor-Voss",
+      "shortName": "Nadia Okafor-Voss",
+      "roleTag": "Banned Academic Menace",
+      "comicFlaw": "Corrects Julian's Latin pronunciation on live TV and considers small talk a concussion symptom.",
+      "tacticalTell": "Snipes quantum-entangled star nodes before you can chain a multiplier.",
+      "screwHabit": "Deploys clinical Screws the exact millisecond your multiplier crosses three.",
+      "signatureAccentHex": "#7A62D4",
+      "portraitKey": "rival_09_nadia",
+      "introQuip": "Skip the handshake. Your opening strategy already has two logical fallacies.",
+      "screwQuip": "Multiplier corrected downward. Please stop breathing near the prism.",
+      "defeatQuip": "An irritating outlier. I expect a peer-reviewed rematch by Friday.",
+      "victoryQuip": "As modeled. Three university deans cried faster than you did."
+    },
+    {
+      "championId": "rival_10_arthur",
+      "stageWorldId": "STAGE_10_SOVEREIGN_COLOSSEUM",
+      "stageNumber": 10,
+      "displayName": "Arthur \"The Archivist\" Pendelton",
+      "shortName": "Arthur Pendelton",
+      "roleTag": "1994 Retainer Closer",
+      "comicFlaw": "Memorized every encyclopedia through 1998 and remains quietly furious that Pluto lost planet status.",
+      "tacticalTell": "Plays every twist like tournament chess—baits Split-or-Steal traps and chains the apex.",
+      "screwHabit": "Apologizes with immaculate gentlemanly grace half a second before ruining your turn.",
+      "signatureAccentHex": "#E3B84F",
+      "portraitKey": "rival_10_arthur",
+      "introQuip": "Thirty years on retainer, and they send a parking-deck walk-in. Fascinating.",
+      "screwQuip": "Terribly sorry—nothing personal. My penthouse lease prefers your defeat.",
+      "defeatQuip": "Well played. Tell Sloane I am keeping the silver tea service.",
+      "victoryQuip": "The retainer remains intact. Also, Pluto is still a planet."
+    }
+  ],
+  "episodeArcBeats": [
+    {
+      "beatId": "ep_01_cold_open",
+      "episodeNumber": 1,
+      "stageWorldId": "STAGE_01_VAUDEVILLE_PALACE",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "replySpeakerId": "JULIAN",
+      "replySpeakerDisplayName": "Julian Sterling",
+      "replySpeakerRoleTag": "30-Year Host",
+      "triggerTags": ["ep_01", "stage_01"],
+      "priority": 100,
+      "mood": "icy",
+      "lines": [
+        "HR says you walked in for parking validation. Smile at Camera Two, trespasser.",
+        "They're standing in my key light, Sloane. Have security slide them six inches left."
+      ]
+    },
+    {
+      "beatId": "ep_02_trunk_opening",
+      "episodeNumber": 2,
+      "stageWorldId": "STAGE_01_VAUDEVILLE_PALACE",
+      "rivalId": "rival_01_barnaby",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "JULIAN",
+      "replySpeakerDisplayName": "Julian Sterling",
+      "replySpeakerRoleTag": "30-Year Host",
+      "triggerTags": ["ep_02", "stage_01"],
+      "priority": 100,
+      "mood": "wry",
+      "lines": [
+        "Barnaby only took Episode Two for dental coverage. Don't let him pivot left.",
+        "His left clavicle carried daytime drama in eighty-seven, Frankie. Show some mercy."
+      ]
+    },
+    {
+      "beatId": "ep_03_drywall_marble",
+      "episodeNumber": 3,
+      "stageWorldId": "STAGE_02_GENEVA_CONSERVATORY",
+      "rivalId": "rival_02_sabine",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["ep_03", "stage_02"],
+      "priority": 100,
+      "mood": "smug",
+      "lines": [
+        "Stage Two cost twelve million in Italian marble. Legal expects you out by noon.",
+        "Relax, Sloane. Half that marble is painted drywall I taped at four AM."
+      ]
+    },
+    {
+      "beatId": "ep_04_bond_14b_slip",
+      "episodeNumber": 4,
+      "stageWorldId": "STAGE_02_GENEVA_CONSERVATORY",
+      "rivalId": "rival_02_sabine",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "replySpeakerId": "SLOANE",
+      "replySpeakerDisplayName": "Sloane Mercer",
+      "replySpeakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["ep_04", "stage_02"],
+      "priority": 100,
+      "mood": "suspicious",
+      "lines": [
+        "Why can't we simply edit out the parking-deck walk-in before syndication?",
+        "FCC Bond Fourteen-B, Julian. Once red tally lights up, they must lose on air."
+      ]
+    },
+    {
+      "beatId": "ep_05_tampered_cue_card",
+      "episodeNumber": 5,
+      "stageWorldId": "STAGE_03_MONTE_CARLO_SALON",
+      "rivalId": "rival_03_mireille",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "replySpeakerId": "SLOANE",
+      "replySpeakerDisplayName": "Sloane Mercer",
+      "replySpeakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["ep_05", "stage_03"],
+      "priority": 100,
+      "mood": "annoyed",
+      "lines": [
+        "Someone penciled a joke about my ninety-nine alimony onto my blue cue card.",
+        "Standards refreshes copy continuously, Julian. Read the card or forfeit your residuals."
+      ]
+    },
+    {
+      "beatId": "ep_06_depreciation_tab",
+      "episodeNumber": 6,
+      "stageWorldId": "STAGE_03_MONTE_CARLO_SALON",
+      "rivalId": "rival_03_mireille",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "JULIAN",
+      "replySpeakerDisplayName": "Julian Sterling",
+      "replySpeakerRoleTag": "30-Year Host",
+      "triggerTags": ["ep_06", "stage_03"],
+      "priority": 100,
+      "mood": "scheming",
+      "lines": [
+        "Accounting billed the Countess's champagne under Loss Depreciation. Meridian wants this show bankrupt.",
+        "Impossible. Nobody spends thirty million on chandeliers just to fail on purpose—unless it's tax season."
+      ]
+    },
+    {
+      "beatId": "ep_07_new_jersey_amazon",
+      "episodeNumber": 7,
+      "stageWorldId": "STAGE_04_CARTOGRAPHIC_ROTUNDA",
+      "rivalId": "rival_04_alistair",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "SLOANE",
+      "replySpeakerDisplayName": "Sloane Mercer",
+      "replySpeakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["ep_07", "stage_04"],
+      "priority": 100,
+      "mood": "wry",
+      "lines": [
+        "Alistair's famous Amazon map is literally the New Jersey Turnpike drawn upside down.",
+        "Mention Hackensack near a hot microphone, Frankie, and I cancel your shop's dental."
+      ]
+    },
+    {
+      "beatId": "ep_08_air_quotes_revolt",
+      "episodeNumber": 8,
+      "stageWorldId": "STAGE_04_CARTOGRAPHIC_ROTUNDA",
+      "rivalId": "rival_04_alistair",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "replySpeakerId": "JULIAN",
+      "replySpeakerDisplayName": "Julian Sterling",
+      "replySpeakerRoleTag": "30-Year Host",
+      "triggerTags": ["ep_08", "stage_04"],
+      "priority": 100,
+      "mood": "icy",
+      "lines": [
+        "Julian, you used visible air quotes around our sponsor's name on live broadcast.",
+        "My wrists cramp whenever Standards hands me fraud on cheap blue cardstock, darling."
+      ]
+    },
+    {
+      "beatId": "ep_09_sub_level_five",
+      "episodeNumber": 9,
+      "stageWorldId": "STAGE_05_ANALOG_BUNKER_1969",
+      "rivalId": "rival_05_walter",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "JULIAN",
+      "replySpeakerDisplayName": "Julian Sterling",
+      "replySpeakerRoleTag": "30-Year Host",
+      "triggerTags": ["ep_09", "stage_05"],
+      "priority": 100,
+      "mood": "wry",
+      "lines": [
+        "Sub-Level Five isn't a set—it's a sixty-nine fallout shelter with Walter still squatting inside.",
+        "Wonderful. If my cashmere smells like canned lima beans, I'm invoicing Legal."
+      ]
+    },
+    {
+      "beatId": "ep_10_clause_14b_exposed",
+      "episodeNumber": 10,
+      "stageWorldId": "STAGE_05_ANALOG_BUNKER_1969",
+      "rivalId": "rival_05_walter",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "JULIAN",
+      "replySpeakerDisplayName": "Julian Sterling",
+      "replySpeakerRoleTag": "30-Year Host",
+      "triggerTags": ["ep_10", "stage_05"],
+      "priority": 100,
+      "mood": "shocked",
+      "lines": [
+        "Found Sloane's red file behind Walter's radar. Meridian insured these ten ruins for one-eighty million.",
+        "And if this parking-deck walk-in wins Episode Twenty, the tax write-off explodes. Splendid."
+      ]
+    },
+    {
+      "beatId": "ep_11_fake_retirement_card",
+      "episodeNumber": 11,
+      "stageWorldId": "STAGE_06_KYOTO_LACQUER_PAVILION",
+      "rivalId": "rival_06_kenzo",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["ep_11", "stage_06"],
+      "priority": 100,
+      "mood": "annoyed",
+      "lines": [
+        "Sloane slipped a tearful retirement farewell onto Card Four to void my pension.",
+        "Take my fat black Sharpie, Julian. Let's make Standards cry before commercial break."
+      ]
+    },
+    {
+      "beatId": "ep_12_eyelid_twitch",
+      "episodeNumber": 12,
+      "stageWorldId": "STAGE_06_KYOTO_LACQUER_PAVILION",
+      "rivalId": "rival_06_kenzo",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["ep_12", "stage_06"],
+      "priority": 100,
+      "mood": "tense",
+      "lines": [
+        "Kenzo will deliver a swift, tastefully quiet elimination before the coastal affiliates tune in.",
+        "Your left eyelid just ticked twice, Sloane. Ratings are beating Sunday football."
+      ]
+    },
+    {
+      "beatId": "ep_13_casino_blacklist",
+      "episodeNumber": 13,
+      "stageWorldId": "STAGE_07_CARNIVAL_CURIOSITIES",
+      "rivalId": "rival_07_delilah",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "JULIAN",
+      "replySpeakerDisplayName": "Julian Sterling",
+      "replySpeakerRoleTag": "30-Year Host",
+      "triggerTags": ["ep_13", "stage_07"],
+      "priority": 100,
+      "mood": "wry",
+      "lines": [
+        "Legal's panicking—they unlocked the condemned seventy-three pier set and hired an Atlantic City grifter.",
+        "Delilah already stole my pocket square, Frankie. Win fast before she unbolts my podium."
+      ]
+    },
+    {
+      "beatId": "ep_14_viral_badge_upgrade",
+      "episodeNumber": 14,
+      "stageWorldId": "STAGE_07_CARNIVAL_CURIOSITIES",
+      "rivalId": "rival_07_delilah",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "replySpeakerId": "JULIAN",
+      "replySpeakerDisplayName": "Julian Sterling",
+      "replySpeakerRoleTag": "30-Year Host",
+      "triggerTags": ["ep_14", "stage_07"],
+      "priority": 100,
+      "mood": "tense",
+      "lines": [
+        "Forty million viewers. HR has reluctantly upgraded your lanyard from Trespasser to Contender.",
+        "Put it on the wall, kid. You're officially costing Meridian's CFO his Malibu boat."
+      ]
+    },
+    {
+      "beatId": "ep_15_soup_ladle_pump",
+      "episodeNumber": 15,
+      "stageWorldId": "STAGE_08_SUNKEN_BATHYSPHERE",
+      "rivalId": "rival_08_henrik",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "SLOANE",
+      "replySpeakerDisplayName": "Sloane Mercer",
+      "replySpeakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["ep_15", "stage_08"],
+      "priority": 100,
+      "mood": "wry",
+      "lines": [
+        "Stage Eight is our flooded boiler room with bronze portholes glued on. Watch the ladle.",
+        "Maritime ambience, Frankie. And the insurance adjuster signed off from the stairwell."
+      ]
+    },
+    {
+      "beatId": "ep_16_napkin_bribe",
+      "episodeNumber": 16,
+      "stageWorldId": "STAGE_08_SUNKEN_BATHYSPHERE",
+      "rivalId": "rival_08_henrik",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["ep_16", "stage_08"],
+      "priority": 100,
+      "mood": "icy",
+      "lines": [
+        "Two hundred fifty thousand on this cocktail napkin to miss one easy geography clue.",
+        "Thanks, Sloane. I needed something absorbent to wipe axle grease off my wrench."
+      ]
+    },
+    {
+      "beatId": "ep_17_rooftop_menace",
+      "episodeNumber": 17,
+      "stageWorldId": "STAGE_09_ASTRAL_OBSERVATORY",
+      "rivalId": "rival_09_nadia",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["ep_17", "stage_09"],
+      "priority": 100,
+      "mood": "tense",
+      "lines": [
+        "Nadia corrected my Latin during soundcheck and made the boom operator switch careers.",
+        "Sloane's out of bluffers. Beat the professor and we're knocking on Penthouse Ten."
+      ]
+    },
+    {
+      "beatId": "ep_18_teleprompter_lockout",
+      "episodeNumber": 18,
+      "stageWorldId": "STAGE_09_ASTRAL_OBSERVATORY",
+      "rivalId": "rival_09_nadia",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["ep_18", "stage_09"],
+      "priority": 100,
+      "mood": "scheming",
+      "lines": [
+        "I deadbolted the teleprompter booth and brought my own cards. Who's upstairs on Ten?",
+        "Meridian's ninety-four champion. Payroll says he hasn't left the penthouse in thirty years."
+      ]
+    },
+    {
+      "beatId": "ep_19_retainer_reveal",
+      "episodeNumber": 19,
+      "stageWorldId": "STAGE_10_SOVEREIGN_COLOSSEUM",
+      "rivalId": "rival_10_arthur",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "SLOANE",
+      "replySpeakerDisplayName": "Sloane Mercer",
+      "replySpeakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["ep_19", "stage_10"],
+      "priority": 100,
+      "mood": "shocked",
+      "lines": [
+        "Nine hundred grand a year since ninety-four just to keep Arthur blocking the vault.",
+        "Risk management, Frankie. Far cheaper than paying ten million to an unscheduled tourist."
+      ]
+    },
+    {
+      "beatId": "ep_20_live_finale_open",
+      "episodeNumber": 20,
+      "stageWorldId": "STAGE_10_SOVEREIGN_COLOSSEUM",
+      "rivalId": "rival_10_arthur",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "replySpeakerId": "SLOANE",
+      "replySpeakerDisplayName": "Sloane Mercer",
+      "replySpeakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["ep_20", "stage_10"],
+      "priority": 100,
+      "mood": "dramatic",
+      "lines": [
+        "No commercials, no safety cutaways, and four illegal fire braziers. Ready to ruin Accounting?",
+        "If you clear this altar, Meridian ceases to exist. Please reconsider, politely."
+      ]
+    },
+    {
+      "beatId": "ep_20_finale_win",
+      "episodeNumber": 20,
+      "stageWorldId": "STAGE_10_SOVEREIGN_COLOSSEUM",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["ep_20_win", "season_cleared"],
+      "priority": 105,
+      "mood": "triumphant",
+      "lines": [
+        "Accounting has wired ten million dollars. Kindly validate your own parking on the way out.",
+        "Grab a booth at the diner, kid. Legal's covering my overtime and Julian's scotch."
+      ]
+    }
+  ],
+  "reactiveMemoryBeats": [
+    {
+      "beatId": "react_cut_wrong_wire_1",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "JULIAN",
+      "replySpeakerDisplayName": "Julian Sterling",
+      "replySpeakerRoleTag": "30-Year Host",
+      "triggerTags": ["cut_wrong_wire", "wire_detonated"],
+      "priority": 85,
+      "mood": "annoyed",
+      "lines": [
+        "I color-coded that briefcase for a sleepy intern, and you snipped copper anyway.",
+        "My dry cleaner just quoted four hundred dollars for the soot on my lapel."
+      ]
+    },
+    {
+      "beatId": "react_cut_blue_wire",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "SLOANE",
+      "replySpeakerDisplayName": "Sloane Mercer",
+      "replySpeakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["cut_blue_wire"],
+      "priority": 86,
+      "mood": "wry",
+      "lines": [
+        "Blue wire came off clean—no flash, no singed eyebrows, no OSHA binder.",
+        "Disappointing. Legal had already pre-drafted a very tasteful apology card."
+      ]
+    },
+    {
+      "beatId": "react_bomb_defused_clean",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["bomb_defused", "wire_clean_sweep"],
+      "priority": 84,
+      "mood": "impressed",
+      "lines": [
+        "Three snipped cables without flinching. Either you're brilliant or your nerves died years ago.",
+        "Keep my chrome cutters wiped down, kid. Those cost more than Barnaby's toupee."
+      ]
+    },
+    {
+      "beatId": "react_trapdoor_clutch_1_5s",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["trapdoor_under_1_5s", "trapdoor_clutch"],
+      "priority": 88,
+      "mood": "icy",
+      "lines": [
+        "Under two seconds remaining. The hydraulic vendor owes Meridian a full refund.",
+        "Invoice's already on your desk, sweetheart. Four thousand two hundred, union overtime."
+      ]
+    },
+    {
+      "beatId": "react_trapdoor_survived_1",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "replySpeakerId": "SLOANE",
+      "replySpeakerDisplayName": "Sloane Mercer",
+      "replySpeakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["trapdoor_survived"],
+      "priority": 84,
+      "mood": "wry",
+      "lines": [
+        "You climbed out of Pit B with plaster dust on your collar. Wardrobe is weeping.",
+        "Meridian provides a voluntary lint roller upon exit. Sign the waiver."
+      ]
+    },
+    {
+      "beatId": "react_trapdoor_survived_repeat",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "SLOANE",
+      "replySpeakerDisplayName": "Sloane Mercer",
+      "replySpeakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["trapdoor_survived", "trapdoor_repeat"],
+      "priority": 86,
+      "mood": "scheming",
+      "conditions": { "minTrapdoorSurvivals": 2 },
+      "lines": [
+        "Twice down the hatch and twice back up. My crew's buying a boat on this overtime.",
+        "Frankie, weld a faster spring under Podium One before tomorrow's taping."
+      ]
+    },
+    {
+      "beatId": "react_trapdoor_failed",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["trapdoor_failed"],
+      "priority": 85,
+      "mood": "smug",
+      "lines": [
+        "Gravity eventually resolves every compliance anomaly. Try the padded stairs next visit.",
+        "Dust yourself off, kid. The padding down there is just old nineteen-eighties cue cards."
+      ]
+    },
+    {
+      "beatId": "react_broke_monte_carlo",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["broke_in_monte_carlo", "monte_carlo_bust"],
+      "priority": 89,
+      "mood": "wry",
+      "lines": [
+        "Broke in Monte Carlo. Even the penniless Countess looked embarrassed for your wallet.",
+        "Check the velvet lining. I taped bus fare behind the loaded dice."
+      ]
+    },
+    {
+      "beatId": "react_blackjack_21_hit",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "replySpeakerId": "JULIAN",
+      "replySpeakerDisplayName": "Julian Sterling",
+      "replySpeakerRoleTag": "30-Year Host",
+      "triggerTags": ["blackjack_21_hit"],
+      "priority": 84,
+      "mood": "icy",
+      "lines": [
+        "Twenty-one on the nose. Gaming Compliance would like to inspect your sleeves.",
+        "Leave them alone, Sloane—the pit boss just asked for their autograph."
+      ]
+    },
+    {
+      "beatId": "react_blackjack_bust",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "JULIAN",
+      "replySpeakerDisplayName": "Julian Sterling",
+      "replySpeakerRoleTag": "30-Year Host",
+      "triggerTags": ["blackjack_21_bust"],
+      "priority": 84,
+      "mood": "wry",
+      "lines": [
+        "Busted over twenty-one with a smirk on your face. Bold, expensive hobby.",
+        "House edge remains undefeated, though your confidence was briefly inspiring."
+      ]
+    },
+    {
+      "beatId": "react_trophy_unlocked",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "replySpeakerId": "SLOANE",
+      "replySpeakerDisplayName": "Sloane Mercer",
+      "replySpeakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["trophy_unlocked", "medal_unlocked"],
+      "priority": 86,
+      "mood": "annoyed",
+      "lines": [
+        "They engraved your name in cast bronze before mine got polished. Unbelievable.",
+        "Relax, Julian. Meridian reserves the right to melt trophies for scrap during bankruptcy."
+      ]
+    },
+    {
+      "beatId": "react_trophy_unlocked_2",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "JULIAN",
+      "replySpeakerDisplayName": "Julian Sterling",
+      "replySpeakerRoleTag": "30-Year Host",
+      "triggerTags": ["trophy_unlocked"],
+      "priority": 83,
+      "mood": "wry",
+      "lines": [
+        "Nice vault hardware. Careful—the gold leaf flakes off if you breathe loudly.",
+        "Frankie, stop telling contestants our awards are hollow pewter. It ruins the glamour."
+      ]
+    },
+    {
+      "beatId": "react_contraband_relic_bought",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["contraband_relic_bought", "contraband_relic_equipped"],
+      "priority": 88,
+      "mood": "icy",
+      "lines": [
+        "That contraption still has a seventy-four customs seizure tag bolted to the brass.",
+        "Vintage patina, Sloane. Try reading an antiques quarterly once in a while."
+      ]
+    },
+    {
+      "beatId": "react_contraband_relic_2",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "JULIAN",
+      "replySpeakerDisplayName": "Julian Sterling",
+      "replySpeakerRoleTag": "30-Year Host",
+      "triggerTags": ["contraband_relic_bought", "contraband_relic_equipped"],
+      "priority": 85,
+      "mood": "scheming",
+      "lines": [
+        "If Legal asks where you got that contraband gizmo, you found it in catering.",
+        "Nobody finds military-grade brass relays inside a shrimp platter, Frankie."
+      ]
+    },
+    {
+      "beatId": "react_relic_rigged_capacitor",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["relic_rigged_capacitor"],
+      "priority": 84,
+      "mood": "wry",
+      "lines": [
+        "Don't lick the capacitor leads. Made that mistake during the ninety-two sweeps week.",
+        "My left molar still picks up AM traffic reports when it rains."
+      ]
+    },
+    {
+      "beatId": "react_relic_hot_mic",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["relic_hot_mic"],
+      "priority": 84,
+      "mood": "suspicious",
+      "lines": [
+        "Is that my missing nineteen-eighties ribbon mic bolted onto your podium?",
+        "Found property, Julian. Possession is nine-tenths of broadcast engineering."
+      ]
+    },
+    {
+      "beatId": "react_relic_trapdoor_token",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["relic_trapdoor_token"],
+      "priority": 84,
+      "mood": "icy",
+      "lines": [
+        "Jamming a brass token into our safety hatch voids Meridian's liability rider.",
+        "I am filing a memo. You will feel mildly uncomfortable by Thursday."
+      ]
+    },
+    {
+      "beatId": "react_relic_loaded_die",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "SLOANE",
+      "replySpeakerDisplayName": "Sloane Mercer",
+      "replySpeakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["relic_loaded_die", "relic_gold_dice"],
+      "priority": 84,
+      "mood": "scheming",
+      "lines": [
+        "Weighted those gold dice with lead fishing sinkers from Jersey. Roll gentle.",
+        "Atlantic City Gaming called twice, Frankie. Stop giving them our switchboard number."
+      ]
+    },
+    {
+      "beatId": "react_relic_pocket_watch",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["relic_geneva_escapement", "relic_pocket_watch"],
+      "priority": 84,
+      "mood": "wry",
+      "lines": [
+        "Did that Swiss pocket watch just slow my studio wall clock by three seconds?",
+        "Optical illusion, Julian. Just keep reading the cards before Standards checks the quartz."
+      ]
+    },
+    {
+      "beatId": "react_screwed_rival",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "JULIAN",
+      "replySpeakerDisplayName": "Julian Sterling",
+      "replySpeakerRoleTag": "30-Year Host",
+      "triggerTags": ["screwed_rival", "foil_screw_used"],
+      "priority": 85,
+      "mood": "scheming",
+      "lines": [
+        "Watching you sabotage Sloane's house champion in primetime heals my lower back.",
+        "Unnecessary roughness, frankly—and the demographic share jumped four points."
+      ]
+    },
+    {
+      "beatId": "react_got_screwed",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["got_screwed", "rival_sabotage_hit"],
+      "priority": 85,
+      "mood": "wry",
+      "lines": [
+        "Your rival hit the sabotage button with suspicious enthusiasm. Have you two dated?",
+        "Don't get mad, kid—check my velvet drawer and return the favor with interest."
+      ]
+    },
+    {
+      "beatId": "react_bullseye_globe",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "replySpeakerId": "SLOANE",
+      "replySpeakerDisplayName": "Sloane Mercer",
+      "replySpeakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["bullseye_globe", "globe_pinpoint"],
+      "priority": 86,
+      "mood": "impressed",
+      "lines": [
+        "Dead center on the brass globe. Most contestants can't locate their own zip code.",
+        "Clearly memorized. Have Standards check whether they smuggled a sextant."
+      ]
+    },
+    {
+      "beatId": "react_globe_missed_continent",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "JULIAN",
+      "replySpeakerDisplayName": "Julian Sterling",
+      "replySpeakerRoleTag": "30-Year Host",
+      "triggerTags": ["globe_missed_continent", "globe_way_off"],
+      "priority": 84,
+      "mood": "wry",
+      "lines": [
+        "Wrong hemisphere entirely. You pinned an empty patch of South Pacific whales.",
+        "At least the whales had no comment, Frankie. Mercifully quiet crowd."
+      ]
+    },
+    {
+      "beatId": "react_caught_hosts_lie",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "replySpeakerId": "SLOANE",
+      "replySpeakerDisplayName": "Sloane Mercer",
+      "replySpeakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["caught_hosts_lie", "lie_detected"],
+      "priority": 86,
+      "mood": "annoyed",
+      "lines": [
+        "For the record, I knew that word was false. I was merely testing you.",
+        "Your left eyebrow twitches whenever you bluff, Julian. We noticed in ninety-six."
+      ]
+    },
+    {
+      "beatId": "react_fell_for_hosts_lie",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["fell_for_hosts_lie"],
+      "priority": 83,
+      "mood": "smug",
+      "lines": [
+        "Thirty years of velvety baritone, and you swallowed a blatant fib whole.",
+        "Never trust a man wearing cufflinks bought with syndication money."
+      ]
+    },
+    {
+      "beatId": "react_blackout_survived",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["blackout_survived", "twist_blackout_cleared"],
+      "priority": 85,
+      "mood": "tense",
+      "lines": [
+        "We cut forty thousand watts of stage lamps and you still cleared the board.",
+        "You forgot ConEd's been cutting our power for free since Tuesday, Sloane."
+      ]
+    },
+    {
+      "beatId": "react_gravity_inverted",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["gravity_inverted"],
+      "priority": 83,
+      "mood": "annoyed",
+      "lines": [
+        "Inverting the set rattled my fillings and ruined three perfectly combed strands.",
+        "Be grateful the floor bolts held, Julian. Those came from a surplus hardware bin."
+      ]
+    },
+    {
+      "beatId": "react_mole_exposed",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "SLOANE",
+      "replySpeakerDisplayName": "Sloane Mercer",
+      "replySpeakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["mole_exposed", "double_agent_caught"],
+      "priority": 85,
+      "mood": "wry",
+      "lines": [
+        "Spotted the wobbly decoy tile before it bit you. Somebody watches my woodwork.",
+        "That tile wasn't defective, Frankie—it was an unannounced compliance variable."
+      ]
+    },
+    {
+      "beatId": "react_split_or_steal_betrayed",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "replySpeakerId": "JULIAN",
+      "replySpeakerDisplayName": "Julian Sterling",
+      "replySpeakerRoleTag": "30-Year Host",
+      "triggerTags": ["split_or_steal_betrayed", "split_or_steal_stole"],
+      "priority": 86,
+      "mood": "impressed",
+      "lines": [
+        "Cold-blooded betrayal on the final vault. Honestly, Meridian's boardroom could use you.",
+        "Don't recruit the contestant, Sloane—they still haven't returned my parking pass."
+      ]
+    },
+    {
+      "beatId": "react_flood_survived",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["flood_survived"],
+      "priority": 83,
+      "mood": "wry",
+      "lines": [
+        "Ankle-deep in stage runoff and you still kept dry shoes. Impressive footwork.",
+        "Don't touch the brass handrail down there unless you want a free perm."
+      ]
+    },
+    {
+      "beatId": "react_cryptex_solved",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["cryptex_solved"],
+      "priority": 82,
+      "mood": "wry",
+      "lines": [
+        "Cracked the brass cryptex before the violins finished bar eight. Show-off.",
+        "I oiled those tumblers with bacon fat, Julian—nobody's supposed to spin that fast."
+      ]
+    },
+    {
+      "beatId": "react_streak_5_plus",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "replySpeakerId": "JULIAN",
+      "replySpeakerDisplayName": "Julian Sterling",
+      "replySpeakerRoleTag": "30-Year Host",
+      "triggerTags": ["streak_5_plus", "hot_streak"],
+      "priority": 84,
+      "mood": "tense",
+      "conditions": { "minStreak": 5 },
+      "lines": [
+        "Five straight hits. Somebody in control room, please check if our clues leaked.",
+        "Or—hear me out, Sloane—the parking-deck walk-in actually reads books."
+      ]
+    },
+    {
+      "beatId": "react_streak_broken",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["streak_broken"],
+      "priority": 80,
+      "mood": "wry",
+      "lines": [
+        "Pity about that streak. Accounting actually applauded from behind the glass.",
+        "Clear your throat and pretend it was a dramatic pacing choice."
+      ]
+    },
+    {
+      "beatId": "react_comeback_win",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "SLOANE",
+      "replySpeakerDisplayName": "Sloane Mercer",
+      "replySpeakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["comeback_win", "won_after_trapdoor"],
+      "priority": 86,
+      "mood": "scheming",
+      "conditions": { "requiresWin": true },
+      "lines": [
+        "Crawled out of the Trapdoor and still stole the tape. Sloane's stress rash is blooming.",
+        "It is seasonal pollen, Frankie, and I am increasing next week's difficulty band."
+      ]
+    },
+    {
+      "beatId": "react_stage_01_env",
+      "stageWorldId": "STAGE_01_VAUDEVILLE_PALACE",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "JULIAN",
+      "replySpeakerDisplayName": "Julian Sterling",
+      "replySpeakerRoleTag": "30-Year Host",
+      "triggerTags": ["stage_01"],
+      "priority": 70,
+      "mood": "wry",
+      "lines": [
+        "Stage One still has nineteen-twenty-eight velvet seats. Don't sit—two springs bit a grip.",
+        "Historic patina, Frankie. Real vaudeville never apologized for mild tetanus."
+      ]
+    },
+    {
+      "beatId": "react_stage_02_env",
+      "stageWorldId": "STAGE_02_GENEVA_CONSERVATORY",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["stage_02"],
+      "priority": 70,
+      "mood": "wry",
+      "lines": [
+        "Sabine keeps resetting the conservatory clock whenever anyone breathes off-tempo.",
+        "I loosened her mainspring half a millimeter. Don't mention it on camera."
+      ]
+    },
+    {
+      "beatId": "react_stage_03_env",
+      "stageWorldId": "STAGE_03_MONTE_CARLO_SALON",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "SLOANE",
+      "replySpeakerDisplayName": "Sloane Mercer",
+      "replySpeakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["stage_03"],
+      "priority": 70,
+      "mood": "wry",
+      "lines": [
+        "The Countess asked catering for caviar and got warm pretzel bites in a crystal dish.",
+        "Budget discipline, Frankie. The Riviera look is ninety percent chandelier lighting."
+      ]
+    },
+    {
+      "beatId": "react_stage_04_env",
+      "stageWorldId": "STAGE_04_CARTOGRAPHIC_ROTUNDA",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["stage_04"],
+      "priority": 70,
+      "mood": "wry",
+      "lines": [
+        "Alistair insists his khaki safari jacket was torn by a jaguar. I saw a coat hook.",
+        "The man couldn't find his own dressing room without a compass and a bribe."
+      ]
+    },
+    {
+      "beatId": "react_stage_05_env",
+      "stageWorldId": "STAGE_05_ANALOG_BUNKER_1969",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["stage_05"],
+      "priority": 70,
+      "mood": "icy",
+      "lines": [
+        "Sub-Level Five passed air-quality review in nineteen-seventy-two. That remains legally current.",
+        "Walter's toaster just sparked orange Nixie tubes, Sloane. Wear rubber soles."
+      ]
+    },
+    {
+      "beatId": "react_stage_06_env",
+      "stageWorldId": "STAGE_06_KYOTO_LACQUER_PAVILION",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["stage_06"],
+      "priority": 70,
+      "mood": "annoyed",
+      "lines": [
+        "Kenzo gave my opening monologue two stars and called my diction lukewarm.",
+        "Crack his stone bridge down the center. Critics hate when the table bites back."
+      ]
+    },
+    {
+      "beatId": "react_stage_07_env",
+      "stageWorldId": "STAGE_07_CARNIVAL_CURIOSITIES",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "JULIAN",
+      "replySpeakerDisplayName": "Julian Sterling",
+      "replySpeakerRoleTag": "30-Year Host",
+      "triggerTags": ["stage_07"],
+      "priority": 70,
+      "mood": "wry",
+      "lines": [
+        "Delilah already swapped two tin ducks with lead weights while the stagehand sneezed.",
+        "Magnificent—I can finally relate to someone in this building."
+      ]
+    },
+    {
+      "beatId": "react_stage_08_env",
+      "stageWorldId": "STAGE_08_SUNKEN_BATHYSPHERE",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["stage_08"],
+      "priority": 70,
+      "mood": "tense",
+      "lines": [
+        "Did the bronze porthole just burp, or is Henrik whispering in French again?",
+        "Both. Keep your trousers cuffed until I wedge another soup ladle under the valve."
+      ]
+    },
+    {
+      "beatId": "react_stage_09_env",
+      "stageWorldId": "STAGE_09_ASTRAL_OBSERVATORY",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "replySpeakerId": "JULIAN",
+      "replySpeakerDisplayName": "Julian Sterling",
+      "replySpeakerRoleTag": "30-Year Host",
+      "triggerTags": ["stage_09"],
+      "priority": 70,
+      "mood": "smug",
+      "lines": [
+        "Nadia solved our sample bracket during her cab ride from the airport.",
+        "Charming. Remind her that television audiences despise people who pronounce Latin properly."
+      ]
+    },
+    {
+      "beatId": "react_stage_10_env",
+      "stageWorldId": "STAGE_10_SOVEREIGN_COLOSSEUM",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "JULIAN",
+      "replySpeakerDisplayName": "Julian Sterling",
+      "replySpeakerRoleTag": "30-Year Host",
+      "triggerTags": ["stage_10"],
+      "priority": 70,
+      "mood": "dramatic",
+      "lines": [
+        "Four fire braziers and zero sprinklers. Fire marshal took a long lunch in Jersey.",
+        "If Arthur mentions Pluto, nod solemnly and hit the buzzer twice as hard."
+      ]
+    },
+    {
+      "beatId": "react_state_low_bankroll",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "SLOANE",
+      "replySpeakerDisplayName": "Sloane Mercer",
+      "replySpeakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["low_bankroll"],
+      "priority": 55,
+      "mood": "wry",
+      "conditions": { "maxBankroll": 250 },
+      "lines": [
+        "Your bankroll's looking thin enough to see through. No credit tabs at my trunk.",
+        "Financial fragility is actually a wonderful ratings arc. Keep smiling."
+      ]
+    },
+    {
+      "beatId": "react_state_high_bankroll",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "replySpeakerId": "JULIAN",
+      "replySpeakerDisplayName": "Julian Sterling",
+      "replySpeakerRoleTag": "30-Year Host",
+      "triggerTags": ["high_bankroll"],
+      "priority": 55,
+      "mood": "tense",
+      "conditions": { "minBankroll": 12000 },
+      "lines": [
+        "Accounting wants to know why a walk-in holds more petty cash than Wardrobe.",
+        "Because they didn't spend twelve million on painted drywall, Sloane."
+      ]
+    },
+    {
+      "beatId": "react_state_post_loss",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "JULIAN",
+      "replySpeakerDisplayName": "Julian Sterling",
+      "replySpeakerRoleTag": "30-Year Host",
+      "triggerTags": ["post_loss", "loss_streak"],
+      "priority": 56,
+      "mood": "wry",
+      "conditions": { "requiresLoss": true },
+      "lines": [
+        "Rough tape. Sloane's already popping prosecco in Standards—don't make me watch that.",
+        "Drink some warm tap water, tighten your collar, and ruin her afternoon."
+      ]
+    },
+    {
+      "beatId": "react_state_full_relics",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["full_relic_podium"],
+      "priority": 55,
+      "mood": "icy",
+      "lines": [
+        "Your podium looks like a Victorian pawnshop. Half those gizmos hum on camera.",
+        "That's just sixty-cycle studio charm, Sloane. Perfectly legal under Union Article Nine."
+      ]
+    },
+    {
+      "beatId": "evergreen_cue_cards_1",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["evergreen", "backstage_idle"],
+      "priority": 30,
+      "mood": "annoyed",
+      "lines": [
+        "Card Seven tells me to 'smile warmly like a trustworthy uncle.' I have zero nephews.",
+        "Better than yesterday's card, Julian—Standards tried to spell your name with a G."
+      ]
+    },
+    {
+      "beatId": "evergreen_parking_validation",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["evergreen", "backstage_idle"],
+      "priority": 30,
+      "mood": "icy",
+      "lines": [
+        "Quick reminder: your garage meter is still running at forty dollars an hour.",
+        "Meridian only validates after a polite, compliant elimination."
+      ]
+    },
+    {
+      "beatId": "evergreen_union_invoice",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "replySpeakerId": "SLOANE",
+      "replySpeakerDisplayName": "Sloane Mercer",
+      "replySpeakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["evergreen", "backstage_idle"],
+      "priority": 30,
+      "mood": "wry",
+      "lines": [
+        "Every time that Trapdoor clicks, Local Fifty-Two bills four grand for hinge inspection.",
+        "Frankie, it's a steel flap on a spring. Stop invoicing us like NASA."
+      ]
+    },
+    {
+      "beatId": "evergreen_catering_shrimp",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "replySpeakerId": "FRANKIE",
+      "replySpeakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "replySpeakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["evergreen", "backstage_idle"],
+      "priority": 30,
+      "mood": "wry",
+      "lines": [
+        "Avoid the backstage shrimp platter. Barnaby ate three and started reciting Macbeth.",
+        "That wasn't the shrimp, Julian. He does that whenever nobody looks at him."
+      ]
+    },
+    {
+      "beatId": "evergreen_camera_three",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["evergreen", "backstage_idle"],
+      "priority": 30,
+      "mood": "smug",
+      "lines": [
+        "Never look into Camera Three. Its lens adds twelve pounds and steals your dignity.",
+        "Stick to Camera One and let my tailor carry the evening."
+      ]
+    },
+    {
+      "beatId": "evergreen_sloane_memo",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "replySpeakerId": "JULIAN",
+      "replySpeakerDisplayName": "Julian Sterling",
+      "replySpeakerRoleTag": "30-Year Host",
+      "triggerTags": ["evergreen", "backstage_idle"],
+      "priority": 30,
+      "mood": "icy",
+      "lines": [
+        "Board members asked why the audience is cheering. I assured them it's sarcastic.",
+        "Yes, forty million homes clapping ironically. Tell the CFO to buy a lifeboat."
+      ]
+    },
+    {
+      "beatId": "evergreen_velvet_trunk",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["evergreen", "backstage_idle"],
+      "priority": 30,
+      "mood": "wry",
+      "lines": [
+        "Touch the brass latches gently—my mentor built this trunk during the eighty-one strike.",
+        "Everything inside either bends the odds or makes Standards break out in hives."
+      ]
+    },
+    {
+      "beatId": "evergreen_emmy_shelf",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "replySpeakerId": "SLOANE",
+      "replySpeakerDisplayName": "Sloane Mercer",
+      "replySpeakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["evergreen", "backstage_idle"],
+      "priority": 30,
+      "mood": "annoyed",
+      "lines": [
+        "My nineteen-ninety-one daytime trophy vanished from dressing room two.",
+        "Relocated to Legal as collateral, Julian. Win back our ratings and we'll talk."
+      ]
+    }
+  ],
+  "liveBroadcastQuips": [
+    {
+      "beatId": "quip_gear_x3_1",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["gear_align_x3"],
+      "priority": 75,
+      "lines": ["Three brass rings aligned. Accounting just spilled scotch on the carpet."]
+    },
+    {
+      "beatId": "quip_gear_x3_2",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["gear_align_x3"],
+      "priority": 75,
+      "lines": ["Hear that triple detent? That's my union gearwork singing, baby."]
+    },
+    {
+      "beatId": "quip_gear_x3_3",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["gear_align_x3"],
+      "priority": 75,
+      "lines": ["Triple alignment noted. Reviewing our mechanical tolerance contract immediately."]
+    },
+    {
+      "beatId": "quip_twist_blackout_1",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["twist_blackout", "BLACKOUT_SPOTLIGHT"],
+      "priority": 80,
+      "lines": ["Routine power conservation. Please enjoy your sudden lack of visibility."]
+    },
+    {
+      "beatId": "quip_twist_blackout_2",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["twist_blackout", "BLACKOUT_SPOTLIGHT"],
+      "priority": 80,
+      "lines": ["Who killed my key light? Nobody ruins my cheekbones on live air."]
+    },
+    {
+      "beatId": "quip_twist_blackout_3",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["twist_blackout", "BLACKOUT_SPOTLIGHT"],
+      "priority": 80,
+      "lines": ["Sloane kicked the main breaker again. Sweep your spotlight fast."]
+    },
+    {
+      "beatId": "quip_twist_gravity_1",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["twist_gravity_inversion", "GRAVITY_INVERSION"],
+      "priority": 80,
+      "lines": ["Board's upside down. My hairdresser is invoicing Network Legal double."]
+    },
+    {
+      "beatId": "quip_twist_gravity_2",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["twist_gravity_inversion", "GRAVITY_INVERSION"],
+      "priority": 80,
+      "lines": ["Vertical orientation recalibrated. Please ignore any mild inner-ear discomfort."]
+    },
+    {
+      "beatId": "quip_twist_auction_1",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["twist_blind_auction", "HOST_BLIND_AUCTION"],
+      "priority": 80,
+      "lines": ["Blind gavel is out. Overbid at your own financial peril."]
+    },
+    {
+      "beatId": "quip_twist_auction_2",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["twist_blind_auction", "HOST_BLIND_AUCTION"],
+      "priority": 80,
+      "lines": ["Don't trust the velvet cloche. Half the time it's a rigged bill."]
+    },
+    {
+      "beatId": "quip_twist_fuse_1",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["twist_chain_fuse", "CHAIN_FUSE_DETONATION"],
+      "priority": 80,
+      "lines": ["Live fuse is crawling. Move before Wardrobe invoices me for burns."]
+    },
+    {
+      "beatId": "quip_twist_flood_1",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["twist_rising_flood", "RISING_FLOOD_STAGE"],
+      "priority": 80,
+      "lines": ["Outer tiles are experiencing scheduled hydraulic elevation. Mind your loafers."]
+    },
+    {
+      "beatId": "quip_twist_mole_1",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["twist_double_agent_mole", "DOUBLE_AGENT_MOLE"],
+      "priority": 80,
+      "lines": ["Two fake tiles on the floor. Watch which ones wobble."]
+    },
+    {
+      "beatId": "quip_twist_split_1",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["twist_split_or_steal", "SPLIT_OR_STEAL_VAULT"],
+      "priority": 80,
+      "lines": ["Split or Steal. Let's see whose morals survive a televised vault."]
+    },
+    {
+      "beatId": "quip_twist_mirror_1",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["twist_mirror_twin", "MIRROR_TWIN_LINK"],
+      "priority": 80,
+      "lines": ["Twin nodes linked. Flip one brass plate and its cousin jumps too."]
+    },
+    {
+      "beatId": "quip_twist_magnet_1",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["twist_magnetic_repulsor", "MAGNETIC_REPULSOR"],
+      "priority": 80,
+      "lines": ["Floor magnets just yanked my cufflinks toward Podium Two. Marvelous."]
+    },
+    {
+      "beatId": "quip_twist_decay_1",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["twist_cursed_decay", "CURSED_MULTIPLIER_DECAY"],
+      "priority": 80,
+      "lines": ["Bonus depreciation active. Hesitate and your payout shrinks politely."]
+    },
+    {
+      "beatId": "quip_twist_overclock_1",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["twist_overclock", "OVERCLOCK_DOUBLE_SPEED"],
+      "priority": 80,
+      "lines": ["Somebody jammed the governor pin. Everything runs double speed now."]
+    },
+    {
+      "beatId": "quip_twist_fog_1",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["twist_fog_jammer", "RIVAL_FOG_JAMMER"],
+      "priority": 80,
+      "lines": ["Atmospheric mist deployed. Visibility is an optional luxury package."]
+    },
+    {
+      "beatId": "quip_twist_bounty_1",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["twist_golden_bounty", "GOLDEN_BOUNTY_HUNT"],
+      "priority": 80,
+      "lines": ["Bounty tile live. Watch Accounting flinch when you touch it."]
+    },
+    {
+      "beatId": "quip_twist_trapdoor_hazard_1",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["twist_sudden_trapdoor", "SUDDEN_TRAPDOOR_HAZARD"],
+      "priority": 82,
+      "lines": ["Floor latches set to hair-trigger. Please stand nowhere near the hinges."]
+    },
+    {
+      "beatId": "quip_twist_laser_1",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["twist_ricochet_laser", "RICOCHET_LASER_BONUS"],
+      "priority": 80,
+      "lines": ["Borrowed a stage ruby beam. Don't stare straight into the mirror."]
+    },
+    {
+      "beatId": "quip_twist_voltage_1",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["twist_high_voltage", "HIGH_VOLTAGE_CHAIN"],
+      "priority": 80,
+      "lines": ["High-voltage chain live. My hair just stood up on union time."]
+    },
+    {
+      "beatId": "quip_twist_generic_1",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["twist_generic"],
+      "priority": 70,
+      "lines": ["Mid-match compliance adjustment active. Thank you for remaining insured."]
+    },
+    {
+      "beatId": "quip_twist_generic_2",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["twist_generic"],
+      "priority": 70,
+      "lines": ["Sloane touched the control desk again. Brace for studio nonsense."]
+    },
+    {
+      "beatId": "quip_screw_rival_1",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["screw_rival"],
+      "priority": 82,
+      "lines": ["Oh, that's petty. Keep doing it—Legal hates the paperwork."]
+    },
+    {
+      "beatId": "quip_screw_rival_2",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["screw_rival"],
+      "priority": 82,
+      "lines": ["Deliciously unsportsmanlike. Camera Two, zoom straight into their regret."]
+    },
+    {
+      "beatId": "quip_screw_rival_3",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["screw_rival"],
+      "priority": 82,
+      "lines": ["Sabotaging a salaried champion is rude, though legally broadcastable."]
+    },
+    {
+      "beatId": "quip_rival_screws_1",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["rival_screws_player"],
+      "priority": 82,
+      "lines": ["Your opponent just pulled the dirty switch. Smile through the betrayal."]
+    },
+    {
+      "beatId": "quip_rival_screws_2",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["rival_screws_player"],
+      "priority": 82,
+      "lines": ["Cheap shot from Podium Two. Remember where my foil drawer sits."]
+    },
+    {
+      "beatId": "quip_trapdoor_drop_1",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["trapdoor_drop"],
+      "priority": 85,
+      "lines": ["Congratulations on your voluntary vertical relocation to Sub-Level Pit B."]
+    },
+    {
+      "beatId": "quip_trapdoor_drop_2",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["trapdoor_drop"],
+      "priority": 85,
+      "lines": ["Mind the gap. Eight seconds before the cushions stop caring."]
+    },
+    {
+      "beatId": "quip_trapdoor_drop_3",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["trapdoor_drop"],
+      "priority": 85,
+      "lines": ["Ka-ching! Four grand in hinge overtime, kid—now scramble back up."]
+    },
+    {
+      "beatId": "quip_trapdoor_escape_1",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["trapdoor_escape"],
+      "priority": 84,
+      "lines": ["Still breathing! Sloane's compliance binder just snapped in half."]
+    },
+    {
+      "beatId": "quip_trapdoor_escape_2",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["trapdoor_escape"],
+      "priority": 84,
+      "lines": ["Back from the cellar. Straighten your shoulders—we're live in three."]
+    },
+    {
+      "beatId": "quip_trapdoor_clutch_1",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["trapdoor_clutch_escape"],
+      "priority": 88,
+      "lines": ["Sub-second escape. I am terminating our hydraulic contractor before lunch."]
+    },
+    {
+      "beatId": "quip_trapdoor_clutch_2",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["trapdoor_clutch_escape"],
+      "priority": 88,
+      "lines": ["One heartbeat left. Even my cardiologist just leaned closer."]
+    },
+    {
+      "beatId": "quip_trapdoor_fail_1",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["trapdoor_fail"],
+      "priority": 84,
+      "lines": ["Pit closed. Refreshments and liability waivers await by the freight elevator."]
+    },
+    {
+      "beatId": "quip_wire_safe_1",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["wire_snip_safe"],
+      "priority": 78,
+      "lines": ["Clean snip. Zero smoke, zero sirens, zero deductible."]
+    },
+    {
+      "beatId": "quip_wire_safe_2",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["wire_snip_safe"],
+      "priority": 78,
+      "lines": ["Steady hands. Clearly wasted on parking-deck validation."]
+    },
+    {
+      "beatId": "quip_wire_wrong_1",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["wire_snip_wrong"],
+      "priority": 82,
+      "lines": ["Wrong cable! That briefcase took me six hours to solder."]
+    },
+    {
+      "beatId": "quip_wire_wrong_2",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["wire_snip_wrong"],
+      "priority": 82,
+      "lines": ["Smoke on my silk tie. Somebody call Wardrobe and a priest."]
+    },
+    {
+      "beatId": "quip_globe_bullseye_1",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["globe_bullseye"],
+      "priority": 80,
+      "lines": ["Pinpoint accuracy. Alistair is quietly hiding his nineteen-fifty-four atlas."]
+    },
+    {
+      "beatId": "quip_globe_bullseye_2",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["globe_bullseye"],
+      "priority": 80,
+      "lines": ["Suspiciously precise latitude. Checking your shoes for hidden magnets."]
+    },
+    {
+      "beatId": "quip_globe_way_off_1",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["globe_way_off"],
+      "priority": 78,
+      "lines": ["Wrong ocean, kid. Even the whales look confused."]
+    },
+    {
+      "beatId": "quip_cryptex_cracked_1",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["cryptex_cracked"],
+      "priority": 78,
+      "lines": ["Tumblers dropped smooth. Remind me never to share my locker code."]
+    },
+    {
+      "beatId": "quip_hosts_lie_caught_1",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["hosts_lie_caught"],
+      "priority": 82,
+      "lines": ["Caught my fib. Fine—Standards made me read it anyway."]
+    },
+    {
+      "beatId": "quip_hosts_lie_missed_1",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["hosts_lie_missed"],
+      "priority": 78,
+      "lines": ["Sold a blatant lie on baritone alone. Still sharp."]
+    },
+    {
+      "beatId": "quip_blackjack_21_1",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["blackjack_21"],
+      "priority": 80,
+      "lines": ["Twenty-one flat. The pit boss just swallowed his whistle."]
+    },
+    {
+      "beatId": "quip_blackjack_bust_1",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["blackjack_bust"],
+      "priority": 80,
+      "lines": ["Busted past twenty-one. Greed remains Meridian's favorite unpaid intern."]
+    },
+    {
+      "beatId": "quip_streak_3_1",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["streak_3"],
+      "priority": 76,
+      "lines": ["Three in a row. Sloane's pen just stopped moving."]
+    },
+    {
+      "beatId": "quip_streak_3_2",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["streak_3"],
+      "priority": 76,
+      "lines": ["Three straight. Control room's sweating through their polyester."]
+    },
+    {
+      "beatId": "quip_streak_5_1",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["streak_5"],
+      "priority": 84,
+      "lines": ["Five unanswered. Someone upstairs, please dim their microphone gently."]
+    },
+    {
+      "beatId": "quip_streak_5_2",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["streak_5"],
+      "priority": 84,
+      "lines": ["Five straight! Even the orchestra stopped checking their watches."]
+    },
+    {
+      "beatId": "quip_chain_shattered_1",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["chain_shattered"],
+      "priority": 78,
+      "lines": ["Snapped my iron padlocks clean. Billing Standards for fresh steel."]
+    },
+    {
+      "beatId": "quip_lead_taken_1",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["lead_taken"],
+      "priority": 74,
+      "lines": ["New leader on the board. Notice Legal loosening their collars."]
+    },
+    {
+      "beatId": "quip_final_turn_1",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["final_turn"],
+      "priority": 76,
+      "lines": ["Final turn. Hold the commercials—this might ruin somebody's bonus."]
+    },
+    {
+      "beatId": "quip_final_turn_2",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["final_turn"],
+      "priority": 76,
+      "lines": ["Last turn remaining. Please lose cleanly before the network feed drops."]
+    },
+    {
+      "beatId": "quip_match_win_1",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["match_win"],
+      "priority": 80,
+      "lines": ["Tape's yours, kid. Come backstage before Sloane hides my velvet trunk."]
+    },
+    {
+      "beatId": "quip_match_win_2",
+      "speakerId": "JULIAN",
+      "speakerDisplayName": "Julian Sterling",
+      "speakerRoleTag": "30-Year Host",
+      "triggerTags": ["match_win"],
+      "priority": 80,
+      "lines": ["Another house champion humbled. Accounting is drafting angry emails."]
+    },
+    {
+      "beatId": "quip_match_loss_1",
+      "speakerId": "SLOANE",
+      "speakerDisplayName": "Sloane Mercer",
+      "speakerRoleTag": "VP Standards & Ratings",
+      "triggerTags": ["match_loss"],
+      "priority": 80,
+      "lines": ["A tidy, fully insured outcome. Thank you for participating."]
+    },
+    {
+      "beatId": "quip_match_loss_2",
+      "speakerId": "FRANKIE",
+      "speakerDisplayName": "Frankie \"The Fixer\" DeLuca",
+      "speakerRoleTag": "Local 52 Prop Master",
+      "triggerTags": ["match_loss"],
+      "priority": 80,
+      "lines": ["Bruised, not buried. Get backstage—we're tweaking your hardware."]
+    }
+  ]
+}
