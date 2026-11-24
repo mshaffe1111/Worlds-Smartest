@@ -1,0 +1,1795 @@
+/* ============================================================================
+   WORLD'S SMARTEST v5.0 — Carved Mahogany, Brushed Brass & Emerald Baize Modals
+   Shared Ledger Stylesheet for:
+     1. Career Stats & 12-Domain Polar Radar (`CareerAnalyticsDashboardView.ts`)
+     2. Hall of Honours — 100 Trophies & 48 Rewards (`HallOfHonoursView.ts`)
+     3. 5-Slot Contestant Dossier Saves (`CampaignSaveSlotsModal.ts`)
+   Design Language: Hearthstone Leather/Brass Clasp Tomes + Cuphead Vaudeville
+   Scorecard Ledgers + Approved v5 Mahogany, Brass Filigree & Emerald Enamel.
+   Strict Guarantees:
+     • ZERO dark-blue SaaS enterprise boxes
+     • ZERO backdrop-filter (60fps mobile GPU friendly)
+     • ZERO OS color emojis (pure inline SVG brass iconography)
+     • >= 44px tactile brass tabs, clasps, and action latches
+     • 0px horizontal overflow on 360x640, 390x844, 640x360, 844x390 & Desktop
+   ============================================================================ */
+
+:root {
+  --ws5-mahogany-abyss: #160904;
+  --ws5-mahogany-deep: #231007;
+  --ws5-mahogany-mid: #34180b;
+  --ws5-mahogany-warm: #4a2311;
+  --ws5-mahogany-panel: #2b140a;
+  --ws5-mahogany-ridge: #5b2c15;
+
+  --ws5-brass-highlight: #fff0b8;
+  --ws5-brass-bright: #f4ce72;
+  --ws5-brass-mid: #d39a38;
+  --ws5-brass-burnished: #9e6a1d;
+  --ws5-brass-groove: #5b370c;
+  --ws5-brass-line: rgba(235, 188, 86, 0.3);
+  --ws5-brass-line-soft: rgba(235, 188, 86, 0.16);
+  --ws5-brass-line-strong: rgba(244, 206, 114, 0.58);
+
+  --ws5-emerald-bright: #198d68;
+  --ws5-emerald-enamel: #0f684c;
+  --ws5-emerald-baize: #0a4935;
+  --ws5-emerald-deep: #062f22;
+  --ws5-emerald-ink: #57e6ab;
+
+  --ws5-crimson-velvet: #6f101b;
+  --ws5-crimson-deep: #3d090f;
+  --ws5-crimson-ink: #ff8e9c;
+  --ws5-crimson-bright: #d94657;
+
+  --ws5-parchment-bright: #fdf5e4;
+  --ws5-parchment-ink: #efe0c1;
+  --ws5-parchment-muted: #c8ae84;
+  --ws5-parchment-dim: #9d825d;
+  --ws5-turquoise-ink: #6ee0cf;
+  --ws5-amber-ink: #f7b65c;
+
+  --ws5-font-display: 'Cinzel', Georgia, 'Times New Roman', serif;
+  --ws5-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ws5-font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
+}
+
+/* ============================================================================
+   1. WARM THEATRE BACKDROP SCRIM (ZERO backdrop-filter!)
+   ============================================================================ */
+
+.ws-brass-backdrop,
+.ws-brass-backdrop.ws-meta-backdrop,
+.ws-brass-backdrop.ws-save-modal,
+.ws-brass-backdrop.ws-velvet-backdrop {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  max-width: 100vw;
+  z-index: 70;
+  background:
+    radial-gradient(ellipse 92% 48% at 50% 0%, rgba(124, 62, 22, 0.42) 0%, rgba(28, 12, 6, 0.88) 54%, rgba(12, 5, 2, 0.96) 100%);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  pointer-events: auto;
+  overflow: hidden;
+  box-sizing: border-box;
+  font-variant-numeric: tabular-nums;
+}
+
+.ws-brass-backdrop *,
+.ws-brass-backdrop *::before,
+.ws-brass-backdrop *::after,
+.ws-brass-ledger *,
+.ws-brass-ledger *::before,
+.ws-brass-ledger *::after {
+  box-sizing: border-box;
+}
+
+/* Desktop / Tablet framed brass-bound ledger presentation */
+@media (min-width: 768px) and (min-height: 521px) {
+  .ws-brass-backdrop:not(.is-stage-dock),
+  .ws-brass-backdrop.ws-meta-backdrop:not(.is-stage-dock),
+  .ws-brass-backdrop.ws-save-modal {
+    align-items: center;
+    padding: 18px 20px;
+  }
+}
+
+/* ============================================================================
+   2. CARVED MAHOGANY & BRUSHED BRASS LEDGER SHELL
+   ============================================================================ */
+
+.ws-brass-ledger,
+.ws-brass-ledger.ws-meta-shell,
+.ws-brass-ledger.ws-saves-sheet {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  max-width: 100%;
+  max-height: 100dvh;
+  overflow: hidden;
+  border-radius: 0;
+  /* Rich carved mahogany grain + warm tungsten stage vignette */
+  background:
+    radial-gradient(ellipse 95% 24% at 50% 0%, rgba(248, 206, 114, 0.16) 0%, rgba(74, 35, 17, 0) 70%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(94, 44, 18, 0.09) 0px,
+      rgba(94, 44, 18, 0.09) 2px,
+      transparent 2px,
+      transparent 16px,
+      rgba(16, 6, 2, 0.14) 16px,
+      rgba(16, 6, 2, 0.14) 19px,
+      transparent 19px,
+      transparent 38px
+    ),
+    linear-gradient(180deg, #32170a 0%, #241007 42%, #1b0b04 100%);
+  border: none;
+  border-top: 2px solid #c99233;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 240, 184, 0.45),
+    inset 0 -2px 0 rgba(168, 118, 36, 0.35);
+  display: flex;
+  flex-direction: column;
+  color: var(--ws5-parchment-bright);
+  font-family: var(--ws5-font-sans);
+  font-variant-numeric: tabular-nums;
+}
+
+.ws-brass-ledger.ws-meta-shell::before,
+.ws-brass-ledger.ws-saves-sheet::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    #6b4111 0%,
+    #e2b04a 18%,
+    #fff0b8 50%,
+    #e2b04a 82%,
+    #6b4111 100%
+  );
+  pointer-events: none;
+  z-index: 30;
+}
+
+@media (min-width: 768px) and (min-height: 521px) {
+  .ws-brass-backdrop.ws-meta-backdrop:not(.is-stage-dock) .ws-brass-ledger.ws-meta-shell {
+    max-width: 1020px;
+    height: auto;
+    max-height: calc(100dvh - 36px);
+    border-radius: 18px;
+    border: 2px solid #c79134;
+    box-shadow:
+      0 30px 76px rgba(6, 2, 0, 0.88),
+      0 0 0 1px rgba(90, 52, 12, 0.9),
+      inset 0 1px 0 rgba(255, 240, 184, 0.52),
+      inset 0 0 0 3px #4b280c,
+      inset 0 0 0 4px rgba(244, 206, 114, 0.28);
+  }
+
+  .ws-brass-backdrop.ws-save-modal .ws-brass-ledger.ws-saves-sheet {
+    max-width: 820px;
+    height: min(90dvh, 850px);
+    max-height: min(90dvh, 850px);
+    border-radius: 18px;
+    border: 2px solid #c79134;
+    box-shadow:
+      0 30px 76px rgba(6, 2, 0, 0.88),
+      0 0 0 1px rgba(90, 52, 12, 0.9),
+      inset 0 1px 0 rgba(255, 240, 184, 0.52),
+      inset 0 0 0 3px #4b280c,
+      inset 0 0 0 4px rgba(244, 206, 114, 0.28);
+  }
+}
+
+/* Brass SVG Icon utility */
+.ws-brass-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.ws-brass-ico svg {
+  display: block;
+}
+
+/* ============================================================================
+   3. STICKY CARVED MAHOGANY & BRASS CLASP TOPBAR (>= 44px TOUCH TARGETS)
+   ============================================================================ */
+
+.ws-brass-ledger .ws-meta-topbar,
+.ws-brass-ledger .ws-sheet-header {
+  position: relative;
+  z-index: 25;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: calc(56px + env(safe-area-inset-top, 0px));
+  padding:
+    max(8px, env(safe-area-inset-top, 8px))
+    max(12px, env(safe-area-inset-right, 12px))
+    8px
+    max(12px, env(safe-area-inset-left, 12px));
+  background:
+    radial-gradient(ellipse 80% 120% at 50% 0%, rgba(244, 206, 114, 0.14) 0%, transparent 72%),
+    linear-gradient(180deg, #3e1d0d 0%, #2a1308 100%);
+  border: none;
+  border-bottom: 2px solid rgba(212, 158, 56, 0.45);
+  box-shadow:
+    0 6px 18px rgba(10, 4, 1, 0.5),
+    inset 0 -1px 0 rgba(70, 38, 10, 0.85);
+}
+
+.ws-brass-ledger .ws-meta-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.ws-brass-ledger .ws-meta-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.ws-brass-ledger .ws-meta-topbar-titles {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ws-brass-ledger .ws-meta-title,
+.ws-brass-ledger .ws-sheet-title {
+  margin: 0;
+  font-family: var(--ws5-font-display);
+  font-size: clamp(14px, 1.9vw, 18px);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ws5-brass-highlight);
+  text-shadow: 0 2px 4px rgba(16, 6, 1, 0.88);
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.ws-brass-ledger .ws-meta-eyebrow {
+  font-family: var(--ws5-font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ws5-parchment-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Raised Brushed-Brass Clasp Buttons (Back, Fullscreen, Close, Vault, 3D) */
+.ws-brass-ledger .ws-meta-back-btn,
+.ws-brass-ledger .ws-sheet-nav-btn,
+.ws-brass-ledger .ws-meta-vault-btn,
+.ws-brass-ledger .ws-brass-clasp-btn,
+.ws-brass-ledger .ws-sheet-icon-btn {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1.5px solid #c68e32;
+  background: linear-gradient(180deg, #4b2411 0%, #2d1409 62%, #220e05 100%);
+  box-shadow:
+    0 3px 8px rgba(8, 3, 1, 0.55),
+    inset 0 1px 0 rgba(255, 240, 184, 0.34),
+    inset 0 -1px 0 rgba(20, 8, 2, 0.72);
+  color: var(--ws5-brass-highlight);
+  font-family: var(--ws5-font-sans);
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: transform 0.12s ease, filter 0.14s ease, border-color 0.14s ease, background 0.14s ease;
+}
+
+.ws-brass-ledger .ws-brass-clasp-btn.is-icon-only,
+.ws-brass-ledger .ws-sheet-icon-btn {
+  padding: 0;
+  width: 44px;
+}
+
+.ws-brass-ledger .ws-meta-back-btn:hover,
+.ws-brass-ledger .ws-sheet-nav-btn:hover,
+.ws-brass-ledger .ws-meta-vault-btn:hover,
+.ws-brass-ledger .ws-brass-clasp-btn:hover,
+.ws-brass-ledger .ws-sheet-icon-btn:hover {
+  border-color: var(--ws5-brass-highlight);
+  background: linear-gradient(180deg, #5e2e16 0%, #3a1a0b 100%);
+  color: #ffffff;
+  filter: brightness(1.06);
+}
+
+.ws-brass-ledger .ws-meta-back-btn:active,
+.ws-brass-ledger .ws-sheet-nav-btn:active,
+.ws-brass-ledger .ws-meta-vault-btn:active,
+.ws-brass-ledger .ws-brass-clasp-btn:active,
+.ws-brass-ledger .ws-sheet-icon-btn:active {
+  transform: translateY(1px);
+}
+
+.ws-brass-ledger .ws-brass-clasp-btn.is-active-emerald {
+  border-color: var(--ws5-brass-bright);
+  background: linear-gradient(180deg, #167c5c 0%, #0b4f39 100%);
+  color: var(--ws5-brass-highlight);
+}
+
+.ws-brass-ledger .ws-brass-clasp-btn.is-close-clasp,
+.ws-brass-ledger .ws-sheet-icon-btn {
+  border-color: rgba(217, 152, 64, 0.72);
+  background: linear-gradient(180deg, #5c191f 0%, #3a0d12 100%);
+  color: #ffe8c2;
+}
+
+.ws-brass-ledger .ws-brass-clasp-btn.is-close-clasp:hover,
+.ws-brass-ledger .ws-sheet-icon-btn:hover {
+  border-color: var(--ws5-brass-highlight);
+  background: linear-gradient(180deg, #7c222a 0%, #4d1218 100%);
+}
+
+/* Vault Popover Dropdown (Mahogany & Brass — Zero Cold Blue!) */
+.ws-brass-ledger .ws-meta-vault-menu,
+.ws-brass-backdrop .ws-meta-vault-menu {
+  background: linear-gradient(180deg, #35180b 0%, #200d05 100%);
+  border: 1.5px solid #c99235;
+  border-radius: 12px;
+  box-shadow:
+    0 20px 44px rgba(6, 2, 0, 0.88),
+    inset 0 1px 0 rgba(255, 240, 184, 0.3);
+  padding: 6px;
+}
+
+.ws-brass-ledger .ws-meta-vault-row,
+.ws-brass-backdrop .ws-meta-vault-row {
+  min-height: 44px;
+  color: var(--ws5-parchment-bright);
+  border-radius: 8px;
+}
+
+.ws-brass-ledger .ws-meta-vault-row:hover,
+.ws-brass-backdrop .ws-meta-vault-row:hover {
+  background: rgba(244, 206, 114, 0.14);
+  color: var(--ws5-brass-highlight);
+}
+
+.ws-brass-ledger .ws-meta-vault-row.is-current,
+.ws-brass-backdrop .ws-meta-vault-row.is-current {
+  background: linear-gradient(90deg, rgba(16, 108, 80, 0.65) 0%, rgba(16, 108, 80, 0.2) 100%);
+  color: var(--ws5-brass-highlight);
+  box-shadow: inset 3px 0 0 var(--ws5-brass-bright);
+}
+
+.ws-brass-ledger .ws-meta-vault-row.is-exit,
+.ws-brass-backdrop .ws-meta-vault-row.is-exit {
+  color: var(--ws5-parchment-muted);
+}
+
+.ws-brass-ledger .ws-meta-vault-row.is-exit:hover,
+.ws-brass-backdrop .ws-meta-vault-row.is-exit:hover {
+  background: rgba(185, 42, 58, 0.24);
+  color: #ffc2ca;
+}
+
+.ws-brass-ledger .ws-meta-vault-sep,
+.ws-brass-backdrop .ws-meta-vault-sep {
+  background: var(--ws5-brass-line);
+}
+
+/* ============================================================================
+   4. HEARTHSTONE-INSPIRED BRASS & EMERALD LEDGER INDEX TABS (>= 44px)
+   ============================================================================ */
+
+.ws-brass-ledger .ws-meta-underline-tabs {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  padding:
+    7px
+    max(12px, env(safe-area-inset-right, 12px))
+    7px
+    max(12px, env(safe-area-inset-left, 12px));
+  background: linear-gradient(180deg, #241007 0%, #1c0c05 100%);
+  border-bottom: 1.5px solid var(--ws5-brass-line);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  flex-shrink: 0;
+}
+
+.ws-brass-ledger .ws-meta-underline-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.ws-brass-ledger .ws-meta-underline-tab {
+  flex: 1 0 auto;
+  min-height: 44px;
+  padding: 6px 13px;
+  margin-bottom: 0;
+  border-radius: 9px;
+  border: 1.5px solid rgba(212, 158, 56, 0.34);
+  background: linear-gradient(180deg, #35180b 0%, #241007 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 240, 184, 0.14);
+  color: var(--ws5-parchment-ink);
+  font-family: var(--ws5-font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.14s ease, border-color 0.14s ease, color 0.14s ease, transform 0.12s ease;
+}
+
+.ws-brass-ledger .ws-meta-underline-tab:hover {
+  border-color: var(--ws5-brass-bright);
+  color: var(--ws5-brass-highlight);
+}
+
+.ws-brass-ledger .ws-meta-underline-tab.is-active {
+  border-color: var(--ws5-brass-bright);
+  background: linear-gradient(180deg, #157d5c 0%, #0d563f 56%, #083d2c 100%);
+  box-shadow:
+    0 4px 12px rgba(5, 26, 18, 0.65),
+    inset 0 1px 0 rgba(255, 240, 184, 0.45),
+    inset 0 -2px 0 rgba(244, 206, 114, 0.42);
+  color: var(--ws5-brass-highlight);
+  text-shadow: 0 1px 2px rgba(4, 18, 12, 0.85);
+}
+
+/* ============================================================================
+   5. SCROLL BODY, CARVED LEDGER SECTIONS & BRASS CHIPS
+   ============================================================================ */
+
+.ws-brass-ledger .ws-meta-body-scroll,
+.ws-brass-ledger .ws-saves-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding:
+    12px
+    max(14px, env(safe-area-inset-right, 14px))
+    max(22px, env(safe-area-inset-bottom, 22px))
+    max(14px, env(safe-area-inset-left, 14px));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Recessed Mahogany Ledger Folio Section with Engraved Brass Corner Rivets */
+.ws-brass-ledger .ws-meta-section {
+  position: relative;
+  padding: 14px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(226, 178, 76, 0.3);
+  background:
+    radial-gradient(circle 3px at 9px 9px, rgba(244, 206, 114, 0.52) 0%, rgba(132, 86, 22, 0.3) 65%, transparent 100%),
+    radial-gradient(circle 3px at calc(100% - 9px) 9px, rgba(244, 206, 114, 0.52) 0%, rgba(132, 86, 22, 0.3) 65%, transparent 100%),
+    linear-gradient(180deg, rgba(58, 28, 13, 0.76) 0%, rgba(33, 15, 7, 0.88) 100%);
+  box-shadow:
+    0 6px 18px rgba(10, 4, 1, 0.4),
+    inset 0 1px 0 rgba(255, 238, 180, 0.2),
+    inset 0 0 0 3px rgba(34, 15, 7, 0.55);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.ws-brass-ledger .ws-meta-section:first-child {
+  padding-top: 14px;
+}
+
+.ws-brass-ledger .ws-meta-section:last-child {
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(226, 178, 76, 0.26);
+}
+
+.ws-brass-ledger .ws-meta-section-title {
+  font-family: var(--ws5-font-display);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ws5-brass-bright);
+  text-shadow: 0 1px 2px rgba(14, 5, 1, 0.8);
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Horizontal Filter Ribbon & Tactile Brass Filter Chips (>= 44px) */
+.ws-brass-ledger .ws-meta-hscroll {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 7px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 2px 1px;
+  max-width: 100%;
+  flex-shrink: 0;
+}
+
+.ws-brass-ledger .ws-meta-hscroll::-webkit-scrollbar {
+  display: none;
+}
+
+.ws-brass-ledger .ws-meta-chip {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 13px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(212, 158, 56, 0.36);
+  background: linear-gradient(180deg, #3a1b0c 0%, #261107 100%);
+  box-shadow:
+    0 2px 6px rgba(10, 4, 1, 0.42),
+    inset 0 1px 0 rgba(255, 240, 184, 0.16);
+  color: var(--ws5-parchment-ink);
+  font-family: var(--ws5-font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.14s ease, border-color 0.14s ease, color 0.14s ease;
+}
+
+.ws-brass-ledger .ws-meta-chip:hover {
+  border-color: var(--ws5-brass-bright);
+  background: linear-gradient(180deg, #4b2411 0%, #301509 100%);
+  color: var(--ws5-parchment-bright);
+}
+
+.ws-brass-ledger .ws-meta-chip.is-active {
+  border-color: var(--ws5-brass-highlight);
+  background: linear-gradient(180deg, #167e5d 0%, #0b4e39 100%);
+  box-shadow:
+    0 4px 10px rgba(4, 24, 17, 0.58),
+    inset 0 1px 0 rgba(255, 240, 184, 0.44);
+  color: var(--ws5-brass-highlight);
+  font-weight: 700;
+}
+
+.ws-brass-ledger .ws-brass-tier-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1.5px rgba(255, 240, 184, 0.45);
+}
+
+/* ============================================================================
+   6. VAUDEVILLE LEDGER TALLY STRIP (REPLACES FLAT DARK-BLUE SAAS KPI ROW)
+   ============================================================================ */
+
+.ws-brass-ledger .ws-meta-kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+  gap: 8px;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(212, 158, 56, 0.44);
+  background:
+    radial-gradient(ellipse 90% 100% at 50% 0%, rgba(16, 108, 80, 0.22) 0%, transparent 72%),
+    linear-gradient(180deg, #32160a 0%, #1e0d05 100%);
+  box-shadow:
+    0 6px 16px rgba(8, 3, 1, 0.48),
+    inset 0 1px 0 rgba(255, 240, 184, 0.26);
+}
+
+.ws-brass-ledger .ws-meta-kpi-cell {
+  padding: 8px 10px;
+  border-left: none;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(22, 9, 4, 0.65) 0%, rgba(34, 15, 7, 0.45) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(244, 206, 114, 0.16),
+    inset 3px 0 0 rgba(212, 158, 56, 0.55);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.ws-brass-ledger .ws-meta-kpi-cell:first-child {
+  padding-left: 10px;
+}
+
+/* Asymmetric Hero Emerald-Baize Stamp for Primary Accuracy Tally */
+.ws-brass-ledger .ws-meta-kpi-cell[data-stats-kpi="accuracy"] {
+  background:
+    radial-gradient(ellipse 90% 90% at 30% 15%, rgba(25, 141, 104, 0.44) 0%, rgba(8, 49, 36, 0.78) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 240, 184, 0.38),
+    inset 3px 0 0 var(--ws5-brass-highlight),
+    0 2px 8px rgba(4, 20, 14, 0.45);
+}
+
+.ws-brass-ledger .ws-meta-kpi-lbl {
+  font-family: var(--ws5-font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ws5-parchment-muted);
+}
+
+.ws-brass-ledger .ws-meta-kpi-val {
+  font-family: var(--ws5-font-mono);
+  font-size: 15.5px;
+  font-weight: 800;
+  color: var(--ws5-parchment-bright);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.22;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================================================
+   7. CAREER ANALYTICS CROSS-FILTER BAR, EMERALD PLAQUE CTAS & CHARTS
+   ============================================================================ */
+
+.ws-brass-ledger .ws-stats-outcome-strip {
+  padding: 2px 0 2px;
+  gap: 7px;
+}
+
+.ws-brass-ledger .ws-stats-outcome-pill {
+  min-height: 44px;
+  padding: 0 14px;
+}
+
+.ws-brass-ledger .ws-stats-filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(212, 158, 56, 0.34);
+  background: linear-gradient(180deg, #36190b 0%, #231007 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 240, 184, 0.18);
+  min-width: 0;
+}
+
+.ws-brass-ledger .ws-stats-filter-bar.is-filtered {
+  border-color: var(--ws5-brass-bright);
+  background:
+    linear-gradient(90deg, rgba(16, 108, 80, 0.34) 0%, rgba(54, 25, 11, 0.92) 65%),
+    #281208;
+  box-shadow:
+    inset 4px 0 0 var(--ws5-brass-bright),
+    0 6px 16px rgba(8, 3, 1, 0.45);
+  padding-left: 14px;
+}
+
+.ws-brass-ledger .ws-stats-filter-chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.ws-brass-ledger .ws-stats-slice-summary {
+  font-family: var(--ws5-font-mono);
+  font-size: 11px;
+  color: var(--ws5-parchment-ink);
+  line-height: 1.4;
+}
+
+.ws-brass-ledger .ws-stats-filter-chip {
+  min-height: 44px;
+  padding: 0 13px;
+  border-radius: 999px;
+  border: 1.5px solid var(--ws5-brass-bright);
+  background: linear-gradient(180deg, #167a5a 0%, #0b4c37 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 240, 184, 0.38);
+  color: var(--ws5-brass-highlight);
+  font-family: var(--ws5-font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: filter 0.14s ease;
+}
+
+.ws-brass-ledger .ws-stats-filter-chip:hover {
+  filter: brightness(1.08);
+}
+
+.ws-brass-ledger .ws-stats-reset-btn {
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(226, 102, 116, 0.65);
+  background: linear-gradient(180deg, #681721 0%, #440d14 100%);
+  color: #ffd0d6;
+  font-family: var(--ws5-font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: filter 0.14s ease;
+}
+
+.ws-brass-ledger .ws-stats-reset-btn:hover {
+  filter: brightness(1.1);
+}
+
+.ws-brass-ledger .ws-stats-linked-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Emerald Enamel & Gold Brass Primary Plaque CTA (matches STEP ON STAGE / START CUSTOM SHOW) */
+.ws-brass-ledger .ws-meta-btn-gold,
+.ws-brass-ledger .ws-stats-action-cta,
+.ws-brass-ledger .ws-save-cta-primary {
+  min-height: 44px;
+  min-width: 116px;
+  padding: 8px 18px;
+  border-radius: 10px;
+  border: 2px solid #e6b650 !important;
+  background: linear-gradient(180deg, #168562 0%, #0e6348 56%, #094431 100%);
+  box-shadow:
+    0 5px 14px rgba(5, 22, 16, 0.58),
+    inset 0 1px 0 rgba(255, 240, 184, 0.52),
+    inset 0 0 0 2px rgba(10, 56, 40, 0.8),
+    inset 0 -2px 0 rgba(244, 206, 114, 0.32);
+  color: var(--ws5-brass-highlight);
+  text-shadow: 0 1px 3px rgba(4, 18, 12, 0.88);
+  font-family: var(--ws5-font-display);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.12s ease, filter 0.14s ease, border-color 0.14s ease;
+}
+
+.ws-brass-ledger .ws-meta-btn-gold:hover:not(:disabled),
+.ws-brass-ledger .ws-stats-action-cta:hover:not(:disabled),
+.ws-brass-ledger .ws-save-cta-primary:hover:not(:disabled) {
+  border-color: var(--ws5-brass-highlight) !important;
+  filter: brightness(1.09);
+  transform: translateY(-1px);
+}
+
+.ws-brass-ledger .ws-meta-btn-gold:active:not(:disabled),
+.ws-brass-ledger .ws-save-cta-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Burnished Walnut & Brass Secondary Action Buttons */
+.ws-brass-ledger .ws-meta-btn,
+.ws-brass-ledger .ws-stats-action-btn,
+.ws-brass-ledger .ws-save-action-btn {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(212, 158, 56, 0.45) !important;
+  background: linear-gradient(180deg, #431f0e 0%, #2a1308 100%);
+  box-shadow:
+    0 3px 8px rgba(8, 3, 1, 0.44),
+    inset 0 1px 0 rgba(255, 240, 184, 0.22);
+  color: var(--ws5-parchment-bright);
+  font-family: var(--ws5-font-sans);
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.14s ease, border-color 0.14s ease, color 0.14s ease;
+}
+
+.ws-brass-ledger .ws-meta-btn:hover:not(:disabled),
+.ws-brass-ledger .ws-stats-action-btn:hover:not(:disabled),
+.ws-brass-ledger .ws-save-action-btn:hover:not(:disabled) {
+  border-color: var(--ws5-brass-bright) !important;
+  background: linear-gradient(180deg, #562913 0%, #38190b 100%);
+  color: var(--ws5-brass-highlight);
+}
+
+.ws-brass-ledger .ws-save-action-btn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.ws-brass-ledger .ws-save-action-btn.is-warn {
+  border-color: rgba(235, 168, 72, 0.52) !important;
+  background: linear-gradient(180deg, #532c0f 0%, #341a08 100%);
+  color: #ffd089;
+}
+
+.ws-brass-ledger .ws-save-action-btn.is-danger {
+  border-color: rgba(219, 86, 102, 0.56) !important;
+  background: linear-gradient(180deg, #5e151e 0%, #3b0c12 100%);
+  color: #ffb4be;
+}
+
+.ws-brass-ledger .ws-meta-inline-link {
+  min-height: 44px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(226, 178, 76, 0.35);
+  background: rgba(54, 25, 11, 0.72);
+  color: var(--ws5-brass-bright);
+  font-family: var(--ws5-font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.ws-brass-ledger .ws-meta-inline-link:hover {
+  border-color: var(--ws5-brass-highlight);
+  color: var(--ws5-brass-highlight);
+  text-decoration: none;
+}
+
+/* Chart Plate Frame (Recessed Dark Walnut & Brass Bevel) */
+.ws-brass-chart-plate {
+  width: 100%;
+  padding: 8px 6px;
+  border-radius: 12px;
+  border: 1px solid rgba(226, 178, 76, 0.24);
+  background:
+    radial-gradient(ellipse 80% 70% at 50% 45%, rgba(16, 86, 63, 0.16) 0%, rgba(20, 9, 4, 0.78) 78%),
+    #1b0c05;
+  box-shadow: inset 0 2px 10px rgba(8, 3, 1, 0.65);
+  overflow: hidden;
+}
+
+.ws-brass-radar-plate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 4px;
+}
+
+/* Ledger Rows & Interactive Drill-Down Rows */
+.ws-brass-ledger .ws-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 8px;
+  border: none;
+  border-bottom: 1px solid var(--ws5-brass-line-soft);
+  background: transparent;
+  min-width: 0;
+  transition: background 0.12s ease;
+}
+
+.ws-brass-ledger .ws-meta-row:last-child {
+  border-bottom: none;
+}
+
+.ws-brass-ledger .ws-meta-row.is-interactive {
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.ws-brass-ledger .ws-meta-row.is-interactive:hover {
+  background: rgba(244, 206, 114, 0.09);
+}
+
+.ws-brass-ledger .ws-meta-row.is-focused {
+  background: linear-gradient(90deg, rgba(16, 108, 80, 0.42) 0%, rgba(244, 206, 114, 0.08) 100%);
+  box-shadow: inset 3px 0 0 var(--ws5-brass-bright);
+  padding-left: 12px;
+}
+
+.ws-brass-ledger .ws-stats-row-btn {
+  width: 100%;
+  min-height: 44px;
+  text-align: left;
+  padding: 8px 8px;
+  gap: 8px;
+  color: var(--ws5-parchment-bright);
+  font-family: var(--ws5-font-sans);
+}
+
+.ws-brass-ledger .ws-stats-row-btn.is-dimmed {
+  opacity: 0.46;
+}
+
+.ws-brass-ledger .ws-stats-row-btn.is-dimmed:hover {
+  opacity: 0.9;
+}
+
+.ws-brass-ledger .ws-stats-subcat-panel {
+  margin-top: 8px;
+  padding: 10px 10px 4px 12px;
+  border-radius: 10px;
+  background: rgba(12, 62, 46, 0.24);
+  box-shadow: inset 3px 0 0 var(--ws5-brass-bright);
+}
+
+.ws-brass-ledger .ws-meta-note {
+  padding: 8px 10px 8px 12px;
+  border-radius: 8px;
+  background: rgba(24, 11, 5, 0.65);
+  box-shadow: inset 3px 0 0 var(--ws5-brass-bright);
+  font-size: 12px;
+  color: var(--ws5-parchment-ink);
+  line-height: 1.45;
+}
+
+/* Hint Tier Brass Plaques */
+.ws-brass-ledger .ws-stats-peel-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  padding-top: 6px;
+}
+
+.ws-brass-ledger .ws-stats-peel-btn {
+  min-height: 48px;
+  padding: 8px 9px;
+  border-radius: 10px;
+  border: 1px solid rgba(212, 158, 56, 0.34);
+  background: linear-gradient(180deg, #36190b 0%, #231007 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  text-align: left;
+  min-width: 0;
+  transition: background 0.14s ease, border-color 0.14s ease, opacity 0.14s ease;
+}
+
+.ws-brass-ledger .ws-stats-peel-btn:hover {
+  border-color: var(--ws5-brass-bright);
+  background: linear-gradient(180deg, #472210 0%, #2c1409 100%);
+}
+
+.ws-brass-ledger .ws-stats-peel-btn.is-active {
+  border-color: var(--ws5-brass-highlight);
+  background: linear-gradient(180deg, #167a5a 0%, #0b4a36 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 240, 184, 0.4);
+}
+
+.ws-brass-ledger .ws-stats-peel-btn.is-dimmed {
+  opacity: 0.48;
+}
+
+/* Domain Medallion Ring inside Stats Rows */
+.ws-brass-mini-medallion {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  padding: 2px;
+  background: radial-gradient(circle at 35% 30%, #4e2613 0%, #1d0c05 100%);
+  border: 1.5px solid #c99235;
+  box-shadow: inset 0 1px 0 rgba(255, 240, 184, 0.35);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ws-brass-mini-medallion img {
+  width: 17px;
+  height: 17px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Progress Meter Track */
+.ws-brass-ledger .ws-meta-progress-track,
+.ws-brass-ledger .ws-save-progress-track {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(14, 6, 2, 0.78);
+  border: 1px solid rgba(212, 158, 56, 0.28);
+  overflow: hidden;
+}
+
+.ws-brass-ledger .ws-meta-progress-fill,
+.ws-brass-ledger .ws-save-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #b57c22 0%, #f4ce72 60%, #fff0b8 100%);
+}
+
+/* Two-Column Responsive Grid */
+.ws-brass-ledger .ws-meta-two-col {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+@media (min-width: 720px) {
+  .ws-brass-ledger .ws-meta-two-col {
+    grid-template-columns: minmax(0, 0.96fr) minmax(0, 1.04fr);
+    gap: 18px;
+  }
+}
+
+/* ============================================================================
+   8. HALL OF HONOURS — VELVET & BRASS TROPHY CABINET (100 TROPHIES / 48 REWARDS)
+   ============================================================================ */
+
+.ws-brass-trophy-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+}
+
+@media (min-width: 640px) {
+  .ws-brass-trophy-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 12px;
+  }
+}
+
+.ws-brass-trophy-card {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(212, 158, 56, 0.25);
+  background: linear-gradient(180deg, rgba(46, 21, 10, 0.85) 0%, rgba(27, 12, 5, 0.92) 100%);
+  box-shadow:
+    0 4px 12px rgba(8, 3, 1, 0.38),
+    inset 0 1px 0 rgba(255, 240, 184, 0.12);
+  min-width: 0;
+}
+
+.ws-brass-trophy-card.is-earned {
+  border-color: rgba(244, 206, 114, 0.58);
+  background:
+    radial-gradient(ellipse 90% 80% at 14% 20%, rgba(16, 108, 80, 0.28) 0%, transparent 66%),
+    linear-gradient(180deg, rgba(64, 24, 18, 0.92) 0%, rgba(34, 13, 8, 0.95) 100%);
+  box-shadow:
+    0 6px 16px rgba(8, 3, 1, 0.5),
+    inset 0 1px 0 rgba(255, 240, 184, 0.3),
+    inset 3px 0 0 var(--trophy-tier-hex, #f4ce72);
+}
+
+/* Sculpted Double-Ring Brass Medallion Well */
+.ws-brass-medallion-well {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  padding: 4px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 35% 28%, #522018 0%, #240c09 75%);
+  border: 2px solid #9d6c24;
+  box-shadow:
+    0 4px 10px rgba(6, 2, 0, 0.6),
+    inset 0 1px 0 rgba(255, 240, 184, 0.32),
+    inset 0 0 0 2px rgba(34, 14, 6, 0.9);
+}
+
+.ws-brass-trophy-card.is-earned .ws-brass-medallion-well {
+  border-color: var(--trophy-tier-hex, #f4ce72);
+  background:
+    radial-gradient(circle at 35% 28%, #961c2a 0%, #440a11 76%);
+  box-shadow:
+    0 0 16px rgba(244, 206, 114, 0.34),
+    0 5px 12px rgba(6, 2, 0, 0.65),
+    inset 0 1px 0 rgba(255, 240, 184, 0.6);
+  transform: rotate(-3deg);
+}
+
+.ws-brass-medallion-well img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  display: block;
+}
+
+.ws-brass-trophy-card:not(.is-earned) .ws-brass-medallion-well img {
+  filter: sepia(0.35) saturate(0.45) brightness(0.76);
+  opacity: 0.72;
+}
+
+.ws-brass-trophy-body {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ws-brass-trophy-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+
+.ws-brass-trophy-code {
+  font-family: var(--ws5-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ws-brass-trophy-status {
+  font-family: var(--ws5-font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  background: rgba(20, 9, 4, 0.72);
+  border: 1px solid rgba(212, 158, 56, 0.28);
+  color: var(--ws5-parchment-muted);
+}
+
+.ws-brass-trophy-status.is-earned {
+  background: linear-gradient(180deg, #167c5c 0%, #0b4c37 100%);
+  border-color: var(--ws5-brass-bright);
+  color: var(--ws5-brass-highlight);
+}
+
+.ws-brass-trophy-title {
+  font-family: var(--ws5-font-display);
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--ws5-parchment-bright);
+  line-height: 1.24;
+}
+
+.ws-brass-trophy-desc {
+  font-size: 11.5px;
+  color: var(--ws5-parchment-muted);
+  line-height: 1.38;
+}
+
+.ws-brass-trophy-reward {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--ws5-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ws5-brass-bright);
+  margin-top: 2px;
+}
+
+/* 48 Rewards Equip Grid */
+.ws-brass-rewards-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+
+@media (min-width: 600px) {
+  .ws-brass-rewards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 12px;
+  }
+}
+
+.ws-brass-reward-plaque {
+  width: 100%;
+  min-height: 52px;
+  padding: 9px 12px;
+  border-radius: 11px;
+  border: 1px solid rgba(212, 158, 56, 0.28);
+  background: linear-gradient(180deg, rgba(50, 23, 11, 0.85) 0%, rgba(28, 12, 6, 0.92) 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 240, 184, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.14s ease, background 0.14s ease;
+}
+
+.ws-brass-reward-plaque:hover:not(:disabled) {
+  border-color: var(--ws5-brass-bright);
+  background: linear-gradient(180deg, rgba(68, 32, 15, 0.92) 0%, rgba(38, 17, 8, 0.96) 100%);
+}
+
+.ws-brass-reward-plaque:disabled {
+  opacity: 0.52;
+  cursor: not-allowed;
+}
+
+.ws-brass-reward-plaque.is-focused {
+  border-color: var(--ws5-brass-highlight);
+  background: linear-gradient(180deg, rgba(16, 108, 80, 0.45) 0%, rgba(10, 62, 46, 0.65) 100%);
+  box-shadow:
+    0 4px 12px rgba(6, 24, 17, 0.5),
+    inset 0 1px 0 rgba(255, 240, 184, 0.4);
+}
+
+.ws-brass-equip-badge {
+  font-family: var(--ws5-font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 4px 9px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  border: 1px solid rgba(212, 158, 56, 0.42);
+  background: rgba(24, 10, 4, 0.72);
+  color: var(--ws5-brass-bright);
+}
+
+.ws-brass-equip-badge.is-equipped {
+  border-color: var(--ws5-brass-highlight);
+  background: linear-gradient(180deg, #168260 0%, #0b4f3a 100%);
+  color: var(--ws5-brass-highlight);
+}
+
+.ws-brass-equip-badge.is-locked {
+  border-color: rgba(200, 174, 132, 0.24);
+  color: var(--ws5-parchment-dim);
+}
+
+/* 3D Stage Dock Variant for Hall of Honours */
+.ws-brass-backdrop.is-stage-dock {
+  background: transparent;
+}
+
+.ws-brass-backdrop.is-stage-dock .ws-meta-float-pill {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 13px;
+  border-radius: 999px;
+  border: 1.5px solid #c99235;
+  background: linear-gradient(180deg, rgba(58, 27, 13, 0.94) 0%, rgba(30, 13, 6, 0.96) 100%);
+  box-shadow:
+    0 6px 18px rgba(8, 3, 1, 0.65),
+    inset 0 1px 0 rgba(255, 240, 184, 0.38);
+  color: var(--ws5-brass-highlight);
+}
+
+.ws-brass-backdrop.is-stage-dock .ws-meta-float-pill.is-active-gold {
+  border-color: var(--ws5-brass-highlight);
+  background: linear-gradient(180deg, #167e5d 0%, #0b4d38 100%);
+  color: var(--ws5-brass-highlight);
+}
+
+.ws-brass-backdrop.is-stage-dock .ws-meta-orbit-whisper {
+  background: rgba(34, 15, 7, 0.9);
+  border: 1px solid rgba(226, 178, 76, 0.45);
+  color: var(--ws5-parchment-bright);
+}
+
+.ws-brass-backdrop.is-stage-dock .ws-meta-sheet {
+  background:
+    linear-gradient(180deg, #32170a 0%, #200e06 100%);
+  border-top: 2px solid #d49c3b;
+  box-shadow:
+    0 -18px 44px rgba(8, 3, 1, 0.78),
+    inset 0 1px 0 rgba(255, 240, 184, 0.42);
+  color: var(--ws5-parchment-bright);
+}
+
+.ws-brass-backdrop.is-stage-dock .ws-meta-drag-handle {
+  background: linear-gradient(90deg, #8e5c1a 0%, #f4ce72 50%, #8e5c1a 100%);
+}
+
+/* ============================================================================
+   9. 5-SLOT CONTESTANT DOSSIER FOLIO (`CampaignSaveSlotsModal.ts`)
+   ============================================================================ */
+
+.ws-brass-ledger .ws-saves-subhead {
+  flex-shrink: 0;
+  padding: 9px 14px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ws5-parchment-muted);
+  border-bottom: 1px solid var(--ws5-brass-line);
+  background: rgba(24, 11, 5, 0.85);
+}
+
+.ws-brass-ledger .ws-saves-subhead code {
+  font-family: var(--ws5-font-mono);
+  font-size: 11px;
+  color: var(--ws5-brass-bright);
+  background: rgba(74, 35, 17, 0.65);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.ws-brass-ledger .ws-saves-banner {
+  padding: 11px 14px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.38;
+  border: 1px solid rgba(87, 230, 171, 0.42);
+  background: linear-gradient(90deg, rgba(16, 108, 80, 0.44) 0%, rgba(16, 62, 46, 0.34) 100%);
+  color: #c2fae1;
+  box-shadow: inset 3px 0 0 var(--ws5-emerald-ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ws-brass-ledger .ws-saves-banner.is-error {
+  border-color: rgba(235, 102, 116, 0.55);
+  background: linear-gradient(90deg, rgba(111, 16, 27, 0.62) 0%, rgba(61, 9, 15, 0.52) 100%);
+  color: #ffc5cd;
+  box-shadow: inset 3px 0 0 var(--ws5-crimson-bright);
+}
+
+.ws-brass-slots-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+}
+
+.ws-brass-ledger .ws-save-slot-row {
+  padding: 14px 14px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(212, 158, 56, 0.28);
+  background: linear-gradient(180deg, rgba(52, 24, 11, 0.86) 0%, rgba(30, 13, 6, 0.94) 100%);
+  box-shadow:
+    0 5px 14px rgba(8, 3, 1, 0.42),
+    inset 0 1px 0 rgba(255, 240, 184, 0.16);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  transition: border-color 0.14s ease, background 0.14s ease;
+}
+
+.ws-brass-ledger .ws-save-slot-row.is-active {
+  border-color: var(--ws5-brass-bright);
+  background:
+    radial-gradient(ellipse 90% 80% at 10% 0%, rgba(18, 120, 88, 0.34) 0%, transparent 66%),
+    linear-gradient(180deg, rgba(64, 30, 14, 0.94) 0%, rgba(34, 15, 7, 0.96) 100%);
+  box-shadow:
+    0 8px 22px rgba(6, 2, 0, 0.58),
+    inset 0 1px 0 rgba(255, 240, 184, 0.42),
+    inset 4px 0 0 var(--ws5-brass-bright);
+}
+
+.ws-brass-ledger .ws-save-slot-row.is-empty {
+  border-style: dashed;
+  border-color: rgba(212, 158, 56, 0.34);
+  background: linear-gradient(180deg, rgba(38, 17, 8, 0.72) 0%, rgba(24, 10, 5, 0.84) 100%);
+}
+
+.ws-brass-ledger .ws-save-slot-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px 10px;
+}
+
+.ws-brass-ledger .ws-save-slot-identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ws-brass-ledger .ws-save-slot-num {
+  font-family: var(--ws5-font-mono);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 158, 56, 0.42);
+  background: rgba(24, 10, 4, 0.76);
+  color: var(--ws5-parchment-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.ws-brass-ledger .ws-save-slot-row.is-active .ws-save-slot-num {
+  border-color: var(--ws5-brass-highlight);
+  background: linear-gradient(180deg, #167c5c 0%, #0b4c37 100%);
+  color: var(--ws5-brass-highlight);
+}
+
+.ws-brass-ledger .ws-save-slot-name {
+  font-family: var(--ws5-font-display);
+  font-size: 15.5px;
+  font-weight: 800;
+  color: var(--ws5-parchment-bright);
+  letter-spacing: 0.03em;
+}
+
+.ws-brass-ledger .ws-save-slot-row.is-empty .ws-save-slot-name {
+  font-family: var(--ws5-font-sans);
+  font-weight: 600;
+  color: var(--ws5-parchment-muted);
+}
+
+.ws-brass-ledger .ws-save-slot-persona {
+  font-size: 12px;
+  color: var(--ws5-brass-bright);
+  font-weight: 600;
+}
+
+.ws-brass-ledger .ws-save-slot-time {
+  font-family: var(--ws5-font-mono);
+  font-size: 11px;
+  color: var(--ws5-parchment-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.ws-brass-ledger .ws-save-slot-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px 12px;
+  font-family: var(--ws5-font-mono);
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--ws5-parchment-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.ws-brass-ledger .ws-save-slot-stats strong {
+  color: var(--ws5-parchment-bright);
+  font-weight: 700;
+}
+
+.ws-brass-ledger .ws-save-slot-stats .is-gold {
+  color: var(--ws5-brass-bright);
+}
+
+.ws-brass-ledger .ws-save-slot-stats .is-emerald {
+  color: var(--ws5-emerald-ink);
+}
+
+.ws-brass-ledger .ws-save-slot-stats .is-cyan {
+  color: var(--ws5-turquoise-ink);
+}
+
+.ws-brass-ledger .ws-save-slot-stats .is-alert {
+  color: var(--ws5-crimson-ink);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ws-brass-ledger .ws-save-empty-note {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--ws5-parchment-muted);
+}
+
+.ws-brass-ledger .ws-save-empty-note code {
+  font-family: var(--ws5-font-mono);
+  font-size: 11px;
+  color: var(--ws5-brass-bright);
+}
+
+.ws-brass-ledger .ws-save-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  margin-top: 2px;
+}
+
+.ws-brass-ledger .ws-save-confirm-strip {
+  margin-top: 2px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(226, 98, 114, 0.65);
+  background: linear-gradient(180deg, rgba(102, 16, 26, 0.72) 0%, rgba(56, 8, 14, 0.84) 100%);
+  box-shadow: inset 3px 0 0 var(--ws5-crimson-bright);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+}
+
+.ws-brass-ledger .ws-save-confirm-msg {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #ffccd3;
+  line-height: 1.38;
+}
+
+.ws-brass-ledger .ws-save-confirm-btns {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.ws-brass-ledger .ws-save-confirm-exec {
+  min-height: 44px;
+  padding: 0 15px;
+  border-radius: 10px;
+  border: 1.5px solid #f29ca8 !important;
+  background: linear-gradient(180deg, #d83d50 0%, #961929 100%);
+  color: #fff6f7;
+  font-family: var(--ws5-font-display);
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* ============================================================================
+   10. MOBILE-FIRST PORTRAIT (360x640 / 390x844) & PHONE LANDSCAPE (844x390 / 640x360)
+   ============================================================================ */
+
+/* Compact Portrait Phones (<= 480px wide): Keep Titles 100% Untruncated! */
+@media (max-width: 480px) {
+  .ws-brass-ledger .ws-meta-topbar,
+  .ws-brass-ledger .ws-sheet-header {
+    padding-left: max(8px, env(safe-area-inset-left, 8px));
+    padding-right: max(8px, env(safe-area-inset-right, 8px));
+    gap: 5px;
+  }
+
+  .ws-brass-ledger .ws-meta-topbar-left {
+    gap: 7px;
+  }
+
+  .ws-brass-ledger .ws-meta-topbar-right {
+    gap: 4px;
+  }
+
+  .ws-brass-ledger .ws-brass-back-lbl,
+  .ws-brass-ledger .ws-brass-title-ico {
+    display: none;
+  }
+
+  .ws-brass-ledger .ws-meta-back-btn,
+  .ws-brass-ledger .ws-sheet-nav-btn {
+    padding: 0;
+    width: 44px;
+  }
+
+  .ws-brass-ledger .ws-meta-vault-btn {
+    padding: 0 8px;
+    font-size: 11.5px;
+    gap: 3px;
+  }
+
+  .ws-brass-ledger .ws-meta-title,
+  .ws-brass-ledger .ws-sheet-title {
+    font-size: 13px;
+    letter-spacing: 0.04em;
+  }
+
+  .ws-brass-ledger .ws-meta-underline-tabs {
+    padding: 6px 8px;
+    gap: 5px;
+  }
+
+  .ws-brass-ledger .ws-meta-underline-tab {
+    padding: 6px 9px;
+    font-size: 11px;
+  }
+
+  .ws-brass-ledger .ws-meta-body-scroll,
+  .ws-brass-ledger .ws-saves-scroll {
+    padding: 10px 10px max(20px, env(safe-area-inset-bottom, 20px));
+    gap: 10px;
+  }
+
+  .ws-brass-ledger .ws-meta-section {
+    padding: 11px 10px;
+  }
+
+  .ws-brass-ledger .ws-meta-kpi-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    padding: 8px;
+  }
+
+  .ws-brass-ledger .ws-stats-peel-grid {
+    gap: 5px;
+  }
+
+  .ws-brass-ledger .ws-stats-peel-btn {
+    padding: 7px 6px;
+  }
+
+  .ws-brass-ledger .ws-stats-action-cta,
+  .ws-brass-ledger .ws-stats-action-btn {
+    font-size: 11.5px;
+    padding: 8px 12px;
+  }
+}
+
+@media (max-width: 375px) {
+  .ws-brass-ledger .ws-meta-title,
+  .ws-brass-ledger .ws-sheet-title {
+    font-size: 11.8px;
+    letter-spacing: 0.025em;
+  }
+}
+
+/* Phone Landscape Split-Ledger Layout (844x390, 932x430, 640x360) */
+@media (max-height: 500px) and (orientation: landscape) {
+  .ws-brass-ledger .ws-meta-topbar,
+  .ws-brass-ledger .ws-sheet-header {
+    min-height: 48px;
+    padding:
+      4px
+      max(12px, env(safe-area-inset-right, 12px))
+      4px
+      max(12px, env(safe-area-inset-left, 12px));
+  }
+
+  .ws-brass-ledger .ws-meta-eyebrow {
+    display: none;
+  }
+
+  .ws-brass-ledger .ws-meta-underline-tabs {
+    padding: 4px max(12px, env(safe-area-inset-right, 12px)) 4px max(12px, env(safe-area-inset-left, 12px));
+    gap: 6px;
+  }
+
+  .ws-brass-ledger .ws-meta-underline-tab {
+    min-height: 44px;
+    padding: 4px 12px;
+    font-size: 11.5px;
+  }
+
+  .ws-brass-ledger .ws-meta-body-scroll,
+  .ws-brass-ledger .ws-saves-scroll {
+    padding:
+      8px
+      max(12px, env(safe-area-inset-right, 12px))
+      max(14px, env(safe-area-inset-bottom, 14px))
+      max(12px, env(safe-area-inset-left, 12px));
+    gap: 8px;
+  }
+
+  .ws-brass-ledger .ws-meta-section {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .ws-brass-ledger .ws-meta-kpi-strip {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 6px;
+    padding: 7px;
+  }
+
+  .ws-brass-ledger .ws-meta-kpi-cell {
+    padding: 5px 8px;
+  }
+
+  .ws-brass-ledger .ws-meta-kpi-val {
+    font-size: 13.5px;
+  }
+
+  /* 2-Column Side-by-Side Split-Stage inside Phone Landscape! */
+  .ws-brass-ledger .ws-meta-two-col {
+    grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+    gap: 12px;
+    align-items: start;
+  }
+
+  .ws-brass-radar-plate svg {
+    max-width: 242px !important;
+  }
+
+  .ws-brass-trophy-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 10px;
+  }
+
+  .ws-brass-rewards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px 10px;
+  }
+
+  .ws-brass-slots-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 10px;
+  }
+
+  .ws-brass-ledger .ws-saves-subhead {
+    display: none;
+  }
+
+  .ws-brass-ledger .ws-save-slot-row {
+    padding: 10px 12px;
+    gap: 7px;
+  }
+}
+
+/* Narrow landscape phones like 640x360: keep KPI strip readable with 3/2 wrap */
+@media (max-width: 680px) and (max-height: 500px) and (orientation: landscape) {
+  .ws-brass-ledger .ws-meta-kpi-strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .ws-brass-slots-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

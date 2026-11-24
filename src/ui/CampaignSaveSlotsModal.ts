@@ -1,12 +1,13 @@
 // ============================================================================
-// WORLD'S SMARTEST — 5-Slot Campaign Save Dossier Sheet (2026 Mobile-First)
-//  • Sleek full-height dark-velvet frameless sheet (zero nested bordered boxes)
-//  • Sticky 48px header (`← Back` · Campaign Saves · `✕`) + Escape support
-//  • 5 independent Campaign Save Slots separated by `1px` hairline dividers
-//  • Comfortable >= 44px touch actions: Load/New, Export, Import, Reset, Delete
-//  • Zero commas inside 4-digit years across timestamps & dossier telemetry
+// WORLD'S SMARTEST v5.0 — 5-Slot Contestant Dossier Folio (`CampaignSaveSlotsModal.ts`)
+//  • Carved Mahogany, Brushed Brass Filigree & Deep Emerald Baize Dossier Sheet
+//  • Sticky >= 44px brass rail (`Back` · Contestant Dossiers · Fullscreen · `Close`)
+//  • 5 independent Campaign Save Folios with 2-col Phone Landscape spread
+//  • Comfortable >= 44px brass latches: Load/New, Export, Import, Reset, Delete
+//  • Zero OS color emojis · Zero backdrop-filter · Zero year commas
 // ============================================================================
 
+import '../styles/brass_modals_v5.css';
 import type { StudioAudioEngine } from '../audio/StudioAudioEngine';
 import type { HapticsEngine } from '../audio/HapticsEngine';
 
@@ -44,8 +45,21 @@ export interface CampaignSaveSlotsModalActions {
   onClose?: () => void;
 }
 
-const SAVES_SHEET_STYLE_ID = 'ws-sleek-saves-sheet-css';
 const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] as const;
+
+const BRASS_SAVES_ICONS = {
+  back: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>',
+  close: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
+  fullscreen: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>',
+  dossier: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h5l2 2h5a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5Z"/><path d="M8 12h8"/><path d="M8 16h5"/></svg>',
+  play: '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"/></svg>',
+  download: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 20h16"/></svg>',
+  upload: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="m7 8 5-5 5 5"/><path d="M4 20h16"/></svg>',
+  reset: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>',
+  trash: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>',
+  alert: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><circle cx="12" cy="17" r="0.8" fill="currentColor"/></svg>',
+  check: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>',
+} as const;
 
 function escapeHtml(raw: string): string {
   return String(raw ?? '')
@@ -95,456 +109,21 @@ function formatCleanSaveTimestamp(rawLabel: string): string {
   return cleaned;
 }
 
-function ensureSavesSheetStyles(): void {
+function toggleSavesFullscreenSafe(btn: HTMLButtonElement): void {
   if (typeof document === 'undefined') return;
-  if (document.getElementById(SAVES_SHEET_STYLE_ID)) return;
-  const style = document.createElement('style');
-  style.id = SAVES_SHEET_STYLE_ID;
-  style.textContent = `
-    .ws-velvet-backdrop.ws-save-modal {
-      position: fixed;
-      inset: 0;
-      z-index: 65;
-      background: rgba(3, 5, 10, 0.88);
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
-      display: flex;
-      align-items: stretch;
-      justify-content: center;
-      padding: 0;
-      pointer-events: auto;
+  try {
+    if (document.fullscreenElement) {
+      void document.exitFullscreen?.().catch(() => {});
+      btn.setAttribute('aria-pressed', 'false');
+      btn.classList.remove('is-active-emerald');
+    } else {
+      void document.documentElement.requestFullscreen?.().catch(() => {});
+      btn.setAttribute('aria-pressed', 'true');
+      btn.classList.add('is-active-emerald');
     }
-
-    .ws-velvet-sheet.ws-saves-sheet {
-      position: relative;
-      width: 100%;
-      height: 100vh;
-      height: 100dvh;
-      max-height: 100dvh;
-      background:
-        radial-gradient(ellipse 90% 34% at 50% 0%, rgba(216, 175, 87, 0.08) 0%, rgba(7, 10, 18, 0) 70%),
-        #070a12;
-      border: none !important;
-      border-radius: 0;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      color: var(--ivory-primary, #f6f2e9);
-      font-family: var(--font-sans, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
-    }
-
-    .ws-velvet-sheet.ws-saves-sheet::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent 4%, rgba(232, 197, 116, 0.42) 50%, transparent 96%);
-      pointer-events: none;
-      z-index: 10;
-    }
-
-    @media (min-width: 768px) and (min-height: 560px) {
-      .ws-velvet-backdrop.ws-save-modal {
-        align-items: center;
-        padding: 20px;
-      }
-      .ws-velvet-sheet.ws-saves-sheet {
-        max-width: 780px;
-        height: min(88dvh, 840px);
-        max-height: min(88dvh, 840px);
-        border-radius: 18px;
-        box-shadow:
-          0 32px 84px rgba(0, 0, 0, 0.84),
-          0 0 0 1px rgba(242, 207, 126, 0.14);
-      }
-    }
-
-    .ws-saves-sheet .ws-sheet-header {
-      position: sticky;
-      top: 0;
-      z-index: 8;
-      flex-shrink: 0;
-      display: grid;
-      grid-template-columns: minmax(76px, auto) minmax(0, 1fr) minmax(44px, auto);
-      align-items: center;
-      gap: 6px;
-      min-height: calc(48px + env(safe-area-inset-top, 0px));
-      padding: env(safe-area-inset-top, 0px) 8px 0 8px;
-      background: rgba(7, 10, 18, 0.96);
-      border: none;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-    }
-
-    .ws-saves-sheet .ws-sheet-nav-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 5px;
-      min-height: 44px;
-      min-width: 44px;
-      padding: 0 10px;
-      border: none;
-      border-radius: 8px;
-      background: transparent;
-      color: var(--gold-bright, #f2cf7e);
-      font-size: 13.5px;
-      font-weight: 600;
-      white-space: nowrap;
-      transition: background 0.14s ease, color 0.14s ease;
-    }
-
-    .ws-saves-sheet .ws-sheet-nav-btn:hover {
-      background: rgba(255, 255, 255, 0.06);
-      color: #ffebb8;
-    }
-
-    .ws-saves-sheet .ws-sheet-title {
-      margin: 0;
-      text-align: center;
-      font-family: var(--font-display, 'Cinzel', Georgia, serif);
-      font-size: clamp(13.5px, 1.5vw, 16px);
-      font-weight: 700;
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
-      color: var(--ivory-primary, #f6f2e9);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .ws-saves-sheet .ws-sheet-icon-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 44px;
-      min-height: 44px;
-      border: none;
-      border-radius: 8px;
-      background: transparent;
-      color: rgba(246, 242, 233, 0.66);
-      font-size: 17px;
-      line-height: 1;
-      transition: background 0.14s ease, color 0.14s ease;
-    }
-
-    .ws-saves-sheet .ws-sheet-icon-btn:hover {
-      background: rgba(255, 255, 255, 0.07);
-      color: var(--ivory-primary, #f6f2e9);
-    }
-
-    .ws-saves-subhead {
-      flex-shrink: 0;
-      padding: 9px 16px;
-      font-size: 12px;
-      line-height: 1.35;
-      color: rgba(246, 242, 233, 0.68);
-      border: none;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-      background: rgba(7, 10, 18, 0.92);
-    }
-
-    .ws-saves-subhead code {
-      font-family: var(--font-mono, ui-monospace, monospace);
-      font-size: 11px;
-      color: rgba(242, 207, 126, 0.85);
-    }
-
-    .ws-saves-scroll {
-      flex: 1 1 auto;
-      min-height: 0;
-      overflow-y: auto;
-      overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
-      padding-bottom: max(16px, env(safe-area-inset-bottom, 0px));
-      border: none;
-    }
-
-    .ws-saves-banner {
-      padding: 11px 16px;
-      font-size: 12.5px;
-      font-weight: 500;
-      line-height: 1.35;
-      border: none;
-      background: rgba(57, 212, 154, 0.1);
-      color: #9ff5d1;
-      box-shadow: inset 3px 0 0 var(--emerald-win, #39d49a);
-    }
-
-    .ws-saves-banner.is-error {
-      background: rgba(224, 82, 99, 0.13);
-      color: #ffb4be;
-      box-shadow: inset 3px 0 0 var(--crimson-alert, #e05263);
-    }
-
-    .ws-save-slot-row {
-      padding: 15px 16px;
-      border: none;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-      background: transparent;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      transition: background 0.14s ease;
-    }
-
-    .ws-save-slot-row.is-active {
-      background: linear-gradient(90deg, rgba(242, 207, 126, 0.095) 0%, rgba(242, 207, 126, 0.015) 100%);
-      box-shadow: inset 3px 0 0 var(--gold-bright, #f2cf7e);
-    }
-
-    .ws-save-slot-top {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 6px 12px;
-    }
-
-    .ws-save-slot-identity {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
-      min-width: 0;
-    }
-
-    .ws-save-slot-num {
-      font-family: var(--font-mono, ui-monospace, monospace);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      padding: 2px 7px;
-      border-radius: 5px;
-      border: none;
-      background: rgba(255, 255, 255, 0.07);
-      color: rgba(246, 242, 233, 0.72);
-      font-variant-numeric: tabular-nums;
-    }
-
-    .ws-save-slot-row.is-active .ws-save-slot-num {
-      background: rgba(242, 207, 126, 0.22);
-      color: var(--gold-bright, #f2cf7e);
-    }
-
-    .ws-save-slot-name {
-      font-family: var(--font-display, 'Cinzel', Georgia, serif);
-      font-size: 15.5px;
-      font-weight: 700;
-      color: var(--ivory-primary, #f6f2e9);
-      letter-spacing: 0.02em;
-    }
-
-    .ws-save-slot-row.is-empty .ws-save-slot-name {
-      font-family: var(--font-sans, 'Inter', sans-serif);
-      font-weight: 500;
-      color: rgba(246, 242, 233, 0.68);
-    }
-
-    .ws-save-slot-persona {
-      font-size: 12px;
-      color: var(--cyan-clue, #56d4f5);
-      font-weight: 500;
-    }
-
-    .ws-save-slot-time {
-      font-family: var(--font-mono, ui-monospace, monospace);
-      font-size: 11px;
-      color: rgba(246, 242, 233, 0.66);
-      font-variant-numeric: tabular-nums;
-      white-space: nowrap;
-    }
-
-    .ws-save-progress-track {
-      width: 100%;
-      height: 2px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.08);
-      overflow: hidden;
-    }
-
-    .ws-save-progress-fill {
-      height: 100%;
-      border-radius: 999px;
-      background: linear-gradient(90deg, #b5842c 0%, #f2cf7e 100%);
-    }
-
-    .ws-save-slot-stats {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 4px 12px;
-      font-family: var(--font-mono, ui-monospace, monospace);
-      font-size: 11.5px;
-      line-height: 1.4;
-      color: rgba(246, 242, 233, 0.68);
-      font-variant-numeric: tabular-nums;
-    }
-
-    .ws-save-slot-stats strong {
-      color: var(--ivory-primary, #f6f2e9);
-      font-weight: 600;
-    }
-
-    .ws-save-slot-stats .is-gold {
-      color: var(--gold-bright, #f2cf7e);
-    }
-
-    .ws-save-slot-stats .is-emerald {
-      color: var(--emerald-win, #39d49a);
-    }
-
-    .ws-save-slot-stats .is-cyan {
-      color: var(--cyan-clue, #56d4f5);
-    }
-
-    .ws-save-slot-stats .is-alert {
-      color: #ff8e9b;
-      font-weight: 700;
-    }
-
-    .ws-save-empty-note {
-      font-size: 12.5px;
-      line-height: 1.4;
-      color: rgba(246, 242, 233, 0.66);
-    }
-
-    .ws-save-actions {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 7px;
-      margin-top: 2px;
-    }
-
-    .ws-save-cta-primary {
-      min-height: 44px;
-      min-width: 116px;
-      padding: 0 16px;
-      border: none !important;
-      border-radius: 10px;
-      background: linear-gradient(180deg, #fae29c 0%, #d8ab4e 56%, #b5842c 100%);
-      color: #0e121a;
-      font-family: var(--font-display, 'Cinzel', Georgia, serif);
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: filter 0.14s ease, transform 0.12s ease;
-    }
-
-    .ws-save-cta-primary:hover {
-      filter: brightness(1.06);
-    }
-
-    .ws-save-cta-primary:active {
-      transform: scale(0.99);
-    }
-
-    .ws-save-action-btn {
-      min-height: 44px;
-      min-width: 44px;
-      padding: 0 13px;
-      border: none !important;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--ivory-primary, #f6f2e9);
-      font-size: 12.5px;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      white-space: nowrap;
-      transition: background 0.14s ease, color 0.14s ease;
-    }
-
-    .ws-save-action-btn:hover:not(:disabled) {
-      background: rgba(255, 255, 255, 0.11);
-    }
-
-    .ws-save-action-btn:disabled {
-      opacity: 0.34;
-      cursor: not-allowed;
-    }
-
-    .ws-save-action-btn.is-warn {
-      background: rgba(240, 157, 70, 0.1);
-      color: var(--amber-warn, #f09d46);
-    }
-
-    .ws-save-action-btn.is-warn:hover {
-      background: rgba(240, 157, 70, 0.18);
-    }
-
-    .ws-save-action-btn.is-danger {
-      background: rgba(224, 82, 99, 0.11);
-      color: #ff8e9b;
-    }
-
-    .ws-save-action-btn.is-danger:hover {
-      background: rgba(224, 82, 99, 0.2);
-    }
-
-    .ws-save-confirm-strip {
-      margin-top: 2px;
-      padding: 10px 12px;
-      border: none;
-      border-radius: 8px;
-      background: rgba(224, 82, 99, 0.13);
-      box-shadow: inset 3px 0 0 var(--crimson-alert, #e05263);
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px 12px;
-    }
-
-    .ws-save-confirm-msg {
-      font-size: 12.5px;
-      font-weight: 600;
-      color: #ffb4be;
-      line-height: 1.35;
-    }
-
-    .ws-save-confirm-btns {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
-
-    .ws-save-confirm-exec {
-      min-height: 44px;
-      padding: 0 14px;
-      border: none !important;
-      border-radius: 9px;
-      background: linear-gradient(180deg, #ef6676 0%, #c23345 100%);
-      color: #ffffff;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-
-    @media (max-height: 520px) and (orientation: landscape) {
-      .ws-saves-sheet .ws-sheet-header {
-        min-height: 44px;
-      }
-      .ws-saves-subhead {
-        display: none;
-      }
-      .ws-save-slot-row {
-        padding: 10px 14px;
-        gap: 7px;
-      }
-    }
-  `;
-  document.head.appendChild(style);
+  } catch {
+    // Fullscreen unavailable in restricted context
+  }
 }
 
 export class CampaignSaveSlotsModal {
@@ -569,19 +148,19 @@ export class CampaignSaveSlotsModal {
 
   public open(actions: CampaignSaveSlotsModalActions): void {
     this.close();
-    ensureSavesSheetStyles();
     this.statusBanner = null;
     this.pendingConfirm = null;
 
     const backdrop = document.createElement('div');
-    backdrop.className = 'ws-modal-backdrop ws-save-modal ws-velvet-backdrop';
+    backdrop.className = 'ws-modal-backdrop ws-save-modal ws-velvet-backdrop ws-brass-backdrop';
     backdrop.setAttribute('role', 'dialog');
     backdrop.setAttribute('aria-modal', 'true');
-    backdrop.setAttribute('aria-label', 'Campaign Save Slots Dossier');
+    backdrop.setAttribute('aria-label', 'Contestant Dossier Save Slots');
 
     const render = () => {
       const prevScroll = backdrop.querySelector<HTMLElement>('.ws-saves-scroll')?.scrollTop ?? 0;
       const slots = actions.getSlots();
+      const isFsActive = typeof document !== 'undefined' && Boolean(document.fullscreenElement);
 
       const rowsHtml = slots
         .map((s) => {
@@ -608,8 +187,8 @@ export class CampaignSaveSlotsModal {
                   <span class="ws-save-confirm-msg">
                     ${
                       this.pendingConfirm.kind === 'DELETE'
-                        ? `Permanently delete Slot ${s.slotId} campaign dossier?`
-                        : `Reset Slot ${s.slotId} back to Act 0 Geneva Start?`
+                        ? `Permanently delete Slot 0${s.slotId} contestant dossier?`
+                        : `Reset Slot 0${s.slotId} back to Episode 1?`
                     }
                   </span>
                   <div class="ws-save-confirm-btns">
@@ -650,21 +229,21 @@ export class CampaignSaveSlotsModal {
 
               ${
                 s.isEmpty
-                  ? `<div class="ws-save-empty-note">Unassigned slot — launch a fresh Act 0 Geneva Vetting campaign or import a saved <code>.ws-save.json</code> file.</div>`
+                  ? `<div class="ws-save-empty-note">Unassigned contestant ledger — launch a fresh World Tour run or import a portable <code>.ws-save.json</code> dossier.</div>`
                   : `
                     <div class="ws-save-progress-track" aria-hidden="true">
                       <div class="ws-save-progress-fill" style="width:${pct}%;"></div>
                     </div>
                     <div class="ws-save-slot-stats">
                       <span><strong class="is-gold">${escapeHtml(cleanActOrCity)}</strong></span>
-                      <span>Visas <strong class="is-emerald">${s.visasCleared}/8</strong></span>
-                      <span>Relics <strong class="is-cyan">${s.relicsUnlocked}/8</strong></span>
+                      <span>Tiers <strong class="is-emerald">${s.visasCleared}/8</strong></span>
+                      <span>Stars <strong class="is-cyan">${s.relicsUnlocked}</strong></span>
                       <span><strong>${escapeHtml(cleanCompletion)}</strong></span>
                       ${cleanRemaining ? `<span><strong class="is-gold">${escapeHtml(cleanRemaining)}</strong></span>` : ''}
                       <span>Acc <strong>${s.accuracyPct}%</strong></span>
                       ${
                         (s.failedAttemptsCount ?? 0) > 0
-                          ? `<span class="is-alert">⚠ ${s.failedAttemptsCount} Retryable</span>`
+                          ? `<span class="is-alert"><span class="ws-brass-ico" aria-hidden="true">${BRASS_SAVES_ICONS.alert}</span>${s.failedAttemptsCount} Retryable</span>`
                           : ''
                       }
                     </div>
@@ -673,22 +252,27 @@ export class CampaignSaveSlotsModal {
 
               <div class="ws-save-actions">
                 <button type="button" class="ws-save-cta-primary" data-slot-load="${s.slotId}">
-                  ${s.isEmpty ? '▶ Start New' : s.isActive ? '▶ Continue' : '▶ Load Slot'}
+                  <span class="ws-brass-ico" aria-hidden="true">${BRASS_SAVES_ICONS.play}</span>
+                  <span>${s.isEmpty ? 'Start New' : s.isActive ? 'Continue' : 'Load Slot'}</span>
                 </button>
                 <button type="button" class="ws-save-action-btn" data-slot-export="${s.slotId}" ${s.isEmpty ? 'disabled' : ''}>
-                  ⬇ Export
+                  <span class="ws-brass-ico" aria-hidden="true">${BRASS_SAVES_ICONS.download}</span>
+                  <span>Export</span>
                 </button>
                 <button type="button" class="ws-save-action-btn" data-slot-import="${s.slotId}">
-                  ⬆ Import
+                  <span class="ws-brass-ico" aria-hidden="true">${BRASS_SAVES_ICONS.upload}</span>
+                  <span>Import</span>
                 </button>
                 ${
                   !s.isEmpty
                     ? `
                       <button type="button" class="ws-save-action-btn is-warn" data-slot-reset="${s.slotId}">
-                        ↺ Reset
+                        <span class="ws-brass-ico" aria-hidden="true">${BRASS_SAVES_ICONS.reset}</span>
+                        <span>Reset</span>
                       </button>
                       <button type="button" class="ws-save-action-btn is-danger" data-slot-delete="${s.slotId}">
-                        ✕ Delete
+                        <span class="ws-brass-ico" aria-hidden="true">${BRASS_SAVES_ICONS.trash}</span>
+                        <span>Delete</span>
                       </button>
                     `
                     : ''
@@ -702,19 +286,40 @@ export class CampaignSaveSlotsModal {
         .join('');
 
       backdrop.innerHTML = `
-        <div class="ws-velvet-sheet ws-saves-sheet">
+        <div class="ws-velvet-sheet ws-saves-sheet ws-brass-ledger">
           <header class="ws-sheet-header">
-            <button type="button" class="ws-sheet-nav-btn" id="ws-saves-close">
-              ← Back
-            </button>
-            <h2 class="ws-sheet-title">Campaign Saves</h2>
-            <button type="button" class="ws-sheet-icon-btn" id="ws-saves-close-x" aria-label="Close">
-              ✕
-            </button>
+            <div class="ws-meta-topbar-left">
+              <button type="button" class="ws-sheet-nav-btn" id="ws-saves-close" aria-label="Back">
+                <span class="ws-brass-ico" aria-hidden="true">${BRASS_SAVES_ICONS.back}</span>
+                <span class="ws-brass-back-lbl">Back</span>
+              </button>
+              <div class="ws-meta-topbar-titles">
+                <h2 class="ws-sheet-title">
+                  <span class="ws-brass-ico ws-brass-title-ico" aria-hidden="true">${BRASS_SAVES_ICONS.dossier}</span>
+                  <span>CONTESTANT DOSSIERS</span>
+                </h2>
+                <div class="ws-meta-eyebrow">5 Independent Campaign Save Folios</div>
+              </div>
+            </div>
+            <div class="ws-meta-topbar-right">
+              <button
+                type="button"
+                class="ws-brass-clasp-btn is-icon-only ${isFsActive ? 'is-active-emerald' : ''}"
+                data-v5-fullscreen-toggle="true"
+                aria-pressed="${isFsActive}"
+                aria-label="Toggle Fullscreen"
+                title="Toggle Fullscreen"
+              >
+                <span class="ws-brass-ico" aria-hidden="true">${BRASS_SAVES_ICONS.fullscreen}</span>
+              </button>
+              <button type="button" class="ws-sheet-icon-btn" id="ws-saves-close-x" aria-label="Close">
+                <span class="ws-brass-ico" aria-hidden="true">${BRASS_SAVES_ICONS.close}</span>
+              </button>
+            </div>
           </header>
 
           <div class="ws-saves-subhead">
-            Maintain up to 5 independent dossiers — switch anytime or exchange portable <code>.ws-save.json</code> backups.
+            Maintain up to 5 independent contestant dossiers — switch anytime or exchange portable <code>.ws-save.json</code> backups.
           </div>
 
           <input type="file" id="ws-saves-file-input" hidden accept=".json,.ws-save.json,application/json" style="display:none;" />
@@ -724,12 +329,15 @@ export class CampaignSaveSlotsModal {
               this.statusBanner
                 ? `
                   <div class="ws-saves-banner ${this.statusBanner.isError ? 'is-error' : ''}">
-                    ${escapeHtml(stripYearCommas(this.statusBanner.text))}
+                    <span class="ws-brass-ico" aria-hidden="true">${this.statusBanner.isError ? BRASS_SAVES_ICONS.alert : BRASS_SAVES_ICONS.check}</span>
+                    <span>${escapeHtml(stripYearCommas(this.statusBanner.text))}</span>
                   </div>
                 `
                 : ''
             }
-            ${rowsHtml}
+            <div class="ws-brass-slots-grid">
+              ${rowsHtml}
+            </div>
           </div>
         </div>
       `;
@@ -753,7 +361,7 @@ export class CampaignSaveSlotsModal {
             text:
               res.message ||
               (res.ok
-                ? `✓ Imported save file into Slot ${pendingImportSlot} successfully.`
+                ? `Imported save file into Slot 0${pendingImportSlot} successfully.`
                 : 'Invalid campaign save JSON file.'),
             isError: !res.ok,
           };
@@ -778,6 +386,14 @@ export class CampaignSaveSlotsModal {
       backdrop.querySelector('#ws-saves-close')?.addEventListener('click', handleClose);
       backdrop.querySelector('#ws-saves-close-x')?.addEventListener('click', handleClose);
 
+      backdrop.querySelectorAll<HTMLButtonElement>('[data-v5-fullscreen-toggle]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          this.haptics.uiTap();
+          this.audio.playSfx('ui_tap');
+          toggleSavesFullscreenSafe(btn);
+        });
+      });
+
       backdrop.querySelectorAll<HTMLButtonElement>('[data-slot-load]').forEach((btn) => {
         btn.addEventListener('click', () => {
           const slotId = Number(btn.dataset.slotLoad) as CampaignSlotId;
@@ -795,7 +411,7 @@ export class CampaignSaveSlotsModal {
           this.audio.playSfx('ui_tap');
           actions.onExportSlot(slotId);
           this.statusBanner = {
-            text: `⬇ Exported Slot ${slotId} backup (.ws-save.json).`,
+            text: `Exported Slot 0${slotId} backup (.ws-save.json).`,
             isError: false,
           };
           render();
@@ -849,13 +465,13 @@ export class CampaignSaveSlotsModal {
           if (kind === 'DELETE') {
             actions.onDeleteSlot(slotId);
             this.statusBanner = {
-              text: `🗑 Deleted Slot ${slotId}.`,
+              text: `Deleted Slot 0${slotId} contestant dossier.`,
               isError: false,
             };
           } else {
             actions.onResetSlotToStart(slotId);
             this.statusBanner = {
-              text: `↺ Reset Slot ${slotId} to Act 0 Geneva Start.`,
+              text: `Reset Slot 0${slotId} to start.`,
               isError: false,
             };
           }

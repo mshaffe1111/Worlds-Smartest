@@ -16,6 +16,7 @@
 //    Zero year commas · >= 44px touch targets · 0px overflow on 360x640..1280x800
 // ============================================================================
 
+import '../styles/brass_modals_v5.css';
 import {
   SOVEREIGN_DOMAINS,
   getSovereignDomainMeta,
@@ -186,6 +187,34 @@ function buildFilterContextLabel(filter: AnalyticsFilterState): string | null {
   return parts.length > 0 ? parts.join(' · ') : null;
 }
 
+const BRASS_STATS_ICONS = {
+  back: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>',
+  close: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
+  fullscreen: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>',
+  radar: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12 18.4 5.6"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/></svg>',
+  play: '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"/></svg>',
+  cards: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="14" height="14" rx="2"/><path d="M7 6V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-2"/></svg>',
+  trophy: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9H4a2 2 0 0 1-2-2V5h4"/><path d="M18 9h2a2 2 0 0 0 2-2V5h-4"/><path d="M6 4h12v6a6 6 0 0 1-12 0V4Z"/><path d="M12 16v4"/><path d="M8 20h8"/></svg>',
+  reset: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>',
+} as const;
+
+function toggleDocumentFullscreenSafe(btn: HTMLButtonElement): void {
+  if (typeof document === 'undefined') return;
+  try {
+    if (document.fullscreenElement) {
+      void document.exitFullscreen?.().catch(() => {});
+      btn.setAttribute('aria-pressed', 'false');
+      btn.classList.remove('is-active-emerald');
+    } else {
+      void document.documentElement.requestFullscreen?.().catch(() => {});
+      btn.setAttribute('aria-pressed', 'true');
+      btn.classList.add('is-active-emerald');
+    }
+  } catch {
+    // Fullscreen unavailable in restricted context
+  }
+}
+
 /**
  * Graph 1: High-DPI SVG Stacked Right/Wrong Bars + Golden Rolling Accuracy % Trend Curve.
  * Every bar is clickable to filter the entire dashboard to that day or question!
@@ -205,13 +234,15 @@ function buildRightWrongTrendSvg(
 
   if (series.length === 0) {
     return `
-      <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block;">
-        <rect x="${padL}" y="${padT}" width="${plotW}" height="${plotH}" rx="8" fill="rgba(12,17,28,0.65)" stroke="rgba(216,175,87,0.2)" stroke-dasharray="4 4"/>
-        <text x="${w / 2}" y="${h / 2 - 7}" text-anchor="middle" fill="#b8b2a6" font-size="11.5" font-family="Inter,sans-serif">
-          <tspan x="${w / 2}" dy="0">No questions match this active filter slice</tspan>
-          <tspan x="${w / 2}" dy="17">Adjust filters or reset to inspect all history</tspan>
-        </text>
-      </svg>
+      <div class="ws-brass-chart-plate">
+        <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block;">
+          <rect x="${padL}" y="${padT}" width="${plotW}" height="${plotH}" rx="8" fill="rgba(26,11,5,0.72)" stroke="rgba(226,178,76,0.34)" stroke-dasharray="4 4"/>
+          <text x="${w / 2}" y="${h / 2 - 7}" text-anchor="middle" fill="#e6cfa0" font-size="11.5" font-family="Inter,sans-serif">
+            <tspan x="${w / 2}" dy="0">No questions match this active filter slice</tspan>
+            <tspan x="${w / 2}" dy="17">Adjust filters or reset to inspect all history</tspan>
+          </text>
+        </svg>
+      </div>
     `;
   }
 
@@ -225,9 +256,9 @@ function buildRightWrongTrendSvg(
       const pctLbl = `${Math.round(frac * 100)}%`;
       const cntLbl = Math.round(frac * maxCount);
       return `
-        <line x1="${padL}" y1="${y.toFixed(1)}" x2="${w - padR}" y2="${y.toFixed(1)}" stroke="rgba(216,175,87,0.15)" stroke-dasharray="3 3"/>
-        <text x="${padL - 5}" y="${(y + 3).toFixed(1)}" text-anchor="end" fill="#a5afc2" font-size="9.5" font-family="JetBrains Mono,monospace">${cntLbl}</text>
-        <text x="${w - padR + 5}" y="${(y + 3).toFixed(1)}" text-anchor="start" fill="#f2cf7e" font-size="9.5" font-family="JetBrains Mono,monospace">${pctLbl}</text>
+        <line x1="${padL}" y1="${y.toFixed(1)}" x2="${w - padR}" y2="${y.toFixed(1)}" stroke="rgba(226,178,76,0.22)" stroke-dasharray="3 3"/>
+        <text x="${padL - 5}" y="${(y + 3).toFixed(1)}" text-anchor="end" fill="#c8ae84" font-size="9.5" font-family="JetBrains Mono,monospace">${cntLbl}</text>
+        <text x="${w - padR + 5}" y="${(y + 3).toFixed(1)}" text-anchor="start" fill="#f4ce72" font-size="9.5" font-family="JetBrains Mono,monospace">${pctLbl}</text>
       `;
     })
     .join('');
@@ -254,61 +285,63 @@ function buildRightWrongTrendSvg(
         role="button"
         tabindex="0"
         aria-label="${escapeMetaHtml(`${pt.label}: ${pt.right} right, ${pt.wrong} wrong`)}"
-        style="cursor:pointer;opacity:${dimmed ? '0.32' : '1'};"
+        style="cursor:pointer;opacity:${dimmed ? '0.34' : '1'};"
       >
-        <rect x="${(cx - stepX * 0.48).toFixed(1)}" y="${padT}" width="${(stepX * 0.96).toFixed(1)}" height="${plotH + 18}" fill="${isSel ? 'rgba(242,207,126,0.15)' : 'transparent'}" rx="3"/>
-        ${rH > 0 ? `<rect x="${(cx - barW / 2).toFixed(1)}" y="${rY.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(2, rH).toFixed(1)}" fill="#39d49a" rx="2"/>` : ''}
-        ${wH > 0 ? `<rect x="${(cx - barW / 2).toFixed(1)}" y="${wY.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(2, wH).toFixed(1)}" fill="#e05263" rx="2"/>` : ''}
-        ${isSel ? `<line x1="${cx.toFixed(1)}" y1="${padT}" x2="${cx.toFixed(1)}" y2="${padT + plotH}" stroke="#f2cf7e" stroke-width="1.2" stroke-dasharray="2 2"/>` : ''}
+        <rect x="${(cx - stepX * 0.48).toFixed(1)}" y="${padT}" width="${(stepX * 0.96).toFixed(1)}" height="${plotH + 18}" fill="${isSel ? 'rgba(244,206,114,0.18)' : 'transparent'}" rx="3"/>
+        ${rH > 0 ? `<rect x="${(cx - barW / 2).toFixed(1)}" y="${rY.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(2, rH).toFixed(1)}" fill="#38d396" rx="2"/>` : ''}
+        ${wH > 0 ? `<rect x="${(cx - barW / 2).toFixed(1)}" y="${wY.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(2, wH).toFixed(1)}" fill="#e05868" rx="2"/>` : ''}
+        ${isSel ? `<line x1="${cx.toFixed(1)}" y1="${padT}" x2="${cx.toFixed(1)}" y2="${padT + plotH}" stroke="#fff0b8" stroke-width="1.3" stroke-dasharray="2 2"/>` : ''}
       </g>
     `);
 
     const accY = padT + (1 - pt.rollingAccPct / 100) * plotH;
     linePts.push(`${cx.toFixed(1)},${accY.toFixed(1)}`);
     dotsSvg.push(
-      `<circle data-g1-idx="${idx}" data-g1-bucket="${escapeMetaHtml(pt.bucketKey)}" cx="${cx.toFixed(1)}" cy="${accY.toFixed(1)}" r="${isSel ? '5.2' : '3.2'}" fill="#f2cf7e" stroke="#080b11" stroke-width="1.3" style="cursor:pointer;opacity:${dimmed ? '0.4' : '1'};"/>`,
+      `<circle data-g1-idx="${idx}" data-g1-bucket="${escapeMetaHtml(pt.bucketKey)}" cx="${cx.toFixed(1)}" cy="${accY.toFixed(1)}" r="${isSel ? '5.4' : '3.4'}" fill="#fff0b8" stroke="#231007" stroke-width="1.4" style="cursor:pointer;opacity:${dimmed ? '0.4' : '1'};"/>`,
     );
 
     const showLabel =
       series.length <= 12 || idx === 0 || idx === series.length - 1 || idx % Math.ceil(series.length / 8) === 0;
     if (showLabel) {
       barsSvg.push(
-        `<text data-g1-idx="${idx}" data-g1-bucket="${escapeMetaHtml(pt.bucketKey)}" x="${cx.toFixed(1)}" y="${h - 8}" text-anchor="middle" fill="${isSel ? '#f2cf7e' : '#b8b2a6'}" font-size="9" font-weight="${isSel ? '800' : '500'}" font-family="JetBrains Mono,monospace" style="cursor:pointer;">${escapeMetaHtml(pt.label)}</text>`,
+        `<text data-g1-idx="${idx}" data-g1-bucket="${escapeMetaHtml(pt.bucketKey)}" x="${cx.toFixed(1)}" y="${h - 8}" text-anchor="middle" fill="${isSel ? '#fff0b8' : '#c8ae84'}" font-size="9" font-weight="${isSel ? '800' : '600'}" font-family="JetBrains Mono,monospace" style="cursor:pointer;">${escapeMetaHtml(pt.label)}</text>`,
       );
     }
   });
 
   return `
-    <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block;">
-      ${gridLines}
-      ${barsSvg.join('')}
-      <polyline points="${linePts.join(' ')}" fill="none" stroke="#f2cf7e" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" pointer-events="none"/>
-      ${dotsSvg.join('')}
-    </svg>
+    <div class="ws-brass-chart-plate">
+      <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block;">
+        ${gridLines}
+        ${barsSvg.join('')}
+        <polyline points="${linePts.join(' ')}" fill="none" stroke="#f4ce72" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" pointer-events="none"/>
+        ${dotsSvg.join('')}
+      </svg>
+    </div>
   `;
 }
 
 /**
- * Graph 2 (Left): Sovereign 12-Domain Polar Accuracy & ELO Radar.
+ * Graph 2 (Left): Brushed-Brass 12-Domain Compass Radar Dial.
  * Clicking ANY spoke, vertex, or domain label toggles that exact domain filter!
  */
 function buildPolarDomainRadarSvg(
   view: FilteredAnalyticsView,
   activeDomainId: DomainId | null,
 ): string {
-  const cx = 155;
-  const cy = 135;
-  const maxR = 86;
+  const cx = 175;
+  const cy = 146;
+  const maxR = 88;
   const rings = [0.33, 0.66, 1.0];
 
   const grid = rings
-    .map((r) => {
+    .map((r, rIdx) => {
       const pts: string[] = [];
       for (let i = 0; i < 12; i++) {
         const a = (Math.PI * 2 * i) / 12 - Math.PI / 2;
         pts.push(`${(cx + Math.cos(a) * maxR * r).toFixed(1)},${(cy + Math.sin(a) * maxR * r).toFixed(1)}`);
       }
-      return `<polygon points="${pts.join(' ')}" fill="none" stroke="rgba(216,175,87,0.2)" stroke-width="1"/>`;
+      return `<polygon points="${pts.join(' ')}" fill="none" stroke="${rIdx === 2 ? 'rgba(244,206,114,0.48)' : 'rgba(226,178,76,0.24)'}" stroke-width="${rIdx === 2 ? '1.3' : '1'}"/>`;
     })
     .join('');
 
@@ -328,7 +361,6 @@ function buildPolarDomainRadarSvg(
     const tot = d.right + d.wrong;
     let rFrac: number;
     if (isWrongOnly) {
-      // In Wrong Only slice, show relative miss concentration per domain cleanly
       rFrac = tot > 0 ? Math.max(0.22, tot / maxDomTotal) : 0.1;
     } else if (tot > 0) {
       const accNorm = Math.max(0.18, d.right / tot);
@@ -349,36 +381,48 @@ function buildPolarDomainRadarSvg(
     spokes.push(`
       <g data-g2-dom="${i}" data-radar-spoke="${i}" role="button" tabindex="0" aria-label="Filter by ${escapeMetaHtml(SOVEREIGN_DOMAINS[i].name)}" style="cursor:pointer;">
         <line x1="${cx}" y1="${cy}" x2="${ox.toFixed(1)}" y2="${oy.toFixed(1)}" stroke="transparent" stroke-width="14"/>
-        <line x1="${cx}" y1="${cy}" x2="${ox.toFixed(1)}" y2="${oy.toFixed(1)}" stroke="${isAct ? '#f2cf7e' : 'rgba(216,175,87,0.18)'}" stroke-width="${isAct ? '2.2' : '1'}"/>
+        <line x1="${cx}" y1="${cy}" x2="${ox.toFixed(1)}" y2="${oy.toFixed(1)}" stroke="${isAct ? '#fff0b8' : 'rgba(226,178,76,0.24)'}" stroke-width="${isAct ? '2.2' : '1'}"/>
       </g>
     `);
 
     vertices.push(`
       <g data-g2-dom="${i}" style="cursor:pointer;">
         <circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="12" fill="transparent"/>
-        <circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="${isAct ? '5.4' : tot > 0 ? '3.3' : '2.1'}" fill="${isAct ? '#f2cf7e' : isWrongOnly ? '#ff7c8c' : '#39d49a'}" stroke="#080b11" stroke-width="1.3"/>
+        <circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="${isAct ? '5.5' : tot > 0 ? '3.5' : '2.3'}" fill="${isAct ? '#fff0b8' : isWrongOnly ? '#ff8e9c' : '#57e6ab'}" stroke="#1f0d06" stroke-width="1.4"/>
       </g>
     `);
 
-    const lx = cx + cosA * (maxR + 15);
-    const ly = cy + sinA * (maxR + 14);
+    const lx = cx + cosA * (maxR + 18);
+    const ly = cy + sinA * (maxR + 16);
     const anchor = cosA < -0.25 ? 'end' : cosA > 0.25 ? 'start' : 'middle';
     labels.push(
-      `<text data-g2-dom="${i}" x="${lx.toFixed(1)}" y="${(ly + 3).toFixed(1)}" text-anchor="${anchor}" fill="${isAct ? '#f2cf7e' : tot > 0 ? '#ebe5d8' : '#8f99ad'}" font-size="${isAct ? '9.6' : '8.8'}" font-weight="${isAct ? '800' : '600'}" style="cursor:pointer;">${escapeMetaHtml(SOVEREIGN_DOMAINS[i].shortName)}</text>`,
+      `<text data-g2-dom="${i}" x="${lx.toFixed(1)}" y="${(ly + 3).toFixed(1)}" text-anchor="${anchor}" fill="${isAct ? '#fff0b8' : tot > 0 ? '#fdf5e4' : '#b89c72'}" font-size="${isAct ? '9.8' : '8.9'}" font-weight="${isAct ? '800' : '600'}" style="cursor:pointer;">${escapeMetaHtml(SOVEREIGN_DOMAINS[i].shortName)}</text>`,
     );
   }
 
-  const polyStroke = isWrongOnly ? '#e05263' : '#39d49a';
-  const polyFill = isWrongOnly ? 'rgba(224,82,99,0.22)' : 'rgba(57,212,154,0.22)';
+  const polyStroke = isWrongOnly ? '#f06978' : '#57e6ab';
+  const polyFill = isWrongOnly ? 'rgba(217,70,87,0.28)' : 'rgba(56,211,150,0.26)';
 
   return `
-    <svg viewBox="0 0 310 270" style="width:100%;max-width:295px;height:auto;display:block;margin:0 auto;">
-      ${grid}
-      ${spokes.join('')}
-      <polygon points="${polyPts.join(' ')}" fill="${polyFill}" stroke="${polyStroke}" stroke-width="2" pointer-events="none"/>
-      ${vertices.join('')}
-      ${labels.join('')}
-    </svg>
+    <div class="ws-brass-chart-plate ws-brass-radar-plate">
+      <svg viewBox="0 0 350 292" style="width:100%;max-width:340px;height:auto;display:block;margin:0 auto;">
+        <defs>
+          <radialGradient id="ws5-radar-baize" cx="50%" cy="46%" r="55%">
+            <stop offset="0%" stop-color="#136c4f" stop-opacity="0.58"/>
+            <stop offset="72%" stop-color="#0a3b2b" stop-opacity="0.52"/>
+            <stop offset="100%" stop-color="#1e0d05" stop-opacity="0.88"/>
+          </radialGradient>
+        </defs>
+        <circle cx="${cx}" cy="${cy}" r="${maxR + 6}" fill="url(#ws5-radar-baize)" stroke="#c99235" stroke-width="2"/>
+        <circle cx="${cx}" cy="${cy}" r="${maxR + 2}" fill="none" stroke="rgba(255,240,184,0.3)" stroke-width="0.9"/>
+        ${grid}
+        ${spokes.join('')}
+        <polygon points="${polyPts.join(' ')}" fill="${polyFill}" stroke="${polyStroke}" stroke-width="2.2" pointer-events="none"/>
+        <circle cx="${cx}" cy="${cy}" r="3.2" fill="#f4ce72" stroke="#231007" stroke-width="1.2" pointer-events="none"/>
+        ${vertices.join('')}
+        ${labels.join('')}
+      </svg>
+    </div>
   `;
 }
 
@@ -395,12 +439,14 @@ function buildEloTrajectorySvg(eloPoints: readonly AnalyticsEloPoint[]): string 
 
   if (eloPoints.length === 0) {
     return `
-      <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block;">
-        <rect x="${padX}" y="${padY}" width="${plotW}" height="${plotH}" rx="8" fill="rgba(12,17,28,0.65)" stroke="rgba(86,212,245,0.2)" stroke-dasharray="4 4"/>
-        <text x="${w / 2}" y="${h / 2 + 4}" text-anchor="middle" fill="#b8b2a6" font-size="11" font-family="Inter,sans-serif">
-          No ELO trajectory points in this active slice
-        </text>
-      </svg>
+      <div class="ws-brass-chart-plate">
+        <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block;">
+          <rect x="${padX}" y="${padY}" width="${plotW}" height="${plotH}" rx="8" fill="rgba(26,11,5,0.72)" stroke="rgba(226,178,76,0.34)" stroke-dasharray="4 4"/>
+          <text x="${w / 2}" y="${h / 2 + 4}" text-anchor="middle" fill="#e6cfa0" font-size="11" font-family="Inter,sans-serif">
+            No ELO trajectory points in this active slice
+          </text>
+        </svg>
+      </div>
     `;
   }
 
@@ -419,22 +465,24 @@ function buildEloTrajectorySvg(eloPoints: readonly AnalyticsEloPoint[]): string 
   const area = `${coords[0].x.toFixed(1)},${h - padY} ${poly} ${coords[coords.length - 1].x.toFixed(1)},${h - padY}`;
 
   return `
-    <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block;">
-      <line x1="${padX}" y1="${padY}" x2="${w - padX}" y2="${padY}" stroke="rgba(86,212,245,0.22)" stroke-dasharray="3 3"/>
-      <text x="${padX - 6}" y="${padY + 4}" text-anchor="end" fill="#56d4f5" font-size="9.5" font-family="JetBrains Mono,monospace">${Math.round(maxElo)}</text>
-      <line x1="${padX}" y1="${h - padY}" x2="${w - padX}" y2="${h - padY}" stroke="rgba(216,175,87,0.2)"/>
-      <text x="${padX - 6}" y="${h - padY + 3}" text-anchor="end" fill="#a5afc2" font-size="9.5" font-family="JetBrains Mono,monospace">${Math.round(minElo)}</text>
-      <polygon points="${area}" fill="rgba(86,212,245,0.14)"/>
-      <polyline points="${poly}" fill="none" stroke="#56d4f5" stroke-width="2.3" stroke-linejoin="round"/>
-      ${coords
-        .map(
-          (c, i) =>
-            i === coords.length - 1 || coords.length <= 16
-              ? `<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="${i === coords.length - 1 ? '4.5' : '3'}" fill="${i === coords.length - 1 ? '#f2cf7e' : '#56d4f5'}" stroke="#080b11" stroke-width="1.2"/>`
-              : '',
-        )
-        .join('')}
-    </svg>
+    <div class="ws-brass-chart-plate">
+      <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block;">
+        <line x1="${padX}" y1="${padY}" x2="${w - padX}" y2="${padY}" stroke="rgba(244,206,114,0.26)" stroke-dasharray="3 3"/>
+        <text x="${padX - 6}" y="${padY + 4}" text-anchor="end" fill="#f4ce72" font-size="9.5" font-family="JetBrains Mono,monospace">${Math.round(maxElo)}</text>
+        <line x1="${padX}" y1="${h - padY}" x2="${w - padX}" y2="${h - padY}" stroke="rgba(226,178,76,0.3)"/>
+        <text x="${padX - 6}" y="${h - padY + 3}" text-anchor="end" fill="#c8ae84" font-size="9.5" font-family="JetBrains Mono,monospace">${Math.round(minElo)}</text>
+        <polygon points="${area}" fill="rgba(244,206,114,0.16)"/>
+        <polyline points="${poly}" fill="none" stroke="#f4ce72" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+        ${coords
+          .map(
+            (c, i) =>
+              i === coords.length - 1 || coords.length <= 16
+                ? `<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="${i === coords.length - 1 ? '4.8' : '3.1'}" fill="${i === coords.length - 1 ? '#57e6ab' : '#fff0b8'}" stroke="#231007" stroke-width="1.3"/>`
+                : '',
+          )
+          .join('')}
+      </svg>
+    </div>
   `;
 }
 
@@ -478,7 +526,7 @@ function buildSpeedHistogramSvg(
           tabindex="0"
           aria-pressed="${isSel}"
           aria-label="Speed bucket ${escapeMetaHtml(SPEED_BUCKET_LABELS[idx])}: ${b.right} right, ${b.wrong} wrong"
-          style="cursor:pointer;opacity:${dimmed ? '0.35' : '1'};"
+          style="cursor:pointer;opacity:${dimmed ? '0.36' : '1'};"
         >
           <rect
             x="${(cx - stepX * 0.45).toFixed(1)}"
@@ -486,23 +534,25 @@ function buildSpeedHistogramSvg(
             width="${(stepX * 0.9).toFixed(1)}"
             height="${plotH + 34}"
             rx="6"
-            fill="${isSel ? 'rgba(242,207,126,0.14)' : 'transparent'}"
+            fill="${isSel ? 'rgba(244,206,114,0.18)' : 'transparent'}"
           />
-          ${rH > 0 ? `<rect x="${(cx - barW / 2).toFixed(1)}" y="${rY.toFixed(1)}" width="${barW}" height="${Math.max(2, rH).toFixed(1)}" fill="#39d49a" rx="3"/>` : ''}
-          ${wH > 0 ? `<rect x="${(cx - barW / 2).toFixed(1)}" y="${wY.toFixed(1)}" width="${barW}" height="${Math.max(2, wH).toFixed(1)}" fill="#e05263" rx="3"/>` : ''}
-          ${isSel ? `<line x1="${(cx - barW / 2).toFixed(1)}" y1="${padT + plotH + 2}" x2="${(cx + barW / 2).toFixed(1)}" y2="${padT + plotH + 2}" stroke="#f2cf7e" stroke-width="2.4"/>` : ''}
-          <text x="${cx.toFixed(1)}" y="${Math.max(12, (tot > 0 ? wY : padT + plotH) - 5).toFixed(1)}" text-anchor="middle" fill="${isSel ? '#f2cf7e' : '#f6f2e9'}" font-size="9.5" font-weight="700" font-family="JetBrains Mono,monospace">${tot}</text>
-          <text x="${cx.toFixed(1)}" y="${h - 9}" text-anchor="middle" fill="${isSel ? '#f2cf7e' : '#c8c2b6'}" font-size="9.5" font-weight="${isSel ? '800' : '500'}" font-family="JetBrains Mono,monospace">${escapeMetaHtml(SPEED_BUCKET_LABELS[idx])}</text>
+          ${rH > 0 ? `<rect x="${(cx - barW / 2).toFixed(1)}" y="${rY.toFixed(1)}" width="${barW}" height="${Math.max(2, rH).toFixed(1)}" fill="#38d396" rx="3"/>` : ''}
+          ${wH > 0 ? `<rect x="${(cx - barW / 2).toFixed(1)}" y="${wY.toFixed(1)}" width="${barW}" height="${Math.max(2, wH).toFixed(1)}" fill="#e05868" rx="3"/>` : ''}
+          ${isSel ? `<line x1="${(cx - barW / 2).toFixed(1)}" y1="${padT + plotH + 2}" x2="${(cx + barW / 2).toFixed(1)}" y2="${padT + plotH + 2}" stroke="#fff0b8" stroke-width="2.4"/>` : ''}
+          <text x="${cx.toFixed(1)}" y="${Math.max(12, (tot > 0 ? wY : padT + plotH) - 5).toFixed(1)}" text-anchor="middle" fill="${isSel ? '#fff0b8' : '#fdf5e4'}" font-size="9.5" font-weight="700" font-family="JetBrains Mono,monospace">${tot}</text>
+          <text x="${cx.toFixed(1)}" y="${h - 9}" text-anchor="middle" fill="${isSel ? '#fff0b8' : '#c8ae84'}" font-size="9.5" font-weight="${isSel ? '800' : '600'}" font-family="JetBrains Mono,monospace">${escapeMetaHtml(SPEED_BUCKET_LABELS[idx])}</text>
         </g>
       `;
     })
     .join('');
 
   return `
-    <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block;">
-      <line x1="${padX}" y1="${padT + plotH}" x2="${w - padX}" y2="${padT + plotH}" stroke="rgba(216,175,87,0.28)"/>
-      ${cols}
-    </svg>
+    <div class="ws-brass-chart-plate">
+      <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block;">
+        <line x1="${padX}" y1="${padT + plotH}" x2="${w - padX}" y2="${padT + plotH}" stroke="rgba(226,178,76,0.36)"/>
+        ${cols}
+      </svg>
+    </div>
   `;
 }
 
@@ -596,7 +646,7 @@ export class CareerAnalyticsDashboardView {
     this.deps.store.syncAndBackfillFromProfile(this.deps.passport);
 
     const backdrop = document.createElement('div');
-    backdrop.className = 'ws-meta-backdrop';
+    backdrop.className = 'ws-meta-backdrop ws-brass-backdrop';
     backdrop.setAttribute('role', 'dialog');
     backdrop.setAttribute('aria-modal', 'true');
     backdrop.setAttribute('aria-label', 'Career Stats — Strengths, Weak Spots & Domain Radar');
@@ -769,7 +819,7 @@ export class CareerAnalyticsDashboardView {
                         aria-label="Remove ${escapeMetaHtml(ch.label)} filter"
                       >
                         <span>${escapeMetaHtml(ch.label)}</span>
-                        <span aria-hidden="true" style="color:var(--ivory-primary);font-weight:800;">✕</span>
+                        <span class="ws-brass-ico" aria-hidden="true" style="color:var(--ws5-brass-highlight);">${BRASS_STATS_ICONS.close}</span>
                       </button>
                     `,
                   )
@@ -780,7 +830,8 @@ export class CareerAnalyticsDashboardView {
                   id="ws-stats-reset-filters"
                   data-reset-filters="true"
                 >
-                  ↺ Reset All
+                  <span class="ws-brass-ico" aria-hidden="true">${BRASS_STATS_ICONS.reset}</span>
+                  <span>Reset All</span>
                 </button>
               `
               : `
@@ -798,23 +849,26 @@ export class CareerAnalyticsDashboardView {
             id="ws-stats-practice-slice"
             aria-label="${escapeMetaHtml(practiceTitle)}"
           >
-            ▸ Practice This Slice
+            <span class="ws-brass-ico" aria-hidden="true">${BRASS_STATS_ICONS.play}</span>
+            <span>Practice This Slice</span>
           </button>
           <button
             type="button"
             class="ws-meta-btn ws-stats-action-btn"
             id="ws-stats-open-srs"
-            style="color:#8ee5ff;"
+            style="color:var(--ws5-turquoise-ink);"
           >
-            ✦ Review Missed Cards (${missedCount})
+            <span class="ws-brass-ico" aria-hidden="true">${BRASS_STATS_ICONS.cards}</span>
+            <span>Review Missed Cards (${missedCount})</span>
           </button>
           <button
             type="button"
             class="ws-meta-btn ws-stats-action-btn"
             id="ws-stats-open-honours"
-            style="color:var(--gold-bright);"
+            style="color:var(--ws5-brass-bright);"
           >
-            ◆ Related Trophies
+            <span class="ws-brass-ico" aria-hidden="true">${BRASS_STATS_ICONS.trophy}</span>
+            <span>Related Trophies</span>
           </button>
         </div>
       </div>
@@ -829,12 +883,12 @@ export class CareerAnalyticsDashboardView {
       <div id="ws-stats-subcat-panel" class="ws-stats-subcat-panel" data-subcat-domain="${this.filter.domainId}">
         <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;">
           <span class="ws-meta-section-title" style="color:${domMeta.accentHex};">
-            ◆ Subcategory Breakdown · ${escapeMetaHtml(domMeta.name)}
+            Subcategory Breakdown · ${escapeMetaHtml(domMeta.name)}
           </span>
           ${
             this.filter.subcatLabel
-              ? `<button type="button" class="ws-meta-inline-link" data-remove-filter="subcat" style="min-height:44px;padding:0 6px;">✕ Clear Subcategory</button>`
-              : `<span style="font-family:var(--font-mono);font-size:10.5px;color:#a5afc2;">Tap a topic to drill deeper</span>`
+              ? `<button type="button" class="ws-meta-inline-link" data-remove-filter="subcat">Clear Subcategory</button>`
+              : `<span style="font-family:var(--ws5-font-mono);font-size:10.5px;color:var(--ws5-parchment-muted);">Tap a topic to drill deeper</span>`
           }
         </div>
         ${
@@ -855,22 +909,22 @@ export class CareerAnalyticsDashboardView {
                         aria-pressed="${isSel}"
                         class="ws-meta-row is-interactive ws-stats-row-btn ${isSel ? 'is-focused' : ''} ${dimmed ? 'is-dimmed' : ''}"
                       >
-                        <span style="min-width:0;flex:0 1 138px;font-size:12px;font-weight:600;color:var(--ivory-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                        <span style="min-width:0;flex:0 1 138px;font-size:12px;font-weight:600;color:var(--ws5-parchment-bright);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
                           ${escapeMetaHtml(sanitizeMetaCopy(row.subcatLabel))}
                         </span>
-                        <div style="flex:1 1 60px;min-width:36px;height:5px;border-radius:999px;background:rgba(224,82,99,0.38);overflow:hidden;">
-                          <div style="width:${row.accuracyPct}%;height:100%;background:#39d49a;"></div>
+                        <div style="flex:1 1 60px;min-width:36px;height:6px;border-radius:999px;background:rgba(217,70,87,0.42);border:1px solid rgba(226,178,76,0.22);overflow:hidden;">
+                          <div style="width:${row.accuracyPct}%;height:100%;background:#38d396;"></div>
                         </div>
-                        <span style="font-family:var(--font-mono);font-size:11px;color:#c8c2b6;white-space:nowrap;flex-shrink:0;">
-                          <strong style="color:#67ebb8;">${row.right}R</strong>·<strong style="color:#ff8a98;">${row.wrong}W</strong>
-                          <span style="color:#a5afc2;">(${row.accuracyPct}%)</span>
+                        <span style="font-family:var(--ws5-font-mono);font-size:11px;color:var(--ws5-parchment-ink);white-space:nowrap;flex-shrink:0;">
+                          <strong style="color:var(--ws5-emerald-ink);">${row.right}R</strong>·<strong style="color:var(--ws5-crimson-ink);">${row.wrong}W</strong>
+                          <span style="color:var(--ws5-parchment-muted);">(${row.accuracyPct}%)</span>
                         </span>
                       </button>
                     `;
                   })
                   .join('')}
               </div>`
-            : `<div style="padding:10px 0;font-size:12px;color:#a5afc2;">No questions recorded in ${escapeMetaHtml(domMeta.name)} for this filter slice yet.</div>`
+            : `<div style="padding:10px 0;font-size:12px;color:var(--ws5-parchment-muted);">No questions recorded in ${escapeMetaHtml(domMeta.name)} for this filter slice yet.</div>`
         }
       </div>
     `;
@@ -904,20 +958,21 @@ export class CareerAnalyticsDashboardView {
 
     const sliceSubtitle = buildFilterContextLabel(this.filter);
     const hostProfile = buildPlayerStatProfileForHost(snap);
+    const isFsActive = typeof document !== 'undefined' && Boolean(document.fullscreenElement);
     const strengthWeakHtml =
       hostProfile.strongestDomainId !== null || hostProfile.weakestDomainId !== null
         ? `<div id="ws-stats-strength-weak-strip" class="ws-meta-hscroll" style="padding:2px 0 4px;" aria-label="Strengths and Weak Spots">
             ${
               hostProfile.strongestDomainId !== null && hostProfile.strongestDomainName
-                ? `<button type="button" class="ws-meta-chip" data-quick-dom="${hostProfile.strongestDomainId}" style="color:#67ebb8;">
-                    ✦ Strongest: ${escapeMetaHtml(hostProfile.strongestDomainName)} (${hostProfile.strongestAccuracyPct}%)
+                ? `<button type="button" class="ws-meta-chip" data-quick-dom="${hostProfile.strongestDomainId}" style="color:var(--ws5-emerald-ink);">
+                    Strongest: ${escapeMetaHtml(hostProfile.strongestDomainName)} (${hostProfile.strongestAccuracyPct}%)
                   </button>`
                 : ''
             }
             ${
               hostProfile.weakestDomainId !== null && hostProfile.weakestDomainName
-                ? `<button type="button" class="ws-meta-chip" data-quick-dom="${hostProfile.weakestDomainId}" style="color:#ff9aa6;">
-                    ◆ Weak Spot: ${escapeMetaHtml(hostProfile.weakestDomainName)} (${hostProfile.weakestAccuracyPct}%)
+                ? `<button type="button" class="ws-meta-chip" data-quick-dom="${hostProfile.weakestDomainId}" style="color:var(--ws5-crimson-ink);">
+                    Weak Spot: ${escapeMetaHtml(hostProfile.weakestDomainName)} (${hostProfile.weakestAccuracyPct}%)
                   </button>`
                 : ''
             }
@@ -925,21 +980,44 @@ export class CareerAnalyticsDashboardView {
         : '';
 
     host.innerHTML = `
-      <div class="ws-meta-shell" data-stats-filtered="${view.hasActiveDimensionFilter ? 'true' : 'false'}">
+      <div class="ws-meta-shell ws-brass-ledger" data-stats-filtered="${view.hasActiveDimensionFilter ? 'true' : 'false'}">
         <div class="ws-meta-topbar">
           <div class="ws-meta-topbar-left">
-            <button type="button" class="ws-meta-back-btn" id="ws-stats-back" data-meta-back="true" aria-label="Back">← Back</button>
+            <button type="button" class="ws-meta-back-btn" id="ws-stats-back" data-meta-back="true" aria-label="Back">
+              <span class="ws-brass-ico" aria-hidden="true">${BRASS_STATS_ICONS.back}</span>
+              <span class="ws-brass-back-lbl">Back</span>
+            </button>
             <div class="ws-meta-topbar-titles">
-              <h2 class="ws-meta-title">CAREER STATS</h2>
+              <h2 class="ws-meta-title">
+                <span class="ws-brass-ico ws-brass-title-ico" aria-hidden="true">${BRASS_STATS_ICONS.radar}</span>
+                <span>CAREER STATS</span>
+              </h2>
               <div class="ws-meta-eyebrow">${escapeMetaHtml(challengerName)} · ${escapeMetaHtml(sliceSubtitle ?? 'Strengths, Weak Spots & Domain Radar')}</div>
             </div>
           </div>
           <div class="ws-meta-topbar-right">
+            <button
+              type="button"
+              class="ws-brass-clasp-btn is-icon-only ${isFsActive ? 'is-active-emerald' : ''}"
+              data-v5-fullscreen-toggle="true"
+              aria-pressed="${isFsActive}"
+              aria-label="Toggle Fullscreen"
+              title="Toggle Fullscreen"
+            >
+              <span class="ws-brass-ico" aria-hidden="true">${BRASS_STATS_ICONS.fullscreen}</span>
+            </button>
             ${vaultJumperHtml}
+            ${
+              isModal
+                ? `<button type="button" class="ws-brass-clasp-btn is-icon-only is-close-clasp" data-brass-close="true" aria-label="Close Career Stats" title="Close">
+                    <span class="ws-brass-ico" aria-hidden="true">${BRASS_STATS_ICONS.close}</span>
+                  </button>`
+                : ''
+            }
           </div>
         </div>
 
-        <!-- Single-Row Borderless Underline Time-Range Tabs -->
+        <!-- Brass & Emerald Index Time-Range Tabs (>= 44px) -->
         <div class="ws-meta-underline-tabs" role="tablist" aria-label="Analytics Time Range">
           ${(
             [
@@ -960,7 +1038,7 @@ export class CareerAnalyticsDashboardView {
         </div>
 
         <div class="ws-meta-body-scroll">
-          <!-- Clickable Outcome KPI Filter Pills -->
+          <!-- Clickable Outcome Brass Filter Clasps -->
           <div class="ws-meta-hscroll ws-stats-outcome-strip" role="group" aria-label="Filter by Outcome">
             ${(
               [
@@ -986,31 +1064,31 @@ export class CareerAnalyticsDashboardView {
               .join('')}
           </div>
 
-          <!-- Frameless Hairline KPI Strip (100% Live Recomputed from Filtered Slice!) -->
+          <!-- Vaudeville Contestant Ledger Tally Strip (100% Live Recomputed from Filtered Slice!) -->
           <div class="ws-meta-kpi-strip" id="ws-stats-kpi-strip" data-kpi-total="${kpis.totalAnswered}" data-kpi-right="${kpis.totalRight}" data-kpi-wrong="${kpis.totalWrong}">
             <div class="ws-meta-kpi-cell" data-stats-kpi="rw">
               <span class="ws-meta-kpi-lbl">Right / Wrong</span>
               <span class="ws-meta-kpi-val">
-                <span data-stats-right="${kpis.totalRight}" style="color:#67ebb8;">${kpis.totalRight}R</span>
-                <span style="color:#a5afc2;font-weight:500;">·</span>
-                <span data-stats-wrong="${kpis.totalWrong}" style="color:#ff8a98;">${kpis.totalWrong}W</span>
+                <span data-stats-right="${kpis.totalRight}" style="color:var(--ws5-emerald-ink);">${kpis.totalRight}R</span>
+                <span style="color:var(--ws5-parchment-muted);font-weight:500;">·</span>
+                <span data-stats-wrong="${kpis.totalWrong}" style="color:var(--ws5-crimson-ink);">${kpis.totalWrong}W</span>
               </span>
             </div>
             <div class="ws-meta-kpi-cell" data-stats-kpi="accuracy">
               <span class="ws-meta-kpi-lbl">Accuracy</span>
-              <span class="ws-meta-kpi-val" style="color:var(--gold-bright);">${kpis.accuracyPct !== null ? `${kpis.accuracyPct.toFixed(1)}%` : '—'}</span>
+              <span class="ws-meta-kpi-val" style="color:var(--ws5-brass-bright);">${kpis.accuracyPct !== null ? `${kpis.accuracyPct.toFixed(1)}%` : '—'}</span>
             </div>
             <div class="ws-meta-kpi-cell" data-stats-kpi="streak">
               <span class="ws-meta-kpi-lbl">Streak</span>
-              <span class="ws-meta-kpi-val">${kpis.currentStreak} <span style="font-size:11.5px;color:var(--gold-bright);">/ ${kpis.bestStreak} BEST</span></span>
+              <span class="ws-meta-kpi-val">${kpis.currentStreak} <span style="font-size:11px;color:var(--ws5-brass-bright);">/ ${kpis.bestStreak} BEST</span></span>
             </div>
             <div class="ws-meta-kpi-cell" data-stats-kpi="elo">
               <span class="ws-meta-kpi-lbl">${this.filter.domainId !== null ? 'Slice ELO' : 'Global ELO'}</span>
-              <span class="ws-meta-kpi-val" style="color:var(--cyan-clue);">${kpis.eloLatest} <span style="font-size:11px;color:#a5afc2;">(${kpis.eloPeak})</span></span>
+              <span class="ws-meta-kpi-val" style="color:var(--ws5-turquoise-ink);">${kpis.eloLatest} <span style="font-size:11px;color:var(--ws5-parchment-muted);">(${kpis.eloPeak})</span></span>
             </div>
             <div class="ws-meta-kpi-cell" data-stats-kpi="speed">
               <span class="ws-meta-kpi-lbl">Speed · 2x Win</span>
-              <span class="ws-meta-kpi-val" style="font-size:14.5px;">${kpis.totalAnswered > 0 ? `${(kpis.avgResponseMs / 1000).toFixed(1)}s` : '—'} · <span style="color:var(--gold-bright);">${ddWinPctStr}</span></span>
+              <span class="ws-meta-kpi-val" style="font-size:14px;">${kpis.totalAnswered > 0 ? `${(kpis.avgResponseMs / 1000).toFixed(1)}s` : '—'} · <span style="color:var(--ws5-brass-bright);">${ddWinPctStr}</span></span>
             </div>
           </div>
 
@@ -1021,8 +1099,8 @@ export class CareerAnalyticsDashboardView {
           <div class="ws-meta-section" id="ws-stats-section-1">
             <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px;">
               <h3 class="ws-meta-section-title">1. Right vs. Wrong &amp; Rolling Accuracy</h3>
-              <span style="font-family:var(--font-mono);font-size:10.5px;color:#c8c2b6;">
-                <span style="color:#67ebb8;">■ Right</span> · <span style="color:#ff8a98;">■ Wrong</span> · <span style="color:var(--gold-bright);">— Accuracy %</span>
+              <span style="font-family:var(--ws5-font-mono);font-size:10.5px;color:var(--ws5-parchment-ink);">
+                <span style="color:var(--ws5-emerald-ink);">Right</span> · <span style="color:var(--ws5-crimson-ink);">Wrong</span> · <span style="color:var(--ws5-brass-bright);">Accuracy %</span>
               </span>
             </div>
 
@@ -1030,25 +1108,25 @@ export class CareerAnalyticsDashboardView {
 
             ${
               activeBarTooltip
-                ? `<div class="ws-meta-note" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-family:var(--font-mono);font-size:11px;color:var(--ivory-primary);">
+                ? `<div class="ws-meta-note" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-family:var(--ws5-font-mono);font-size:11px;color:var(--ws5-parchment-bright);">
                     <span>[${escapeMetaHtml(activeBarTooltip.label)}] ${escapeMetaHtml(activeBarTooltip.sublabel)}</span>
-                    <span style="color:var(--gold-bright);font-weight:700;">Rolling ${activeBarTooltip.rollingAccPct}%${this.filter.bucketKey ? ' · Filtered (tap bar to clear)' : ' · Tap any bar to filter'}</span>
+                    <span style="color:var(--ws5-brass-bright);font-weight:700;">Rolling ${activeBarTooltip.rollingAccPct}%${this.filter.bucketKey ? ' · Filtered (tap bar to clear)' : ' · Tap any bar to filter'}</span>
                   </div>`
                 : ''
             }
           </div>
 
-          <!-- Graph 2: 12-Domain Mastery Breakdown, Polar Radar & Subcategory Drill-Down -->
+          <!-- Graph 2: 12-Domain Mastery Breakdown, Compass Brass Radar & Subcategory Drill-Down -->
           <div class="ws-meta-section" id="ws-stats-section-2">
             <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px;">
               <h3 class="ws-meta-section-title">2. 12-Domain Mastery &amp; Polar Radar</h3>
-              <span style="font-family:var(--font-mono);font-size:10.5px;color:#a5afc2;">
+              <span style="font-family:var(--ws5-font-mono);font-size:10.5px;color:var(--ws5-parchment-muted);">
                 ${hasDomFilter ? 'Tap active domain again to show all 12' : 'Tap any spoke or domain row to drill down'}
               </span>
             </div>
             ${strengthWeakHtml}
 
-            <div class="ws-meta-two-col" style="align-items:center;">
+            <div class="ws-meta-two-col">
               <div>
                 ${buildPolarDomainRadarSvg(view, this.filter.domainId)}
               </div>
@@ -1068,15 +1146,17 @@ export class CareerAnalyticsDashboardView {
                       aria-pressed="${isAct}"
                       class="ws-meta-row is-interactive ws-stats-row-btn ${isAct ? 'is-focused' : ''} ${isDim ? 'is-dimmed' : ''}"
                     >
-                      <span style="display:inline-flex;align-items:center;gap:7px;min-width:0;flex:0 1 104px;">
-                        <img src="./${escapeMetaHtml(dom.medallionUrl)}" alt="" style="width:18px;height:18px;object-fit:contain;flex-shrink:0;"/>
-                        <span style="font-size:12px;font-weight:${isAct ? '700' : '600'};color:${isAct ? 'var(--gold-bright)' : 'var(--ivory-primary)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeMetaHtml(dom.shortName)}</span>
+                      <span style="display:inline-flex;align-items:center;gap:7px;min-width:0;flex:0 1 112px;">
+                        <span class="ws-brass-mini-medallion">
+                          <img src="./${escapeMetaHtml(dom.medallionUrl)}" alt=""/>
+                        </span>
+                        <span style="font-size:12px;font-weight:${isAct ? '800' : '600'};color:${isAct ? 'var(--ws5-brass-highlight)' : 'var(--ws5-parchment-bright)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeMetaHtml(dom.shortName)}</span>
                       </span>
-                      <div style="flex:1 1 44px;min-width:28px;height:5px;border-radius:999px;background:${tot > 0 ? 'rgba(224,82,99,0.42)' : 'rgba(255,255,255,0.08)'};overflow:hidden;">
-                        <div style="width:${rPct.toFixed(1)}%;height:100%;background:#39d49a;"></div>
+                      <div style="flex:1 1 40px;min-width:24px;height:6px;border-radius:999px;background:${tot > 0 ? 'rgba(217,70,87,0.42)' : 'rgba(20,9,4,0.72)'};border:1px solid rgba(226,178,76,0.2);overflow:hidden;">
+                        <div style="width:${rPct.toFixed(1)}%;height:100%;background:#38d396;"></div>
                       </div>
-                      <span style="font-family:var(--font-mono);font-size:10.5px;color:#c8c2b6;white-space:nowrap;flex-shrink:0;">
-                        <strong style="color:#67ebb8;">${dc.right}R</strong>·<strong style="color:#ff8a98;">${dc.wrong}W</strong> <span style="color:#a5afc2;">(${pctStr(dc.right, dc.wrong)})</span> · <strong style="color:${dom.accentHex};">${dc.lastElo}</strong>
+                      <span style="font-family:var(--ws5-font-mono);font-size:10.5px;color:var(--ws5-parchment-ink);white-space:nowrap;flex-shrink:0;">
+                        <strong style="color:var(--ws5-emerald-ink);">${dc.right}R</strong>·<strong style="color:var(--ws5-crimson-ink);">${dc.wrong}W</strong> <span style="color:var(--ws5-parchment-muted);">(${pctStr(dc.right, dc.wrong)})</span> · <strong style="color:${dom.accentHex};">${dc.lastElo}</strong>
                       </span>
                     </button>
                   `;
@@ -1095,22 +1175,22 @@ export class CareerAnalyticsDashboardView {
                 ${buildEloTrajectorySvg(view.eloSeries)}
               </div>
               <div style="display:flex;flex-direction:column;">
-                <div class="ws-meta-row" style="font-family:var(--font-mono);font-size:11.5px;">
-                  <span style="color:#c8c2b6;">Standard Lock Record</span>
-                  <span><strong style="color:#67ebb8;">${kpis.safeLockWins}W</strong> – <strong style="color:#ff8a98;">${kpis.safeLockMisses}L</strong> <span style="color:#a5afc2;">(${pctStr(kpis.safeLockWins, kpis.safeLockMisses)})</span></span>
+                <div class="ws-meta-row" style="font-family:var(--ws5-font-mono);font-size:11.5px;">
+                  <span style="color:var(--ws5-parchment-ink);">Standard Lock Record</span>
+                  <span><strong style="color:var(--ws5-emerald-ink);">${kpis.safeLockWins}W</strong> – <strong style="color:var(--ws5-crimson-ink);">${kpis.safeLockMisses}L</strong> <span style="color:var(--ws5-parchment-muted);">(${pctStr(kpis.safeLockWins, kpis.safeLockMisses)})</span></span>
                 </div>
                 <button
                   type="button"
                   class="ws-meta-row is-interactive ws-stats-row-btn ${this.filter.outcome === 'DOUBLE_DOWN' ? 'is-focused' : ''}"
                   data-outcome-filter="DOUBLE_DOWN"
-                  style="font-family:var(--font-mono);font-size:11.5px;"
+                  style="font-family:var(--ws5-font-mono);font-size:11.5px;"
                 >
-                  <span style="color:#c8c2b6;">2x Double-Down Wins</span>
-                  <span style="color:var(--gold-bright);font-weight:700;">${kpis.doubleDownWins}W – ${kpis.doubleDownMisses}L (${ddWinPctStr})</span>
+                  <span style="color:var(--ws5-parchment-ink);">2x Double-Down Wins</span>
+                  <span style="color:var(--ws5-brass-bright);font-weight:700;">${kpis.doubleDownWins}W – ${kpis.doubleDownMisses}L (${ddWinPctStr})</span>
                 </button>
-                <div class="ws-meta-row" style="font-family:var(--font-mono);font-size:11.5px;border-bottom:none;">
-                  <span style="color:#c8c2b6;">Backfires / Max Streak</span>
-                  <span><strong style="color:#ff8a98;">${kpis.backfires}</strong> · Peak <strong style="color:var(--gold-bright);">${kpis.bestConsecutiveMax6xWins}×</strong></span>
+                <div class="ws-meta-row" style="font-family:var(--ws5-font-mono);font-size:11.5px;border-bottom:none;">
+                  <span style="color:var(--ws5-parchment-ink);">Backfires / Max Streak</span>
+                  <span><strong style="color:var(--ws5-crimson-ink);">${kpis.backfires}</strong> · Peak <strong style="color:var(--ws5-brass-bright);">${kpis.bestConsecutiveMax6xWins}×</strong></span>
                 </div>
               </div>
             </div>
@@ -1118,10 +1198,10 @@ export class CareerAnalyticsDashboardView {
 
           <!-- Graph 4: Format Mastery Strip + Mode Matrix & Speed Histogram -->
           <div class="ws-meta-section" id="ws-stats-section-4">
-            <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;">
+            <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px;">
               <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px;">
                 <h3 class="ws-meta-section-title">Format Mastery Strip (7 Game-Show Formats)</h3>
-                <span style="font-family:var(--font-mono);font-size:10.5px;color:#a5afc2;">
+                <span style="font-family:var(--ws5-font-mono);font-size:10.5px;color:var(--ws5-parchment-muted);">
                   ${hasFormatFilter ? 'Tap active format to clear' : 'Tap any format to cross-filter'}
                 </span>
               </div>
@@ -1142,7 +1222,7 @@ export class CareerAnalyticsDashboardView {
                       style="${isDim ? 'opacity:0.45;' : ''}display:inline-flex;align-items:center;gap:6px;"
                     >
                       <span>${escapeMetaHtml(FORMAT_MASTERY_LABELS[fmt])}</span>
-                      <span style="font-family:var(--font-mono);font-size:10.5px;color:${isAct ? 'var(--gold-bright)' : '#c8c2b6'};">
+                      <span style="font-family:var(--ws5-font-mono);font-size:10.5px;color:${isAct ? 'var(--ws5-brass-highlight)' : 'var(--ws5-parchment-muted)'};">
                         ${fc.right}R·${fc.wrong}W${pct !== '—' ? ` (${pct})` : ''}
                       </span>
                     </button>
@@ -1167,10 +1247,10 @@ export class CareerAnalyticsDashboardView {
                         data-arch-wrong="${c.wrong}"
                         aria-pressed="${isAct}"
                         class="ws-meta-row is-interactive ws-stats-row-btn ${isAct ? 'is-focused' : ''} ${isDim ? 'is-dimmed' : ''}"
-                        style="font-family:var(--font-mono);font-size:11px;"
+                        style="font-family:var(--ws5-font-mono);font-size:11px;"
                       >
-                        <span style="color:${isAct ? 'var(--gold-bright)' : 'var(--ivory-primary)'};font-weight:${isAct ? '700' : '500'};">${escapeMetaHtml(ARCHETYPE_SHORT_LABELS[arch])}</span>
-                        <span><strong style="color:#67ebb8;">${c.right}R</strong> · <strong style="color:#ff8a98;">${c.wrong}W</strong> <span style="color:#a5afc2;">(${pctStr(c.right, c.wrong)})</span></span>
+                        <span style="color:${isAct ? 'var(--ws5-brass-highlight)' : 'var(--ws5-parchment-bright)'};font-weight:${isAct ? '700' : '600'};">${escapeMetaHtml(ARCHETYPE_SHORT_LABELS[arch])}</span>
+                        <span><strong style="color:var(--ws5-emerald-ink);">${c.right}R</strong> · <strong style="color:var(--ws5-crimson-ink);">${c.wrong}W</strong> <span style="color:var(--ws5-parchment-muted);">(${pctStr(c.right, c.wrong)})</span></span>
                       </button>
                     `;
                   }).join('')}
@@ -1196,9 +1276,9 @@ export class CareerAnalyticsDashboardView {
                           data-peel-wrong="${tc.wrong}"
                           aria-pressed="${isAct}"
                         >
-                          <span class="ws-meta-kpi-lbl" style="color:${isAct ? 'var(--gold-bright)' : '#e6d095'};">${lbl}</span>
+                          <span class="ws-meta-kpi-lbl" style="color:${isAct ? 'var(--ws5-brass-highlight)' : 'var(--ws5-brass-bright)'};">${lbl}</span>
                           <span class="ws-meta-kpi-val" style="font-size:13px;">
-                            <span style="color:#67ebb8;">${tc.right}R</span> / <span style="color:#ff8a98;">${tc.wrong}W</span>
+                            <span style="color:var(--ws5-emerald-ink);">${tc.right}R</span> / <span style="color:var(--ws5-crimson-ink);">${tc.wrong}W</span>
                           </span>
                         </button>
                       `;
@@ -1210,7 +1290,7 @@ export class CareerAnalyticsDashboardView {
               <div style="display:flex;flex-direction:column;gap:8px;">
                 <div style="display:flex;align-items:baseline;justify-content:space-between;gap:6px;">
                   <h3 class="ws-meta-section-title">4B. Response-Time Histogram</h3>
-                  <span style="font-family:var(--font-mono);font-size:10.5px;color:#a5afc2;">
+                  <span style="font-family:var(--ws5-font-mono);font-size:10.5px;color:var(--ws5-parchment-muted);">
                     ${this.filter.speedBucket !== null ? 'Tap active bar to clear' : 'Tap any bar to filter'}
                   </span>
                 </div>
@@ -1220,14 +1300,14 @@ export class CareerAnalyticsDashboardView {
           </div>
 
           <!-- 5. Chronological Question Ledger Tape (Strictly Filtered!) -->
-          <div class="ws-meta-section" id="ws-stats-section-5" style="border-bottom:none;">
+          <div class="ws-meta-section" id="ws-stats-section-5">
             <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px;">
               <h3 class="ws-meta-section-title">
                 5. Question Ledger Tape (${recentLedger.length}${view.filteredEvents.length > recentLedger.length ? ` of ${view.filteredEvents.length}` : ''})
               </h3>
               ${
                 view.hasActiveDimensionFilter
-                  ? `<span style="font-family:var(--font-mono);font-size:10.5px;color:var(--gold-bright);">Filtered Slice Only</span>`
+                  ? `<span style="font-family:var(--ws5-font-mono);font-size:10.5px;color:var(--ws5-brass-bright);">Filtered Slice Only</span>`
                   : ''
               }
             </div>
@@ -1258,26 +1338,28 @@ export class CareerAnalyticsDashboardView {
                             data-ledger-peel="${ev.peelTier}"
                             data-ledger-speed="${speedIdx}"
                             data-ledger-date="${escapeMetaHtml(ev.dateKey)}"
-                            style="flex-direction:column;align-items:stretch;gap:4px;padding:9px 4px 9px 10px;font-family:var(--font-mono);font-size:11px;box-shadow:inset 2px 0 0 ${ev.correct ? 'var(--emerald-win)' : 'var(--crimson-alert)'};"
+                            style="flex-direction:column;align-items:stretch;gap:4px;padding:9px 6px 9px 12px;font-family:var(--ws5-font-mono);font-size:11px;box-shadow:inset 3px 0 0 ${ev.correct ? 'var(--ws5-emerald-ink)' : 'var(--ws5-crimson-bright)'};"
                           >
                             <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;">
                               <span style="display:inline-flex;align-items:center;gap:6px;min-width:0;flex-wrap:wrap;">
-                                <span style="font-weight:800;color:${ev.correct ? '#67ebb8' : '#ff8a98'};">
-                                  ${ev.correct ? '✓' : ev.backfired ? '✕!' : '✕'}
+                                <span style="font-weight:800;color:${ev.correct ? 'var(--ws5-emerald-ink)' : 'var(--ws5-crimson-ink)'};">
+                                  ${ev.correct ? 'WIN' : ev.backfired ? 'MISS!' : 'MISS'}
                                 </span>
-                                <img src="./${escapeMetaHtml(dom.medallionUrl)}" alt="" style="width:16px;height:16px;object-fit:contain;flex-shrink:0;"/>
-                                <span style="color:var(--ivory-primary);font-weight:600;">${escapeMetaHtml(dom.shortName)}</span>
+                                <span class="ws-brass-mini-medallion" style="width:20px;height:20px;">
+                                  <img src="./${escapeMetaHtml(dom.medallionUrl)}" alt="" style="width:14px;height:14px;"/>
+                                </span>
+                                <span style="color:var(--ws5-parchment-bright);font-weight:700;">${escapeMetaHtml(dom.shortName)}</span>
                                 ${cleanSubcat ? `<span style="color:${dom.accentHex};">· ${escapeMetaHtml(cleanSubcat)}</span>` : ''}
-                                <span style="color:#a5afc2;">· ${escapeMetaHtml(modeOrFmtLabel)} · ${PEEL_TIER_SHORT_TAGS[ev.peelTier]}${dd ? ' · 2x' : ''}</span>
+                                <span style="color:var(--ws5-parchment-muted);">· ${escapeMetaHtml(modeOrFmtLabel)} · ${PEEL_TIER_SHORT_TAGS[ev.peelTier]}${dd ? ' · 2x' : ''}</span>
                               </span>
-                              <span style="color:#c8c2b6;white-space:nowrap;">
-                                ${(ev.responseTimeMs / 1000).toFixed(1)}s · ${effMult}x · <strong style="color:${ev.correct ? 'var(--gold-bright)' : '#a5afc2'};">+${ev.pointsDelta.toLocaleString('en-US')} PTS</strong>
+                              <span style="color:var(--ws5-parchment-ink);white-space:nowrap;">
+                                ${(ev.responseTimeMs / 1000).toFixed(1)}s · ${effMult}x · <strong style="color:${ev.correct ? 'var(--ws5-brass-bright)' : 'var(--ws5-parchment-muted)'};">+${ev.pointsDelta.toLocaleString('en-US')} PTS</strong>
                               </span>
                             </div>
                             ${
                               cleanPrompt
-                                ? `<div style="font-family:var(--font-sans);font-size:11.5px;color:#c8c2b6;line-height:1.35;white-space:normal;">
-                                    ${escapeMetaHtml(cleanPrompt)}${ev.answerLabel ? ` — <strong style="color:var(--ivory-primary);">${escapeMetaHtml(sanitizeMetaCopy(ev.answerLabel))}</strong>` : ''}
+                                ? `<div style="font-family:var(--ws5-font-sans);font-size:11.5px;color:var(--ws5-parchment-ink);line-height:1.38;white-space:normal;">
+                                    ${escapeMetaHtml(cleanPrompt)}${ev.answerLabel ? ` — <strong style="color:var(--ws5-parchment-bright);">${escapeMetaHtml(sanitizeMetaCopy(ev.answerLabel))}</strong>` : ''}
                                   </div>`
                                 : ''
                             }
@@ -1286,9 +1368,9 @@ export class CareerAnalyticsDashboardView {
                       })
                       .join('')}
                   </div>`
-                : `<div id="ws-stats-ledger-empty" style="padding:18px 0;text-align:center;font-size:12.5px;color:#c8c2b6;display:flex;flex-direction:column;align-items:center;gap:10px;">
+                : `<div id="ws-stats-ledger-empty" style="padding:18px 0;text-align:center;font-size:12.5px;color:var(--ws5-parchment-muted);display:flex;flex-direction:column;align-items:center;gap:10px;">
                     <span>${view.hasActiveDimensionFilter ? 'No recorded questions match every active filter in this slice.' : 'No individual question events logged in this browser session yet.'}</span>
-                    ${view.hasActiveDimensionFilter ? `<button type="button" class="ws-stats-reset-btn" data-reset-filters="true">↺ Reset All Filters</button>` : ''}
+                    ${view.hasActiveDimensionFilter ? `<button type="button" class="ws-stats-reset-btn" data-reset-filters="true"><span class="ws-brass-ico" aria-hidden="true">${BRASS_STATS_ICONS.reset}</span><span>Reset All Filters</span></button>` : ''}
                   </div>`
             }
           </div>
@@ -1301,6 +1383,14 @@ export class CareerAnalyticsDashboardView {
 
   private bindEvents(host: HTMLElement): void {
     host.querySelector('#ws-stats-back')?.addEventListener('click', () => this.handleBackOrClose());
+    host.querySelector('[data-brass-close="true"]')?.addEventListener('click', () => this.handleClose());
+    host.querySelectorAll<HTMLButtonElement>('[data-v5-fullscreen-toggle]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        this.deps.haptics?.uiTap();
+        this.deps.audio?.playSfx('ui_tap');
+        toggleDocumentFullscreenSafe(btn);
+      });
+    });
 
     bindVaultJumperEvents(host, {
       closeBtnId: 'ws-stats-close',

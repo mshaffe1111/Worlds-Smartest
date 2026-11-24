@@ -10,6 +10,7 @@
 //  • Deep-link aspect pre-filtering from Career Stats (`initialAspectFilter`)
 // ============================================================================
 
+import '../styles/brass_modals_v5.css';
 import type { Stage3DDirector } from '../stage3d';
 import type { InkBlackboard, PassportSystem } from '../narrative';
 import type { StudioAudioEngine } from '../audio/StudioAudioEngine';
@@ -50,6 +51,43 @@ export type HonoursSubTab = 'TROPHIES_64' | 'UNLOCKABLES_32' | 'TROPHIES' | 'UNL
 
 function isTrophiesTab(tab: HonoursSubTab): boolean {
   return tab === 'TROPHIES_64' || tab === 'TROPHIES';
+}
+
+const BRASS_HONOURS_ICONS = {
+  back: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>',
+  close: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
+  fullscreen: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>',
+  trophy: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9H4a2 2 0 0 1-2-2V5h4"/><path d="M18 9h2a2 2 0 0 0 2-2V5h-4"/><path d="M6 4h12v6a6 6 0 0 1-12 0V4Z"/><path d="M12 16v4"/><path d="M8 20h8"/></svg>',
+  reward: '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.1 8.4 22 9.3 17 14.1 18.2 21 12 17.7 5.8 21 7 14.1 2 9.3 8.9 8.4 12 2"/></svg>',
+  cube3d: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 21 7 21 17 12 22 3 17 3 7 12 2"/><path d="m3 7 9 5 9-5"/><path d="M12 12v10"/></svg>',
+  orbit: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>',
+  check: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>',
+  lock: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+} as const;
+
+const TIER_DOT_HEX: Record<HonourRarityTier, string> = {
+  TIER_1_EASY: '#d49254',
+  TIER_2_MEDIUM: '#dce3ee',
+  TIER_3_HARD: '#f4ce72',
+  TIER_4_VERY_RARE: '#69b8ff',
+  TIER_5_MYTHIC: '#d896ff',
+};
+
+function toggleHonoursFullscreenSafe(btn: HTMLButtonElement): void {
+  if (typeof document === 'undefined') return;
+  try {
+    if (document.fullscreenElement) {
+      void document.exitFullscreen?.().catch(() => {});
+      btn.setAttribute('aria-pressed', 'false');
+      btn.classList.remove('is-active-emerald');
+    } else {
+      void document.documentElement.requestFullscreen?.().catch(() => {});
+      btn.setAttribute('aria-pressed', 'true');
+      btn.classList.add('is-active-emerald');
+    }
+  } catch {
+    // Fullscreen unavailable in restricted context
+  }
 }
 
 export interface HallOfHonoursViewDependencies {
@@ -112,7 +150,7 @@ export class HallOfHonoursView {
     this.deps.honoursSystem.evaluateAndUnlock(true);
 
     const backdrop = document.createElement('div');
-    backdrop.className = 'ws-meta-backdrop';
+    backdrop.className = 'ws-meta-backdrop ws-brass-backdrop';
     backdrop.setAttribute('role', 'dialog');
     backdrop.setAttribute('aria-modal', 'true');
     backdrop.setAttribute(
@@ -204,8 +242,8 @@ export class HallOfHonoursView {
   private rerender(): void {
     if (this.modalBackdrop) {
       this.modalBackdrop.className = this.trophy3DDockActive
-        ? 'ws-meta-backdrop is-stage-dock'
-        : 'ws-meta-backdrop';
+        ? 'ws-meta-backdrop ws-brass-backdrop is-stage-dock'
+        : 'ws-meta-backdrop ws-brass-backdrop';
       this.syncUiRootVisibility(this.trophy3DDockActive);
       this.renderInto(this.modalBackdrop, true);
     } else if (this.mountedContainer) {
@@ -234,13 +272,16 @@ export class HallOfHonoursView {
       unlockedThemeIds.length;
 
     const onTrophies = isTrophiesTab(this.activeTab);
+    const isFsActive = typeof document !== 'undefined' && Boolean(document.fullscreenElement);
     const underlineTabsHtml = `
       <div class="ws-meta-underline-tabs" role="tablist" aria-label="Hall of Honours Sections">
         <button type="button" role="tab" aria-selected="${onTrophies}" class="ws-meta-underline-tab ${onTrophies ? 'is-active' : ''}" data-honours-tab="TROPHIES_64">
-          ${totalHonours} Trophies (${unlockedHonoursCount}/${totalHonours})
+          <span class="ws-brass-ico" aria-hidden="true">${BRASS_HONOURS_ICONS.trophy}</span>
+          <span>${totalHonours} Trophies (${unlockedHonoursCount}/${totalHonours})</span>
         </button>
         <button type="button" role="tab" aria-selected="${!onTrophies}" class="ws-meta-underline-tab ${!onTrophies ? 'is-active' : ''}" data-honours-tab="UNLOCKABLES_32">
-          ${totalRewards} Rewards (${totalUnlockedRewards}/${totalRewards})
+          <span class="ws-brass-ico" aria-hidden="true">${BRASS_HONOURS_ICONS.reward}</span>
+          <span>${totalRewards} Rewards (${totalUnlockedRewards}/${totalRewards})</span>
         </button>
       </div>
     `;
@@ -265,20 +306,39 @@ export class HallOfHonoursView {
       host.innerHTML = `
         <div class="ws-meta-stage-zone">
           <div class="ws-meta-stage-top">
-            <button type="button" class="ws-meta-float-pill" id="ws-honours-back" data-meta-back="true" aria-label="Back">← Back</button>
-            ${vaultFloatingHtml}
+            <button type="button" class="ws-meta-float-pill" id="ws-honours-back" data-meta-back="true" aria-label="Back">
+              <span class="ws-brass-ico" aria-hidden="true">${BRASS_HONOURS_ICONS.back}</span>
+              <span>Back</span>
+            </button>
+            <div class="ws-meta-stage-actions">
+              <button
+                type="button"
+                class="ws-meta-float-pill ${isFsActive ? 'is-active-gold' : ''}"
+                data-v5-fullscreen-toggle="true"
+                aria-pressed="${isFsActive}"
+                aria-label="Toggle Fullscreen"
+              >
+                <span class="ws-brass-ico" aria-hidden="true">${BRASS_HONOURS_ICONS.fullscreen}</span>
+              </button>
+              ${vaultFloatingHtml}
+              <button type="button" class="ws-meta-float-pill" data-brass-close="true" aria-label="Close">
+                <span class="ws-brass-ico" aria-hidden="true">${BRASS_HONOURS_ICONS.close}</span>
+              </button>
+            </div>
           </div>
           <div class="ws-meta-stage-bottom">
-            <span class="ws-meta-orbit-whisper">↻ Drag 3D to Orbit</span>
+            <span class="ws-meta-orbit-whisper">
+              <span class="ws-brass-ico" aria-hidden="true" style="margin-right:4px;vertical-align:-2px;">${BRASS_HONOURS_ICONS.orbit}</span>Drag 3D to Orbit
+            </span>
             <div class="ws-meta-stage-actions">
               <button type="button" class="ws-meta-float-pill is-active-gold" id="ws-honours-3d-toggle">
-                ⤢ Full Hall
+                Full Hall
               </button>
             </div>
           </div>
         </div>
 
-        <div class="ws-meta-sheet">
+        <div class="ws-meta-sheet ws-brass-ledger">
           <div class="ws-meta-drag-handle" aria-hidden="true"></div>
           ${underlineTabsHtml}
           <div class="ws-meta-body-scroll">
@@ -298,22 +358,48 @@ export class HallOfHonoursView {
     });
 
     host.innerHTML = `
-      <div class="ws-meta-shell">
+      <div class="ws-meta-shell ws-brass-ledger">
         <div class="ws-meta-topbar">
           <div class="ws-meta-topbar-left">
-            <button type="button" class="ws-meta-back-btn" id="ws-honours-back" data-meta-back="true" aria-label="Back">← Back</button>
+            <button type="button" class="ws-meta-back-btn" id="ws-honours-back" data-meta-back="true" aria-label="Back">
+              <span class="ws-brass-ico" aria-hidden="true">${BRASS_HONOURS_ICONS.back}</span>
+              <span class="ws-brass-back-lbl">Back</span>
+            </button>
             <div class="ws-meta-topbar-titles">
-              <h2 class="ws-meta-title">HONOURS</h2>
+              <h2 class="ws-meta-title">
+                <span class="ws-brass-ico ws-brass-title-ico" aria-hidden="true">${BRASS_HONOURS_ICONS.trophy}</span>
+                <span>HALL OF HONOURS</span>
+              </h2>
               <div class="ws-meta-eyebrow">${unlockedHonoursCount}/${totalHonours} Trophies · ${totalUnlockedRewards}/${totalRewards} Rewards</div>
             </div>
           </div>
           <div class="ws-meta-topbar-right">
             ${
               this.deps.stage3d && isModal
-                ? `<button type="button" class="ws-meta-vault-btn" id="ws-honours-3d-toggle" aria-label="Toggle 3D Trophy Showcase">◈ 3D</button>`
+                ? `<button type="button" class="ws-brass-clasp-btn" id="ws-honours-3d-toggle" aria-label="Toggle 3D Trophy Showcase">
+                    <span class="ws-brass-ico" aria-hidden="true">${BRASS_HONOURS_ICONS.cube3d}</span>
+                    <span>3D</span>
+                  </button>`
                 : ''
             }
+            <button
+              type="button"
+              class="ws-brass-clasp-btn is-icon-only ${isFsActive ? 'is-active-emerald' : ''}"
+              data-v5-fullscreen-toggle="true"
+              aria-pressed="${isFsActive}"
+              aria-label="Toggle Fullscreen"
+              title="Toggle Fullscreen"
+            >
+              <span class="ws-brass-ico" aria-hidden="true">${BRASS_HONOURS_ICONS.fullscreen}</span>
+            </button>
             ${vaultJumperHtml}
+            ${
+              isModal
+                ? `<button type="button" class="ws-brass-clasp-btn is-icon-only is-close-clasp" data-brass-close="true" aria-label="Close Hall of Honours" title="Close">
+                    <span class="ws-brass-ico" aria-hidden="true">${BRASS_HONOURS_ICONS.close}</span>
+                  </button>`
+                : ''
+            }
           </div>
         </div>
 
@@ -338,16 +424,17 @@ export class HallOfHonoursView {
     const hasActivePreFilter = this.tierFilter !== 'ALL' || this.aspectFilter !== 'ALL';
 
     return `
-      <!-- Single-Line Horizontal Scrollable Tier & Aspect Filters (Zero Boxed Filter Cards!) -->
-      <div class="ws-meta-section" style="padding-top:0;gap:7px;" data-honours-active-aspect="${this.aspectFilter}" data-honours-active-tier="${this.tierFilter}">
+      <!-- Carved Mahogany & Brass Filter Ribbons (44px+ Tactile Clasps) -->
+      <div class="ws-meta-section" style="gap:8px;" data-honours-active-aspect="${this.aspectFilter}" data-honours-active-tier="${this.tierFilter}">
         ${
           hasActivePreFilter || this.contextLabel
-            ? `<div id="ws-honours-context-bar" class="ws-meta-note" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:6px 0 6px 12px;">
-                <span style="font-family:var(--font-mono);font-size:11px;color:var(--ivory-primary);">
-                  ◆ ${this.contextLabel ? `Related to ${escapeMetaHtml(this.contextLabel)} · ` : ''}Showing <strong>${filtered.length}</strong> of ${allHonours.length} Trophies
+            ? `<div id="ws-honours-context-bar" class="ws-meta-note" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;">
+                <span style="font-family:var(--ws5-font-mono);font-size:11px;color:var(--ws5-parchment-bright);">
+                  ${this.contextLabel ? `Related to ${escapeMetaHtml(this.contextLabel)} · ` : ''}Showing <strong>${filtered.length}</strong> of ${allHonours.length} Trophies
                 </span>
-                <button type="button" class="ws-meta-inline-link" id="ws-honours-clear-filters" style="min-height:44px;padding:0 8px;">
-                  ✕ Show All ${allHonours.length}
+                <button type="button" class="ws-meta-inline-link" id="ws-honours-clear-filters">
+                  <span class="ws-brass-ico" aria-hidden="true">${BRASS_HONOURS_ICONS.close}</span>
+                  <span>Show All ${allHonours.length}</span>
                 </button>
               </div>`
             : ''
@@ -355,18 +442,19 @@ export class HallOfHonoursView {
         <div class="ws-meta-hscroll" aria-label="Filter by Rarity Tier">
           ${(
             [
-              ['ALL', `All ${allHonours.length}`],
-              ['TIER_1_EASY', 'Bronze'],
-              ['TIER_2_MEDIUM', 'Sterling'],
-              ['TIER_3_HARD', '24K Gold'],
-              ['TIER_4_VERY_RARE', 'Sapphire'],
-              ['TIER_5_MYTHIC', 'Mythic 0.1%'],
+              ['ALL', `All ${allHonours.length}`, null],
+              ['TIER_1_EASY', 'Bronze', TIER_DOT_HEX.TIER_1_EASY],
+              ['TIER_2_MEDIUM', 'Sterling', TIER_DOT_HEX.TIER_2_MEDIUM],
+              ['TIER_3_HARD', '24K Gold', TIER_DOT_HEX.TIER_3_HARD],
+              ['TIER_4_VERY_RARE', 'Sapphire', TIER_DOT_HEX.TIER_4_VERY_RARE],
+              ['TIER_5_MYTHIC', 'Mythic 0.1%', TIER_DOT_HEX.TIER_5_MYTHIC],
             ] as const
           )
             .map(
-              ([id, lbl]) => `
+              ([id, lbl, dotHex]) => `
                 <button type="button" class="ws-meta-chip ${this.tierFilter === id ? 'is-active' : ''}" data-tier-filter="${id}">
-                  ${lbl}
+                  ${dotHex ? `<span class="ws-brass-tier-dot" style="background:${dotHex};" aria-hidden="true"></span>` : ''}
+                  <span>${lbl}</span>
                 </button>
               `,
             )
@@ -395,50 +483,56 @@ export class HallOfHonoursView {
         </div>
       </div>
 
-      <!-- Hairline-Divided Trophy List / 2-Column Wide Grid (Zero Nested Boxes!) -->
-      <div class="ws-meta-section" style="border-bottom:none;padding-top:4px;gap:0;">
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:0 22px;">
+      <!-- Velvet-Lined Mahogany & Brushed Brass Trophy Medallion Cabinet -->
+      <div class="ws-meta-section" style="padding:12px;">
+        <div class="ws-brass-trophy-grid">
           ${filtered
             .map((item) => {
               const tm = RARITY_TIER_META[item.def.tier];
               const progressText = item.unlocked
-                ? '✓ EARNED'
+                ? 'EARNED'
                 : `${Math.round(item.current)} / ${Math.round(item.target)}`;
               return `
-                <div data-trophy-id="${escapeMetaHtml(item.def.id)}" style="display:flex;gap:11px;align-items:flex-start;padding:12px 4px;border-bottom:1px solid rgba(255,255,255,0.07);${item.unlocked ? `box-shadow:inset 3px 0 0 ${tm.colorHex};padding-left:10px;background:rgba(255,255,255,0.02);` : ''}">
-                  <img
-                    src="${escapeMetaHtml(item.emblemPngUrl)}"
-                    data-fallback-src="${escapeMetaHtml(item.emblemFallbackDataUri)}"
-                    alt=""
-                    style="width:42px;height:42px;object-fit:contain;flex-shrink:0;${item.unlocked ? '' : 'filter:grayscale(0.82) opacity(0.55);'}"
-                  />
-                  <div style="min-width:0;flex:1 1 auto;display:flex;flex-direction:column;gap:4px;">
-                    <div style="display:flex;justify-content:space-between;gap:6px;align-items:baseline;">
-                      <span style="font-family:var(--font-mono);font-size:10px;font-weight:700;color:${tm.colorHex};letter-spacing:0.06em;">
+                <article
+                  class="ws-brass-trophy-card ${item.unlocked ? 'is-earned' : ''}"
+                  data-trophy-id="${escapeMetaHtml(item.def.id)}"
+                  style="--trophy-tier-hex:${tm.colorHex};"
+                >
+                  <div class="ws-brass-medallion-well">
+                    <img
+                      src="${escapeMetaHtml(item.emblemPngUrl)}"
+                      data-fallback-src="${escapeMetaHtml(item.emblemFallbackDataUri)}"
+                      alt=""
+                    />
+                  </div>
+                  <div class="ws-brass-trophy-body">
+                    <div class="ws-brass-trophy-meta">
+                      <span class="ws-brass-trophy-code" style="color:${tm.colorHex};">
                         #${item.def.number} · ${escapeMetaHtml(tm.shortLabel.toUpperCase())}
                       </span>
-                      <span style="font-family:var(--font-mono);font-size:10.5px;font-weight:700;color:${item.unlocked ? 'var(--emerald-win)' : 'var(--ivory-muted)'};flex-shrink:0;">
-                        ${progressText}
+                      <span class="ws-brass-trophy-status ${item.unlocked ? 'is-earned' : ''}">
+                        ${item.unlocked ? `<span class="ws-brass-ico" aria-hidden="true" style="margin-right:3px;vertical-align:-1px;">${BRASS_HONOURS_ICONS.check}</span>` : ''}${progressText}
                       </span>
                     </div>
-                    <div style="font-family:var(--font-display);font-size:13.5px;font-weight:800;color:var(--ivory-primary);line-height:1.22;">
+                    <div class="ws-brass-trophy-title">
                       ${escapeMetaHtml(item.def.title)}
                     </div>
-                    <div style="font-size:11.5px;color:var(--ivory-muted);line-height:1.35;">
+                    <div class="ws-brass-trophy-desc">
                       ${escapeMetaHtml(sanitizeMetaCopy(item.def.description))}
                     </div>
-                    <div class="ws-meta-progress-track" style="margin-top:2px;">
-                      <div class="ws-meta-progress-fill" style="width:${Math.round(item.ratio * 100)}%;background:${item.unlocked ? 'var(--emerald-win)' : tm.colorHex};"></div>
+                    <div class="ws-meta-progress-track" style="margin-top:3px;">
+                      <div class="ws-meta-progress-fill" style="width:${Math.round(item.ratio * 100)}%;background:${item.unlocked ? 'linear-gradient(90deg, #168260 0%, #57e6ab 100%)' : tm.colorHex};"></div>
                     </div>
                     ${
                       item.def.reward
-                        ? `<div style="font-family:var(--font-mono);font-size:10px;color:var(--gold-bright);margin-top:1px;">
-                            ✦ ${escapeMetaHtml(item.def.reward.rewardLabel)}
+                        ? `<div class="ws-brass-trophy-reward">
+                            <span class="ws-brass-ico" aria-hidden="true">${BRASS_HONOURS_ICONS.reward}</span>
+                            <span>${escapeMetaHtml(item.def.reward.rewardLabel)}</span>
                           </div>`
                         : ''
                     }
                   </div>
-                </div>
+                </article>
               `;
             })
             .join('')}
@@ -462,33 +556,35 @@ export class HallOfHonoursView {
     ).length;
 
     return `
-      <!-- 1. Stage & 3D Trophy Finishes (Dynamic Total) -->
-      <div class="ws-meta-section" style="padding-top:0;">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+      <!-- 1. Stage & 3D Trophy Finishes (16 Finishes) -->
+      <div class="ws-meta-section">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
           <h3 class="ws-meta-section-title">1. Stage &amp; 3D Trophy Finishes (${finishStatuses.filter((f) => f.unlocked).length}/${totalFinishes})</h3>
           ${
             this.callbacks.onNavigateSection
-              ? `<button type="button" class="ws-meta-inline-link" data-suite-nav="ATELIER">◈ 3D Atelier ›</button>`
+              ? `<button type="button" class="ws-meta-inline-link" data-suite-nav="ATELIER">
+                  <span class="ws-brass-ico" aria-hidden="true">${BRASS_HONOURS_ICONS.cube3d}</span>
+                  <span>3D Atelier</span>
+                </button>`
               : ''
           }
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:0 20px;">
+        <div class="ws-brass-rewards-grid">
           ${finishStatuses
             .map(
               (st) => `
                 <button
                   type="button"
-                  class="ws-meta-row is-interactive ${st.equipped ? 'is-focused' : ''}"
+                  class="ws-brass-reward-plaque ${st.equipped ? 'is-focused' : ''}"
                   data-equip-finish="${st.spec.id}"
                   ${st.unlocked ? '' : 'disabled'}
-                  style="width:100%;text-align:left;"
                 >
-                  <span style="display:inline-flex;align-items:center;gap:9px;min-width:0;">
-                    <span style="width:18px;height:18px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,${st.spec.swatchPrimaryCss},${st.spec.swatchSecondaryCss});box-shadow:0 0 0 1px rgba(255,255,255,0.45);"></span>
-                    <span style="font-size:12px;font-weight:600;color:var(--ivory-primary);line-height:1.25;">${escapeMetaHtml(st.spec.name)}</span>
+                  <span style="display:inline-flex;align-items:center;gap:10px;min-width:0;">
+                    <span style="width:24px;height:24px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,${st.spec.swatchPrimaryCss},${st.spec.swatchSecondaryCss});border:2px solid #d49c3b;box-shadow:inset 0 1px 0 rgba(255,240,184,0.45);"></span>
+                    <span style="font-size:12.5px;font-weight:700;color:var(--ws5-parchment-bright);line-height:1.25;">${escapeMetaHtml(st.spec.name)}</span>
                   </span>
-                  <span style="font-family:var(--font-mono);font-size:10px;font-weight:700;color:${st.equipped ? 'var(--emerald-win)' : st.unlocked ? 'var(--gold-bright)' : '#9aa4b7'};flex-shrink:0;">
-                    ${st.equipped ? '✓ ON' : st.unlocked ? 'EQUIP' : '◇'}
+                  <span class="ws-brass-equip-badge ${st.equipped ? 'is-equipped' : st.unlocked ? '' : 'is-locked'}">
+                    ${st.equipped ? 'EQUIPPED' : st.unlocked ? 'EQUIP' : `<span class="ws-brass-ico" aria-hidden="true">${BRASS_HONOURS_ICONS.lock}</span>`}
                   </span>
                 </button>
               `,
@@ -497,31 +593,30 @@ export class HallOfHonoursView {
         </div>
       </div>
 
-      <!-- 2. Broadcast Show Titles (Dynamic Total) -->
+      <!-- 2. Broadcast Show Titles (19 Titles) -->
       <div class="ws-meta-section">
         <h3 class="ws-meta-section-title">2. Broadcast Show Titles (${unlockedTitlesCount}/${totalTitles})</h3>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:0 20px;">
+        <div class="ws-brass-rewards-grid">
           ${BROADCAST_TITLES_CATALOG.map((bt) => {
             const isUnl = bt.order === 1 || unlockedTitles.includes(bt.title);
             const isAct = activeTitle === bt.title;
             return `
               <button
                 type="button"
-                class="ws-meta-row is-interactive ${isAct ? 'is-focused' : ''}"
+                class="ws-brass-reward-plaque ${isAct ? 'is-focused' : ''}"
                 data-equip-title="${escapeMetaHtml(bt.title)}"
                 ${isUnl ? '' : 'disabled'}
-                style="width:100%;text-align:left;"
               >
                 <span style="min-width:0;display:flex;flex-direction:column;gap:2px;">
-                  <span style="font-family:var(--font-display);font-size:11.5px;font-weight:700;color:${isAct ? 'var(--gold-bright)' : 'var(--ivory-primary)'};">
+                  <span style="font-family:var(--ws5-font-display);font-size:12px;font-weight:800;color:${isAct ? 'var(--ws5-brass-highlight)' : 'var(--ws5-parchment-bright)'};">
                     ${escapeMetaHtml(bt.title)}
                   </span>
-                  <span style="font-family:var(--font-mono);font-size:10px;color:#9aa4b7;">
+                  <span style="font-family:var(--ws5-font-mono);font-size:10px;color:var(--ws5-parchment-muted);">
                     ${escapeMetaHtml(sanitizeMetaCopy(bt.unlockRequirement))}
                   </span>
                 </span>
-                <span style="font-family:var(--font-mono);font-size:10px;font-weight:700;color:${isAct ? 'var(--emerald-win)' : isUnl ? 'var(--gold-bright)' : '#9aa4b7'};flex-shrink:0;">
-                  ${isAct ? '✓ ON' : isUnl ? 'EQUIP' : '◇'}
+                <span class="ws-brass-equip-badge ${isAct ? 'is-equipped' : isUnl ? '' : 'is-locked'}">
+                  ${isAct ? 'EQUIPPED' : isUnl ? 'EQUIP' : `<span class="ws-brass-ico" aria-hidden="true">${BRASS_HONOURS_ICONS.lock}</span>`}
                 </span>
               </button>
             `;
@@ -529,30 +624,29 @@ export class HallOfHonoursView {
         </div>
       </div>
 
-      <!-- 3. Stage & Crown HUD Themes (Dynamic Total) -->
-      <div class="ws-meta-section" style="border-bottom:none;">
+      <!-- 3. Stage & Crown HUD Themes (13 Themes) -->
+      <div class="ws-meta-section">
         <h3 class="ws-meta-section-title">3. Stage &amp; Crown HUD Themes (${unlockedThemeIds.length}/${totalThemes})</h3>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:0 20px;">
+        <div class="ws-brass-rewards-grid">
           ${HUD_ACCENT_THEMES.map((th) => {
             const isUnl = unlockedThemeIds.includes(th.id);
             const isEq = equippedTheme.id === th.id;
             return `
               <button
                 type="button"
-                class="ws-meta-row is-interactive ${isEq ? 'is-focused' : ''}"
+                class="ws-brass-reward-plaque ${isEq ? 'is-focused' : ''}"
                 data-equip-theme="${th.id}"
                 ${isUnl ? '' : 'disabled'}
-                style="width:100%;text-align:left;"
               >
-                <span style="display:inline-flex;align-items:center;gap:9px;min-width:0;">
-                  <span style="width:16px;height:16px;border-radius:50%;background:${th.primaryHex};box-shadow:0 0 0 2px ${th.secondaryHex};flex-shrink:0;"></span>
+                <span style="display:inline-flex;align-items:center;gap:10px;min-width:0;">
+                  <span style="width:22px;height:22px;border-radius:50%;background:${th.primaryHex};border:2px solid #d49c3b;box-shadow:0 0 0 2px ${th.secondaryHex};flex-shrink:0;"></span>
                   <span style="min-width:0;">
-                    <span style="display:block;font-size:12px;font-weight:600;color:var(--ivory-primary);line-height:1.25;">${escapeMetaHtml(th.name)}</span>
-                    <span style="display:block;font-family:var(--font-mono);font-size:10px;color:#9aa4b7;">${escapeMetaHtml(sanitizeMetaCopy(th.unlockRequirement))}</span>
+                    <span style="display:block;font-size:12.5px;font-weight:700;color:var(--ws5-parchment-bright);line-height:1.25;">${escapeMetaHtml(th.name)}</span>
+                    <span style="display:block;font-family:var(--ws5-font-mono);font-size:10px;color:var(--ws5-parchment-muted);">${escapeMetaHtml(sanitizeMetaCopy(th.unlockRequirement))}</span>
                   </span>
                 </span>
-                <span style="font-family:var(--font-mono);font-size:10px;font-weight:700;color:${isEq ? 'var(--emerald-win)' : isUnl ? 'var(--gold-bright)' : '#9aa4b7'};flex-shrink:0;">
-                  ${isEq ? '✓ ON' : isUnl ? 'EQUIP' : '◇'}
+                <span class="ws-brass-equip-badge ${isEq ? 'is-equipped' : isUnl ? '' : 'is-locked'}">
+                  ${isEq ? 'EQUIPPED' : isUnl ? 'EQUIP' : `<span class="ws-brass-ico" aria-hidden="true">${BRASS_HONOURS_ICONS.lock}</span>`}
                 </span>
               </button>
             `;
@@ -575,6 +669,14 @@ export class HallOfHonoursView {
     });
 
     host.querySelector('#ws-honours-back')?.addEventListener('click', () => this.handleBackOrClose());
+    host.querySelector('[data-brass-close="true"]')?.addEventListener('click', () => this.handleClose());
+    host.querySelectorAll<HTMLButtonElement>('[data-v5-fullscreen-toggle]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        this.deps.haptics?.uiTap();
+        this.deps.audio?.playSfx('ui_tap');
+        toggleHonoursFullscreenSafe(btn);
+      });
+    });
     host.querySelector('#ws-honours-3d-toggle')?.addEventListener('click', () => {
       this.deps.haptics?.uiTap();
       this.deps.audio?.playSfx('ui_tap');
