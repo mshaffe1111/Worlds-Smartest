@@ -158,7 +158,7 @@ function resolveDailyTicketCode(model: GreenRoomMenuViewModel): string {
     return 'CLEARED';
   }
   if (model.dailyBroadcastLabel && model.dailyBroadcastLabel.trim().length > 0) {
-    return model.dailyBroadcastLabel.trim();
+    return model.dailyBroadcastLabel.trim().replace(/^broadcast\s+/i, '');
   }
   if (typeof model.dailyBroadcastNumber === 'number' && Number.isFinite(model.dailyBroadcastNumber)) {
     return `#${Math.max(1, Math.round(model.dailyBroadcastNumber))}`;
@@ -1679,8 +1679,8 @@ function ensureGreenRoomStyles(): void {
         overflow: hidden;
       }
       .v5gr-vista {
-        flex: 0 0 43%;
-        width: 43%;
+        flex: 0 0 40%;
+        width: 40%;
         height: 100%;
         min-height: 0;
         border-right: 3px solid #d9a03b;
@@ -1747,50 +1747,94 @@ function ensureGreenRoomStyles(): void {
         margin-left: 0;
       }
       .v5gr-desk {
-        flex: 1 1 57%;
-        width: 57%;
+        flex: 1 1 60%;
+        width: 60%;
+        min-width: 0;
         height: 100%;
         border-top: none;
         overflow-y: auto;
+        overflow-x: hidden;
         justify-content: space-between;
       }
       .v5gr-desk-lip { display: none; }
       .v5gr-wainscot-ornament { display: none; }
       .v5gr-desk-grid {
         margin: auto 0;
-        padding: 6px 12px 2px;
-        grid-template-columns: 1fr 1.38fr 1fr;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        padding: 5px 8px 2px;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.22fr) minmax(0, 1fr);
         grid-template-areas:
           "trunk stage dial"
           "daily stage endless";
         align-items: center;
+        justify-items: center;
         row-gap: 4px;
-        column-gap: 6px;
+        column-gap: 4px;
+      }
+      .v5gr-prop-btn {
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
       }
       .v5gr-prop-trunk, .v5gr-prop-dial { margin-top: 0; }
-      .v5gr-trunk-svg { width: 102px; }
-      .v5gr-dial-svg { width: 96px; }
-      .v5gr-daily-svg { width: 96px; }
-      .v5gr-endless-svg { width: 88px; }
-      .v5gr-nameplate { font-size: 9.5px; padding: 2px 9px; margin-top: -4px; }
-      .v5gr-subplate { font-size: 8.5px; padding: 1px 7px; }
+      .v5gr-trunk-svg { width: min(92px, 100%); }
+      .v5gr-dial-svg { width: min(86px, 100%); }
+      .v5gr-daily-svg { width: min(86px, 100%); }
+      .v5gr-endless-svg { width: min(80px, 100%); }
+      .v5gr-nameplate {
+        font-size: 9px;
+        padding: 2px 7px;
+        margin-top: -4px;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        box-sizing: border-box;
+      }
+      .v5gr-subplate {
+        font-size: 8px;
+        padding: 1px 5px;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        box-sizing: border-box;
+      }
       .v5gr-step-ticket {
         width: 100%;
-        max-width: 242px;
-        min-height: 94px;
-        padding: 12px 14px 10px;
+        min-width: 0;
+        max-width: 100%;
+        min-height: 90px;
+        padding: 10px 8px 8px;
+        box-sizing: border-box;
       }
-      .v5gr-step-title { font-size: 20px; }
-      .v5gr-step-sub { font-size: 8.8px; padding: 1px 7px; max-width: 96%; }
+      .v5gr-step-title { font-size: clamp(16px, 2.3vw, 20px); }
+      .v5gr-step-sub { font-size: 8.4px; padding: 1px 6px; max-width: 96%; }
       .v5gr-bottom-rail {
-        padding: 4px 12px 6px;
+        padding: 4px 10px 6px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
       }
-      .v5gr-medallion-disc { width: 42px; height: 42px; border-width: 2.5px; }
-      .v5gr-medallion-disc svg { width: 24px; height: 24px; }
-      .v5gr-medallion-ribbon { min-height: 32px; padding: 3px 10px 3px 18px; }
-      .v5gr-medallion-btn-right .v5gr-medallion-ribbon { padding: 3px 18px 3px 10px; }
-      .v5gr-medallion-label { font-size: 10px; }
-      .v5gr-medallion-meta { font-size: 8.5px; }
+      .v5gr-medallion-disc { width: 40px; height: 40px; border-width: 2.5px; }
+      .v5gr-medallion-disc svg { width: 22px; height: 22px; }
+      .v5gr-medallion-ribbon { min-height: 30px; padding: 3px 9px 3px 16px; }
+      .v5gr-medallion-btn-right .v5gr-medallion-ribbon { padding: 3px 16px 3px 9px; }
+      .v5gr-medallion-label { font-size: 9.5px; }
+      .v5gr-medallion-meta { font-size: 8px; }
+    }
+
+    @media (max-height: 500px) and (max-width: 740px) {
+      .v5gr-vista { flex: 0 0 38%; width: 38%; }
+      .v5gr-desk { flex: 1 1 62%; width: 62%; }
+      .v5gr-title-svg { width: 176px; }
+      .v5gr-trunk-svg, .v5gr-dial-svg, .v5gr-daily-svg, .v5gr-endless-svg { width: 68px; }
+      .v5gr-nameplate { font-size: 8px; padding: 2px 5px; }
+      .v5gr-subplate { font-size: 7.5px; padding: 1px 4px; }
+      .v5gr-step-ticket { min-height: 78px; padding: 8px 6px; }
+      .v5gr-step-title { font-size: 15px; }
     }
 
     /* Ultra-narrow Mobile (360x640) */

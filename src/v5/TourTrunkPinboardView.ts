@@ -964,6 +964,7 @@ export function ensureTourPinboardStyles(): void {
     /* ===== TOP CROWN: BANKER'S LAMP, BACK LATCH, 5 BRASS ACT LUGGAGE TAGS & SPONSOR SEAL ===== */
     .v5pb-header {
       position: relative;
+      flex-shrink: 0;
       z-index: 12;
       display: flex;
       flex-wrap: wrap;
@@ -2845,30 +2846,34 @@ export function ensureTourPinboardStyles(): void {
         height: 60px;
       }
       .v5pb-header {
-        gap: 5px 6px;
+        flex-shrink: 0;
+        gap: 4px 5px;
         padding: 1px 2px;
       }
       .v5pb-header-left {
-        padding-left: 64px;
+        padding-left: 52px;
       }
       .v5pb-back-latch {
-        min-height: 34px;
-        padding: 4px 9px 4px 6px;
-        font-size: 10px;
+        min-height: 32px;
+        padding: 4px 7px 4px 5px;
+        font-size: 9.5px;
       }
       .v5pb-sponsor-btn {
-        min-height: 34px;
-        padding: 3px 8px 3px 5px;
+        min-height: 32px;
+        padding: 2px 7px 2px 4px;
+        gap: 4px;
       }
       .v5pb-sponsor-kicker {
-        font-size: 7.5px;
+        font-size: 7px;
       }
       .v5pb-sponsor-name {
-        font-size: 10px;
+        font-size: 9px;
       }
       .v5pb-act-rail {
         order: 3;
-        flex: 1 0 100%;
+        flex: 0 0 100%;
+        width: 100%;
+        max-width: 100%;
         gap: 4px;
       }
       .v5pb-act-tag {
@@ -3848,10 +3853,30 @@ export class TourTrunkPinboardView {
       </div>
     `;
 
-    // Restore corkboard scroll position
+    // Restore corkboard scroll position, or auto-center on active unlocked/frontier node!
     const nextViewport = this.container.querySelector('.v5pb-board-viewport') as HTMLElement | null;
-    if (nextViewport && prevScrollTop > 0) {
-      nextViewport.scrollTop = prevScrollTop;
+    if (nextViewport) {
+      if (prevScrollTop > 0) {
+        nextViewport.scrollTop = prevScrollTop;
+      } else {
+        const focusId =
+          this.inspectedNodeId ??
+          frontierNodeId ??
+          layouts.find((l) => this.isNodeUnlocked(l.node, saveState))?.node.nodeId ??
+          null;
+        const focusLayout = focusId ? layouts.find((l) => l.node.nodeId === focusId) : null;
+        if (focusLayout) {
+          const applyCenterScroll = () => {
+            const vh = nextViewport.clientHeight || 320;
+            const targetPx = (focusLayout.yPct / 100) * stageMinHeight;
+            nextViewport.scrollTop = Math.max(0, Math.round(targetPx - vh * 0.48));
+          };
+          applyCenterScroll();
+          if (typeof requestAnimationFrame === 'function') {
+            requestAnimationFrame(applyCenterScroll);
+          }
+        }
+      }
     }
 
     this.bindDomEvents(allNodesById, saveState, charmsMap);

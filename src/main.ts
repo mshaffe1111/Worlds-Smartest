@@ -1,12 +1,13 @@
 /// <reference types="vite/client" />
 // ============================================================================
-// WORLD'S SMARTEST v4.0 — Master Prime-Time Entry Point (`src/main.ts`)
-// 7 Interactive Formats · Living Gimmick Boards · 42 Viewers -> 1.4B Live Tour
+// WORLD'S SMARTEST v5.0 — Master Theatrical Showtime Entry Point (`src/main.ts`)
+// Diegetic Green Room · 14-Twist Octagonal Boards · 88-Node Voiced Story ·
+// Real MusyngKite Symphony Orchestra + 8 Stage Symphonies · 1.27M+ Questions
 // ============================================================================
 
 import './styles/sovereign.css';
-import './styles/gameshow_v4.css';
-import { GameShowMasterController } from './v4/GameShowMasterController';
+import './styles/showtime_v5.css';
+import { ShowtimeMasterControllerV5 } from './v5/ShowtimeMasterControllerV5';
 
 interface OfflineSwClientModule {
   registerOfflineServiceWorker?: () => Promise<unknown>;
@@ -66,7 +67,7 @@ function bootstrap(): void {
     throw new Error('Missing #canvas-root, #vfx-canvas, or #ui-root mount elements in index.html.');
   }
 
-  const master = new GameShowMasterController(canvasRoot, vfxCanvas, uiRoot);
+  const master = new ShowtimeMasterControllerV5(canvasRoot, vfxCanvas, uiRoot);
 
   window.addEventListener('beforeunload', () => {
     master.dispose();

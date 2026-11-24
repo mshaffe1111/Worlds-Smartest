@@ -1271,6 +1271,8 @@ const SCOPED_STYLES_CSS = `
   color: #fff9eb;
   background: #061026;
   box-sizing: border-box;
+  max-width: 100vw;
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 .v5b-root *, .v5b-root *::before, .v5b-root *::after {
@@ -1315,13 +1317,14 @@ const SCOPED_STYLES_CSS = `
   position: relative;
   z-index: 2;
   width: 100%;
+  max-width: min(100%, 1180px);
   min-height: 100dvh;
-  max-width: 1180px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 0 8px 0;
+  overflow-x: hidden;
 }
 .v5b-landscape-left-col,
 .v5b-landscape-right-col {
@@ -3896,10 +3899,21 @@ export class LivingStageBoardView {
   // 7. MAIN LIVING STAGE BOARD RENDERER
   // ==========================================================================
 
+  private ensureAttached(): void {
+    this.injectScopedStyles();
+    if (!this.stageHostEl.isConnected || !this.modalLayerEl.isConnected) {
+      this.rootEl.innerHTML = '';
+      this.rootEl.classList.add('v5b-root');
+      this.rootEl.appendChild(this.stageHostEl);
+      this.rootEl.appendChild(this.modalLayerEl);
+    }
+  }
+
   public render(
     model: LivingStageBoardViewModelV5,
     callbacks: LivingStageBoardCallbacksV5,
   ): void {
+    this.ensureAttached();
     this.clearAsyncHooks();
     this.activeModel = model;
     this.activeCallbacks = callbacks;
@@ -5174,6 +5188,7 @@ export class LivingStageBoardView {
     model: PostMatchCurtainCallModelV5,
     callbacks: PostMatchCurtainCallCallbacksV5,
   ): void {
+    this.ensureAttached();
     this.clearAsyncHooks();
     this.closeModal();
     this.renderCounter += 1;

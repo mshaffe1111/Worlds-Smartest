@@ -526,22 +526,27 @@ function ensureTheaterStyles(): void {
     /* Top HUD rail with Venue Brass Plaque + 1-tap Fullscreen latch */
     .v5-theater-topbar {
       flex: 0 0 auto;
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: space-between;
+      gap: 6px;
       min-height: 44px;
       z-index: 8;
     }
 
     .v5-theater-top-left {
+      flex: 0 0 auto;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 5px;
       justify-content: flex-start;
     }
 
     .v5-theater-top-right {
+      flex: 0 0 auto;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -551,6 +556,9 @@ function ensureTheaterStyles(): void {
     /* Sculpted Venue Crest matching OAKRIDGE HALL plaque in mockup */
     .v5-theater-venue-crest {
       position: relative;
+      flex: 1 1 0;
+      min-width: 0;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -596,9 +604,19 @@ function ensureTheaterStyles(): void {
       color: #f8e2a9;
       text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
       white-space: nowrap;
-      max-width: min(52vw, 310px);
+      max-width: 100%;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    @media (max-width: 410px) {
+      .v5-beat-pips {
+        display: none;
+      }
+      .v5-venue-plaque {
+        padding: 4px 10px;
+        font-size: 10.5px;
+      }
     }
 
     /* Sculpted brushed-brass HUD latches */

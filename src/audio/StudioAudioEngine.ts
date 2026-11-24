@@ -254,6 +254,14 @@ const MUSIC_TRACK_VOLUME_SCALE: Record<string, number> = {
   './assets/audio/music_board_groove.mp3': 0.90,
   './assets/audio/music_thinking_bed.mp3': 0.82,
   './assets/audio/music_finale_tension.mp3': 0.94,
+  './assets/audio/themes/theme_stage1_oakridge.mp3': 0.90,
+  './assets/audio/themes/theme_stage3_broadcast.mp3': 0.92,
+  './assets/audio/themes/theme_stage5_london.mp3': 0.90,
+  './assets/audio/themes/theme_stage6_tokyo.mp3': 0.92,
+  './assets/audio/themes/theme_stage7_cairo.mp3': 0.90,
+  './assets/audio/themes/theme_stage8_finale.mp3': 0.95,
+  './assets/audio/themes/theme_branch_redemption.mp3': 0.88,
+  './assets/audio/themes/theme_branch_velvet.mp3': 0.90,
   './assets/audio/ambience_chamber_room.mp3': 0.72,
   './assets/audio/ambience_cairo_vault_air.mp3': 0.68,
   './assets/audio/ambience_ocean_storm_air.mp3': 0.68,
@@ -542,6 +550,7 @@ export class StudioAudioEngine {
   private musicToken = 0;
   private musicFadeRaf = 0;
   private currentMusicCue: MusicCueId = 'title';
+  private customMusicUrlOverride: string | null = null;
   private activeVenueAmbienceUrl = './assets/audio/ambience_chamber_room.mp3';
   private baseMusicVolume = 0.40;
   private isVoiceDucking = false;
@@ -1911,6 +1920,38 @@ export class StudioAudioEngine {
    */
   public setMusicCue(cue: MusicCueId): void {
     this.currentMusicCue = cue;
+    this.customMusicUrlOverride = null;
+    if (this.isMusicEnabled()) {
+      this.syncMusicPlayback();
+    }
+  }
+
+  /**
+   * Resolves and crossfades to one of the 8 bespoke v5.0 Stage & Story-Branch Symphonies
+   * (`public/assets/audio/themes/*.mp3` — 100% real MusyngKite instruments, 0 oscillators).
+   */
+  public playStageSymphony(tierNumber: number, lane?: string | null): void {
+    let url = './assets/audio/themes/theme_stage1_oakridge.mp3';
+    if (lane === 'REDEMPTION_GRIT') {
+      url = './assets/audio/themes/theme_branch_redemption.mp3';
+    } else if (lane === 'VELVET_SALON') {
+      url = './assets/audio/themes/theme_branch_velvet.mp3';
+    } else if (tierNumber <= 2) {
+      url = './assets/audio/themes/theme_stage1_oakridge.mp3';
+    } else if (tierNumber <= 4) {
+      url = './assets/audio/themes/theme_stage3_broadcast.mp3';
+    } else if (tierNumber === 5) {
+      url = './assets/audio/themes/theme_stage5_london.mp3';
+    } else if (tierNumber === 6) {
+      url = './assets/audio/themes/theme_stage6_tokyo.mp3';
+    } else if (tierNumber === 7) {
+      url = './assets/audio/themes/theme_stage7_cairo.mp3';
+    } else {
+      url = './assets/audio/themes/theme_stage8_finale.mp3';
+    }
+
+    this.currentMusicCue = tierNumber >= 8 ? 'finale' : 'board';
+    this.customMusicUrlOverride = normalizeAssetUrl(url);
     if (this.isMusicEnabled()) {
       this.syncMusicPlayback();
     }
@@ -1918,6 +1959,9 @@ export class StudioAudioEngine {
 
   private resolveMusicUrl(cue: MusicCueId): string | null {
     if (!this.musicApproved) return null;
+    if (this.customMusicUrlOverride) {
+      return this.customMusicUrlOverride;
+    }
     if (cue === 'ambient') {
       const room = this.manifest.roomTone ?? this.activeVenueAmbienceUrl;
       return room ? normalizeAssetUrl(room) : null;

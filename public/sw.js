@@ -5,8 +5,8 @@
  * Zero hardcoded leading-slash paths — every URL derives from registration.scope
  * ============================================================================ */
 
-const SHELL_CACHE = 'ws-meridian-shell-v4';
-const DATA_CACHE = 'ws-meridian-data-v4';
+const SHELL_CACHE = 'ws-meridian-shell-v5';
+const DATA_CACHE = 'ws-meridian-data-v5';
 const VALID_CACHES = new Set([SHELL_CACHE, DATA_CACHE]);
 
 const NAVIGATION_TIMEOUT_MS = 2500;
@@ -23,24 +23,48 @@ const CORE_SHELL_ASSETS = [
   './icon-192.png',
   './icon-512.png',
   './icon-maskable-512.png',
-  // Core 3D Hardware, Briefing Studio Stage & Default Geneva Chamber
-  './assets/aaa_models/veritas_prism.glb',
-  './assets/aaa_models/calibrator_chronometer.glb',
-  './assets/aaa_models/codex_cryptex.glb',
-  './assets/aaa_models/meridian_world_globe.glb',
-  './assets/aaa_models/championship_trophy.glb',
-  './assets/aaa_models/vetting_chamber_room.glb',
-  './assets/models/stage_plinth.glb',
-  './assets/models/stage_monolith.glb',
-  './assets/models/relic_meridian_astrolabe.glb',
-  './assets/hdris/studio_small_09.hdr',
-  './assets/venues/ch.jpg',
-  './assets/venues/studio.jpg',
-  // Core Broadcast Music, Streak Chords, Foley & Crowd Audio (v4)
+  // v5 Painted Green Rooms, Corkboard, Cast Cutouts & Stage Venues
+  './assets/v5/greenroom/greenroom_local.webp',
+  './assets/v5/greenroom/greenroom_tv.webp',
+  './assets/v5/greenroom/greenroom_global.webp',
+  './assets/v5/greenroom/tour_corkboard_bg.webp',
+  './assets/v5/cast/max_welcome.webp',
+  './assets/v5/cast/max_hype.webp',
+  './assets/v5/cast/max_wince.webp',
+  './assets/v5/cast/frankie.webp',
+  './assets/v5/cast/denise.webp',
+  './assets/v5/cast/trevor.webp',
+  './assets/v5/cast/priya.webp',
+  './assets/v5/cast/alistair.webp',
+  './assets/v5/cast/kenji.webp',
+  './assets/v5/cast/nadia.webp',
+  './assets/v5/cast/viktor.webp',
+  './assets/v5/venues/tier1_oakridge.webp',
+  './assets/v5/venues/tier2_lyric.webp',
+  './assets/v5/venues/tier3_channel7.webp',
+  './assets/v5/venues/tier4_primetime.webp',
+  './assets/v5/venues/tier5_london.webp',
+  './assets/v5/venues/tier6_tokyo.webp',
+  './assets/v5/venues/tier7_cairo.webp',
+  './assets/v5/venues/tier8_finale.webp',
+  // Core Symphonic Score, 8 Stage/Branch Symphonies, Streak Fanfares & Foley (v5)
   './assets/audio/music_title_showtime.mp3',
+  './assets/audio/music_greenroom_lounge.mp3',
   './assets/audio/music_board_groove.mp3',
   './assets/audio/music_thinking_bed.mp3',
   './assets/audio/music_finale_tension.mp3',
+  './assets/audio/themes/theme_stage1_oakridge.mp3',
+  './assets/audio/themes/theme_stage3_broadcast.mp3',
+  './assets/audio/themes/theme_stage5_london.mp3',
+  './assets/audio/themes/theme_stage6_tokyo.mp3',
+  './assets/audio/themes/theme_stage7_cairo.mp3',
+  './assets/audio/themes/theme_stage8_finale.mp3',
+  './assets/audio/themes/theme_branch_redemption.mp3',
+  './assets/audio/themes/theme_branch_velvet.mp3',
+  './assets/audio/sfx_screw_slam.mp3',
+  './assets/audio/sfx_jackpot_sweep.mp3',
+  './assets/audio/sfx_polaroid_pin.mp3',
+  './assets/audio/sfx_switch_clack.mp3',
   './assets/audio/sfx_streak_1.mp3',
   './assets/audio/sfx_streak_2.mp3',
   './assets/audio/sfx_streak_3.mp3',
@@ -163,6 +187,10 @@ const CORE_SHELL_ASSETS = [
 ];
 
 const CORE_DATA_ASSETS = [
+  './data/v5_story_acts_1_2.json',
+  './data/v5_story_acts_3_5.json',
+  './data/v5_voice_manifest.json',
+  './data/v5_stage_themes_manifest.json',
   './data/world_tour_v4.json',
   './data/curated_v4_witty_pack.json',
   './data/shards/taxonomy_tree.json',
@@ -171,8 +199,6 @@ const CORE_DATA_ASSETS = [
   './data/shards/subcat_baseball.json',
   './data/visual_globe_packs.json',
   './data/jeopardy_signature_packs.json',
-  './data/campaign_20hr.json',
-  './data/narrative_wave2.json',
   './data/gold_venue_packs.json',
 ];
 

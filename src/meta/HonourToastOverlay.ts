@@ -74,9 +74,9 @@ function ensureToastStylesInjected(): void {
       min-height: 52px;
       padding: 8px 12px;
       border-radius: 12px;
-      background: #080c17;
-      border: none;
-      border-left: 3px solid var(--toast-accent, #f2cf7e);
+      background: linear-gradient(165deg, #351d0e 0%, #1d0e06 100%);
+      border: 1.5px solid #dfaa44;
+      border-left: 4px solid var(--toast-accent, #f2cf7e);
       box-shadow:
         0 14px 34px rgba(0, 0, 0, 0.86),
         inset 0 0 0 1px rgba(232, 197, 116, 0.22);
@@ -188,7 +188,7 @@ export class HonourToastOverlay {
       />
       <div style="min-width:0;flex:1 1 auto;">
         <div style="font-family:var(--font-mono,monospace);font-size:9px;font-weight:800;letter-spacing:0.08em;color:${tierMeta.colorHex};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-          ✦ CITATION UNLOCKED · ${escapeMetaHtml(tierMeta.shortLabel.toUpperCase())}
+          TROPHY UNLOCKED · STAGE HONOURS
         </div>
         <div style="font-family:var(--font-display,Georgia,serif);font-size:13px;font-weight:800;color:var(--ivory-primary,#f6f2e9);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
           ${escapeMetaHtml(next.def.title)}

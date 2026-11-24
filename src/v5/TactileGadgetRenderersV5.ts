@@ -1985,7 +1985,10 @@ export function mountPinpointDialGadget(
   const showCoarse = span > 150 && fineStep * 10 < span;
   const coarseStep = fineStep * 10;
 
-  let currentValue = clampAndSnap(minVal + span / 2, minVal, maxVal, step);
+  let currentValue = clampAndSnap(minVal + span * 0.22, minVal, maxVal, step);
+  if (Math.abs(currentValue - spec.exactVal) <= Math.max(spec.winRadius * 1.4, step * 2)) {
+    currentValue = clampAndSnap(minVal + span * 0.78, minVal, maxVal, step);
+  }
   let locked = false;
   let dragging = false;
   let activePointerId: number | null = null;
