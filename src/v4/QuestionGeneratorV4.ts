@@ -1,8 +1,9 @@
 // ============================================================================
-// WORLD'S SMARTEST v4.0 — 7-FORMAT QUESTION GENERATOR & HONEST EVALUATOR
-// Combines curated_v4_witty_pack.json + Jeopardy Signature + Gold Venue +
-// Visual/Globe + Clean Gold Core FIRST, then scales seamlessly across 500k+
-// fame-gated, game-show-rewritten structured fact shards across ALL 7 formats!
+// WORLD'S SMARTEST v5.0 — 7-FORMAT QUESTION GENERATOR & HONEST EVALUATOR
+// Combines curated_v4_witty_pack.json (400+ witty multi-format cards) + Jeopardy
+// Signature + Gold Venue + Visual/Globe + Clean Gold Core FIRST, then scales
+// seamlessly across 1.25M+ fame-gated, game-show-rewritten structured fact shards
+// across ALL 12 domains, 157 subcategories, and ALL 7 tactile formats!
 // ============================================================================
 
 import { forgeEngine, type ForgeEngine } from '../forge/ForgeEngine';
@@ -16,6 +17,7 @@ import {
   isBenchmarkOrExamSlop,
   isCleanShardCandidate,
   isShardRowFamousEnoughForTier,
+  isYearNumberContext,
   normalizeToPrismQuestion,
   normalizeVisualAssetUrl,
   pickRegionalGlobeDecoys,
@@ -81,28 +83,64 @@ export interface DrawQuestionCardV4Options {
 }
 
 const WITTY_HEADERS_BY_DOMAIN: Readonly<Record<DomainId, readonly string[]>> = {
-  0: ['History’s Plot Twists', 'Crown & Chaos', 'Before It Was Cool', 'Famous Last Moves', 'Time-Machine Check'],
-  1: ['Mad Science Weekly', 'Cosmic Flex', 'Lab Coat Required', 'Gravity’s Fault', 'Elementary, Actually'],
-  2: ['No GPS Allowed', 'Passport Stamp', 'Geography Dropouts', 'Where on Earth?', 'Borderline Genius'],
-  3: ['Museum Heist', 'Masterpiece Theater', 'Architectural Flex', 'Frame It!', 'Gallery Gossip'],
-  4: ['Pop Goes the Buzzer', 'Cue the Soundtrack', 'Box Office Gold', 'Chart Toppers', 'Roll Credits'],
-  5: ['Buzzer Beater', 'Hall of Fame Heat', 'Instant Replay', 'Rulebook Check', 'Championship Form'],
-  6: ['Ctrl+Alt+Genius', 'Silicon Legends', 'Patent Pending', 'Byte-Sized Brilliance', 'Reboot Required'],
-  7: ['Wild Kingdom Flex', 'Mother Nature’s Tricks', 'Survival of the Wittiest', 'Creature Feature', 'Eco-Logic'],
-  8: ['Wait, That’s Legal?', 'Gavel & Globe', 'Summit Showdown', 'Courtroom Drama', 'Treaty Table'],
-  9: ['Chef’s Kiss', 'Check, Please!', 'Craft & Craving', 'Secret Ingredient', 'Design Classics'],
-  10: ['Plot Twist!', 'Myth-Busted', 'Page Turners', 'Olympus Calling', 'Read Between the Lines'],
-  11: ['Do the Math', 'Brain Freeze', 'Logic Trap', 'Checkmate Moment', 'Numbers Don’t Lie'],
+  0: [
+    'History’s Plot Twists', 'Crown & Chaos', 'Before It Was Cool', 'Famous Last Moves', 'Time-Machine Check',
+    'Bad Ideas in Armor', 'Empires Gone Wild', 'Royal Fine Print', 'Dated & Debated', 'Footnote Royalty',
+  ],
+  1: [
+    'Mad Science Weekly', 'Cosmic Flex', 'Lab Coat Required', 'Gravity’s Fault', 'Elementary, Actually',
+    'Quantum Shenanigans', 'Beakers & Booms', 'Space-Time Side Quest', 'Newton’s Nightmare', 'Rocket Surgery',
+  ],
+  2: [
+    'No GPS Allowed', 'Passport Stamp', 'Geography Dropouts', 'Where on Earth?', 'Borderline Genius',
+    'Lost in Latitude', 'Scenic Detour', 'Atlas Shrugged', 'Hemisphere Hijinks', 'Middle-Seat View',
+  ],
+  3: [
+    'Museum Heist', 'Masterpiece Theater', 'Architectural Flex', 'Frame It!', 'Gallery Gossip',
+    'Marble & Drama', 'Do Not Touch the Art', 'Brushstroke Bravado', 'Dome Sweet Dome', 'Velvet Rope Club',
+  ],
+  4: [
+    'Pop Goes the Buzzer', 'Cue the Soundtrack', 'Box Office Gold', 'Chart Toppers', 'Roll Credits',
+    'Encore! Encore!', 'Spoiler Alert', 'Vinyl & Velvet', 'Prime-Time Panic', 'Award-Show Snub',
+  ],
+  5: [
+    'Buzzer Beater', 'Hall of Fame Heat', 'Instant Replay', 'Rulebook Check', 'Championship Form',
+    'Overtime Drama', 'Trophy-Case Flex', 'Penalty Box', 'Walk-Off Magic', 'Press-Box Hot Take',
+  ],
+  6: [
+    'Ctrl+Alt+Genius', 'Silicon Legends', 'Patent Pending', 'Byte-Sized Brilliance', 'Reboot Required',
+    'Have You Tried Turning It Off?', 'Wire & Wonder', 'Mainframe Memories', 'Gearhead Glory', 'Beta-Test Chaos',
+  ],
+  7: [
+    'Wild Kingdom Flex', 'Mother Nature’s Tricks', 'Survival of the Wittiest', 'Creature Feature', 'Eco-Logic',
+    'Darwin’s Group Chat', 'Apex Predators Only', 'Flora & Fury', 'Too Weird to Evolve', 'Field-Guide Freakout',
+  ],
+  8: [
+    'Wait, That’s Legal?', 'Gavel & Globe', 'Summit Showdown', 'Courtroom Drama', 'Treaty Table',
+    'Diplomatic Immunity', 'Filibuster Buster', 'Red Tape Rumble', 'Embassy Row', 'Constitutional Chaos',
+  ],
+  9: [
+    'Chef’s Kiss', 'Check, Please!', 'Craft & Craving', 'Secret Ingredient', 'Design Classics',
+    'Michelin Mischief', 'Haute & Bothered', 'Pantry Politics', 'Table for Four', 'Signature Stitch',
+  ],
+  10: [
+    'Plot Twist!', 'Myth-Busted', 'Page Turners', 'Olympus Calling', 'Read Between the Lines',
+    'Unreliable Narrators', 'Book-Club Brawl', 'Curse of the Sequel', 'Epic Footnotes', 'Dramatic Monologue',
+  ],
+  11: [
+    'Do the Math', 'Brain Freeze', 'Logic Trap', 'Checkmate Moment', 'Numbers Don’t Lie',
+    'Show Your Work', 'Paradox Party', 'Proof Positive', 'Mental-Math Meltdown', 'Calculated Risk',
+  ],
 };
 
 const WITTY_FORMAT_HEADERS: Readonly<Record<QuestionFormatV4, readonly string[]>> = {
-  MULTIPLE_CHOICE: ['Spotlight Showdown', 'Four-Way Faceoff', 'Classic Buzzer', 'Lock It In'],
-  MATCH_4: ['Perfect Pairs', 'Connect the Dots', 'Matchmaker Live', 'Link Up Four'],
-  SORT_4: ['Put ’Em in Order', 'Timeline Scramble', 'Rank & File', 'Stack the Deck'],
-  MULTI_STRIKE: ['Spot the Fake', 'Truth Squad', 'Imposter Alert', 'Fact Check Frenzy'],
-  PINPOINT_DIAL: ['Dial It In', 'Closest Without Panic', 'Bullseye Territory', 'Zero In'],
-  CLUE_ESCALATOR: ['Three-Clue Gamble', 'Call It Early', 'Escalator Stakes', 'Read the Room'],
-  VISUAL_SPOTTER: ['Eyes on the Stage', 'Blueprint Check', 'Picture Perfect', 'Spot the Target'],
+  MULTIPLE_CHOICE: ['Spotlight Showdown', 'Four-Way Faceoff', 'Classic Buzzer', 'Lock It In', 'High-Stakes Quartet', 'No Lifelines Needed'],
+  MATCH_4: ['Perfect Pairs', 'Connect the Dots', 'Matchmaker Live', 'Link Up Four', 'Switchboard Scramble', 'Crossed Wires'],
+  SORT_4: ['Put ’Em in Order', 'Timeline Scramble', 'Rank & File', 'Stack the Deck', 'Chronology Check', 'From First to Worst'],
+  MULTI_STRIKE: ['Spot the Fake', 'Truth Squad', 'Imposter Alert', 'Fact Check Frenzy', 'Party Crashers', 'Who Doesn’t Belong?'],
+  PINPOINT_DIAL: ['Dial It In', 'Closest Without Panic', 'Bullseye Territory', 'Zero In', 'Needle in a Haystack', 'Sweet-Spot Spin'],
+  CLUE_ESCALATOR: ['Three-Clue Gamble', 'Call It Early', 'Escalator Stakes', 'Read the Room', 'Break the Seal', 'Name That Tune-Up'],
+  VISUAL_SPOTTER: ['Eyes on the Stage', 'Blueprint Check', 'Picture Perfect', 'Spot the Target', 'Zoom & Enhance', 'Studio Monitor Live'],
 };
 
 export function pickWittyHeaderForCard(
@@ -394,6 +432,22 @@ const MATCH4_TABLE_CONFIGS: readonly Match4TableConfig[] = [
   { type: 'lit_work', leftCol: 0, rightCol: 1, prompt: 'Match each celebrated literary work to its author.', instruction: 'Pair each book with its author', wittyHeader: 'Page Turners', hintTemplate: () => 'Link the classic novel you remember from school first to narrow the shelf.' },
   { type: 'lit_myth', leftCol: 0, rightCol: 1, prompt: 'Match each legendary figure to its mythological tradition.', instruction: 'Pair each figure with its mythology', wittyHeader: 'Olympus Calling', hintTemplate: () => 'Listen to the spelling and syllables to distinguish Greek, Norse, and ancient Near Eastern lore.' },
   { type: 'math_person', leftCol: 0, rightCol: 3, prompt: 'Match each mathematical thinker to the country they called home.', instruction: 'Pair each mathematician with their country', wittyHeader: 'Numbers Don’t Lie', hintTemplate: () => 'Pair the surname origin and historical era to crack the lineup.' },
+  // Specialist Subcategory Tables (291k+ deep shard pool)
+  { type: 'sub_hist_dynasty', leftCol: 0, rightCol: 1, prompt: 'Wire each historical ruler or figure to their royal dynasty.', instruction: 'Pair each figure with their dynasty', wittyHeader: 'Royal Family Tree', hintTemplate: () => 'Spot the regnal numeral or surname first to anchor the family tree.' },
+  { type: 'sub_hist_arch_site', leftCol: 0, rightCol: 1, prompt: 'Connect each ancient archaeological site to the modern country where it stands.', instruction: 'Pair each dig site with its country', wittyHeader: 'Brush Off the Trowel', hintTemplate: () => 'Group Mediterranean, Andean, and Asian ruins to narrow the map fast.' },
+  { type: 'sub_sci_laureate', leftCol: 0, rightCol: 1, prompt: 'Match each celebrated scientific mind to the landmark prize they won.', instruction: 'Pair each laureate with their honor', wittyHeader: 'Black-Tie Science', hintTemplate: () => 'Separate mathematics medals from physics, chemistry, and medicine honors.' },
+  { type: 'sub_geo_us_city', leftCol: 0, rightCol: 1, prompt: 'No GPS allowed: link each American city to its home state.', instruction: 'Pair each U.S. city with its state', wittyHeader: 'Cross-Country Road Trip', hintTemplate: () => 'Lock in the coastal metro first and work inland across the map.' },
+  { type: 'sub_art_museum', leftCol: 0, rightCol: 2, prompt: 'Plan the museum heist: match each famed work to the museum that displays it.', instruction: 'Pair each artwork with its museum', wittyHeader: 'Velvet Rope Club', hintTemplate: () => 'Match the European national flagship gallery you know cold first.' },
+  { type: 'sub_art_classical', leftCol: 0, rightCol: 1, prompt: 'Cue the symphony: connect each classical work to its composer.', instruction: 'Pair each composition with its composer', wittyHeader: 'Raise the Baton', hintTemplate: () => 'Listen for Italian opera titles versus German symphonies and French suites.' },
+  { type: 'sub_pop_actor', leftCol: 0, rightCol: 1, prompt: 'Red-carpet passport check: match each screen actor to their home country.', instruction: 'Pair each actor with their homeland', wittyHeader: 'Casting-Call Atlas', hintTemplate: () => 'Anchor the marquee name you recognize from British, American, or European cinema first.' },
+  { type: 'sub_bb_ballpark', leftCol: 0, rightCol: 2, prompt: 'Play ball! Connect each baseball ballpark to the franchise that called it home.', instruction: 'Pair each ballpark with its club', wittyHeader: 'Seventh-Inning Switchboard', hintTemplate: () => 'Match the classic National or American League shrine you know cold first.' },
+  { type: 'sub_vg_genre', leftCol: 0, rightCol: 2, prompt: 'Grab a controller: wire each acclaimed video game to the studio behind it.', instruction: 'Pair each game with its studio', wittyHeader: 'Press Start to Link', hintTemplate: () => 'Pair the flagship console or PC studio title first to clear the rest.' },
+  { type: 'sub_tech_aero_year', leftCol: 0, rightCol: 1, prompt: 'Clear the runway: match each aircraft or vehicle model to its manufacturer.', instruction: 'Pair each craft with its maker', wittyHeader: 'Hangar Roll Call', hintTemplate: () => 'Model prefixes and numbering styles point straight toward aerospace or auto makers.' },
+  { type: 'sub_nat_breed', leftCol: 0, rightCol: 2, prompt: 'Best in show! Link each heritage animal breed to the country that developed it.', instruction: 'Pair each breed with its homeland', wittyHeader: 'Pedigree Switchboard', hintTemplate: () => 'Regional words tucked into breed names give away half the board.' },
+  { type: 'sub_soc_law', leftCol: 0, rightCol: 1, prompt: 'Order in the court! Connect each landmark law or charter to its country.', instruction: 'Pair each legal landmark with its nation', wittyHeader: 'Wait, That’s Legal?', hintTemplate: () => 'Use legal phrasing and constitutional terminology to separate jurisdictions.' },
+  { type: 'sub_food_atelier', leftCol: 0, rightCol: 1, prompt: 'Atelier check: match each famed heritage house to the founder who launched it.', instruction: 'Pair each house with its founder', wittyHeader: 'Signature Stitch', hintTemplate: () => 'Watch for founders whose initials or family names evolved into the house mark.' },
+  { type: 'sub_lit_char', leftCol: 0, rightCol: 2, prompt: 'Page-turner switchboard: match each iconic character to their creator.', instruction: 'Pair each character with their author', wittyHeader: 'Unreliable Narrators', hintTemplate: () => 'Anchor the unmistakable detective, wizard, or classic protagonist first.' },
+  { type: 'sub_lit_genre', leftCol: 0, rightCol: 1, prompt: 'Straight off the bestseller shelf: match each book to its author.', instruction: 'Pair each title with its writer', wittyHeader: 'Book-Club Brawl', hintTemplate: () => 'Lock in the genre titan you spot first, then narrow the final three.' },
 ];
 
 interface Sort4TableConfig {
@@ -432,6 +486,16 @@ const SORT4_TABLE_CONFIGS: readonly Sort4TableConfig[] = [
   { type: 'food_brand', labelCol: 0, numCol: 2, isYear: true, unit: '', prompt: 'Rank these four iconic brands from oldest founding year to newest.', direction: 'Oldest Founded -> Newest Founded', wittyHeader: 'Vintage Labels', minGapEasy: 10 },
   { type: 'lit_work', labelCol: 0, numCol: 2, isYear: true, unit: '', prompt: 'Arrange these four literary works from earliest publication to latest.', direction: 'Earliest Published -> Latest Published', wittyHeader: 'Shelf Chronology', minGapEasy: 15 },
   { type: 'math_person', labelCol: 0, numCol: 2, isYear: true, unit: '', prompt: 'Order these four mathematical thinkers from earliest birth year to latest.', direction: 'Earliest Born -> Latest Born', wittyHeader: 'Proof Through Time', minGapEasy: 30 },
+  // Specialist Subcategory Tables
+  { type: 'sub_bb_slugger', labelCol: 0, numCol: 2, isYear: false, unit: 'HR', prompt: 'Rank these four MLB sluggers from fewest career home runs to most.', direction: 'Fewest -> Most Career HRs', wittyHeader: 'Tape-Measure Stack', minGapEasy: 35 },
+  { type: 'sub_bb_pitcher', labelCol: 0, numCol: 2, isYear: false, unit: 'K', prompt: 'Order these four MLB pitchers from fewest career strikeouts to most.', direction: 'Fewest -> Most Strikeouts', wittyHeader: 'Strike-Zone Ladder', minGapEasy: 220 },
+  { type: 'sub_bb_ballpark', labelCol: 0, numCol: 3, isYear: true, unit: '', prompt: 'Stack these four baseball ballparks from oldest opening year to newest.', direction: 'Oldest -> Newest Ballpark', wittyHeader: 'Turnstile Timeline', minGapEasy: 10 },
+  { type: 'sub_geo_us_city', labelCol: 0, numCol: 2, isYear: false, unit: 'k pop.', prompt: 'Rank these four U.S. cities from smallest population to largest.', direction: 'Smallest -> Largest U.S. City', wittyHeader: 'Census Scramble', minGapEasy: 200 },
+  { type: 'sub_art_classical', labelCol: 0, numCol: 2, isYear: true, unit: '', prompt: 'Arrange these four classical works from earliest composition year to latest.', direction: 'Earliest -> Latest Composition', wittyHeader: 'Symphony Timeline', minGapEasy: 18 },
+  { type: 'sub_vg_genre', labelCol: 0, numCol: 3, isYear: true, unit: '', prompt: 'Put these four video games in release-year order from earliest to latest.', direction: 'Earliest -> Latest Release', wittyHeader: 'Console Generations', minGapEasy: 3 },
+  { type: 'sub_tech_aero_year', labelCol: 0, numCol: 2, isYear: true, unit: '', prompt: 'Order these four aircraft or vehicles from earliest debut year to latest.', direction: 'Earliest -> Latest Debut', wittyHeader: 'Hangar Chronology', minGapEasy: 8 },
+  { type: 'sub_food_atelier', labelCol: 0, numCol: 2, isYear: true, unit: '', prompt: 'Stack these four heritage houses from oldest founding year to newest.', direction: 'Oldest -> Newest House', wittyHeader: 'Atelier Vintage', minGapEasy: 12 },
+  { type: 'sub_lit_genre', labelCol: 0, numCol: 3, isYear: true, unit: '', prompt: 'Put these four books in chronological order from earliest publication to latest.', direction: 'Earliest -> Latest Publication', wittyHeader: 'Bestseller Timeline', minGapEasy: 10 },
 ];
 
 interface MultiStrikeTableConfig {
@@ -575,10 +639,74 @@ const MULTISTRIKE_TABLE_CONFIGS: readonly MultiStrikeTableConfig[] = [
     type: 'math_person',
     labelCol: 0,
     groupCol: 3,
-    pickAllPrompt: (g) => `Tap all 3 mathematicians associated with ${g}.`,
+    pickAllPrompt: (g) => `Tap all 3 mathematicians hailing from ${g}.`,
     imposterPrompt: (g) => `Three of these mathematicians hailed from ${g}—spot the 1 imposter!`,
     whyPickAll: (g, w) => `${w.join(', ')} all contributed to ${g}’s mathematical heritage.`,
     whyImposter: (g, imp, ig) => `${imp} is the outlier—linked to ${ig} rather than ${g}.`,
+  },
+  // Specialist Subcategory Tables
+  {
+    type: 'sub_geo_us_city',
+    labelCol: 0,
+    groupCol: 1,
+    pickAllPrompt: (g) => `Road-trip check: tap all 3 American cities located inside ${g}.`,
+    imposterPrompt: (g) => `Three of these cities sit inside ${g}—spot the 1 out-of-state imposter!`,
+    whyPickAll: (g, w) => `${w.join(', ')} are all proud cities on the map of ${g}.`,
+    whyImposter: (g, imp, ig) => `${imp} crossed state lines—it actually sits in ${ig}, not ${g}.`,
+  },
+  {
+    type: 'sub_art_classical',
+    labelCol: 0,
+    groupCol: 1,
+    pickAllPrompt: (g) => `Cue the encore: tap all 3 musical works composed by ${g}.`,
+    imposterPrompt: (g) => `Three of these pieces flowed from ${g}’s pen—spot the 1 imposter!`,
+    whyPickAll: (g, w) => `${g} composed ${w.join(', ')}.`,
+    whyImposter: (g, imp, ig) => `${imp} snuck onto the program—it was composed by ${ig}, not ${g}.`,
+  },
+  {
+    type: 'sub_art_museum',
+    labelCol: 0,
+    groupCol: 2,
+    pickAllPrompt: (g) => `Gallery check: tap all 3 artworks housed inside ${g}.`,
+    imposterPrompt: (g) => `Three of these masterpieces hang in ${g}—spot the 1 imposter!`,
+    whyPickAll: (g, w) => `${w.join(', ')} are all prized highlights at ${g}.`,
+    whyImposter: (g, imp, ig) => `${imp} belongs in another wing—it resides at ${ig}, not ${g}.`,
+  },
+  {
+    type: 'sub_pop_actor',
+    labelCol: 0,
+    groupCol: 1,
+    pickAllPrompt: (g) => `Red-carpet call: tap all 3 screen actors hailing from ${g}.`,
+    imposterPrompt: (g) => `Three of these actors hail from ${g}—spot the 1 imposter!`,
+    whyPickAll: (g, w) => `${w.join(', ')} all trace their roots to ${g}.`,
+    whyImposter: (g, imp, ig) => `${imp} carries a different passport—they hail from ${ig}, not ${g}.`,
+  },
+  {
+    type: 'sub_vg_genre',
+    labelCol: 0,
+    groupCol: 2,
+    pickAllPrompt: (g) => `Press Start! Tap all 3 video games developed by ${g}.`,
+    imposterPrompt: (g) => `Three of these games came out of ${g}—spot the 1 imposter!`,
+    whyPickAll: (g, w) => `${g} built ${w.join(', ')}.`,
+    whyImposter: (g, imp, ig) => `${imp} came from a rival studio—${ig}, not ${g}.`,
+  },
+  {
+    type: 'sub_nat_breed',
+    labelCol: 0,
+    groupCol: 2,
+    pickAllPrompt: (g) => `Best in show: tap all 3 animal breeds originating in ${g}.`,
+    imposterPrompt: (g) => `Three of these breeds originated in ${g}—spot the 1 imposter!`,
+    whyPickAll: (g, w) => `${w.join(', ')} all trace their pedigree to ${g}.`,
+    whyImposter: (g, imp, ig) => `${imp} wandered in from abroad—it hails from ${ig}, not ${g}.`,
+  },
+  {
+    type: 'sub_lit_char',
+    labelCol: 0,
+    groupCol: 2,
+    pickAllPrompt: (g) => `Shelf check: tap all 3 characters created by ${g}.`,
+    imposterPrompt: (g) => `Three of these characters were created by ${g}—spot the 1 imposter!`,
+    whyPickAll: (g, w) => `${g} brought ${w.join(', ')} to life on the page.`,
+    whyImposter: (g, imp, ig) => `${imp} walked out of another author’s book—created by ${ig}, not ${g}.`,
   },
 ];
 
@@ -685,10 +813,9 @@ function convertPrismToPinpointV4(
   if (!pq.calibrator) return null;
   const cal = pq.calibrator;
   const prompt = sanitizeTriviaCopy(pq.prompt);
-  const isYear =
-    /^(?:ce|ad|year|yr)$/i.test(cal.unit.trim()) ||
-    (!cal.unit.trim() && cal.exactVal >= 1000 && cal.exactVal <= 2120);
-  const unitLabel = isYear ? '' : sanitizeTriviaCopy(cal.unit.trim());
+  const uTrim = cal.unit.trim();
+  const isCeYear = /^(?:ce|ad|year|yr)$/i.test(uTrim) || (!uTrim && isYearNumberContext(cal.exactVal, uTrim, prompt));
+  const unitLabel = isCeYear ? '' : sanitizeTriviaCopy(uTrim);
   const step = Math.max(1, Math.round(cal.step));
   const exactVal = Math.round(cal.exactVal / step) * step;
   const minVal = Math.min(Math.round(cal.minVal / step) * step, exactVal - step * 4);
@@ -768,18 +895,25 @@ function convertPrismToClueEscalatorV4(
     correctIndex: packed.correctIndex,
   };
 
+  const catClean = sanitizeTriviaCopy(pq.l1Category || pq.domainMeta.name);
+  const escPrompts = [
+    `Break as few seals as you dare: crack this ${catClean} mystery early for up to 3x points.`,
+    `How soon can you call it? Solve this ${catClean} escalator on Clue 1 for triple payout.`,
+    `Three wax seals stand between you and the answer—nail this ${catClean} clue early for 3x.`,
+    `Trust your gut on ${catClean}: lock in early for 3x, or crack another seal to play it safe.`,
+  ];
   const card: QuestionCardV4 = {
     qid: pq.qid,
     format: 'CLUE_ESCALATOR',
     domainId: pq.l0Domain,
     wedgeId: domainToWedgeColor(pq.l0Domain),
-    categoryLabel: sanitizeTriviaCopy(pq.l1Category || pq.domainMeta.name),
+    categoryLabel: catClean,
     wittyHeader: pickWittyHeaderForCard(pq.l0Domain, pq.l1Category, 'CLUE_ESCALATOR', seed),
     ...(subcategoryId ? { subcategoryId } : {}),
     difficultyTier: pq.difficultyTier,
     recommendedSec: 32,
     readInGraceSec: 2.0,
-    prompt: `Crack this ${sanitizeTriviaCopy(pq.l1Category || pq.domainMeta.name)} mystery early for up to 3x points.`,
+    prompt: escPrompts[fnv1a32(`ESC_PROMPT:${pq.qid}:${seed}`) % escPrompts.length],
     funFactWhy: sanitizeTriviaCopy(pq.whyExplanation),
     helpfulHint: mediumClue,
     escalator,
@@ -1149,7 +1283,7 @@ function synthesizeSort4FromShards(
         `Exact order: ${correctOrder.map((c) => `${c.label} (${c.formattedValue})`).join(' -> ')}.`,
       ),
       helpfulHint: sanitizeTriviaCopy(
-        `Anchor the extremes first: spot which entry sits at the very bottom (${correctOrder[0].formattedValue.replace(/\d/g, '?') === '????' ? 'earliest' : 'lowest'}) and very top.`,
+        `Anchor the extremes first: nail which card sits at the very ${cfg.isYear ? 'earliest' : 'lowest'} slot and the very ${cfg.isYear ? 'latest' : 'highest'} slot, then slot the middle pair.`,
       ),
       sort4: {
         orderDirectionLabel: cfg.direction,
@@ -1352,6 +1486,12 @@ function synthesizeBlitzMultipleChoiceFromShards(
     { type: 'sport_athlete', subjCol: 0, ansCol: 1, makePrompt: (s) => `${s}’s signature sport?`, makeWhy: (s, a) => `${s} achieved global fame competing in ${a}.`, makeHint: () => 'Picture the arena, court, or pitch where they became a legend.' },
     { type: 'food_item', subjCol: 0, ansCol: 2, makePrompt: (s) => `Home country of ${s}?`, makeWhy: (s, a) => `${s} is a celebrated culinary tradition from ${a}.`, makeHint: () => 'Listen to the dish’s native language for a quick clue.' },
     { type: 'tech_company', subjCol: 0, ansCol: 3, makePrompt: (s) => `Home country of ${s}?`, makeWhy: (s, a) => `${s} was founded in ${a}.`, makeHint: () => 'Think of where this global brand keeps its flagship headquarters.' },
+    { type: 'sub_geo_us_city', subjCol: 0, ansCol: 1, makePrompt: (s) => `Which U.S. state is ${s} in?`, makeWhy: (s, a) => `${s} sits on the map in ${a}.`, makeHint: () => 'Picture the region and interstate corridor around this city.' },
+    { type: 'sub_art_classical', subjCol: 0, ansCol: 1, makePrompt: (s) => `Who composed ${s}?`, makeWhy: (s, a) => `${a} composed "${s}".`, makeHint: () => 'Listen to the title’s language and musical era.' },
+    { type: 'sub_bb_ballpark', subjCol: 0, ansCol: 2, makePrompt: (s) => `Home team of ${s}?`, makeWhy: (s, a) => `The ${a} called ${s} their home ballpark.`, makeHint: () => 'Match the ballpark’s era and city to its franchise.' },
+    { type: 'sub_food_atelier', subjCol: 0, ansCol: 1, makePrompt: (s) => `Who founded ${s}?`, makeWhy: (s, a) => `${a} founded the heritage house ${s}.`, makeHint: () => 'Check the brand’s surname roots and founding era.' },
+    { type: 'sub_lit_char', subjCol: 0, ansCol: 2, makePrompt: (s) => `Who created ${s}?`, makeWhy: (s, a) => `${a} created the iconic character ${s}.`, makeHint: () => 'Match the character’s genre and era to their author.' },
+    { type: 'sub_lit_genre', subjCol: 0, ansCol: 1, makePrompt: (s) => `Who wrote ${s}?`, makeWhy: (s, a) => `${a} wrote "${s}".`, makeHint: () => 'Match the title’s voice and genre to its writer.' },
   ];
 
   const domOrder = [...domains];
@@ -1508,6 +1648,7 @@ function pickCuratedV4Card(
   excluded: ReadonlySet<number>,
   rng: RngLike,
   subcategoryId?: string,
+  allowSeenFallback = false,
 ): QuestionCardV4 | null {
   const allCurated = engine.getCuratedV4Cards();
   if (allCurated.length === 0) return null;
@@ -1525,7 +1666,8 @@ function pickCuratedV4Card(
     }
   };
 
-  for (let pass = 0; pass < 3; pass++) {
+  const maxPasses = allowSeenFallback ? 3 : 2;
+  for (let pass = 0; pass < maxPasses; pass++) {
     const candidates = allCurated.filter((card) => {
       if (card.format !== format) return false;
       if (excluded.has(card.qid)) return false;
@@ -1559,6 +1701,17 @@ function pickCuratedV4Card(
           : picked.recommendedSec;
       return {
         ...picked,
+        prompt: sanitizeTriviaCopy(picked.prompt),
+        funFactWhy: sanitizeTriviaCopy(picked.funFactWhy),
+        helpfulHint: sanitizeTriviaCopy(picked.helpfulHint),
+        ...(picked.visualSpotter?.imageUrl
+          ? {
+              visualSpotter: {
+                ...picked.visualSpotter,
+                imageUrl: normalizeVisualAssetUrl(picked.visualSpotter.imageUrl),
+              },
+            }
+          : {}),
         recommendedSec,
         readInGraceSec: 2.0,
         ...(subcategoryId && !picked.subcategoryId ? { subcategoryId } : {}),
@@ -1748,7 +1901,7 @@ export function drawQuestionCardV4Sync(opts: DrawQuestionCardV4Options = {}): Qu
     if (shardCard) return shardCard;
   }
 
-  // 4. Cross-layer fallback: retry curated v4 even if preferDynamicShards or tier relaxed, then Visual/Legacy
+  // 4. Cross-layer fallback: retry curated v4 (including seen fallback if shards weren't loaded yet), then Visual/Legacy
   const relaxedCurated = pickCuratedV4Card(
     engine,
     format,
@@ -1758,6 +1911,7 @@ export function drawQuestionCardV4Sync(opts: DrawQuestionCardV4Options = {}): Qu
     excluded,
     rng,
     opts.subcategoryId,
+    true,
   );
   if (relaxedCurated) return relaxedCurated;
 
@@ -1790,6 +1944,7 @@ export function drawQuestionCardV4Sync(opts: DrawQuestionCardV4Options = {}): Qu
     excluded,
     rng,
     opts.subcategoryId,
+    true,
   );
   if (anyDomainCurated) return anyDomainCurated;
 
