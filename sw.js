@@ -5,8 +5,8 @@
  * Zero hardcoded leading-slash paths — every URL derives from registration.scope
  * ============================================================================ */
 
-const SHELL_CACHE = 'ws-meridian-shell-v3';
-const DATA_CACHE = 'ws-meridian-data-v3';
+const SHELL_CACHE = 'ws-meridian-shell-v4';
+const DATA_CACHE = 'ws-meridian-data-v4';
 const VALID_CACHES = new Set([SHELL_CACHE, DATA_CACHE]);
 
 const NAVIGATION_TIMEOUT_MS = 2500;
@@ -36,7 +36,31 @@ const CORE_SHELL_ASSETS = [
   './assets/hdris/studio_small_09.hdr',
   './assets/venues/ch.jpg',
   './assets/venues/studio.jpg',
-  // Core Horological Foley & Default Room Ambience
+  // Core Broadcast Music, Streak Chords, Foley & Crowd Audio (v4)
+  './assets/audio/music_title_showtime.mp3',
+  './assets/audio/music_board_groove.mp3',
+  './assets/audio/music_thinking_bed.mp3',
+  './assets/audio/music_finale_tension.mp3',
+  './assets/audio/sfx_streak_1.mp3',
+  './assets/audio/sfx_streak_2.mp3',
+  './assets/audio/sfx_streak_3.mp3',
+  './assets/audio/sfx_streak_4.mp3',
+  './assets/audio/sfx_streak_5.mp3',
+  './assets/audio/sfx_clock_tick.mp3',
+  './assets/audio/sfx_clock_urgent.mp3',
+  './assets/audio/sfx_buzzer_timeout.mp3',
+  './assets/audio/sfx_crowd_small_hall.mp3',
+  './assets/audio/sfx_crowd_tv_studio.mp3',
+  './assets/audio/sfx_crowd_global_arena.mp3',
+  './assets/audio/sfx_crowd_gasp.mp3',
+  './assets/audio/sfx_tile_flip.mp3',
+  './assets/audio/sfx_padlock_break.mp3',
+  './assets/audio/sfx_wheel_tick.mp3',
+  './assets/audio/sfx_power_play.mp3',
+  './assets/audio/sfx_wedge_earned.mp3',
+  './assets/audio/sfx_rival_trap.mp3',
+  './assets/audio/sfx_lock_in.mp3',
+  './assets/audio/sfx_wrong_answer.mp3',
   './assets/audio/sfx_ui_tap.mp3',
   './assets/audio/sfx_spin_tick.mp3',
   './assets/audio/sfx_sightline_snap.mp3',
@@ -139,6 +163,8 @@ const CORE_SHELL_ASSETS = [
 ];
 
 const CORE_DATA_ASSETS = [
+  './data/world_tour_v4.json',
+  './data/curated_v4_witty_pack.json',
   './data/shards/taxonomy_tree.json',
   './data/shards/shard_manifest.json',
   './data/questions.json.gz',
