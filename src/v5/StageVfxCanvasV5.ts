@@ -734,8 +734,11 @@ export class StageVfxCanvasV5 implements StageVfxApiV5 {
     this.canvas = canvas;
     this.enforceOverlayStyles(canvas);
 
+    // IMPORTANT: Never pass `desynchronized: true` here! On Android Chrome / mobile GPUs,
+    // `desynchronized: true` promotes a fullscreen z-index:65 canvas to a direct-scanout
+    // hardware overlay plane whose clearRect() scans out as OPAQUE BLACK over #ui-root!
     this.ctx =
-      canvas.getContext('2d', { alpha: true, desynchronized: true }) ??
+      canvas.getContext('2d', { alpha: true }) ??
       canvas.getContext('2d');
 
     if (!this.ctx) {

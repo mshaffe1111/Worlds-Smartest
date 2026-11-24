@@ -17,8 +17,10 @@ const offlineSwClientLoaders = import.meta.glob<OfflineSwClientModule>(
   './pwa/OfflineServiceWorkerClient.ts',
 );
 
+const SW_UPGRADE_RELOAD_KEY = 'ws_sw_upgraded_v5_r2';
+
 function scheduleOfflineServiceWorkerRegistration(): void {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
   try {
     const params = new URLSearchParams(window.location.search);
     if (params.get('nosw') === '1') {
@@ -28,20 +30,32 @@ function scheduleOfflineServiceWorkerRegistration(): void {
     // Ignore malformed search strings
   }
 
+  // Force immediate SW update check & clean one-shot reload when replacing a stale SW
+  const hadController = Boolean(navigator.serviceWorker.controller);
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController) return;
+    try {
+      if (sessionStorage.getItem(SW_UPGRADE_RELOAD_KEY) === '1') return;
+      sessionStorage.setItem(SW_UPGRADE_RELOAD_KEY, '1');
+    } catch {
+      // Ignore private browsing sessionStorage restrictions
+    }
+    window.location.reload();
+  });
+
   const registerNonBlocking = (): void => {
+    void navigator.serviceWorker
+      .register('./sw.js', { scope: './', updateViaCache: 'none' })
+      .then((reg) => {
+        void reg.update().catch(() => {});
+      })
+      .catch(() => {});
+
     const loader = offlineSwClientLoaders['./pwa/OfflineServiceWorkerClient.ts'];
     if (typeof loader === 'function') {
       void loader()
         .then((mod) => mod.registerOfflineServiceWorker?.())
-        .catch(() => {
-          // Graceful fallback if OfflineServiceWorkerClient is unavailable or SW unsupported
-        });
-      return;
-    }
-    if ('serviceWorker' in navigator) {
-      void navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(() => {
-        // Ignore when sw.js is not yet staged or blocked by browser context
-      });
+        .catch(() => {});
     }
   };
 
