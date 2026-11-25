@@ -4,8 +4,8 @@
  * Automatically purges legacy v1-v7.0 caches and caches clean v7.5 shell & data.
  * ============================================================================ */
 
-const SHELL_CACHE = 'ws-fifty-million-shell-v7.5-goldmaster-r10';
-const DATA_CACHE = 'ws-fifty-million-data-v7.5-goldmaster-r10';
+const SHELL_CACHE = 'ws-fifty-million-shell-v7.5.1-goldmaster-r11';
+const DATA_CACHE = 'ws-fifty-million-data-v7.5.1-goldmaster-r11';
 const VALID_CACHES = new Set([SHELL_CACHE, DATA_CACHE]);
 
 const CORE_SHELL_ASSETS = [
