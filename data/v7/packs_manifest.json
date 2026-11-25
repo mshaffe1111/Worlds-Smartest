@@ -1,0 +1,101 @@
+{
+  "schema": "WS_V7_PACKS_MANIFEST_1",
+  "updatedAtIso": "2026-11-25T19:36:59.351Z",
+  "bootPack": "boot_pack.json",
+  "totalCorpusCount": 11053,
+  "nextQid": 11053,
+  "shards": [
+    {
+      "file": "season_1.json",
+      "kind": "season",
+      "season": 1,
+      "priority": 10,
+      "count": 2268,
+      "qidRange": [
+        0,
+        5451
+      ]
+    },
+    {
+      "file": "season_2.json",
+      "kind": "season",
+      "season": 2,
+      "priority": 20,
+      "count": 1949,
+      "qidRange": [
+        2,
+        5448
+      ]
+    },
+    {
+      "file": "season_3.json",
+      "kind": "season",
+      "season": 3,
+      "priority": 30,
+      "count": 1427,
+      "qidRange": [
+        1511,
+        6577
+      ]
+    },
+    {
+      "file": "season_4.json",
+      "kind": "season",
+      "season": 4,
+      "priority": 40,
+      "count": 934,
+      "qidRange": [
+        2990,
+        6576
+      ]
+    },
+    {
+      "file": "pack_primetime_variety_1.json",
+      "kind": "expansion",
+      "packId": "primetime_variety_1",
+      "title": "Primetime Variety Expansion I (5-Style All-Era Edition)",
+      "priority": 5,
+      "count": 1441,
+      "qidRange": [
+        6578,
+        8018
+      ]
+    },
+    {
+      "file": "pack_primetime_variety_2.json",
+      "kind": "expansion",
+      "packId": "primetime_variety_2",
+      "title": "Primetime Variety Expansion II (13-Toy Showcase & 5-Style Edition)",
+      "priority": 6,
+      "count": 1278,
+      "qidRange": [
+        8019,
+        9296
+      ]
+    },
+    {
+      "file": "pack_primetime_variety_3.json",
+      "kind": "expansion",
+      "packId": "primetime_variety_3",
+      "title": "Primetime Variety Expansion III (10K All-Era & Showcase Edition)",
+      "priority": 7,
+      "count": 956,
+      "qidRange": [
+        9297,
+        10252
+      ]
+    },
+    {
+      "file": "pack_primetime_variety_4.json",
+      "kind": "expansion",
+      "packId": "primetime_variety_4",
+      "title": "Primetime Variety Expansion IV (11K All-Era & Showcase Edition)",
+      "priority": 8,
+      "count": 800,
+      "qidRange": [
+        10253,
+        11052
+      ]
+    }
+  ]
+}
