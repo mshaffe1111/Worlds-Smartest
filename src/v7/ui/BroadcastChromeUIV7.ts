@@ -98,6 +98,54 @@ export function getFriendlyTvCategoryLabelV7(category: CategoryIdV7): string {
   return FRIENDLY_TV_CATEGORY_LABELS_V7[category] ?? category;
 }
 
+export function isDocumentFullscreenV7(): boolean {
+  if (typeof document === 'undefined') return false;
+  const doc = document as Document & {
+    webkitFullscreenElement?: Element | null;
+  };
+  return Boolean(doc.fullscreenElement || doc.webkitFullscreenElement);
+}
+
+export async function toggleDocumentFullscreenV7(): Promise<{
+  readonly ok: boolean;
+  readonly isFullscreen: boolean;
+  readonly reason?: 'UNSUPPORTED_IOS' | 'BLOCKED';
+}> {
+  if (typeof document === 'undefined') {
+    return { ok: false, isFullscreen: false, reason: 'BLOCKED' };
+  }
+  const doc = document as Document & {
+    webkitFullscreenElement?: Element | null;
+    webkitExitFullscreen?: () => Promise<void> | void;
+  };
+  const el = document.documentElement as HTMLElement & {
+    webkitRequestFullscreen?: () => Promise<void> | void;
+  };
+
+  try {
+    if (doc.fullscreenElement || doc.webkitFullscreenElement) {
+      if (typeof doc.exitFullscreen === 'function') {
+        await doc.exitFullscreen();
+      } else if (typeof doc.webkitExitFullscreen === 'function') {
+        await doc.webkitExitFullscreen();
+      }
+      return { ok: true, isFullscreen: false };
+    }
+
+    if (typeof el.requestFullscreen === 'function') {
+      await el.requestFullscreen({ navigationUI: 'hide' });
+      return { ok: true, isFullscreen: true };
+    }
+    if (typeof el.webkitRequestFullscreen === 'function') {
+      await el.webkitRequestFullscreen();
+      return { ok: true, isFullscreen: true };
+    }
+    return { ok: false, isFullscreen: false, reason: 'UNSUPPORTED_IOS' };
+  } catch {
+    return { ok: false, isFullscreen: isDocumentFullscreenV7(), reason: 'BLOCKED' };
+  }
+}
+
 const LIVING_COLOR_DOMAIN_RIBBONS_V7: Record<
   DomainIdV7,
   { readonly bg: string; readonly ink: string; readonly chipBg: string; readonly chipInk: string }
@@ -215,6 +263,7 @@ export interface BroadcastChromeCallbacksV7 {
   ) => void;
   readonly onReturnToTitleHub?: () => void;
   readonly onAdjustBoardZoom?: (deltaOrReset: number | 'RESET') => void;
+  readonly onToggleFullscreen?: () => void;
 }
 
 export interface TopBugSnapshotV7 {
@@ -365,6 +414,7 @@ export class BroadcastChromeUIV7 {
   private readonly arrestSwitchBtn: HTMLButtonElement;
   private readonly censorPaddleBtn: HTMLButtonElement;
   private readonly zoomReadoutBtn: HTMLButtonElement;
+  private readonly fullscreenBugBtn: HTMLButtonElement;
 
   private readonly questionStageEl: HTMLDivElement;
   private readonly questionChassisEl: HTMLDivElement;
@@ -388,6 +438,9 @@ export class BroadcastChromeUIV7 {
   private activeToastTimeout: number | null = null;
   private activeBoardModeFadeTimeout: number | null = null;
   private activeModalCleanup: (() => void) | null = null;
+  private readonly detachChromeListeners: Array<() => void> = [];
+  private questionOpenedAtMs = 0;
+  private sawFreshPointerDownInToyBay = false;
   private liveMatchScoreForShop: number | null = null;
   private currentRivalId: RivalIdV7 = 'CARMEN_DELGADO';
   private questionMaxCountdownSec = 30;
@@ -629,7 +682,24 @@ export class BroadcastChromeUIV7 {
       }
     });
 
-    bugActions.append(rulesBtn, propsBtn, soundBtn, hubBtn);
+    this.fullscreenBugBtn = makeRibbonBtn(
+      '⛶',
+      'FULL',
+      'fullscreen',
+      'Toggle Full Screen (F)',
+      false,
+    );
+    this.fullscreenBugBtn.dataset.compactHide = 'true';
+    this.fullscreenBugBtn.addEventListener('click', () => {
+      if (this.callbacks.onToggleFullscreen) {
+        this.callbacks.onToggleFullscreen();
+      } else {
+        void this.handleFullscreenToggle();
+      }
+    });
+    this.syncFullscreenButtonState();
+
+    bugActions.append(rulesBtn, propsBtn, soundBtn, this.fullscreenBugBtn, hubBtn);
     topBug.append(solariPair, this.vuMeterWrapEl, bugActions);
     this.topBugWrapEl.appendChild(topBug);
 
@@ -771,6 +841,49 @@ export class BroadcastChromeUIV7 {
     this.toyBayEl.className = 'ws7-toy-bay';
     this.toyBayEl.id = 'ws7-toy-mount';
 
+    // Capture-phase anti-bleed gate: prevents trailing `click`/`pointerup` from a 3D board tile tap
+    // from ever auto-answering a newly mounted question before a fresh pointerdown inside `toyBayEl`!
+    const onToyPointerDownCapture = (ev: PointerEvent): void => {
+      const elapsed =
+        typeof performance !== 'undefined' ? performance.now() - this.questionOpenedAtMs : 999;
+      if (elapsed < 220) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        ev.stopImmediatePropagation();
+        return;
+      }
+      this.sawFreshPointerDownInToyBay = true;
+    };
+    const onToyClickCapture = (ev: MouseEvent): void => {
+      const elapsed =
+        typeof performance !== 'undefined' ? performance.now() - this.questionOpenedAtMs : 999;
+      // `ev.detail === 0` indicates keyboard Enter/Space or synthetic keyboard shortcut `.click()`;
+      // `ev.detail > 0` is a physical mouse/touch/pen click and MUST have started inside `toyBayEl`!
+      if (elapsed < 220 || (ev.detail > 0 && !this.sawFreshPointerDownInToyBay)) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        ev.stopImmediatePropagation();
+      }
+    };
+    this.toyBayEl.addEventListener('pointerdown', onToyPointerDownCapture, true);
+    this.toyBayEl.addEventListener('click', onToyClickCapture, true);
+    this.detachChromeListeners.push(() => {
+      this.toyBayEl.removeEventListener('pointerdown', onToyPointerDownCapture, true);
+      this.toyBayEl.removeEventListener('click', onToyClickCapture, true);
+    });
+
+    if (typeof document !== 'undefined') {
+      const onFsChange = (): void => {
+        this.syncFullscreenButtonState();
+      };
+      document.addEventListener('fullscreenchange', onFsChange);
+      document.addEventListener('webkitfullscreenchange', onFsChange as EventListener);
+      this.detachChromeListeners.push(() => {
+        document.removeEventListener('fullscreenchange', onFsChange);
+        document.removeEventListener('webkitfullscreenchange', onFsChange as EventListener);
+      });
+    }
+
     this.questionChassisEl.append(vellumPane, this.toyBayEl);
     this.questionStageEl.appendChild(this.questionChassisEl);
 
@@ -815,6 +928,10 @@ export class BroadcastChromeUIV7 {
 
   public dispose(): void {
     this.hideModalStage();
+    for (const unsub of this.detachChromeListeners) {
+      unsub();
+    }
+    this.detachChromeListeners.length = 0;
     if (this.activeToastTimeout !== null) {
       window.clearTimeout(this.activeToastTimeout);
       this.activeToastTimeout = null;
@@ -825,6 +942,27 @@ export class BroadcastChromeUIV7 {
     }
     this.cancelSolariRollers();
     this.rootEl.remove();
+  }
+
+  public syncFullscreenButtonState(): void {
+    const active = isDocumentFullscreenV7();
+    this.fullscreenBugBtn.dataset.active = active ? 'true' : 'false';
+    this.fullscreenBugBtn.innerHTML = active
+      ? `<span class="ws7-thumb-icon" aria-hidden="true">🗗</span><span>EXIT</span>`
+      : `<span class="ws7-thumb-icon" aria-hidden="true">⛶</span><span>FULL</span>`;
+    this.fullscreenBugBtn.title = active ? 'Exit Full Screen (Esc / F)' : 'Enter Full Screen (F)';
+  }
+
+  public async handleFullscreenToggle(): Promise<void> {
+    const res = await toggleDocumentFullscreenV7();
+    this.syncFullscreenButtonState();
+    if (!res.ok && res.reason === 'UNSUPPORTED_IOS') {
+      this.showLiveToast(
+        'IPHONE FULL SCREEN: Tap Safari Share → “Add to Home Screen” for full-screen TV mode!',
+        'brass',
+        3400,
+      );
+    }
   }
 
   // --------------------------------------------------------------------------
@@ -1740,6 +1878,8 @@ export class BroadcastChromeUIV7 {
     );
     this.updateQuestionCountdown(spec.countdownSeconds);
 
+    this.questionOpenedAtMs = typeof performance !== 'undefined' ? performance.now() : 0;
+    this.sawFreshPointerDownInToyBay = false;
     this.toyBayEl.innerHTML = '';
     this.questionStageEl.classList.remove('ws7-hidden');
     this.syncBoardModeRibbonVisibility();
@@ -2953,7 +3093,25 @@ export class BroadcastChromeUIV7 {
         return b;
       };
 
+      const fsToggleBtn = document.createElement('button');
+      fsToggleBtn.type = 'button';
+      const fsNow = isDocumentFullscreenV7();
+      fsToggleBtn.className = fsNow ? 'ws7-teal-btn' : 'ws7-secondary-btn';
+      fsToggleBtn.textContent = `⛶ FULL SCREEN: ${fsNow ? 'ON' : 'OFF'}`;
+      fsToggleBtn.addEventListener('click', () => {
+        void (async () => {
+          if (this.callbacks.onToggleFullscreen) {
+            this.callbacks.onToggleFullscreen();
+            window.setTimeout(() => render(), 120);
+          } else {
+            await this.handleFullscreenToggle();
+            render();
+          }
+        })();
+      });
+
       toggleRow.append(
+        fsToggleBtn,
         makeToggle('HAPTICS', settings.hapticsEnabled, {
           hapticsEnabled: !settings.hapticsEnabled,
         }),

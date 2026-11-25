@@ -839,7 +839,8 @@ function createContouredGlowRingGeometry(
   borderWidth = 0.028,
 ): THREE.BufferGeometry {
   const outer = createTileContourShape(shapeKind, width + borderWidth * 2, depth + borderWidth * 2);
-  const innerShape = createTileContourShape(shapeKind, Math.max(0.08, width - 0.014), Math.max(0.08, depth - 0.014));
+  // Step inner hole strictly OUTSIDE the beveled enamelRimMesh (`width - 0.016`) so perimeter collars NEVER intersect or Z-fight!
+  const innerShape = createTileContourShape(shapeKind, Math.max(0.08, width - 0.002), Math.max(0.08, depth - 0.002));
   const innerPts = innerShape.getPoints(24);
   const hole = new THREE.Path();
   for (let i = 0; i < innerPts.length; i++) {
@@ -850,7 +851,7 @@ function createContouredGlowRingGeometry(
   outer.holes.push(hole);
 
   const geom = new THREE.ExtrudeGeometry(outer, {
-    depth: 0.01,
+    depth: 0.006,
     bevelEnabled: false,
   });
   geom.rotateX(-Math.PI * 0.5);
@@ -2685,7 +2686,7 @@ export class InteractiveBoard3DControllerV7 {
       }),
     );
     const coneMesh = new THREE.Mesh(coneGeom, coneMat);
-    coneMesh.position.y = coneHeight * 0.5 + 0.02;
+    coneMesh.position.y = coneHeight * 0.5 + 0.065;
     beamGroup.add(coneMesh);
 
     const ringGeom = this.trackGeom(new THREE.RingGeometry(0.14, 0.45, 32));
@@ -2701,7 +2702,8 @@ export class InteractiveBoard3DControllerV7 {
       }),
     );
     const ringMesh = new THREE.Mesh(ringGeom, ringMat);
-    ringMesh.position.y = 0.018;
+    // Seat spotlight floor halo down on the recessed shadowbox bed beneath the tile plinth (zero plaque intersection!)
+    ringMesh.position.y = -0.115;
     beamGroup.add(ringMesh);
 
     this.balanceBeamGroup.add(beamGroup);
@@ -4427,12 +4429,12 @@ export class InteractiveBoard3DControllerV7 {
       this.trackGeom(createContouredGlowRingGeometry(tile.shape, tileW, tileD, 0.034)),
       underGlowMat,
     );
-    underGlowRing.position.y = tile.tierY - 0.056;
+    underGlowRing.position.y = tile.tierY - 0.068;
     rootGroup.add(underGlowRing);
 
     // 2. Canonical `RimRing` Socket A: Sleek Contoured Harvest-Gold Truce Halo (zero loose floating dashes!)
     const amberTruceRing = new THREE.Group();
-    amberTruceRing.position.y = tile.tierY - 0.056;
+    amberTruceRing.position.y = tile.tierY - 0.05;
     const amberMat = this.trackMat(
       new THREE.MeshStandardMaterial({
         color: 0xf4a91f,
@@ -4464,7 +4466,7 @@ export class InteractiveBoard3DControllerV7 {
       this.trackGeom(createContouredGlowRingGeometry(tile.shape, tileW, tileD, 0.022)),
       uhfMat,
     );
-    uhfHaloMesh.position.y = tile.tierY - 0.058;
+    uhfHaloMesh.position.y = tile.tierY - 0.05;
     uhfHaloMesh.visible = tile.hasUhfHalo;
     rootGroup.add(uhfHaloMesh);
 
@@ -4482,7 +4484,7 @@ export class InteractiveBoard3DControllerV7 {
       this.trackGeom(createContouredGlowRingGeometry(tile.shape, tileW, tileD, 0.026)),
       blitzMat,
     );
-    blitzCrownRing.position.y = tile.tierY - 0.052;
+    blitzCrownRing.position.y = tile.tierY - 0.05;
     blitzCrownRing.visible = false;
     rootGroup.add(blitzCrownRing);
 
@@ -4500,7 +4502,7 @@ export class InteractiveBoard3DControllerV7 {
       this.trackGeom(createContouredGlowRingGeometry(tile.shape, tileW, tileD, 0.024)),
       twistAccentMat,
     );
-    twistAccentRing.position.y = tile.tierY - 0.054;
+    twistAccentRing.position.y = tile.tierY - 0.05;
     twistAccentRing.visible = false;
     rootGroup.add(twistAccentRing);
 
@@ -4555,7 +4557,7 @@ export class InteractiveBoard3DControllerV7 {
       }),
     );
     coreGeom.rotateX(-Math.PI * 0.5);
-    coreGeom.translate(0, -0.026, 0);
+    coreGeom.translate(0, -0.03, 0);
 
     const champagneMat = this.trackMat(
       new THREE.MeshPhysicalMaterial({
@@ -4570,7 +4572,7 @@ export class InteractiveBoard3DControllerV7 {
     champagneMat.envMapIntensity = 0.4;
     const champagneCoreMesh = new THREE.Mesh(coreGeom, champagneMat);
     champagneCoreMesh.castShadow = true;
-    champagneCoreMesh.receiveShadow = true;
+    champagneCoreMesh.receiveShadow = false;
     trilonFlipGroup.add(champagneCoreMesh);
 
     // 4c. Ultra-HD `1024x512` Mipmapped `CanvasTexture` Living Color Front Plaque (fills 92% x 90% of tile!)
@@ -4609,10 +4611,13 @@ export class InteractiveBoard3DControllerV7 {
       new THREE.MeshBasicMaterial({
         color: 0xffffff,
         map: plaqueTexture,
+        polygonOffset: true,
+        polygonOffsetFactor: -2,
+        polygonOffsetUnits: -2,
       }),
     );
     const plaqueMesh = new THREE.Mesh(plaqueGeom, plaqueMat);
-    plaqueMesh.position.y = 0.0262; // Cleanly +2.2mm above prism core top (world local y = +0.0022, zero float & zero Z-fighting!)
+    plaqueMesh.position.y = 0.0285; // Cleanly +8.5mm above prism core top (zero depth-buffer Z-fighting!)
     trilonFlipGroup.add(plaqueMesh);
 
     // Reverse Metallic Harvest-Gold Trilon Backplate (gleams cleanly during 180°/360° physical Trilon flips!)
@@ -4740,35 +4745,42 @@ export class InteractiveBoard3DControllerV7 {
       tile.state === 'CLAIMED_PLAYER' || tile.state === 'CLAIMED_RIVAL' ? 0xdbe3eb : 0xffffff,
     );
 
-    rig.amberTruceRing.visible = tile.hasAmberTruce && isPlayable;
-    rig.uhfHaloMesh.visible = tile.hasUhfHalo && isPlayable;
-    rig.blitzCrownRing.visible = tile.state === 'BLITZ_SURVIVOR';
-    rig.copperSparksGroup.visible = tile.isRiggedSolenoid && tile.state === 'OPEN';
+    // Strictly mutually exclusive perimeter collar priority (ZERO coplanar Z-fighting between rings!)
+    const showBlitzCollar = tile.state === 'BLITZ_SURVIVOR';
+    let showTwistCollar = false;
+    if (!showBlitzCollar && isPlayable) {
+      if (isUnlockedVault || isSecretRevealed) {
+        rig.twistAccentMat.color.setHex(0xffd56b);
+        rig.twistAccentMat.emissive.setHex(0xf4a91f);
+        showTwistCollar = true;
+      } else if (tvTwist === 'MYSTERY_CURTAIN') {
+        rig.twistAccentMat.color.setHex(0xff6da3);
+        rig.twistAccentMat.emissive.setHex(0xe63b7a);
+        showTwistCollar = true;
+      } else if (tvTwist === 'OPPONENT_CHOICE') {
+        rig.twistAccentMat.color.setHex(0xf47295);
+        rig.twistAccentMat.emissive.setHex(0xc92a54);
+        showTwistCollar = true;
+      } else if (tvTwist === 'SHOWCASE_BONUS') {
+        rig.twistAccentMat.color.setHex(0x4be3f0);
+        rig.twistAccentMat.emissive.setHex(0x0098a6);
+        showTwistCollar = true;
+      }
+    }
+    const showAmberCollar =
+      !showBlitzCollar && !showTwistCollar && tile.hasAmberTruce && isPlayable;
+    const showUhfCollar =
+      !showBlitzCollar && !showTwistCollar && !showAmberCollar && tile.hasUhfHalo && isPlayable;
+
+    rig.blitzCrownRing.visible = showBlitzCollar;
+    rig.twistAccentRing.visible = showTwistCollar;
+    rig.amberTruceRing.visible = showAmberCollar;
+    rig.uhfHaloMesh.visible = showUhfCollar;
+    rig.copperSparksGroup.visible = false;
     rig.vaultLockGroup.visible = isLockedVault && isPlayable;
     if (!isPlayable) {
       rig.underGlowMat.opacity = 0;
       rig.underGlowRing.visible = false;
-    }
-
-    // Luminous 3D Twist Accent Collar
-    if (isPlayable && (isUnlockedVault || isSecretRevealed)) {
-      rig.twistAccentMat.color.setHex(0xffd56b);
-      rig.twistAccentMat.emissive.setHex(0xf4a91f);
-      rig.twistAccentRing.visible = true;
-    } else if (isPlayable && tvTwist === 'MYSTERY_CURTAIN') {
-      rig.twistAccentMat.color.setHex(0xff6da3);
-      rig.twistAccentMat.emissive.setHex(0xe63b7a);
-      rig.twistAccentRing.visible = true;
-    } else if (isPlayable && tvTwist === 'OPPONENT_CHOICE') {
-      rig.twistAccentMat.color.setHex(0xf47295);
-      rig.twistAccentMat.emissive.setHex(0xc92a54);
-      rig.twistAccentRing.visible = true;
-    } else if (isPlayable && tvTwist === 'SHOWCASE_BONUS') {
-      rig.twistAccentMat.color.setHex(0x4be3f0);
-      rig.twistAccentMat.emissive.setHex(0x0098a6);
-      rig.twistAccentRing.visible = true;
-    } else {
-      rig.twistAccentRing.visible = false;
     }
 
     // Disable raycast hit-volume on retracted tiles during Blitz!
@@ -5379,19 +5391,8 @@ export class InteractiveBoard3DControllerV7 {
         rig.vaultUnlockBurstSec = Math.max(0, rig.vaultUnlockBurstSec - dt);
       }
 
-      if (tile.isRiggedSolenoid && tile.state === 'OPEN') {
-        if (!this.reducedMotion) {
-          const phase = this.elapsedSec * Math.PI * 2 * 24 + tile.index * 1.7;
-          shiverX += Math.sin(phase) * 0.008;
-          shiverZ += Math.cos(phase * 1.13) * 0.005;
-        }
-        rig.copperSparksGroup.visible = true;
-        rig.copperSparksGroup.rotation.y += dt * 9.5;
-        const sparkScale = 0.72 + 0.42 * Math.abs(Math.sin(this.elapsedSec * 18 + tile.index));
-        rig.copperSparksGroup.scale.setScalar(sparkScale);
-      } else {
-        rig.copperSparksGroup.visible = false;
-      }
+      // Keep `isRiggedSolenoid` ("HOT SPOT") tiles rock-steady at rest (zero 24Hz sub-Nyquist frame flicker!)
+      rig.copperSparksGroup.visible = false;
 
       // Physical Motorized 3-Sided Trilon (`0 -> 2π`) Flip Animation with anti-clipping pop-arc!
       let flipLiftArc = 0;

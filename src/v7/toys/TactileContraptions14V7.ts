@@ -1777,6 +1777,7 @@ export function mountTactileContraptionV7(
 
   let resolved = false;
   let disposed = false;
+  const mountedAtMs = typeof performance !== 'undefined' ? performance.now() : 0;
   const timers: number[] = [];
   const cleanups: Array<() => void> = [];
 
@@ -1786,6 +1787,11 @@ export function mountTactileContraptionV7(
       if (!disposed) fn();
     }, delay);
     timers.push(id);
+  };
+
+  const isInputArmed = (): boolean => {
+    if (typeof performance === 'undefined') return true;
+    return performance.now() - mountedAtMs >= 180;
   };
 
   const emitOnce = (res: ToyResolutionV7): void => {
@@ -1838,7 +1844,7 @@ export function mountTactileContraptionV7(
         });
 
         pad.addEventListener('click', () => {
-          if (resolved || disposed) return;
+          if (resolved || disposed || !isInputArmed()) return;
           pad.classList.add('is-thrown');
           context.onTactileSfx?.('THROW_SNAP');
           const res = buildChoiceResolution(clue, idx, 1.0);
@@ -1889,7 +1895,7 @@ export function mountTactileContraptionV7(
         spikeBtn.innerHTML = `<span>1.25×</span><span>BOLD${actuaryBonusHint}</span>`;
 
         const dispatch = (mult: 0.75 | 1.25, tag: string): void => {
-          if (resolved || disposed) return;
+          if (resolved || disposed || !isInputArmed()) return;
           row.classList.add('is-dispatched');
           context.onTactileSfx?.('PNEUMATIC_THUNK');
           const res = buildChoiceResolution(clue, idx, mult, `[${tag}]`);

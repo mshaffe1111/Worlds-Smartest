@@ -241,7 +241,13 @@ export class ShowtimeAppV7 {
     };
     syncViewportOrientationAndFit();
     window.addEventListener('resize', syncViewportOrientationAndFit);
-    this.detachListeners.push(() => window.removeEventListener('resize', syncViewportOrientationAndFit));
+    document.addEventListener('fullscreenchange', syncViewportOrientationAndFit);
+    document.addEventListener('webkitfullscreenchange', syncViewportOrientationAndFit as EventListener);
+    this.detachListeners.push(() => {
+      window.removeEventListener('resize', syncViewportOrientationAndFit);
+      document.removeEventListener('fullscreenchange', syncViewportOrientationAndFit);
+      document.removeEventListener('webkitfullscreenchange', syncViewportOrientationAndFit as EventListener);
+    });
 
     // 4. 1966 "In Living Color" Broadcast Chrome UI + Animated Title & Onboarding Hub
     this.ui = new BroadcastChromeUIV7(this.uiRoot, this.campaign, {
@@ -323,6 +329,11 @@ export class ShowtimeAppV7 {
             : this.engine.adjustUserZoom(deltaOrReset);
         this.ui.updateZoomReadout(nextZoom);
       },
+      onToggleFullscreen: () => {
+        void this.audio.unlock();
+        this.audio.playUiTap();
+        void this.ui.handleFullscreenToggle();
+      },
     });
 
     this.titleHub = new TitleAndOnboardingControllerV7(this.uiRoot, {
@@ -383,6 +394,11 @@ export class ShowtimeAppV7 {
         this.ui.openEpisodeJumpModal(() => {
           if (this.phase === 'HUB') this.refreshTitleHubView();
         });
+      },
+      onToggleFullscreen: () => {
+        void this.audio.unlock();
+        this.audio.playUiTap();
+        void this.ui.handleFullscreenToggle();
       },
       onUiTapSfx: () => {
         void this.audio.unlock();
@@ -2032,11 +2048,31 @@ export class ShowtimeAppV7 {
       if (!pick) return;
 
       if (pick.type === 'TILE') {
-        this.selectBoardTile(pick.tileIndex);
+        // Defer `selectBoardTile` out of `pointerup` AND arm a capture-phase trailing-click
+        // shield so the browser's synthesized `click` after `pointerup` NEVER auto-picks A/B/C/D!
+        lastCanvasTileTapMs = performance.now();
+        window.setTimeout(() => {
+          if (!this.disposed) {
+            void this.selectBoardTile(pick.tileIndex);
+          }
+        }, 0);
       } else if (pick.type === 'MERCY_SWITCH') {
         this.board.pullMercySwitch();
       } else if (pick.type === 'BOARD_GIMMICK') {
         this.board.activateBoardGimmick();
+      }
+    };
+
+    let lastCanvasTileTapMs = -9999;
+    const swallowTrailingBoardTapClick = (e: MouseEvent): void => {
+      if (this.disposed) return;
+      if (e.detail > 0 && performance.now() - lastCanvasTileTapMs < 340) {
+        const targetEl = e.target as HTMLElement | null;
+        if (targetEl && targetEl !== canvas && targetEl.closest('#ws7-toy-mount, .ws7-question-stage')) {
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+        }
       }
     };
 
@@ -2055,6 +2091,13 @@ export class ShowtimeAppV7 {
 
       if (e.key === 'Shift' && !e.repeat && this.phase === 'BOARD_SELECT') {
         this.handleCensorPaddleHold(true);
+        return;
+      }
+
+      if ((e.key === 'f' || e.key === 'F') && !e.repeat && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        this.audio.playUiTap();
+        void this.ui.handleFullscreenToggle();
         return;
       }
 
@@ -2097,6 +2140,7 @@ export class ShowtimeAppV7 {
     canvas.addEventListener('wheel', onWheel, { passive: false });
     window.addEventListener('pointerup', onPointerUp);
     window.addEventListener('pointercancel', onPointerCancel);
+    window.addEventListener('click', swallowTrailingBoardTapClick, true);
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
 
@@ -2106,6 +2150,7 @@ export class ShowtimeAppV7 {
       canvas.removeEventListener('wheel', onWheel);
       window.removeEventListener('pointerup', onPointerUp);
       window.removeEventListener('pointercancel', onPointerCancel);
+      window.removeEventListener('click', swallowTrailingBoardTapClick, true);
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('keyup', onKeyUp);
     });

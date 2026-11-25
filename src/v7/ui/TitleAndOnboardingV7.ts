@@ -17,6 +17,7 @@ import {
   type EpisodeBlueprintV7,
 } from '../contracts_v7';
 import { CAST_PROFILES_V7, MAX_TRUNK_SLOTS_V7 } from '../campaign/CastAndRelicsCatalogV7';
+import { isDocumentFullscreenV7, toggleDocumentFullscreenV7 } from './BroadcastChromeUIV7';
 
 const COLD_OPEN_SEEN_STORAGE_KEY = 'ws_v7_cold_open_seen_1';
 const DEFAULT_TUNEIN_DURATION_MS = 850;
@@ -43,6 +44,7 @@ export interface TitleAndOnboardingCallbacksV7 {
   readonly onOpenAudioSettings?: () => void;
   readonly onOpenPropShop?: () => void;
   readonly onOpenEpisodeJump?: () => void;
+  readonly onToggleFullscreen?: () => void;
   readonly onUiTapSfx?: () => void;
   readonly onBellSfx?: () => void;
   readonly onCelebrateSfx?: () => void;
@@ -369,6 +371,51 @@ export class TitleAndOnboardingControllerV7 {
 
     this.rootEl.append(this.spectrumEl, this.stageLayerEl, this.toastEl);
     this.host.appendChild(this.rootEl);
+
+    if (typeof document !== 'undefined') {
+      const onFsChange = (): void => {
+        this.syncTitleFullscreenButtons();
+      };
+      document.addEventListener('fullscreenchange', onFsChange);
+      document.addEventListener('webkitfullscreenchange', onFsChange as EventListener);
+      this.detachFsListener = () => {
+        document.removeEventListener('fullscreenchange', onFsChange);
+        document.removeEventListener('webkitfullscreenchange', onFsChange as EventListener);
+      };
+    }
+  }
+
+  private detachFsListener: (() => void) | null = null;
+
+  private syncTitleFullscreenButtons(): void {
+    const active = isDocumentFullscreenV7();
+    const btns = this.rootEl.querySelectorAll<HTMLButtonElement>('[data-action="toggle-fullscreen"]');
+    btns.forEach((btn) => {
+      btn.dataset.active = active ? 'true' : 'false';
+      btn.title = active ? 'Exit Full Screen (Esc / F)' : 'Enter Full Screen (F)';
+      const lbl = btn.querySelector('.ws66-fs-label');
+      if (lbl) {
+        lbl.textContent = active ? 'EXIT FULL' : 'FULL SCREEN';
+      }
+      const ico = btn.querySelector('.ws66-fs-icon');
+      if (ico) {
+        ico.textContent = active ? '🗗' : '⛶';
+      }
+    });
+  }
+
+  private async triggerTitleFullscreenToggle(): Promise<void> {
+    this.callbacks.onUiTapSfx?.();
+    if (this.callbacks.onToggleFullscreen) {
+      this.callbacks.onToggleFullscreen();
+      window.setTimeout(() => this.syncTitleFullscreenButtons(), 100);
+      return;
+    }
+    const res = await toggleDocumentFullscreenV7();
+    this.syncTitleFullscreenButtons();
+    if (!res.ok && res.reason === 'UNSUPPORTED_IOS') {
+      this.showToast('📱 ON IPHONE: TAP SHARE → “ADD TO HOME SCREEN” FOR FULL SCREEN!');
+    }
   }
 
   public setCallbacks(callbacks: TitleAndOnboardingCallbacksV7): void {
@@ -433,6 +480,8 @@ export class TitleAndOnboardingControllerV7 {
 
   public dispose(): void {
     this.hideAll();
+    this.detachFsListener?.();
+    this.detachFsListener = null;
     if (this.toastTimerId !== null) {
       window.clearTimeout(this.toastTimerId);
       this.toastTimerId = null;
@@ -573,7 +622,8 @@ export class TitleAndOnboardingControllerV7 {
     stage.dataset.ctaHover = 'none';
     stage.setAttribute('aria-label', "World's Smartest 1966 Title Broadcast Hub");
 
-    // Floating Top Studio Bug
+    // Floating Top Studio Bug + 1-Tap Full Screen Button
+    const fsActive = isDocumentFullscreenV7();
     const topStrip = document.createElement('header');
     topStrip.className = 'ws66-title-topstrip';
     topStrip.innerHTML = `
@@ -584,11 +634,21 @@ export class TitleAndOnboardingControllerV7 {
         </span>
         <span class="ws66-studio-callsign">IBC STUDIO 6A · NEW YORK</span>
       </div>
-      <div class="ws66-livingcolor-emblem">
-        ${buildPeacockEmblemSvg()}
-        <span class="ws66-livingcolor-tag">IN LIVING COLOR</span>
+      <div class="ws66-topstrip-right">
+        <div class="ws66-livingcolor-emblem">
+          ${buildPeacockEmblemSvg()}
+          <span class="ws66-livingcolor-tag">IN LIVING COLOR</span>
+        </div>
+        <button type="button" class="ws66-fs-btn" data-action="toggle-fullscreen" data-active="${fsActive}" title="${fsActive ? 'Exit Full Screen (Esc / F)' : 'Enter Full Screen (F)'}">
+          <span class="ws66-fs-icon" aria-hidden="true">${fsActive ? '🗗' : '⛶'}</span>
+          <span class="ws66-fs-label">${fsActive ? 'EXIT FULL' : 'FULL SCREEN'}</span>
+        </button>
       </div>
     `;
+    const topFsBtn = topStrip.querySelector<HTMLButtonElement>('[data-action="toggle-fullscreen"]');
+    topFsBtn?.addEventListener('click', () => {
+      void this.triggerTitleFullscreenToggle();
+    });
 
     // Main Composition: Kinetic Marquee Sculpture + Sculpted Push-Button Deck
     const main = document.createElement('div');

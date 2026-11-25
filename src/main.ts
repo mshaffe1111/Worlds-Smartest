@@ -19,7 +19,7 @@ const offlineSwClientLoaders = import.meta.glob<OfflineSwClientModule>(
   './pwa/OfflineServiceWorkerClient.ts',
 );
 
-const SW_UPGRADE_RELOAD_KEY = 'ws_sw_upgraded_v7_r1';
+const SW_UPGRADE_RELOAD_KEY = 'ws_sw_upgraded_v7_r11';
 
 function scheduleOfflineServiceWorkerRegistration(): void {
   if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;

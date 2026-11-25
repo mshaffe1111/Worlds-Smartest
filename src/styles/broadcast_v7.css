@@ -141,7 +141,7 @@ body,
   background: linear-gradient(180deg, #0b1d30 0%, #081524 100%);
   box-shadow: 0 6px 22px rgba(4, 10, 19, 0.56);
   pointer-events: auto;
-  z-index: 48;
+  z-index: 54;
 }
 
 .ws7-top-bug-wrap::after {
@@ -511,6 +511,17 @@ body,
 
 .ws7-thumb-btn[data-mobile-drawer='true'] {
   display: inline-flex;
+}
+
+.ws7-thumb-btn[data-action='fullscreen'][data-active='true'] {
+  color: var(--ws7-peacock-bright);
+  background: rgba(0, 150, 166, 0.2);
+}
+
+@media (max-width: 520px) {
+  .ws7-thumb-btn[data-compact-hide='true'] {
+    display: none;
+  }
 }
 
 /* ============================================================================

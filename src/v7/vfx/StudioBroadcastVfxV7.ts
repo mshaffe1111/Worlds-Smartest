@@ -489,9 +489,11 @@ export class StudioBroadcastVfxV7 {
     }
 
     this.applyCanvasOverlayStyles(options.zIndex ?? 85);
+    // CRITICAL: Never pass `desynchronized: true` on a transparent full-screen overlay canvas!
+    // DirectComposition / mobile GPU swapchains composite `desynchronized` 2D canvases with an
+    // opaque black backing buffer, turning the entire screen black when celebration VFX draw.
     this.ctx = this.canvas.getContext('2d', {
       alpha: true,
-      desynchronized: true,
     });
 
     this.resize();
@@ -1098,7 +1100,7 @@ export class StudioBroadcastVfxV7 {
 
   private applyCanvasOverlayStyles(zIndex: number): void {
     const s = this.canvas.style;
-    s.display = 'block';
+    s.display = 'none';
     s.position = 'fixed';
     s.top = '0';
     s.left = '0';
@@ -1158,7 +1160,11 @@ export class StudioBroadcastVfxV7 {
   }
 
   private ensureLoopRunning(): void {
-    if (this.disposed || !this.autoAnimate) return;
+    if (this.disposed) return;
+    if (this.canvas.style.display !== 'block') {
+      this.canvas.style.display = 'block';
+    }
+    if (!this.autoAnimate) return;
     if (this.rafId !== null) return;
     this.lastRafMs = performance.now();
     this.rafId = window.requestAnimationFrame(this.onRafTick);
@@ -1168,6 +1174,9 @@ export class StudioBroadcastVfxV7 {
     if (this.rafId !== null) {
       window.cancelAnimationFrame(this.rafId);
       this.rafId = null;
+    }
+    if (this.canvas.style.display !== 'none') {
+      this.canvas.style.display = 'none';
     }
   }
 
@@ -1187,6 +1196,7 @@ export class StudioBroadcastVfxV7 {
       this.rafId = window.requestAnimationFrame(this.onRafTick);
     } else {
       this.clearCanvasSurface();
+      this.canvas.style.display = 'none';
     }
   };
 
