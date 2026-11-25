@@ -9,15 +9,21 @@
 
 import {
   ALL_CATEGORIES_V7,
+  ALL_RIVAL_IDS_V7,
   CATEGORY_TO_DOMAIN_V7,
   type BoardIdV7,
   type BoardTileNodeV7,
   type BoardTwistIdV7,
+  type BoardUnlockTopologyV7,
   type CategoryIdV7,
   type ClassicTvTileTwistV7,
+  type CpuPlaystyleIdV7,
+  type CpuTemperamentIdV7,
+  type DifficultyModeV7,
   type DomainIdV7,
   type RivalIdV7,
 } from '../contracts_v7';
+import { CAST_PROFILES_V7 } from '../campaign/CastAndRelicsCatalogV7';
 
 // ----------------------------------------------------------------------------
 // 1. Canonical 16-Twist Specification Catalog (`BOARD_TWIST_SPECS_V7`)
@@ -168,32 +174,83 @@ export const ALL_BOARD_TWIST_IDS_V7: readonly BoardTwistIdV7[] = Object.keys(
 ) as BoardTwistIdV7[];
 
 // ----------------------------------------------------------------------------
-// 2. Canonical Rival Weak/Strong Fallback Map (Matches `CastProfileV7` 20/20!)
+// 2. Canonical 24-Champion Weak/Strong/Playstyle/Temperament Runtime Helpers
+//    (100% Lazy Runtime Access into `CAST_PROFILES_V7` — ZERO Top-Level Module
+//    Evaluation Across Rollup `v7-boards` <-> `v7-campaign-ui` Chunks!)
 // ----------------------------------------------------------------------------
 
-export const RIVAL_SYMPATHETIC_SET_V7: ReadonlySet<RivalIdV7> = new Set<RivalIdV7>([
-  'CARMEN_DELGADO',
-  'TOBY_OKAFOR',
-  'INEZ_CALLAHAN',
-]);
+let cachedSympatheticSet: ReadonlySet<RivalIdV7> | null = null;
 
-export const DEFAULT_RIVAL_WEAK_CATEGORIES_V7: Record<RivalIdV7, readonly CategoryIdV7[]> = {
-  CARMEN_DELGADO: ['PHYSICS', 'FINANCE', 'ENGINES'],
-  TOBY_OKAFOR: ['DYNASTIES', 'FINE ARTS', 'LITERATURE'],
-  INEZ_CALLAHAN: ['GADGETS', 'JUKEBOX', 'SPORTS'],
-  ALASTAIR_KERR: ['SCREEN', 'CUISINE', 'PRICING'],
-  SEO_YUN_KANG: ['FOLKLORE', 'HEADLINES', 'LEXICON'],
-  REX_CALLOWAY: ['CHEMISTRY', 'MEDICINE', 'FALLACIES'],
+export function getSympatheticRivalsSetV7(): ReadonlySet<RivalIdV7> {
+  if (!cachedSympatheticSet) {
+    cachedSympatheticSet = new Set<RivalIdV7>(
+      ALL_RIVAL_IDS_V7.filter((id) => CAST_PROFILES_V7[id]?.role === 'RIVAL_SYMPATHETIC'),
+    );
+  }
+  return cachedSympatheticSet;
+}
+
+export function getRivalWeakCategoriesV7(id: RivalIdV7): readonly CategoryIdV7[] {
+  return (
+    CAST_PROFILES_V7[id]?.weakCategories ??
+    CAST_PROFILES_V7.CARMEN_DELGADO?.weakCategories ??
+    ['PHYSICS', 'FINANCE', 'ENGINES']
+  );
+}
+
+export function getRivalStrongCategoriesV7(id: RivalIdV7): readonly CategoryIdV7[] {
+  return (
+    CAST_PROFILES_V7[id]?.strongCategories ??
+    CAST_PROFILES_V7.CARMEN_DELGADO?.strongCategories ??
+    ['MEDICINE', 'CHEMISTRY', 'CUISINE']
+  );
+}
+
+export function getRivalPlaystyleV7(id: RivalIdV7): CpuPlaystyleIdV7 {
+  return CAST_PROFILES_V7[id]?.playstyle ?? 'PROFESSOR';
+}
+
+export function getRivalTemperamentV7(id: RivalIdV7): CpuTemperamentIdV7 {
+  return CAST_PROFILES_V7[id]?.temperament ?? 'STEADY';
+}
+
+export const RIVAL_SYMPATHETIC_SET_V7: Pick<ReadonlySet<RivalIdV7>, 'has'> = {
+  has(id: RivalIdV7): boolean {
+    return getSympatheticRivalsSetV7().has(id);
+  },
 };
 
-export const DEFAULT_RIVAL_STRONG_CATEGORIES_V7: Record<RivalIdV7, readonly CategoryIdV7[]> = {
-  CARMEN_DELGADO: ['LEXICON', 'LITERATURE', 'CUISINE'],
-  TOBY_OKAFOR: ['ENGINES', 'GADGETS', 'PHYSICS'],
-  INEZ_CALLAHAN: ['FINANCE', 'ODDS', 'HEADLINES'],
-  ALASTAIR_KERR: ['DYNASTIES', 'FINE ARTS', 'FOLKLORE'],
-  SEO_YUN_KANG: ['MEDICINE', 'CHEMISTRY', 'ATLAS'],
-  REX_CALLOWAY: ['SPORTS', 'SCREEN', 'PRICING'],
-};
+export const DEFAULT_RIVAL_WEAK_CATEGORIES_V7: Record<RivalIdV7, readonly CategoryIdV7[]> =
+  new Proxy({} as Record<RivalIdV7, readonly CategoryIdV7[]>, {
+    get(_target, prop): readonly CategoryIdV7[] {
+      return getRivalWeakCategoriesV7(String(prop) as RivalIdV7);
+    },
+  });
+
+export const DEFAULT_RIVAL_STRONG_CATEGORIES_V7: Record<RivalIdV7, readonly CategoryIdV7[]> =
+  new Proxy({} as Record<RivalIdV7, readonly CategoryIdV7[]>, {
+    get(_target, prop): readonly CategoryIdV7[] {
+      return getRivalStrongCategoriesV7(String(prop) as RivalIdV7);
+    },
+  });
+
+export const DEFAULT_RIVAL_PLAYSTYLE_V7: Record<RivalIdV7, CpuPlaystyleIdV7> = new Proxy(
+  {} as Record<RivalIdV7, CpuPlaystyleIdV7>,
+  {
+    get(_target, prop): CpuPlaystyleIdV7 {
+      return getRivalPlaystyleV7(String(prop) as RivalIdV7);
+    },
+  },
+);
+
+export const DEFAULT_RIVAL_TEMPERAMENT_V7: Record<RivalIdV7, CpuTemperamentIdV7> = new Proxy(
+  {} as Record<RivalIdV7, CpuTemperamentIdV7>,
+  {
+    get(_target, prop): CpuTemperamentIdV7 {
+      return getRivalTemperamentV7(String(prop) as RivalIdV7);
+    },
+  },
+);
 
 // ----------------------------------------------------------------------------
 // 3. Twist Runtime State, Gimmick Controls & Tile Evaluation Contracts
@@ -226,13 +283,146 @@ export interface BoardGimmickStateV7 {
   turnCounter: number;
 }
 
-export type BoardPlayModeV7 =
-  | 'CLASSIC_TOTE'
-  | 'TIC_TAC_LINE'
-  | 'COAST_HEX_BRIDGE'
-  | 'EYE_GUESS_MEMORY'
-  | 'CONCENTRATION_PRIZE_MATCH'
-  | 'MONTY_CURTAIN_DEAL';
+export {
+  ALL_BOARD_PLAY_MODES_V7,
+  ALL_BOARD_UNLOCK_TOPOLOGIES_V7,
+  type BoardPlayModeV7,
+} from '../contracts_v7';
+import {
+  ALL_BOARD_PLAY_MODES_V7,
+  ALL_BOARD_UNLOCK_TOPOLOGIES_V7,
+  type BoardPlayModeV7,
+} from '../contracts_v7';
+
+export interface BoardUnlockTopologySpecV7 {
+  readonly id: BoardUnlockTopologyV7;
+  readonly badge: string;
+  readonly title: string;
+  readonly shortRule: string;
+  readonly compactRule: string;
+}
+
+export const BOARD_UNLOCK_TOPOLOGY_SPECS_V7: Record<
+  BoardUnlockTopologyV7,
+  BoardUnlockTopologySpecV7
+> = {
+  CLASSIC_OPEN: {
+    id: 'CLASSIC_OPEN',
+    badge: 'OPEN RACK',
+    title: 'Classic Open Tote',
+    shortRule: 'All dollar squares open from Turn 1 — crack the $500 Gold Vault!',
+    compactRule: 'All open Turn 1',
+  },
+  PYRAMID_CLIMB: {
+    id: 'PYRAMID_CLIMB',
+    badge: '▲ PYRAMID',
+    title: 'Pyramid Tier Climb',
+    shortRule: 'Start on the base row and win upward to unlock higher-dollar upper tiers!',
+    compactRule: 'Win base row up',
+  },
+  KEY_AND_SAFE: {
+    id: 'KEY_AND_SAFE',
+    badge: '🗝️ KEY & SAFE',
+    title: 'Brass Key & Safe Vaults',
+    shortRule: 'Win a 🗝️ Brass Key square to unlock a $500 Safe with 1-Turn Keyholder Shield!',
+    compactRule: 'Win 🗝️ Key for Safe',
+  },
+  CENTER_STARBURST: {
+    id: 'CENTER_STARBURST',
+    badge: '✦ STARBURST',
+    title: 'Center Starburst Bloom',
+    shortRule: 'Claim center hub squares to radiate outward into high-stake corner keystones!',
+    compactRule: 'Win center outward',
+  },
+  ROVING_SPOTLIGHT: {
+    id: 'ROVING_SPOTLIGHT',
+    badge: '🔦 SPOTLIGHT',
+    title: 'Roving Follow-Spot',
+    shortRule: 'Warm stage follow-spots sweep across active squares each turn (+$50 Spot Bonus)!',
+    compactRule: 'Hit 🔦 Spot (+$50)',
+  },
+};
+
+export interface CombinatorialBoardComboV7 {
+  readonly playMode: BoardPlayModeV7;
+  readonly unlockTopology: BoardUnlockTopologyV7;
+  readonly boardId: BoardIdV7;
+  readonly comboKey: string;
+}
+
+const PREFERRED_BOARDS_BY_PLAY_MODE_V7: Record<BoardPlayModeV7, readonly BoardIdV7[]> = {
+  CLASSIC_TOTE: ['BOARD_01_FUNK_CROSSFADER', 'BOARD_04_MAHOGANY_SWITCHBOARD'],
+  TIC_TAC_LINE: ['BOARD_02_JUBILEE_HEX_BRIDGE', 'BOARD_10_SOVEREIGN_ZIGGURAT'],
+  COAST_HEX_BRIDGE: ['BOARD_08_GEODESIC_SUNDIAL', 'BOARD_11_WHEW_GAUNTLET'],
+  EYE_GUESS_MEMORY: ['BOARD_05_LARSON_SPIN_RING', 'BOARD_09_PIRATE_UHF_DECK'],
+  CONCENTRATION_PRIZE_MATCH: ['BOARD_03_VAUDEVILLE_GEAR_TRAIN', 'BOARD_07_MONTE_CARLO_SHOE'],
+  MONTY_CURTAIN_DEAL: ['BOARD_06_BOARDWALK_PINBALL', 'BOARD_12_PENDULUM_BALANCE'],
+  PRESS_YOUR_LUCK_GREMLIN: ['BOARD_05_LARSON_SPIN_RING', 'BOARD_06_BOARDWALK_PINBALL'],
+  BIG_WHEEL_SHOWCASE: ['BOARD_03_VAUDEVILLE_GEAR_TRAIN', 'BOARD_01_FUNK_CROSSFADER'],
+};
+
+/**
+ * Draws a non-repeating `(BoardPlayModeV7 × BoardUnlockTopologyV7)` combination from
+ * the 40-combo studio bag. `S01E01` ALWAYS opens with `CLASSIC_TOTE + CLASSIC_OPEN`!
+ */
+export function drawCombinatorialBoardComboV7(opts: {
+  readonly episodeNumber: number;
+  readonly isCampaignEp1?: boolean;
+  readonly fallbackBoardId: BoardIdV7;
+  readonly recentCombos?: readonly string[];
+  readonly preferredMode?: BoardPlayModeV7;
+  readonly seed?: number;
+}): CombinatorialBoardComboV7 {
+  if (opts.isCampaignEp1) {
+    return {
+      playMode: 'CLASSIC_TOTE',
+      unlockTopology: 'CLASSIC_OPEN',
+      boardId: 'BOARD_01_FUNK_CROSSFADER',
+      comboKey: 'CLASSIC_TOTE::CLASSIC_OPEN',
+    };
+  }
+
+  const recent = opts.recentCombos ?? [];
+  const recentSet = new Set(recent.slice(-18));
+  const lastCombo = recent.length > 0 ? recent[recent.length - 1] : '';
+  const [lastMode, lastTopo] = lastCombo.split('::');
+
+  const candidateModes: readonly BoardPlayModeV7[] = opts.preferredMode
+    ? [opts.preferredMode]
+    : ALL_BOARD_PLAY_MODES_V7;
+
+  const allPairs: Array<{ mode: BoardPlayModeV7; topo: BoardUnlockTopologyV7; key: string }> = [];
+  for (const mode of candidateModes) {
+    for (const topo of ALL_BOARD_UNLOCK_TOPOLOGIES_V7) {
+      allPairs.push({ mode, topo, key: `${mode}::${topo}` });
+    }
+  }
+
+  const freshStrict = allPairs.filter(
+    (p) =>
+      !recentSet.has(p.key) &&
+      (opts.preferredMode ? p.topo !== lastTopo : p.mode !== lastMode && p.topo !== lastTopo),
+  );
+  const freshAny = allPairs.filter((p) => !recentSet.has(p.key));
+  const pool = freshStrict.length > 0 ? freshStrict : freshAny.length > 0 ? freshAny : allPairs;
+
+  const rawSeed =
+    (opts.seed ?? opts.episodeNumber * 2654435761 + recent.length * 40503) >>> 0;
+  const picked = pool[rawSeed % pool.length] ?? pool[0];
+  const preferredBoards = PREFERRED_BOARDS_BY_PLAY_MODE_V7[picked.mode];
+  const boardId = opts.preferredMode
+    ? preferredBoards[rawSeed % preferredBoards.length] ?? opts.fallbackBoardId
+    : BOARD_PLAY_MODE_BY_BOARD_V7[opts.fallbackBoardId] === picked.mode
+      ? opts.fallbackBoardId
+      : preferredBoards[rawSeed % preferredBoards.length] ?? opts.fallbackBoardId;
+
+  return {
+    playMode: picked.mode,
+    unlockTopology: picked.topo,
+    boardId,
+    comboKey: picked.key,
+  };
+}
 
 export type EyeGuessHiddenBadgeV7 = 'NONE' | 'DOUBLE_2X' | 'CASH_300' | 'TRAP';
 
@@ -250,20 +440,26 @@ export interface BoardModePostClaimResultV7 {
   readonly multAdd: number;
   readonly bannerHeadline: string | null;
   readonly highlightedTileIndices?: readonly number[];
+  readonly earnedGremlinSpins?: number;
+  readonly triggerBigWheel?: boolean;
 }
 
 export interface BoardModeRuleBannerV7 {
   readonly mode: BoardPlayModeV7;
   readonly modeTitle: string;
   readonly ruleSummary: string;
+  readonly compactTitle?: string;
+  readonly compactRuleSummary?: string;
+  readonly unlockTopology?: BoardUnlockTopologyV7;
+  readonly topologyBadge?: string;
 }
 
 export const BOARD_PLAY_MODE_BY_BOARD_V7: Record<BoardIdV7, BoardPlayModeV7> = {
   BOARD_01_FUNK_CROSSFADER: 'CLASSIC_TOTE',
   BOARD_02_JUBILEE_HEX_BRIDGE: 'TIC_TAC_LINE',
-  BOARD_03_VAUDEVILLE_GEAR_TRAIN: 'CONCENTRATION_PRIZE_MATCH',
+  BOARD_03_VAUDEVILLE_GEAR_TRAIN: 'BIG_WHEEL_SHOWCASE',
   BOARD_04_MAHOGANY_SWITCHBOARD: 'CLASSIC_TOTE',
-  BOARD_05_LARSON_SPIN_RING: 'EYE_GUESS_MEMORY',
+  BOARD_05_LARSON_SPIN_RING: 'PRESS_YOUR_LUCK_GREMLIN',
   BOARD_06_BOARDWALK_PINBALL: 'MONTY_CURTAIN_DEAL',
   BOARD_07_MONTE_CARLO_SHOE: 'CONCENTRATION_PRIZE_MATCH',
   BOARD_08_GEODESIC_SUNDIAL: 'COAST_HEX_BRIDGE',
@@ -276,33 +472,59 @@ export const BOARD_PLAY_MODE_BY_BOARD_V7: Record<BoardIdV7, BoardPlayModeV7> = {
 export const BOARD_MODE_RULE_BANNERS_V7: Record<BoardPlayModeV7, BoardModeRuleBannerV7> = {
   CLASSIC_TOTE: {
     mode: 'CLASSIC_TOTE',
-    modeTitle: "1964 CLASSIC TOTE",
+    modeTitle: '1964 CLASSIC TOTE',
     ruleSummary: 'Climb $150–$400 rows, uncover the hidden 2× Secret Square & crack the $500 Gold Vault!',
+    compactTitle: 'CLASSIC TOTE',
+    compactRuleSummary: 'Crack the $500 Gold Vault!',
   },
   TIC_TAC_LINE: {
     mode: 'TIC_TAC_LINE',
-    modeTitle: "HOLLYWOOD SQUARES · 3-IN-A-ROW",
+    modeTitle: 'HOLLYWOOD SQUARES · 3-IN-A-ROW',
     ruleSummary: 'Connect 3 claimed tiles in a line for a +$600 LINE JACKPOT — watch Rival blocks!',
+    compactTitle: '3-IN-A-ROW',
+    compactRuleSummary: '3-in-a-row wins +$600!',
   },
   COAST_HEX_BRIDGE: {
     mode: 'COAST_HEX_BRIDGE',
     modeTitle: 'COAST-TO-COAST BRIDGE',
     ruleSummary: 'Connect Left (NYC) to Right (Hollywood) across adjacent wins for +$750 (+0.25×/link)!',
+    compactTitle: 'COAST BRIDGE',
+    compactRuleSummary: 'Link Left-Right +$750!',
   },
   EYE_GUESS_MEMORY: {
     mode: 'EYE_GUESS_MEMORY',
     modeTitle: "EYE GUESS '66 · MEMORY FLASH",
     ruleSummary: 'Memorize the 2.4s board flash! Claim hidden ⭐ 2× & 💰 +$300 tiles while dodging 🎭 TRAPS!',
+    compactTitle: "EYE GUESS '66",
+    compactRuleSummary: 'Recall 2.4s 2× flash!',
   },
   CONCENTRATION_PRIZE_MATCH: {
     mode: 'CONCENTRATION_PRIZE_MATCH',
     modeTitle: "CONCENTRATION '65 · PRIZE MATCH",
     ruleSummary: 'Match 2 Luxury Prize Halves (Color TV, Convertible, Hawaii) for +$500 — hit TAKE! to steal $200!',
+    compactTitle: 'PRIZE MATCH',
+    compactRuleSummary: 'Match 2 prizes +$500!',
   },
   MONTY_CURTAIN_DEAL: {
     mode: 'MONTY_CURTAIN_DEAL',
     modeTitle: "LET'S MAKE A DEAL · CURTAIN SHOW",
     ruleSummary: 'Triple Velvet Mystery Curtains (#1–#3) + Instant Bargains — trade, double & steal!',
+    compactTitle: 'CURTAIN DEAL',
+    compactRuleSummary: 'Pull Curtains #1–#3!',
+  },
+  PRESS_YOUR_LUCK_GREMLIN: {
+    mode: 'PRESS_YOUR_LUCK_GREMLIN',
+    modeTitle: "PRESS YOUR LUCK '66 · GREMLIN BOARD",
+    ruleSummary: 'Win ⚡ Luck Squares to spin the Chasing Light-Board — bank cash or PASS SPINS before the Gremlin zaps 40%!',
+    compactTitle: 'PRESS YOUR LUCK',
+    compactRuleSummary: 'Spin cash, dodge Zonk!',
+  },
+  BIG_WHEEL_SHOWCASE: {
+    mode: 'BIG_WHEEL_SHOWCASE',
+    modeTitle: '1966 BIG WHEEL SHOWCASE',
+    ruleSummary: 'Claim 🎡 Big Wheel squares to flick the 20-wedge Studio Wheel for $1,000 Jackpots, 2× Mult & Free Lifelines!',
+    compactTitle: 'BIG WHEEL',
+    compactRuleSummary: 'Spin 🎡 Wheel $1,000!',
   },
 };
 
@@ -312,8 +534,16 @@ export interface BoardTwistContextV7 {
   readonly rivalId?: RivalIdV7;
   readonly rivalWeakCategories?: readonly CategoryIdV7[];
   readonly rivalStrongCategories?: readonly CategoryIdV7[];
+  readonly scoutedWeakCategories?: readonly CategoryIdV7[];
+  readonly playModeOverride?: BoardPlayModeV7;
+  readonly unlockTopology?: BoardUnlockTopologyV7;
+  readonly cpuPlaystyle?: CpuPlaystyleIdV7;
+  readonly cpuTemperament?: CpuTemperamentIdV7;
+  readonly isCampaignEp1?: boolean;
   readonly playerStreak?: number;
   readonly isBlitzPhase?: boolean;
+  readonly isAct3Showdown?: boolean;
+  readonly turnNumber?: number;
   readonly seedOffset?: number;
 }
 
@@ -407,6 +637,41 @@ export const CLASSIC_TV_TWIST_SPECS_V7: Record<ClassicTvTileTwistV7, ClassicTvTw
     shortRule: 'Special tactile 1966 TV Showcase format with +$50 & +0.20x Showcase Bonus!',
     accentHex: '#0096A6',
   },
+  BIG_WHEEL_SPIN: {
+    id: 'BIG_WHEEL_SPIN',
+    badgeLabel: '🎡 BIG WHEEL',
+    headline: '1966 Studio Big Wheel Spin!',
+    shortRule: 'Flick the 20-wedge Studio Wheel for up to $1,000, 2× Mult, Steal $250, or Free Lifeline!',
+    accentHex: '#F4A91F',
+  },
+  BLIND_CATEGORY: {
+    id: 'BLIND_CATEGORY',
+    badgeLabel: '$600 · ???',
+    headline: 'Blind $600 Mystery Category!',
+    shortRule: 'High $600 dollar stake — hidden category shutter flips open when tapped!',
+    accentHex: '#1E56C5',
+  },
+  MYSTERY_CASH: {
+    id: 'MYSTERY_CASH',
+    badgeLabel: '$??? CASH',
+    headline: 'Wax-Sealed Mystery Cash Square!',
+    shortRule: 'Category revealed upfront; hidden dollar stake ($250–$650) unseals on tap!',
+    accentHex: '#0096A6',
+  },
+  BRASS_KEY: {
+    id: 'BRASS_KEY',
+    badgeLabel: '🗝️ SAFE KEY',
+    headline: 'Brass Safe Key!',
+    shortRule: 'Unlocks a $500 Safe with 1-Turn Keyholder Priority Shield against CPU sniping!',
+    accentHex: '#F4A91F',
+  },
+  PRESS_LUCK_SPIN: {
+    id: 'PRESS_LUCK_SPIN',
+    badgeLabel: '⚡ LUCK SPIN',
+    headline: 'Press-Your-Luck Light Board!',
+    shortRule: 'Win to earn 2 Light-Board spins — bank big cash or pass spins before the Gremlin zaps 40%!',
+    accentHex: '#FF6738',
+  },
 };
 
 export interface TileTwistBreakdownV7 {
@@ -462,12 +727,161 @@ function normalizeAngleDelta(a: number, b: number): number {
 // 4. `BoardTwistsEngineV7` — Stateful Live 16-Twist & Spatial Combo Engine
 // ----------------------------------------------------------------------------
 
+export interface StagedMatchBoardOverridesV7 {
+  readonly playModeOverride?: BoardPlayModeV7;
+  readonly unlockTopology?: BoardUnlockTopologyV7;
+  readonly scoutedWeakCategories?: readonly CategoryIdV7[];
+  readonly cpuPlaystyle?: CpuPlaystyleIdV7;
+  readonly cpuTemperament?: CpuTemperamentIdV7;
+  readonly isCampaignEp1?: boolean;
+}
+
+export interface CpuTurnRollInputV7 {
+  readonly baseAccuracy: number;
+  readonly difficultyMode?: DifficultyModeV7;
+  readonly playstyle: CpuPlaystyleIdV7;
+  readonly temperament: CpuTemperamentIdV7;
+  readonly isWeakCategory: boolean;
+  readonly isStrongCategory: boolean;
+  readonly isBlindCategory?: boolean;
+  readonly tvTwist?: ClassicTvTileTwistV7;
+  readonly turnNumber: number;
+  readonly cpuStreak: number;
+  readonly cpuTiltTurnsRemaining: number;
+  readonly boothRattled: boolean;
+  readonly deterministicRoll01: number;
+}
+
+export interface CpuTurnRollOutcomeV7 {
+  readonly scored: boolean;
+  readonly hitThreshold: number;
+  readonly lockInDwellMs: number;
+  readonly demeanorTag: string;
+}
+
+export const DIFFICULTY_ACCURACY_OFFSET_V7: Record<DifficultyModeV7, number> = {
+  MATINEE_EASY: -0.12,
+  PRIMETIME_NORMAL: 0.0,
+  ALLSTAR_HARD: 0.09,
+  MASTERMIND: 0.16,
+};
+
+/**
+ * Evaluates a CPU Champion's turn honestly from character stats, difficulty mode,
+ * category mastery, and temperament psychology — ZERO fake score rubber-banding!
+ */
+export function evaluateCpuTurnOutcomeV7(input: CpuTurnRollInputV7): CpuTurnRollOutcomeV7 {
+  const diffMode = input.difficultyMode ?? 'PRIMETIME_NORMAL';
+  let threshold = input.baseAccuracy + DIFFICULTY_ACCURACY_OFFSET_V7[diffMode];
+
+  if (input.isWeakCategory) threshold -= 0.24;
+  if (input.isStrongCategory) threshold += 0.1;
+  if (input.isBlindCategory) threshold -= 0.06;
+  if (input.boothRattled) threshold -= 0.16;
+
+  let lockInDwellMs = 460;
+  let demeanorTag = 'STEADY LOCK';
+
+  switch (input.temperament) {
+    case 'HOTHEAD': {
+      if (input.cpuTiltTurnsRemaining > 0) {
+        threshold -= 0.16;
+        lockInDwellMs = 310;
+        demeanorTag = 'STEAMING TILT!';
+      } else if (input.cpuStreak >= 2) {
+        threshold += 0.06;
+        lockInDwellMs = 350;
+        demeanorTag = 'FIRED UP!';
+      }
+      break;
+    }
+    case 'ICE_VEINED': {
+      if (input.turnNumber >= 8) {
+        threshold += 0.08;
+        lockInDwellMs = 640;
+        demeanorTag = 'ICE-VEINED CLUTCH';
+      } else {
+        lockInDwellMs = 560;
+        demeanorTag = 'COOL & MEASURED';
+      }
+      break;
+    }
+    case 'SHOWBOAT': {
+      const isGlamourTwist =
+        input.tvTwist === 'BIG_WHEEL_SPIN' ||
+        input.tvTwist === 'PRESS_LUCK_SPIN' ||
+        input.tvTwist === 'SECRET_SQUARE' ||
+        input.tvTwist === 'MYSTERY_CURTAIN';
+      if (input.cpuTiltTurnsRemaining > 0) {
+        threshold -= 0.08;
+        lockInDwellMs = 340;
+        demeanorTag = 'RUFFLED SHOWBOAT';
+      } else if (isGlamourTwist) {
+        threshold += 0.07;
+        lockInDwellMs = 520;
+        demeanorTag = 'SPOTLIGHT SHOWBOAT!';
+      } else {
+        threshold -= 0.05;
+        lockInDwellMs = 380;
+        demeanorTag = 'FLASHY SNAP';
+      }
+      break;
+    }
+    case 'STEADY':
+    default: {
+      if (input.cpuTiltTurnsRemaining > 0) {
+        threshold -= 0.04;
+        lockInDwellMs = 430;
+        demeanorTag = 'SHAKEN FOCUS';
+      }
+      break;
+    }
+  }
+
+  if (input.playstyle === 'CLUTCH_SHARK' && input.turnNumber >= 8) {
+    threshold += 0.07;
+    demeanorTag = 'SHARK FINALE SURGE';
+  }
+
+  const minFloor = diffMode === 'MATINEE_EASY' ? 0.22 : 0.28;
+  const maxCeil =
+    diffMode === 'MATINEE_EASY'
+      ? 0.72
+      : diffMode === 'PRIMETIME_NORMAL'
+        ? 0.85
+        : diffMode === 'ALLSTAR_HARD'
+          ? 0.9
+          : 0.96;
+  const clampedThreshold = clamp(threshold, minFloor, maxCeil);
+  const scored = input.deterministicRoll01 < clampedThreshold;
+
+  return {
+    scored,
+    hitThreshold: roundTo2(clampedThreshold),
+    lockInDwellMs,
+    demeanorTag,
+  };
+}
+
 export class BoardTwistsEngineV7 {
+  private static pendingMatchOverrides: StagedMatchBoardOverridesV7 | null = null;
+  private static lastActiveInstance: BoardTwistsEngineV7 | null = null;
+
+  public static stageNextMatchOverrides(overrides: StagedMatchBoardOverridesV7 | null): void {
+    BoardTwistsEngineV7.pendingMatchOverrides = overrides;
+  }
+
+  public static getActiveEngine(): BoardTwistsEngineV7 | null {
+    return BoardTwistsEngineV7.lastActiveInstance;
+  }
+
   private context: BoardTwistContextV7;
   private gimmick: BoardGimmickStateV7;
   private revealedSecretSquareIndices = new Set<number>();
   private rolledMysteryOutcomes = new Map<number, MysteryCurtainOutcomeV7>();
   private mysteryCurtainNumbers = new Map<number, 1 | 2 | 3>();
+  private mysteryCashAmounts = new Map<number, number>();
+  private activeSpotlightIndices: number[] = [];
   private eyeGuessBadges = new Map<number, EyeGuessHiddenBadgeV7>();
   private concentrationPrizes = new Map<number, ConcentrationPrizeKindV7>();
   private revealedConcentrationTiles = new Set<number>();
@@ -475,6 +889,7 @@ export class BoardTwistsEngineV7 {
   private awardedTicTacLines = new Set<string>();
   private coastToCoastAwarded = false;
   private activeWaveNumber = 1;
+  private act2BoostedTiles = new WeakSet<BoardTileNodeV7>();
 
   constructor(initialContext?: Partial<BoardTwistContextV7>) {
     this.context = {
@@ -483,11 +898,20 @@ export class BoardTwistsEngineV7 {
       rivalId: initialContext?.rivalId ?? 'CARMEN_DELGADO',
       rivalWeakCategories: initialContext?.rivalWeakCategories,
       rivalStrongCategories: initialContext?.rivalStrongCategories,
+      scoutedWeakCategories: initialContext?.scoutedWeakCategories ?? [],
+      playModeOverride: initialContext?.playModeOverride,
+      unlockTopology: initialContext?.unlockTopology ?? 'CLASSIC_OPEN',
+      cpuPlaystyle: initialContext?.cpuPlaystyle,
+      cpuTemperament: initialContext?.cpuTemperament,
+      isCampaignEp1: initialContext?.isCampaignEp1 ?? false,
       playerStreak: initialContext?.playerStreak ?? 0,
       isBlitzPhase: initialContext?.isBlitzPhase ?? false,
+      isAct3Showdown: initialContext?.isAct3Showdown ?? false,
+      turnNumber: initialContext?.turnNumber ?? 1,
       seedOffset: initialContext?.seedOffset ?? 0,
     };
     this.gimmick = this.createInitialGimmickState();
+    BoardTwistsEngineV7.lastActiveInstance = this;
   }
 
   private createInitialGimmickState(): BoardGimmickStateV7 {
@@ -516,15 +940,37 @@ export class BoardTwistsEngineV7 {
     tiles?: BoardTileNodeV7[],
     resetGimmicks = true,
   ): void {
+    BoardTwistsEngineV7.lastActiveInstance = this;
+    const staged = BoardTwistsEngineV7.pendingMatchOverrides;
+    if (resetGimmicks && staged) {
+      BoardTwistsEngineV7.pendingMatchOverrides = null;
+    }
+
     this.context = {
       ...this.context,
       ...nextContext,
+      ...(resetGimmicks
+        ? {
+            playModeOverride: nextContext.playModeOverride ?? staged?.playModeOverride,
+            unlockTopology: nextContext.unlockTopology ?? staged?.unlockTopology ?? 'CLASSIC_OPEN',
+            scoutedWeakCategories:
+              nextContext.scoutedWeakCategories ?? staged?.scoutedWeakCategories ?? [],
+            cpuPlaystyle: nextContext.cpuPlaystyle ?? staged?.cpuPlaystyle,
+            cpuTemperament: nextContext.cpuTemperament ?? staged?.cpuTemperament,
+            isCampaignEp1: nextContext.isCampaignEp1 ?? staged?.isCampaignEp1 ?? false,
+            isBlitzPhase: false,
+            isAct3Showdown: false,
+            turnNumber: 1,
+          }
+        : {}),
     };
     if (resetGimmicks) {
       this.gimmick = this.createInitialGimmickState();
       this.revealedSecretSquareIndices.clear();
       this.rolledMysteryOutcomes.clear();
       this.mysteryCurtainNumbers.clear();
+      this.mysteryCashAmounts.clear();
+      this.activeSpotlightIndices = [];
       this.eyeGuessBadges.clear();
       this.concentrationPrizes.clear();
       this.revealedConcentrationTiles.clear();
@@ -532,11 +978,38 @@ export class BoardTwistsEngineV7 {
       this.awardedTicTacLines.clear();
       this.coastToCoastAwarded = false;
       this.activeWaveNumber = 1;
+      this.act2BoostedTiles = new WeakSet<BoardTileNodeV7>();
     }
     if (tiles && tiles.length > 0) {
       this.seedSocketMarkersOnTiles(tiles);
       this.seedClassicTvTwistsOnTiles(tiles, this.activeWaveNumber, this.context.seedOffset ?? 0);
       this.syncPendulumTilt(tiles);
+      this.recomputeBoardModifiers(tiles);
+    }
+  }
+
+  public updateRuntimeMatchFlags(
+    patch: Partial<
+      Pick<
+        BoardTwistContextV7,
+        | 'scoutedWeakCategories'
+        | 'turnNumber'
+        | 'isAct3Showdown'
+        | 'cpuPlaystyle'
+        | 'cpuTemperament'
+      >
+    >,
+    tiles?: BoardTileNodeV7[],
+  ): void {
+    this.context = {
+      ...this.context,
+      ...patch,
+    };
+    if (tiles && patch.scoutedWeakCategories) {
+      const scoutedSet = new Set<CategoryIdV7>(patch.scoutedWeakCategories);
+      for (const t of tiles) {
+        t.isWheelhouse = scoutedSet.has(t.category);
+      }
       this.recomputeBoardModifiers(tiles);
     }
   }
@@ -586,33 +1059,34 @@ export class BoardTwistsEngineV7 {
   public seedSocketMarkersOnTiles(tiles: BoardTileNodeV7[]): void {
     if (tiles.length === 0) return;
 
-    const weakSet = new Set<CategoryIdV7>(this.getEffectiveWeakCategories());
+    const weakList = this.getEffectiveWeakCategories();
+    const scoutedSet = new Set<CategoryIdV7>(this.context.scoutedWeakCategories ?? []);
     const rivalId = this.context.rivalId ?? 'CARMEN_DELGADO';
     const isSympathetic = RIVAL_SYMPATHETIC_SET_V7.has(rivalId);
     const twistId = this.context.twistId;
 
-    // Reset dynamic flags cleanly first
+    // Reset dynamic flags cleanly first — `isWheelhouse` badge on plaque only lights up once SCOUTED!
     for (const tile of tiles) {
       tile.domain = CATEGORY_TO_DOMAIN_V7[tile.category] ?? tile.domain;
-      tile.isWheelhouse = weakSet.has(tile.category);
+      tile.isWheelhouse = scoutedSet.has(tile.category);
       tile.hasAmberTruce = false;
       tile.hasUhfHalo = false;
       tile.isRiggedSolenoid = false;
     }
 
-    // Ensure at least 2 tiles carry Rival weak categories so Wheelhouse Totem is always actionable
-    let wheelhouseCount = tiles.filter((t) => t.isWheelhouse).length;
-    const weakList = this.getEffectiveWeakCategories();
-    if (wheelhouseCount < 2 && weakList.length > 0) {
-      for (let i = 0; i < tiles.length && wheelhouseCount < 2; i++) {
+    // Ensure at least 2 tiles carry Rival weak categories so scouting discoveries are always actionable!
+    const trueWeakSet = new Set<CategoryIdV7>(weakList);
+    let weakPresentCount = tiles.filter((t) => trueWeakSet.has(t.category)).length;
+    if (weakPresentCount < 2 && weakList.length > 0) {
+      for (let i = 0; i < tiles.length && weakPresentCount < 2; i++) {
         const candidateIdx = (i * 5 + 2) % tiles.length;
         const candidate = tiles[candidateIdx];
-        if (!candidate.isWheelhouse) {
-          const forcedCat = weakList[wheelhouseCount % weakList.length] ?? ALL_CATEGORIES_V7[0];
+        if (!trueWeakSet.has(candidate.category)) {
+          const forcedCat = weakList[weakPresentCount % weakList.length] ?? ALL_CATEGORIES_V7[0];
           candidate.category = forcedCat;
           candidate.domain = CATEGORY_TO_DOMAIN_V7[forcedCat];
-          candidate.isWheelhouse = true;
-          wheelhouseCount++;
+          candidate.isWheelhouse = scoutedSet.has(forcedCat);
+          weakPresentCount++;
         }
       }
     }
@@ -697,11 +1171,16 @@ export class BoardTwistsEngineV7 {
     this.revealedSecretSquareIndices.clear();
     this.rolledMysteryOutcomes.clear();
     this.mysteryCurtainNumbers.clear();
+    this.mysteryCashAmounts.clear();
 
     // Reset all tiles to clean classic 4-option defaults first
     for (const tile of tiles) {
       tile.tvTwist = 'NONE';
       tile.isVaultLocked = false;
+      tile.isTopologyLocked = false;
+      tile.keyholderProtectedTurns = 0;
+      tile.blindCategoryHidden = false;
+      tile.mysteryCashHidden = false;
     }
 
     const playable = tiles.filter((t) => t.state === 'OPEN' || t.state === 'BLITZ_SURVIVOR');
@@ -709,6 +1188,8 @@ export class BoardTwistsEngineV7 {
 
     const assigned = new Set<number>();
     const hashBase = this.computeDeterministicBoardHash(waveNumber * 31);
+    const playMode = this.getActivePlayMode();
+    const topology = this.getActiveUnlockTopology();
 
     // 1. LOCKED_VAULT (1 high-value $500 Gold Vault per non-Blitz board, positioned upstage/central with neighbors)
     if (!this.context.isBlitzPhase && playable.length >= 6) {
@@ -741,60 +1222,479 @@ export class BoardTwistsEngineV7 {
       return chosen;
     };
 
-    // 2. SECRET_SQUARE (1 hidden Daily Double tile per board; reveals on tap!)
+    // 2. SECRET_SQUARE (1 hidden Daily Double tile per board; stays clean on-board & reveals on tap!)
     const secretTile = pickNextUnassigned(101, (t) => t.baseChips >= 200);
     if (secretTile) {
       secretTile.tvTwist = 'SECRET_SQUARE';
     }
 
-    // 3. OPPONENT_CHOICE (`1–2` tiles badged `🎭 RIVAL'S PICK`, preferring Rival strong categories!)
+    // Strict 60–65% Clean Classic Category Tile Budget (`7–8` of 12 tiles stay crisp Classic tiles;
+    // max `4` visible twist banners on 12-tile boards, max `5` on 13–15 tile boards, max `2` SHOWCASE_BONUS!)
+    const maxVisibleTwists = this.context.isBlitzPhase ? 2 : playable.length >= 13 ? 5 : 4;
+    let visibleTwistsPlaced = assigned.has(secretTile?.index ?? -1)
+      ? assigned.size - 1
+      : assigned.size;
+
+    const canPlaceVisibleTwist = (): boolean => visibleTwistsPlaced < maxVisibleTwists;
+
+    // 3. KEY_AND_SAFE Topology: Seed 1 accessible BRASS_KEY tile on lower/mid rows!
+    if (topology === 'KEY_AND_SAFE' && !this.context.isBlitzPhase && canPlaceVisibleTwist()) {
+      const keyTile = pickNextUnassigned(149, (t) => t.z >= -0.05);
+      if (keyTile) {
+        keyTile.tvTwist = 'BRASS_KEY';
+        keyTile.baseChips = Math.max(keyTile.baseChips, 250);
+        visibleTwistsPlaced++;
+      }
+    }
+
+    // 4. Mode-Signature & Rotating Headline Twist (1–2 distinct stars per board — ZERO Christmas-tree clutter!)
     const strongSet = new Set<CategoryIdV7>(this.getEffectiveStrongCategories());
-    const opponentTargetCount = playable.length >= 10 ? 2 : 1;
-    for (let i = 0; i < opponentTargetCount; i++) {
-      const oppTile = pickNextUnassigned(203 + i * 29, (t) => strongSet.has(t.category));
-      if (oppTile) {
-        oppTile.tvTwist = 'OPPONENT_CHOICE';
+    const placeMysteryCashOn = (t: BoardTileNodeV7): void => {
+      t.tvTwist = 'MYSTERY_CASH';
+      t.mysteryCashHidden = true;
+      const cashPool = [250, 350, 450, 550, 650] as const;
+      const hiddenCash =
+        cashPool[this.computeDeterministicBoardHash(t.index * 59 + waveNumber) % cashPool.length];
+      this.mysteryCashAmounts.set(t.index, hiddenCash);
+    };
+    const placeBlindCategoryOn = (t: BoardTileNodeV7): void => {
+      t.tvTwist = 'BLIND_CATEGORY';
+      t.baseChips = 600;
+      t.blindCategoryHidden = true;
+    };
+    const placeCurtainOn = (t: BoardTileNodeV7, slotIdx: number): void => {
+      t.tvTwist = 'MYSTERY_CURTAIN';
+      const num = (playMode === 'MONTY_CURTAIN_DEAL'
+        ? (slotIdx % 3) + 1
+        : ((waveNumber - 1 + slotIdx) % 3) + 1) as 1 | 2 | 3;
+      this.mysteryCurtainNumbers.set(t.index, num);
+    };
+
+    if (playMode === 'MONTY_CURTAIN_DEAL') {
+      const curtainsWanted = playable.length >= 13 ? 3 : 2;
+      for (let c = 0; c < curtainsWanted && visibleTwistsPlaced < maxVisibleTwists - 1; c++) {
+        const ct = pickNextUnassigned(307 + c * 41, (t) => !t.hasAmberTruce);
+        if (ct) {
+          placeCurtainOn(ct, c);
+          visibleTwistsPlaced++;
+        }
+      }
+    } else if (playMode === 'BIG_WHEEL_SHOWCASE') {
+      const wheelsWanted = this.context.isBlitzPhase ? 1 : playable.length >= 13 ? 3 : 2;
+      for (let w = 0; w < wheelsWanted && canPlaceVisibleTwist(); w++) {
+        const wt = pickNextUnassigned(173 + w * 37, (t) => !t.hasAmberTruce && t.z >= -0.05);
+        if (wt) {
+          wt.tvTwist = 'BIG_WHEEL_SPIN';
+          wt.baseChips = Math.max(wt.baseChips, 250);
+          visibleTwistsPlaced++;
+        }
+      }
+      if (visibleTwistsPlaced < maxVisibleTwists - 1) {
+        const accent = pickNextUnassigned(283, (t) => !t.hasAmberTruce);
+        if (accent) {
+          if ((hashBase & 1) === 0) placeMysteryCashOn(accent);
+          else placeBlindCategoryOn(accent);
+          visibleTwistsPlaced++;
+        }
+      }
+    } else if (playMode === 'PRESS_YOUR_LUCK_GREMLIN') {
+      const luckWanted = this.context.isBlitzPhase ? 1 : 2;
+      for (let l = 0; l < luckWanted && canPlaceVisibleTwist(); l++) {
+        const lt = pickNextUnassigned(211 + l * 43, (t) => !t.hasAmberTruce && t.z >= -0.05);
+        if (lt) {
+          lt.tvTwist = 'PRESS_LUCK_SPIN';
+          lt.baseChips = Math.max(lt.baseChips, 250);
+          visibleTwistsPlaced++;
+        }
+      }
+      if (visibleTwistsPlaced < maxVisibleTwists - 1) {
+        const accent = pickNextUnassigned(173, (t) => !t.hasAmberTruce);
+        if (accent) {
+          accent.tvTwist = 'BIG_WHEEL_SPIN';
+          accent.baseChips = Math.max(accent.baseChips, 250);
+          visibleTwistsPlaced++;
+        }
+      }
+    } else {
+      // Standard & Spatial Modes: Rotate 1 Headline Action Twist + 1 Mystery/Dare Twist (leaving 2 slots for Showcase!)
+      const headlinePool: readonly ClassicTvTileTwistV7[] =
+        this.context.isCampaignEp1 && waveNumber === 1
+          ? ['BIG_WHEEL_SPIN', 'MYSTERY_CURTAIN', 'OPPONENT_CHOICE']
+          : ['BIG_WHEEL_SPIN', 'MYSTERY_CURTAIN', 'PRESS_LUCK_SPIN', 'OPPONENT_CHOICE'];
+      const chosenHeadline = headlinePool[hashBase % headlinePool.length] ?? 'BIG_WHEEL_SPIN';
+      if (visibleTwistsPlaced < maxVisibleTwists - 1) {
+        const ht = pickNextUnassigned(
+          181,
+          chosenHeadline === 'OPPONENT_CHOICE'
+            ? (t) => strongSet.has(t.category)
+            : (t) => !t.hasAmberTruce,
+        );
+        if (ht) {
+          if (chosenHeadline === 'MYSTERY_CURTAIN') {
+            placeCurtainOn(ht, 0);
+          } else {
+            ht.tvTwist = chosenHeadline;
+            if (chosenHeadline === 'BIG_WHEEL_SPIN' || chosenHeadline === 'PRESS_LUCK_SPIN') {
+              ht.baseChips = Math.max(ht.baseChips, 250);
+            }
+          }
+          visibleTwistsPlaced++;
+        }
+      }
+
+      if (!this.context.isBlitzPhase && visibleTwistsPlaced < maxVisibleTwists - 2) {
+        const mysteryPool: readonly ('BLIND_CATEGORY' | 'MYSTERY_CASH' | 'OPPONENT_CHOICE')[] =
+          chosenHeadline === 'OPPONENT_CHOICE'
+            ? ['BLIND_CATEGORY', 'MYSTERY_CASH']
+            : ['BLIND_CATEGORY', 'MYSTERY_CASH', 'OPPONENT_CHOICE'];
+        const chosenMystery =
+          mysteryPool[(hashBase >>> 3) % mysteryPool.length] ?? 'MYSTERY_CASH';
+        const mt = pickNextUnassigned(
+          257,
+          chosenMystery === 'OPPONENT_CHOICE'
+            ? (t) => strongSet.has(t.category)
+            : chosenMystery === 'BLIND_CATEGORY'
+              ? (t) => t.z <= 0.1
+              : (t) => !t.hasAmberTruce,
+        );
+        if (mt) {
+          if (chosenMystery === 'BLIND_CATEGORY') placeBlindCategoryOn(mt);
+          else if (chosenMystery === 'MYSTERY_CASH') placeMysteryCashOn(mt);
+          else mt.tvTwist = 'OPPONENT_CHOICE';
+          visibleTwistsPlaced++;
+        }
       }
     }
 
-    // 4. MYSTERY_CURTAIN (`1–2` tiles normally, or `3` full Curtains #1/#2/#3 on `MONTY_CURTAIN_DEAL`!)
-    const playMode = this.getActivePlayMode();
-    const curtainTargetCount =
-      playMode === 'MONTY_CURTAIN_DEAL'
-        ? Math.min(3, playable.length)
-        : playable.length >= 10
-          ? 2
-          : 1;
-    for (let i = 0; i < curtainTargetCount; i++) {
-      const curtainTile = pickNextUnassigned(307 + i * 41, (t) => !t.hasAmberTruce);
-      if (curtainTile) {
-        curtainTile.tvTwist = 'MYSTERY_CURTAIN';
-        const num = (playMode === 'MONTY_CURTAIN_DEAL'
-          ? (i % 3) + 1
-          : ((waveNumber - 1 + i) % 3) + 1) as 1 | 2 | 3;
-        this.mysteryCurtainNumbers.set(curtainTile.index, num);
-      }
-    }
-
-    // 5. SHOWCASE_BONUS (`2–3` tiles per 12–15 tile board -> exact ~25% special tactile showcase rounds!)
-    const showcaseTargetCount = playable.length >= 12 ? 3 : playable.length >= 8 ? 2 : 1;
-    for (let i = 0; i < showcaseTargetCount; i++) {
+    // 5. SHOWCASE_BONUS (Strictly 1–2 tiles max per board -> ~25% tactile Showcase cadence without clutter!)
+    const showcaseSlotsLeft = Math.max(0, Math.min(2, maxVisibleTwists - visibleTwistsPlaced));
+    for (let i = 0; i < showcaseSlotsLeft; i++) {
       const showcaseTile = pickNextUnassigned(419 + i * 53);
       if (showcaseTile) {
         showcaseTile.tvTwist = 'SHOWCASE_BONUS';
+        visibleTwistsPlaced++;
       }
     }
 
-    // 6. Seed Mode-Specific Hidden Layers (`EYE_GUESS_MEMORY` & `CONCENTRATION_PRIZE_MATCH`)
+    // 6. Seed Mode-Specific Hidden Layers & Board Unlock Topology (`PYRAMID_CLIMB`, `KEY_AND_SAFE`, etc.)
     this.seedBoardPlayModeState(tiles, waveNumber);
+    this.seedUnlockTopologyState(tiles);
+
+    // 7. Turn-1 Mode-Signature Openness Guarantee (`BIG_WHEEL_SHOWCASE` & `PRESS_YOUR_LUCK_GREMLIN`):
+    // Even under `PYRAMID_CLIMB`, `KEY_AND_SAFE`, or `CENTER_STARBURST`, guarantee >= 2 signature
+    // Wheel / Gremlin squares are immediately clickable on Turn 1!
+    if (
+      !this.context.isBlitzPhase &&
+      (playMode === 'BIG_WHEEL_SHOWCASE' || playMode === 'PRESS_YOUR_LUCK_GREMLIN')
+    ) {
+      const sigTwist: ClassicTvTileTwistV7 =
+        playMode === 'BIG_WHEEL_SHOWCASE' ? 'BIG_WHEEL_SPIN' : 'PRESS_LUCK_SPIN';
+      const openPlayable = playable.filter((t) => !t.isVaultLocked && !t.isTopologyLocked);
+      let openSigCount = openPlayable.filter((t) => t.tvTwist === sigTwist).length;
+      const targetOpenSig = Math.min(2, openPlayable.length);
+      if (openSigCount < targetOpenSig) {
+        const lockedSigs = playable.filter(
+          (t) => t.tvTwist === sigTwist && (t.isTopologyLocked || t.isVaultLocked),
+        );
+        const swapTargets = openPlayable.filter(
+          (t) =>
+            t.tvTwist !== sigTwist &&
+            t.tvTwist !== 'BRASS_KEY' &&
+            t.tvTwist !== 'SECRET_SQUARE',
+        );
+        for (const dst of swapTargets) {
+          if (openSigCount >= targetOpenSig) break;
+          const lockedDonor = lockedSigs.shift();
+          if (lockedDonor && !lockedDonor.isVaultLocked) {
+            lockedDonor.tvTwist = dst.tvTwist;
+          }
+          dst.tvTwist = sigTwist;
+          dst.blindCategoryHidden = false;
+          dst.mysteryCashHidden = false;
+          dst.baseChips = Math.max(dst.baseChips, 250);
+          openSigCount++;
+        }
+      }
+    }
   }
 
   public getActivePlayMode(): BoardPlayModeV7 {
-    return BOARD_PLAY_MODE_BY_BOARD_V7[this.context.boardId] ?? 'CLASSIC_TOTE';
+    return (
+      this.context.playModeOverride ??
+      BOARD_PLAY_MODE_BY_BOARD_V7[this.context.boardId] ??
+      'CLASSIC_TOTE'
+    );
+  }
+
+  public getActiveUnlockTopology(): BoardUnlockTopologyV7 {
+    if (this.context.isBlitzPhase) return 'CLASSIC_OPEN';
+    return this.context.unlockTopology ?? 'CLASSIC_OPEN';
+  }
+
+  public getActiveSpotlightIndices(): readonly number[] {
+    return this.activeSpotlightIndices;
   }
 
   public getBoardModeRuleBanner(): BoardModeRuleBannerV7 {
-    return BOARD_MODE_RULE_BANNERS_V7[this.getActivePlayMode()];
+    const base = BOARD_MODE_RULE_BANNERS_V7[this.getActivePlayMode()];
+    const topo = this.getActiveUnlockTopology();
+    if (topo === 'CLASSIC_OPEN') {
+      return {
+        ...base,
+        compactTitle: base.compactTitle ?? base.modeTitle,
+        compactRuleSummary: base.compactRuleSummary ?? base.ruleSummary,
+        unlockTopology: topo,
+      };
+    }
+    const topoSpec = BOARD_UNLOCK_TOPOLOGY_SPECS_V7[topo];
+    const baseCompactTitle = base.compactTitle ?? base.modeTitle;
+    const baseCompactRule = base.compactRuleSummary ?? base.ruleSummary;
+    return {
+      ...base,
+      modeTitle: `${base.modeTitle} · ${topoSpec.badge}`,
+      ruleSummary: `${topoSpec.shortRule} ${base.ruleSummary}`,
+      compactTitle: `${baseCompactTitle} · ${topoSpec.badge}`,
+      compactRuleSummary: `${topoSpec.compactRule} · ${baseCompactRule}`,
+      unlockTopology: topo,
+      topologyBadge: topoSpec.badge,
+    };
+  }
+
+  private ensureMinimumOpenTopologyTiles(tiles: BoardTileNodeV7[], minOpen = 3): void {
+    const playable = tiles.filter((t) => t.state === 'OPEN' || t.state === 'BLITZ_SURVIVOR');
+    const currentlyAvailable = playable.filter((t) => !t.isVaultLocked && !t.isTopologyLocked);
+    if (currentlyAvailable.length >= Math.min(minOpen, playable.length)) return;
+
+    const lockedCandidates = playable
+      .filter((t) => t.isTopologyLocked && !t.isVaultLocked)
+      .sort((a, b) => b.z - a.z || Math.hypot(a.x, a.z) - Math.hypot(b.x, b.z) || a.index - b.index);
+
+    let need = Math.min(minOpen, playable.length) - currentlyAvailable.length;
+    for (const cand of lockedCandidates) {
+      if (need <= 0) break;
+      cand.isTopologyLocked = false;
+      need--;
+    }
+  }
+
+  public seedUnlockTopologyState(tiles: BoardTileNodeV7[]): void {
+    this.activeSpotlightIndices = [];
+    const topo = this.getActiveUnlockTopology();
+    const playable = tiles.filter((t) => t.state === 'OPEN' || t.state === 'BLITZ_SURVIVOR');
+    if (playable.length === 0 || topo === 'CLASSIC_OPEN') {
+      for (const t of tiles) t.isTopologyLocked = false;
+      return;
+    }
+
+    if (topo === 'PYRAMID_CLIMB') {
+      // Bottom row (`maxZ` band) starts open; mid & upper rows unlock as you climb!
+      const maxZ = Math.max(...playable.map((t) => t.z));
+      for (const t of playable) {
+        t.isTopologyLocked = t.z < maxZ - 0.34 && !t.isVaultLocked;
+      }
+      this.ensureMinimumOpenTopologyTiles(tiles, 4);
+      return;
+    }
+
+    if (topo === 'KEY_AND_SAFE') {
+      // Lock 2–3 high-dollar Safe tiles (`$500`) until a `🗝️ BRASS_KEY` tile is won!
+      const safeCandidates = [...playable]
+        .filter((t) => t.tvTwist !== 'BRASS_KEY' && !t.isVaultLocked)
+        .sort((a, b) => -a.z - -b.z || b.baseChips - a.baseChips || a.index - b.index);
+      const safeCount = Math.min(2, Math.max(1, Math.floor(playable.length / 5)));
+      const safeSet = new Set(safeCandidates.slice(0, safeCount).map((t) => t.index));
+      for (const t of playable) {
+        if (safeSet.has(t.index)) {
+          t.isTopologyLocked = true;
+          t.baseChips = Math.max(t.baseChips, 500);
+        } else {
+          t.isTopologyLocked = false;
+        }
+      }
+      this.ensureMinimumOpenTopologyTiles(tiles, 4);
+      return;
+    }
+
+    if (topo === 'CENTER_STARBURST') {
+      // Closest 4 center hub tiles start open; outer ring unlocks via adjacency!
+      const byCenterDist = [...playable].sort(
+        (a, b) => Math.hypot(a.x, a.z) - Math.hypot(b.x, b.z) || a.index - b.index,
+      );
+      const hubSet = new Set(byCenterDist.slice(0, Math.min(4, playable.length)).map((t) => t.index));
+      for (const t of playable) {
+        t.isTopologyLocked = !hubSet.has(t.index) && !t.isVaultLocked;
+      }
+      this.ensureMinimumOpenTopologyTiles(tiles, 4);
+      return;
+    }
+
+    if (topo === 'ROVING_SPOTLIGHT') {
+      this.refreshRovingSpotlight(tiles);
+    }
+  }
+
+  public refreshRovingSpotlight(tiles: BoardTileNodeV7[]): readonly number[] {
+    if (this.getActiveUnlockTopology() !== 'ROVING_SPOTLIGHT') {
+      this.activeSpotlightIndices = [];
+      return [];
+    }
+    const candidates = tiles.filter(
+      (t) => (t.state === 'OPEN' || t.state === 'BLITZ_SURVIVOR') && !t.isVaultLocked,
+    );
+    if (candidates.length === 0) {
+      this.activeSpotlightIndices = [];
+      return [];
+    }
+    const targetLit = Math.min(candidates.length, Math.max(4, Math.ceil(candidates.length * 0.42)));
+    const ordered = [...candidates].sort((a, b) => {
+      const ha = this.computeDeterministicBoardHash(
+        a.index * 61 + this.gimmick.turnCounter * 131 + this.activeWaveNumber * 17,
+      );
+      const hb = this.computeDeterministicBoardHash(
+        b.index * 61 + this.gimmick.turnCounter * 131 + this.activeWaveNumber * 17,
+      );
+      return ha - hb;
+    });
+    const litSet = new Set(ordered.slice(0, targetLit).map((t) => t.index));
+    for (const t of candidates) {
+      t.isTopologyLocked = !litSet.has(t.index);
+    }
+    this.activeSpotlightIndices = Array.from(litSet);
+    return this.activeSpotlightIndices;
+  }
+
+  /**
+   * Unlocks topology-gated tiles after a claim (`PYRAMID_CLIMB`, `CENTER_STARBURST`,
+   * `KEY_AND_SAFE` with **1-Turn Keyholder Priority Shield**, or advances `ROVING_SPOTLIGHT`).
+   */
+  public unlockTopologyAfterClaim(
+    claimedIdx: number,
+    tiles: BoardTileNodeV7[],
+    scored: boolean,
+    isPlayerClaim = true,
+  ): {
+    readonly unlockedIndices: readonly number[];
+    readonly keyProtectedSafeIdx: number | null;
+    readonly spotlightIndices: readonly number[];
+  } {
+    const topo = this.getActiveUnlockTopology();
+    const claimed = tiles.find((t) => t.index === claimedIdx);
+    const unlockedIndices: number[] = [];
+    let keyProtectedSafeIdx: number | null = null;
+
+    if (topo === 'PYRAMID_CLIMB' || topo === 'CENTER_STARBURST') {
+      if (scored && claimed) {
+        for (const t of tiles) {
+          if (
+            t.isTopologyLocked &&
+            (t.state === 'OPEN' || t.state === 'BLITZ_SURVIVOR') &&
+            Math.hypot(t.x - claimed.x, t.z - claimed.z) <= 1.28
+          ) {
+            t.isTopologyLocked = false;
+            unlockedIndices.push(t.index);
+          }
+        }
+      }
+      this.ensureMinimumOpenTopologyTiles(tiles, 3);
+    } else if (topo === 'KEY_AND_SAFE') {
+      if (scored && claimed?.tvTwist === 'BRASS_KEY') {
+        const lockedSafes = tiles
+          .filter((t) => t.isTopologyLocked && (t.state === 'OPEN' || t.state === 'BLITZ_SURVIVOR'))
+          .sort((a, b) => b.baseChips - a.baseChips || a.index - b.index);
+        const safe = lockedSafes[0];
+        if (safe) {
+          safe.isTopologyLocked = false;
+          // 1-Turn Keyholder Priority: when Player unlocks a Safe, shield it from CPU sniping on the upcoming Rival turn!
+          if (isPlayerClaim) {
+            safe.keyholderProtectedTurns = 1;
+            keyProtectedSafeIdx = safe.index;
+          }
+          unlockedIndices.push(safe.index);
+        }
+      }
+      this.ensureMinimumOpenTopologyTiles(tiles, 3);
+    } else if (topo === 'ROVING_SPOTLIGHT') {
+      this.refreshRovingSpotlight(tiles);
+    }
+
+    if (unlockedIndices.length > 0 || topo === 'ROVING_SPOTLIGHT') {
+      this.recomputeBoardModifiers(tiles);
+    }
+
+    return {
+      unlockedIndices,
+      keyProtectedSafeIdx,
+      spotlightIndices: this.activeSpotlightIndices,
+    };
+  }
+
+  /**
+   *Expires 1-Turn Keyholder Priority shields right after the Rival's turn completes,
+   *after having protected the newly unlocked Safe from CPU sniping!
+   */
+  public tickKeyholderProtectionAfterRivalTurn(tiles: BoardTileNodeV7[]): boolean {
+    let changed = false;
+    for (const t of tiles) {
+      if (t.keyholderProtectedTurns && t.keyholderProtectedTurns > 0) {
+        t.keyholderProtectedTurns = Math.max(0, t.keyholderProtectedTurns - 1);
+        changed = true;
+      }
+    }
+    return changed;
+  }
+
+  /**
+   * Unseals a `BLIND_CATEGORY` (`$600 · ???`) or `MYSTERY_CASH` (`CAT · $???`) tile on tap!
+   */
+  public revealBlindOrMysteryTile(
+    tileIndex: number,
+    tiles: BoardTileNodeV7[],
+  ): {
+    readonly wasBlindCategory: boolean;
+    readonly wasMysteryCash: boolean;
+    readonly revealedCategory?: CategoryIdV7;
+    readonly revealedCash?: number;
+  } {
+    const tile = tiles.find((t) => t.index === tileIndex);
+    if (!tile) {
+      return { wasBlindCategory: false, wasMysteryCash: false };
+    }
+    if (tile.tvTwist === 'BLIND_CATEGORY' && tile.blindCategoryHidden) {
+      tile.blindCategoryHidden = false;
+      this.recomputeBoardModifiers(tiles);
+      return {
+        wasBlindCategory: true,
+        wasMysteryCash: false,
+        revealedCategory: tile.category,
+      };
+    }
+    if (tile.tvTwist === 'MYSTERY_CASH' && tile.mysteryCashHidden) {
+      tile.mysteryCashHidden = false;
+      const cash = this.mysteryCashAmounts.get(tileIndex) ?? 400;
+      tile.baseChips = cash;
+      this.recomputeBoardModifiers(tiles);
+      return {
+        wasBlindCategory: false,
+        wasMysteryCash: true,
+        revealedCash: cash,
+      };
+    }
+    return { wasBlindCategory: false, wasMysteryCash: false };
+  }
+
+  /**
+   * Act-3 (`Turns 8–10`) DOUBLE-DOLLARS SHOWDOWN: boosts all open tile stakes by `1.5x`
+   * (rounded to crisp `$50` studio tote increments)!
+   */
+  public applyAct3DoubleDollarsBoost(tiles: BoardTileNodeV7[]): void {
+    this.context = { ...this.context, isAct3Showdown: true };
+    for (const t of tiles) {
+      if ((t.state === 'OPEN' || t.state === 'BLITZ_SURVIVOR') && !this.act2BoostedTiles.has(t)) {
+        this.act2BoostedTiles.add(t);
+        t.baseChips = Math.min(900, Math.round((t.baseChips * 1.5) / 50) * 50);
+      }
+    }
+    this.recomputeBoardModifiers(tiles);
   }
 
   public getEyeGuessHiddenBadge(tileIndex: number): EyeGuessHiddenBadgeV7 {
@@ -1024,10 +1924,10 @@ export class BoardTwistsEngineV7 {
         if (badge === 'TRAP') {
           return {
             mode,
-            bonusCash: scored ? -100 : -150,
+            bonusCash: -100,
             rivalStealCash: 0,
             multAdd: 0,
-            bannerHeadline: '🎭 EYE GUESS TRAP! -$100 STUDIO ZONK!',
+            bannerHeadline: '⚡ EYE GUESS TRAP! -$100 STUDIO ZONK!',
             highlightedTileIndices: [claimedIdx],
           };
         }
@@ -1040,7 +1940,7 @@ export class BoardTwistsEngineV7 {
             bonusCash: 0,
             rivalStealCash: 0,
             multAdd: 1.0,
-            bannerHeadline: '👁 EYE GUESS MEMORY HIT! ⭐ 2× DOUBLE BONUS!',
+            bannerHeadline: '★ EYE GUESS MEMORY HIT! 2× DOUBLE BONUS!',
             highlightedTileIndices: [claimedIdx],
           };
         }
@@ -1050,7 +1950,7 @@ export class BoardTwistsEngineV7 {
             bonusCash: 300,
             rivalStealCash: 0,
             multAdd: 0,
-            bannerHeadline: '👁 EYE GUESS MEMORY JACKPOT! 💰 +$300 BONUS!',
+            bannerHeadline: '★ EYE GUESS MEMORY JACKPOT! +$300 BONUS!',
             highlightedTileIndices: [claimedIdx],
           };
         }
@@ -1069,10 +1969,10 @@ export class BoardTwistsEngineV7 {
         if (prize === 'TAKE_STEAL') {
           return {
             mode,
-            bonusCash: 200,
+            bonusCash: 0,
             rivalStealCash: 200,
             multAdd: 0,
-            bannerHeadline: '⚡ CONCENTRATION TAKE! Swiped $200 from Champion!',
+            bannerHeadline: '⚡ CONCENTRATION TAKE! Swiped up to $200 from Champion!',
             highlightedTileIndices: [claimedIdx],
           };
         }
@@ -1118,6 +2018,61 @@ export class BoardTwistsEngineV7 {
             bannerHeadline: "🎪 LET'S MAKE A DEAL BONUS! +$150 CURTAIN SWEETENER!",
             highlightedTileIndices: [claimedIdx],
           };
+        }
+        return { mode, bonusCash: 0, rivalStealCash: 0, multAdd: 0, bannerHeadline: null };
+      }
+
+      case 'PRESS_YOUR_LUCK_GREMLIN': {
+        if (!scored) {
+          return { mode, bonusCash: 0, rivalStealCash: 0, multAdd: 0, bannerHeadline: null };
+        }
+        const spins = tile.tvTwist === 'PRESS_LUCK_SPIN' ? 2 : 1;
+        return {
+          mode,
+          bonusCash: 0,
+          rivalStealCash: 0,
+          multAdd: 0,
+          bannerHeadline:
+            spins >= 2
+              ? '⚡ DOUBLE LUCK SPINS EARNED (2 SPINS)!'
+              : '⚡ +1 LIGHT-BOARD SPIN EARNED!',
+          highlightedTileIndices: [claimedIdx],
+          earnedGremlinSpins: spins,
+        };
+      }
+
+      case 'BIG_WHEEL_SHOWCASE': {
+        if (!scored) {
+          return { mode, bonusCash: 0, rivalStealCash: 0, multAdd: 0, bannerHeadline: null };
+        }
+        if (tile.tvTwist === 'BIG_WHEEL_SPIN') {
+          return {
+            mode,
+            bonusCash: 100,
+            rivalStealCash: 0,
+            multAdd: 0.25,
+            bannerHeadline: '🎡 BIG WHEEL SHOWCASE BONUS! +$100 SPIN SWEETENER!',
+            highlightedTileIndices: [claimedIdx],
+            triggerBigWheel: true,
+          };
+        }
+        const sameRowOwned = tiles.filter(
+          (t) => t.state === 'CLAIMED_PLAYER' && Math.abs(t.z - tile.z) < 0.14,
+        );
+        if (sameRowOwned.length >= 3) {
+          const sweepKey = `WHEEL_ROW_${Math.round(tile.z * 10)}`;
+          if (!this.awardedTicTacLines.has(sweepKey)) {
+            this.awardedTicTacLines.add(sweepKey);
+            return {
+              mode,
+              bonusCash: 200,
+              rivalStealCash: 0,
+              multAdd: 0.25,
+              bannerHeadline: '🎡 ROW COMPLETE — BONUS BIG WHEEL SPIN UNLOCKED!',
+              highlightedTileIndices: sameRowOwned.map((t) => t.index),
+              triggerBigWheel: true,
+            };
+          }
         }
         return { mode, bonusCash: 0, rivalStealCash: 0, multAdd: 0, bannerHeadline: null };
       }
@@ -1203,6 +2158,7 @@ export class BoardTwistsEngineV7 {
     claimedIdx: number,
     tiles: BoardTileNodeV7[],
     currentStreak = 0,
+    isPlayerClaim = true,
   ): VaultUnlockResultV7 {
     const claimedTile = tiles.find((t) => t.index === claimedIdx);
     const streakUnlocked = currentStreak >= 2;
@@ -1228,6 +2184,10 @@ export class BoardTwistsEngineV7 {
 
       if (isAdjacent || streakUnlocked) {
         tile.isVaultLocked = false;
+        // 1-Turn Vault Shield: protect newly cracked $500 Gold Vault from immediate CPU sniping!
+        if (isPlayerClaim) {
+          tile.keyholderProtectedTurns = 1;
+        }
         unlockedTileIndices.push(tile.index);
         unlockedTiles.push(tile);
         if (isAdjacent) {
@@ -1274,16 +2234,15 @@ export class BoardTwistsEngineV7 {
           curtainNumber,
           kind,
           headline: `❓ CURTAIN #${curtainNumber} · TAKE $150 FROM RIVAL!`,
-          detail: 'Concentration TAKE! You swipe $150 right off the Champion’s scoreboard!',
+          detail: 'Concentration TAKE! You swipe up to $150 right off the Champion’s scoreboard!',
           instantCashDelta: 150,
           rivalCashDelta: -150,
           chipsMultiplier: 1.0,
         };
       case 'DOUBLE_CHIPS': {
-        const doubledStake = Math.min(800, (tile?.baseChips ?? 200) * 2);
-        if (applyMutations && tile) {
-          tile.baseChips = doubledStake;
-        }
+        // Do NOT mutate `tile.baseChips` directly here; `evaluateTileModifiers` applies exact `2x` once
+        // so `$200` becomes `$400` (`2.0x`), NEVER quadrupling (`4.0x`)!
+        const doubledStake = Math.min(900, Math.round(((tile?.baseChips ?? 200) * 2) / 50) * 50);
         return {
           tileIndex,
           curtainNumber,
@@ -1299,13 +2258,14 @@ export class BoardTwistsEngineV7 {
       default: {
         const weakCats = this.getEffectiveWeakCategories();
         const fallbackPool = weakCats.length > 0 ? weakCats : ALL_CATEGORIES_V7;
+        const scoutedSet = new Set<CategoryIdV7>(this.context.scoutedWeakCategories ?? []);
         const candidateCat =
           fallbackPool.find((c) => c !== tile?.category) ??
           ALL_CATEGORIES_V7[(tileIndex + curtainNumber * 3 + 5) % ALL_CATEGORIES_V7.length];
         if (applyMutations && tile) {
           tile.category = candidateCat;
           tile.domain = CATEGORY_TO_DOMAIN_V7[candidateCat];
-          tile.isWheelhouse = weakCats.includes(candidateCat);
+          tile.isWheelhouse = scoutedSet.has(candidateCat);
         }
         return {
           tileIndex,
@@ -1324,29 +2284,39 @@ export class BoardTwistsEngineV7 {
 
   /**
    * Previews 3 distinct deterministic outcomes behind Curtains #1, #2, and #3
-   * for interactive *Let's Make a Deal* door selection (without mutating board state!).
+   * using a full Fisher-Yates shuffle across all 24 3-door permutations!
    */
   public previewMysteryCurtainDoors(
     tileIndex: number,
     tiles: BoardTileNodeV7[],
   ): readonly [MysteryCurtainOutcomeV7, MysteryCurtainOutcomeV7, MysteryCurtainOutcomeV7] {
     const tile = tiles.find((t) => t.index === tileIndex);
-    const kinds: readonly MysteryCurtainKindV7[] = [
+    const shuffled: MysteryCurtainKindV7[] = [
       'BONUS_ENVELOPE',
       'STEAL_FROM_RIVAL',
       'DOUBLE_CHIPS',
       'WILD_CATEGORY_SWAP',
     ];
-    const baseHash = this.computeDeterministicBoardHash(
-      tileIndex * 73 + this.gimmick.turnCounter * 19,
-    );
-    const k1 = kinds[baseHash % kinds.length];
-    const k2 = kinds[(baseHash + 1) % kinds.length];
-    const k3 = kinds[(baseHash + 2) % kinds.length];
+    let state =
+      this.computeDeterministicBoardHash(
+        tileIndex * 73 + this.gimmick.turnCounter * 19 + (this.context.turnNumber ?? 1) * 29,
+      ) || 0x1966_6a01;
+    const nextUint = (): number => {
+      state ^= state << 13;
+      state ^= state >>> 17;
+      state ^= state << 5;
+      return state >>> 0;
+    };
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = nextUint() % (i + 1);
+      const tmp = shuffled[i];
+      shuffled[i] = shuffled[j];
+      shuffled[j] = tmp;
+    }
     return [
-      this.buildMysteryOutcomeForKind(tileIndex, 1, k1, tile, false),
-      this.buildMysteryOutcomeForKind(tileIndex, 2, k2, tile, false),
-      this.buildMysteryOutcomeForKind(tileIndex, 3, k3, tile, false),
+      this.buildMysteryOutcomeForKind(tileIndex, 1, shuffled[0], tile, false),
+      this.buildMysteryOutcomeForKind(tileIndex, 2, shuffled[1], tile, false),
+      this.buildMysteryOutcomeForKind(tileIndex, 3, shuffled[2], tile, false),
     ];
   }
 
@@ -1624,15 +2594,18 @@ export class BoardTwistsEngineV7 {
       }
     }
 
-    // 3. Rival Wheelhouse Weak-Spot Bounty (`+0.50x Mult` for attacking Rival's 3 weak categories!)
+    // 3. Rival Wheelhouse Weak-Spot Bounty (`+0.50x Mult` for attacking Rival's 3 weak categories!
+    //    Masked while `blindCategoryHidden` is true so `$600 · ???` shutters never leak weak spots!)
     const weakSet = new Set<CategoryIdV7>(this.getEffectiveWeakCategories());
     const strongSet = new Set<CategoryIdV7>(this.getEffectiveStrongCategories());
-    const hitRivalWheelhouse = tile.isWheelhouse || weakSet.has(tile.category);
+    const isCategoryVisible = !tile.blindCategoryHidden;
+    const hitRivalWheelhouse =
+      isCategoryVisible && (tile.isWheelhouse || weakSet.has(tile.category));
     if (hitRivalWheelhouse) {
       rawMultBonus += 0.5;
       bonusChips += twistId === 'TWIST_14_RIVAL_WHEELHOUSE_BOUNTY' ? 60 : 35;
       reasons.push('Rival Wheelhouse +0.50x');
-    } else if (strongSet.has(tile.category)) {
+    } else if (isCategoryVisible && strongSet.has(tile.category)) {
       bonusChips += 45;
       reasons.push('Rival Turf Dare +45 Chips');
     }
@@ -1665,7 +2638,9 @@ export class BoardTwistsEngineV7 {
       rawMultBonus += 1.0;
       reasons.push('⭐ Secret Square 2× (+1.00x)');
     } else if (tvTwist === 'OPPONENT_CHOICE') {
-      rawMultBonus += 0.5;
+      if (!hitRivalWheelhouse) {
+        rawMultBonus += 0.5;
+      }
       bonusChips += 100;
       reasons.push("🎭 Rival's Pick Spite (+0.50x +$100)");
     } else if (tvTwist === 'LOCKED_VAULT' && !isVaultLocked) {
@@ -1680,6 +2655,31 @@ export class BoardTwistsEngineV7 {
       if (rolled?.kind === 'DOUBLE_CHIPS') {
         reasons.push('❓ Mystery Curtain 2× Chips');
       }
+    } else if (tvTwist === 'BIG_WHEEL_SPIN') {
+      rawMultBonus += 0.25;
+      reasons.push('🎡 Big Wheel Spin (+0.25x)');
+    } else if (tvTwist === 'BLIND_CATEGORY') {
+      rawMultBonus += 0.35;
+      reasons.push('$600 Blind Category (+0.35x)');
+    } else if (tvTwist === 'MYSTERY_CASH') {
+      rawMultBonus += 0.2;
+      reasons.push('Mystery Cash Envelope (+0.20x)');
+    } else if (tvTwist === 'BRASS_KEY') {
+      rawMultBonus += 0.2;
+      bonusChips += 50;
+      reasons.push('🗝️ Safe Key Bonus (+0.20x +$50)');
+    } else if (tvTwist === 'PRESS_LUCK_SPIN') {
+      rawMultBonus += 0.25;
+      reasons.push('⚡ Press-Your-Luck Spin (+0.25x)');
+    }
+
+    if (
+      this.getActiveUnlockTopology() === 'ROVING_SPOTLIGHT' &&
+      this.activeSpotlightIndices.includes(tile.index)
+    ) {
+      bonusChips += 50;
+      rawMultBonus += 0.2;
+      reasons.push('🔦 Roving Spotlight (+0.20x +$50)');
     }
 
     // 6. Primary Episode Twist & Spatial Board Mechanics (All 16 Twists Wired!)
@@ -1898,8 +2898,14 @@ export class BoardTwistsEngineV7 {
     const cappedMultBonus = roundTo2(clamp(rawMultBonus, 0, maxBonus));
     const effectiveMult = roundTo2(1.0 + cappedMultBonus);
     // Authentic 1960s Network Tote-Board Dollar Stakes: strictly clean $50 increments ($150, $200, $250, ..., $500+)!
-    const rawTotalChips = tile.baseChips + bonusChips;
-    const effectiveChips = Math.max(150, Math.round(rawTotalChips / 50) * 50);
+    // Keep Locked Gold Vault anchored to its printed Vault stake ($500, or $750 in Act II 1.5x) so unlocking never shifts price!
+    const rawTotalChips = tvTwist === 'LOCKED_VAULT' ? tile.baseChips : tile.baseChips + bonusChips;
+    const preDoubleChips = Math.max(150, Math.round(rawTotalChips / 50) * 50);
+    const rolledMystery = this.rolledMysteryOutcomes.get(tile.index);
+    const effectiveChips =
+      tvTwist === 'MYSTERY_CURTAIN' && rolledMystery?.kind === 'DOUBLE_CHIPS'
+        ? Math.min(1200, preDoubleChips * 2)
+        : preDoubleChips;
     const roundedBonusChips = Math.max(0, effectiveChips - tile.baseChips);
 
     return {
@@ -1963,39 +2969,141 @@ export class BoardTwistsEngineV7 {
   }
 
   /**
-   * Selects a smart target tile for the Rival's turn (avoiding Rival weak categories
-   * when possible, preferring strong categories or strategic blockades) and commits it.
+   * Selects a smart target tile for the Rival's turn driven by their `CpuPlaystyleIdV7`
+   * archetype (`GAMBLER`, `BLOCKER`, `PROFESSOR`, `HIGH_ROLLER`, `CLUTCH_SHARK`),
+   * while strictly honoring `isVaultLocked`, `isTopologyLocked`, and 1-Turn Keyholder Priority!
    */
   public chooseRivalTargetTile(tiles: BoardTileNodeV7[]): number | null {
-    const openTiles = tiles.filter(
-      (t) => (t.state === 'OPEN' || t.state === 'BLITZ_SURVIVOR') && !t.isVaultLocked,
+    const unprotectedOpen = tiles.filter(
+      (t) =>
+        (t.state === 'OPEN' || t.state === 'BLITZ_SURVIVOR') &&
+        !t.isVaultLocked &&
+        !t.isTopologyLocked &&
+        !(t.keyholderProtectedTurns && t.keyholderProtectedTurns > 0),
     );
-    if (openTiles.length === 0) return null;
+    const fallbackOpen =
+      unprotectedOpen.length > 0
+        ? unprotectedOpen
+        : tiles.filter(
+            (t) =>
+              (t.state === 'OPEN' || t.state === 'BLITZ_SURVIVOR') &&
+              !t.isVaultLocked &&
+              !t.isTopologyLocked,
+          );
+    if (fallbackOpen.length === 0) return null;
 
+    const rivalId = this.context.rivalId ?? 'CARMEN_DELGADO';
+    const playstyle: CpuPlaystyleIdV7 =
+      this.context.cpuPlaystyle ?? DEFAULT_RIVAL_PLAYSTYLE_V7[rivalId] ?? 'PROFESSOR';
+    const turnNumber = this.context.turnNumber ?? this.gimmick.turnCounter + 1;
     const strongSet = new Set<CategoryIdV7>(this.getEffectiveStrongCategories());
     const weakSet = new Set<CategoryIdV7>(this.getEffectiveWeakCategories());
 
-    let bestTile = openTiles[0];
+    let bestTile = fallbackOpen[0];
     let bestScore = -Infinity;
 
     const playMode = this.getActivePlayMode();
-    for (const tile of openTiles) {
-      let score = tile.baseChips * 0.4 + tile.boardMultBonus * 140;
-      if (strongSet.has(tile.category)) score += 160;
-      if (weakSet.has(tile.category)) score -= 140;
-      if (tile.hasAmberTruce) score -= 220; // Sympathetic rivals honor their own chalk truce!
-      if (tile.isRiggedSolenoid) score -= 90;
-      if (tile.tvTwist === 'OPPONENT_CHOICE') score -= 45; // Risky for Rival—flips to their weak spot!
-      // Hollywood Squares `TIC_TAC_LINE`: Rival actively prioritizes blocking Player 2-in-a-row threats!
-      if (playMode === 'TIC_TAC_LINE') {
-        const threatLines = this.findPlayerThreeInARowLines(tiles, tile.index);
-        const newThreat = threatLines.some((ln) => !this.awardedTicTacLines.has(ln.join('-')));
-        if (newThreat) {
-          score += 380;
+    const playerClaimed = tiles.filter((t) => t.state === 'CLAIMED_PLAYER');
+    const maxPlayerX =
+      playerClaimed.length > 0 ? Math.max(...playerClaimed.map((t) => t.x)) : -Infinity;
+
+    for (const tile of fallbackOpen) {
+      // Honest On-Stage Visibility: mask `$600 · ???` blind categories & unrevealed Secret Squares!
+      const categoryKnown = !tile.blindCategoryHidden;
+      const isKnownStrong = categoryKnown && strongSet.has(tile.category);
+      const isKnownWeak = categoryKnown && weakSet.has(tile.category);
+      const visibleTwist: ClassicTvTileTwistV7 =
+        tile.tvTwist === 'SECRET_SQUARE' && !this.revealedSecretSquareIndices.has(tile.index)
+          ? 'NONE'
+          : (tile.tvTwist ?? 'NONE');
+      const visibleChips = tile.mysteryCashHidden ? 350 : tile.baseChips;
+
+      let score = visibleChips * 0.42 + tile.boardMultBonus * 145;
+      if (isKnownStrong) score += 155;
+      if (isKnownWeak) score -= 145;
+      if (tile.hasAmberTruce && RIVAL_SYMPATHETIC_SET_V7.has(rivalId)) score -= 220;
+      if (tile.isRiggedSolenoid) score -= 75;
+      if (visibleTwist === 'OPPONENT_CHOICE') score -= 60;
+
+      // Baseline mode awareness: block imminent 3-in-a-row jackpots & Coast-to-Coast bridges
+      const threatLines = this.findPlayerThreeInARowLines(tiles, tile.index);
+      const blocksLineThreat = threatLines.some((ln) => !this.awardedTicTacLines.has(ln.join('-')));
+      if (playMode === 'TIC_TAC_LINE' && blocksLineThreat) {
+        score += 360;
+      }
+      const adjPlayerCount = this.countAdjacentClaimedPlayer(tile, tiles);
+      const blocksBridgeFrontier =
+        !this.coastToCoastAwarded &&
+        adjPlayerCount >= 1 &&
+        (tile.x >= maxPlayerX - 0.15 || Math.abs(tile.x) <= 0.65);
+      if (playMode === 'COAST_HEX_BRIDGE' && blocksBridgeFrontier) {
+        score += 240;
+      }
+
+      // 5 Distinct `CpuPlaystyleIdV7` Archetype Personalities:
+      switch (playstyle) {
+        case 'GAMBLER': {
+          if (
+            visibleTwist === 'BIG_WHEEL_SPIN' ||
+            visibleTwist === 'PRESS_LUCK_SPIN' ||
+            visibleTwist === 'MYSTERY_CURTAIN' ||
+            visibleTwist === 'MYSTERY_CASH' ||
+            visibleTwist === 'SECRET_SQUARE'
+          ) {
+            score += 290;
+          }
+          break;
+        }
+        case 'BLOCKER': {
+          if (blocksLineThreat) score += 420;
+          if (blocksBridgeFrontier) score += 275;
+          if (adjPlayerCount >= 1) score += adjPlayerCount * 145;
+          const nearLockedVault = tiles.some(
+            (v) =>
+              v.tvTwist === 'LOCKED_VAULT' &&
+              v.isVaultLocked &&
+              Math.hypot(v.x - tile.x, v.z - tile.z) <= 1.22,
+          );
+          if (nearLockedVault) score += 170;
+          if (visibleTwist === 'BRASS_KEY') score += 210;
+          break;
+        }
+        case 'PROFESSOR': {
+          if (isKnownStrong) score += 260;
+          if (isKnownWeak) score -= 240;
+          if (visibleTwist === 'BLIND_CATEGORY' || visibleTwist === 'PRESS_LUCK_SPIN') {
+            score -= 95;
+          }
+          break;
+        }
+        case 'HIGH_ROLLER': {
+          score += visibleChips * 0.65;
+          if (
+            visibleChips >= 450 ||
+            visibleTwist === 'BLIND_CATEGORY' ||
+            (visibleTwist === 'LOCKED_VAULT' && !tile.isVaultLocked) ||
+            visibleTwist === 'BRASS_KEY'
+          ) {
+            score += 275;
+          }
+          break;
+        }
+        case 'CLUTCH_SHARK': {
+          if (turnNumber >= 8) {
+            score += visibleChips * 0.8 + tile.boardMultBonus * 260 + 210;
+            if (visibleTwist === 'BIG_WHEEL_SPIN' || tile.state === 'BLITZ_SURVIVOR') {
+              score += 240;
+            }
+          } else {
+            if (isKnownStrong) score += 110;
+            if (blocksLineThreat) score += 210;
+          }
+          break;
         }
       }
+
       if (this.context.boardId === 'BOARD_11_WHEW_GAUNTLET' && Math.abs(tile.z) < 0.35) {
-        score += 85; // Blockade center row on Whew! Gauntlet
+        score += 85;
       }
       if (score > bestScore) {
         bestScore = score;

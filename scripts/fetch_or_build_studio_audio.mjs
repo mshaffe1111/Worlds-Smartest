@@ -19,10 +19,26 @@ const RAW_DIR = path.join(
   '.gemini',
   'antigravity',
   'brain',
+  '459adf44-b11c-43a7-82dd-2ed4116b9812',
+  'scratch',
+  'raw_samples',
+);
+const LEGACY_RAW_DIR = path.join(
+  'C:',
+  'Users',
+  'mshaf',
+  '.gemini',
+  'antigravity',
+  'brain',
   'f4701086-cbc2-473c-a60d-bc6ad6c376c2',
   'scratch',
   'raw_samples',
 );
+const REBUILD_ALL = process.argv.includes('--rebuild-all');
+const EXISTING_MANIFEST_PATH = path.join(OUT_DIR, 'manifest.json');
+const EXISTING_MANIFEST = fs.existsSync(EXISTING_MANIFEST_PATH)
+  ? JSON.parse(fs.readFileSync(EXISTING_MANIFEST_PATH, 'utf8'))
+  : null;
 
 fs.mkdirSync(OUT_DIR, { recursive: true });
 fs.mkdirSync(RAW_DIR, { recursive: true });
@@ -143,16 +159,20 @@ function noteToMidi(noteName) {
 const SOUNDFONT_BASE = 'https://gleitz.github.io/midi-js-soundfonts/MusyngKite';
 
 const INSTRUMENT_SPECS = [
-  { id: 'trumpet', sf: 'trumpet', notes: ['F4', 'Bb4', 'D5', 'G5'], dur: 1.45, bitrate: '96k' },
-  { id: 'brass', sf: 'brass_section', notes: ['C3', 'F3', 'Bb3', 'D4', 'G4'], dur: 1.55, bitrate: '96k' },
-  { id: 'trombone', sf: 'trombone', notes: ['F2', 'C3', 'F3', 'Bb3'], dur: 1.5, bitrate: '96k' },
-  { id: 'muted_trumpet', sf: 'muted_trumpet', notes: ['C4', 'F4', 'Bb4'], dur: 1.25, bitrate: '96k' },
-  { id: 'tenor_sax', sf: 'tenor_sax', notes: ['F3', 'C4', 'F4'], dur: 1.45, bitrate: '96k' },
-  { id: 'upright_bass', sf: 'acoustic_bass', notes: ['E1', 'A1', 'D2', 'G2', 'C3'], dur: 1.4, bitrate: '96k' },
+  { id: 'electric_bass', sf: 'electric_bass_finger', notes: ['E1', 'A1', 'D2', 'G2', 'C3'], dur: 1.55, bitrate: '96k' },
+  { id: 'upright_bass', sf: 'acoustic_bass', notes: ['E1', 'A1', 'D2', 'G2', 'C3'], dur: 1.45, bitrate: '96k' },
+  { id: 'electric_piano', sf: 'electric_piano_1', notes: ['C2', 'G2', 'C3', 'G3', 'C4'], dur: 2.0, bitrate: '96k' },
   { id: 'grand_piano', sf: 'acoustic_grand_piano', notes: ['C2', 'G2', 'C3', 'G3', 'C4', 'G4', 'C5'], dur: 2.1, bitrate: '96k' },
-  { id: 'vibraphone', sf: 'vibraphone', notes: ['C4', 'F4', 'Bb4', 'E5'], dur: 2.0, bitrate: '96k' },
-  { id: 'marimba', sf: 'marimba', notes: ['C4', 'G4', 'C5'], dur: 1.15, bitrate: '96k' },
-  { id: 'jazz_guitar', sf: 'electric_guitar_jazz', notes: ['C3', 'G3', 'C4'], dur: 1.45, bitrate: '96k' },
+  { id: 'jazz_guitar', sf: 'electric_guitar_jazz', notes: ['E2', 'A2', 'C3', 'G3', 'C4'], dur: 1.5, bitrate: '96k' },
+  { id: 'clean_guitar', sf: 'electric_guitar_clean', notes: ['E2', 'A2', 'D3', 'G3', 'C4'], dur: 1.5, bitrate: '96k' },
+  { id: 'baritone_sax', sf: 'baritone_sax', notes: ['A1', 'D2', 'G2', 'C3'], dur: 1.55, bitrate: '96k' },
+  { id: 'tenor_sax', sf: 'tenor_sax', notes: ['C3', 'F3', 'C4', 'F4'], dur: 1.45, bitrate: '96k' },
+  { id: 'trombone', sf: 'trombone', notes: ['F2', 'C3', 'F3', 'Bb3'], dur: 1.5, bitrate: '96k' },
+  { id: 'brass', sf: 'brass_section', notes: ['C3', 'F3', 'Bb3', 'D4', 'G4'], dur: 1.55, bitrate: '96k' },
+  { id: 'muted_trumpet', sf: 'muted_trumpet', notes: ['C4', 'F4', 'Bb4'], dur: 1.25, bitrate: '96k' },
+  { id: 'trumpet', sf: 'trumpet', notes: ['C4', 'F4', 'Bb4', 'D5', 'G5'], dur: 1.45, bitrate: '96k' },
+  { id: 'vibraphone', sf: 'vibraphone', notes: ['C3', 'G3', 'C4', 'F4', 'Bb4', 'E5'], dur: 2.0, bitrate: '96k' },
+  { id: 'marimba', sf: 'marimba', notes: ['C3', 'G3', 'C4', 'G4', 'C5'], dur: 1.2, bitrate: '96k' },
   { id: 'strings', sf: 'string_ensemble_1', notes: ['C3', 'G3', 'C4', 'G4'], dur: 2.35, bitrate: '112k', channels: 2 },
   { id: 'glockenspiel', sf: 'glockenspiel', notes: ['C5', 'G5'], dur: 1.35, bitrate: '96k' },
   { id: 'tubular_bell', sf: 'tubular_bells', notes: ['C5', 'G5'], dur: 2.0, bitrate: '96k' },
@@ -161,7 +181,7 @@ const INSTRUMENT_SPECS = [
 ];
 
 const manifest = {
-  version: 'v7.2-1966-living-color-studio',
+  version: 'v7.6-1966-wrecking-crew-showband',
   instruments: {},
   drums: {},
   foley: {},
@@ -174,9 +194,21 @@ async function fetchSoundfontInstruments() {
     manifest.instruments[spec.id] = [];
     for (const note of spec.notes) {
       const midi = noteToMidi(note);
-      const rawPath = path.join(RAW_DIR, `sf_${spec.id}_${note}.mp3`);
+      const rawName = `sf_${spec.id}_${note}.mp3`;
+      const legacyRawPath = path.join(LEGACY_RAW_DIR, rawName);
+      const rawPath = fs.existsSync(legacyRawPath) ? legacyRawPath : path.join(RAW_DIR, rawName);
       const outName = `inst_${spec.id}_${note}.mp3`;
       const outPath = path.join(OUT_DIR, outName);
+
+      if (!REBUILD_ALL && fs.existsSync(outPath) && fs.statSync(outPath).size > 1000) {
+        manifest.instruments[spec.id].push({
+          note,
+          midi,
+          file: outName,
+          bytes: fs.statSync(outPath).size,
+        });
+        continue;
+      }
 
       if (!fs.existsSync(rawPath)) {
         const url = `${SOUNDFONT_BASE}/${spec.sf}-mp3/${note}.mp3`;
@@ -689,8 +721,34 @@ async function fetchRealCrowdAndFoley() {
 
 async function main() {
   await fetchSoundfontInstruments();
-  await fetchRealJazzDrums();
-  await fetchRealCrowdAndFoley();
+
+  // Preserve verified existing real CC0 drums, foley & studio crowd files on disk unless --rebuild-all!
+  const canReuseGroup = (groupObj) =>
+    !REBUILD_ALL &&
+    groupObj &&
+    Object.keys(groupObj).length > 0 &&
+    Object.values(groupObj).every((e) => e?.file && fs.existsSync(path.join(OUT_DIR, e.file)));
+
+  if (
+    EXISTING_MANIFEST &&
+    canReuseGroup(EXISTING_MANIFEST.drums) &&
+    canReuseGroup(EXISTING_MANIFEST.foley) &&
+    canReuseGroup(EXISTING_MANIFEST.crowd)
+  ) {
+    console.log('\n[2-3/4] Preserving verified on-disk CC0 Boston Jazz Drums, Foley & Studio Crowd MP3s...');
+    for (const bucket of ['drums', 'foley', 'crowd']) {
+      for (const [k, entry] of Object.entries(EXISTING_MANIFEST[bucket])) {
+        const fp = path.join(OUT_DIR, entry.file);
+        manifest[bucket][k] = {
+          ...entry,
+          bytes: fs.statSync(fp).size,
+        };
+      }
+    }
+  } else {
+    await fetchRealJazzDrums();
+    await fetchRealCrowdAndFoley();
+  }
 
   // Compute totals and write manifest.json
   let totalBytes = 0;

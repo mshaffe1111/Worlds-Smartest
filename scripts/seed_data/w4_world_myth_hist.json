@@ -1,0 +1,5658 @@
+[
+  {
+    "canonicalEntityKey": "w4_wmh_atl_hallstatt_austria",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "stem": "Perched beside a glassy Alpine lake in Austria, which storybook salt-mining village was so photogenic that a Chinese developer built a full-scale clone of it?",
+    "choices": [
+      "Hallstatt",
+      "Zermatt",
+      "Cortina",
+      "Interlaken"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "In 2012, a developer spent $940 million cloning Hallstatt in Guangdong—down to the church spire and town clock—without telling the Austrian mayor first!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_05_RELIEF_GLOBE_3D"
+    ],
+    "cardStyle": "PICTURE_MONITOR",
+    "geo": {
+      "lat": 47.5622,
+      "lng": 13.6493,
+      "landmarkLabel": "Hallstatt Lakeside Village",
+      "regionHint": "Salzkammergut, Austria"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_valparaiso_chile",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 3,
+    "stem": "Painted in bold carnival hues up 42 steep Pacific hills, which Chilean port relies on clacking 19th-century cliffside funiculars called ascensores?",
+    "choices": [
+      "Cartagena",
+      "Valparaiso",
+      "Guayaquil",
+      "Arequipa"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Sailors originally painted Valparaiso houses using leftover ship-hull paint—creating a vibrant patchwork hillside immortalized by poet Pablo Neruda.",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_05_RELIEF_GLOBE_3D"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "geo": {
+      "lat": -33.0472,
+      "lng": -71.6127,
+      "landmarkLabel": "Valparaiso Hills & Funiculars",
+      "regionHint": "Central Chile"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_giethoorn_netherlands",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 3,
+    "stem": "Spot the road-free canal town! In which thatched-roof Dutch village do mail carriers glide by whisper-boat beneath more than 170 arched wooden bridges?",
+    "choices": [
+      "Delft",
+      "Bruges",
+      "Giethoorn",
+      "Colmar"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Centuries of peat digging carved Giethoorn into tiny residential islands—and tourists leave cars at the outskirts to cruise silently by electric punt.",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_05_RELIEF_GLOBE_3D"
+    ],
+    "cardStyle": "PICTURE_MONITOR",
+    "geo": {
+      "lat": 52.7401,
+      "lng": 6.078,
+      "landmarkLabel": "Giethoorn Canal Village",
+      "regionHint": "Overijssel, Netherlands"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_coober_pedy_australia",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "stem": "To beat 115-degree Outback heat, residents carved churches, bookshops, and half their homes deep underground in which South Australian opal-mining town?",
+    "choices": [
+      "Alice Springs",
+      "Broken Hill",
+      "Kalgoorlie",
+      "Coober Pedy"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Its name adapts an Aboriginal phrase for \"white fella in a hole\"—and its treeless golf course uses glowing balls played after sunset!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_05_RELIEF_GLOBE_3D"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "geo": {
+      "lat": -29.0135,
+      "lng": 134.7544,
+      "landmarkLabel": "Coober Pedy Dugouts",
+      "regionHint": "South Australia"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_himeji_castle_japan",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "stem": "Nicknamed \"White Heron\" for its gleaming chalk-plaster eaves, which 17th-century Japanese hilltop castle survived both WWII air raids and the 1995 Kobe quake?",
+    "choices": [
+      "Himeji Castle",
+      "Osaka Castle",
+      "Matsumoto Keep",
+      "Nijo Palace"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Its maze-like courtyard spirals forced attackers into dead ends—and in 1945 a firebomb fell straight onto the top roof without detonating!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_05_RELIEF_GLOBE_3D"
+    ],
+    "cardStyle": "PICTURE_MONITOR",
+    "geo": {
+      "lat": 34.8394,
+      "lng": 134.6939,
+      "landmarkLabel": "Himeji White Heron Castle",
+      "regionHint": "Hyogo, Japan"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_sintra_portugal",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 3,
+    "stem": "Crowned by canary-yellow and crimson Pena Palace perched in misty coastal pines, which fairytale resort town sits just 18 miles northwest of Lisbon?",
+    "choices": [
+      "Toledo",
+      "Sintra",
+      "Girona",
+      "Coimbra"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "King Ferdinand II built Pena Palace atop ruined monastery walls in the 1840s—blending Moorish domes, Gothic turrets, and bright tropical paint.",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_05_RELIEF_GLOBE_3D"
+    ],
+    "cardStyle": "PICTURE_MONITOR",
+    "geo": {
+      "lat": 38.7876,
+      "lng": -9.3906,
+      "landmarkLabel": "Pena Palace, Sintra",
+      "regionHint": "Lisbon Coast, Portugal"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_kigali_rwanda",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 3,
+    "stem": "Banned plastic bags in 2008 and famed for monthly Saturday community cleanups called Umuganda, which lush highland capital ranks among Africa's cleanest cities?",
+    "choices": [
+      "Nairobi",
+      "Kampala",
+      "Kigali",
+      "Lusaka"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "On the last Saturday of every month, shops shut across Kigali while neighbors—often joined by the president—sweep streets and plant hillside trees.",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_05_RELIEF_GLOBE_3D"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "geo": {
+      "lat": -1.9441,
+      "lng": 30.0619,
+      "landmarkLabel": "Kigali Highland Capital",
+      "regionHint": "Central Rwanda"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_mackinac_island_mi",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "stem": "Famous for Victorian fudge shops and a total ban on private cars since 1898, which Lake Huron island lets only horses, bikes, and emergency vehicles roll?",
+    "choices": [
+      "Nantucket Island",
+      "Catalina Island",
+      "Amelia Island",
+      "Mackinac Island"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Even the state highway ringing Mackinac Island—M-185—is the only U.S. state highway where automobiles are illegal, and its local nickname rhymes with \"awe\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_05_RELIEF_GLOBE_3D"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "geo": {
+      "lat": 45.8492,
+      "lng": -84.6189,
+      "landmarkLabel": "Mackinac Island, Lake Huron",
+      "regionHint": "Michigan, USA"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_ait_benhaddou_morocco",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 4,
+    "stem": "Built of sun-baked red mudbrick along an old Sahara caravan route, which fortified Moroccan village starred in Gladiator, Lawrence of Arabia, and Game of Thrones?",
+    "choices": [
+      "Ait Benhaddou",
+      "Essaouira Fort",
+      "Volubilis Ruin",
+      "Fes Medina"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Because earthen clay melts slowly in desert rain, Hollywood film crews routinely pay to replaster Ait Benhaddou's towers before cameras roll.",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_05_RELIEF_GLOBE_3D"
+    ],
+    "cardStyle": "PICTURE_MONITOR",
+    "geo": {
+      "lat": 31.047,
+      "lng": -7.1319,
+      "landmarkLabel": "Ksar of Ait Benhaddou",
+      "regionHint": "Atlas Foothills, Morocco"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_baarle_nassau_border",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 4,
+    "stem": "White street crosses slice right through cafes in which tangled Dutch-Belgian border town, where whichever nation your front door opens into sets your taxes?",
+    "choices": [
+      "Maastricht Split",
+      "Baarle-Nassau",
+      "Aachen Corner",
+      "Busingen Enclave"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "During early Dutch curfew laws, restaurant patrons in Baarle-Nassau simply picked up their beer mugs and stepped to a table inside the Belgian half!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_05_RELIEF_GLOBE_3D"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "geo": {
+      "lat": 51.4417,
+      "lng": 4.9317,
+      "landmarkLabel": "Baarle-Nassau / Baarle-Hertog",
+      "regionHint": "Netherlands-Belgium Border"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_oymyakon_siberia",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 4,
+    "stem": "Where winter thermometers plunged to minus 90 Fahrenheit and locals leave trucks idling so oil won't freeze, which Siberian village is Earth's coldest lived-in spot?",
+    "choices": [
+      "Norilsk",
+      "Murmansk",
+      "Oymyakon",
+      "Yakutsk"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Ironically, \"Oymyakon\" means \"unfrozen water\" for a nearby hot spring—and schools only close when morning temperatures drop below minus 62 Fahrenheit!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_05_RELIEF_GLOBE_3D"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "geo": {
+      "lat": 63.4641,
+      "lng": 142.7737,
+      "landmarkLabel": "Oymyakon Pole of Cold",
+      "regionHint": "Sakha Republic, Russia"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_aogashima_volcano",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 5,
+    "stem": "Picture a volcanic cone rising straight out of an outer volcanic crater in the Philippine Sea! About 170 residents live inside which dramatic Japanese island?",
+    "choices": [
+      "Yakushima Island",
+      "Miyajima Island",
+      "Naoshima Island",
+      "Aogashima Island"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Locals cook sweet potatoes and eggs in free geothermal steam vents inside the caldera—and sell flaky sea salt boiled using volcanic heat.",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_05_RELIEF_GLOBE_3D"
+    ],
+    "cardStyle": "PICTURE_MONITOR",
+    "geo": {
+      "lat": 32.4567,
+      "lng": 139.7603,
+      "landmarkLabel": "Aogashima Double Caldera",
+      "regionHint": "Izu Islands, Japan"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_orient_express_chrono",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "stem": "Railroad Showdown: Which iconic long-distance train began hauling passengers FIRST—Europe's luxury Orient Express or Russia's Trans-Siberian Railway?",
+    "choices": [
+      "Orient Express",
+      "Trans-Siberian",
+      "Glacier Express",
+      "Eurostar Rail"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The Orient Express steamed out of Paris in 1883—33 years before Russia finished its 5,772-mile Trans-Siberian line to Vladivostok in 1916!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_08_CHRONOLOGY_RAIL"
+    ],
+    "cardStyle": "BINARY_SPLIT",
+    "chronology": {
+      "events": [
+        {
+          "label": "U.S. Golden Spike Rail",
+          "year": 1869,
+          "displayYear": "1869"
+        },
+        {
+          "label": "Orient Express Debuts",
+          "year": 1883,
+          "displayYear": "1883"
+        },
+        {
+          "label": "Trans-Siberian Finished",
+          "year": 1916,
+          "displayYear": "1916"
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_south_pole_chrono",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "stem": "Extreme-Exploration Race: Which ultimate Earth frontier did human explorers reach FIRST—the South Pole or the summit of Mount Everest?",
+    "choices": [
+      "Mount Everest",
+      "South Pole",
+      "Challenger Deep",
+      "North Sea Floor"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Roald Amundsen's dog-sled team planted Norway's flag at the South Pole in December 1911—42 years before Hillary and Tenzing topped Everest!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_08_CHRONOLOGY_RAIL"
+    ],
+    "cardStyle": "BINARY_SPLIT",
+    "chronology": {
+      "events": [
+        {
+          "label": "Amundsen Hits South Pole",
+          "year": 1911,
+          "displayYear": "1911"
+        },
+        {
+          "label": "Everest Summit Reached",
+          "year": 1953,
+          "displayYear": "1953"
+        },
+        {
+          "label": "Trieste Dives Trench",
+          "year": 1960,
+          "displayYear": "1960"
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_northern_hemisphere_88",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "stem": "Population Globe Check: Roughly 88% of all humans on Earth live in which half of our planet—the Northern Hemisphere or the Southern Hemisphere?",
+    "choices": [
+      "Eastern Hemisphere",
+      "Southern Hemisphere",
+      "Northern Hemisphere",
+      "Western Hemisphere"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "About two-thirds of Earth's total landmass sits north of the Equator—packing Europe, North America, and almost all of Asia into one half!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_panama_atlantic_west",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 4,
+    "stem": "Canal Compass Brain-Melter: Because Panama bends like an S-curve, which ocean entrance to the Panama Canal actually sits FURTHER WEST?",
+    "choices": [
+      "Pacific Ocean",
+      "Indian Ocean",
+      "Arctic Ocean",
+      "Atlantic Ocean"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Ships entering from the Atlantic at Colon actually sail SOUTHEAST to reach the Pacific at Panama City—roughly 25 miles further east!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_milan_north_of_toronto",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 3,
+    "stem": "Latitude Shocker: Pull a string straight across the globe—which city sits nearly 125 miles FURTHER NORTH, sunny Milan or snowy Toronto?",
+    "choices": [
+      "Milan, Italy",
+      "Toronto, Canada",
+      "Boston, USA",
+      "Chicago, USA"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Milan sits at 45.5 degrees north while Toronto sits at 43.7—warm Atlantic currents keep Europe far milder than North America at identical latitudes!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_mount_elbrus_europe_peak",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 3,
+    "stem": "Summit Showdown: Towering 18,510 feet in Russia's Caucasus range, which peak actually holds the crown as Europe's highest mountain—Mount Elbrus or Mont Blanc?",
+    "choices": [
+      "Mont Blanc",
+      "Mount Elbrus",
+      "Matterhorn",
+      "Mount Etna"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Mont Blanc tops the Alps at 15,777 feet, yet Mount Elbrus towers nearly 2,700 feet higher—making the dormant twin-cone volcano one of the Seven Summits!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_myth_japan_timezones",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "stem": "Atlas Klaxon! Three of these wild map facts check out on every globe, while one time-zone claim is totally bogus. Pull the klaxon on the myth!",
+    "choices": [
+      "Alaska is easternmost U.S.",
+      "Africa hits 4 hemispheres",
+      "Japan uses 3 time zones",
+      "France borders Brazil"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 0,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "From snowy Hokkaido down to tropical Okinawa, all of Japan runs on ONE single time zone (UTC+9)—and skips daylight saving time too!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_07_MAIL_SORTER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH",
+    "sorter": {
+      "chuteALabel": "NORTH HEMISPHERE",
+      "chuteBLabel": "SOUTH HEMISPHERE",
+      "items": [
+        {
+          "label": "Cairo, Egypt",
+          "chute": 0
+        },
+        {
+          "label": "Sydney, Australia",
+          "chute": 1
+        },
+        {
+          "label": "Reykjavik, Iceland",
+          "chute": 0
+        },
+        {
+          "label": "Lima, Peru",
+          "chute": 1
+        },
+        {
+          "label": "Cape Town, S. Africa",
+          "chute": 1
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_myth_amazon_east_west",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "stem": "Compass Klaxon! Three of these surprising border and river facts are 100% legit, while one flips direction backward. Catch the fake!",
+    "choices": [
+      "Russia borders N. Korea",
+      "Canada has most lakes",
+      "Egypt spans two continents",
+      "Amazon flows east to west"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "The Amazon starts high in Peru's western Andes and pours EAST into the Atlantic—though ancient rocks show it really DID flow west 15 million years ago!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_07_MAIL_SORTER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH",
+    "sorter": {
+      "chuteALabel": "TRUE MAP FACT",
+      "chuteBLabel": "GEOGRAPHY MYTH",
+      "items": [
+        {
+          "label": "France borders Brazil",
+          "chute": 0
+        },
+        {
+          "label": "China uses 5 time zones",
+          "chute": 1
+        },
+        {
+          "label": "Canada holds most lakes",
+          "chute": 0
+        },
+        {
+          "label": "Amazon flows westward",
+          "chute": 1
+        },
+        {
+          "label": "Russia borders N. Korea",
+          "chute": 0
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_myth_greenland_norway",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "stem": "Travel Desk Klaxon! Three of these crisp world-atlas facts are true, and one Nordic sovereignty claim gets the flag wrong. Spot the myth!",
+    "choices": [
+      "Greenland is part of Norway",
+      "Iceland has zero mosquitoes",
+      "Brazil speaks Portuguese",
+      "Monaco fits in Central Park"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Greenland is an autonomous territory within the Kingdom of Denmark—and Denmark actually kept it in 1814 when Norway split off to Sweden!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_myth_fuji_extinct",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "stem": "Peak Klaxon! Three of these global landscape claims are completely accurate, while one famous volcano's status is dead wrong. Nab the fake!",
+    "choices": [
+      "Australia runs ski resorts",
+      "Mount Fuji is long extinct",
+      "Spain holds African cities",
+      "Chile tops 2,600 miles"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Geologists still classify Mount Fuji as an ACTIVE volcano—its last major eruption in 1707 rained inches of black ash right onto downtown Tokyo!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_myth_nepal_rectangle",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "stem": "Flagpole Klaxon! Three of these quirky national-flag truths will wow vexillologists, and one shape claim misses badly. Spot the fake!",
+    "choices": [
+      "Swiss flag is a square",
+      "Paraguay has 2 flag sides",
+      "Nepal flies a rectangle",
+      "Cyprus maps its island"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Nepal flies the world's ONLY non-rectangular national flag—two stacked crimson triangles whose exact geometric construction is written into its constitution!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_myth_nile_only_egypt",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "stem": "River Atlas Klaxon! Three of these geography nuggets are rock-solid truth, while one shrinks a legendary African river. Ring the klaxon!",
+    "choices": [
+      "Danube touches 10 nations",
+      "Lesotho sits in S. Africa",
+      "Vatican prints own stamps",
+      "Nile flows only in Egypt"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "The Nile basin weaves through eleven nations—from Uganda, Rwanda, and Ethiopia up through Sudan—before fanning out across Egypt's delta!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_greenwich_mean_time",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "stem": "World Clock Wire, 1884: Delegates from 25 nations voted in Washington to anchor global hours to [ _____ ], setting a London hill at longitude zero.",
+    "choices": [
+      "Greenwich Mean Time",
+      "Atlantic Solar Clock",
+      "Paris Meridian Hour",
+      "Imperial Naval Beat"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "France abstained in 1884 and stubbornly kept \"Paris Mean Time\"—9 minutes and 21 seconds ahead of London—for another 27 years!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_continental_drift",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "stem": "Geology Wire, 1912: Critics mocked German meteorologist Alfred Wegener's bold [ _____ ] theory—even though Africa and South America fit like puzzle pieces.",
+    "choices": [
+      "Plate subduction",
+      "Continental drift",
+      "Mantle convection",
+      "Crustal folding"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Wegener couldn't explain WHAT pushed landmasses around—so geologists only vindicated him in the 1960s after sonar mapped seafloor spreading!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_isobars_weather",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "stem": "Forecast Desk: Those swirling loop lines drawn on TV weather maps to link spots sharing identical air pressure—packing tight near storms—are [ _____ ].",
+    "choices": [
+      "Isotherms",
+      "Meridians",
+      "Isobars",
+      "Tectonics"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "From Greek \"isos\" (equal) and \"baros\" (weight), tightly crowded isobars tell pilots and sailors instantly where fierce winds are howling!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_continental_divide",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "stem": "Watershed Wire: Raindrops landing inches apart along the Rocky Mountains' [ _____ ] split forever—some racing to the Pacific, others to the Atlantic.",
+    "choices": [
+      "Cascade Trench",
+      "Timberline Crest",
+      "Appalachian Spine",
+      "Continental Divide"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "At Two Ocean Pass in Wyoming, one tiny mountain creek literally forks into Pacific Creek and Atlantic Creek—so trout can swim between ocean basins!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_midnight_sun",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "stem": "Arctic Dispatch: Every June above 66.5 degrees north, Earth's tilt keeps golden daylight glowing at 2 a.m. in the summer wonder called the [ _____ ].",
+    "choices": [
+      "Midnight sun",
+      "Polar mirage",
+      "Aurora flare",
+      "Solstice halo"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "In northern Norway, locals play golf and kayak at 1 a.m. under warm golden skies—before paying it back with dark Polar Nights every December!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_roaring_forties",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 3,
+    "stem": "Maritime Dispatch: Clipper ships racing toward Australia rode fierce, unbroken Southern Ocean westerlies nicknamed the [ _____ ] for their latitude belt.",
+    "choices": [
+      "Trade Corridors",
+      "Roaring Forties",
+      "Siren Squalls",
+      "Cape Westerlies"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Because almost no land blocks the ocean between 40 and 50 degrees south, winds whip nonstop around Earth—followed by the \"Furious Fifties\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_fjord_norway",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "stem": "Zoom in on Norway's coastline! What Norse-named geological marvel forms when massive Ice Age glaciers carve steep U-shaped valleys that later flood with sea water?",
+    "choices": [
+      "Estuary",
+      "Lagoon",
+      "Fjord",
+      "Delta"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Norway's Sognefjord plunges over 4,200 feet deep yet narrows at its shallow ocean mouth—making fjords calmer than the stormy sea just outside!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_coral_atoll",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "stem": "Picture a turquoise ring of coral reef encircling a calm blue lagoon in the Maldives—left behind after a central volcano sank. What is this ring island called?",
+    "choices": [
+      "Cay",
+      "Shoal",
+      "Isthmus",
+      "Atoll"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Young Charles Darwin solved how atolls form while sailing aboard HMS Beagle—guessing correctly that coral keeps growing upward as dead islands sink!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_ring_of_fire",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "stem": "Circling the Pacific like a fiery horseshoe from Chile to Japan and Alaska, which tectonic belt hosts roughly 75% of Earth's volcanoes and 90% of its earthquakes?",
+    "choices": [
+      "Ring of Fire",
+      "Pacific Rift",
+      "Magma Crescent",
+      "Trench Arc"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Stretching 25,000 miles around the Pacific Plate's grinding edges, it packs over 450 volcanoes—including Fuji, St. Helens, and Krakatoa!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_tropic_of_capricorn",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "stem": "Slicing across Australia's Outback, Madagascar, and Chile's Atacama at 23.4 degrees south, which sun-line marks December's overhead solstice—named for a sea-goat?",
+    "choices": [
+      "Tropic of Cancer",
+      "Tropic of Capricorn",
+      "Antarctic Circle",
+      "Horse Latitude"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Because Earth wobbles like a spinning top over 26,000 years, the December sun has actually drifted into Sagittarius—yet the old name stuck!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_northwest_passage",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "stem": "Dooming Sir John Franklin's 1845 ships Erebus and Terror in Arctic pack ice, which fabled shortcut through northern Canada did Roald Amundsen finally sail in 1906?",
+    "choices": [
+      "Northeast Corridor",
+      "Hudson Strait",
+      "Northwest Passage",
+      "Baffin Channel"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Amundsen succeeded where giant Royal Navy ships failed by sailing a tiny converted herring boat, Gjoa, shallow enough to hug coastal ice gaps!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_doldrums_belt",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "stem": "Where rising equatorial heat stalls the trade winds dead, wooden ships could drift motionless for weeks—giving English which dreary word for a listless slump?",
+    "choices": [
+      "Squall Line",
+      "Dead Calm",
+      "Trade Belt",
+      "Doldrums"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Meteorologists call the same belt the Intertropical Convergence Zone—and today it breeds towering thunderstorm walls instead of trapping clippers!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_bering_strait",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "stem": "Measuring just 53 miles across between Alaska and Siberia, which icy waterway dried into a grassy Ice Age highway letting ancient migrants walk into the Americas?",
+    "choices": [
+      "Bering Strait",
+      "Davis Strait",
+      "Cook Strait",
+      "Denmark Strait"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Because so much ocean water locked inside Ice Age glaciers, sea levels dropped 400 feet—turning the shallow strait into a continent-wide steppe!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_kola_superdeep_hole",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 4,
+    "stem": "Capped today by a rusted bolted lid in Arctic Russia, which Soviet science bore plunged 7.6 miles into Earth's crust—stopping only when 356-degree rock turned gooey?",
+    "choices": [
+      "Baikal Core Shaft",
+      "Kola Superdeep",
+      "Ural Mantle Well",
+      "Kamchatka Pit"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 0,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Despite drilling deeper than Mount Everest is tall, Kola Superdeep scratched less than 0.2% of the way to Earth's core—and found microscopic fossils 4 miles down!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_mekong_river",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "stem": "Tumbling off the Tibetan Plateau through six Southeast Asian nations before fanning into Vietnam's lush rice-bowl delta, which river feeds tens of millions?",
+    "choices": [
+      "Irrawaddy River",
+      "Red River",
+      "Mekong River",
+      "Salween River"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The Mekong shelters giant freshwater stingrays wider than a car—and every monsoon its surge literally forces Cambodia's Tonle Sap tributary to flow backward!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_atl_pampas_grasslands",
+    "category": "ATLAS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "stem": "Sweeping across Argentina and Uruguay in a treeless sea of rich green pasture, which legendary plains became the classic horseback turf of South American gauchos?",
+    "choices": [
+      "The Llanos",
+      "The Steppe",
+      "The Cerrado",
+      "The Pampas"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Named from the Quechua word for \"plain,\" the Pampas boast soil so deep and fertile that Argentina quickly became one of Earth's premier beef and wheat baskets.",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_loch_ness_monster",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "First mentioned in a 6th-century saint's biography before a viral 1934 photo turned it into a tourist icon, which Highland lake legend swims through Scottish lore?",
+    "choices": [
+      "Loch Ness Monster",
+      "Ogopogo Serpent",
+      "Kraken of Skye",
+      "Kelpie of Tay"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Saint Columba allegedly scolded a water beast back into the River Ness in 565 CE—and a 2019 eDNA survey of the loch found zero plesiosaurs, just giant eels!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_05_RELIEF_GLOBE_3D"
+    ],
+    "cardStyle": "PICTURE_MONITOR",
+    "geo": {
+      "lat": 57.3229,
+      "lng": -4.4244,
+      "landmarkLabel": "Loch Ness, Scottish Highlands",
+      "regionHint": "Scotland, UK"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_mount_olympus_greece",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Rising 9,570 feet into swirling Aegean clouds, which real Greek peak served as the mythic golden penthouse where Zeus and eleven fellow gods feasted on ambrosia?",
+    "choices": [
+      "Mount Parnassus",
+      "Mount Olympus",
+      "Mount Ida",
+      "Mount Pelion"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Despite millennia of fame, Mount Olympus's top peak Mytikas wasn't officially climbed until Greek guide Christos Kakkalos led Swiss hikers up in 1913!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_05_RELIEF_GLOBE_3D"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "geo": {
+      "lat": 40.0856,
+      "lng": 22.3586,
+      "landmarkLabel": "Mount Olympus Summit",
+      "regionHint": "Northern Greece"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_blarney_stone_ireland",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Lean backward upside-down over a castle parapet near Cork to kiss which legendary Irish limestone block—supposedly gifting smooth, silver-tongued eloquence?",
+    "choices": [
+      "Stone of Destiny",
+      "Giant's Stepping Rock",
+      "Blarney Stone",
+      "Tara Pillar"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Queen Elizabeth I reportedly groaned that the castle's smooth-talking lord spouted \"all Blarney\"—turning the village's name into English slang for charming flattery!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_05_RELIEF_GLOBE_3D"
+    ],
+    "cardStyle": "PICTURE_MONITOR",
+    "geo": {
+      "lat": 51.9291,
+      "lng": -8.5709,
+      "landmarkLabel": "Blarney Castle Battlements",
+      "regionHint": "County Cork, Ireland"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_beowulf_chrono",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Monster-Tale Showdown: Which legendary hero epic was written down on parchment FIRST—Old English Beowulf or Dante's Inferno?",
+    "choices": [
+      "Dante's Inferno",
+      "Canterbury Tales",
+      "Grimms' Tales",
+      "Beowulf Poem"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The sole surviving Beowulf manuscript dates around 1000 CE—and narrowly escaped a 1731 London library fire when a librarian tossed it out a window!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_08_CHRONOLOGY_RAIL"
+    ],
+    "cardStyle": "BINARY_SPLIT",
+    "chronology": {
+      "events": [
+        {
+          "label": "Beowulf Parchment Copied",
+          "year": 1000,
+          "displayYear": "c. 1000"
+        },
+        {
+          "label": "Dante Finishes Inferno",
+          "year": 1320,
+          "displayYear": "1320"
+        },
+        {
+          "label": "Grimms Publish Fairy Tales",
+          "year": 1812,
+          "displayYear": "1812"
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_poseidon_athens_spring",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Patron-God Showdown: Before Athena won Athens with an olive tree, which Greek deity struck the Acropolis rock to conjure a salty spring—Poseidon or Apollo?",
+    "choices": [
+      "Poseidon",
+      "Apollo",
+      "Ares",
+      "Hephaestus"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Athenians chose Athena's useful olive tree over salty water you couldn't even drink—and salty marks on the Acropolis rock were shown off as trident dents!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_frigg_friday_norse",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Weekday Myth Match: English \"Friday\" honors Odin's wise queen of hearth and prophecy—which Norse goddess gave her name to the end of the workweek?",
+    "choices": [
+      "Hel",
+      "Frigg",
+      "Sif",
+      "Idunn"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Just as Romans named the day for Venus (\"Vendredi\" in French), Germanic speakers mapped it to Frigg—making four English weekdays purely Norse!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_paul_bunyan_babe",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Tall-Tale Showdown: Whose giant sidekick was a sky-blue ox named Babe—logging-camp titan Paul Bunyan or steam-train legend Casey Jones?",
+    "choices": [
+      "Casey Jones",
+      "Davy Crockett",
+      "Paul Bunyan",
+      "Rip Van Winkle"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Campfire loggers spun Bunyan yarns first, but an ad copywriter for Red River Lumber Company turned him and Babe into national icons in a 1916 brochure!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_sirens_giant_birds",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 3,
+    "stem": "Mythic Makeover: In Homer's original Greek Odyssey, the singing Sirens perched on rocky meadows weren't mermaids at all—what creatures were they blended with?",
+    "choices": [
+      "Sea serpents",
+      "Winged lions",
+      "Wild goats",
+      "Giant birds"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Greek vase painters always drew Sirens as human-headed birds—it took medieval European monks centuries later to swap their feathers for scaly fish tails!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_myth_mirror_3_years",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Superstition Klaxon! Three of these classic folk traditions are genuine old-world luck customs, while one famous bad-luck penalty gets the math wrong. Spot it!",
+    "choices": [
+      "Broken mirror = 3 bad yrs",
+      "Horseshoes hang ends up",
+      "Toss salt over left back",
+      "Knock on wood for luck"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Classic lore sentences mirror-breakers to SEVEN unlucky years—tracing back to ancient Romans who believed human health renewed itself on a seven-year cycle!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_07_MAIL_SORTER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH",
+    "sorter": {
+      "chuteALabel": "LUCKY FOLK OMEN",
+      "chuteBLabel": "UNLUCKY OMEN",
+      "items": [
+        {
+          "label": "Four-leaf clover",
+          "chute": 0
+        },
+        {
+          "label": "Open umbrella indoors",
+          "chute": 1
+        },
+        {
+          "label": "Finding heads-up penny",
+          "chute": 0
+        },
+        {
+          "label": "Walk under a ladder",
+          "chute": 1
+        },
+        {
+          "label": "Acorn on windowsill",
+          "chute": 0
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_myth_zeus_forged_mjolnir",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Pantheon Klaxon! Three of these ancient mythological tales are 100% authentic lore, while one scrambles two rival mythologies together. Catch the fake!",
+    "choices": [
+      "Thor rode goat-drawn cart",
+      "Zeus forged Thor's hammer",
+      "Odin kept two spy ravens",
+      "Anubis weighed dead hearts"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Wrong pantheon! Norse dwarven brothers Brokkr and Sindri forged Mjolnir—and a mischievous fly-disguised Loki stung Brokkr's eyelid so the handle came out short!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_07_MAIL_SORTER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH",
+    "sorter": {
+      "chuteALabel": "GREEK MYTH",
+      "chuteBLabel": "NORSE MYTH",
+      "items": [
+        {
+          "label": "Valhalla Feast Hall",
+          "chute": 1
+        },
+        {
+          "label": "Trojan Horse Ploy",
+          "chute": 0
+        },
+        {
+          "label": "Rainbow Bridge Bifrost",
+          "chute": 1
+        },
+        {
+          "label": "Golden Fleece Quest",
+          "chute": 0
+        },
+        {
+          "label": "Ragnarok Twilight",
+          "chute": 1
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_myth_dracula_sunlight",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Monster Lore Klaxon! Three of these spooky legends check out in classic folklore, while one famous vampire weakness was actually invented by a 1922 movie. Nab it!",
+    "choices": [
+      "Garlic repelled vampires",
+      "Irish carved spooky turnips",
+      "Dracula burns in sunlight",
+      "Iron warded off fairies"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 0,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "In Bram Stoker's 1897 novel, Dracula strolls around sunny London just fine—lethal sunrise rays were invented by German silent film Nosferatu in 1922!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_myth_atlas_held_earth",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Classical Klaxon! Three of these Greek-myth details appear in ancient poems, while one iconic statue pose misreads what a famous Titan held. Pull the klaxon!",
+    "choices": [
+      "Icarus melted wax wings",
+      "Midas grew donkey ears",
+      "Hermes stole Apollo's cows",
+      "Atlas held planet Earth"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Zeus sentenced Atlas to hold up the celestial SKY so heaven wouldn't crash onto Earth—sculptors carved starry globes, which modern viewers mistook for planet Earth!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_myth_mothman_1860",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Cryptid Klaxon! Three of these wild monster-sighting timelines are documented folklore history, while one famous winged mystery jumps a full century too early!",
+    "choices": [
+      "Mothman debuted in 1860",
+      "Chupacabra began in 1995",
+      "Bigfoot prints hit 1958",
+      "Jackalope began as prank"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Glowing-eyed Mothman sightings kicked off in Point Pleasant, West Virginia in November 1966—which today celebrates with a shiny chrome statue and annual festival!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_myth_snow_white_frog",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Fairy-Tale Klaxon! Three of these surprising original storybook twists really happened in early editions, while one mixes up two princesses. Catch the fake!",
+    "choices": [
+      "Early Grimms stayed gory",
+      "Snow White kissed a frog",
+      "Pinocchio squashed Cricket",
+      "Rumpelstiltskin ripped self"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "That was the Frog Prince—and in the 1812 Grimm version, the princess didn't kiss the frog at all; she flung him straight at her bedroom wall in disgust!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_gordian_knot",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Oracle Dispatch: Prophecy vowed whoever untangled the impossible ox-cart [ _____ ] in ancient Phrygia would rule all Asia—until impatient Alexander drew his sword.",
+    "choices": [
+      "Phaistos cord",
+      "Delphic tether",
+      "Gordian knot",
+      "Sardis splice"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Some ancient historians say Alexander sliced right through it, while others claim he cheekily pulled the wooden linchpin out so the rope fell open!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_trojan_horse",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Siege Chronicle: Pretending to sail home after ten weary years, Greek commandos hid inside a hollow wooden [ _____ ] wheeled gladly through the enemy gates.",
+    "choices": [
+      "Spartan chariot",
+      "Athenian galley",
+      "Aegean tower",
+      "Trojan horse"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Surprisingly, Homer's Iliad ends BEFORE the sneaky wooden gift appears—the full ambush story is told in the Odyssey and Virgil's Aeneid!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_fountain_of_youth",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Explorer Lore: Tall tales whispered that Spanish governor Juan Ponce de Leon combed lush Florida springs searching for the [ _____ ] to turn back aging.",
+    "choices": [
+      "Fountain of Youth",
+      "Spring of Gold",
+      "Well of Eternity",
+      "Chalice of Dawn"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Ponce de Leon's own 1513 ship logs never mention magic water—chroniclers stuck the legend onto him years after his death to mock his failed hunt for gold!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_el_dorado",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Conquistador Wire: Greedy explorers hunted a mythical jungle city of solid gold called [ _____ ], though the original Muisca legend was a gold-dusted ruler.",
+    "choices": [
+      "Cibola Crown",
+      "El Dorado",
+      "Shangri-La",
+      "Atlantis"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Spanish \"El Dorado\" literally means \"The Gilded One\"—describing a Colombian chief who dusted himself in gold powder and dove into Lake Guatavita!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_sword_of_damocles",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Courtroom Fable: To prove how stressful wearing a crown feels, Sicilian tyrant Dionysius hung the [ _____ ] directly above a flatterer's banquet seat.",
+    "choices": [
+      "Crown of Midas",
+      "Spear of Ares",
+      "Sword of Damocles",
+      "Axe of Solon"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Suspended by a single horsehair, the blade terrified Damocles out of the royal throne within seconds—leaving us an immortal phrase for looming peril!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_golden_fleece",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Argonaut Dispatch: Jason gathered Heracles and Orpheus aboard the ship Argo to sail east to Colchis and snatch the gleaming [ _____ ] from a sleepless dragon.",
+    "choices": [
+      "Amber Crown",
+      "Silver Trident",
+      "Bronze Shield",
+      "Golden Fleece"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Some historians think the myth echoes real Georgian gold prospectors who dipped woolly sheepskins into mountain streams to trap sparkling gold dust!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_maneki_neko",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Spot the cheerful porcelain shopkeeper! Perched near Japanese cash registers waving one upright paw to invite good fortune, what is this calico cat charm called?",
+    "choices": [
+      "Maneki-neko",
+      "Kokeshi",
+      "Netsuke",
+      "Origami crane"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "In Japan, a palm-down wave says \"come here!\"—and legend says a raised left paw summons customers while a raised right paw draws cash and luck!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_daruma_doll",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 4,
+    "stem": "Inspect this roly-poly crimson Japanese wishing figurine sold with two blank white eyes: you ink one pupil when setting a big goal and the second when it comes true!",
+    "choices": [
+      "Teru bozu",
+      "Daruma doll",
+      "Inu hariko",
+      "Tanuki jar"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Weighted at the bottom so it always pops upright when knocked over, the Daruma embodies Japan's proverb \"Fall down seven times, stand up eight!\"",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_tengu_goblin",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 4,
+    "stem": "Crimson face, impossibly long nose, feathered wings, and a monk's cap: which proud mountain spirit of Japanese folklore doubles as a legendary master of swordplay?",
+    "choices": [
+      "Oni ogre",
+      "Noppera-bo",
+      "Tengu",
+      "Baku spirit"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Early Japanese tales pictured Tengu as sharp-beaked birds of prey—over centuries the beak morphed into that famously boastful long red nose!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_basilisk_serpent",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 3,
+    "stem": "Medieval bestiaries warned this \"little king\" of serpents hatched from a rooster's egg under a toad—turning victims to stone with one glare unless tricked by a mirror!",
+    "choices": [
+      "Wyvern",
+      "Cockatrice",
+      "Hydra",
+      "Basilisk"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "From Greek \"basiliskos\" (little king) for the tiny crown spot on its head, its only natural predator in folklore was a fearless ordinary weasel!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_manticore_beast",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 4,
+    "stem": "Picture a Persian-born nightmare: a red lion's body, a grinning human face with three rows of shark teeth, and a stinging scorpion tail firing darts!",
+    "choices": [
+      "Manticore",
+      "Chimaera",
+      "Ammit",
+      "Lamassu"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Its name comes from Old Persian \"martya-khvara\" (\"man-eater\")—and Greek doctor Ctesias reported it sang in a haunting melody like a trumpet and flute!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_hamsa_hand",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Hung in doorways across North Africa and the Middle East to deflect bad luck, which symmetrical open-palm talisman often holds a watchful blue eye in its center?",
+    "choices": [
+      "Ankh charm",
+      "Hamsa hand",
+      "Celtic knot",
+      "Scarab seal"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Arabic \"khamsa\" simply means \"five\" for the palm's five fingers—and Jewish, Muslim, and Christian households all cherish versions of the protective emblem!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_sphinx_riddle",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Which winged lion-bodied guardian blocked the highway into ancient Thebes, devouring travelers who couldn't answer her riddle of four, two, and three legs?",
+    "choices": [
+      "Harpy",
+      "Gorgon",
+      "Sphinx",
+      "Pegasus"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Greek \"sphingo\" means \"to strangle\"—and once a clever traveler answered \"a human\" (crawling, walking, using a cane), she threw herself off her cliff!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_leprechaun_irish",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Before modern emerald tuxedos, Irish folklore dressed this solitary fairy shoemaker in RED—and vowed he'd reveal his gold pot ONLY if you never blinked away!",
+    "choices": [
+      "Brownie",
+      "Pooka",
+      "Pixie",
+      "Leprechaun"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "W.B. Yeats noted old Irish leprechauns wore bright red coats with silver buttons—and they always mend just ONE single shoe at a time, never a pair!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_puck_goodfellow",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Known across Tudor villages as Robin Goodfellow, which cheeky English forest sprite swept clean hearths for a bowl of cream—before stealing scenes for Shakespeare?",
+    "choices": [
+      "Puck",
+      "Oberon",
+      "Ariel",
+      "Boggart"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Shakespeare's A Midsummer Night's Dream turned Puck into a playful imp—though earlier English farmers feared him as a lantern-waving bog trickster!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_gargoyle_spouts",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Named for a fire-spitting French river dragon—and sharing a root with \"gargle\"—which carved cathedral monsters doubled as rainwater gutters spitting storms off walls?",
+    "choices": [
+      "Grotesques",
+      "Gargoyles",
+      "Chimeras",
+      "Buttresses"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Architects insist a stone beast only counts as a true gargoyle if water actually shoots through its mouth—solid decorative statues are just \"grotesques\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_rumpelstiltskin_name",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Which boastful German fairy-tale imp spun rooms of straw into gleaming gold—only to lose his royal bargain after chanting his own secret name around a campfire?",
+    "choices": [
+      "Tom Tit Tot",
+      "Till Eulenspiegel",
+      "Rumpelstiltskin",
+      "Pied Piper"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "His German name literally translates to \"little rattle-stilt\"—and folklorists trace the secret-name riddle motif back over 4,000 years across Europe!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_heimdall_watchman",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Able to hear grass sprout in meadows and wool grow on sheep, which sharp-eyed Norse guardian watches the rainbow bridge waiting to sound Gjallarhorn at Ragnarok?",
+    "choices": [
+      "Tyr",
+      "Baldur",
+      "Freyr",
+      "Heimdall"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Old Norse poems say Heimdall needed less sleep than a bird, owned gleaming golden teeth, and was mysteriously born to NINE giantess mothers at once!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_osiris_green_egypt",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Painted leafy green to symbolize fertile Nile floods and rebirth, which Egyptian lord of the underworld was reassembled by Isis after his jealous brother Set slew him?",
+    "choices": [
+      "Osiris",
+      "Horus",
+      "Ra",
+      "Ptah"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Set tricked Osiris by hosting a banquet with a custom-fitted jeweled chest—promising it to whoever fit snug inside, then slamming the lid shut!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_bastet_cat_goddess",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Initially drawn as a fierce desert lioness before softening into a sleek housecat protecting grain and music, which Egyptian goddess was honored in the city of Bubastis?",
+    "choices": [
+      "Sekhmet",
+      "Bastet",
+      "Hathor",
+      "Nephthys"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Greek historian Herodotus marveled that Bastet's annual river festival drew 700,000 cheering pilgrims—drinking more wine in one week than all year!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_pecos_bill_cyclone",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Raised by wild coyotes after bouncing out of a covered wagon, which swaggering Texas tall-tale cowboy supposedly roped a tornado and cracked a live rattlesnake whip?",
+    "choices": [
+      "Buffalo Bill",
+      "Wild Bill Hickok",
+      "Pecos Bill",
+      "Billy the Kid"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Just like Paul Bunyan, Pecos Bill wasn't an ancient campfire myth—writer Edward O'Reilly invented him whole-cloth for a 1923 magazine article!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_john_henry_hammer",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Swinging a nine-pound hammer in each fist, which American railroad folk hero raced a mechanical steam drill through a West Virginia tunnel—and won before collapsing?",
+    "choices": [
+      "Joe Magarac",
+      "Casey Jones",
+      "Stagger Lee",
+      "John Henry"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Historian Scott Reynolds Nelson traced the ballad to a real formerly enslaved Virginian laborer—John William Henry—who worked the C&O rail line in 1871!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_johnny_appleseed",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Real frontier nurseryman John Chapman walked barefoot across Ohio fencing orchards—earning which gentle folk nickname, even though his tart fruit mostly made hard cider?",
+    "choices": [
+      "Johnny Appleseed",
+      "Uncle Remus",
+      "Old Stormalong",
+      "Febold Feboldson"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Chapman wasn't just scattering random pips—he ran a savvy real-estate business, planting nurseries ahead of settlers and selling plots for a tidy profit!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_cinderella_rhodopis",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Over 500 global variations exist of which rags-to-royalty tale—starting in ancient Egypt when an eagle snatched Rhodopis's rose-gilded sandal and dropped it on a pharaoh?",
+    "choices": [
+      "Sleeping Beauty",
+      "Cinderella",
+      "Thumbelina",
+      "Rapunzel"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "A 9th-century Chinese version called Ye Xian predates Europe's fairy godmother by 800 years—with magical talking fish bones granting her silk gown!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_goldilocks_old_woman",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "In Robert Southey's original 1837 Three Bears story, the cheeky burglar tasting bowls and breaking chairs wasn't a sweet child—she was a grumpy old woman! Who replaced her?",
+    "choices": [
+      "Little Bo Peep",
+      "Red Riding Hood",
+      "Goldilocks",
+      "Mother Goose"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Earlier variants even cast a sneaky fox named Scrapefoot as the intruder—until Victorian book illustrators softened the villain into golden-curled Goldilocks!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_flk_jormungandr_serpent",
+    "category": "FOLKLORE",
+    "domain": "HIST_FACT",
+    "difficulty": 3,
+    "stem": "Tossed into the deep sea as a baby by Odin, which colossal Norse serpent grew so enormous around Midgard's ocean floor that it bites its own tail until Ragnarok?",
+    "choices": [
+      "Nidhogg",
+      "Fafnir",
+      "Vritra",
+      "Jormungandr"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Thor once went fishing with an ox head as bait and actually hooked Jormungandr—until his terrified giant boatmate cut the fishing line in panic!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_versailles_palace",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Started as Louis XIII's humble brick hunting lodge before the Sun King gilded it with 2,300 rooms and a Hall of Mirrors, what grand estate sits near Paris?",
+    "choices": [
+      "Versailles",
+      "Chambord",
+      "Fontainebleau",
+      "Tuileries"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Louis XIV kept aristocrats distracted by mandatory royal bedtime rituals—and his gardens had so many fountains that staff had to turn them on only as he walked past!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_05_RELIEF_GLOBE_3D"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "geo": {
+      "lat": 48.8049,
+      "lng": 2.1204,
+      "landmarkLabel": "Palace of Versailles",
+      "regionHint": "Ile-de-France, France"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_tower_of_london",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Founded by William the Conqueror beside the Thames, which stony fortress doubled as royal mint, exotic zoo housing a swimming polar bear, prison, and Crown Jewels vault?",
+    "choices": [
+      "Windsor Castle",
+      "Tower of London",
+      "Hampton Court",
+      "Edinburgh Keep"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Norway gifted King Henry III a polar bear in 1252, and Tower guards walked it down to the Thames on a long leash so it could catch fresh fish!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_05_RELIEF_GLOBE_3D"
+    ],
+    "cardStyle": "PICTURE_MONITOR",
+    "geo": {
+      "lat": 51.5081,
+      "lng": -0.0759,
+      "landmarkLabel": "Tower of London Fortress",
+      "regionHint": "London, England"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_carthage_harbor",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Anchored by a secret circular naval dock sheltering 220 warships on the Gulf of Tunis, which Phoenician-born powerhouse rivaled Rome through three Punic Wars?",
+    "choices": [
+      "Alexandria",
+      "Syracuse",
+      "Carthage",
+      "Corinth"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 0,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Despite the dramatic legend, historians find zero ancient proof that Romans salted Carthage's earth—in fact, Julius Caesar rebuilt it into a thriving Roman port!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_05_RELIEF_GLOBE_3D"
+    ],
+    "cardStyle": "PICTURE_MONITOR",
+    "geo": {
+      "lat": 36.8529,
+      "lng": 10.3233,
+      "landmarkLabel": "Ancient Harbor of Carthage",
+      "regionHint": "Gulf of Tunis, Tunisia"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_taj_mahal_before_harvard",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Timeline Brain-Melter: Which landmark milestone kicked off FIRST—breaking ground on India's marble Taj Mahal or founding Harvard College in Massachusetts?",
+    "choices": [
+      "Harvard College",
+      "Newton's Principia",
+      "Jamestown Fort",
+      "Taj Mahal"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Mughal Emperor Shah Jahan began raising the Taj Mahal in 1632—four full years before Massachusetts Bay colonists voted to open Harvard in 1636!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_08_CHRONOLOGY_RAIL"
+    ],
+    "cardStyle": "BINARY_SPLIT",
+    "chronology": {
+      "events": [
+        {
+          "label": "Taj Mahal Construction",
+          "year": 1632,
+          "displayYear": "1632"
+        },
+        {
+          "label": "Harvard College Founded",
+          "year": 1636,
+          "displayYear": "1636"
+        },
+        {
+          "label": "Newton Prints Principia",
+          "year": 1687,
+          "displayYear": "1687"
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_woolly_mammoths_pyramids",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Ice-Age Time Warp: When Egyptian builders capped Giza's Great Pyramid around 2560 BCE, which shaggy beasts still roamed Arctic Wrangel Island?",
+    "choices": [
+      "Woolly mammoths",
+      "Saber-tooth cats",
+      "Giant ground sloths",
+      "Dire wolves"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "A marooned population of woolly mammoths survived on Siberia's remote Wrangel Island until roughly 1700 BCE—nearly 900 years after the Great Pyramid stood!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_08_CHRONOLOGY_RAIL"
+    ],
+    "cardStyle": "BINARY_SPLIT",
+    "chronology": {
+      "events": [
+        {
+          "label": "Great Pyramid Completed",
+          "year": -2560,
+          "displayYear": "2560 BCE"
+        },
+        {
+          "label": "Last Mammoths Vanish",
+          "year": -1700,
+          "displayYear": "1700 BCE"
+        },
+        {
+          "label": "Traditional Founding of Rome",
+          "year": -753,
+          "displayYear": "753 BCE"
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_nintendo_1889_chrono",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Century Surprise: Which global powerhouse opened its doors FIRST—Kyoto handmade playing-card shop Nintendo or Henry Ford's Motor Company?",
+    "choices": [
+      "Ford Motor Co.",
+      "Nintendo",
+      "Disney Studios",
+      "Sony Corp."
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Fusajiro Yamauchi launched Nintendo in September 1889 selling painted Hanafuda cards—14 years before Ford Motor Company incorporated in 1903!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_08_CHRONOLOGY_RAIL"
+    ],
+    "cardStyle": "BINARY_SPLIT",
+    "chronology": {
+      "events": [
+        {
+          "label": "Japan Meiji Restoration",
+          "year": 1868,
+          "displayYear": "1868"
+        },
+        {
+          "label": "Nintendo Card Shop Opens",
+          "year": 1889,
+          "displayYear": "1889"
+        },
+        {
+          "label": "Ford Motor Co. Founded",
+          "year": 1903,
+          "displayYear": "1903"
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_byzantine_longevity",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Imperial Stamina Check: After Rome split in two, which half survived nearly 1,000 years LONGER—the Western Roman Empire or the Eastern Byzantine Empire?",
+    "choices": [
+      "Western Rome",
+      "Carolingian Realm",
+      "Byzantine Empire",
+      "Latin Empire"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Byzantine citizens never called themselves \"Byzantines\"—they called themselves Romans right up until Ottoman cannons breached Constantinople in 1453!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_08_CHRONOLOGY_RAIL"
+    ],
+    "cardStyle": "BINARY_SPLIT",
+    "chronology": {
+      "events": [
+        {
+          "label": "Western Rome Collapses",
+          "year": 476,
+          "displayYear": "476 CE"
+        },
+        {
+          "label": "Charlemagne Crowned",
+          "year": 800,
+          "displayYear": "800 CE"
+        },
+        {
+          "label": "Constantinople Falls",
+          "year": 1453,
+          "displayYear": "1453 CE"
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_fax_before_civil_war",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 4,
+    "stem": "Victorian Time Warp: Which historical milestone arrived FIRST—the patented electric fax machine or the outbreak of the American Civil War?",
+    "choices": [
+      "U.S. Civil War",
+      "Bell's Telephone",
+      "Wright Flyer",
+      "Electric fax machine"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Scottish clockmaker Alexander Bain patented his pendulum-driven electric fax in 1843—18 years before Fort Sumter, and 33 years before the telephone!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_08_CHRONOLOGY_RAIL"
+    ],
+    "cardStyle": "BINARY_SPLIT",
+    "chronology": {
+      "events": [
+        {
+          "label": "Bain Patents Electric Fax",
+          "year": 1843,
+          "displayYear": "1843"
+        },
+        {
+          "label": "U.S. Civil War Begins",
+          "year": 1861,
+          "displayYear": "1861"
+        },
+        {
+          "label": "Bell Patents Telephone",
+          "year": 1876,
+          "displayYear": "1876"
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_french_revolution_bastille",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "On July 14, 1789, furious Parisians hunting gunpowder stormed the medieval Bastille—freeing just seven puzzled inmates yet launching which world-changing upheaval?",
+    "choices": [
+      "French Revolution",
+      "Paris Commune",
+      "July Monarchy",
+      "Reign of Napoleon"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The Bastille held just seven inmates—four forgers, two lunatics, and one unruly noble—yet Lafayette proudly sent its heavy iron key to George Washington!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_08_CHRONOLOGY_RAIL"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "chronology": {
+      "events": [
+        {
+          "label": "U.S. Declares Independence",
+          "year": 1776,
+          "displayYear": "1776"
+        },
+        {
+          "label": "Storming of the Bastille",
+          "year": 1789,
+          "displayYear": "1789"
+        },
+        {
+          "label": "Napoleon Loses Waterloo",
+          "year": 1815,
+          "displayYear": "1815"
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_myth_caesar_first_emperor",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Senate Klaxon! Three of these wild ancient Roman facts are 100% documented history, while one famous job title gets promoted too soon. Catch the myth!",
+    "choices": [
+      "Pirates kidnapped Caesar",
+      "Caesar was 1st emperor",
+      "Cleopatra spoke Greek",
+      "Romans washed with urine"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Julius Caesar ruled as Dictator of the Roman Republic and was slain before the Empire began—his adopted heir Augustus became Rome's first true Emperor!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_07_MAIL_SORTER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH",
+    "sorter": {
+      "chuteALabel": "TRUE ROMAN FACT",
+      "chuteBLabel": "MOVIE MYTH",
+      "items": [
+        {
+          "label": "Pirates held Caesar",
+          "chute": 0
+        },
+        {
+          "label": "Caesar was 1st emperor",
+          "chute": 1
+        },
+        {
+          "label": "Fast food lined Pompeii",
+          "chute": 0
+        },
+        {
+          "label": "Vomitorium = puke room",
+          "chute": 1
+        },
+        {
+          "label": "Purple came from snails",
+          "chute": 0
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_myth_ninjas_pure_black",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Chronicle Klaxon! Three of these surprising global-history nuggets check out in real archives, while one stealthy wardrobe stereotype comes straight from theater!",
+    "choices": [
+      "Samurai fired muskets",
+      "Vikings groomed hair daily",
+      "Ninjas always wore black",
+      "Aztecs drank spicy cacao"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Real shinobi spies wore ordinary farmer robes or dark navy clothes to blend into crowds—all-black outfits came from invisible Kabuki theater stagehands!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_07_MAIL_SORTER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH",
+    "sorter": {
+      "chuteALabel": "REAL HISTORY",
+      "chuteBLabel": "POP MYTH",
+      "items": [
+        {
+          "label": "Samurai used firearms",
+          "chute": 0
+        },
+        {
+          "label": "Vikings wore horned helm",
+          "chute": 1
+        },
+        {
+          "label": "Ninjas wore pure black",
+          "chute": 1
+        },
+        {
+          "label": "Vikings packed combs",
+          "chute": 0
+        },
+        {
+          "label": "Pyramids paid workers",
+          "chute": 0
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_myth_washington_wood_teeth",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Founders Klaxon! Three of these colonial American tidbits are 100% true, while one famous presidential dental legend misses the real material completely. Nab it!",
+    "choices": [
+      "Ben invented bifocals",
+      "Adams & Jefferson died 7/4",
+      "Washington bred mules",
+      "Washington had wood teeth"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Zero wood! George Washington's painful spring-loaded dentures were forged from hippo ivory, brass, gold wire, horse teeth, and purchased human teeth.",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_myth_iron_maiden_hoax",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 3,
+    "stem": "Dungeon Klaxon! Three of these surprising Middle Ages facts check out in real archives, while one gruesome spiked torture cabinet was a Victorian tourist fake!",
+    "choices": [
+      "Iron Maidens were medieval",
+      "Knights could jog in plate",
+      "Peasants had feast days",
+      "Tudors loved sugar paste"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Zero medieval records mention spiked Iron Maidens—19th-century showmen glued nails inside old German \"cloak of shame\" barrels to thrill paying tourists!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_myth_spartans_shirtless",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Ancient World Klaxon! Three of these eye-opening archaeology facts are genuine, while one chiseled warrior image comes straight from comic-book movies. Pull it!",
+    "choices": [
+      "Tut owned a space dagger",
+      "Spartans fought shirtless",
+      "Egyptians kept pet baboons",
+      "Incas wove grass bridges"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "No sane hoplite marched into spear range bare-chested—real Spartans wore bronze breastplates or tough glued-linen armor over crimson tunics!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_silk_road_trade",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Caravan Dispatch: Stretching from Xi'an to the Mediterranean across deserts and passes, the [ _____ ] carried paper, spices, Buddhism, and prized Chinese cloth.",
+    "choices": [
+      "Amber Highway",
+      "Spice Strait",
+      "Silk Road",
+      "Jade Corridor"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "German geographer Ferdinand von Richthofen didn't coin the catchy name \"Silk Road\" until 1877—ancient merchants knew it simply as countless overlapping caravan trails!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_boston_tea_party",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Harbor Wire, 1773: Protesting Parliament's monopoly levy, disguised Sons of Liberty dumped 342 East India chests into cold saltwater during the [ _____ ].",
+    "choices": [
+      "Gaspee Raid",
+      "Stamp Act Riot",
+      "Lexington March",
+      "Boston Tea Party"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The raiders broke only one single padlock on the whole ship—and bought the captain a brand-new replacement padlock the very next morning!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_wars_of_the_roses",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Tudor Chronicle: For 30 turbulent years, rival English cousins of York and Lancaster fought over the crown in the [ _____ ]—later named for their floral emblems.",
+    "choices": [
+      "Wars of the Roses",
+      "Barons' Crusade",
+      "Peasants' Revolt",
+      "Hundred Years' Duel"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The real-life feuds between York and Lancaster directly inspired George R.R. Martin's Starks and Lannisters in Game of Thrones!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_renaissance_rebirth",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Florentine Wire: Literally French for \"rebirth,\" the [ _____ ] radiated out of 14th-century Italy, reviving Greek classics, linear perspective, and anatomy.",
+    "choices": [
+      "Enlightenment",
+      "Renaissance",
+      "Reformation",
+      "Baroque Era"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "People living in 1500 didn't call it \"the Renaissance\"—French historian Jules Michelet popularized the French label over 300 years later in 1855!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_black_death_1348",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Chronicle, 1348: Riding Mediterranean trade galleys via flea-bitten rodents, the [ _____ ] claimed at least a third of Europe's people and upended feudal wages.",
+    "choices": [
+      "Sweating Fever",
+      "Justinian Blight",
+      "Black Death",
+      "Great Famine"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 0,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "With labor suddenly scarce afterward, surviving English peasants demanded higher pay—prompting Parliament to pass an angry 1351 law capping wages!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_crossing_rubicon",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Senate Bulletin, 49 BCE: Marching his armed legion across the shallow [ _____ ] stream into northern Italy, Julius Caesar sparked civil war and coined a phrase.",
+    "choices": [
+      "Tiber Creek",
+      "Po Estuary",
+      "Arno Ford",
+      "Rubicon"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Quoting a Greek comedy line—\"Let the die be cast!\"—Caesar broke Roman law against bringing armies home, making the tiny river an eternal point of no return!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_dead_sea_scrolls",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Discovered in 1947 when a teenage shepherd tossed a stone into a cliffside cave near Qumran and heard pottery shatter, what 2,000-year-old parchments were inside?",
+    "choices": [
+      "Dead Sea Scrolls",
+      "Nag Hammadi Texts",
+      "Vindolanda Tablets",
+      "Oxyrhynchus Papyri"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Preserved by bone-dry desert air inside sealed clay jars, the Qumran caves yielded nearly 1,000 ancient texts—including a rare scroll hammered into pure copper!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_faberge_eggs",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Crack open royal luxury! Crafted in St. Petersburg for Tsars Alexander III and Nicholas II, which jeweled Easter shells hid tiny golden carriages and clockwork swans?",
+    "choices": [
+      "Romanov Lockets",
+      "Faberge eggs",
+      "Kremlin Globes",
+      "Tsarina Caskets"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "In 2012, an American scrap-metal dealer bought a weird gold egg at a Midwest flea market for $14,000—only to learn it was a lost $33 million Imperial Faberge egg!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_book_of_kells",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Zoom in on dazzling Celtic spirals painted with Afghan lapis lazuli and beetle shells! Which 9th-century Irish Gospel manuscript gleams behind glass in Dublin?",
+    "choices": [
+      "Lindisfarne Scroll",
+      "Magna Bible",
+      "Book of Kells",
+      "Codex Gigas"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Its monks tucked mischievous tiny cartoons of cats chasing mice and otters clutching fish right into the ornate initials—and left several pages unfinished!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_antikythera_mechanism",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 3,
+    "stem": "Pulled from a Greek sponge-diver shipwreck in 1901, which corroded bronze box of 30+ interlocking gears predicted solar eclipses and Olympic dates 2,100 years ago?",
+    "choices": [
+      "Phaistos Disc",
+      "Astrolabe of Rhodes",
+      "Archimedes Sphere",
+      "Antikythera mechanism"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Its tiny hand-filed triangular teeth used a pin-and-slot gear to imitate the Moon's slightly elliptical orbit—engineering not matched in Europe for over 1,000 years!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_nefertiti_bust",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Sculpted around 1345 BCE with a tall blue flat-topped crown and one famously empty left eye socket, which Egyptian queen's painted limestone bust dazzles Berlin visitors?",
+    "choices": [
+      "Nefertiti",
+      "Hatshepsut",
+      "Nefertari",
+      "Tiye"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "CT scans revealed sculptor Thutmose carved a slightly wrinkled inner limestone portrait first—then smoothed her cheekbones and nose with fine gypsum plaster!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_kublai_khan",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Grandson of Genghis who founded China's Yuan Dynasty, built his capital at modern Beijing, and employed Venetian merchant Marco Polo for 17 years—who was this ruler?",
+    "choices": [
+      "Ogedei Khan",
+      "Kublai Khan",
+      "Batu Khan",
+      "Hulagu Khan"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Kublai backed paper banknotes with real silver reserves—astounding Marco Polo, who wrote home that the Khan made money \"like an alchemist out of mulberry bark!\"",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_elizabeth_first",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Wearing silver armor to rally English troops before 1588's Spanish Armada, which red-haired \"Virgin Queen\" ruled 44 years and presided over Shakespeare's golden age?",
+    "choices": [
+      "Mary Tudor",
+      "Queen Anne",
+      "Elizabeth I",
+      "Jane Grey"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Elizabeth spoke six languages fluently and loved dancing brisk Italian leaps well into her sixties—and reportedly stayed up all night playing chess!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_peter_the_great",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Towering six-foot-eight yet trying to stay undercover in 1697, which Russian tsar worked incognito as a Dutch shipyard carpenter to learn Western naval engineering?",
+    "choices": [
+      "Ivan III",
+      "Alexander I",
+      "Nicholas I",
+      "Peter the Great"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "His disguise fooled nobody once curious locals spotted a giant Russian hammering planks—and he later built St. Petersburg straight over a frozen Baltic swamp!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_augustus_marble",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Julius Caesar's shrewd adopted heir Octavian outlasted Mark Antony, launched 200 years of Pax Romana, and boasted he found Rome brick and left it marble—under what title?",
+    "choices": [
+      "Augustus",
+      "Tiberius",
+      "Trajan",
+      "Hadrian"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Shrewdly avoiding the hated word \"king,\" Augustus styled himself merely \"First Citizen\"—yet quietly locked up control of Rome's armies, treasury, and calendar month!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_marcus_aurelius",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Scribbling Stoic pep talks by candlelight inside cold frontier army tents along the Danube, which \"philosopher emperor\" never meant for his private diary to be published?",
+    "choices": [
+      "Antoninus Pius",
+      "Marcus Aurelius",
+      "Seneca Elder",
+      "Diocletian"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "In his opening chapters, the mighty ruler of the Mediterranean literally reminds himself not to stay snuggled under warm blankets when it's time to get out of bed!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_akhenaten_sun_disk",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 3,
+    "stem": "Which rebel 14th-century BCE pharaoh—King Tut's father—closed Egypt's old temples, worshiped only the sun disk Aten, and built a brand-new desert capital at Amarna?",
+    "choices": [
+      "Thutmose III",
+      "Seti I",
+      "Akhenaten",
+      "Khufu"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "As soon as Akhenaten died, angry priests chiseled his face off monuments and skipped him on king lists—and his young son changed his name from Tutankhaten to Tutankhamun!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_zheng_he_giraffes",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Leading massive Ming treasure fleets across the Indian Ocean decades before Columbus, which Chinese admiral sailed to East Africa and brought Beijing a live giraffe?",
+    "choices": [
+      "Kublai Admiral",
+      "Ban Chao",
+      "Admiral Yi",
+      "Zheng He"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Ming courtiers cheered the tall East African giraffe as a mythical auspicious qilin—until a new emperor burned the fleet logs and halted deep-sea voyages!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_qin_shi_huang",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Standardizing China's coins, scripts, and cart-axle widths around 221 BCE, which first unifier ironically shortened his own life by swallowing mercury pills for immortality?",
+    "choices": [
+      "Qin Shi Huang",
+      "Emperor Wu",
+      "Emperor Gaozu",
+      "Yongle Emperor"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Archaeologists still haven't opened his main burial mound—soil tests detect unusually high mercury levels matching ancient tales of flowing mercury rivers inside!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_emperor_norton_sf",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 3,
+    "stem": "Proclaiming himself \"Emperor of the United States\" in an 1859 San Francisco newspaper, which beloved eccentric got free meals and saw local shops accept his homemade cash?",
+    "choices": [
+      "King Strang",
+      "Emperor Norton",
+      "Baron Munchausen",
+      "Lord Timothy Dexter"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Norton decreed that a bridge should span San Francisco Bay in 1872 and fined anyone saying \"Frisco\"—and 10,000 mourners lined the streets for his 1880 funeral!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_mary_queen_of_scots",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Crowned sovereign at just six days old, fluent in six languages, and an avid golfer, which tragic Stuart ruler spent 19 years imprisoned by her cousin Elizabeth I?",
+    "choices": [
+      "Lady Jane Grey",
+      "Anne Boleyn",
+      "Mary, Queen of Scots",
+      "Catherine Howard"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Mary's own son James VI of Scotland ended up inheriting Elizabeth's English throne in 1603—uniting both crowns under the Stuart line anyway!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_blackbeard_fuses",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Which theatrical 1718 Caribbean pirate—born Edward Teach—braided slow-burning hemp cannon fuses beneath his hat so hellish smoke curled around his face in battle?",
+    "choices": [
+      "Captain Kidd",
+      "Henry Morgan",
+      "Calico Jack",
+      "Blackbeard"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Blackbeard's scary theater worked so well that merchant crews surrendered on sight—historians find zero solid proof he ever harmed a single captive prisoner!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_ching_shih_pirate",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 3,
+    "stem": "Commanding up to 1,800 armed junks and 70,000 sailors along China's coast in 1807, which formidable pirate queen negotiated a full imperial pardon and retired wealthy?",
+    "choices": [
+      "Ching Shih",
+      "Grace O'Malley",
+      "Anne Bonny",
+      "Jeanne de Clisson"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "She enforced a strict pirate code—including instant beheading for anyone stealing from common treasure—and ran a peaceful Guangzhou gambling house into her sixties!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_medici_family",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Rising from Florentine wool merchants to Europe's top bankers, which powerhouse dynasty produced four popes, two French queens, and bankrolled Michelangelo and Galileo?",
+    "choices": [
+      "Borgia family",
+      "Medici family",
+      "Sforza family",
+      "Visconti family"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Teenage Michelangelo actually lived right inside Lorenzo de' Medici's Florence palace for years—eating dinner at the family table beside future popes!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_sutton_hoo_helmet",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 4,
+    "stem": "Unearthed in 1939 from an 88-foot buried Suffolk longship just weeks before WWII, which gleaming Anglo-Saxon war mask sports bronze eyebrows shaped like tiny boars?",
+    "choices": [
+      "Coppergate helm",
+      "Waterloo helmet",
+      "Sutton Hoo helmet",
+      "Staffordshire crown"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "When diggers cleared the mound, the helmet had rusted into over 500 iron shards—British Museum conservators spent years solving it like a 3D jigsaw puzzle!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_dyn_cyrus_cylinder",
+    "category": "DYNASTIES",
+    "domain": "HIST_FACT",
+    "difficulty": 5,
+    "stem": "Baked in 539 BCE after Persia captured Babylon without a fight, which barrel-shaped clay record let exiled captives go home—and earned praise as an early charter of rights?",
+    "choices": [
+      "Behistun Stone",
+      "Rosetta Tablet",
+      "Code of Lipit",
+      "Cyrus Cylinder"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "A replica of the 9-inch clay barrel sits on permanent display at UN Headquarters in New York—translated into all six official United Nations languages!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_myth_ostrich_sand",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Wildlife Klaxon! Three of these wild animal facts are 100% real biology, while one famous cartoon hiding habit would suffocate the bird. Spot the myth!",
+    "choices": [
+      "Ostriches bury heads in sand",
+      "Sharks lack bony skeletons",
+      "Wombats produce cube poop",
+      "Crows remember human faces"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "If threatened, ostriches sprint up to 43 mph or lie flat with their neck stretched on the dirt—from afar, leaning down to rotate eggs only LOOKED like burying!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_07_MAIL_SORTER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH",
+    "sorter": {
+      "chuteALabel": "TRUE ANIMAL FACT",
+      "chuteBLabel": "WILDLIFE MYTH",
+      "items": [
+        {
+          "label": "Wombats make cube dung",
+          "chute": 0
+        },
+        {
+          "label": "Ostriches bury heads",
+          "chute": 1
+        },
+        {
+          "label": "Bulls hate color red",
+          "chute": 1
+        },
+        {
+          "label": "Crows recall faces",
+          "chute": 0
+        },
+        {
+          "label": "Otters hold sleeping paws",
+          "chute": 0
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_myth_shaving_thicker",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Mirror Klaxon! Three of these surprising human-body facts are textbook anatomy, while one bathroom-counter belief has fooled teens for generations. Catch it!",
+    "choices": [
+      "Stomach acid dissolves zinc",
+      "Shaving makes hair thicker",
+      "Skin sheds cells nonstop",
+      "Taste buds renew biweekly"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "A razor only slices off hair's tapered tip above the skin—leaving a blunt stub that feels prickly and looks darker, without changing the follicle below!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_07_MAIL_SORTER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH",
+    "sorter": {
+      "chuteALabel": "REAL BODY FACT",
+      "chuteBLabel": "HEALTH MYTH",
+      "items": [
+        {
+          "label": "Shaving thickens hair",
+          "chute": 1
+        },
+        {
+          "label": "Dim reading ruins eyes",
+          "chute": 1
+        },
+        {
+          "label": "Corneas lack blood tubes",
+          "chute": 0
+        },
+        {
+          "label": "Babies hold extra bones",
+          "chute": 0
+        },
+        {
+          "label": "Stomach acid pits zinc",
+          "chute": 0
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_myth_lightning_twice",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Storm Desk Klaxon! Three of these jaw-dropping weather facts are straight from meteorology, while one famous old proverb gets repeatedly zapped. Spot the lie!",
+    "choices": [
+      "Bolts outheat the Sun's rim",
+      "Raindrops shape like buns",
+      "Lightning never hits twice",
+      "Cumulus clouds weigh tons"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Tell that to New York's Empire State Building—it gets blasted by lightning around 20 to 25 times every single year, and sometimes twice in one storm!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_myth_iss_zero_gravity",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Mission Control Klaxon! Three of these cosmic trivia gems are 100% real astronomy, while one textbook shortcut about floating astronauts misses orbital physics!",
+    "choices": [
+      "Venus spins backward slowly",
+      "Saturn is lighter than water",
+      "Moon dust smells burnt",
+      "Zero gravity rules the ISS"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "At Space Station altitude, Earth's gravity is still 89% as strong as at home—astronauts float only because they fall sideways around Earth at 17,500 mph!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_myth_carrots_night_vision",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Pantry Klaxon! Three of these quirky kitchen facts are botanically true, while one veggie superpower was actually a clever WWII British spy cover story!",
+    "choices": [
+      "Carrots grant night vision",
+      "Honey resists rot for ages",
+      "Peanuts ripen underground",
+      "Bananas count as berries"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Britain's Ministry of Information bragged RAF pilots ate heaps of carrots to hide top-secret airborne radar from German spies—vitamin A helps health, not super-sight!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_myth_chameleon_camo",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Safari Klaxon! Three of these bizarre creature quirks are genuine science, while one rainbow-flashing reptile legend misses why it really swaps colors!",
+    "choices": [
+      "Koalas own human-like prints",
+      "Chameleons shift for camo",
+      "Dolphins sleep half-brained",
+      "Octopuses pump blue blood"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Chameleons already match leafy greens at rest—their neon yellows and reds mainly flash mood, warn rivals, attract mates, or absorb morning warmth!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_myth_penny_skyscraper",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Physics Desk Klaxon! Three of these surprising lab phenomena are real science, while one famous Manhattan sidewalk scare fails basic aerodynamics. Nab the myth!",
+    "choices": [
+      "Diamonds burn into CO2 gas",
+      "Old glass stays a true solid",
+      "Skyscraper penny kills fast",
+      "Hot water can freeze faster"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 0,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "A flat 2.5-gram penny flutters in air drag and caps out around 25 to 50 mph—MythBusters even shot one at terminal velocity into skin and felt just a mild sting!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_myth_bats_blind",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Nature Klaxon! Three of these eyebrow-raising mammal facts are 100% authentic, while one classic English simile insults a nocturnal flyer's real eyesight!",
+    "choices": [
+      "Elephants cannot jump aloft",
+      "Polar bears wear black skin",
+      "Hippos ooze pink sunscreen",
+      "Bats fly completely blind"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 0,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Every single bat species has working eyes—and giant fruit bats (flying foxes) don't even use echolocation, relying on sharp twilight vision to find mangoes!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_myth_alcohol_cooks_off",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Chef's Klaxon! Three of these quirky kitchen physics facts hold up under lab tests, while one reassuring saucepan claim leaves far more kick in the pot!",
+    "choices": [
+      "Alcohol boils off in 5 mins",
+      "Apples float via 25% air",
+      "Ripe cranberries bounce up",
+      "Salt barely shifts boil pt"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "USDA food chemists proved roughly 40% of wine or bourbon remains after 15 minutes of simmering—even a dramatic flambe burns off barely a quarter of the booze!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_myth_dim_light_eyes",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Bedtime Klaxon! Three of these sleep-and-body facts are backed by modern clinics, while one favorite parental scolding causes only tired eyes, not permanent harm!",
+    "choices": [
+      "Everyone dreams nightly",
+      "Dim reading ruins eyesight",
+      "Snoring can top 80 decibels",
+      "Yawns may cool warm brains"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Ophthalmologists compare reading under dim covers to taking a photo in low light—your eyes strain and blink less temporarily, but it never permanently ruins vision!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_myth_einstein_flunked_math",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Lab Coat Klaxon! Three of these eccentric scientist stories really happened, while one comforting report-card myth made its famous target burst out laughing!",
+    "choices": [
+      "Curie's notebooks stay hot",
+      "Darwin ate species he drew",
+      "Einstein flunked grade math",
+      "Newton poked his own eye"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 0,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "When a 1935 Ripley's column claimed Einstein failed math, he laughed—\"Before I was fifteen, I had mastered differential and integral calculus!\"",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_myth_dogs_black_white",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Pet Clinic Klaxon! Three of these adorable animal facts are real science, while one old belief traps your golden retriever inside a 1950s monochrome movie!",
+    "choices": [
+      "Sloths swim faster than walk",
+      "Otters hold paws napping",
+      "Penguins propose via pebbles",
+      "Dogs see only black & white"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Dogs have two types of color cones instead of our three—meaning they see vibrant blues and yellows clearly, while red balls fade into muddy brownish-gray!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_myth_cold_air_colds",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Winter Clinic Klaxon! Three of these odd human-health facts are medically verified, while one chilly-weather warning blames the thermometer instead of germs!",
+    "choices": [
+      "Cold air causes viral colds",
+      "Hiccups spasm the diaphragm",
+      "Cartilage ears sag with age",
+      "Sneezes blast past 90 mph"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Stepping outside with wet hair won't summon rhinoviruses—winter cold waves spike mostly because everyone crowds indoors breathing recycled room air!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_myth_turkey_tryptophan",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Holiday Table Klaxon! Three of these quirky everyday facts are 100% genuine, while one November nap-time culprit gets blamed unfairly every Thanksgiving!",
+    "choices": [
+      "Dogs catch human yawns too",
+      "Turkey induces unique naps",
+      "Bananas emit trace radiation",
+      "Hot soup dulls salty taste"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Roast turkey packs no more tryptophan than ordinary chicken or cheddar cheese—post-feast snoozes come from massive piles of mashed potatoes, pie, and wine!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_myth_daddy_longlegs_venom",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Backyard Klaxon! Three of these surprising critter facts are real zoology, while one playground rumor turns a harmless porch crawler into a tiny assassin!",
+    "choices": [
+      "Mice prefer sweet nut butter",
+      "Camels store fat in humps",
+      "Daddy longlegs pack venom",
+      "Pigs have very few sweat pts"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Outdoor harvestmen aren't even true spiders and possess ZERO venom glands—and the cellar spiders sharing that nickname have weak venom harmless to people!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_kahneman_nobel_chrono",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Mind-Trap Showdown: Which psychologist won the 2002 Nobel Prize in Economics for mapping human decision biases—Daniel Kahneman or Stanley Milgram?",
+    "choices": [
+      "Stanley Milgram",
+      "Solomon Asch",
+      "Philip Zimbardo",
+      "Daniel Kahneman"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Working with Amos Tversky, Kahneman never took a single college economics class—yet their Prospect Theory proved real shoppers aren't cold rational robots!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_08_CHRONOLOGY_RAIL"
+    ],
+    "cardStyle": "BINARY_SPLIT",
+    "chronology": {
+      "events": [
+        {
+          "label": "Stroop Color-Word Test",
+          "year": 1935,
+          "displayYear": "1935"
+        },
+        {
+          "label": "Prospect Theory Published",
+          "year": 1979,
+          "displayYear": "1979"
+        },
+        {
+          "label": "Kahneman Wins Nobel",
+          "year": 2002,
+          "displayYear": "2002"
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_clock_hands_eleven_times",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 4,
+    "stem": "Clockwork Riddle Showdown: During one complete 12-hour loop starting at 12:01 p.m. and ending at midnight, how many times do a clock's hands overlap?",
+    "choices": [
+      "Eleven times",
+      "Twelve times",
+      "Ten times",
+      "Thirteen times"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The speedy minute hand laps the hour hand every 65.45 minutes—skipping the 11 o'clock hour completely before meeting right on midnight, for 11 overlaps!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_ponzo_railroad_illusion",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 4,
+    "stem": "Check the track monitor! Two identical horizontal yellow bars lie across converging railroad rails—yet your brain swears the top bar is longer. Name this trick!",
+    "choices": [
+      "Zollner illusion",
+      "Ponzo illusion",
+      "Ebbinghaus trick",
+      "Hering curve"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 0,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Italian psychologist Mario Ponzo sketched it in 1911—showing how linear perspective tricks your visual cortex into scaling distant-looking objects way up!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_checker_shadow_adelson",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 3,
+    "stem": "Believe your screen? On MIT professor Edward Adelson's 1995 tiled board, dark Square A and dim green-shaded Square B share the exact same gray pixel value!",
+    "choices": [
+      "Mach band effect",
+      "Troxler fading",
+      "Checker shadow",
+      "Simultaneous grid"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Your brain automatically \"subtracts\" the green cylinder's shadow to judge true surface paint—making Square B look bright white until you link them with gray bars!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_shepard_tone_audio",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 4,
+    "stem": "An audio Escher staircase! Used in Dunkirk and Super Mario 64's endless stairs, which overlapping octave trick makes a musical pitch seem to rise forever?",
+    "choices": [
+      "Tritone paradox",
+      "Doppler glide",
+      "Binaural beat",
+      "Shepard tone"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Invented by Bell Labs scientist Roger Shepard in 1964, it quietly fades a lower octave IN as the top octave fades OUT—creating nonstop sonic suspense!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_hollow_mask_illusion",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 4,
+    "stem": "Watch a spinning plastic Charlie Chaplin face turn completely concave inside-out—yet your brain stubbornly pops the nose right back outward! Name this famous quirk:",
+    "choices": [
+      "Hollow-mask illusion",
+      "Thatcher inversion",
+      "Motion aftereffect",
+      "Stereogram flip"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Your brain expects faces to bulge outward so fiercely that it overrides real 3D depth—powering classic haunted-house marble busts that seem to follow you!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_cafe_wall_illusion",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 5,
+    "stem": "Spotted on a tiled Bristol coffeehouse facade in 1973: why do perfectly straight, parallel gray mortar lines between staggered black-and-white tiles look wildly sloped?",
+    "choices": [
+      "Grid scintillation",
+      "Cafe wall illusion",
+      "Poggendorff bend",
+      "Fraser spiral"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Psychologist Richard Gregory named it after walking past St. Michael's Hill in Bristol—tiny contrast wedges along the gray mortar fool edge-detecting neurons!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_moon_illusion_horizon",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "A rising full orb looks gigantic above rooftop trees yet shrinks to a tiny dime overhead—even though a camera measures the exact same width! Name this sky trick:",
+    "choices": [
+      "Horizon refraction",
+      "Atmospheric zoom",
+      "Moon illusion",
+      "Zenith lensing"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Bend over and peek at a giant horizon moon upside-down between your legs—breaking your brain's normal landscape cues instantly shrinks it right back down!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_placebo_effect_blank",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Clinical Wire: Even when patients know a capsule holds pure chalk or sugar, belief in medical care can trigger real pain relief via the [ _____ ].",
+    "choices": [
+      "Hawthorne nudge",
+      "Pavlovian reflex",
+      "Barnum reaction",
+      "Placebo effect"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Strangely, bigger sugar pills relieve pain better than tiny ones, two pills beat one, and colored capsules even match expectations—blue calms while red perks people up!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_butterfly_effect_lorenz",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Chaos Desk, 1972: Meteorologist Edward Lorenz coined the [ _____ ] to show how rounding one tiny decimal can completely flip a hurricane's path weeks later.",
+    "choices": [
+      "Butterfly effect",
+      "Domino cascade",
+      "Snowball drift",
+      "Pendulum shift"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Lorenz discovered it in 1961 when he retyped \"0.506\" instead of \"0.506127\" into his office weather computer—and came back from coffee to a totally different forecast!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_echo_chamber_media",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Media Wire: When algorithms bounce only beliefs you already applaud back at your screen until dissent vanishes, researchers say you sit inside an [ _____ ].",
+    "choices": [
+      "Ivory vault",
+      "Echo chamber",
+      "Glass silo",
+      "Mirror booth"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Unlike a gentle \"filter bubble\" that merely hides outside views, sociologists note an echo chamber actively trains members to distrust outside voices before hearing them!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_reductio_ad_absurdum",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 4,
+    "stem": "Debate Desk: Disproving an opponent's claim by following its own logic straight to a hilarious, impossible conclusion is Latin's [ _____ ].",
+    "choices": [
+      "Post hoc ergo",
+      "Argumentum ad baculum",
+      "Reductio ad absurdum",
+      "Petitio principii"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Mathematicians love this move too—Euclid used reductio ad absurdum around 300 BCE to prove in five crisp lines that prime numbers go on forever!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_zeigarnik_effect_waiters",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 4,
+    "stem": "Watching Vienna waiters remember unpaid dinner tabs effortlessly yet blank the instant bills got paid, which psychologist lent her name to our itch over unfinished tasks?",
+    "choices": [
+      "Pavlov effect",
+      "Stroop effect",
+      "Rorschach loop",
+      "Zeigarnik effect"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Bluma Zeigarnik proved in 1927 that interrupted puzzles stick in memory nearly twice as well—the exact psychological hook behind every TV cliffhanger!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_fermi_paradox_lunch",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "\"Where is everybody?\" blurted a Nobel physicist over a 1950 Los Alamos lunch, launching which famous puzzle about why a vast galaxy shows zero alien visitors?",
+    "choices": [
+      "Fermi paradox",
+      "Drake equation",
+      "Olbers riddle",
+      "Kardashev gap"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Enrico Fermi's table had been joking about a New Yorker cartoon blaming missing Manhattan trash cans on flying saucers right before his famous outburst!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_peter_principle_office",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Great coders get promoted into clumsy managers and stop climbing once they struggle—what 1969 workplace satire law says workers rise to their level of incompetence?",
+    "choices": [
+      "Dilbert Rule",
+      "Peter Principle",
+      "Conway's Law",
+      "Pareto Law"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Laurence J. Peter wrote it half-joking—until a 2018 study of 53,000 real sales reps confirmed top sellers who got promoted often turned into weaker managers!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_parkinsons_law_time",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Give someone a whole afternoon to mail one postcard and it magically takes four hours! Which witty 1955 Economist maxim says work expands to fill all time allotted?",
+    "choices": [
+      "Murphy's Rule",
+      "Campbell's Law",
+      "Parkinson's Law",
+      "Gresham's Law"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Cyril Northcote Parkinson noticed Britain's Admiralty office grew its desk staff by 78% even while its actual fleet of Royal Navy battleships shrank by two-thirds!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_cunninghams_law_internet",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "\"The fastest way to get the right answer online isn't asking a question—it's posting the WRONG answer!\" Which internet maxim captures our urge to correct strangers?",
+    "choices": [
+      "Godwin's Rule",
+      "Sturgeon's Maxim",
+      "Cole's Axiom",
+      "Cunningham's Law"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Named for Wiki inventor Ward Cunningham, it works so reliably that trivia writers joke even Sherlock Holmes used it to make smug rivals blurt out clues!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_observer_effect_tire",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Pressing a gauge onto a bike tire lets a tiny hiss of air escape—altering the very pressure you wanted to check! What broad science rule describes that interference?",
+    "choices": [
+      "Observer effect",
+      "Placebo drift",
+      "Sampling skew",
+      "Entropy leak"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Pop science often mixes this up with Heisenberg's uncertainty principle—the observer effect happens even with ordinary thermometers warming up cold soup!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_optimism_bias_drivers",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "In famous surveys, around 80% of drivers rate themselves \"above average\" and assume flat tires happen to other folks—which sunny mental tilt bends our odds?",
+    "choices": [
+      "Halo distortion",
+      "Optimism bias",
+      "Sunk-cost trap",
+      "Anchoring slant"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Psychologist Tali Sharot found humans update beliefs quickly after good news yet brush off bad news—which boosts grit even when it ruins wedding budgets!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_recency_bias_sports",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Why do MVP voters and stock pickers fixate on last night's dazzling highlight while forgetting six quiet months of spring slumps? Name this memory tilt:",
+    "choices": [
+      "Primacy pull",
+      "Selection slant",
+      "Recency bias",
+      "Recall halo"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "In courtroom mock trials, lawyers routinely save their punchiest closing witness for last—exploiting recency bias right before jurors walk into deliberations!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_primacy_effect_first",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Read a random 15-item grocery list once and your brain remembers the opening three items way better than the middle—what classic psychology rule rewards going FIRST?",
+    "choices": [
+      "Serial middle",
+      "Salience bounce",
+      "First-mover myth",
+      "Primacy effect"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Because opening items get repeated silently in working memory before new words crowd them out, candidates listed first on crowded ballots often gain a real edge!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_contrast_effect_realtor",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "Savvy realtors sometimes show an overpriced fixer-upper FIRST so the next average house feels like a gleaming bargain—what perceptual trick makes comparisons lie?",
+    "choices": [
+      "Contrast effect",
+      "Scarcity lure",
+      "Endowment pull",
+      "Framing twist"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Dip one hand in ice water, one in hot water, then plunge both into lukewarm water—one feels scalding and one feels chilly thanks to the exact same contrast effect!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_appeal_to_novelty",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "stem": "The polar opposite of \"we've always done it this way\": insisting a gadget or diet MUST beat the classic version purely because it launched yesterday commits which fallacy?",
+    "choices": [
+      "Appeal to hype",
+      "Appeal to novelty",
+      "Appeal to fashion",
+      "Appeal to progress"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Latin scholars dubbed it \"argumentum ad novitatem\"—and 1985's famously flopped New Coke proved brand-new doesn't always beat the original formula!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_hasty_generalization",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "stem": "Bumping into two grumpy commuters on one rainy morning and declaring an entire city rude commits which classic logic blunder built on a tiny sample size?",
+    "choices": [
+      "Slippery leap",
+      "False analogy",
+      "Hasty generalization",
+      "Circular claim"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 0,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Logicians also call this the \"fallacy of the lonely fact\"—remembering how one bad restaurant meal can turn someone against an entire country's cuisine!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_fal_argument_from_silence",
+    "category": "FALLACIES",
+    "domain": "HIST_FACT",
+    "difficulty": 5,
+    "stem": "Marco Polo's famous travelogue never mentions tea or the Great Wall—yet claiming he never visited China solely for those omissions risks which historian's fallacy?",
+    "choices": [
+      "Appeal to mystery",
+      "Straw-man omission",
+      "Negative bias",
+      "Argument from silence"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "In Latin, \"argumentum ex silentio\"—remembering that absence of evidence in one diary isn't automatic proof of absence, especially since Polo traveled in Mongol lands!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_ok_1839_chrono",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "stem": "Slang Timeline Showdown: Which everyday American expression appeared in newspaper print FIRST—the cheeky acronym \"OK\" or baseball's \"rain check\"?",
+    "choices": [
+      "OK (1839)",
+      "Rain check (1884)",
+      "Jazz (1912)",
+      "Robot (1920)"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The Boston Morning Post printed \"o.k. (all correct)\" as a goofy intentional misspelling gag in March 1839—45 years before rainy baseball tickets birthed \"rain check\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_08_CHRONOLOGY_RAIL"
+    ],
+    "cardStyle": "BINARY_SPLIT",
+    "chronology": {
+      "events": [
+        {
+          "label": "\"OK\" Printed in Boston",
+          "year": 1839,
+          "displayYear": "1839"
+        },
+        {
+          "label": "Baseball \"Rain Check\"",
+          "year": 1884,
+          "displayYear": "1884"
+        },
+        {
+          "label": "Capek Coins \"Robot\"",
+          "year": 1920,
+          "displayYear": "1920"
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_radar_before_laser_chrono",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "stem": "Tech-Word Showdown: Which famous science acronym entered everyday English FIRST—wartime \"Radar\" or beam-firing \"Laser\"?",
+    "choices": [
+      "Laser",
+      "Radar",
+      "Scuba",
+      "Modem"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Two U.S. Navy officers coined \"RADAR\" (Radio Detection And Ranging) in 1940—19 years before physicist Gordon Gould unveiled \"LASER\" at a 1959 conference!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_08_CHRONOLOGY_RAIL"
+    ],
+    "cardStyle": "BINARY_SPLIT",
+    "chronology": {
+      "events": [
+        {
+          "label": "U.S. Navy Coins \"Radar\"",
+          "year": 1940,
+          "displayYear": "1940"
+        },
+        {
+          "label": "Diver Acronym \"Scuba\"",
+          "year": 1952,
+          "displayYear": "1952"
+        },
+        {
+          "label": "Gould Coins \"Laser\"",
+          "year": 1959,
+          "displayYear": "1959"
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_emoticon_before_emoji_chrono",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "stem": "Keyboard Showdown: Which digital smile hit screens FIRST—typed sideways punctuation \"Emoticon\" or Japanese cell-phone picture \"Emoji\"?",
+    "choices": [
+      "Emoji",
+      "Hashtag",
+      "Emoticon",
+      "Selfie"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Computer scientist Scott Fahlman proposed :-) on a Carnegie Mellon bulletin board in 1982—17 years before Shigetaka Kurita drew Japan's first 176 emojis in 1999!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_08_CHRONOLOGY_RAIL"
+    ],
+    "cardStyle": "BINARY_SPLIT",
+    "chronology": {
+      "events": [
+        {
+          "label": "First :-) Emoticon Post",
+          "year": 1982,
+          "displayYear": "1982"
+        },
+        {
+          "label": "First Japanese Emojis",
+          "year": 1999,
+          "displayYear": "1999"
+        },
+        {
+          "label": "First Twitter #Hashtag",
+          "year": 2007,
+          "displayYear": "2007"
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_letter_j_last_added",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "stem": "Alphabet Showdown: Which modern English letter was the VERY LAST to break off as its own distinct character in the 1600s—Letter J or Letter Z?",
+    "choices": [
+      "Letter Z",
+      "Letter Q",
+      "Letter X",
+      "Letter J"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "For centuries \"I\" and \"J\" were treated as twin shapes of one letter—that's why Washington D.C.'s lettered street grid famously skips straight from I to K!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_screeched_one_syllable",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "stem": "Breath-Control Match: Which common nine-letter English word squeezes ALL nine letters into ONE single syllable—Screeched or Stampeded?",
+    "choices": [
+      "Screeched",
+      "Stampeded",
+      "Splintered",
+      "Strangled"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Both \"screeched\" and \"strengths\" tie at nine letters in one crisp beat—while \"strengths\" packs an astonishing eight consonants around one lone lonely vowel!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_myth_otto_titzling",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "stem": "Word-Origin Klaxon! Three of these quirky English word stories are 100% genuine lexicography, while one cheeky fashion-inventor tale was a 1971 comedy hoax!",
+    "choices": [
+      "Scuba is a real acronym",
+      "Brassiere honors Titzling",
+      "Taser honors sci-fi hero",
+      "Laser stands for light"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "\"Otto Titzling\" was invented for laughs in Wallace Reyburn's 1971 spoof book Bust-Up—the real word comes cleanly from Old French \"braciere,\" an arm or chest guard!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_07_MAIL_SORTER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH",
+    "sorter": {
+      "chuteALabel": "REAL ACRONYM",
+      "chuteBLabel": "FAKE BACKRONYM",
+      "items": [
+        {
+          "label": "SCUBA (diving gear)",
+          "chute": 0
+        },
+        {
+          "label": "POSH (ship cabins)",
+          "chute": 1
+        },
+        {
+          "label": "RADAR (radio waves)",
+          "chute": 0
+        },
+        {
+          "label": "NEWS (compass pts)",
+          "chute": 1
+        },
+        {
+          "label": "TASER (Tom Swift)",
+          "chute": 0
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_myth_quiz_dublin_bet",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "stem": "Dictionary Klaxon! Three of these wild meaning shifts are real Oxford English Dictionary history, while one famous Irish pub-bet origin story is pure urban legend!",
+    "choices": [
+      "Nice once meant foolish",
+      "Awful once meant majestic",
+      "Quiz began as a Dublin bet",
+      "Silly once meant blessed"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 0,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Legends claim Dublin theater manager Richard Daly painted \"Q-U-I-Z\" on walls in 1791 on a wager—but scholars found \"quiz\" in letters a decade earlier!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_07_MAIL_SORTER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH",
+    "sorter": {
+      "chuteALabel": "FROM ARABIC",
+      "chuteBLabel": "FROM JAPANESE",
+      "items": [
+        {
+          "label": "Algebra",
+          "chute": 0
+        },
+        {
+          "label": "Karaoke",
+          "chute": 1
+        },
+        {
+          "label": "Coffee",
+          "chute": 0
+        },
+        {
+          "label": "Tsunami",
+          "chute": 1
+        },
+        {
+          "label": "Sofa",
+          "chute": 0
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_myth_cardigan_dog",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "stem": "Closet Klaxon! Three of these garment names really trace straight to real spots on the world map, while one cozy knitwear etymology barks up the wrong tree!",
+    "choices": [
+      "Jeans trace to Genoa",
+      "Denim traces to Nimes",
+      "Bikini honors an atoll",
+      "Cardigan honors a corgi"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "The button-front sweater honors British General James Brudenell, 7th Earl of Cardigan, whose chilly officers wore knitted wool waistcoats during the Crimean War!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_myth_nylon_ny_london",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "stem": "Brand-Name Klaxon! Three of these global loanwords carry their true linguistic roots, while one famous two-city fabric acronym was officially debunked by DuPont!",
+    "choices": [
+      "Nylon = New York + London",
+      "Zero came via Arabic sifr",
+      "Ketchup began as fish sauce",
+      "Pajamas meant leg garments"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "DuPont's archives show they started with \"No-Run\" (for snag-proof stockings), flipped it to \"Nuron,\" tweaked it to \"Nulon,\" and finally settled on catchy \"Nylon\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_myth_xmas_modern_erasure",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "stem": "Holiday Ink Klaxon! Three of these snappy wordplay facts are 100% legit, while one heated December complaint overlooks a thousand years of Greek Christian scribes!",
+    "choices": [
+      "Spam meat named junk mail",
+      "Xmas is a modern secular cut",
+      "Podcast blends iPod & cast",
+      "Queue hides 4 silent letters"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "That \"X\" isn't crossing anyone out—it's the Greek letter Chi, the opening initial of Christos, used by devout monks and English printers since the 1000s!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_myth_robot_latin_wheel",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "stem": "Word-Nerd Klaxon! Three of these quirky English facts will delight any Scrabble fan, while one sci-fi etymology plugs in the wrong ancient language. Nab it!",
+    "choices": [
+      "Bookkeeper packs 3 doubles",
+      "Run topped Set in OED defs",
+      "Robot came from Latin wheel",
+      "Rhythm skips standard AEIOU"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 0,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Czech writer Karel Capek—actually crediting his painter brother Josef—coined \"robot\" in 1920 from Slavic \"robota,\" meaning forced serf labor, not Latin!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_bite_the_bullet",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "stem": "Idiom Dispatch: When you brace yourself and power through a tough ordeal—echoing old tales of wounded troops clenching lead shot—you [ _____ ].",
+    "choices": [
+      "Face the cannon",
+      "Hold your fire",
+      "Walk the plank",
+      "Bite the bullet"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Rudyard Kipling put the phrase in print in 1891—and old field surgeons really gave troops soft lead or leather to clench during anesthesia-free operations!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_break_a_leg",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "stem": "Backstage Wire: Superstitious Broadway actors hate hearing \"good luck\" on opening night, shouting [ _____ ] instead to spoof jealous stage gremlins.",
+    "choices": [
+      "Break a leg",
+      "Drop a curtain",
+      "Crack a prop",
+      "Miss a cue"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Linguists trace it to German theater slang \"Hals- und Beinbruch\" (neck and leg break)—reverse-psychology banter meant to fool fate into giving you a smash hit!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_red_tape_ribbon",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "stem": "City Hall Wire: Named for scarlet cloth ribbons literally tied around thick 16th-century Spanish and British legal files, endless form-filling delay is [ _____ ].",
+    "choices": [
+      "Blue ink",
+      "Red tape",
+      "Wax seal",
+      "Green stamp"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Emperor Charles V bound top-priority royal dossiers in bright red ribbon in 1525—and British barristers still tie court briefs with pink cotton \"red tape\" today!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_spill_the_beans",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "stem": "Gossip Wire: Whether echoing clattering ancient voting jars or tipped pantry tins, accidentally blabbing a juicy surprise early means you [ _____ ].",
+    "choices": [
+      "Drop the salt",
+      "Crack the vault",
+      "Spill the beans",
+      "Tip the scales"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Though folks love crediting Greek voting bowls, the earliest printed U.S. sightings pop up in 1908—likely coined right beside \"upset the applecart\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_cold_feet_gamblers",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "stem": "Chapel Wire: Tracing back to an 1862 German poker joke where broke cardsharps quit early blaming chilly toes, sudden last-minute jitters are [ _____ ].",
+    "choices": [
+      "Wet hands",
+      "Pale cheeks",
+      "Weak knees",
+      "Cold feet"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Author Fritz Reuter popularized the gambler gag in German, and Stephen Crane soon carried \"cold feet\" into American English in his 1896 novel Maggie!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_cats_pajamas_1920s",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "stem": "Jazz Age Wire: Sports cartoonist Tad Dorgan helped spread cheeky 1920s flapper praise calling anything stylishly top-notch the [ _____ ].",
+    "choices": [
+      "Cat's pajamas",
+      "Owl's spectacles",
+      "Fox's mittens",
+      "Bear's slippers"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Roaring Twenties slang went wild for silly animal-plus-fashion combos—including \"the bee's knees,\" \"the eel's ankles,\" and \"the elephant's instep\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_ampersand_et_ligature",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "stem": "Zoom in on this curly typographic loop! Born as a speedy Roman cursive fusion of the letters E and T (\"et\"), what do we call the & symbol?",
+    "choices": [
+      "Interrobang",
+      "Ampersand",
+      "Pilcrow",
+      "Tilde"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "19th-century schoolkids recited \"&\" as the 27th alphabet letter—\"X, Y, Z, and per se and\"—slurring those four Latin-English words right into \"ampersand\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_rebus_picture_puzzle",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "stem": "1960s Game-Show Favorite! On TV's Concentration, a visual puzzle blending an eyeball, a heart, and a sheep for \"I love you\" is called what Latin-named riddle?",
+    "choices": [
+      "Acrostic",
+      "Cryptogram",
+      "Rebus",
+      "Anagrams"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "From Latin \"non verbis sed rebus\" (\"not by words, but by things\")—ancient Egyptian hieroglyphs actually relied on rebus puns to spell tricky abstract ideas!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_ambigram_swims",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "stem": "Flip the Studio Monitor upside-down! A cleverly styled word or logo like \"SWIMS\" or \"NOON\" that still reads identically rotated 180 degrees is called an what?",
+    "choices": [
+      "Palindrome",
+      "Isogram",
+      "Tautogram",
+      "Ambigram"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Cognitive scientist Douglas Hofstadter coined \"ambigram\" in 1983—and typographer John Langdon's rotational designs later starred on the cover of Angels & Demons!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_serif_typeface_feet",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "stem": "Typesetter Zoom! What do printers call those crisp little decorative feet flaring off the tips of classic book and newspaper letters—echoing Roman stone chisels?",
+    "choices": [
+      "Serifs",
+      "Kerns",
+      "Ascenders",
+      "Glyphs"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "That's why clean modern fonts without feet—like Helvetica or Futura—are called \"sans-serif\" (literally French for \"without serifs\")!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_anagram_listen_silent",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "stem": "Scramble the glowing marquee tiles! Rearranging every letter of \"LISTEN\" to spell \"SILENT\"—or \"ASTRONOMER\" into \"MOON STARER\"—creates what playful word twin?",
+    "choices": [
+      "Homophone",
+      "Anagram",
+      "Portmanteau",
+      "Acronym"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Galileo hid his 1610 discovery of Saturn's rings in a scrambled Latin puzzle to prove priority later—and Kepler misdecoded it as two tiny moons around Mars!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_wingdings_1990_font",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "stem": "Retro Screen Check: Packed with tiny scissors, floppy disks, and waving hands instead of ABCs, which 1990 Microsoft dingbat font turned homework into secret codes?",
+    "choices": [
+      "Comic Sans",
+      "Courier New",
+      "Wingdings",
+      "Papyrus"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Its name playfully smashed together \"Windows\" and \"dingbats\" (printers' old word for tiny decorative ornament blocks)—and its symbols even shaped early email habits!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_calligram_shaped_poem",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 5,
+    "stem": "Look closely at the printed page! A visual poem whose text curves into the physical shape of its subject—like the twisting Mouse's Tale in Alice in Wonderland—is a:",
+    "choices": [
+      "Haiku",
+      "Epigram",
+      "Limerick",
+      "Calligram"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 0,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "French avant-garde poet Guillaume Apollinaire coined \"calligramme\" in 1918—shaping WWI verses into falling rain, Eiffel Towers, and pocket watches!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_salary_salarium",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "stem": "Roman soldiers didn't actually haul sacks of table seasoning home, yet Latin \"salarium\" (an allowance to buy salt) gifted English which welcome payday noun?",
+    "choices": [
+      "Salary",
+      "Stipend",
+      "Bonus",
+      "Pension"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The exact same Latin salt root (\"sal\") also gave English \"salad\" (salted greens), \"salami,\" \"salsa,\" and the compliment \"worth one's salt\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_clue_clew_yarn",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "stem": "Once spelled \"clew\" for a ball of thread—just like Ariadne's string guiding Theseus out of the Minotaur's maze—which detective-story word kept the path-finding metaphor?",
+    "choices": [
+      "Hunch",
+      "Clue",
+      "Lead",
+      "Proof"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "By the 1600s, writers started using \"clew\" for any hint leading you out of a sticky mystery—and by the 1800s the crisp spelling \"clue\" won out!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_muscle_little_mouse",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "stem": "Ancient Romans thought flexing an arm bicep looked like a tiny rodent darting beneath the skin—calling it \"musculus\" (little mouse), which became which body word?",
+    "choices": [
+      "Tendon",
+      "Knuckle",
+      "Muscle",
+      "Marrow"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Those exact same amused Romans named shellfish \"mussels\" for looking like little gray mice too—meaning gym gains and seafood pasta share one tiny rodent ancestor!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_trivial_trivium",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "stem": "Latin \"trivium\" meant a bustling three-road crossroads where ordinary Roman locals traded gossip and small talk—giving game-show fans which adjective for bite-sized facts?",
+    "choices": [
+      "Mundane",
+      "Frivolous",
+      "Quaint",
+      "Trivial"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "In medieval colleges, the \"Trivium\" was the starter trio of grammar, logic, and rhetoric—so \"trivial\" also meant basic introductory stuff everyone picked up early!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_sarcasm_tear_flesh",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "stem": "Rooted in Greek \"sarkazein\"—meaning to bite your lip in rage or literally \"tear flesh\" like snarling hounds—which sharp style of mocking wit still packs real teeth?",
+    "choices": [
+      "Sarcasm",
+      "Satire",
+      "Banter",
+      "Parody"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "It shares its Greek \"sarx\" (flesh) ancestor with \"sarcophagus\"—literally a \"flesh-eating\" limestone tomb that sped up decomposition!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_sabotage_sabots",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "stem": "Derived from clunky French wooden clogs called \"sabots\"—initially slang for deliberately noisy, bungled work on the shop floor—which noun now means willful wrecking?",
+    "choices": [
+      "Mutiny",
+      "Sabotage",
+      "Treason",
+      "Embargo"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Despite the beloved myth of workers chucking clogs into factory gears, 19th-century French dictionaries show \"saboter\" first meant clomping around sloppily on purpose!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_paparazzi_mosquito",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "stem": "In 1960's La Dolce Vita, director Federico Fellini named a buzzing celebrity photographer after an Italian dialect word for mosquito—giving tabloids which plural noun?",
+    "choices": [
+      "Tabloiders",
+      "Stringers",
+      "Paparazzi",
+      "Muckrakers"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Fellini said the surname sounded like a buzzing, darting, stinging insect—and if you spot just ONE lone lensman outside a cafe, the Italian singular is \"paparazzo\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_tuxedo_park_1886",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "stem": "At an 1886 autumn ball in New York's Hudson Valley, daring socialite Griswold Lorillard chopped the long tails off his formal coat—naming which black-tie suit?",
+    "choices": [
+      "Ascot",
+      "Cummerbund",
+      "Tailcoat",
+      "Tuxedo"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Named for exclusive Tuxedo Park, New York (itself from an Algonquian word linked to wolves or round feet), Brits still call the exact same suit a \"dinner jacket\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_checkmate_shah_mat",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "stem": "Evolving from Persian \"shah mat\"—literally announcing \"the king is helpless\" rather than dead—which crisp two-syllable call ends every classic chess battle?",
+    "choices": [
+      "Checkmate",
+      "Stalemate",
+      "Gambit",
+      "Endgame"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Even our banking word \"check\" (and \"exchequer\") grew from medieval chessboards—treasury clerks counted taxes across checkered cloth grids like chess squares!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_berserk_bearskin",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "stem": "Old Norse \"berserkr\" described fierce Viking fighters who charged into battle wearing shaggy bearskin shirts—leaving English which wild adjective for losing all control?",
+    "choices": [
+      "Frenzied",
+      "Berserk",
+      "Rabid",
+      "Savage"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Sir Walter Scott helped carry \"berserk\" into modern English in 1822—and scholars still debate whether Viking warriors pumped up with ritual chants or wild trance!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_companion_bread",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "stem": "Glued together from Latin \"com\" (together) and \"panis\" (bread), which warm everyday noun literally means someone you sit down and break a loaf with?",
+    "choices": [
+      "Confidant",
+      "Comrade",
+      "Companion",
+      "Colleague"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Business \"company\" grew from that exact same bread-sharing root—while \"lord\" comes from Old English \"hlafweard,\" literally \"keeper of the loaf\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_mortgage_death_pledge",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "stem": "Norman French lawyers nicknamed a house loan a \"death pledge\"—because the contract \"dies\" either when you pay it off or default—giving homeowners which word?",
+    "choices": [
+      "Escrow",
+      "Collateral",
+      "Foreclosure",
+      "Mortgage"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "That silent \"t\" in the middle is a preserved fossil from Old French \"mort\" (death)—the exact same grim root hiding inside \"mortal\" and \"postmortem\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_malaria_bad_air",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "stem": "Long before doctors fingered mosquitoes, 18th-century Italians blamed stinky Roman marsh fog (\"mala aria\" or bad air)—accidentally naming which tropical fever?",
+    "choices": [
+      "Malaria",
+      "Cholera",
+      "Dengue",
+      "Typhoid"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Similarly, \"influenza\" began as Italian for astral \"influence\"—because Renaissance doctors blamed sudden winter flu outbreaks on unlucky star alignments!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_dandelion_lions_tooth",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "stem": "Borrowed from French \"dent-de-lion\" to salute its jagged, sharp-toothed green leaves, which cheerful yellow backyard weed wears a ferocious big-cat nickname?",
+    "choices": [
+      "Snapdragon",
+      "Dandelion",
+      "Tiger lily",
+      "Foxglove"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "European settlers actually brought dandelions to North America ON PURPOSE as prized salad greens and herbal tonic—long before suburban lawn fans declared war on them!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_disaster_bad_star",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "stem": "Blaming sudden calamity on an unlucky zodiac alignment, Renaissance Italian \"dis-astro\" (literally \"ill-starred\") gave English which word for a total catastrophe?",
+    "choices": [
+      "Debacle",
+      "Calamity",
+      "Disaster",
+      "Fiasco"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Even the cheerful word \"consider\" has stargazing roots—Latin \"con-siderare\" literally meant carefully examining the constellations (\"sidera\") before deciding!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_wmh_lex_hocus_pocus_magician",
+    "category": "LEXICON",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "stem": "17th-century London jugglers rattled off faux-Latin gibberish to distract watching crowds—what rhyming stage-magic chant still doubles as slang for sneaky trickery?",
+    "choices": [
+      "Abracadabra",
+      "Mumbo jumbo",
+      "Razzle dazzle",
+      "Hocus-pocus"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "A 1634 magic handbook was titled \"Hocus Pocus Junior\"—and scholars think the phrase even shrunk down later to give us the cheeky verb \"hoax\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  }
+]

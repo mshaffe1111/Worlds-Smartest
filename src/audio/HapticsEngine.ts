@@ -189,6 +189,10 @@ export class HapticsEngine implements IHapticsEngine {
   private vibrateWeb(pattern: number | number[]): void {
     try {
       if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+        const ua = (navigator as Navigator & { userActivation?: { hasBeenActive?: boolean } }).userActivation;
+        if (ua && !ua.hasBeenActive) {
+          return;
+        }
         navigator.vibrate(pattern);
       }
     } catch {

@@ -26,7 +26,7 @@ import {
   createBorosilicateGlassMaterial,
   createChamferedArch,
   createChamferedBox,
-  createChasingMarqueePillar,
+  createContactShadowDisc,
   createCurvedParabolicCove,
   createFilletedShaft,
   createGrandFeuEnamelMaterial,
@@ -36,10 +36,13 @@ import {
   createNotchedBezel,
   createObsidianMaterial,
   createSmoothBeveledRing,
+  createTungstenBulbHaloSprite,
   createTurnedOrb,
   createVolumetricLightCone,
   createWalnutMaterial,
   disposeObject3DTree,
+  getBrushedAnodizedTexture,
+  getTungstenBulbHaloTexture,
 } from './HorologicalCAD';
 
 // ----------------------------------------------------------------------------
@@ -51,8 +54,8 @@ export const STAGE_WORLD_SPECS_V7: Record<StageWorldIdV7, StageWorldSpecV7> = {
     stageId: 'STAGE_01_IBC_DAYTIME_FUNK',
     code: 'STG-01',
     name: '30 Rock Studio 6A — 1966 Living Color',
-    eraLabel: '1966 NBC Living Color',
-    subtitle: 'Peacock Acrylite Fan Pavilion, Sunlit Walnut Slats & Chasing Marquee',
+    eraLabel: '1966 IBC Living Color',
+    subtitle: 'Starburst Acrylite Fan Pavilion, Sunlit Walnut Slats & Chasing Marquee',
     isSealedVault: false,
     bpm: 108,
     timeSig: '4/4',
@@ -67,7 +70,7 @@ export const STAGE_WORLD_SPECS_V7: Record<StageWorldIdV7, StageWorldSpecV7> = {
   STAGE_02_IBC_PRIMETIME_JUBILEE: {
     stageId: 'STAGE_02_IBC_PRIMETIME_JUBILEE',
     code: 'STG-02',
-    name: 'CBS Television City — Primetime Jubilee',
+    name: 'IBC Television City — Primetime Jubilee',
     eraLabel: '1966 Primetime Sweeps',
     subtitle: '24K Atomic Starburst Rotunda, Carnaby Cerise & Harvest Gold Chevrons',
     isSealedVault: false,
@@ -254,7 +257,7 @@ const STAGE_LIVING_COLOR_PALETTES: Record<StageWorldIdV7, StagePaletteTriad> = {
     warmPoolHex: 0xffd888,
     coolPoolHex: 0x20d8ee,
     spotTintHex: 0xffe4a8,
-    signText: 'ON THE AIR · IN LIVING COLOR',
+    signText: 'IBC STUDIO 6A · IN LIVING COLOR',
   },
   STAGE_02_IBC_PRIMETIME_JUBILEE: {
     acrylite: [0xf6b224, 0xe83b7c, 0x00bcd4],
@@ -265,7 +268,7 @@ const STAGE_LIVING_COLOR_PALETTES: Record<StageWorldIdV7, StagePaletteTriad> = {
     warmPoolHex: 0xffcb62,
     coolPoolHex: 0xe84890,
     spotTintHex: 0xffe0a0,
-    signText: 'CBS JUBILEE · IN LIVING COLOR',
+    signText: 'IBC JUBILEE · IN LIVING COLOR',
   },
   STAGE_03_1926_VAUDEVILLE_PIT: {
     acrylite: [0xe63b7a, 0xf4a91f, 0x0096a6],
@@ -301,14 +304,14 @@ const STAGE_LIVING_COLOR_PALETTES: Record<StageWorldIdV7, StagePaletteTriad> = {
     signText: 'APOLLO CONTROL · IN LIVING COLOR',
   },
   STAGE_06_ATLANTIC_CITY_PIER: {
-    acrylite: [0x00bcc8, 0xff7838, 0xf8c230],
-    cycZenith: '#0a2b44',
-    cycMid: '#0f5672',
-    cycHorizon: '#e07a44',
-    ringGlowHex: 0xffa642,
-    warmPoolHex: 0xffb858,
-    coolPoolHex: 0x16d2de,
-    spotTintHex: 0xffe4b4,
+    acrylite: [0x00d2e6, 0xff7838, 0xffd147],
+    cycZenith: '#03152c',
+    cycMid: '#073660',
+    cycHorizon: '#0c6b94',
+    ringGlowHex: 0x18dcf0,
+    warmPoolHex: 0xffbe5c,
+    coolPoolHex: 0x00dcf0,
+    spotTintHex: 0xdff8ff,
     signText: 'STEEL PIER · IN LIVING COLOR',
   },
   STAGE_07_1969_MONTE_CARLO_CASINO: {
@@ -346,16 +349,210 @@ const STAGE_LIVING_COLOR_PALETTES: Record<StageWorldIdV7, StagePaletteTriad> = {
   },
   STAGE_10_SOVEREIGN_SANCTUM: {
     acrylite: [0xf4a91f, 0x00b4c8, 0xe63b7a],
-    cycZenith: '#0d1936',
-    cycMid: '#1b3162',
-    cycHorizon: '#704c2a',
+    cycZenith: '#040a1c',
+    cycMid: '#0b1b42',
+    cycHorizon: '#162d63',
     ringGlowHex: 0xffcf54,
     warmPoolHex: 0xffd166,
     coolPoolHex: 0x2cb4dc,
     spotTintHex: 0xffe6b0,
-    signText: 'PENTHOUSE 38 · IN LIVING COLOR',
+    signText: 'IBC PENTHOUSE 38 · LIVING COLOR',
   },
 };
+
+const SHORT_STAGE_ID_ALIASES_V7: Readonly<Record<string, StageWorldIdV7>> = {
+  STAGE_01: 'STAGE_01_IBC_DAYTIME_FUNK',
+  STAGE_1: 'STAGE_01_IBC_DAYTIME_FUNK',
+  'STG-01': 'STAGE_01_IBC_DAYTIME_FUNK',
+  STAGE_02: 'STAGE_02_IBC_PRIMETIME_JUBILEE',
+  STAGE_2: 'STAGE_02_IBC_PRIMETIME_JUBILEE',
+  'STG-02': 'STAGE_02_IBC_PRIMETIME_JUBILEE',
+  STAGE_03: 'STAGE_03_1926_VAUDEVILLE_PIT',
+  STAGE_3: 'STAGE_03_1926_VAUDEVILLE_PIT',
+  'STG-03': 'STAGE_03_1926_VAUDEVILLE_PIT',
+  STAGE_04: 'STAGE_04_1958_ISOLATION_VAULT',
+  STAGE_4: 'STAGE_04_1958_ISOLATION_VAULT',
+  'STG-04': 'STAGE_04_1958_ISOLATION_VAULT',
+  STAGE_05: 'STAGE_05_1984_LARSON_CRT_LAB',
+  STAGE_5: 'STAGE_05_1984_LARSON_CRT_LAB',
+  'STG-05': 'STAGE_05_1984_LARSON_CRT_LAB',
+  STAGE_06: 'STAGE_06_ATLANTIC_CITY_PIER',
+  STAGE_6: 'STAGE_06_ATLANTIC_CITY_PIER',
+  'STG-06': 'STAGE_06_ATLANTIC_CITY_PIER',
+  STAGE_07: 'STAGE_07_1969_MONTE_CARLO_CASINO',
+  STAGE_7: 'STAGE_07_1969_MONTE_CARLO_CASINO',
+  'STG-07': 'STAGE_07_1969_MONTE_CARLO_CASINO',
+  STAGE_08: 'STAGE_08_WORLDS_FAIR_GEODESIC',
+  STAGE_8: 'STAGE_08_WORLDS_FAIR_GEODESIC',
+  'STG-08': 'STAGE_08_WORLDS_FAIR_GEODESIC',
+  STAGE_09: 'STAGE_09_CHANNEL_83_UHF_BARGE',
+  STAGE_9: 'STAGE_09_CHANNEL_83_UHF_BARGE',
+  'STG-09': 'STAGE_09_CHANNEL_83_UHF_BARGE',
+  STAGE_10: 'STAGE_10_SOVEREIGN_SANCTUM',
+  'STG-10': 'STAGE_10_SOVEREIGN_SANCTUM',
+};
+
+// Register non-enumerable short stage aliases (`STAGE_01`..`STAGE_10`) so direct lookups
+// (`STAGE_WORLD_SPECS_V7[raw]`) never return `undefined` while keeping `Object.keys()` === 10!
+for (const [alias, canonical] of Object.entries(SHORT_STAGE_ID_ALIASES_V7)) {
+  if (!(alias in STAGE_WORLD_SPECS_V7)) {
+    Object.defineProperty(STAGE_WORLD_SPECS_V7, alias, {
+      value: STAGE_WORLD_SPECS_V7[canonical],
+      enumerable: false,
+      configurable: true,
+    });
+  }
+  if (!(alias in STAGE_FLOOR_MAP_V7)) {
+    Object.defineProperty(STAGE_FLOOR_MAP_V7, alias, {
+      value: STAGE_FLOOR_MAP_V7[canonical],
+      enumerable: false,
+      configurable: true,
+    });
+  }
+  if (!(alias in STAGE_LIVING_COLOR_PALETTES)) {
+    Object.defineProperty(STAGE_LIVING_COLOR_PALETTES, alias, {
+      value: STAGE_LIVING_COLOR_PALETTES[canonical],
+      enumerable: false,
+      configurable: true,
+    });
+  }
+}
+
+export function resolveStageWorldIdV7(raw: string | StageWorldIdV7 | null | undefined): StageWorldIdV7 {
+  if (!raw) return 'STAGE_01_IBC_DAYTIME_FUNK';
+  const trimmed = String(raw).trim().toUpperCase();
+  if (Object.prototype.hasOwnProperty.call(STAGE_WORLD_SPECS_V7, trimmed)) {
+    const spec = (STAGE_WORLD_SPECS_V7 as Record<string, StageWorldSpecV7 | undefined>)[trimmed];
+    if (spec) return spec.stageId;
+  }
+  const byAlias = SHORT_STAGE_ID_ALIASES_V7[trimmed];
+  if (byAlias) return byAlias;
+  const canonicalKeys = Object.keys(STAGE_WORLD_SPECS_V7) as StageWorldIdV7[];
+  const byPrefix = canonicalKeys.find((k) => k.startsWith(trimmed));
+  return byPrefix ?? 'STAGE_01_IBC_DAYTIME_FUNK';
+}
+
+/**
+ * Merges static non-instanced `THREE.Mesh` descendants inside `container` that share the exact
+ * same `(material, castShadow, receiveShadow)` tuple into a single `THREE.BufferGeometry` per
+ * material in `container`'s local coordinate frame, slashing draw calls by 4x–8x with zero visual change!
+ */
+function compactStaticMeshesInGroup(
+  container: THREE.Object3D,
+  skipSubtrees?: ReadonlySet<THREE.Object3D>,
+): void {
+  container.updateWorldMatrix(true, true);
+  const invContainer = new THREE.Matrix4().copy(container.matrixWorld).invert();
+  const relMat = new THREE.Matrix4();
+
+  interface Bucket {
+    mat: THREE.Material;
+    castShadow: boolean;
+    receiveShadow: boolean;
+    geoms: THREE.BufferGeometry[];
+    meshes: THREE.Mesh[];
+  }
+  const buckets = new Map<string, Bucket>();
+  const matIds = new Map<THREE.Material, number>();
+  let nextMatId = 1;
+
+  const walk = (node: THREE.Object3D): void => {
+    if (skipSubtrees?.has(node)) return;
+    if (!node.visible) return;
+    if ((node as THREE.Sprite).isSprite) return;
+
+    const mesh = node as THREE.Mesh;
+    if (
+      mesh.isMesh &&
+      !(mesh as unknown as { isInstancedMesh?: boolean }).isInstancedMesh &&
+      !Array.isArray(mesh.material) &&
+      mesh.geometry &&
+      mesh.geometry.getAttribute('position') &&
+      !mesh.userData?.interactiveKind
+    ) {
+      const mat = mesh.material;
+      let mId = matIds.get(mat);
+      if (!mId) {
+        mId = nextMatId++;
+        matIds.set(mat, mId);
+      }
+      const key = `${mId}_${mesh.castShadow ? 1 : 0}_${mesh.receiveShadow ? 1 : 0}`;
+      let b = buckets.get(key);
+      if (!b) {
+        b = {
+          mat,
+          castShadow: mesh.castShadow,
+          receiveShadow: mesh.receiveShadow,
+          geoms: [],
+          meshes: [],
+        };
+        buckets.set(key, b);
+      }
+      relMat.multiplyMatrices(invContainer, mesh.matrixWorld);
+      const g = mesh.geometry.index ? mesh.geometry.toNonIndexed() : mesh.geometry.clone();
+      g.applyMatrix4(relMat);
+      b.geoms.push(g);
+      if (mesh.children.length === 0) {
+        b.meshes.push(mesh);
+        return;
+      }
+      // If a Mesh has child objects, detach/reparent its children onto `container` in world-preserved space, or walk children!
+      b.geoms.pop();
+      g.dispose();
+    }
+
+    for (let i = 0; i < node.children.length; i++) {
+      walk(node.children[i]);
+    }
+  };
+
+  for (let i = 0; i < container.children.length; i++) {
+    walk(container.children[i]);
+  }
+
+  for (const b of buckets.values()) {
+    if (b.geoms.length < 2) {
+      for (const g of b.geoms) g.dispose();
+      continue;
+    }
+    let totalVerts = 0;
+    for (const g of b.geoms) {
+      totalVerts += g.getAttribute('position').count;
+    }
+    const pos = new Float32Array(totalVerts * 3);
+    const norm = new Float32Array(totalVerts * 3);
+    const uv = new Float32Array(totalVerts * 2);
+    let vOff = 0;
+    for (const g of b.geoms) {
+      const pAttr = g.getAttribute('position') as THREE.BufferAttribute;
+      const nAttr = g.getAttribute('normal') as THREE.BufferAttribute | undefined;
+      const uAttr = g.getAttribute('uv') as THREE.BufferAttribute | undefined;
+      pos.set(pAttr.array as ArrayLike<number>, vOff * 3);
+      if (nAttr && nAttr.itemSize === 3) {
+        norm.set(nAttr.array as ArrayLike<number>, vOff * 3);
+      }
+      if (uAttr && uAttr.itemSize === 2) {
+        uv.set(uAttr.array as ArrayLike<number>, vOff * 2);
+      }
+      vOff += pAttr.count;
+      g.dispose();
+    }
+    for (const m of b.meshes) {
+      m.geometry.dispose();
+      m.removeFromParent();
+    }
+    const mergedGeom = new THREE.BufferGeometry();
+    mergedGeom.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    mergedGeom.setAttribute('normal', new THREE.BufferAttribute(norm, 3));
+    mergedGeom.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+    mergedGeom.computeBoundingSphere();
+
+    const mergedMesh = new THREE.Mesh(mergedGeom, b.mat);
+    mergedMesh.castShadow = b.castShadow;
+    mergedMesh.receiveShadow = b.receiveShadow;
+    container.add(mergedMesh);
+  }
+}
 
 // ----------------------------------------------------------------------------
 // 2. Built Stage Handle & Sub-Component Contracts
@@ -367,6 +564,7 @@ export interface BuiltStageWorldV7 {
   readonly root: THREE.Group;
   triggerFresnelTell(isRubySpite?: boolean): void;
   triggerRowCGlint(active: boolean): void;
+  triggerApplauseSign?(durationSec?: number): void;
   getRowCColliderMesh(): THREE.Mesh;
   setVipJuryState(boonActive: boolean, baneActive: boolean): void;
   setCoupRegime(regime: CoupRegimeIdV7): void;
@@ -374,12 +572,12 @@ export interface BuiltStageWorldV7 {
   setApertureDimFactor(factor: number): void;
   setWingSpanX(halfSpanMeters: number, wingZ?: number): void;
   setMarqueeCrownY?(yMeters: number): void;
-  setPortraitFraming?(isPortrait: boolean): void;
+  setPortraitFraming?(isPortrait: boolean, aspect?: number): void;
   update(dtSec: number, elapsedSec: number): void;
   dispose(): void;
 }
 
-// Helper: floor-bolted sculpted satin-brass mounting shoe resting flush on y = 0.00m
+// Helper: floor-bolted sculpted satin-brass mounting shoe resting flush on y = 0.00m + Contact AO
 function createFloorShoe(
   width: number,
   depth: number,
@@ -388,6 +586,15 @@ function createFloorShoe(
   boltMat: THREE.Material,
 ): THREE.Group {
   const g = new THREE.Group();
+  g.add(
+    createContactShadowDisc({
+      radiusX: width * 0.86,
+      radiusZ: depth * 0.86,
+      opacity: 0.54,
+      yOffset: 0.004,
+      name: 'FloorShoeContactAO',
+    }),
+  );
   const plate = createChamferedBox({
     width,
     height,
@@ -424,81 +631,202 @@ function createFloorShoe(
   return g;
 }
 
-// Procedural 512x512 Radiant 1966 Living Color Broadcast Cyclorama Gradient Texture
+// Procedural 1024x512 Radiant 1966 Living Color Broadcast Cyclorama Vista Texture
 function createCycloramaGradientTexture(
   stageId: StageWorldIdV7,
   palette: StagePaletteTriad,
 ): THREE.CanvasTexture {
   const canvas = document.createElement('canvas');
-  canvas.width = 512;
+  canvas.width = 1024;
   canvas.height = 512;
   const ctx = canvas.getContext('2d');
   if (ctx) {
+    const isNightVista =
+      stageId === 'STAGE_06_ATLANTIC_CITY_PIER' ||
+      stageId === 'STAGE_10_SOVEREIGN_SANCTUM' ||
+      stageId === 'STAGE_07_1969_MONTE_CARLO_CASINO' ||
+      stageId === 'STAGE_08_WORLDS_FAIR_GEODESIC' ||
+      stageId === 'STAGE_09_CHANNEL_83_UHF_BARGE';
+
     const vGrad = ctx.createLinearGradient(0, 0, 0, 512);
     vGrad.addColorStop(0.0, palette.cycZenith);
-    vGrad.addColorStop(0.38, palette.cycMid);
-    vGrad.addColorStop(0.76, palette.cycHorizon);
-    vGrad.addColorStop(0.95, '#ffda88');
-    vGrad.addColorStop(1.0, palette.cycHorizon);
+    vGrad.addColorStop(0.42, palette.cycMid);
+    vGrad.addColorStop(0.82, palette.cycHorizon);
+    vGrad.addColorStop(1.0, isNightVista ? palette.cycMid : '#ffd88a');
     ctx.fillStyle = vGrad;
-    ctx.fillRect(0, 0, 512, 512);
+    ctx.fillRect(0, 0, 1024, 512);
 
-    // Stage-distinct theatrical backdrop atmosphere!
+    // Stage-distinct theatrical backdrop vistas right in the camera-visible y = 260..512 horizon band!
     if (stageId === 'STAGE_10_SOVEREIGN_SANCTUM') {
-      // Distant glittering 1966 Manhattan skyline silhouette glow along horizon
-      ctx.fillStyle = 'rgba(10, 18, 42, 0.42)';
-      const heights = [120, 185, 145, 240, 165, 290, 210, 175, 255, 190, 140, 220, 150, 130];
-      const bw = 512 / heights.length;
+      // Unmistakable 1966 Midnight Manhattan 38th-Floor Skyline Panorama (Empire State, Chrysler, Park Ave!)
+      const stars = 95;
+      ctx.fillStyle = 'rgba(255, 246, 210, 0.55)';
+      for (let s = 0; s < stars; s++) {
+        ctx.fillRect((s * 137) % 1024, (s * 61) % 250, 2, 2);
+      }
+      const heights = [
+        195, 255, 215, 310, 240, 355, 275, 230, 335, 265, 205, 295,
+        365, 250, 315, 235, 285, 340, 225, 290, 245, 320, 210, 260,
+      ];
+      const bw = 1024 / heights.length;
       for (let i = 0; i < heights.length; i++) {
         const bh = heights[i];
-        ctx.fillRect(i * bw + 2, 512 - bh, bw - 4, bh);
-        ctx.fillStyle = 'rgba(255, 222, 135, 0.48)';
-        for (let wy = 512 - bh + 12; wy < 485; wy += 16) {
-          for (let wx = i * bw + 7; wx < (i + 1) * bw - 9; wx += 9) {
-            if ((i * 7 + wy) % 3 !== 0) ctx.fillRect(wx, wy, 4, 6);
+        const bx = i * bw + 2;
+        const by = 512 - bh;
+        ctx.fillStyle = i % 2 === 0 ? '#070E24' : '#0B1636';
+        ctx.fillRect(bx, by, bw - 3, bh);
+        // Art-Deco setback crown & Empire spire accents
+        if (bh >= 330) {
+          ctx.fillRect(bx + 6, by - 26, bw - 15, 26);
+          ctx.fillStyle = '#FFD56B';
+          ctx.fillRect(bx + bw * 0.5 - 2, by - 58, 4, 32);
+        }
+        //Crisp glittering golden 1966 office window grid
+        ctx.fillStyle = '#FFE082';
+        for (let wy = by + 10; wy < 502; wy += 12) {
+          for (let wx = bx + 5; wx < bx + bw - 8; wx += 8) {
+            if (((i * 11 + wy * 3 + wx) % 5) !== 0) {
+              ctx.fillRect(wx, wy, 4, 6);
+            }
           }
         }
-        ctx.fillStyle = 'rgba(10, 18, 42, 0.42)';
       }
     } else if (stageId === 'STAGE_08_WORLDS_FAIR_GEODESIC') {
-      // Subtle starry flushing-meadows sky dome specks + sweeping blue searchlights
-      ctx.fillStyle = 'rgba(220, 248, 255, 0.42)';
-      for (let s = 0; s < 70; s++) {
-        const sx = (s * 97) % 512;
-        const sy = (s * 53) % 240;
-        ctx.fillRect(sx, sy, 2, 2);
+      ctx.fillStyle = 'rgba(220, 248, 255, 0.52)';
+      for (let s = 0; s < 90; s++) {
+        ctx.fillRect((s * 113) % 1024, (s * 53) % 260, 2.5, 2.5);
+      }
+      ctx.strokeStyle = 'rgba(140, 232, 255, 0.42)';
+      ctx.lineWidth = 4;
+      for (const r of [160, 240, 330, 420]) {
+        ctx.beginPath();
+        ctx.arc(512, 490, r, Math.PI, Math.PI * 2);
+        ctx.stroke();
+      }
+    } else if (stageId === 'STAGE_06_ATLANTIC_CITY_PIER') {
+      // Unmistakable 1965 Atlantic City Night Ocean Horizon + Illuminated Steel Pier Boardwalk & Surf!
+      // Deep Atlantic ocean water plane across y = 315..512
+      const seaGrad = ctx.createLinearGradient(0, 315, 0, 512);
+      seaGrad.addColorStop(0.0, '#043B5C');
+      seaGrad.addColorStop(0.45, '#065A82');
+      seaGrad.addColorStop(1.0, '#032942');
+      ctx.fillStyle = seaGrad;
+      ctx.fillRect(0, 315, 1024, 197);
+
+      // Moonlit turquoise & gold ocean wave rollers
+      for (let wy = 326; wy < 506; wy += 11) {
+        ctx.strokeStyle = wy % 22 === 0 ? 'rgba(255, 230, 150, 0.52)' : 'rgba(64, 232, 248, 0.44)';
+        ctx.lineWidth = wy % 22 === 0 ? 3.5 : 2.5;
+        ctx.beginPath();
+        for (let wx = 0; wx <= 1024; wx += 24) {
+          const yOff = wy + Math.sin(wx * 0.03 + wy * 0.2) * 3.5;
+          if (wx === 0) ctx.moveTo(wx, yOff);
+          else ctx.lineTo(wx, yOff);
+        }
+        ctx.stroke();
+      }
+
+      // Silhouetted Atlantic City Boardwalk Pier trestle & warm carnival string bulbs along y = 300..332
+      ctx.fillStyle = '#05182B';
+      ctx.fillRect(0, 304, 1024, 16);
+      for (let px = 16; px < 1024; px += 36) {
+        ctx.fillRect(px, 318, 6, 36);
+      }
+      ctx.fillStyle = '#FFD56B';
+      for (let lx = 18; lx < 1010; lx += 22) {
+        ctx.beginPath();
+        ctx.arc(lx, 296 + Math.sin(lx * 0.07) * 5, 4.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else if (stageId === 'STAGE_07_1969_MONTE_CARLO_CASINO') {
+      ctx.fillStyle = 'rgba(6, 18, 36, 0.58)';
+      ctx.beginPath();
+      ctx.moveTo(0, 512);
+      ctx.lineTo(0, 305);
+      ctx.quadraticCurveTo(260, 385, 512, 398);
+      ctx.quadraticCurveTo(764, 380, 1024, 295);
+      ctx.lineTo(1024, 512);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255, 230, 150, 0.72)';
+      for (let k = 0; k < 85; k++) {
+        const kx = ((k * 43) % 996) + 12;
+        const ky = 335 + ((k * 29) % 135);
+        ctx.fillRect(kx, ky, 5, 4);
+      }
+    } else if (stageId === 'STAGE_09_CHANNEL_83_UHF_BARGE') {
+      ctx.strokeStyle = 'rgba(48, 232, 255, 0.34)';
+      ctx.lineWidth = 3;
+      for (const r of [120, 210, 300]) {
+        ctx.beginPath();
+        ctx.arc(512, 380, r, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      for (let sy = 345; sy < 506; sy += 15) {
+        ctx.strokeStyle = 'rgba(140, 244, 255, 0.38)';
+        ctx.beginPath();
+        for (let sx = 0; sx <= 1024; sx += 20) {
+          const y = sy + Math.sin(sx * 0.04 + sy) * 5.5;
+          if (sx === 0) ctx.moveTo(sx, y);
+          else ctx.lineTo(sx, y);
+        }
+        ctx.stroke();
+      }
+    } else if (stageId === 'STAGE_05_1984_LARSON_CRT_LAB') {
+      ctx.strokeStyle = 'rgba(110, 210, 255, 0.32)';
+      ctx.lineWidth = 3;
+      for (let a = 1; a <= 5; a++) {
+        ctx.beginPath();
+        ctx.ellipse(512, 360, a * 92, a * 42, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    } else if (stageId === 'STAGE_03_1926_VAUDEVILLE_PIT') {
+      const cols = ['rgba(230,59,122,0.26)', 'rgba(244,169,31,0.26)', 'rgba(0,180,200,0.26)'];
+      for (let d = 0; d < 16; d++) {
+        ctx.fillStyle = cols[d % 3];
+        const dx = 42 + d * 62;
+        const dy = 260 + (d % 2) * 68;
+        ctx.beginPath();
+        ctx.moveTo(dx, dy - 42);
+        ctx.lineTo(dx + 32, dy);
+        ctx.lineTo(dx, dy + 42);
+        ctx.lineTo(dx - 32, dy);
+        ctx.closePath();
+        ctx.fill();
       }
     }
 
-    // Theatrical 1966 NBC/CBS light-fan rays blooming upward from stage center
+    // Theatrical 1966 IBC light-fan rays blooming upward from stage center
     ctx.save();
-    ctx.translate(256, 468);
+    ctx.translate(512, 476);
     const rayCount = stageId === 'STAGE_02_IBC_PRIMETIME_JUBILEE' ? 7 : 5;
     for (let i = -rayCount; i <= rayCount; i++) {
       ctx.save();
       ctx.rotate(i * (0.86 / rayCount));
       const rayGrad = ctx.createLinearGradient(0, 0, 0, -470);
-      rayGrad.addColorStop(0.0, 'rgba(255, 240, 200, 0.24)');
-      rayGrad.addColorStop(0.45, 'rgba(255, 232, 185, 0.08)');
+      rayGrad.addColorStop(0.0, isNightVista ? 'rgba(120, 220, 255, 0.14)' : 'rgba(255, 240, 200, 0.24)');
+      rayGrad.addColorStop(0.45, 'rgba(255, 232, 185, 0.06)');
       rayGrad.addColorStop(1.0, 'rgba(255, 232, 185, 0.0)');
       ctx.fillStyle = rayGrad;
       ctx.beginPath();
-      ctx.moveTo(-12, 0);
-      ctx.lineTo(-38, -470);
-      ctx.lineTo(38, -470);
-      ctx.lineTo(12, 0);
+      ctx.moveTo(-16, 0);
+      ctx.lineTo(-52, -470);
+      ctx.lineTo(52, -470);
+      ctx.lineTo(16, 0);
       ctx.closePath();
       ctx.fill();
       ctx.restore();
     }
     ctx.restore();
 
-    const horizonGlow = ctx.createRadialGradient(256, 470, 24, 256, 470, 290);
-    horizonGlow.addColorStop(0.0, 'rgba(255, 234, 178, 0.36)');
-    horizonGlow.addColorStop(0.55, 'rgba(255, 215, 130, 0.11)');
-    horizonGlow.addColorStop(1.0, 'rgba(255, 215, 130, 0.0)');
-    ctx.fillStyle = horizonGlow;
-    ctx.fillRect(0, 140, 512, 372);
+    if (!isNightVista) {
+      const horizonGlow = ctx.createRadialGradient(512, 475, 32, 512, 475, 380);
+      horizonGlow.addColorStop(0.0, 'rgba(255, 234, 178, 0.32)');
+      horizonGlow.addColorStop(0.55, 'rgba(255, 215, 130, 0.1)');
+      horizonGlow.addColorStop(1.0, 'rgba(255, 215, 130, 0.0)');
+      ctx.fillStyle = horizonGlow;
+      ctx.fillRect(0, 140, 1024, 372);
+    }
   }
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
@@ -658,14 +986,34 @@ function buildRowCAcousticRisers(spec: StageWorldSpecV7, envMap: THREE.Texture) 
   const group = new THREE.Group();
   group.name = 'RowCAcousticRisers';
 
+  // Stage-distinct upholstery & gallery architectural finishes (zero cloned pink Studio 6A bleachers!)
+  const upholsteryByStage: Record<StageWorldIdV7, number> = {
+    STAGE_01_IBC_DAYTIME_FUNK: 0xa81f48, // Studio 6A Carnaby Rose Velvet
+    STAGE_02_IBC_PRIMETIME_JUBILEE: 0x5c2078, // Primetime Royal Plum Velvet
+    STAGE_03_1926_VAUDEVILLE_PIT: 0xd94e1f, // Burbank Mod Tangerine Vinyl
+    STAGE_04_1958_ISOLATION_VAULT: 0x0f5c6e, // Sealed Vault Teal Baffle
+    STAGE_05_1984_LARSON_CRT_LAB: 0x1a4b8c, // Apollo Telemetry Cobalt
+    STAGE_06_ATLANTIC_CITY_PIER: 0x008b99, // Atlantic City Seafoam Cabana
+    STAGE_07_1969_MONTE_CARLO_CASINO: 0x0d6b4c, // Riviera Casino Emerald Velvet
+    STAGE_08_WORLDS_FAIR_GEODESIC: 0x1864ab, // World's Fair Pavilion Cerulean
+    STAGE_09_CHANNEL_83_UHF_BARGE: 0x264653, // Pirate Ship Gunmetal Canvas
+    STAGE_10_SOVEREIGN_SANCTUM: 0x6b1028, // Penthouse 38 Imperial Burgundy Velvet
+  };
   const velvetMat = new THREE.MeshStandardMaterial({
-    color: 0xa81f48,
-    roughness: 0.68,
-    metalness: 0.06,
+    color: upholsteryByStage[spec.stageId] ?? 0xa81f48,
+    roughness: 0.62,
+    metalness: 0.08,
     envMap,
     envMapIntensity: 0.65,
   });
-  const walnutMat = createWalnutMaterial(envMap);
+  const useDarkExecutiveBase =
+    spec.stageId === 'STAGE_10_SOVEREIGN_SANCTUM' ||
+    spec.stageId === 'STAGE_05_1984_LARSON_CRT_LAB' ||
+    spec.stageId === 'STAGE_08_WORLDS_FAIR_GEODESIC' ||
+    spec.stageId === 'STAGE_09_CHANNEL_83_UHF_BARGE';
+  const walnutMat = useDarkExecutiveBase
+    ? createObsidianMaterial(envMap)
+    : createWalnutMaterial(envMap);
   const brassMat = create24KGoldMaterial(envMap);
   const aluminumMat = createAnodizedAluminumMaterial(envMap);
 
@@ -674,6 +1022,16 @@ function buildRowCAcousticRisers(spec: StageWorldSpecV7, envMap: THREE.Texture) 
     { z: -7.58, h: 0.98, d: 0.64 },
     { z: -8.22, h: 1.44, d: 0.66 },
   ];
+
+  const riserShadow = createContactShadowDisc({
+    radiusX: 1.72,
+    radiusZ: 1.28,
+    opacity: 0.56,
+    yOffset: 0.004,
+    name: 'RowCRiserContactAO',
+  });
+  riserShadow.position.set(0, 0.004, -7.58);
+  group.add(riserShadow);
 
   for (let t = 0; t < tiers.length; t++) {
     const tier = tiers[t];
@@ -743,6 +1101,71 @@ function buildRowCAcousticRisers(spec: StageWorldSpecV7, envMap: THREE.Texture) 
         group.add(seatBack);
       }
     }
+
+    if (!noStudioGallery) {
+      // 5 Sculpted Walnut & Velvet Theatre Seat Armrests framing the 4 audience seats!
+      for (let a = 0; a < 5; a++) {
+        const ax = -1.36 + a * 0.68;
+        const armPost = createChamferedBox({
+          width: 0.055,
+          height: 0.18,
+          depth: 0.32,
+          cornerRadius: 0.018,
+          material: walnutMat,
+        });
+        armPost.position.set(ax, tier.h + 0.14, tier.z + 0.02);
+        const armPad = createChamferedBox({
+          width: 0.072,
+          height: 0.036,
+          depth: 0.34,
+          cornerRadius: 0.016,
+          material: velvetMat,
+        });
+        armPad.position.set(ax, tier.h + 0.24, tier.z + 0.02);
+        group.add(armPost, armPad);
+      }
+    }
+  }
+
+  // Twin Sloped 24K Brass Studio Audience Aisle Handrails + Warm Amber Step Courtesy Lights!
+  const stepLampMat = new THREE.MeshStandardMaterial({
+    color: 0xffd56b,
+    emissive: 0xffa826,
+    emissiveIntensity: 1.15,
+    roughness: 0.18,
+  });
+  for (const railSide of [-1.46, 1.46] as const) {
+    for (const [pz, ph] of [
+      [-6.72, 0.92],
+      [-8.42, 1.84],
+    ] as const) {
+      const stanchion = createFilletedShaft({
+        radius: 0.024,
+        height: ph,
+        anglageBevel: 0.005,
+        radialSegments: 18,
+        material: brassMat,
+      });
+      stanchion.position.set(railSide, 0, pz);
+      group.add(stanchion);
+    }
+    const railCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(railSide, 0.92, -6.72),
+      new THREE.Vector3(railSide, 1.38, -7.57),
+      new THREE.Vector3(railSide, 1.84, -8.42),
+    ]);
+    const handrail = new THREE.Mesh(
+      new THREE.TubeGeometry(railCurve, 14, 0.022, 12, false),
+      brassMat,
+    );
+    const stepLamp = createTurnedOrb({
+      radius: 0.032,
+      radialSegments: 14,
+      material: stepLampMat,
+      castShadow: false,
+    });
+    stepLamp.position.set(railSide, 0.58, -6.68);
+    group.add(handrail, stepLamp);
   }
 
   const glintAnchor = new THREE.Group();
@@ -843,6 +1266,8 @@ function buildRowCAcousticRisers(spec: StageWorldSpecV7, envMap: THREE.Texture) 
   colliderMesh.userData.interactiveKind = 'ROW_C_GLINT';
   colliderMesh.userData.stageId = spec.stageId;
   group.add(colliderMesh);
+
+  compactStaticMeshesInGroup(group, new Set([glintAnchor, colliderMesh]));
 
   return {
     group,
@@ -988,6 +1413,8 @@ function buildVipJuryLoges(envMap: THREE.Texture) {
     }
   }
 
+  compactStaticMeshesInGroup(group);
+
   return { group, boonMat, baneMat };
 }
 
@@ -1026,7 +1453,8 @@ function buildBespokeStageArchitectureAndHero(
     roughness: 0.12,
   });
 
-  // Helper to attach chasing bulbs along a curved arch radius
+  // Helper to attach 4-circuit instanced chasing `#11` 2700K bulbs + instanced glow halos (`8` draw calls instead of `30+`!)
+  const sharedHaloTex = typeof document !== 'undefined' ? getTungstenBulbHaloTexture() : null;
   const addArchBulbs = (
     parent: THREE.Object3D,
     radius: number,
@@ -1035,26 +1463,57 @@ function buildBespokeStageArchitectureAndHero(
     centerY: number,
     bulbHex = 0xffd56b,
   ) => {
-    const mats: THREE.MeshStandardMaterial[] = [];
-    for (let i = 0; i < count; i++) {
-      const a = 0.14 * Math.PI + (i / Math.max(1, count - 1)) * (0.72 * Math.PI);
+    const circuitMats: THREE.MeshStandardMaterial[] = [];
+    const haloMats: THREE.MeshBasicMaterial[] = [];
+    for (let c = 0; c < 4; c++) {
       const bm = new THREE.MeshStandardMaterial({
         color: 0xfff8e4,
         emissive: bulbHex,
         emissiveIntensity: 1.0,
         roughness: 0.12,
       });
-      const bulb = createTurnedOrb({
-        radius: 0.048,
-        radialSegments: 16,
-        material: bm,
-        castShadow: false,
+      const hm = new THREE.MeshBasicMaterial({
+        map: sharedHaloTex,
+        color: bulbHex,
+        transparent: true,
+        opacity: 0.65,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        toneMapped: false,
       });
-      bulb.position.set(Math.cos(a) * radius, centerY + Math.sin(a) * radius, zOff);
-      parent.add(bulb);
-      mats.push(bm);
+      (bm.userData as Record<string, unknown>).haloMat = hm;
+      circuitMats.push(bm);
+      haloMats.push(hm);
     }
-    chasingBulbGroups.push(mats);
+
+    const orbGeom = new THREE.SphereGeometry(0.048, 10, 8);
+    const haloGeom = new THREE.PlaneGeometry(0.24, 0.24);
+    const dummy = new THREE.Object3D();
+    const buckets: Array<Array<[number, number]>> = [[], [], [], []];
+
+    for (let i = 0; i < count; i++) {
+      const a = 0.14 * Math.PI + (i / Math.max(1, count - 1)) * (0.72 * Math.PI);
+      buckets[i % 4].push([Math.cos(a) * radius, centerY + Math.sin(a) * radius]);
+    }
+    for (let c = 0; c < 4; c++) {
+      const pts = buckets[c];
+      if (pts.length === 0) continue;
+      const bInst = new THREE.InstancedMesh(orbGeom, circuitMats[c], pts.length);
+      const hInst = new THREE.InstancedMesh(haloGeom, haloMats[c], pts.length);
+      hInst.renderOrder = 4;
+      for (let k = 0; k < pts.length; k++) {
+        dummy.position.set(pts[k][0], pts[k][1], zOff);
+        dummy.updateMatrix();
+        bInst.setMatrixAt(k, dummy.matrix);
+        dummy.position.set(pts[k][0], pts[k][1], zOff + 0.036);
+        dummy.updateMatrix();
+        hInst.setMatrixAt(k, dummy.matrix);
+      }
+      bInst.instanceMatrix.needsUpdate = true;
+      hInst.instanceMatrix.needsUpdate = true;
+      parent.add(bInst, hInst);
+    }
+    chasingBulbGroups.push(circuitMats);
   };
 
   switch (stageId) {
@@ -1063,6 +1522,14 @@ function buildBespokeStageArchitectureAndHero(
       const peacockColors = [0x0096a6, 0x16a34a, 0xf4a91f, 0xff6738, 0xe63b7a, 0x1e56c5, 0x0096a6];
       const featherGroup = new THREE.Group();
       featherGroup.position.set(0, 0.34, -5.48);
+
+      const fanPlinthAO = createContactShadowDisc({
+        radius: 1.24,
+        opacity: 0.58,
+        yOffset: -0.336,
+        name: 'PeacockFanPlinthContactAO',
+      });
+      featherGroup.add(fanPlinthAO);
 
       // Regal low-profile 24K Gold & Walnut Scalloped Peacock Plinth at y = 0..0.68m (zero center pole cutting through starburst!)
       const fanPlinthBase = createFilletedShaft({
@@ -1191,10 +1658,13 @@ function buildBespokeStageArchitectureAndHero(
           bulbMat: bulbGlowMat,
         });
         spinner.position.set(0, 2.52, 0.14);
+        compactStaticMeshesInGroup(spinner);
         wing.add(spinner);
         wingSpinners.push(spinner);
+        compactStaticMeshesInGroup(wing, new Set([spinner]));
         group.add(wing);
       }
+      compactStaticMeshesInGroup(featherGroup);
 
       return {
         group,
@@ -1263,12 +1733,16 @@ function buildBespokeStageArchitectureAndHero(
         teeth: 20,
         thickness: 0.08,
         spokes: 6,
+        material: goldMat,
       });
       innerHalo.add(turqRing, innerGear);
+      compactStaticMeshesInGroup(outerHalo);
+      compactStaticMeshesInGroup(innerHalo);
       rotunda.add(outerHalo, innerHalo);
+      compactStaticMeshesInGroup(rotunda, new Set([outerHalo, innerHalo]));
       group.add(rotunda);
 
-      // Stepped Hollywood-Squares / CBS Jubilee Wing Light Chevrons (totally distinct from Stage 1!)
+      // Stepped Hollywood-Squares / IBC Jubilee Wing Light Chevrons (totally distinct from Stage 1!)
       for (const side of [-1, 1] as const) {
         const wing = new THREE.Group();
         wing.position.set(side * 3.55, 0, -4.4);
@@ -1298,6 +1772,7 @@ function buildBespokeStageArchitectureAndHero(
           wing.add(frame, panel);
         }
         addArchBulbs(wing, 1.32, 9, 0.14, 1.75, 0xffd166);
+        compactStaticMeshesInGroup(wing);
         group.add(wing);
       }
 
@@ -1389,6 +1864,7 @@ function buildBespokeStageArchitectureAndHero(
         center.add(bezel, innerStar, hinge);
         shutterPivots.push(hinge);
       }
+      compactStaticMeshesInGroup(center, new Set(shutterPivots));
       group.add(center);
 
       // Flanking 1966 Carnaby Flower-Power Starburst Sculptures on Tulip Stems (Dating Game vibe!)
@@ -1404,6 +1880,7 @@ function buildBespokeStageArchitectureAndHero(
           [0.08, 1.62, 0.58, 1],
           [0.68, 2.55, 0.66, 2],
         ];
+        const wingSkip = new Set<THREE.Object3D>();
         for (const [fx, fy, fr, ci] of positions) {
           const stem = createFilletedShaft({
             radius: 0.042,
@@ -1421,9 +1898,12 @@ function buildBespokeStageArchitectureAndHero(
             bulbMat: bulbGlowMat,
           });
           flower.position.set(fx, fy, 0.08);
+          compactStaticMeshesInGroup(flower);
+          wingSkip.add(flower);
           wing.add(stem, flower);
           flowerHeads.push(flower);
         }
+        compactStaticMeshesInGroup(wing, wingSkip);
         group.add(wing);
       }
 
@@ -1458,8 +1938,24 @@ function buildBespokeStageArchitectureAndHero(
 
       const center = new THREE.Group();
       center.position.set(0, 0, -5.62);
+      center.add(
+        createContactShadowDisc({
+          radius: 1.18,
+          opacity: 0.58,
+          yOffset: 0.004,
+          name: 'PendulumWellContactAO',
+        }),
+      );
 
       for (const bx of [-1.58, 1.58]) {
+        const boothAO = createContactShadowDisc({
+          radius: 1.04,
+          opacity: 0.56,
+          yOffset: 0.004,
+          name: 'IsolationBoothContactAO',
+        });
+        boothAO.position.x = bx;
+        center.add(boothAO);
         const floorPlinth = createFilletedShaft({
           radius: 0.72,
           height: 0.14,
@@ -1522,7 +2018,21 @@ function buildBespokeStageArchitectureAndHero(
           castShadow: false,
         });
         beacon.position.set(bx, 2.58, 0);
-        center.add(floorPlinth, brassTrimRing, teakCanopy, tealGlowRing, curvedTealGlass, beacon);
+        const beaconHalo = createTungstenBulbHaloSprite({
+          scale: 0.44,
+          opacity: 0.68,
+          colorHex: 0xffd56b,
+        });
+        beaconHalo.position.set(bx, 2.6, 0.06);
+        center.add(
+          floorPlinth,
+          brassTrimRing,
+          teakCanopy,
+          tealGlowRing,
+          curvedTealGlass,
+          beacon,
+          beaconHalo,
+        );
       }
 
       // Central Sunlit Teak & Warm Cream Broadcast Solenoid Console
@@ -1558,6 +2068,7 @@ function buildBespokeStageArchitectureAndHero(
         center.add(bar);
         relayBars.push(bar);
       }
+      compactStaticMeshesInGroup(center, new Set(relayBars));
       group.add(center);
 
       // Sunlit Teak & Backlit Peacock Teal Mid-Century Acoustic Slat Wings
@@ -1593,6 +2104,7 @@ function buildBespokeStageArchitectureAndHero(
         });
         tealColumn.position.set(0, 0.12, 0.2);
         wing.add(tealColumn);
+        compactStaticMeshesInGroup(wing);
         group.add(wing);
       }
 
@@ -1626,6 +2138,15 @@ function buildBespokeStageArchitectureAndHero(
 
       const center = new THREE.Group();
       center.position.set(0, 0, -5.85);
+      center.add(
+        createContactShadowDisc({
+          radiusX: 2.65,
+          radiusZ: 0.95,
+          opacity: 0.56,
+          yOffset: 0.004,
+          name: 'ApolloConsoleContactAO',
+        }),
+      );
 
       // Sweeping Curved 1967 Apollo Control Amphitheater Arch in Warm Cream & Royal Cobalt
       const apolloArchOuter = createCurvedParabolicCove({
@@ -1691,6 +2212,7 @@ function buildBespokeStageArchitectureAndHero(
       orbitRing3.rotation.set(-0.42, 0.55, 0);
       armillaryPivot.add(coreOrb, orbitRing1, orbitRing2, orbitRing3);
       center.add(armillaryPivot);
+      compactStaticMeshesInGroup(center, new Set([armillaryPivot]));
       group.add(center);
 
       // Flanking 1967 Apollo Cream-and-Cobalt Analog Broadcast Vectorscope Wings
@@ -1699,6 +2221,7 @@ function buildBespokeStageArchitectureAndHero(
         const wing = new THREE.Group();
         wing.position.set(side * 3.7, 0, -4.3);
         wing.rotation.y = -side * 0.36;
+        wing.add(createFloorShoe(2.42, 0.48, 0.09, goldMat, bluedMat));
         const arch = createCurvedParabolicCove({
           spanWidth: 2.35,
           archHeight: 3.0,
@@ -1728,6 +2251,7 @@ function buildBespokeStageArchitectureAndHero(
         sweepRing.position.set(0, 1.56, 0.14);
         vectorRings.push(sweepRing);
         wing.add(arch, scopeBezel, scopeGlass, sweepRing);
+        compactStaticMeshesInGroup(wing, new Set([sweepRing]));
         group.add(wing);
       }
 
@@ -1751,6 +2275,15 @@ function buildBespokeStageArchitectureAndHero(
       // 1965 ATLANTIC CITY STEEL PIER: Gilded Wurlitzer Organ Pipe Fan + Sunburst Boardwalk Carnival Arches!
       const center = new THREE.Group();
       center.position.set(0, 0, -5.3);
+      center.add(
+        createContactShadowDisc({
+          radiusX: 2.38,
+          radiusZ: 0.78,
+          opacity: 0.58,
+          yOffset: 0.004,
+          name: 'SteelPierBandstandContactAO',
+        }),
+      );
 
       const bandstand = createChamferedBox({
         width: 4.05,
@@ -1812,6 +2345,35 @@ function buildBespokeStageArchitectureAndHero(
       pierArch.position.set(0, 0.06, -0.35);
       center.add(pierArch);
       addArchBulbs(center, 2.05, 13, -0.18, 1.25, 0xffd166);
+
+      // Luminous 3D Atlantic Ocean Wave Crest Coves & Boardwalk Pier Railing spanning the upstage horizon!
+      const oceanWaveMat = createAcrylitePanelMaterial(0x00c6e0, 0.96, envMap);
+      dimmableAcryliteMats.push(oceanWaveMat);
+      for (let wRow = 0; wRow < 2; wRow++) {
+        const waveBar = createChamferedBox({
+          width: 11.4,
+          height: 0.24,
+          depth: 0.1,
+          cornerRadius: 0.09,
+          material: wRow === 0 ? oceanWaveMat : acMats[2],
+          castShadow: false,
+        });
+        waveBar.position.set(0, 0.22 + wRow * 0.34, -2.4 - wRow * 0.5);
+        center.add(waveBar);
+      }
+      for (let bp = -5; bp <= 5; bp++) {
+        if (Math.abs(bp) <= 1) continue;
+        const bollard = createFilletedShaft({
+          radius: 0.065,
+          height: 1.05,
+          anglageBevel: 0.008,
+          radialSegments: 16,
+          material: bp % 2 === 0 ? walnutMat : goldMat,
+        });
+        bollard.position.set(bp * 0.96, 0, -2.1);
+        center.add(bollard);
+      }
+      compactStaticMeshesInGroup(center, new Set(pipes));
       group.add(center);
 
       // Boardwalk Carnival Ferris-Starburst Wing Arches
@@ -1820,6 +2382,7 @@ function buildBespokeStageArchitectureAndHero(
         const wing = new THREE.Group();
         wing.position.set(side * 3.7, 0, -4.35);
         wing.rotation.y = -side * 0.34;
+        wing.add(createFloorShoe(2.45, 0.48, 0.09, goldMat, bluedMat));
         const carnivalArch = createCurvedParabolicCove({
           spanWidth: 2.4,
           archHeight: 3.05,
@@ -1842,8 +2405,10 @@ function buildBespokeStageArchitectureAndHero(
           bulbMat: bulbGlowMat,
         });
         ferrisStar.position.set(0, 1.85, 0.14);
+        compactStaticMeshesInGroup(ferrisStar);
         ferrisStars.push(ferrisStar);
         wing.add(carnivalArch, oceanWavePanel, ferrisStar);
+        compactStaticMeshesInGroup(wing, new Set([ferrisStar]));
         group.add(wing);
       }
 
@@ -1874,6 +2439,11 @@ function buildBespokeStageArchitectureAndHero(
 
       const center = new THREE.Group();
       center.position.set(0, 0, -6.05);
+      for (const ax of [-2.02, 2.02]) {
+        const legAO = createContactShadowDisc({ radius: 0.62, opacity: 0.54, yOffset: 0.004 });
+        legAO.position.x = ax;
+        center.add(legAO);
+      }
 
       const archPortal = createCurvedParabolicCove({
         spanWidth: 4.35,
@@ -1915,6 +2485,7 @@ function buildBespokeStageArchitectureAndHero(
         material: glassMat,
       });
       luminaire.add(octRing, crystalStar, crystalCore);
+      compactStaticMeshesInGroup(luminaire);
       center.add(luminaire);
 
       for (const [tx, tz] of [
@@ -1932,6 +2503,7 @@ function buildBespokeStageArchitectureAndHero(
         const cable = new THREE.Mesh(new THREE.TubeGeometry(curve, 12, 0.016, 8, false), goldMat);
         center.add(floorLug, cable);
       }
+      compactStaticMeshesInGroup(center, new Set([luminaire]));
       group.add(center);
 
       // Sweeping Ken Adam Cantilevered Ivory-Gold Wing Ribs + Riviera Emerald Alcoves
@@ -1939,6 +2511,15 @@ function buildBespokeStageArchitectureAndHero(
         const wing = new THREE.Group();
         wing.position.set(side * 3.7, 0, -4.35);
         wing.rotation.y = -side * 0.36;
+        wing.add(
+          createContactShadowDisc({
+            radiusX: 1.28,
+            radiusZ: 0.56,
+            opacity: 0.56,
+            yOffset: 0.004,
+            name: 'MonteCarloWingContactAO',
+          }),
+        );
         for (let r = 0; r < 3; r++) {
           const rib = createMidCenturyBoomerangPylon({
             height: 3.15 - r * 0.22,
@@ -1958,6 +2539,7 @@ function buildBespokeStageArchitectureAndHero(
         });
         alcove.position.set(0, 1.25, -0.18);
         wing.add(alcove);
+        compactStaticMeshesInGroup(wing);
         group.add(wing);
       }
 
@@ -1983,6 +2565,11 @@ function buildBespokeStageArchitectureAndHero(
 
       const center = new THREE.Group();
       center.position.set(0, 0, -6.28);
+      for (const ax of [-2.35, 2.35]) {
+        const archAO = createContactShadowDisc({ radius: 0.68, opacity: 0.54, yOffset: 0.004 });
+        archAO.position.set(ax, 0.004, -0.42);
+        center.add(archAO);
+      }
 
       for (let i = -2; i <= 2; i++) {
         const arch = createChamferedArch({
@@ -2053,7 +2640,10 @@ function buildBespokeStageArchitectureAndHero(
       const feedTip = createTurnedOrb({ radius: 0.095, material: acMats[0], castShadow: false });
       feedTip.position.z = 0.72;
       dishPivot.add(dishMesh, orbitA, orbitB, orbitC, feedHorn, feedTip);
+      compactStaticMeshesInGroup(dishPivot, new Set([orbitA, orbitB, orbitC]));
       azimuthYoke.add(dishPivot);
+      compactStaticMeshesInGroup(azimuthYoke, new Set([dishPivot]));
+      compactStaticMeshesInGroup(center, new Set([azimuthYoke]));
       group.add(center);
 
       // Iconic 1965 Flushing Meadows Googie Boomerang Wing Pylons + Satellite Spheres
@@ -2061,6 +2651,15 @@ function buildBespokeStageArchitectureAndHero(
         const wing = new THREE.Group();
         wing.position.set(side * 3.65, 0, -4.35);
         wing.rotation.y = -side * 0.3;
+        wing.add(
+          createContactShadowDisc({
+            radiusX: 0.92,
+            radiusZ: 0.54,
+            opacity: 0.56,
+            yOffset: 0.004,
+            name: 'GoogieBoomerangWingAO',
+          }),
+        );
         const boomA = createMidCenturyBoomerangPylon({
           height: 3.35,
           sweepX: side * 0.95,
@@ -2085,7 +2684,14 @@ function buildBespokeStageArchitectureAndHero(
         const satRing = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.022, 12, 32), goldMat);
         satRing.position.copy(satOrb.position);
         satRing.rotation.set(1.15, side * 0.35, 0);
-        wing.add(boomA, boomB, satOrb, satRing);
+        const satHalo = createTungstenBulbHaloSprite({
+          scale: 0.58,
+          opacity: 0.56,
+          colorHex: side > 0 ? 0x4cd8ff : 0xffd56b,
+        });
+        satHalo.position.set(side * 0.26, 3.45, 0.08);
+        wing.add(boomA, boomB, satOrb, satRing, satHalo);
+        compactStaticMeshesInGroup(wing);
         group.add(wing);
       }
 
@@ -2107,6 +2713,11 @@ function buildBespokeStageArchitectureAndHero(
       // 1967 OFFSHORE PIRATE RADIO SHIP (M/V CASSANDRA): Curved Bridge Bulkhead, 5 Ocean Portholes, Glowing 50kW Klystrons & Lattice Radio Masts!
       const center = new THREE.Group();
       center.position.set(0, 0, -5.52);
+      for (const hx of [-2.18, 2.18]) {
+        const hullAO = createContactShadowDisc({ radius: 0.64, opacity: 0.56, yOffset: 0.004 });
+        hullAO.position.set(hx, 0.004, -0.4);
+        center.add(hullAO);
+      }
 
       const bulkhead = createCurvedParabolicCove({
         spanWidth: 4.7,
@@ -2194,6 +2805,7 @@ function buildBespokeStageArchitectureAndHero(
       });
       clinoNeedle.position.set(0, 1.02, 0.21);
       center.add(clinoDial, clinoNeedle);
+      compactStaticMeshesInGroup(center, new Set([clinoNeedle, ...waveBars]));
       group.add(center);
 
       // Slanted Offshore Radio Broadcast Lattice Masts + Strobing Beacons on Wings
@@ -2232,8 +2844,16 @@ function buildBespokeStageArchitectureAndHero(
         });
         const strobe = createTurnedOrb({ radius: 0.15, material: strobeMat, castShadow: false });
         strobe.position.set(side * 0.46, 3.45, 0);
-        wing.add(strobe);
+        const strobeHalo = createTungstenBulbHaloSprite({
+          scale: 0.56,
+          opacity: 0.72,
+          colorHex: 0xff8d4c,
+        });
+        strobeHalo.position.set(side * 0.46, 3.46, 0.06);
+        (strobeMat.userData as Record<string, unknown>).haloSprite = strobeHalo;
+        wing.add(strobe, strobeHalo);
         beaconMats.push(strobeMat);
+        compactStaticMeshesInGroup(wing);
         group.add(wing);
       }
 
@@ -2248,7 +2868,10 @@ function buildBespokeStageArchitectureAndHero(
             waveBars[i].rotation.z = swell * 0.8;
           }
           for (let b = 0; b < beaconMats.length; b++) {
-            beaconMats[b].emissiveIntensity = 0.45 + Math.pow(0.5 + 0.5 * Math.sin(elapsed * 3.8 + b * Math.PI), 2) * 1.85;
+            const pulse = Math.pow(0.5 + 0.5 * Math.sin(elapsed * 3.8 + b * Math.PI), 2);
+            beaconMats[b].emissiveIntensity = 0.45 + pulse * 1.85;
+            const halo = (beaconMats[b].userData as { haloSprite?: THREE.Sprite }).haloSprite;
+            if (halo) halo.material.opacity = 0.22 + pulse * 0.68;
           }
         },
       };
@@ -2267,6 +2890,14 @@ function buildBespokeStageArchitectureAndHero(
 
       const center = new THREE.Group();
       center.position.set(0, 0, -5.62);
+      center.add(
+        createContactShadowDisc({
+          radius: 1.18,
+          opacity: 0.58,
+          yOffset: 0.004,
+          name: 'PendulumWellContactAO',
+        }),
+      );
 
       const wellCurb = createSmoothBeveledRing({
         innerRadius: 0.68,
@@ -2315,6 +2946,7 @@ function buildBespokeStageArchitectureAndHero(
         teeth: 30,
         thickness: 0.09,
         spokes: 6,
+        material: goldMat,
       });
       escapeWheel.position.set(0, 1.68, 0.14);
       center.add(escapeWheel);
@@ -2339,6 +2971,58 @@ function buildBespokeStageArchitectureAndHero(
       mercuryBob.position.y = -1.76;
       pendulumGroup.add(rod, mercuryBob);
       center.add(pendulumGroup);
+
+      // Soaring 38th-Floor Manhattan Penthouse Mullion Panorama Windows + Imperial Velvet Proscenium Drapes!
+      const penthouseVelvetMat = new THREE.MeshStandardMaterial({
+        color: 0x7c0d2b,
+        roughness: 0.65,
+        metalness: 0.08,
+        envMap,
+      });
+      const skylineGlassMat = createAcrylitePanelMaterial(0x16386e, 0.55, envMap);
+      dimmableAcryliteMats.push(skylineGlassMat);
+      for (const wx of [-4.2, -2.65, 2.65, 4.2]) {
+        const windowPane = createChamferedBox({
+          width: 1.18,
+          height: 3.45,
+          depth: 0.05,
+          cornerRadius: 0.14,
+          material: skylineGlassMat,
+          castShadow: false,
+        });
+        windowPane.position.set(wx, 1.78, -2.55);
+        const goldFrame = createChamferedBox({
+          width: 1.28,
+          height: 3.55,
+          depth: 0.08,
+          cornerRadius: 0.16,
+          material: goldMat,
+        });
+        goldFrame.position.set(wx, 1.78, -2.6);
+        const transom = createChamferedBox({
+          width: 1.24,
+          height: 0.055,
+          depth: 0.1,
+          material: goldMat,
+        });
+        transom.position.set(wx, 2.35, -2.54);
+        center.add(goldFrame, windowPane, transom);
+      }
+      // Imperial Crimson Velvet Valance Swags & Gold Bullion Trim flanking Penthouse Proscenium
+      for (const vx of [-3.42, 3.42]) {
+        const drapeColumn = createFilletedShaft({
+          radius: 0.24,
+          topRadius: 0.28,
+          height: 3.55,
+          anglageBevel: 0.012,
+          radialSegments: 20,
+          material: penthouseVelvetMat,
+        });
+        drapeColumn.position.set(vx, 0.05, -2.35);
+        center.add(drapeColumn);
+      }
+
+      compactStaticMeshesInGroup(center, new Set([pendulumGroup, escapeWheel]));
       group.add(center);
 
       // Towering Art-Deco Champagne-Gold & Midnight-Sapphire Manhattan Penthouse Window Bay Wings
@@ -2346,6 +3030,15 @@ function buildBespokeStageArchitectureAndHero(
         const wing = new THREE.Group();
         wing.position.set(side * 3.7, 0, -4.35);
         wing.rotation.y = -side * 0.34;
+        wing.add(
+          createContactShadowDisc({
+            radiusX: 1.42,
+            radiusZ: 0.48,
+            opacity: 0.56,
+            yOffset: 0.004,
+            name: 'PenthouseDecoWingAO',
+          }),
+        );
         const decoArch = createCurvedParabolicCove({
           spanWidth: 2.5,
           archHeight: 3.35,
@@ -2374,6 +3067,7 @@ function buildBespokeStageArchitectureAndHero(
           mullion.position.set(l * 0.64, 0.12, 0.04);
           wing.add(bay, mullion);
         }
+        compactStaticMeshesInGroup(wing);
         group.add(wing);
       }
 
@@ -2399,9 +3093,10 @@ function buildBespokeStageArchitectureAndHero(
 // ----------------------------------------------------------------------------
 
 export function buildStageWorldV7(
-  stageId: StageWorldIdV7,
+  rawStageId: StageWorldIdV7,
   envMap: THREE.Texture,
 ): BuiltStageWorldV7 {
+  const stageId = resolveStageWorldIdV7(rawStageId);
   const spec = STAGE_WORLD_SPECS_V7[stageId];
   const palette = STAGE_LIVING_COLOR_PALETTES[stageId];
   const root = new THREE.Group();
@@ -2412,12 +3107,12 @@ export function buildStageWorldV7(
   const bluedMat = createBluedSteelMaterial(0x1e56c5, envMap);
   const walnutMat = createWalnutMaterial(envMap);
   const trussMat = new THREE.MeshPhysicalMaterial({
-    color: 0x263a52,
-    metalness: 0.86,
-    roughness: 0.26,
-    clearcoat: 0.35,
+    color: 0x2a2e34,
+    metalness: 0.78,
+    roughness: 0.32,
+    clearcoat: 0.28,
     envMap,
-    envMapIntensity: 1.3,
+    envMapIntensity: 1.15,
   });
 
   // --------------------------------------------------------------------------
@@ -2591,12 +3286,35 @@ export function buildStageWorldV7(
   root.add(floorAccentGroup);
 
   // --------------------------------------------------------------------------
-  // 4) Layer 1 Lateral Wing Trusses + Compliance Fresnel Lamp
+  // 4) Layer 1 Studio 6A Lighting Towers (Mole-Richardson Barn-Door Fresnels + 18" Studio Scoops!)
   // --------------------------------------------------------------------------
-  const buildLateralTruss = (name: string): THREE.Group => {
+  const mrLampBodyMat = new THREE.MeshPhysicalMaterial({
+    color: 0x24282e,
+    roughness: 0.44,
+    metalness: 0.52,
+    clearcoat: 0.22,
+    envMap,
+    envMapIntensity: 0.95,
+  });
+  const scoopReflectorMat = new THREE.MeshStandardMaterial({
+    color: 0xfff0cc,
+    emissive: 0xffc857,
+    emissiveIntensity: 0.85,
+    roughness: 0.24,
+    metalness: 0.45,
+    side: THREE.DoubleSide,
+  });
+  const towerTungstenLensMat = new THREE.MeshStandardMaterial({
+    color: 0xfff6dc,
+    emissive: 0xffc952,
+    emissiveIntensity: 1.55,
+    roughness: 0.12,
+  });
+
+  const buildLateralTruss = (name: string, aimSide: -1 | 1): THREE.Group => {
     const tg = new THREE.Group();
     tg.name = name;
-    const shoe = createFloorShoe(0.62, 0.62, 0.12, goldMat, bluedMat);
+    const shoe = createFloorShoe(0.66, 0.66, 0.12, goldMat, trussMat);
     tg.add(shoe);
 
     for (const [cx, cz] of [
@@ -2618,26 +3336,150 @@ export function buildStageWorldV7(
 
     for (let r = 0; r < 7; r++) {
       const collar = createChamferedBox({
-        width: 0.42,
+        width: 0.44,
         height: 0.055,
-        depth: 0.42,
+        depth: 0.44,
         cornerRadius: 0.06,
-        material: goldMat,
+        material: r % 2 === 0 ? aluminumMat : goldMat,
       });
       collar.position.y = 0.48 + r * 0.62;
       tg.add(collar);
     }
+
+    // Mount 2 Mole-Richardson Barn-Door Fresnel Spotlights (`y = 2.48m` & `y = 3.68m`) w/ C-clamps & 2700K glow!
+    for (const fy of [2.48, 3.68] as const) {
+      const rig = new THREE.Group();
+      rig.position.set(-aimSide * 0.28, fy, 0.22);
+      rig.rotation.set(0.24, -aimSide * 0.52, 0);
+
+      const cClamp = createChamferedBox({
+        width: 0.14,
+        height: 0.09,
+        depth: 0.12,
+        cornerRadius: 0.02,
+        material: aluminumMat,
+        castShadow: false,
+      });
+      cClamp.position.set(aimSide * 0.16, 0.18, -0.08);
+
+      const yoke = createChamferedBox({
+        width: 0.34,
+        height: 0.24,
+        depth: 0.05,
+        cornerRadius: 0.03,
+        material: mrLampBodyMat,
+        castShadow: false,
+      });
+      yoke.position.y = 0.08;
+
+      const drum = createFilletedShaft({
+        radius: 0.145,
+        height: 0.32,
+        baseCollarFlare: 0.02,
+        neckCollarFlare: 0.024,
+        anglageBevel: 0.008,
+        radialSegments: 28,
+        centered: true,
+        material: mrLampBodyMat,
+        castShadow: false,
+      });
+      drum.rotation.x = Math.PI * 0.5;
+
+      const lens = createFilletedShaft({
+        radius: 0.125,
+        height: 0.028,
+        radialSegments: 24,
+        centered: true,
+        material: towerTungstenLensMat,
+        castShadow: false,
+      });
+      lens.rotation.x = Math.PI * 0.5;
+      lens.position.z = 0.165;
+
+      const halo = createTungstenBulbHaloSprite({
+        scale: 0.48,
+        opacity: 0.64,
+        colorHex: 0xffd56b,
+      });
+      halo.position.z = 0.22;
+
+      // 4 Angled Mole-Richardson Matte-Black Barn-Door Leaves!
+      for (const [bx, by, rx, ry] of [
+        [0, 0.15, -0.45, 0],
+        [0, -0.15, 0.45, 0],
+        [-0.15, 0, 0, 0.45],
+        [0.15, 0, 0, -0.45],
+      ] as const) {
+        const door = createChamferedBox({
+          width: bx === 0 ? 0.22 : 0.026,
+          height: by === 0 ? 0.22 : 0.026,
+          depth: 0.11,
+          cornerRadius: 0.01,
+          material: mrLampBodyMat,
+          castShadow: false,
+        });
+        door.position.set(bx, by, 0.21);
+        door.rotation.set(rx, ry, 0);
+        rig.add(door);
+      }
+
+      rig.add(cClamp, yoke, drum, lens, halo);
+      tg.add(rig);
+    }
+
+    // Broad 18-inch Spun-Aluminum Incandescent Studio Scoop Floodlight (`y = 1.32m`) washing the stage warmly!
+    const scoopGroup = new THREE.Group();
+    scoopGroup.position.set(-aimSide * 0.26, 1.32, 0.24);
+    scoopGroup.rotation.set(0.12, -aimSide * 0.46, 0);
+    const scoopOuter = createTurnedOrb({
+      radius: 0.22,
+      heightScale: 0.78,
+      hemiOnly: true,
+      radialSegments: 28,
+      material: aluminumMat,
+      castShadow: false,
+    });
+    scoopOuter.rotation.x = -Math.PI * 0.5;
+    const scoopInner = createTurnedOrb({
+      radius: 0.205,
+      heightScale: 0.74,
+      hemiOnly: true,
+      radialSegments: 24,
+      material: scoopReflectorMat,
+      castShadow: false,
+    });
+    scoopInner.rotation.x = -Math.PI * 0.5;
+    scoopInner.position.z = 0.01;
+    const scoopBulb = createTurnedOrb({
+      radius: 0.065,
+      radialSegments: 16,
+      material: towerTungstenLensMat,
+      castShadow: false,
+    });
+    scoopBulb.position.z = 0.05;
+    const scoopHalo = createTungstenBulbHaloSprite({
+      scale: 0.54,
+      opacity: 0.56,
+      colorHex: 0xffe094,
+    });
+    scoopHalo.position.z = 0.12;
+    scoopGroup.add(scoopOuter, scoopInner, scoopBulb, scoopHalo);
+    tg.add(scoopGroup);
+
     return tg;
   };
 
-  const leftWingTruss = buildLateralTruss('LeftWingTruss');
-  const rightWingTruss = buildLateralTruss('RightWingTruss');
+  const leftWingTruss = buildLateralTruss('LeftWingTruss', -1);
+  const rightWingTruss = buildLateralTruss('RightWingTruss', 1);
   leftWingTruss.position.set(-7.6, 0, -4.8);
   rightWingTruss.position.set(7.6, 0, -4.8);
+  compactStaticMeshesInGroup(leftWingTruss);
+  compactStaticMeshesInGroup(rightWingTruss);
   root.add(leftWingTruss, rightWingTruss);
 
   const fresnel = buildComplianceFresnelLamp(envMap);
   fresnel.group.position.set(-0.24, 1.72, 0.24);
+  compactStaticMeshesInGroup(fresnel.group);
   rightWingTruss.add(fresnel.group);
 
   // --------------------------------------------------------------------------
@@ -2667,21 +3509,120 @@ export function buildStageWorldV7(
   const chasingBulbGroups: THREE.MeshStandardMaterial[][] = [...bespokeSet.chasingBulbGroups];
   const innerMarqueePillars: THREE.Group[] = [];
 
+  // Instanced 4-circuit `#11` Marquee Pillars (`12` draw calls total instead of `54`!)
+  const pillarHaloTex = typeof document !== 'undefined' ? getTungstenBulbHaloTexture() : null;
   for (const side of [-1, 1] as const) {
-    const innerPillar = createChasingMarqueePillar({
-      height: 2.75,
-      bulbCount: 8,
-      bodyMat: stageId === 'STAGE_01_IBC_DAYTIME_FUNK' || stageId === 'STAGE_06_ATLANTIC_CITY_PIER' ? walnutMat : aluminumMat,
-      trimMat: goldMat,
-      boltMat: bluedMat,
-      bulbHex: 0xffd56b,
-      name: side < 0 ? 'InnerMarqueePillarL' : 'InnerMarqueePillarR',
+    const pGroup = new THREE.Group();
+    pGroup.name = side < 0 ? 'InnerMarqueePillarL' : 'InnerMarqueePillarR';
+    const ph = 2.75;
+    const pBodyMat =
+      stageId === 'STAGE_01_IBC_DAYTIME_FUNK' || stageId === 'STAGE_06_ATLANTIC_CITY_PIER'
+        ? walnutMat
+        : aluminumMat;
+    pGroup.add(createContactShadowDisc({ radius: 0.44, opacity: 0.56, yOffset: 0.004 }));
+    pGroup.add(
+      createFilletedShaft({
+        radius: 0.21,
+        topRadius: 0.16,
+        height: 0.12,
+        baseCollarFlare: 0.03,
+        neckCollarFlare: 0.015,
+        anglageBevel: 0.01,
+        radialSegments: 28,
+        material: goldMat,
+      }),
+    );
+    const pShaft = createFilletedShaft({
+      radius: 0.125,
+      topRadius: 0.155,
+      height: ph - 0.12,
+      baseCollarFlare: 0.02,
+      neckCollarFlare: 0.035,
+      anglageBevel: 0.01,
+      radialSegments: 28,
+      material: pBodyMat,
     });
-    innerPillar.group.position.set(side * 2.02, 0, -4.52);
-    innerPillar.group.rotation.y = -side * 0.14;
-    framingGroup.add(innerPillar.group);
-    innerMarqueePillars.push(innerPillar.group);
-    chasingBulbGroups.push(innerPillar.bulbMats);
+    pShaft.position.y = 0.12;
+    const pCrown = createTurnedOrb({
+      radius: 0.145,
+      heightScale: 0.72,
+      radialSegments: 24,
+      material: goldMat,
+      castShadow: false,
+    });
+    pCrown.position.y = ph + 0.08;
+    pGroup.add(pShaft, pCrown);
+
+    const pCircuitMats: THREE.MeshStandardMaterial[] = [];
+    for (let c = 0; c < 4; c++) {
+      const bm = new THREE.MeshStandardMaterial({
+        color: 0xfff6dc,
+        emissive: 0xffd56b,
+        emissiveIntensity: 0.9,
+        roughness: 0.12,
+        metalness: 0.05,
+      });
+      const hm = new THREE.MeshBasicMaterial({
+        map: pillarHaloTex,
+        color: 0xffd56b,
+        transparent: true,
+        opacity: 0.68,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        toneMapped: false,
+      });
+      (bm.userData as Record<string, unknown>).haloMat = hm;
+      pCircuitMats.push(bm);
+    }
+
+    const pBulbCount = 8;
+    const pOrbGeom = new THREE.SphereGeometry(0.044, 10, 8);
+    const pHaloGeom = new THREE.PlaneGeometry(0.24, 0.24);
+    const pDummy = new THREE.Object3D();
+    for (let i = 0; i < pBulbCount; i++) {
+      const t = (i + 0.5) / pBulbCount;
+      const by = 0.34 + t * (ph - 0.56);
+      const localR = 0.128 + (0.154 - 0.128) * t;
+      const sock = createSmoothBeveledRing({
+        outerRadius: 0.054,
+        innerRadius: 0.034,
+        thickness: 0.024,
+        segments: 16,
+        material: goldMat,
+      });
+      sock.rotation.x = Math.PI * 0.5;
+      sock.position.set(0, by, localR + 0.01);
+      pGroup.add(sock);
+    }
+    compactStaticMeshesInGroup(pGroup);
+
+    for (let c = 0; c < 4; c++) {
+      const idxs = [0, 1, 2, 3, 4, 5, 6, 7].filter((idx) => idx % 4 === c);
+      const hm = (pCircuitMats[c].userData as { haloMat: THREE.MeshBasicMaterial }).haloMat;
+      const bInst = new THREE.InstancedMesh(pOrbGeom, pCircuitMats[c], idxs.length);
+      const hInst = new THREE.InstancedMesh(pHaloGeom, hm, idxs.length);
+      hInst.renderOrder = 4;
+      for (let k = 0; k < idxs.length; k++) {
+        const t = (idxs[k] + 0.5) / pBulbCount;
+        const by = 0.34 + t * (ph - 0.56);
+        const localR = 0.128 + (0.154 - 0.128) * t;
+        pDummy.position.set(0, by, localR + 0.038);
+        pDummy.updateMatrix();
+        bInst.setMatrixAt(k, pDummy.matrix);
+        pDummy.position.set(0, by, localR + 0.068);
+        pDummy.updateMatrix();
+        hInst.setMatrixAt(k, pDummy.matrix);
+      }
+      bInst.instanceMatrix.needsUpdate = true;
+      hInst.instanceMatrix.needsUpdate = true;
+      pGroup.add(bInst, hInst);
+    }
+
+    pGroup.position.set(side * 2.02, 0, -4.52);
+    pGroup.rotation.y = -side * 0.14;
+    framingGroup.add(pGroup);
+    innerMarqueePillars.push(pGroup);
+    chasingBulbGroups.push(pCircuitMats);
   }
 
   // Clean telescopic satin-brass floor-bolted support struts terminating FLUSH into the bottom
@@ -2729,6 +3670,7 @@ export function buildStageWorldV7(
     name: 'CenterLivingColorStarburst',
   });
   crownStarburst.position.set(0, 0.04, -0.15);
+  compactStaticMeshesInGroup(crownStarburst);
   marqueeCrownGroup.add(crownStarburst);
 
   // Ultra-HD 1024x256 Milk-Glass Illuminated Marquee Sign (Deep Velvety NBC Crimson — ZERO pink washout!)
@@ -2771,12 +3713,14 @@ export function buildStageWorldV7(
   signTex.colorSpace = THREE.SRGBColorSpace;
   signTex.anisotropy = 16;
 
-  const signFaceMat = new THREE.MeshStandardMaterial({
+  // `toneMapped: false` keeps the central milk-glass stage showcase marquee rich & un-crushed by AgX!
+  const signFaceMat = new THREE.MeshBasicMaterial({
     map: signTex,
-    emissiveMap: signTex,
-    emissive: 0xffffff,
-    emissiveIntensity: 0.56,
-    roughness: 0.22,
+    color: 0xffffff,
+    toneMapped: false,
+    polygonOffset: true,
+    polygonOffsetFactor: -2,
+    polygonOffsetUnits: -2,
   });
 
   const signFrame = createChamferedBox({
@@ -2791,38 +3735,309 @@ export function buildStageWorldV7(
   signFrame.add(signFace);
 
   const signBulbMats: THREE.MeshStandardMaterial[] = [];
+  for (let c = 0; c < 4; c++) {
+    const bm = new THREE.MeshStandardMaterial({
+      color: 0xfff8e2,
+      emissive: 0xffd56b,
+      emissiveIntensity: 1.1,
+      roughness: 0.12,
+    });
+    const hm = new THREE.MeshBasicMaterial({
+      map: typeof document !== 'undefined' ? getTungstenBulbHaloTexture() : null,
+      color: 0xffd56b,
+      transparent: true,
+      opacity: 0.65,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      toneMapped: false,
+    });
+    (bm.userData as Record<string, unknown>).haloMat = hm;
+    signBulbMats.push(bm);
+  }
+  const signBulbCoords: Array<[number, number]> = [];
   for (let b = 0; b < 7; b++) {
     const bx = -0.78 + b * 0.26;
-    for (const by of [0.215, -0.215]) {
+    signBulbCoords.push([bx, 0.215], [bx, -0.215]);
+  }
+  const signOrbGeom = new THREE.SphereGeometry(0.025, 10, 8);
+  const signHaloGeom = new THREE.PlaneGeometry(0.15, 0.15);
+  const signDummy = new THREE.Object3D();
+  for (let c = 0; c < 4; c++) {
+    const pts = signBulbCoords.filter((_, idx) => idx % 4 === c);
+    if (pts.length === 0) continue;
+    const hm = (signBulbMats[c].userData as { haloMat: THREE.MeshBasicMaterial }).haloMat;
+    const bInst = new THREE.InstancedMesh(signOrbGeom, signBulbMats[c], pts.length);
+    const hInst = new THREE.InstancedMesh(signHaloGeom, hm, pts.length);
+    hInst.renderOrder = 4;
+    for (let k = 0; k < pts.length; k++) {
+      signDummy.position.set(pts[k][0], pts[k][1], 0.064);
+      signDummy.updateMatrix();
+      bInst.setMatrixAt(k, signDummy.matrix);
+      signDummy.position.set(pts[k][0], pts[k][1], 0.088);
+      signDummy.updateMatrix();
+      hInst.setMatrixAt(k, signDummy.matrix);
+    }
+    bInst.instanceMatrix.needsUpdate = true;
+    hInst.instanceMatrix.needsUpdate = true;
+    signFrame.add(bInst, hInst);
+  }
+  chasingBulbGroups.push(signBulbMats);
+  marqueeCrownGroup.add(signFrame);
+
+  // Authentic Backlit 1966 3D `ON THE AIR` & Reactive Blinking `APPLAUSE` Studio Lightbox Signs!
+  const buildProsceniumLightbox = (kind: 'ON_THE_AIR' | 'APPLAUSE') => {
+    const boxGroup = new THREE.Group();
+    boxGroup.name = kind === 'ON_THE_AIR' ? 'StudioLightbox_OnTheAir' : 'StudioLightbox_Applause';
+
+    const housing = createChamferedBox({
+      width: 0.88,
+      height: 0.36,
+      depth: 0.11,
+      cornerRadius: 0.055,
+      bevelThickness: 0.009,
+      bevelSize: 0.009,
+      bevelSegments: 3,
+      material: aluminumMat,
+      castShadow: false,
+    });
+    const brassBezel = createChamferedBox({
+      width: 0.84,
+      height: 0.32,
+      depth: 0.118,
+      cornerRadius: 0.048,
+      bevelThickness: 0.008,
+      bevelSize: 0.008,
+      bevelSegments: 3,
+      material: goldMat,
+      castShadow: false,
+    });
+    const visorHood = createChamferedBox({
+      width: 0.9,
+      height: 0.026,
+      depth: 0.15,
+      cornerRadius: 0.012,
+      bevelThickness: 0.006,
+      bevelSize: 0.006,
+      bevelSegments: 2,
+      material: goldMat,
+      castShadow: false,
+    });
+    visorHood.position.set(0, 0.175, 0.024);
+
+    // Overhead studio pipe hanger strut
+    const hanger = createFilletedShaft({
+      radius: 0.016,
+      height: 0.42,
+      anglageBevel: 0.004,
+      radialSegments: 16,
+      material: aluminumMat,
+      castShadow: false,
+    });
+    hanger.position.set(0, 0.18, -0.02);
+    boxGroup.add(housing, brassBezel, visorHood, hanger);
+
+    const makeFaceTex = (variant: 'ON_AIR' | 'APPLAUSE_AMBER' | 'APPLAUSE_CRIMSON') => {
+      const c = document.createElement('canvas');
+      c.width = 512;
+      c.height = 192;
+      const ctx = c.getContext('2d');
+      if (ctx) {
+        ctx.fillStyle = '#FFF6E3';
+        ctx.fillRect(0, 0, 512, 192);
+
+        const g = ctx.createLinearGradient(0, 12, 0, 180);
+        if (variant === 'ON_AIR') {
+          g.addColorStop(0.0, '#E61E3A');
+          g.addColorStop(0.55, '#C4122C');
+          g.addColorStop(1.0, '#8C091C');
+        } else if (variant === 'APPLAUSE_AMBER') {
+          g.addColorStop(0.0, '#FFF1A8');
+          g.addColorStop(0.5, '#F6B221');
+          g.addColorStop(1.0, '#C97A08');
+        } else {
+          g.addColorStop(0.0, '#FF4D79');
+          g.addColorStop(0.55, '#E11D52');
+          g.addColorStop(1.0, '#9E0B34');
+        }
+        ctx.fillStyle = g;
+        ctx.fillRect(12, 12, 488, 168);
+
+        ctx.strokeStyle = variant === 'APPLAUSE_AMBER' ? '#0D2238' : '#FFD56B';
+        ctx.lineWidth = 6;
+        ctx.strokeRect(20, 20, 472, 152);
+
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        if (variant === 'ON_AIR') {
+          // Glowing live broadcast tally lamp dot + bold ON THE AIR milk-glass caps
+          ctx.fillStyle = '#FFF9EC';
+          ctx.beginPath();
+          ctx.arc(62, 96, 15, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.font = '900 56px "Jost", "Futura", "Arial Black", sans-serif';
+          ctx.shadowColor = 'rgba(10, 18, 34, 0.55)';
+          ctx.shadowBlur = 6;
+          ctx.fillText('ON THE AIR', 280, 98);
+        } else {
+          ctx.fillStyle = variant === 'APPLAUSE_AMBER' ? '#0D2238' : '#FFF9EC';
+          ctx.font = '900 62px "Jost", "Futura", "Arial Black", sans-serif';
+          ctx.shadowColor =
+            variant === 'APPLAUSE_AMBER' ? 'rgba(255, 250, 224, 0.45)' : 'rgba(10, 18, 34, 0.55)';
+          ctx.shadowBlur = 6;
+          ctx.fillText('APPLAUSE', 256, 98);
+        }
+      }
+      const t = new THREE.CanvasTexture(c);
+      t.colorSpace = THREE.SRGBColorSpace;
+      t.anisotropy = 8;
+      return t;
+    };
+
+    const primaryTex = makeFaceTex(kind === 'ON_THE_AIR' ? 'ON_AIR' : 'APPLAUSE_AMBER');
+    const altTex = kind === 'APPLAUSE' ? makeFaceTex('APPLAUSE_CRIMSON') : null;
+
+    const faceMat = new THREE.MeshBasicMaterial({
+      map: primaryTex,
+      color: kind === 'ON_THE_AIR' ? 0xffffff : 0xdccaa8,
+      toneMapped: false,
+      polygonOffset: true,
+      polygonOffsetFactor: -2,
+      polygonOffsetUnits: -2,
+    });
+    const faceMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.78, 0.27), faceMat);
+    faceMesh.position.set(0, 0, 0.064);
+    boxGroup.add(faceMesh);
+
+    const bulbHalos: THREE.Sprite[] = [];
+    const bulbMats: THREE.MeshStandardMaterial[] = [];
+    for (const [bx, by] of [
+      [-0.36, 0.135],
+      [0.36, 0.135],
+      [-0.36, -0.135],
+      [0.36, -0.135],
+    ] as const) {
       const bm = new THREE.MeshStandardMaterial({
         color: 0xfff8e2,
-        emissive: 0xffd56b,
-        emissiveIntensity: 1.1,
+        emissive: kind === 'ON_THE_AIR' ? 0xff3b5c : 0xffd56b,
+        emissiveIntensity: 1.25,
         roughness: 0.12,
       });
-      const orb = createTurnedOrb({
-        radius: 0.025,
-        radialSegments: 16,
+      const bulb = createTurnedOrb({
+        radius: 0.02,
+        radialSegments: 14,
         material: bm,
         castShadow: false,
         receiveShadow: false,
       });
-      orb.position.set(bx, by, 0.064);
-      signFrame.add(orb);
-      signBulbMats.push(bm);
+      bulb.position.set(bx, by, 0.064);
+      boxGroup.add(bulb);
+      bulbMats.push(bm);
+
+      const halo = createTungstenBulbHaloSprite({
+        scale: 0.15,
+        opacity: kind === 'ON_THE_AIR' ? 0.62 : 0.34,
+        colorHex: kind === 'ON_THE_AIR' ? 0xff6b7a : 0xffd56b,
+      });
+      halo.position.set(bx, by, 0.088);
+      boxGroup.add(halo);
+      bulbHalos.push(halo);
     }
-  }
-  chasingBulbGroups.push(signBulbMats);
-  marqueeCrownGroup.add(signFrame);
+
+    const centerGlowHalo = createTungstenBulbHaloSprite({
+      scale: 0.68,
+      opacity: kind === 'ON_THE_AIR' ? 0.24 : 0.14,
+      colorHex: kind === 'ON_THE_AIR' ? 0xff3b5c : 0xffd56b,
+    });
+    centerGlowHalo.scale.set(0.95, 0.42, 1);
+    centerGlowHalo.position.set(0, 0, 0.09);
+    boxGroup.add(centerGlowHalo);
+
+    return {
+      group: boxGroup,
+      faceMat,
+      primaryTex,
+      altTex,
+      bulbMats,
+      bulbHalos,
+      centerGlowHalo,
+    };
+  };
+
+  const onTheAirLightbox = buildProsceniumLightbox('ON_THE_AIR');
+  const applauseLightbox = buildProsceniumLightbox('APPLAUSE');
+  onTheAirLightbox.group.position.set(-1.54, 0.01, 0.02);
+  applauseLightbox.group.position.set(1.54, 0.01, 0.02);
+  marqueeCrownGroup.add(onTheAirLightbox.group, applauseLightbox.group);
+
   framingGroup.add(marqueeCrownGroup);
 
-  // Twin Live-Sweeping 1966 RCA TK-41 Color Pedestal Cameras w/ Alternating ON-AIR Tally Cuts!
-  const camBodyMat = new THREE.MeshPhysicalMaterial({
-    color: 0x265c82,
-    roughness: 0.24,
+  // Twin Historically Authentic 1966 RCA TK-41C Network Television Pedestal Cameras (ZERO blue!):
+  // - RCA Studio Gray / CBS 18% Gray (`#767A80` brushed cast-aluminum upper cowling)
+  // - Dark Charcoal Crinkle-Enamel (`#282C32`) lower frame, turret, matte-box & Houston-Fearless dolly
+  // - 6 Horizontal side cooling louvers (3-tube Image Orthicon heat vents) + embossed crimson/gold RCA plaque
+  // - 4-Lens mechanical turret + black anodized zoom barrel + angled barn-doors
+  // - Rigid top rectangular CRT viewfinder w/ black sun-visor + glowing red `ON AIR` tally box + dual rear pan-bars
+  // - Houston-Fearless pneumatic column + 3-spoke steering wheel + coiled black triaxial floor cable!
+  const brushedCamTex = typeof document !== 'undefined' ? getBrushedAnodizedTexture() : null;
+  const rcaStudioGrayMat = new THREE.MeshPhysicalMaterial({
+    color: 0x9c9ea3,
+    map: brushedCamTex,
+    roughness: 0.28,
     metalness: 0.62,
-    clearcoat: 0.78,
+    clearcoat: 0.34,
     envMap,
+    envMapIntensity: 1.25,
+  });
+  const rcaCharcoalCrinkleMat = new THREE.MeshPhysicalMaterial({
+    color: 0x282c32,
+    roughness: 0.56,
+    metalness: 0.34,
+    clearcoat: 0.16,
+    envMap,
+    envMapIntensity: 0.85,
+  });
+  const blackRubberCableMat = new THREE.MeshStandardMaterial({
+    color: 0x16181d,
+    roughness: 0.64,
+    metalness: 0.12,
+  });
+  const lensGlassMultiCoatMat = new THREE.MeshPhysicalMaterial({
+    color: 0x182b3a,
+    emissive: 0x0d3b4c,
+    emissiveIntensity: 0.35,
+    roughness: 0.06,
+    metalness: 0.15,
+    clearcoat: 1.0,
+    envMap,
+    envMapIntensity: 1.8,
+  });
+
+  // Embossed Crimson & 24K Gold `RCA · IN LIVING COLOR` side identification nameplate texture
+  const camBadgeCanvas = document.createElement('canvas');
+  camBadgeCanvas.width = 256;
+  camBadgeCanvas.height = 64;
+  const cbCtx = camBadgeCanvas.getContext('2d');
+  if (cbCtx) {
+    cbCtx.fillStyle = '#B81428';
+    cbCtx.fillRect(0, 0, 256, 64);
+    cbCtx.strokeStyle = '#F4A91F';
+    cbCtx.lineWidth = 5;
+    cbCtx.strokeRect(4, 4, 248, 56);
+    cbCtx.fillStyle = '#FFF9EC';
+    cbCtx.font = '900 20px "Jost", Arial, sans-serif';
+    cbCtx.textAlign = 'center';
+    cbCtx.textBaseline = 'middle';
+    cbCtx.fillText('RCA · LIVING COLOR', 128, 33);
+  }
+  const camBadgeTex = new THREE.CanvasTexture(camBadgeCanvas);
+  camBadgeTex.colorSpace = THREE.SRGBColorSpace;
+  camBadgeTex.anisotropy = 8;
+  const camBadgeFaceMat = new THREE.MeshBasicMaterial({
+    map: camBadgeTex,
+    toneMapped: false,
+    polygonOffset: true,
+    polygonOffsetFactor: -2,
+    polygonOffsetUnits: -2,
   });
 
   const camTurretHeads: THREE.Group[] = [];
@@ -2831,93 +4046,402 @@ export function buildStageWorldV7(
 
   for (const side of [-1, 1] as const) {
     const tkCam = new THREE.Group();
+    tkCam.name = side < 0 ? 'RCA_TK41C_Camera_1' : 'RCA_TK41C_Camera_2';
     tkCam.position.set(side * 3.16, 0, -2.85);
     const baseYaw = -side * 0.54;
     tkCam.rotation.y = baseYaw;
 
-    const dollyBase = createNotchedBezel({
-      notchShape: 'HEX',
-      outerRadius: 0.42,
-      innerRadius: 0.12,
-      thickness: 0.09,
-      material: aluminumMat,
+    tkCam.add(
+      createContactShadowDisc({
+        radius: 0.72,
+        opacity: 0.6,
+        yOffset: 0.004,
+        name: 'CameraDollyContactAO',
+      }),
+    );
+
+    // 1. Heavy Houston-Fearless 3-Arm Cast-Iron Crab Dolly Base + Chrome Caster Skirts!
+    const dollyHub = createFilletedShaft({
+      radius: 0.22,
+      topRadius: 0.18,
+      height: 0.11,
+      anglageBevel: 0.01,
+      radialSegments: 28,
+      material: rcaCharcoalCrinkleMat,
     });
-    dollyBase.position.y = 0.045;
-    const pedColumn = createFilletedShaft({
-      radius: 0.11,
-      height: 1.08,
-      baseCollarFlare: 0.03,
-      neckCollarFlare: 0.03,
+    tkCam.add(dollyHub);
+    for (let legIdx = 0; legIdx < 3; legIdx++) {
+      const la = (legIdx / 3) * Math.PI * 2 + Math.PI / 6;
+      const legArm = createChamferedBox({
+        width: 0.13,
+        height: 0.075,
+        depth: 0.44,
+        cornerRadius: 0.03,
+        material: rcaCharcoalCrinkleMat,
+      });
+      legArm.position.set(Math.sin(la) * 0.22, 0.055, Math.cos(la) * 0.22);
+      legArm.rotation.y = la;
+      const casterSkirt = createFilletedShaft({
+        radius: 0.078,
+        height: 0.068,
+        anglageBevel: 0.008,
+        radialSegments: 20,
+        material: aluminumMat,
+      });
+      casterSkirt.position.set(Math.sin(la) * 0.39, 0.01, Math.cos(la) * 0.39);
+      tkCam.add(legArm, casterSkirt);
+    }
+
+    // Two-stage Houston-Fearless Pneumatic Column (charcoal outer cylinder + polished chrome inner ram)
+    const pedOuterSleeve = createFilletedShaft({
+      radius: 0.135,
+      topRadius: 0.125,
+      height: 0.64,
+      baseCollarFlare: 0.025,
+      neckCollarFlare: 0.02,
       anglageBevel: 0.008,
       radialSegments: 32,
+      material: rcaCharcoalCrinkleMat,
+    });
+    pedOuterSleeve.position.y = 0.09;
+    const pedChromeRam = createFilletedShaft({
+      radius: 0.092,
+      height: 0.56,
+      neckCollarFlare: 0.028,
+      anglageBevel: 0.006,
+      radialSegments: 28,
       material: aluminumMat,
     });
-    pedColumn.position.y = 0.09;
+    pedChromeRam.position.y = 0.68;
 
-    const steeringRing = new THREE.Mesh(
-      new THREE.TorusGeometry(0.26, 0.022, 16, 36),
-      goldMat,
+    // 3-Spoke Houston-Fearless Steering Wheel Ring (Black Bakelite Rim + 3 Chrome Spokes!)
+    const steeringGroup = new THREE.Group();
+    steeringGroup.position.y = 0.94;
+    const steeringRim = new THREE.Mesh(
+      new THREE.TorusGeometry(0.28, 0.024, 14, 36),
+      rcaCharcoalCrinkleMat,
     );
-    steeringRing.rotation.x = Math.PI * 0.5;
-    steeringRing.position.y = 0.96;
+    steeringRim.rotation.x = Math.PI * 0.5;
+    steeringGroup.add(steeringRim);
+    for (let sp = 0; sp < 3; sp++) {
+      const sa = (sp / 3) * Math.PI * 2;
+      const spoke = createChamferedBox({
+        width: 0.026,
+        height: 0.022,
+        depth: 0.27,
+        cornerRadius: 0.008,
+        material: aluminumMat,
+        castShadow: false,
+      });
+      spoke.position.set(Math.sin(sa) * 0.135, 0, Math.cos(sa) * 0.135);
+      spoke.rotation.y = sa;
+      steeringGroup.add(spoke);
+    }
 
-    // Articulated Pan-Tilt Camera Head Turret!
+    // Thick Coiled Black Triaxial Camera Cable snaking across the studio floor!
+    const cableCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(0, 0.42, -0.14),
+      new THREE.Vector3(side * 0.18, 0.03, -0.46),
+      new THREE.Vector3(side * 0.56, 0.028, -0.68),
+      new THREE.Vector3(side * 0.34, 0.028, -1.08),
+      new THREE.Vector3(side * 0.88, 0.028, -1.36),
+      new THREE.Vector3(side * 1.38, 0.028, -1.58),
+    ]);
+    const triaxCable = new THREE.Mesh(
+      new THREE.TubeGeometry(cableCurve, 28, 0.026, 10, false),
+      blackRubberCableMat,
+    );
+    const cableAO = createContactShadowDisc({
+      radiusX: 0.76,
+      radiusZ: 0.62,
+      opacity: 0.38,
+      yOffset: 0.0035,
+      name: 'CameraTriaxCableContactAO',
+    });
+    cableAO.position.set(side * 0.68, 0.0035, -1.02);
+    tkCam.add(pedOuterSleeve, pedChromeRam, steeringGroup, triaxCable, cableAO);
+
+    // 2. Articulated RCA TK-41C Pan-Tilt Camera Head!
     const headPivot = new THREE.Group();
     headPivot.position.set(0, 1.38, 0.04);
 
-    const headHousing = createChamferedBox({
-      width: 0.36,
-      height: 0.42,
-      depth: 0.68,
-      cornerRadius: 0.09,
-      material: camBodyMat,
+    // Lower Dark Charcoal Crinkle-Enamel Chassis Base (`y = -0.13`)
+    const lowerChassis = createChamferedBox({
+      width: 0.4,
+      height: 0.17,
+      depth: 0.74,
+      cornerRadius: 0.045,
+      material: rcaCharcoalCrinkleMat,
     });
-    const sideBadge = createChamferedBox({
-      width: 0.38,
-      height: 0.12,
-      depth: 0.46,
-      cornerRadius: 0.04,
-      material: goldMat,
-    });
-    sideBadge.position.z = -0.02;
+    lowerChassis.position.y = -0.13;
 
+    // Upper Brushed RCA Studio Gray Optical Cowling (`y = +0.07`)
+    const upperCowling = createChamferedBox({
+      width: 0.39,
+      height: 0.28,
+      depth: 0.72,
+      cornerRadius: 0.065,
+      material: rcaStudioGrayMat,
+    });
+    upperCowling.position.y = 0.07;
+
+    // Polished Chrome Beltline Molding Strip + Hinged Top Optical Access Lid
+    const chromeBelt = createChamferedBox({
+      width: 0.408,
+      height: 0.024,
+      depth: 0.745,
+      cornerRadius: 0.03,
+      material: aluminumMat,
+      castShadow: false,
+    });
+    chromeBelt.position.y = -0.042;
+    const topAccessLid = createChamferedBox({
+      width: 0.35,
+      height: 0.028,
+      depth: 0.64,
+      cornerRadius: 0.04,
+      material: aluminumMat,
+      castShadow: false,
+    });
+    topAccessLid.position.y = 0.215;
+
+    // Signature TK-41C Horizontal Side Cooling Louvers (6 Image-Orthicon heat vents per flank) + Embossed RCA Plaque!
+    for (const flank of [-1, 1] as const) {
+      for (let lv = 0; lv < 6; lv++) {
+        const louver = createChamferedBox({
+          width: 0.018,
+          height: 0.016,
+          depth: 0.34,
+          cornerRadius: 0.004,
+          material: rcaCharcoalCrinkleMat,
+          castShadow: false,
+        });
+        louver.position.set(flank * 0.198, 0.01 + lv * 0.028, -0.12);
+        headPivot.add(louver);
+      }
+      const badgeHolder = createChamferedBox({
+        width: 0.018,
+        height: 0.088,
+        depth: 0.28,
+        cornerRadius: 0.012,
+        material: goldMat,
+        castShadow: false,
+      });
+      badgeHolder.position.set(flank * 0.2, 0.11, 0.16);
+      const badgeFace = new THREE.Mesh(new THREE.PlaneGeometry(0.25, 0.068), camBadgeFaceMat);
+      badgeFace.position.set(flank * 0.211, 0.11, 0.16);
+      badgeFace.rotation.y = flank > 0 ? Math.PI * 0.5 : -Math.PI * 0.5;
+      headPivot.add(badgeHolder, badgeFace);
+    }
+
+    // Forward 4-Lens Mechanical Turret Plate + 3 Auxiliary Multi-Coated Turret Lenses!
     const turretDisc = createFilletedShaft({
-      radius: 0.15,
-      height: 0.06,
+      radius: 0.19,
+      height: 0.055,
       anglageBevel: 0.006,
       radialSegments: 32,
       centered: true,
-      material: aluminumMat,
+      material: rcaCharcoalCrinkleMat,
     });
     turretDisc.rotation.x = Math.PI * 0.5;
-    turretDisc.position.set(0, -0.02, 0.36);
+    turretDisc.position.set(0, 0.03, 0.385);
+    const turretChromeHub = createFilletedShaft({
+      radius: 0.042,
+      height: 0.075,
+      radialSegments: 20,
+      centered: true,
+      material: aluminumMat,
+      castShadow: false,
+    });
+    turretChromeHub.rotation.x = Math.PI * 0.5;
+    turretChromeHub.position.set(0, 0.03, 0.39);
+    headPivot.add(turretDisc, turretChromeHub);
 
+    // 3 Auxiliary Turret Prime Lenses (`90°`, `180°`, `270°` positions around turret; `0°` holds primary zoom matte-box!)
+    for (const [lx, ly, lr, lh] of [
+      [-0.105, 0.03, 0.042, 0.13],
+      [0.105, 0.03, 0.046, 0.16],
+      [0, -0.075, 0.038, 0.11],
+    ] as const) {
+      const auxBarrel = createFilletedShaft({
+        radius: lr,
+        height: lh,
+        anglageBevel: 0.005,
+        radialSegments: 22,
+        centered: true,
+        material: aluminumMat,
+        castShadow: false,
+      });
+      auxBarrel.rotation.x = Math.PI * 0.5;
+      auxBarrel.position.set(lx, ly, 0.41 + lh * 0.5);
+      const auxGlass = createFilletedShaft({
+        radius: lr * 0.78,
+        height: 0.016,
+        radialSegments: 18,
+        centered: true,
+        material: lensGlassMultiCoatMat,
+        castShadow: false,
+      });
+      auxGlass.rotation.x = Math.PI * 0.5;
+      auxGlass.position.set(lx, ly, 0.412 + lh);
+      headPivot.add(auxBarrel, auxGlass);
+    }
+
+    // Primary Top Turret Black Anodized Zoom Barrel + Rectangular Matte-Box + 4 Angled Barn-Doors!
     const primeLens = createFilletedShaft({
-      radius: 0.065,
+      radius: 0.068,
       height: 0.22,
       anglageBevel: 0.006,
       radialSegments: 28,
       centered: true,
-      material: bluedMat,
+      material: rcaCharcoalCrinkleMat,
     });
     primeLens.rotation.x = Math.PI * 0.5;
-    primeLens.position.set(0, 0.02, 0.46);
+    primeLens.position.set(0, 0.115, 0.49);
+
+    const matteBox = createChamferedBox({
+      width: 0.21,
+      height: 0.16,
+      depth: 0.12,
+      cornerRadius: 0.02,
+      bevelThickness: 0.005,
+      bevelSize: 0.005,
+      bevelSegments: 2,
+      material: rcaCharcoalCrinkleMat,
+      castShadow: false,
+    });
+    matteBox.position.set(0, 0.115, 0.61);
+
+    const frontOpticGlass = createFilletedShaft({
+      radius: 0.056,
+      height: 0.018,
+      radialSegments: 22,
+      centered: true,
+      material: lensGlassMultiCoatMat,
+      castShadow: false,
+    });
+    frontOpticGlass.rotation.x = Math.PI * 0.5;
+    frontOpticGlass.position.set(0, 0.115, 0.605);
+
+    // 4 Angled Matte-Black Studio Zoom Barn-Doors!
+    for (const [bx, by, rx, ry] of [
+      [0, 0.095, -0.42, 0],
+      [0, -0.095, 0.36, 0],
+      [-0.12, 0, 0, 0.42],
+      [0.12, 0, 0, -0.42],
+    ] as const) {
+      const bLeaf = createChamferedBox({
+        width: bx === 0 ? 0.22 : 0.022,
+        height: by === 0 ? 0.165 : 0.022,
+        depth: 0.095,
+        cornerRadius: 0.008,
+        material: rcaCharcoalCrinkleMat,
+        castShadow: false,
+      });
+      bLeaf.position.set(bx, 0.115 + by, 0.695);
+      bLeaf.rotation.set(rx, ry, 0);
+      headPivot.add(bLeaf);
+    }
+
+    // Rigid Top Rectangular CRT Electronic Viewfinder + Black Metal Sun-Visor Hood!
+    const vfBody = createChamferedBox({
+      width: 0.25,
+      height: 0.17,
+      depth: 0.32,
+      cornerRadius: 0.032,
+      bevelThickness: 0.006,
+      bevelSize: 0.006,
+      bevelSegments: 2,
+      material: rcaStudioGrayMat,
+      castShadow: false,
+    });
+    vfBody.position.set(0, 0.305, -0.14);
+    const vfSunHood = createChamferedBox({
+      width: 0.26,
+      height: 0.18,
+      depth: 0.14,
+      cornerRadius: 0.024,
+      material: rcaCharcoalCrinkleMat,
+      castShadow: false,
+    });
+    vfSunHood.position.set(0, 0.31, -0.34);
+
+    // Dual Rear Panning & Twist-Focus Operator Handles w/ Black Rubber Grips!
+    for (const hs of [-1, 1] as const) {
+      const barCurve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(hs * 0.15, -0.08, -0.32),
+        new THREE.Vector3(hs * 0.24, -0.18, -0.58),
+        new THREE.Vector3(hs * 0.28, -0.28, -0.78),
+      ]);
+      const panBar = new THREE.Mesh(
+        new THREE.TubeGeometry(barCurve, 12, 0.013, 8, false),
+        aluminumMat,
+      );
+      const grip = createFilletedShaft({
+        radius: 0.022,
+        height: 0.18,
+        radialSegments: 14,
+        centered: true,
+        material: blackRubberCableMat,
+        castShadow: false,
+      });
+      grip.position.set(hs * 0.27, -0.25, -0.72);
+      grip.rotation.set(0.46, hs * 0.18, 0);
+      headPivot.add(panBar, grip);
+    }
+
+    // Rectangular Chrome-Trimmed Red `"ON AIR"` Tally Lightbox perched atop front of Viewfinder!
+    const tallyHousing = createChamferedBox({
+      width: 0.16,
+      height: 0.072,
+      depth: 0.08,
+      cornerRadius: 0.016,
+      material: aluminumMat,
+      castShadow: false,
+    });
+    tallyHousing.position.set(0, 0.31, 0.14);
 
     const tallyMat = new THREE.MeshStandardMaterial({
       color: 0xff2840,
       emissive: 0xff1e38,
-      emissiveIntensity: side < 0 ? 2.15 : 0.35,
+      emissiveIntensity: side < 0 ? 2.25 : 0.32,
       roughness: 0.14,
     });
-    const tallyLamp = createTurnedOrb({
-      radius: 0.048,
+    const tallyLens = createChamferedBox({
+      width: 0.135,
+      height: 0.052,
+      depth: 0.088,
+      cornerRadius: 0.012,
       material: tallyMat,
       castShadow: false,
     });
-    tallyLamp.position.set(0, 0.25, 0.24);
+    tallyLens.position.set(0, 0.31, 0.145);
 
-    headPivot.add(headHousing, sideBadge, turretDisc, primeLens, tallyLamp);
-    tkCam.add(dollyBase, pedColumn, steeringRing, headPivot);
+    const tallyHalo = createTungstenBulbHaloSprite({
+      scale: 0.28,
+      opacity: side < 0 ? 0.74 : 0.1,
+      colorHex: 0xff3b5c,
+    });
+    tallyHalo.position.set(0, 0.32, 0.2);
+    (tallyMat.userData as Record<string, unknown>).haloSprite = tallyHalo;
+
+    headPivot.add(
+      lowerChassis,
+      upperCowling,
+      chromeBelt,
+      topAccessLid,
+      primeLens,
+      matteBox,
+      frontOpticGlass,
+      vfBody,
+      vfSunHood,
+      tallyHousing,
+      tallyLens,
+      tallyHalo,
+    );
+    compactStaticMeshesInGroup(headPivot);
+    tkCam.add(headPivot);
+    compactStaticMeshesInGroup(tkCam, new Set([headPivot]));
     framingGroup.add(tkCam);
 
     camTurretHeads.push(headPivot);
@@ -3110,6 +4634,10 @@ export function buildStageWorldV7(
 
   let fresnelTimerSec = -1;
   let fresnelPeakHdr = 3.0;
+  let applauseRemainingSec = 0;
+  let baseLightboxScaleX = 0.96;
+  let baseLightboxScaleY = 0.96;
+  let baseLightboxScaleZ = 0.96;
   let baseCycEmissive = 0.56;
   let baseCoveEmissive = 1.15;
 
@@ -3117,7 +4645,7 @@ export function buildStageWorldV7(
     cycMat.emissiveIntensity = baseCycEmissive * apertureDimFactor;
     coveBarMat.emissiveIntensity = baseCoveEmissive * apertureDimFactor;
     floorRingGlowMat.emissiveIntensity = 1.05 * apertureDimFactor;
-    signFaceMat.emissiveIntensity = 0.56 * Math.max(0.45, apertureDimFactor);
+    signFaceMat.color.setScalar(Math.max(0.58, apertureDimFactor));
     for (let i = 0; i < bespokeSet.dimmableAcryliteMats.length; i++) {
       bespokeSet.dimmableAcryliteMats[i].emissiveIntensity = 0.82 * apertureDimFactor;
     }
@@ -3154,6 +4682,10 @@ export function buildStageWorldV7(
         rowC.glintFlareMat.emissiveIntensity = 3.0;
         rowC.glintFlareMat.opacity = 0.92;
       }
+    },
+
+    triggerApplauseSign(durationSec = 2.4): void {
+      applauseRemainingSec = Math.max(applauseRemainingSec, Math.max(0.6, durationSec));
     },
 
     getRowCColliderMesh(): THREE.Mesh {
@@ -3230,28 +4762,135 @@ export function buildStageWorldV7(
       }
     },
 
-    setPortraitFraming(isPortrait: boolean): void {
-      const innerX = isPortrait ? 1.66 : 2.08;
-      innerMarqueePillars[0].position.x = -innerX;
-      innerMarqueePillars[1].position.x = innerX;
-      const crownScale = isPortrait ? 0.94 : 1.04;
-      marqueeCrownGroup.scale.setScalar(crownScale);
-      const shoeX = 0.84 * crownScale;
-      marqueeStrutShoes[0].position.x = -shoeX;
-      marqueeStrutShoes[1].position.x = shoeX;
+    setPortraitFraming(isPortrait: boolean, aspect = isPortrait ? 0.52 : 1.6): void {
+      if (!isPortrait) {
+        // Landscape / Tablet Landscape / Desktop: Full 3-bay wide broadcast proscenium!
+        innerMarqueePillars[0].position.set(-2.36, 0, -4.52);
+        innerMarqueePillars[1].position.set(2.36, 0, -4.52);
+        marqueeCrownGroup.scale.setScalar(1.02);
+        signFrame.scale.set(1, 1, 1);
+        baseLightboxScaleX = 0.96;
+        baseLightboxScaleY = 0.96;
+        baseLightboxScaleZ = 0.96;
+        onTheAirLightbox.group.position.set(-1.52, 0.01, 0.02);
+        applauseLightbox.group.position.set(1.52, 0.01, 0.02);
+        onTheAirLightbox.group.scale.set(baseLightboxScaleX, baseLightboxScaleY, baseLightboxScaleZ);
+        applauseLightbox.group.scale.set(baseLightboxScaleX, baseLightboxScaleY, baseLightboxScaleZ);
+        marqueeStrutShoes[0].position.x = -0.857;
+        marqueeStrutShoes[1].position.x = 0.857;
+      } else if (aspect >= 0.7) {
+        // Tablet Portrait (`768x1024`, `820x1180`): All 3 proscenium lightboxes framed comfortably inside ±1.86m!
+        innerMarqueePillars[0].position.set(-1.92, 0, -4.64);
+        innerMarqueePillars[1].position.set(1.92, 0, -4.64);
+        marqueeCrownGroup.scale.setScalar(0.96);
+        signFrame.scale.set(0.82, 0.92, 0.95);
+        baseLightboxScaleX = 0.82;
+        baseLightboxScaleY = 0.88;
+        baseLightboxScaleZ = 0.92;
+        onTheAirLightbox.group.position.set(-1.24, 0.01, 0.03);
+        applauseLightbox.group.position.set(1.24, 0.01, 0.03);
+        onTheAirLightbox.group.scale.set(baseLightboxScaleX, baseLightboxScaleY, baseLightboxScaleZ);
+        applauseLightbox.group.scale.set(baseLightboxScaleX, baseLightboxScaleY, baseLightboxScaleZ);
+        marqueeStrutShoes[0].position.x = -0.78;
+        marqueeStrutShoes[1].position.x = 0.78;
+      } else {
+        // Phone Portrait (`390x844`, `390x660`): Compact 3-bay proscenium (`ON THE AIR` | Stage Marquee | `APPLAUSE`) inside ±1.17m!
+        innerMarqueePillars[0].position.set(-1.66, 0, -4.66);
+        innerMarqueePillars[1].position.set(1.66, 0, -4.66);
+        marqueeCrownGroup.scale.setScalar(0.94);
+        signFrame.scale.set(0.58, 0.78, 0.88);
+        baseLightboxScaleX = 0.58;
+        baseLightboxScaleY = 0.74;
+        baseLightboxScaleZ = 0.86;
+        onTheAirLightbox.group.position.set(-0.885, 0.0, 0.03);
+        applauseLightbox.group.position.set(0.885, 0.0, 0.03);
+        onTheAirLightbox.group.scale.set(baseLightboxScaleX, baseLightboxScaleY, baseLightboxScaleZ);
+        applauseLightbox.group.scale.set(baseLightboxScaleX, baseLightboxScaleY, baseLightboxScaleZ);
+        marqueeStrutShoes[0].position.x = -0.52;
+        marqueeStrutShoes[1].position.x = 0.52;
+      }
     },
 
     update(dtSec: number, elapsedSec: number): void {
       bespokeSet.update(dtSec, elapsedSec);
 
-      // Gentle 1966 Starburst glisten & smooth 4-circuit `#11` incandescent marquee bulb chase
+      // Gentle 1966 Starburst glisten & smooth 4-circuit `#11` incandescent marquee bulb chase + synced 2700K halation!
       crownStarburst.rotation.z = elapsedSec * 0.14;
       const chasePhase = elapsedSec * 4.5;
       for (let g = 0; g < chasingBulbGroups.length; g++) {
         const bulbs = chasingBulbGroups[g];
         for (let b = 0; b < bulbs.length; b++) {
           const wave = 0.5 + 0.5 * Math.sin(chasePhase - b * 0.95 + g * 0.6);
-          bulbs[b].emissiveIntensity = (0.44 + wave * 1.15) * Math.max(0.45, apertureDimFactor);
+          const dimClamp = Math.max(0.45, apertureDimFactor);
+          const emissive = (0.44 + wave * 1.35) * dimClamp;
+          bulbs[b].emissiveIntensity = emissive;
+          const ud = bulbs[b].userData as {
+            haloSprite?: THREE.Sprite;
+            haloMat?: THREE.MeshBasicMaterial;
+          };
+          if (ud.haloSprite) {
+            ud.haloSprite.material.opacity = (0.2 + wave * 0.68) * dimClamp;
+            const baseS = ((ud.haloSprite.userData as { baseScale?: number }).baseScale ?? 0.22);
+            const s = baseS * (0.86 + wave * 0.26);
+            ud.haloSprite.scale.set(s, s, 1);
+          }
+          if (ud.haloMat) {
+            ud.haloMat.opacity = (0.2 + wave * 0.68) * dimClamp;
+          }
+        }
+      }
+
+      // Live 3D `ON THE AIR` steady broadcast ruby pulse & Reactive Blinking `APPLAUSE` Studio Lightbox!
+      const onAirPulse = 0.92 + 0.08 * Math.sin(elapsedSec * 3.2);
+      onTheAirLightbox.faceMat.color.setScalar(onAirPulse * Math.max(0.65, apertureDimFactor));
+      onTheAirLightbox.centerGlowHalo.material.opacity = 0.22 * onAirPulse * Math.max(0.55, apertureDimFactor);
+      for (let i = 0; i < onTheAirLightbox.bulbHalos.length; i++) {
+        const tw = 0.5 + 0.5 * Math.sin(elapsedSec * 5.0 + i * 1.4);
+        onTheAirLightbox.bulbHalos[i].material.opacity = (0.36 + tw * 0.44) * Math.max(0.55, apertureDimFactor);
+      }
+
+      if (applauseRemainingSec > 0) {
+        applauseRemainingSec = Math.max(0, applauseRemainingSec - dtSec);
+        // Blink warmly at ~5.6Hz alternating 2700K Neon Amber & Carnaby Crimson!
+        const blinkTick = Math.floor(elapsedSec * 11.2);
+        const isCrimsonBeat = (blinkTick & 1) === 1;
+        const flashWave = 0.68 + 0.32 * Math.abs(Math.sin(elapsedSec * Math.PI * 11.2));
+        if (applauseLightbox.altTex) {
+          const nextMap = isCrimsonBeat ? applauseLightbox.altTex : applauseLightbox.primaryTex;
+          if (applauseLightbox.faceMat.map !== nextMap) {
+            applauseLightbox.faceMat.map = nextMap;
+            applauseLightbox.faceMat.needsUpdate = true;
+          }
+        }
+        applauseLightbox.faceMat.color.setScalar(0.85 + 0.15 * flashWave);
+        applauseLightbox.centerGlowHalo.material.color.setHex(isCrimsonBeat ? 0xff477e : 0xffd56b);
+        applauseLightbox.centerGlowHalo.material.opacity = 0.58 * flashWave;
+        const pop = 1 + 0.045 * flashWave;
+        applauseLightbox.group.scale.set(
+          baseLightboxScaleX * pop,
+          baseLightboxScaleY * pop,
+          baseLightboxScaleZ,
+        );
+        for (let i = 0; i < applauseLightbox.bulbHalos.length; i++) {
+          const on = ((i + blinkTick) & 1) === 0;
+          applauseLightbox.bulbHalos[i].material.color.setHex(isCrimsonBeat ? 0xff6b8b : 0xffd56b);
+          applauseLightbox.bulbHalos[i].material.opacity = on ? 0.92 : 0.35;
+          applauseLightbox.bulbMats[i].emissiveIntensity = on ? 2.4 : 0.7;
+        }
+      } else {
+        if (applauseLightbox.faceMat.map !== applauseLightbox.primaryTex) {
+          applauseLightbox.faceMat.map = applauseLightbox.primaryTex;
+          applauseLightbox.faceMat.needsUpdate = true;
+        }
+        const standbyDim = 0.58 * Math.max(0.52, apertureDimFactor);
+        applauseLightbox.faceMat.color.setRGB(standbyDim, standbyDim * 0.94, standbyDim * 0.82);
+        applauseLightbox.centerGlowHalo.material.color.setHex(0xffd56b);
+        applauseLightbox.centerGlowHalo.material.opacity = 0.08 * Math.max(0.5, apertureDimFactor);
+        applauseLightbox.group.scale.set(baseLightboxScaleX, baseLightboxScaleY, baseLightboxScaleZ);
+        for (let i = 0; i < applauseLightbox.bulbHalos.length; i++) {
+          applauseLightbox.bulbHalos[i].material.color.setHex(0xffd56b);
+          applauseLightbox.bulbHalos[i].material.opacity = 0.28 * Math.max(0.5, apertureDimFactor);
+          applauseLightbox.bulbMats[i].emissiveIntensity = 0.85 * Math.max(0.5, apertureDimFactor);
         }
       }
 
@@ -3265,6 +4904,14 @@ export function buildStageWorldV7(
         const targetTally = c === liveCamIdx ? 2.25 : 0.32;
         camTallyMats[c].emissiveIntensity +=
           (targetTally - camTallyMats[c].emissiveIntensity) * Math.min(1, dtSec * 8);
+        const tallyHalo = (camTallyMats[c].userData as { haloSprite?: THREE.Sprite }).haloSprite;
+        if (tallyHalo) {
+          tallyHalo.material.opacity = THREE.MathUtils.clamp(
+            (camTallyMats[c].emissiveIntensity - 0.25) * 0.38,
+            0.08,
+            0.78,
+          );
+        }
       }
 
       // Gentle overhead volumetric studio spot cone drift
@@ -3319,6 +4966,10 @@ export function buildStageWorldV7(
     },
 
     dispose(): void {
+      camBadgeTex.dispose();
+      onTheAirLightbox.primaryTex.dispose();
+      applauseLightbox.primaryTex.dispose();
+      applauseLightbox.altTex?.dispose();
       disposeObject3DTree(root);
     },
   };

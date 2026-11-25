@@ -237,31 +237,32 @@ function buildWarmTungstenPMREM(renderer: THREE.WebGLRenderer): THREE.WebGLRende
   pmrem.compileEquirectangularShader();
 
   const envScene = new THREE.Scene();
-  envScene.background = new THREE.Color(0x121926);
+  // 1966 Living Color Peacock Navy studio surround (ZERO muddy dark brown!)
+  envScene.background = new THREE.Color(0x0b1e33);
 
-  // Warm 2900K tungsten overhead softbox dome
+  // Warm 3100K quartz-tungsten overhead softbox dome
   const keyGeo = new THREE.SphereGeometry(6, 24, 16);
-  const keyMat = new THREE.MeshBasicMaterial({ color: 0xffdf9e, side: THREE.BackSide });
+  const keyMat = new THREE.MeshBasicMaterial({ color: 0xffe8b8, side: THREE.BackSide });
   const keyDome = new THREE.Mesh(keyGeo, keyMat);
   keyDome.scale.set(1, 0.35, 1);
   keyDome.position.set(3.5, 6.5, 4.0);
   envScene.add(keyDome);
 
-  // Amber studio brass reflector strip
+  // Harvest Gold studio brass reflector band
   const fillGeo = new THREE.TorusGeometry(8.5, 0.9, 12, 36);
-  const fillMat = new THREE.MeshBasicMaterial({ color: 0xf4b656 });
+  const fillMat = new THREE.MeshBasicMaterial({ color: 0xf4b644 });
   const fillRing = new THREE.Mesh(fillGeo, fillMat);
   fillRing.rotation.x = Math.PI * 0.42;
   envScene.add(fillRing);
 
-  // Cool Prussian cyclorama rim accent
-  const rimGeo = new THREE.CylinderGeometry(9.5, 9.5, 2.2, 24, 1, true);
-  const rimMat = new THREE.MeshBasicMaterial({ color: 0x3b78b8, side: THREE.DoubleSide });
+  // Living Color Peacock Teal & CBS Cobalt cyclorama rim accent
+  const rimGeo = new THREE.CylinderGeometry(9.5, 9.5, 2.6, 24, 1, true);
+  const rimMat = new THREE.MeshBasicMaterial({ color: 0x009bb0, side: THREE.DoubleSide });
   const rimCyl = new THREE.Mesh(rimGeo, rimMat);
-  rimCyl.position.y = -3.2;
+  rimCyl.position.y = -2.8;
   envScene.add(rimCyl);
 
-  const envRT = pmrem.fromScene(envScene, 0.035);
+  const envRT = pmrem.fromScene(envScene, 0.032);
   keyGeo.dispose();
   keyMat.dispose();
   fillGeo.dispose();
@@ -270,6 +271,26 @@ function buildWarmTungstenPMREM(renderer: THREE.WebGLRenderer): THREE.WebGLRende
   rimMat.dispose();
   pmrem.dispose();
   return envRT;
+}
+
+/** 1x1 neutral fallback mask DataTexture so custom GLSL uniforms are always valid WebGL2 samplers. */
+function createNeutral1x1DataTexture(r: number, g: number, b: number): THREE.DataTexture {
+  const tex = new THREE.DataTexture(new Uint8Array([r, g, b, 255]), 1, 1, THREE.RGBAFormat);
+  tex.needsUpdate = true;
+  return tex;
+}
+
+const GLOBE_FOV_DEG_V7 = 38;
+const GLOBE_FRAMED_BOUND_RADIUS_V7 = 1.19; // Earth (1.0) + Rand McNally brass meridian ring & polar bushings (1.185)
+
+function computeGlobeFramedDistanceV7(aspect: number): number {
+  const halfVertTan = Math.tan(GLOBE_FOV_DEG_V7 * 0.5 * DEG2RAD_V7);
+  const safeAspect = THREE.MathUtils.clamp(Number.isFinite(aspect) ? aspect : 1.35, 0.48, 3.2);
+  const limitingTan = Math.min(halfVertTan, halfVertTan * safeAspect);
+  // Target ~84% framing of the full brass meridian + polar finials -> generous margin, 0px pole clipping!
+  const targetTan = limitingTan * 0.84;
+  const dist = GLOBE_FRAMED_BOUND_RADIUS_V7 * Math.sqrt(1 + 1 / (targetTan * targetTan));
+  return THREE.MathUtils.clamp(dist, 3.75, 5.6);
 }
 
 export class ReliefGlobeContraptionV7 {
@@ -294,13 +315,22 @@ export class ReliefGlobeContraptionV7 {
 
   private readonly disposableGeometries: THREE.BufferGeometry[] = [];
   private readonly disposableMaterials: THREE.Material[] = [];
+  private readonly disposableTextures: THREE.Texture[] = [];
   private readonly textureListener: () => void;
+  private readonly livingColorUniforms: {
+    uOceanMaskMap: { value: THREE.Texture };
+    uElevBumpMap: { value: THREE.Texture };
+    uHasLivingColorMap: { value: number };
+    uHasOceanMask: { value: number };
+    uHasElevBump: { value: number };
+  };
 
   // Orbital camera state
   private camLatDeg = 20;
   private camLngDeg = 10;
-  private camDistance = 2.78;
-  private targetDistance = 2.78;
+  private camDistance = 4.28;
+  private targetDistance = 4.28;
+  private maxZoomDistance = 5.6;
   private velLat = 0;
   private velLng = 0;
   private userHasInteracted = false;
@@ -367,20 +397,21 @@ export class ReliefGlobeContraptionV7 {
       this.camLngDeg = (((options.targetLng + 26 + 180) % 360) + 360) % 360 - 180;
     }
 
-    // 1. Responsive Label-Free 1966 World Atlas Studio Monitor Wrapper (zero AI boxes, >=14px type)
+    // 1. Responsive Label-Free 1966 Rand McNally Peacock-Navy Studio Monitor Wrapper
+    //    (Opaque Peacock Navy #0B1E33 radial studio backdrop — ZERO muddy brown bleed-through!)
     this.stageEl = document.createElement('div');
     this.stageEl.className = 'ws7-relief-globe-stage';
     this.stageEl.style.cssText = [
       'position:relative',
       'width:100%',
       'height:100%',
-      'min-height:176px',
+      'min-height:192px',
       'max-height:100%',
-      'border-radius:0',
+      'border-radius:14px',
       'overflow:hidden',
-      'background:radial-gradient(circle at 50% 48%, rgba(0,180,204,0.25) 0%, rgba(16,43,68,0) 70%)',
-      'box-shadow:none',
-      'border:none',
+      'background:radial-gradient(ellipse at 50% 48%, #153c61 0%, #0d2540 56%, #08182b 100%)',
+      'box-shadow:inset 0 0 26px rgba(0,168,184,0.22), 0 6px 18px rgba(5,14,26,0.42)',
+      'border:2px solid rgba(242,169,34,0.52)',
       'box-sizing:border-box',
       'touch-action:none',
       'user-select:none',
@@ -393,19 +424,20 @@ export class ReliefGlobeContraptionV7 {
     this.coordBadgeEl.style.cssText = [
       'position:absolute',
       'top:8px',
-      'left:10px',
-      'padding:4px 11px',
+      'left:8px',
+      'padding:3px 9px',
       'border-radius:999px',
-      'background:rgba(13,34,56,0.88)',
+      'background:rgba(10,27,46,0.9)',
+      'border:1px solid rgba(242,169,34,0.45)',
       'color:#FFF6E3',
       "font:700 14px/1.2 'Jost', 'Plus Jakarta Sans', system-ui, sans-serif",
       'font-variant-numeric:tabular-nums',
-      'letter-spacing:0.03em',
-      'box-shadow:0 2px 8px rgba(0,0,0,0.32)',
+      'letter-spacing:0.02em',
+      'box-shadow:0 2px 8px rgba(0,0,0,0.34)',
       'pointer-events:none',
       'z-index:2',
     ].join(';');
-    this.coordBadgeEl.textContent = `AIM ${formatCoordShort(this.camLatDeg, this.camLngDeg)}`;
+    this.coordBadgeEl.textContent = formatCoordShort(this.camLatDeg, this.camLngDeg);
     this.stageEl.appendChild(this.coordBadgeEl);
 
     this.statusBadgeEl = document.createElement('div');
@@ -413,23 +445,23 @@ export class ReliefGlobeContraptionV7 {
     this.statusBadgeEl.style.cssText = [
       'position:absolute',
       'top:8px',
-      'right:10px',
-      'max-width:56%',
-      'padding:4px 11px',
+      'right:8px',
+      'max-width:54%',
+      'padding:3px 9px',
       'border-radius:999px',
       'background:linear-gradient(180deg, #00B2C4 0%, #007E8C 100%)',
       'color:#FFFDF7',
       "font:800 14px/1.2 'Jost', 'Plus Jakarta Sans', system-ui, sans-serif",
-      'letter-spacing:0.02em',
+      'letter-spacing:0.015em',
       'text-align:center',
       'box-shadow:0 2px 0 #00525E, 0 4px 10px rgba(0,0,0,0.32)',
       'pointer-events:none',
       'z-index:2',
     ].join(';');
-    this.statusBadgeEl.textContent = 'DRAG · TAP SPOT';
+    this.statusBadgeEl.textContent = 'DRAG · TAP';
     this.stageEl.appendChild(this.statusBadgeEl);
 
-    // 2. Hardware WebGL 2.0 Renderer
+    // 2. Hardware WebGL 2.0 Renderer (alpha: true composites over opaque Peacock Navy radial stage!)
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
@@ -438,56 +470,147 @@ export class ReliefGlobeContraptionV7 {
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2.25));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.24;
+    this.renderer.toneMappingExposure = 1.16;
+    this.renderer.setClearColor(0x0b1e33, 0.0);
     this.renderer.domElement.style.cssText =
       'width:100%;height:100%;display:block;touch-action:none;cursor:grab;';
     this.stageEl.appendChild(this.renderer.domElement);
 
-    // 3. Studio Warm-Tungsten PMREM Environment Reflections
+    // 3. Studio Warm-Tungsten & Peacock PMREM Environment Reflections
     this.pmremTarget = buildWarmTungstenPMREM(this.renderer);
     this.scene = new THREE.Scene();
     this.scene.environment = this.pmremTarget.texture;
 
     const initW = Math.max(160, this.stageEl.clientWidth || 340);
     const initH = Math.max(160, this.stageEl.clientHeight || 220);
-    this.camera = new THREE.PerspectiveCamera(39, initW / initH, 0.1, 36);
+    const initAspect = initW / initH;
+    this.camera = new THREE.PerspectiveCamera(GLOBE_FOV_DEG_V7, initAspect, 0.1, 36);
     this.renderer.setSize(initW, initH, false);
 
+    // Frame full Earth + Rand McNally brass meridian ring & polar bushings cleanly (0px pole clipping!)
+    const initialDist = computeGlobeFramedDistanceV7(initAspect);
+    this.camDistance = initialDist;
+    this.targetDistance = initialDist;
+    this.maxZoomDistance = Math.max(5.6, initialDist * 1.35);
+
     // 4. Radiant 300-Footcandle 1966 Studio Cartographic Key + Rim Lighting
-    const hemi = new THREE.HemisphereLight(0xf2f8ff, 0x1b3a59, 0.92);
+    const hemi = new THREE.HemisphereLight(0xfff7e6, 0x103658, 1.05);
     this.scene.add(hemi);
 
-    this.keyLight = new THREE.DirectionalLight(0xfff4de, 2.5);
+    this.keyLight = new THREE.DirectionalLight(0xfff4de, 2.35);
     this.keyLight.position.set(4.5, 3.2, 5.2);
     this.scene.add(this.keyLight);
 
-    const rim = new THREE.DirectionalLight(0x47dcff, 1.25);
+    const rim = new THREE.DirectionalLight(0x3ad8ee, 1.3);
     rim.position.set(-4.5, -1.5, -3.8);
     this.scene.add(rim);
 
-    // 5. Label-Free 4K Shaded-Relief & Bathymetry Earth Sphere
+    // 5. Label-Free 4K 1966 Rand McNally Living Color Shaded-Relief Earth Sphere
     this.globeRoot = new THREE.Group();
     this.scene.add(this.globeRoot);
 
     this.overlayGroup = new THREE.Group();
     this.globeRoot.add(this.overlayGroup);
 
+    const fallbackOceanTex = createNeutral1x1DataTexture(255, 255, 255);
+    const fallbackElevTex = createNeutral1x1DataTexture(90, 90, 90);
+    this.disposableTextures.push(fallbackOceanTex, fallbackElevTex);
+    this.livingColorUniforms = {
+      uOceanMaskMap: { value: SHARED_EARTH_TEXTURES.specular ?? fallbackOceanTex },
+      uElevBumpMap: { value: SHARED_EARTH_TEXTURES.bump ?? fallbackElevTex },
+      uHasLivingColorMap: { value: SHARED_EARTH_TEXTURES.albedo ? 1.0 : 0.0 },
+      uHasOceanMask: { value: SHARED_EARTH_TEXTURES.specular ? 1.0 : 0.0 },
+      uHasElevBump: { value: SHARED_EARTH_TEXTURES.bump ? 1.0 : 0.0 },
+    };
+
     const earthGeo = new THREE.SphereGeometry(1, 112, 84);
     this.disposableGeometries.push(earthGeo);
     this.earthMaterial = new THREE.MeshPhysicalMaterial({
       map: SHARED_EARTH_TEXTURES.albedo ?? getFallbackBathymetryTexture(),
       bumpMap: SHARED_EARTH_TEXTURES.bump ?? null,
-      bumpScale: 0.038,
+      bumpScale: 0.042,
       specularIntensityMap: SHARED_EARTH_TEXTURES.specular ?? null,
       clearcoatMap: SHARED_EARTH_TEXTURES.specular ?? null,
-      roughness: 0.7,
+      roughness: 0.66,
       metalness: 0.04,
-      clearcoat: 0.52,
-      clearcoatRoughness: 0.24,
-      envMapIntensity: 0.42,
-      specularIntensity: 0.88,
-      specularColor: new THREE.Color(0x9bd7ff),
+      clearcoat: 0.5,
+      clearcoatRoughness: 0.22,
+      envMapIntensity: 0.48,
+      specularIntensity: 0.85,
+      specularColor: new THREE.Color(0x9be5ff),
     });
+
+    // 1966 Rand McNally Mid-Century Classroom Relief-Globe Color Grading Shader
+    // Transforms dark satellite imagery into radiant Peacock Teal oceans + sunlit
+    // Harvest Gold / Vintage Parchment continents + terracotta mountain relief (zero labels!).
+    this.earthMaterial.onBeforeCompile = (shader) => {
+      shader.uniforms.uOceanMaskMap = this.livingColorUniforms.uOceanMaskMap;
+      shader.uniforms.uElevBumpMap = this.livingColorUniforms.uElevBumpMap;
+      shader.uniforms.uHasLivingColorMap = this.livingColorUniforms.uHasLivingColorMap;
+      shader.uniforms.uHasOceanMask = this.livingColorUniforms.uHasOceanMask;
+      shader.uniforms.uHasElevBump = this.livingColorUniforms.uHasElevBump;
+
+      shader.fragmentShader = shader.fragmentShader
+        .replace(
+          '#include <map_pars_fragment>',
+          `#include <map_pars_fragment>
+          uniform sampler2D uOceanMaskMap;
+          uniform sampler2D uElevBumpMap;
+          uniform float uHasLivingColorMap;
+          uniform float uHasOceanMask;
+          uniform float uHasElevBump;`,
+        )
+        .replace(
+          '#include <map_fragment>',
+          `#ifdef USE_MAP
+            vec4 sampledDiffuseColor = texture2D( map, vMapUv );
+            if (uHasLivingColorMap > 0.5) {
+              vec3 sat = pow(max(sampledDiffuseColor.rgb, vec3(0.0001)), vec3(1.0 / 2.2));
+              float oceanSample = uHasOceanMask > 0.5
+                ? texture2D(uOceanMaskMap, vMapUv).r
+                : clamp((sat.b - sat.r) * 3.5, 0.0, 1.0);
+              float oceanMask = smoothstep(0.32, 0.62, oceanSample);
+              float elev = uHasElevBump > 0.5
+                ? texture2D(uElevBumpMap, vMapUv).r
+                : clamp((sat.r + sat.g) * 0.5, 0.0, 1.0);
+              float satLum = dot(sat, vec3(0.299, 0.587, 0.114));
+              float satMax = max(sat.r, max(sat.g, sat.b));
+              float satMin = min(sat.r, min(sat.g, sat.b));
+              float chroma = satMax - satMin;
+
+              // Peacock Teal & Mid-Century Turquoise Bathymetry Oceans
+              float shelf = clamp((satLum - 0.11) * 3.2, 0.0, 1.0);
+              vec3 deepPeacock = vec3(0.04, 0.43, 0.58);
+              vec3 midTurquoise = vec3(0.11, 0.67, 0.77);
+              vec3 shallowAqua = vec3(0.34, 0.85, 0.89);
+              vec3 oceanRgb = mix(deepPeacock, midTurquoise, smoothstep(0.05, 0.62, shelf));
+              oceanRgb = mix(oceanRgb, shallowAqua, smoothstep(0.55, 1.0, shelf) * 0.62);
+
+              float coastHalo = smoothstep(0.0, 0.45, oceanMask) * (1.0 - smoothstep(0.55, 1.0, oceanMask));
+
+              // Sunlit 1966 Rand McNally Classroom Relief Continents (Harvest Gold, Sage Cream & Terracotta Peaks)
+              float dryness = clamp((sat.r - sat.g) * 3.6 + 0.44, 0.0, 1.0);
+              float iceMask = smoothstep(0.68, 0.86, satLum) * (1.0 - smoothstep(0.08, 0.22, chroma));
+              vec3 sageLowland = vec3(0.80, 0.85, 0.58);
+              vec3 warmParchment = vec3(0.94, 0.85, 0.59);
+              vec3 harvestGold = vec3(0.96, 0.74, 0.35);
+              vec3 sierraRelief = vec3(0.85, 0.53, 0.26);
+              vec3 polarIvory = vec3(0.97, 0.95, 0.89);
+
+              vec3 landRgb = mix(sageLowland, warmParchment, smoothstep(0.18, 0.60, dryness));
+              landRgb = mix(landRgb, harvestGold, smoothstep(0.55, 0.92, dryness));
+              landRgb = mix(landRgb, sierraRelief, smoothstep(0.36, 0.80, elev) * 0.76);
+              landRgb = mix(landRgb, polarIvory, iceMask);
+              landRgb = mix(landRgb, vec3(0.45, 0.33, 0.16), coastHalo * 0.34);
+
+              vec3 gradedSrgb = mix(landRgb, oceanRgb + vec3(0.16, 0.22, 0.20) * coastHalo * 0.55, oceanMask);
+              sampledDiffuseColor.rgb = pow(clamp(gradedSrgb, vec3(0.0), vec3(1.0)), vec3(2.2));
+            }
+            diffuseColor *= sampledDiffuseColor;
+          #endif`,
+        );
+    };
+    this.earthMaterial.customProgramCacheKey = () => 'rand-mcnally-1966-living-color-v1';
     this.disposableMaterials.push(this.earthMaterial);
 
     this.earthMesh = new THREE.Mesh(earthGeo, this.earthMaterial);
@@ -497,7 +620,7 @@ export class ReliefGlobeContraptionV7 {
     this.buildRayleighAtmosphere();
     this.buildSubtleGraticule();
 
-    // 6. C1-Filleted Brushed-Brass Meridian Cradle (warm-tungsten PMREM reflected!)
+    // 6. C1-Filleted Spun-Brass Rand McNally Calibrated Meridian Cradle
     this.cradleGroup = this.buildC1FilletedBrassCradle();
     this.scene.add(this.cradleGroup);
 
@@ -507,13 +630,18 @@ export class ReliefGlobeContraptionV7 {
       if (this.disposed) return;
       if (SHARED_EARTH_TEXTURES.albedo) {
         this.earthMaterial.map = SHARED_EARTH_TEXTURES.albedo;
+        this.livingColorUniforms.uHasLivingColorMap.value = 1.0;
       }
       if (SHARED_EARTH_TEXTURES.bump) {
         this.earthMaterial.bumpMap = SHARED_EARTH_TEXTURES.bump;
+        this.livingColorUniforms.uElevBumpMap.value = SHARED_EARTH_TEXTURES.bump;
+        this.livingColorUniforms.uHasElevBump.value = 1.0;
       }
       if (SHARED_EARTH_TEXTURES.specular) {
         this.earthMaterial.specularIntensityMap = SHARED_EARTH_TEXTURES.specular;
         this.earthMaterial.clearcoatMap = SHARED_EARTH_TEXTURES.specular;
+        this.livingColorUniforms.uOceanMaskMap.value = SHARED_EARTH_TEXTURES.specular;
+        this.livingColorUniforms.uHasOceanMask.value = 1.0;
       }
       this.earthMaterial.needsUpdate = true;
     };
@@ -566,113 +694,146 @@ export class ReliefGlobeContraptionV7 {
   }
 
   private buildSubtleGraticule(): void {
-    const r = 1.0025;
-    const pts: number[] = [];
+    const r = 1.003;
+    const majorPts: number[] = [];
+    const minorPts: number[] = [];
+
+    // Major Rand McNally reference circles: Equator (0°), Tropics (±23.5°), Arctic/Antarctic (±66.5°)
+    for (const lat of [-66.5, -23.5, 0, 23.5, 66.5]) {
+      const steps = 96;
+      const target = lat === 0 ? majorPts : minorPts;
+      for (let i = 0; i < steps; i++) {
+        const a = latLngToVector3(lat, -180 + (i / steps) * 360, r);
+        const b = latLngToVector3(lat, -180 + ((i + 1) / steps) * 360, r);
+        target.push(a.x, a.y, a.z, b.x, b.y, b.z);
+      }
+    }
+    // Standard 30° latitude parallels
     for (let lat = -60; lat <= 60; lat += 30) {
+      if (lat === 0) continue;
       const steps = 84;
       for (let i = 0; i < steps; i++) {
         const a = latLngToVector3(lat, -180 + (i / steps) * 360, r);
         const b = latLngToVector3(lat, -180 + ((i + 1) / steps) * 360, r);
-        pts.push(a.x, a.y, a.z, b.x, b.y, b.z);
+        minorPts.push(a.x, a.y, a.z, b.x, b.y, b.z);
       }
     }
+    // 15°/30° longitude meridians (Prime Meridian 0° & 180° emphasized)
     for (let lng = -180; lng < 180; lng += 30) {
       const steps = 56;
+      const target = lng === 0 || lng === -180 ? majorPts : minorPts;
       for (let i = 0; i < steps; i++) {
-        const a = latLngToVector3(-78 + (i / steps) * 156, lng, r);
-        const b = latLngToVector3(-78 + ((i + 1) / steps) * 156, lng, r);
-        pts.push(a.x, a.y, a.z, b.x, b.y, b.z);
+        const a = latLngToVector3(-80 + (i / steps) * 160, lng, r);
+        const b = latLngToVector3(-80 + ((i + 1) / steps) * 160, lng, r);
+        target.push(a.x, a.y, a.z, b.x, b.y, b.z);
       }
     }
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
-    this.disposableGeometries.push(geo);
-    const mat = new THREE.LineBasicMaterial({
-      color: 0xeac978,
+
+    const minorGeo = new THREE.BufferGeometry();
+    minorGeo.setAttribute('position', new THREE.Float32BufferAttribute(minorPts, 3));
+    const majorGeo = new THREE.BufferGeometry();
+    majorGeo.setAttribute('position', new THREE.Float32BufferAttribute(majorPts, 3));
+    this.disposableGeometries.push(minorGeo, majorGeo);
+
+    const minorMat = new THREE.LineBasicMaterial({
+      color: 0xfff1c9,
       transparent: true,
-      opacity: 0.14,
+      opacity: 0.28,
       depthWrite: false,
     });
-    this.disposableMaterials.push(mat);
-    this.globeRoot.add(new THREE.LineSegments(geo, mat));
+    const majorMat = new THREE.LineBasicMaterial({
+      color: 0xffd56b,
+      transparent: true,
+      opacity: 0.52,
+      depthWrite: false,
+    });
+    this.disposableMaterials.push(minorMat, majorMat);
+    this.globeRoot.add(
+      new THREE.LineSegments(minorGeo, minorMat),
+      new THREE.LineSegments(majorGeo, majorMat),
+    );
   }
 
   /**
-   * Sculpted C1-filleted brushed-brass meridian cradle (zero raw BoxGeometry props!)
-   * catching warm-tungsten `PMREMGenerator` reflections (`envMapIntensity = 1.35`).
+   * Sculpted C1-filleted spun-brass 1966 Rand McNally Calibrated Meridian Cradle
+   * (zero raw BoxGeometry props!) w/ 72 radial degree vernier ticks & compact polar bushings
+   * (max vertical radius 1.185 so the entire cradle fits inside the viewport with zero pole clipping!).
    */
   private buildC1FilletedBrassCradle(): THREE.Group {
     const group = new THREE.Group();
 
     const giltBrassMat = new THREE.MeshPhysicalMaterial({
-      color: 0xe2bc66,
+      color: 0xf4c654,
       metalness: 0.94,
-      roughness: 0.2,
-      clearcoat: 0.55,
-      clearcoatRoughness: 0.16,
-      envMapIntensity: 1.35,
+      roughness: 0.18,
+      clearcoat: 0.62,
+      clearcoatRoughness: 0.12,
+      envMapIntensity: 1.55,
     });
     const antiqueBrassMat = new THREE.MeshPhysicalMaterial({
-      color: 0x997532,
+      color: 0xb6862e,
       metalness: 0.9,
-      roughness: 0.32,
-      clearcoat: 0.35,
-      envMapIntensity: 1.15,
+      roughness: 0.28,
+      clearcoat: 0.4,
+      envMapIntensity: 1.25,
     });
     this.disposableMaterials.push(giltBrassMat, antiqueBrassMat);
 
-    // C1-filleted twin-bezel meridian ring (smooth high-segment Torus pair + filleted core)
-    const mainRingGeo = new THREE.TorusGeometry(1.132, 0.019, 24, 144);
-    const innerFilletGeo = new THREE.TorusGeometry(1.111, 0.0075, 16, 144);
-    const outerFilletGeo = new THREE.TorusGeometry(1.151, 0.0065, 16, 144);
+    // C1-filleted twin-bezel spun-brass meridian ring
+    const mainRingGeo = new THREE.TorusGeometry(1.112, 0.02, 24, 144);
+    const innerFilletGeo = new THREE.TorusGeometry(1.09, 0.0075, 16, 144);
+    const outerFilletGeo = new THREE.TorusGeometry(1.132, 0.007, 16, 144);
     this.disposableGeometries.push(mainRingGeo, innerFilletGeo, outerFilletGeo);
 
     group.add(new THREE.Mesh(mainRingGeo, giltBrassMat));
     group.add(new THREE.Mesh(innerFilletGeo, antiqueBrassMat));
     group.add(new THREE.Mesh(outerFilletGeo, antiqueBrassMat));
 
-    // Turned C1-filleted cylindrical degree vernier pins every 15 deg (ZERO BoxGeometry!)
-    const minorPinGeo = new THREE.CapsuleGeometry(0.0055, 0.02, 6, 12);
-    const majorPinGeo = new THREE.CapsuleGeometry(0.008, 0.028, 8, 14);
-    this.disposableGeometries.push(minorPinGeo, majorPinGeo);
-    for (let deg = 0; deg < 360; deg += 15) {
+    // 72 precision calibrated degree vernier ticks (every 5° fine, 15° medium, 30° bold, 90° cardinal)
+    const fineTickGeo = new THREE.CapsuleGeometry(0.0038, 0.015, 4, 8);
+    const medTickGeo = new THREE.CapsuleGeometry(0.006, 0.024, 6, 12);
+    const majorTickGeo = new THREE.CapsuleGeometry(0.0088, 0.034, 8, 14);
+    this.disposableGeometries.push(fineTickGeo, medTickGeo, majorTickGeo);
+    for (let deg = 0; deg < 360; deg += 5) {
       const rad = deg * DEG2RAD_V7;
-      const isCardinal = deg % 90 === 0;
-      const pin = new THREE.Mesh(
-        isCardinal ? majorPinGeo : minorPinGeo,
-        isCardinal ? giltBrassMat : antiqueBrassMat,
+      const isMajor = deg % 30 === 0;
+      const isMed = !isMajor && deg % 15 === 0;
+      const tick = new THREE.Mesh(
+        isMajor ? majorTickGeo : isMed ? medTickGeo : fineTickGeo,
+        isMajor ? giltBrassMat : antiqueBrassMat,
       );
-      pin.position.set(Math.cos(rad) * 1.132, Math.sin(rad) * 1.132, 0);
-      pin.rotation.z = rad + Math.PI * 0.5;
-      group.add(pin);
+      const rTick = isMajor ? 1.118 : 1.112;
+      tick.position.set(Math.cos(rad) * rTick, Math.sin(rad) * rTick, 0);
+      tick.rotation.z = rad + Math.PI * 0.5;
+      group.add(tick);
     }
 
-    // Lathe-turned C1-filleted polar spindles & acorn finials
+    // Compact lathe-turned C1-filleted polar spindle bushings (max tip y = ±1.182 — zero clipping!)
     const lathePts = [
       new THREE.Vector2(0.0, 0.0),
-      new THREE.Vector2(0.014, 0.005),
-      new THREE.Vector2(0.016, 0.09),
-      new THREE.Vector2(0.028, 0.115),
-      new THREE.Vector2(0.018, 0.135),
-      new THREE.Vector2(0.031, 0.162),
-      new THREE.Vector2(0.022, 0.188),
-      new THREE.Vector2(0.0, 0.204),
+      new THREE.Vector2(0.018, 0.006),
+      new THREE.Vector2(0.019, 0.075),
+      new THREE.Vector2(0.032, 0.098),
+      new THREE.Vector2(0.022, 0.122),
+      new THREE.Vector2(0.034, 0.145),
+      new THREE.Vector2(0.02, 0.166),
+      new THREE.Vector2(0.0, 0.176),
     ];
     const finialLatheGeo = new THREE.LatheGeometry(lathePts, 24);
     this.disposableGeometries.push(finialLatheGeo);
 
     for (const sign of [1, -1]) {
       const finial = new THREE.Mesh(finialLatheGeo, giltBrassMat);
-      finial.position.set(0, sign * 1.01, 0);
+      finial.position.set(0, sign * 1.006, 0);
       if (sign < 0) finial.rotation.z = Math.PI;
       group.add(finial);
     }
 
-    // Lower cradling yoke arc
-    const yokeGeo = new THREE.TorusGeometry(1.188, 0.014, 18, 72, Math.PI * 0.64);
+    // Lower cradling brass yoke arc (fits cleanly within 1.178 radius)
+    const yokeGeo = new THREE.TorusGeometry(1.164, 0.013, 18, 72, Math.PI * 0.62);
     this.disposableGeometries.push(yokeGeo);
     const yoke = new THREE.Mesh(yokeGeo, antiqueBrassMat);
-    yoke.rotation.z = -Math.PI * 0.82;
+    yoke.rotation.z = -Math.PI * 0.81;
     group.add(yoke);
 
     return group;
@@ -933,7 +1094,12 @@ export class ReliefGlobeContraptionV7 {
       mid.lengthSq() > 0.001
         ? vector3ToLatLng(mid.normalize())
         : { lat: targetLat, lng: targetLng };
-    const dist = THREE.MathUtils.clamp(2.42 + (result.distanceKm / 9500) * 1.15, 2.38, 3.75);
+    const baseFramed = computeGlobeFramedDistanceV7(this.camera.aspect);
+    const dist = THREE.MathUtils.clamp(
+      baseFramed * 0.86 + (result.distanceKm / 9500) * 1.15,
+      2.65,
+      this.maxZoomDistance,
+    );
     this.flyTo(focus.lat, focus.lng, dist, this.options.reducedMotion ? 0.15 : 0.34);
 
     // Update 1966 Studio HUD status ribbon
@@ -1016,7 +1182,7 @@ export class ReliefGlobeContraptionV7 {
       startDist: this.camDistance,
       endLat: THREE.MathUtils.clamp(lat, -76, 76),
       endLng: startLng + deltaLng,
-      endDist: THREE.MathUtils.clamp(distance, 2.05, 4.0),
+      endDist: THREE.MathUtils.clamp(distance, 2.15, this.maxZoomDistance),
       elapsed: 0,
       duration: Math.max(0.1, durationSec),
     };
@@ -1071,8 +1237,8 @@ export class ReliefGlobeContraptionV7 {
         const ratio = this.lastPinchDist / dist;
         this.targetDistance = THREE.MathUtils.clamp(
           this.targetDistance * Math.pow(ratio, 0.9),
-          2.05,
-          4.0,
+          2.15,
+          this.maxZoomDistance,
         );
       }
       this.lastPinchDist = dist;
@@ -1146,7 +1312,11 @@ export class ReliefGlobeContraptionV7 {
     this.userHasInteracted = true;
     this.flyTween = null;
     const factor = e.deltaY > 0 ? 1.09 : 0.92;
-    this.targetDistance = THREE.MathUtils.clamp(this.targetDistance * factor, 2.05, 4.0);
+    this.targetDistance = THREE.MathUtils.clamp(
+      this.targetDistance * factor,
+      2.15,
+      this.maxZoomDistance,
+    );
   };
 
   private getPinchDistance(): number {
@@ -1180,8 +1350,9 @@ export class ReliefGlobeContraptionV7 {
     this.camera.position.copy(camPos);
     this.camera.lookAt(0, 0, 0);
 
-    // Silhouette the C1-filleted brass meridian cradle cleanly around Earth
-    this.cradleGroup.rotation.y = Math.atan2(camPos.x, camPos.z);
+    // Silhouette the C1-filleted spun-brass Rand McNally calibrated meridian ring cleanly around ALL 360° of Earth
+    // (zero Southern/Northern hemisphere occlusion when pitched to high latitudes!)
+    this.cradleGroup.quaternion.copy(this.camera.quaternion);
 
     const sunPos = latLngToVector3(
       THREE.MathUtils.clamp(this.camLatDeg + 25, -75, 75),
@@ -1191,7 +1362,7 @@ export class ReliefGlobeContraptionV7 {
     this.keyLight.position.copy(sunPos);
 
     if (!this.plantedCoord) {
-      this.coordBadgeEl.textContent = `AIM ${formatCoordShort(this.camLatDeg, this.camLngDeg)}`;
+      this.coordBadgeEl.textContent = formatCoordShort(this.camLatDeg, this.camLngDeg);
     }
   }
 
@@ -1199,9 +1370,18 @@ export class ReliefGlobeContraptionV7 {
     if (this.disposed) return;
     const w = Math.max(120, this.stageEl.clientWidth);
     const h = Math.max(120, this.stageEl.clientHeight);
-    this.camera.aspect = w / h;
+    const aspect = w / h;
+    this.camera.aspect = aspect;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h, false);
+
+    const framedDist = computeGlobeFramedDistanceV7(aspect);
+    this.maxZoomDistance = Math.max(5.6, framedDist * 1.35);
+    if (!this.userHasInteracted && !this.isLocked) {
+      this.camDistance = framedDist;
+      this.targetDistance = framedDist;
+      this.updateCameraTransform();
+    }
   }
 
   private readonly tick = (nowMs: number): void => {
@@ -1301,6 +1481,11 @@ export class ReliefGlobeContraptionV7 {
     this.rafId = requestAnimationFrame(this.tick);
   };
 
+  public renderFrameNow(): void {
+    if (this.disposed) return;
+    this.renderer.render(this.scene, this.camera);
+  }
+
   public dispose(): void {
     if (this.disposed) return;
     this.disposed = true;
@@ -1321,8 +1506,14 @@ export class ReliefGlobeContraptionV7 {
 
     for (const geo of this.disposableGeometries) geo.dispose();
     for (const mat of this.disposableMaterials) mat.dispose();
+    for (const tex of this.disposableTextures) tex.dispose();
     this.pmremTarget.dispose();
     this.renderer.dispose();
+    try {
+      this.renderer.forceContextLoss();
+    } catch {
+      // Context may already be lost in headless/unmounted teardown
+    }
     if (this.stageEl.parentElement === this.hostEl) {
       this.hostEl.removeChild(this.stageEl);
     }

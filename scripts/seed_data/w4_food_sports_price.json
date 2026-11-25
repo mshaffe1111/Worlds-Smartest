@@ -1,0 +1,5469 @@
+[
+  {
+    "canonicalEntityKey": "w4_cui_01_dr_pepper_23_flavors",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Soda-Fountain Wire: Created in Waco in 1885 to smell like an old drugstore counter, every Dr Pepper can proudly boasts [ _____ ].",
+    "choices": [
+      "11 flavors",
+      "17 flavors",
+      "23 flavors",
+      "31 flavors"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Pharmacist Charles Alderton mixed cherry, almond, licorice, and spice notes—the exact 23-flavor recipe still stays locked in two separate vaults!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 23,
+      "min": 5,
+      "max": 50,
+      "step": 1,
+      "unit": "flavors"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_cui_02_kfc_11_herbs_spices",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Kitchen Vault: Colonel Sanders guarded his Original Recipe fried chicken breading so fiercely that two suppliers separately blend its [ _____ ].",
+    "choices": [
+      "11 herbs & spices",
+      "7 herbs & spices",
+      "15 herbs & spices",
+      "19 herbs & spices"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Neither Griffith Laboratories nor McCormick knows the full formula—their half-blends only meet at a third plant before hitting KFC fryers!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 11,
+      "min": 3,
+      "max": 35,
+      "step": 1,
+      "unit": "herbs & spices"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_cui_03_baskin_robbins_31_flavors",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Scoop Shop Flash: Glendale partners Burt Baskin and Irv Robbins promised a fresh taste for every day of the longest month with [ _____ ].",
+    "choices": [
+      "24 flavors",
+      "28 flavors",
+      "40 flavors",
+      "31 flavors"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Look closely at Baskin-Robbins’s pink-and-blue \"BR\" logo—the pink strokes hidden inside the letters literally spell out the number 31!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 31,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "flavors"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_cui_04_bakers_dozen_13_loaves",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Medieval English bakers risked stiff fines—or the pillory—for short-weight bread, so they slipped in a spare loaf to form a \"baker’s dozen\" of how many?",
+    "choices": [
+      "11 loaves",
+      "13 loaves",
+      "14 loaves",
+      "16 loaves"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "King Henry III’s 1266 Assize of Bread punished light loaves harshly, making one extra free roll the cheapest insurance in medieval London!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "numeric": {
+      "target": 13,
+      "min": 6,
+      "max": 24,
+      "step": 1,
+      "unit": "loaves"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_cui_05_chefs_toque_100_pleats",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "French Brigade Lore: Tradition says a tall white pleated chef’s toque carries exactly [ _____ ], representing every classic way to cook an egg.",
+    "choices": [
+      "25 pleats",
+      "50 pleats",
+      "100 pleats",
+      "75 pleats"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Celebrity chef Marie-Antoine Carême popularized the towering hat in the 1800s—the taller the starched crown, the higher your kitchen rank!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 100,
+      "min": 10,
+      "max": 120,
+      "step": 5,
+      "unit": "pleats"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_cui_06_neapolitan_pizza_90_seconds",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Naples Oven Rule: Under strict Vera Pizza Napoletana standards, a blistering wood-fired dome must bake a classic pie in no more than [ _____ ].",
+    "choices": [
+      "90 seconds",
+      "45 seconds",
+      "60 seconds",
+      "120 seconds"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "At roughly 900°F on volcanic brick, dough puffs into leopard-spotted blisters in a minute and a half before its San Marzano sauce can dry out!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 90,
+      "min": 30,
+      "max": 120,
+      "step": 5,
+      "unit": "seconds"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_cui_07_baked_alaska_meringue",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Torched golden meringue peaks shielding an icy scoop of vanilla over sponge cake: what flashy banquet dessert survives a blast in a scorching oven?",
+    "choices": [
+      "Baked Alaska",
+      "Bananas Foster",
+      "Peach Melba",
+      "Cherries Jubilee"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Thousands of tiny air bubbles whipped into egg whites act like oven-mitt insulation, browning outside while keeping the ice cream core frozen solid!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_08_bananas_foster_brennans",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Flambéed tableside with dark rum, butter, and brown sugar at Brennan’s in 1951 New Orleans, which blazing dessert honors a local crime commissioner?",
+    "choices": [
+      "Crepes Suzette",
+      "Bananas Foster",
+      "Bread Pudding",
+      "Pecan Praline"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "New Orleans was America’s booming banana import hub in 1951, so chef Paul Blangé turned surplus fruit into a show-stopping fireball over vanilla!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_09_green_bean_casserole_1955",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "In 1955, Campbell’s test-kitchen whiz Dorcas Reilly stirred cream of mushroom soup, beans, and crispy fried onions into what Thanksgiving classic?",
+    "choices": [
+      "Cornbread dressing",
+      "Sweet yam soufflé",
+      "Green bean casserole",
+      "Creamed pearl onions"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Reilly only had pantry staples most 1950s kitchens already stocked—and her original stained index card now sits proudly in the Inventors Hall of Fame!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_10_shirley_temple_mocktail",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Mixing ginger ale, a ruby splash of grenadine, and a maraschino cherry at 1930s Hollywood supper clubs created which beloved zero-proof mocktail?",
+    "choices": [
+      "Roy Rogers",
+      "Arnold Palmer",
+      "Egg Cream",
+      "Shirley Temple"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Amusingly, the real child star grew up hating how syrupy-sweet her namesake drink tasted whenever waiters proudly slid one across the table!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_11_bibimbap_mixed_rice",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Literally translating to \"mixed rice\" in Korean, which sizzling stone-bowl favorite crowns warm grains with seasoned veggies, chili paste, and an egg?",
+    "choices": [
+      "Bibimbap",
+      "Japchae",
+      "Bulgogi",
+      "Tteokbokki"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "When served in a blazing-hot dolsot stone pot, the bottom layer of rice toasts into crunchy golden nurungji while you stir everything together!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_12_spam_musubi_hawaii",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Island Lunchbox: WWII Pacific rations hooked Hawaii so deeply on Hormel’s 1937 canned pork that corner stores wrap sushi-style musubi around [ _____ ].",
+    "choices": [
+      "Treet",
+      "Spam",
+      "Scrapple",
+      "Bologna"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Hawaii consumes more cans of Spam per capita than any other U.S. state—and even McDonald’s locations across the islands serve it at breakfast!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_13_gnocchi_boiled_potatoes",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Unlike wheat-flour spaghetti, classic northern Italian gnocchi gets its pillowy, tender bite by kneading flour together with riced what?",
+    "choices": [
+      "Yellow polenta",
+      "Ricotta curds",
+      "Boiled potatoes",
+      "Sweet chestnuts"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Cooks roll each dumpling off the tines of a fork to carve tiny ridges that trap butter-sage sauce or rich tomato ragù in every bite!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_14_pesto_pine_nuts",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Before pounding sweet basil, garlic, olive oil, and Parmigiano in a marble mortar for Ligurian pesto, cooks traditionally add which teardrop nuts?",
+    "choices": [
+      "Walnuts",
+      "Almonds",
+      "Cashews",
+      "Pine nuts"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Harvested by hand from Mediterranean stone-pine cones, pricey pine nuts explain why authentic jar pesto costs twice as much as marinara!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_15_myth_salting_pasta_water",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Stovetop Klaxon! Three of these pantry rules are solid kitchen science, while one stubborn pasta-night habit gets the physics backwards. Spot the myth!",
+    "choices": [
+      "Salting water cuts boil time",
+      "Bananas ripen green avocados",
+      "Resting steak saves juices",
+      "Salt tames bitter coffee"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Dissolved salt actually nudges water’s boiling point slightly HIGHER—chefs salt pasta water purely so every noodle absorbs flavor from inside out!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_16_bechamel_white_sauce",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Whisking butter, flour, and warm milk with a grating of nutmeg builds which velvety white French mother sauce at the heart of lasagna and mac and cheese?",
+    "choices": [
+      "Velouté",
+      "Béchamel",
+      "Espagnole",
+      "Béarnaise"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Named after Louis XIV’s chief steward Louis de Béchamel, adding melted Gruyère instantly promotes this silky base into Mornay sauce!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_17_shakshuka_poached_eggs",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Runny eggs gently poached right inside a bubbling skillet of spiced crushed tomatoes, roasted peppers, and cumin: name this North African brunch star!",
+    "choices": [
+      "Menemen",
+      "Chilaquiles",
+      "Shakshuka",
+      "Huevos Motuleños"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Derived from Tunisian Arabic slang meaning \"all mixed up,\" shakshuka arrived with New World tomatoes before sweeping cafés from Tel Aviv to Brooklyn!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_18_pastel_de_nata_lisbon",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Blistered, caramelized egg custard baked inside shatteringly crisp pastry shells: Lisbon’s monks perfected which famed Portuguese tart from leftover yolks?",
+    "choices": [
+      "Canelé de Bordeaux",
+      "Flan pâtissier",
+      "Tarte au citron",
+      "Pastel de nata"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Jerónimos Monastery monks starched their robes with egg whites—turning leftover golden yolks into Lisbon’s sweetest culinary icon in 1837!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_19_affogato_espresso_gelato",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Literally Italian for \"drowned,\" what effortless two-ingredient cafe treat pours a piping-hot shot of espresso straight over cold vanilla gelato?",
+    "choices": [
+      "Affogato",
+      "Macchiato",
+      "Zabaglione",
+      "Semifreddo"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The contrast of bitter boiling espresso melting sweet fior di latte cream delivers dessert and after-dinner coffee in one glorious chilled glass!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_20_arepas_cornmeal_pockets",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Griddled golden cornmeal rounds sliced open like warm pockets and packed with melty cheese or slow-braised beef: which street food unites Colombia and Venezuela?",
+    "choices": [
+      "Pupusas",
+      "Arepas",
+      "Gorditas",
+      "Tostones"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Indigenous cooks ground maize into arepas long before Columbus arrived—today pre-cooked Harina P.A.N. turns out crispy rounds in ten minutes flat!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_21_cheese_fondue_swiss_cartel",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Ski-Lodge Craze: Promoted in the 1930s by a Swiss dairy cartel desperate to move winter Gruyère, bubbling caquelon-pot [ _____ ] conquered 1960s dinner parties.",
+    "choices": [
+      "Raclette grill",
+      "Welsh rarebit",
+      "Cheese fondue",
+      "Aligot mash"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The Swiss Cheese Union coined the slogan \"Fondue is good and creates a good mood\"—and by 1966 every hip suburban host owned long color-coded forks!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_22_chimichurri_argentina",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Finely chopped parsley, oregano, garlic, chili flakes, and zippy red-wine vinegar unite in which bright green Argentine sauce spooned over grilled steak?",
+    "choices": [
+      "Salsa verde",
+      "Gremolata",
+      "Romesco",
+      "Chimichurri"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Unlike Italian pesto, authentic chimichurri is chopped by knife rather than pureed smooth—and folklore even traces its name to Basque \"tximitxurri\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_23_mole_poblano_chocolate",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Simmering toasted chilis, warm spices, sesame seeds, and a bold square of unsweetened chocolate builds which glossy dark Mexican sauce famed in Puebla?",
+    "choices": [
+      "Mole poblano",
+      "Salsa macha",
+      "Recado negro",
+      "Pipián rojo"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "From Nahuatl \"mōlli\" (sauce), a master Puebla mole layers 20+ ingredients so chocolate lends deep, velvety complexity—never candy sweetness!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_24_bundt_pan_1966_bakeoff",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Fluted cast-aluminum ring with a central chimney that bakes thick batters evenly: what Minneapolis cake mold exploded after a 1966 Pillsbury Bake-Off?",
+    "choices": [
+      "Savarin ring",
+      "Bundt pan",
+      "Madeleine tray",
+      "Springform tin"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Nordic Ware barely sold any Bundt pans until Ella Helfrich’s gooey \"Tunnel of Fudge\" took second place in 1966—sparking 200,000 mail-in requests overnight!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_25_moroccan_tagine_cone",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Conical clay chimney perched over a shallow glazed dish so rising steam condenses and drips back onto spiced lamb: name this water-saving North African pot!",
+    "choices": [
+      "Roman Römertopf",
+      "Cazuela skillet",
+      "Moroccan tagine",
+      "Japanese donabe"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Engineered for arid regions where every drop of water counted, the peaked lid acts like a self-basting dome that turns tough cuts butter-tender!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_26_reuben_sandwich_deli",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Deli Board: Piling warm corned beef, tangy sauerkraut, melted Swiss, and Russian dressing onto butter-griddled rye builds an unmistakable [ _____ ].",
+    "choices": [
+      "Cubano press",
+      "Monte Cristo",
+      "Muffuletta sub",
+      "Reuben sandwich"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Both Omaha’s Blackstone Hotel poker games and Arnold Reuben’s NYC deli claim the 1920s creation—either way, it won the 1956 Sandwich Prize!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_27_cajun_gumbo_okra_bantu",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Bayou Pot: Borrowing its name from the West African Bantu word \"ki ngombo\" for okra, Louisiana’s rich dark-roux stew [ _____ ] is ladled over warm rice.",
+    "choices": [
+      "Cajun gumbo",
+      "Creole bisque",
+      "Crawfish boil",
+      "Shrimp remoulade"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Great gumbo cooks stir flour and oil for forty straight minutes until the roux hits milk-chocolate brown—stop stirring for ten seconds and you start over!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_28_creme_brulee_burnt_cream",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Dessert Torch: Translating literally to \"burnt cream,\" chilled vanilla custard beneath a shatteringly crisp sheet of caramelized sugar is called [ _____ ].",
+    "choices": [
+      "Panna cotta",
+      "Crème brûlée",
+      "Flan caramel",
+      "Pots de crème"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "First printed in François Massialot’s 1691 cookbook, its signature tabletop thrill is cracking that glossy sugar crust cleanly with the back of your spoon!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_29_gazpacho_chilled_soup",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Blending peak-summer tomatoes, cucumber, garlic, olive oil, and day-old bread served icy cold from a pitcher yields which refreshing Andalusian soup?",
+    "choices": [
+      "Vichyssoise",
+      "Ribollita",
+      "Gazpacho",
+      "Salmorejo"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Before tomatoes crossed the Atlantic, Spanish farmhands already pounded stale bread, garlic, vinegar, and olive oil to beat 100°F heat!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_30_vanilla_bean_sole_orchid",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Among more than 25,000 orchid species blooming on Earth, America’s most popular ice-cream flavor comes from the cured seed pod of which lone edible crop?",
+    "choices": [
+      "Saffron thread",
+      "Cardamom pod",
+      "Tonka kernel",
+      "Vanilla bean"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Because each vanilla blossom opens for just one single morning, 12-year-old enslaved boy Edmond Albius invented hand-pollination in 1841—still used today!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_31_prosciutto_dry_air",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "How does papery-thin Italian prosciutto crudo differ from baked deli ham? It is never cooked or smoked—just patiently cured with sea salt and what?",
+    "choices": [
+      "Dry mountain air",
+      "Hickory wood smoke",
+      "Red wine vinegar",
+      "Olive oil brine"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Parma’s curing houses open tall shuttered windows to let fragrant Apennine breezes slowly dry hanging hams for one to two full years!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_32_myth_spicy_burns_taste_buds",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Diner Klaxon! Three of these snack-aisle truths are 100% documented science, while one fiery chili warning misses the mark. Spot the myth!",
+    "choices": [
+      "Ketchup began as fish sauce",
+      "Spicy food burns taste buds",
+      "MSG occurs in ripe tomatoes",
+      "Peanuts grow underground"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Capsaicin merely hijacks heat-sensing TRPV1 pain nerves to shout \"fire!\"—zero real tissue burn occurs, though milk’s casein washes the oil away fast!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_33_myth_dark_roast_caffeine",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Coffeehouse Klaxon! Three of these barista facts check out with café pros, while one morning-mug assumption gets it flipped backwards. Catch the myth!",
+    "choices": [
+      "Espresso uses fine-ground beans",
+      "Coffee cherries grow on shrubs",
+      "Dark roasts pack extra caffeine",
+      "Cold brew tastes less acidic"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Dark roasting puffs beans larger and cooks oils smoky without adding caffeine—measured by scoop, dense light roasts actually deliver slightly MORE buzz!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_34_vindaloo_goa_portugal",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 3,
+    "isBlitzLegal": false,
+    "stem": "Goan cooks took Portuguese sailors’ wine-and-garlic pork stew (\"vinha d’alhos\") and added fiery palm vinegar and chilis to invent which tangy curry?",
+    "choices": [
+      "Rogan josh",
+      "Korma masala",
+      "Saag paneer",
+      "Vindaloo"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Even though takeout spots toss in spuds (\"aloo\" means potato in Hindi), traditional Goan vindaloo had zero potatoes—just wine, garlic, and fire!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_35_mapo_tofu_chengdu",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 3,
+    "isBlitzLegal": false,
+    "stem": "Honoring a pockmarked Chengdu grandmother who fed hungry oil porters in 1862, which tingling Sichuan dish marries silky bean curd with fermented chili beans?",
+    "choices": [
+      "Mapo tofu",
+      "Kung Pao bowl",
+      "Dan dan noodle",
+      "Twice-cooked pork"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Its signature electric buzz (\"málà\") comes from Sichuan peppercorns—citrus-family husks that make your tongue literally vibrate at 50 Hertz!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_36_capers_flower_buds",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 3,
+    "isBlitzLegal": false,
+    "stem": "Those salty olive-green pops scattered atop lox bagels and chicken piccata aren’t miniature berries at all—capers are actually pickled unopened what?",
+    "choices": [
+      "Pepper seeds",
+      "Flower buds",
+      "Olive shoots",
+      "Root nodules"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Picked by hand at dawn off prickly Mediterranean bushes before they bloom into purple-white blossoms, the tiniest \"non-pareil\" buds fetch top dollar!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_37_beef_wellington_duxelles",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 3,
+    "isBlitzLegal": false,
+    "stem": "Wrapping seared beef tenderloin in savory chopped mushroom duxelles, prosciutto, and golden puff pastry creates which showstopping British banquet roast?",
+    "choices": [
+      "Steak Diane",
+      "Chateaubriand",
+      "Beef Wellington",
+      "Tournedos Rossini"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Chefs brush crepe or prosciutto around the meat like a waterproof raincoat so mushroom moisture never turns that flaky puff-pastry crust soggy!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_38_myth_turkey_tryptophan",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 3,
+    "isBlitzLegal": false,
+    "stem": "Holiday Table Klaxon! Three of these food facts hold up in nutrition labs, while one classic Thanksgiving excuse is a sleepy tall tale. Spot the myth!",
+    "choices": [
+      "Butter is roughly 80% fat",
+      "Brown sugar holds molasses",
+      "Pears ripen best off the tree",
+      "Turkey tryptophan knocks you out"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Chicken breast and cheddar pack just as much tryptophan per ounce—Thanksgiving couch naps are really caused by massive mounds of stuffing, pie, and wine!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_39_myth_avocado_pit_guac",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 4,
+    "isBlitzLegal": false,
+    "stem": "Bistro Klaxon! Three of these culinary oddities are 100% real, while one viral guacamole-saving trick does almost nothing. Call out the myth!",
+    "choices": [
+      "Avocado pits stop guac browning",
+      "Raw honey keeps for millennia",
+      "Lobster blood turns pale blue",
+      "Pineapples digest tongue protein"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "The pit only protects the tiny circle directly beneath it by blocking air—pressing plastic wrap flush onto the guacamole stops browning way better!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_cui_40_tempura_portuguese_lent",
+    "category": "CUISINE",
+    "domain": "HIST_FACT",
+    "difficulty": 5,
+    "isBlitzLegal": false,
+    "stem": "Japanese cooks adapted lacy ice-cold batter frying in the 1500s from Portuguese Jesuits’ meatless Lenten days (\"quattuor tempora\"), creating what dish?",
+    "choices": [
+      "Tonkatsu",
+      "Tempura",
+      "Yakitori",
+      "Okonomiyaki"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Mixing icy water lightly into flour keeps gluten from forming, so battered shrimp puffs into a featherlight crisp halo in seconds of hot sesame oil!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_01_wilt_100_points_hershey",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "NBA Wire, March 1962: Inside a half-full arena in Hershey, Pennsylvania, Philadelphia titan Wilt Chamberlain dropped a single-game [ _____ ] on the Knicks!",
+    "choices": [
+      "81 points",
+      "92 points",
+      "100 points",
+      "112 points"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Zero TV cameras taped the night! Chamberlain—a career 51% foul shooter—miraculously sank 28 of 32 underhand free throws to hit the century mark!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 100,
+      "min": 50,
+      "max": 120,
+      "step": 1,
+      "unit": "points"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_spt_02_nba_24_second_shot_clock",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Hoops Rescue, 1954: Sick of teams stalling into 19-18 snoozers, Syracuse owner Danny Biasone saved pro basketball by inventing the [ _____ ] shot clock.",
+    "choices": [
+      "24-second",
+      "18-second",
+      "30-second",
+      "35-second"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Biasone divided 2,880 game seconds by 120 lively shots to land on 24—and NBA scoring immediately jumped 14 points per team overnight!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 24,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "seconds"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_spt_03_golf_18_holes_st_andrews",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Links Ledger: After Scotland’s Old Course at St. Andrews trimmed its seaside loop from 22 in 1764, a standard round of golf settled forever at [ _____ ].",
+    "choices": [
+      "12 holes",
+      "16 holes",
+      "24 holes",
+      "18 holes"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Early golfers played out-and-back over the exact same fairways—once St. Andrews merged four short holes into two, every club on Earth copied 18!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 18,
+      "min": 9,
+      "max": 36,
+      "step": 1,
+      "unit": "holes"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_spt_04_dimaggio_56_game_streak",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Diamond Wire, 1941: From May 15 to July 16, Yankee Clipper Joe DiMaggio enthralled radio listeners across America with baseball’s iconic [ _____ ] hit streak!",
+    "choices": [
+      "44-game",
+      "56-game",
+      "64-game",
+      "72-game"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The night after Cleveland third baseman Ken Keltner finally robbed him to end it, DiMaggio calmly started ANOTHER 16-game hitting streak!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 56,
+      "min": 20,
+      "max": 90,
+      "step": 1,
+      "unit": "games"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_spt_05_golf_14_club_bag_limit",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "After 1930s pros started forcing poor caddies to lug 25-iron trunks around courses, golf’s rulemakers capped every tournament bag at how many clubs?",
+    "choices": [
+      "10 clubs",
+      "12 clubs",
+      "14 clubs",
+      "16 clubs"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Pack one extra wedge by mistake and you get docked two penalty strokes per hole—Ian Woosnam infamously lost the 2001 Open Championship that exact way!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "numeric": {
+      "target": 14,
+      "min": 6,
+      "max": 25,
+      "step": 1,
+      "unit": "clubs"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_spt_06_baseball_108_stitches",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Every official Major League baseball is still stitched completely by hand with waxed red cotton thread forming exactly how many raised double stitches?",
+    "choices": [
+      "108 stitches",
+      "72 stitches",
+      "96 stitches",
+      "124 stitches"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Those 108 raised seams aren’t decoration—pitchers grip them to spin curveballs and sliders by grabbing turbulent air at 95 mph!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "numeric": {
+      "target": 108,
+      "min": 40,
+      "max": 160,
+      "step": 2,
+      "unit": "stitches"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_spt_07_hank_aaron_715_braves",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Blasting career homer #715 over Atlanta’s left-field wall on April 8, 1974, which Braves slugger finally broke Babe Ruth’s legendary 39-year record?",
+    "choices": [
+      "Willie McCovey",
+      "Hank Aaron",
+      "Reggie Jackson",
+      "Frank Robinson"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Even if you erased every single one of Hammerin’ Hank’s 755 home runs, he STILL collected over 3,000 career base hits!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_08_lou_gehrig_iron_horse",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Calling himself \"the luckiest man on the face of the earth\" at Yankee Stadium in 1939, which \"Iron Horse\" played 2,130 consecutive MLB games?",
+    "choices": [
+      "Jimmie Foxx",
+      "Stan Musial",
+      "Lou Gehrig",
+      "Mickey Mantle"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Gehrig’s famous streak began by chance in June 1925 when regular first baseman Wally Pipp sat out with a headache—making \"getting Pipped\" sports slang!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_09_willie_mays_1954_catch",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Sprinting full-tilt away from home plate in the 1954 World Series to glove Vic Wertz’s 425-foot drive over his shoulder: who pulled off \"The Catch\"?",
+    "choices": [
+      "Duke Snider",
+      "Roberto Clemente",
+      "Al Kaline",
+      "Willie Mays"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Even crazier than the over-the-shoulder grab? Mays spun on a dime and fired a rocket back to the infield to hold the runner from scoring!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_10_larry_bird_three_point_jacket",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Walking into the 1988 NBA Three-Point Contest locker room to ask rivals \"Who’s coming in second?\" before winning in his warmup jacket: who backed it up?",
+    "choices": [
+      "Larry Bird",
+      "Reggie Miller",
+      "Isiah Thomas",
+      "Clyde Drexler"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Bird raised one index finger toward the ceiling before his final money ball even swished through the net—claiming his third straight shootout crown!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_11_kobe_bryant_black_mamba",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Having BOTH #8 and #24 retired by the Lakers and pouring in 81 points against Toronto in 2006, which relentless guard called himself the \"Black Mamba\"?",
+    "choices": [
+      "Allen Iverson",
+      "Kobe Bryant",
+      "Dwyane Wade",
+      "Tracy McGrady"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Bryant remains the only player in NBA history to earn two separate jersey retirements with the same franchise—winning five rings across two decades!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_12_rafael_nadal_king_of_clay",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Racking up a staggering 14 French Open trophies and a 112-4 mark on Paris’s crushed red brick dust, which Spanish left-hander ruled as \"King of Clay\"?",
+    "choices": [
+      "Björn Borg",
+      "David Ferrer",
+      "Rafael Nadal",
+      "Gustavo Kuerten"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Naturally right-handed in daily life, young Rafa switched to a vicious left-handed forehand whip whose heavy topspin bounced right over rivals’ shoulders!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_13_joe_namath_super_bowl_iii",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Relaxing poolside in Miami in January 1969, which fur-coat-wearing Jets quarterback boldly guaranteed—and pulled off—an 18-point Super Bowl III upset?",
+    "choices": [
+      "Johnny Unitas",
+      "Bart Starr",
+      "Len Dawson",
+      "Joe Namath"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Namath’s 16-7 win over Baltimore proved the upstart AFL could hang with the mighty NFL—and famously wagged his #1 finger running down the tunnel!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_14_bowling_turkey_three_strikes",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Lanes Tradition: Because 1800s Thanksgiving alleys awarded holiday birds to hot rollers, stringing three consecutive bowling strikes is still cheered as a [ _____ ].",
+    "choices": [
+      "Turkey",
+      "Gander",
+      "Rooster",
+      "Pheasant"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Back when bowling pins were hand-set and alleys were crooked timber, three strikes in a row was rare enough to earn Sunday’s whole feast!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_15_tennis_let_serve",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "In tennis, when a zipping serve clips the top white tape of the net yet still drops cleanly inside the proper service box, what call grants a free do-over?",
+    "choices": [
+      "A foot fault",
+      "A let call",
+      "A double fault",
+      "A break point"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "From old English \"let\" meaning \"hindrance\"—tiny sensors clipped inside the net cord now beep umpires the instant a serve clips the tape!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_16_myth_homers_clear_fence",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Dugout Klaxon! Three of these real-world sports truths hold up in every rulebook, while one classic sandlot belief gets called out. Catch the myth!",
+    "choices": [
+      "Baseball has zero game clock",
+      "Golfers call penalties on self",
+      "Home runs must clear fences",
+      "Tie games count in NFL records"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Inside-the-park home runs count every bit as much—Roberto Clemente even smacked a walk-off inside-the-park GRAND SLAM in 1956!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_17_roger_federer_eight_wimbledons",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Striding onto Centre Court in crisp cream blazers while claiming a men’s-record eight Wimbledon singles titles, which Swiss star became grass-court royalty?",
+    "choices": [
+      "Pete Sampras",
+      "Andy Murray",
+      "Stan Wawrinka",
+      "Roger Federer"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Federer even went five straight Wimbledons without losing a match from 2003 to 2007—and played the epic 2008 dusk final hailed as tennis’s greatest duel!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_18_zinedine_zidane_world_cup",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "After heading in two goals to crown France at the 1998 World Cup, which velvet-footed midfielder ended his 2006 Final career with a shocking red-card headbutt?",
+    "choices": [
+      "Zinedine Zidane",
+      "Thierry Henry",
+      "Michel Platini",
+      "Didier Deschamps"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Minutes before his stunning exit in Berlin, Zidane had coolly chipped a Panenka penalty off the bar—walking right past the gold trophy!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_19_steffi_graf_1988_golden_slam",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Sweeping all four tennis Grand Slams PLUS Olympic singles gold inside the single calendar year of 1988, who completed the sport’s lone Golden Slam?",
+    "choices": [
+      "Monica Seles",
+      "Steffi Graf",
+      "Chris Evert",
+      "Martina Hingis"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "At age 19, Graf even double-bageled Natasha Zvereva 6-0, 6-0 in 34 minutes in that year’s French Open final before capturing gold in Seoul!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_20_gordie_howe_hat_trick",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Rink Folklore: Tallying one goal, one assist, and dropping the gloves for one five-minute fight in the same hockey game is cheered as a [ _____ ] hat trick.",
+    "choices": [
+      "Bobby Orr",
+      "Mario Lemieux",
+      "Gordie Howe",
+      "Maurice Richard"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Amusingly, \"Mr. Hockey\" only logged that exact combo TWICE in his 32-year career—Rick Tocchet holds the NHL record with 18!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_21_bobby_orr_1970_flying_goal",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Soaring completely horizontal in midair with arms raised after scoring Boston’s 1970 Stanley Cup overtime clincher: who stars in hockey’s greatest photo?",
+    "choices": [
+      "Phil Esposito",
+      "Stan Mikita",
+      "Jean Béliveau",
+      "Bobby Orr"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "St. Louis defender Noel Picard tripped Orr the split-second he fired past Glenn Hall—launching the defenseman into a bronze statue outside TD Garden!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_22_jerry_rice_hill_sprints",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Charging up brutal California hills every offseason on his way to 22,895 receiving yards and 208 touchdowns, who towers atop NFL receiver history?",
+    "choices": [
+      "Jerry Rice",
+      "Randy Moss",
+      "Cris Carter",
+      "Steve Largent"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Rice’s lead is so absurd that if you took away his first FIVE NFL seasons, his remaining yardage would STILL rank inside the top ten all-time!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_23_walter_payton_sweetness",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Nicknamed \"Sweetness\" for both his graceful jukes and generous spirit, which Bears running back lends his name to the NFL’s Man of the Year award?",
+    "choices": [
+      "Barry Sanders",
+      "Walter Payton",
+      "Jim Brown",
+      "Gale Sayers"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Payton missed just ONE game in 13 bruising seasons—and every winner of his namesake honor wears a permanent silhouetted jersey patch!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_24_wilma_rudolph_1960_rome",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Beating childhood polio and heavy leg braces to sweep the 100m, 200m, and 4x100m relay at the 1960 Rome Olympics, who sprinted into TV history?",
+    "choices": [
+      "Wyomia Tyus",
+      "Althea Gibson",
+      "Wilma Rudolph",
+      "Gail Devers"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Home in Clarksville, Tennessee as \"the fastest woman in the world,\" Rudolph insisted her victory parade and banquet be fully integrated!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_25_mary_lou_retton_1984_vault",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Sticking consecutive perfect-10 vaults at the 1984 Los Angeles Games to become America’s first women’s Olympic all-around gymnastics champ: who leaped to gold?",
+    "choices": [
+      "Shannon Miller",
+      "Dominique Dawes",
+      "Cathy Rigby",
+      "Mary Lou Retton"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Needing a flawless 10 on her final apparatus to edge Ecaterina Szabo by 0.05, Retton clinched on Vault #1—then stuck a second 10 anyway!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_26_curling_granite_button",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Frantic brooms sweeping pebbled ice ahead of a 42-pound polished Scottish granite rock gliding toward a bullseye called \"the button\": name this Olympic sport!",
+    "choices": [
+      "Curling",
+      "Bobsled",
+      "Biathlon",
+      "Skeleton"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Every single Olympic curling stone on Earth is quarried from rare water-repellent granite on one tiny uninhabited Scottish island—Ailsa Craig!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_27_ryder_cup_seed_merchant",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Named after an English seed merchant who donated its gleaming gold chalice in 1927, which biennial match-play clash pits Team USA against Team Europe?",
+    "choices": [
+      "The Walker Cup",
+      "The Ryder Cup",
+      "The Solheim Cup",
+      "The Curtis Cup"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Samuel Ryder made his fortune selling penny seed packets—and golfers play the event purely for team pride with zero official prize money!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_28_hockey_icing_rule",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "When a full-strength NHL squad blasts the puck from behind center red all the way past the rival goal line untouched, linesmen whistle play dead for what?",
+    "choices": [
+      "Offside entry",
+      "High sticking",
+      "Icing the puck",
+      "Too many men"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "To punish stalling, the offending squad cannot swap tired skaters before the faceoff—though shorthanded penalty killers get a free pass!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_29_f1_pole_position_horses",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "In Formula 1 and IndyCar, why is the quickest qualifier starting up front on the grid said to hold \"pole position\"? The phrase came straight from which sport?",
+    "choices": [
+      "Yacht sailing",
+      "Track hurdling",
+      "Ice skating",
+      "Horse racing"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "On oval dirt racetracks, the inside rail beside the starting distance pole gave horses the shortest path around every turn—and motorsport kept the phrase!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_30_nfl_regular_overtime_tie",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Playoff games grind on until someone scores—but if a regular-season NFL overtime game stays deadlocked when the extra 10-minute clock hits 0:00, what happens?",
+    "choices": [
+      "It ends a tie",
+      "Field-goal kick",
+      "Coin-flip win",
+      "Next score wins"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Several stunned NFL pros—including Donovan McNabb in 2008—confessed on live TV they had no idea regular-season games could even end tied!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_31_myth_ancient_torch_relay",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Olympic Klaxon! Three of these wild Games milestones actually happened, while one famous fiery ritual is way younger than you think. Spot the myth!",
+    "choices": [
+      "1904 marathoner rode in a car",
+      "Ancient Greeks ran torch relays",
+      "Tug-of-war awarded Olympic gold",
+      "Early Games held live art events"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Ancient Olympia kept a stationary sacred altar flame with ZERO cross-country relay—the modern Olympic torch relay was invented for the 1936 Berlin Games!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_32_myth_wilt_fouled_out",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Hardwood & Diamond Klaxon! Three of these Hall-of-Fame stats are 100% legit, while one towering record claim gets whistled for a foul. Catch the myth!",
+    "choices": [
+      "Babe Ruth began as a pitcher",
+      "Shaq sank just one 3-pointer",
+      "Wilt fouled out twice in NBA",
+      "Gretzky won nine MVP trophies"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Across 1,045 regular-season games and 160 playoff battles, Wilt Chamberlain NEVER fouled out a single time—zero ejections on six fouls in his whole career!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_33_abebe_bikila_barefoot_1960",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 3,
+    "isBlitzLegal": false,
+    "stem": "Gliding down Rome’s cobblestone Appian Way completely barefoot to win the 1960 Olympic marathon in world-record time: which Ethiopian hero stunned the globe?",
+    "choices": [
+      "Haile Gebrselassie",
+      "Eliud Kipchoge",
+      "Kenenisa Bekele",
+      "Abebe Bikila"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Bikila ditched his sponsor’s blister-giving shoes hours before the start—then came back four years later in Tokyo wearing sneakers to win gold AGAIN!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_34_bob_beamon_1968_long_jump",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 3,
+    "isBlitzLegal": false,
+    "stem": "Mexico City Wire, 1968: Soaring 29 feet 2.5 inches in crisp high-altitude air, [ _____ ] shattered the Olympic long-jump mark by nearly two full feet!",
+    "choices": [
+      "Bob Beamon",
+      "Carl Lewis",
+      "Mike Powell",
+      "Ralph Boston"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Beamon soared clean past the stadium’s optical measuring rail—officials had to fetch a humble steel tape measure while he collapsed in shock!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_35_infield_fly_rule_baseball",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 3,
+    "isBlitzLegal": false,
+    "stem": "To stop crafty defenders from deliberately dropping easy pop-ups to spark cheap double plays with runners on first and second, umps invoke which rule?",
+    "choices": [
+      "Balk penalty",
+      "Infield fly rule",
+      "Ground-rule double",
+      "Tag-up waiver"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Added in 1895 after slick Baltimore Orioles fielders kept baiting trapped baserunners, the batter is called out automatically while the ball stays live!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_36_claret_jug_open_trophy",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 3,
+    "isBlitzLegal": false,
+    "stem": "Gleaming silver wine ewer engraved with champions since 1873 and hoisted each July on breezy British links: what prize crowns The Open Championship?",
+    "choices": [
+      "The Wanamaker Cup",
+      "The Havemeyer Vase",
+      "The Claret Jug",
+      "The Vardon Ewer"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Golf originally awarded a red Morocco-leather Championship Belt—until Young Tom Morris won it three times straight in 1870 and got to keep it forever!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_37_shuttlecock_16_feathers",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 3,
+    "isBlitzLegal": false,
+    "stem": "Crowned by a cork nose and exactly 16 left-wing goose feathers that rocket off strings past 300 mph before braking dramatically: name this feathered flyer!",
+    "choices": [
+      "Lacrosse ball",
+      "Squash dot",
+      "Wiffle orb",
+      "Shuttlecock"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "No matter how awkwardly a shuttlecock gets smashed, its cork tip always flips forward in midair so the feathered skirt trails cleanly like a dart!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_38_cricket_duck_egg_zero",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 3,
+    "isBlitzLegal": false,
+    "stem": "In cricket, walking back to the pavilion dismissed for zero runs is teasingly called a \"duck\" because the oval digit 0 on scorebooks resembles what?",
+    "choices": [
+      "A duck’s egg",
+      "A duck’s bill",
+      "A pond ripple",
+      "A white feather"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Getting dismissed on the very first ball you face earns the even crueler honor of a \"Golden Duck\"—and twice in one match makes a \"pair\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_39_myth_offside_throw_ins",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 4,
+    "isBlitzLegal": false,
+    "stem": "Referee Klaxon! Three of these official rulebook quirks are 100% legal plays, while one shouted sideline claim gets waved off. Spot the myth!",
+    "choices": [
+      "Soccer allows corner-kick goals",
+      "Offside applies on throw-ins",
+      "Goalies can score in NHL games",
+      "A safety awards two NFL points"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Under FIFA’s Laws of the Game, a striker can stand right beside the rival keeper on a throw-in, goal kick, or corner—offside NEVER applies directly!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_spt_40_fair_catch_kick_nfl",
+    "category": "SPORTS",
+    "domain": "NUM_GEO",
+    "difficulty": 5,
+    "isBlitzLegal": false,
+    "stem": "After cleanly fielding a punt, an NFL team may attempt an unguarded free field goal straight from that spot using which ultra-rare rulebook gem?",
+    "choices": [
+      "Drop-kick try",
+      "Onside punt",
+      "Fair-catch kick",
+      "Scrimmage snap"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Going nearly half a century between successes from 1976 until the Chargers nailed a 57-yarder in December 2024, it’s football’s rarest three-pointer!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_01_1966_postage_stamp_5_cents",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Post Office Flash, 1966: Dropping a one-ounce letter into a blue U.S. mailbox during our broadcast’s home year cost a tiny [ _____ ]!",
+    "choices": [
+      "2 cents",
+      "5 cents",
+      "10 cents",
+      "15 cents"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Featuring George Washington’s profile, the 5-cent stamp held steady from 1963 through 1967—today’s first-class stamp runs roughly fifteen times higher!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 5,
+      "min": 1,
+      "max": 25,
+      "step": 1,
+      "unit": "cents"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_prc_02_arizona_iced_tea_99_cents",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Corner-Store Legend: Pre-printed straight onto its tall cherry-blossom can since 1992, AriZona Iced Tea fiercely defends its [ _____ ] tag.",
+    "choices": [
+      "69 cents",
+      "79 cents",
+      "119 cents",
+      "99 cents"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Founder Don Vultaggio skipped pricey TV ads and thinned cans to keep them under a buck for decades—calling it his thank-you to loyal fans!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 99,
+      "min": 49,
+      "max": 120,
+      "step": 1,
+      "unit": "cents"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_prc_03_1955_mcdonalds_burger_15c",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "When Ray Kroc opened his first franchised McDonald’s in Des Plaines, Illinois in 1955, a freshly griddled hamburger lit up the signboard at how much?",
+    "choices": [
+      "15 cents",
+      "10 cents",
+      "25 cents",
+      "35 cents"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "You could pair that 15-cent burger with 10-cent fries and a 20-cent milkshake—an entire Friday-night drive-in feast with change back from half a dollar!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "numeric": {
+      "target": 15,
+      "min": 5,
+      "max": 50,
+      "step": 1,
+      "unit": "cents"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_prc_04_1966_gallon_gas_32_cents",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Fill ’Er Up, 1966: Pulling a shiny coupe into an American service station in 1966 cost an average of roughly [ _____ ] for a gallon of regular gas!",
+    "choices": [
+      "18 cents",
+      "49 cents",
+      "65 cents",
+      "32 cents"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Better still, a uniformed attendant pumped it for you, washed your windshield, checked the oil, and often handed out free drinking glasses or road maps!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 32,
+      "min": 15,
+      "max": 75,
+      "step": 1,
+      "unit": "cents/gal"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_prc_05_super_bowl_i_12_dollars",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Stadium Stub, 1967: Over 30,000 Los Angeles Coliseum seats still sat empty at Super Bowl I even though the most expensive ticket ran just [ _____ ]!",
+    "choices": [
+      "$6",
+      "$12",
+      "$25",
+      "$40"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Fans grumbled $12 felt steep compared to regular $5 NFL seats—a wild bargain next to modern Super Bowl stubs averaging thousands of dollars apiece!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 12,
+      "min": 2,
+      "max": 60,
+      "step": 1,
+      "unit": "dollars"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_prc_06_1964_mustang_sticker_2368",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Unveiled at the 1964 New York World’s Fair to wild showroom crowds, Ford’s brand-new base hardtop Mustang carried a famous sticker price right at what?",
+    "choices": [
+      "$1,695",
+      "$3,450",
+      "$2,368",
+      "$4,290"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Ford hoped to move 100,000 Mustangs in Year One—instead, that sporty under-$2,400 tag sold 22,000 cars on Day One and over 400,000 in twelve months!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "numeric": {
+      "target": 2368,
+      "min": 1500,
+      "max": 4500,
+      "step": 50,
+      "unit": "USD (1964)"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_prc_07_costco_hot_dog_sinegal",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "When an incoming CEO floated raising the $1.50 food-court hot dog combo, co-founder Jim Sinegal famously barked \"I will kill you\" at which club?",
+    "choices": [
+      "Sam’s Club",
+      "BJ’s Wholesale",
+      "Target Stores",
+      "Costco Wholesale"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Held at $1.50 since 1985, Costco even built its own hot-dog factories in California and Illinois just to keep that famous quarter-pound frank affordable!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_08_dollar_tree_125_hike",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Bargain Wire, 2021: Ending 35 years of pricing every single item on its shelves at one exact buck, discount giant [ _____ ] shifted its baseline to $1.25.",
+    "choices": [
+      "Dollar Tree",
+      "Five Below",
+      "Family Dollar",
+      "Dollar General"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Shoppers jokingly renamed it \"Dollar-Twenty-Five Tree\" overnight, though the chain kept its classic green marquee and added $3-$5 Plus aisles!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_09_ikea_exit_food_memory",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Which blue-and-yellow furniture maze parks cheap meatballs and $1 soft-serve cones right by checkout so shoppers walk out humming about low prices?",
+    "choices": [
+      "Crate & Barrel",
+      "IKEA stores",
+      "Wayfair Outlets",
+      "Ashley Furniture"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Founder Ingvar Kamprad insisted \"it’s tough to do business on an empty stomach\"—and psychologists proved cheap exit treats sweeten your whole price memory!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_10_subway_five_dollar_footlong",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Jingle Flash, 2008: One impossibly sticky Miami franchisee promo turned \"$5 Footlong\" into a multi-billion-dollar national craze for [ _____ ].",
+    "choices": [
+      "Quiznos",
+      "Blimpie",
+      "Subway",
+      "Panera"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Franchisee Stuart Frankel started the slow-weekend deal in 2003—five years later its five-note jingle had fans singing down every line!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_11_freemium_pricing_model",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Handing out basic apps or streaming tiers for $0 while charging superfans for ad-free perks or power-ups earned what catchy 2006 pricing portmanteau?",
+    "choices": [
+      "Paywall",
+      "Microtip",
+      "Tiering",
+      "Freemium"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Venture investor Fred Wilson invited blog readers to name the model in 2006—and Jarid Lukin’s snappy mashup of \"free\" and \"premium\" stuck immediately!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_12_kelley_blue_book_cars",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Dog-eared pocket price guide tucked in dealership desks since 1926 that tells used-car shoppers whether a sedan’s sticker is fair or robbery: name it!",
+    "choices": [
+      "Kelley Blue Book",
+      "NADA Red Ledger",
+      "Hemmings Price List",
+      "Carfax Sheet"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Los Angeles dealer Les Kelley first circulated mimeographed sheets listing what he’d pay for Ford Model Ts—and rivals started begging for copies!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_13_rotisserie_chicken_magnet",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Golden, garlicky, and gleaming hot under amber supermarket lamps for $4.99 even when raw poultry costs more: what savory magnet pulls you through the store?",
+    "choices": [
+      "Deli potato salad",
+      "Rotisserie chicken",
+      "Garlic bread loaf",
+      "Baked macaroni pan"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Placed deliberately at the far rear of the market, one juicy $4.99 bird routinely leads shoppers to toss $40 of sides, salad, and wine into the cart!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_14_cinema_buttered_popcorn",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Hollywood studios take the bulk of opening-weekend ticket sales, so movie theaters actually stay afloat on 85%-margin concession markups led by what?",
+    "choices": [
+      "Boxed licorice",
+      "Fountain soda",
+      "Buttered popcorn",
+      "Warm pretzels"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Posh 1920s movie palaces first banned smelly popcorn—until Depression slumps forced owners to wheel golden kettles straight into the lobby!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_15_sticker_shock_1970s",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Showroom Slang: Coined in the inflationary late 1970s when car shoppers froze stiff reading dealership window tags, sudden price paralysis is called [ _____ ].",
+    "choices": [
+      "Lot vertigo",
+      "Tag fatigue",
+      "Buyer freeze",
+      "Sticker shock"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Before federal Monroney window labels became law in 1958, car lots didn’t even post clear retail prices—salesmen simply sized up your suit and guessed!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_16_myth_cash_cars_20_percent",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Checkout Klaxon! Three of these real supermarket secrets are true retail tactics, while one confident car-lot boast actually backfires today. Spot the myth!",
+    "choices": [
+      "Cash gets 20% off new cars",
+      "Store brands often share plants",
+      "Endcaps charge brands extra",
+      "Kids’ cereals sit at eye level"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Modern dealerships earn big reserve commissions from auto lenders—so announcing \"I’m paying cash\" can actually shrink the discount a manager offers!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_17_woolworths_five_and_dime",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Red-and-gold storefront signs, polished wooden counters, and lunch stools selling 10-cent treasures across 1960s Main Streets: which chain ruled the five-and-dime?",
+    "choices": [
+      "Montgomery Ward",
+      "Woolworth’s",
+      "Gimbels Mart",
+      "J.C. Penney"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Frank Woolworth’s first 5-cent Utica shop flopped—until adding 10-cent goods in Lancaster funded Manhattan’s soaring Woolworth Building!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_18_doorbuster_deal_5am",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Stores advertise ultra-cheap \"first 20 shoppers at 5 AM\" televisions to spark pre-dawn sidewalk stampedes—what explosive nickname labels those headline deals?",
+    "choices": [
+      "Flash drop",
+      "Floor sweep",
+      "Doorbuster",
+      "Shelf clear"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Even if twenty TVs vanish in thirty seconds, hundreds of chilly folks already inside the warm store stay to buy full-margin holiday gifts!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_19_layaway_depression_perk",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Born during the 1930s so cash-strapped shoppers could hold a winter coat via small weekly installments before carrying it home, what store system is this?",
+    "choices": [
+      "Consignment",
+      "Rebate slip",
+      "Store credit",
+      "Layaway plan"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Unlike credit cards, classic layaway charged zero interest—retailers simply tucked your boxed coat into the back room until your final dime cleared!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_20_mail_in_rebate_slippage",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Electronics chains love flashing \"$50 OFF!\" while secretly counting on \"slippage\"—shoppers forgetting to clip box barcodes and mail forms—via what clunky offer?",
+    "choices": [
+      "Mail-in rebate",
+      "Price matching",
+      "Loyalty points",
+      "Cashier coupon"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Studies show 40% to 60% of mail-in rebates never get claimed—letting brands advertise eye-popping prices while pocketing full retail cash!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_21_las_vegas_casino_buffet",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "To keep late-night gamblers from wandering off property for supper, El Rancho Vegas launched a $1 \"Buckaroo\" spread in 1946—popularizing what dining format?",
+    "choices": [
+      "The tasting flight",
+      "The casino buffet",
+      "The prix-fixe tray",
+      "The supper club"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Publicist Herb McDonald stacked cold cuts, salads, and warm roast on a long table for one silver dollar—making the all-you-can-eat buffet a Vegas icon!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_22_early_bird_special_430",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "To fill quiet restaurant booths at 4:30 PM before the evening rush arrives, diners across America—especially sunny Florida—invented which pre-sunset bargain?",
+    "choices": [
+      "Matinee platter",
+      "Twilight supper",
+      "Early-bird special",
+      "Midday blue-plate"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Just like off-peak plane seats, empty 4:45 PM tables earn zero—so slinging discounted turkey early lets diners turn every booth twice!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_23_happy_hour_navy_1910s",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Decades before bars slashed cocktail tabs at 5 PM, U.S. Navy sailors in the 1910s coined which upbeat two-word name for weekly onboard music and boxing breaks?",
+    "choices": [
+      "Liberty bell",
+      "Mess call",
+      "Shore leave",
+      "Happy hour"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Aboard the USS Arkansas in 1913, \"Happy Hour Socials\" featured ragtime bands—then Prohibition speakeasies swiped the name for drinks!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_24_charles_shaw_two_buck_chuck",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Bottled from surplus California vineyards in 2002 and sold exclusively at Trader Joe’s for $1.99, which wine earned the affectionate nickname \"Two-Buck Chuck\"?",
+    "choices": [
+      "Charles Shaw",
+      "Barefoot Red",
+      "Franzoni Table",
+      "Gallo Classic"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Wine snobs laughed until Charles Shaw’s 2005 Chardonnay beat 2,300 rivals in a blind tasting at the California State Fair—selling over a billion bottles!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_25_cabbage_patch_1983_craze",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Packaged with \"adoption papers\" at $25 retail in December 1983, which yarn-haired dolls ignited department-store scrambles and $200 black-market resale tags?",
+    "choices": [
+      "Care Bears",
+      "Cabbage Patch Kids",
+      "Pound Puppies",
+      "Strawberry Shortcake"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Each doll’s randomized face, hair, and middle name made every box feel one-of-a-kind—triggering a holiday frenzy that made front-page news nationwide!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_26_tupperware_living_room_parties",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Bypassing sluggish store shelves in the 1950s and 1960s, sales pioneer Brownie Wise built a suburban empire demonstrating burp-sealed bowls at what home events?",
+    "choices": [
+      "Avon showcases",
+      "Fuller Brush teas",
+      "Tupperware parties",
+      "Stanley socials"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Shoppers couldn’t tell how Earl Tupper’s airtight seals worked on a store shelf—so Wise turned living-room demos into a suburban empire!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_27_groupon_6b_google_snub",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Daily-Deal Wire: Pooling local buyers for half-off spa and bakery vouchers in 2008, Chicago startup [ _____ ] famously turned down a $6 billion Google buyout!",
+    "choices": [
+      "LivingSocial",
+      "RetailMeNot",
+      "Honey App",
+      "Groupon"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Shops soon realized deal-hunters rarely returned at full price—and Groupon’s stock later fell to a tiny fraction of Google’s rejected bid!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_28_pawnshop_three_gold_balls",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Three gleaming brass spheres hanging outside storefronts since Renaissance bankers lent cash against heirloom watches: which quick-loan shop flies this emblem?",
+    "choices": [
+      "A pawnshop",
+      "A gold assayer",
+      "A bail office",
+      "A watchmaker"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Legend links the three golden orbs either to Florence’s Medici crest or St. Nicholas tossing three bags of gold through a poor family’s window!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_29_unit_price_shelf_tag",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Comparing a tall \"Family Size\" cereal box beside a regular one, which tiny corner figure on the grocery shelf label reveals which truly costs less per ounce?",
+    "choices": [
+      "The SKU barcode",
+      "The unit price",
+      "The tare weight",
+      "The batch date"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Savvy shoppers swear by unit pricing—surprisingly often, a \"value pack\" actually costs MORE per ounce than grabbing two standard sale-priced boxes!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_30_24k_gold_too_soft",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Browsing wedding bands, a jeweler sets 14-karat beside pure 24-karat gold: why is pricier 24K gold rarely recommended for an everyday ring?",
+    "choices": [
+      "Tarnishes black",
+      "Causes rashes",
+      "Too soft to hold",
+      "Rusts in water"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Pure 24K gold is malleable enough to dent against a doorknob—blending it with copper or silver into 14K or 18K keeps prongs gripping your diamond tight!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_31_supermarket_flowers_bakery_entry",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Grocery chains place blooming flowers and warm bakery smells right inside the automatic front doors—instead of bleach—deliberately to spark what habit?",
+    "choices": [
+      "Faster cart speed",
+      "Higher bag fees",
+      "Cleaner tile air",
+      "Slower impulse buys"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Store architects call it the \"decompression zone\"—warm aromas drop your guard, slow your stride, and nudge you into leisurely browsing every aisle!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_32_myth_buffet_loses_soda",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Menu Klaxon! Three of these sneaky restaurant-pricing tricks are real menu engineering, while one diner guess misses the math wildly. Catch the myth!",
+    "choices": [
+      "All-you-can-eat loses on soda",
+      "Pricey steaks anchor wine sales",
+      "Flowery wording boosts checks",
+      "Boxes spotlight high-margin food"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Fountain syrup, tap water, and ice cost restaurants mere pennies a glass—even with free refills, fountain drinks are the highest-margin item on the menu!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_33_myth_1966_color_tv_under_100",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Price-Tag Klaxon! Three of these jaw-dropping retail comparisons are 100% real, while one nostalgic 1966 living-room claim is way too cheap. Spot the myth!",
+    "choices": [
+      "Saffron beats silver per ounce",
+      "1966 color TVs cost under $100",
+      "Printer ink beats champagne",
+      "First IBM PC topped $1,500"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "A 1966 RCA walnut-cabinet color TV ran $500 to $700—over $5,000 in today’s dollars, which is why whole neighborhoods gathered at one lucky house on Sunday!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_34_myth_first_iphone_199",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Receipt Klaxon! Three of these bygone price tags are historical fact, while one famous gadget launch price got misremembered way too low. Catch the fake!",
+    "choices": [
+      "1966 Coke bottles ran a dime",
+      "McDonald’s fries began at 10¢",
+      "First iPhone cost just $199",
+      "1966 U.S. homes averaged $21k"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Steve Jobs launched the 2007 iPhone at $499 (4GB) and $599 (8GB) WITH a 2-year contract—the $199 price didn’t arrive until iPhone 3G!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_35_hammer_price_auction",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 3,
+    "isBlitzLegal": false,
+    "stem": "Inside Sotheby’s or Christie’s auction rooms, the final winning bid shouted right before the gavel slams down—before house fees—is officially called what?",
+    "choices": [
+      "Reserve bid",
+      "Floor quote",
+      "Gavel tally",
+      "Hammer price"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Keep your paddle calm! Once the auctioneer calls the hammer price, a 15% to 27% \"buyer’s premium\" gets stacked right on top of the final invoice!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_36_reserve_price_secret_floor",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 3,
+    "isBlitzLegal": false,
+    "stem": "On eBay or at classic-car auction blocks, what confidential minimum dollar floor protects a nervous seller from letting a prized item walk away for pennies?",
+    "choices": [
+      "Reserve price",
+      "Ceiling bid",
+      "Opening call",
+      "Proxy limit"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "If bidding stalls short of the seller’s secret reserve, the auctioneer announces \"bought in\" and the treasure rolls straight back offstage unsold!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_37_white_elephant_siamese_gift",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 3,
+    "isBlitzLegal": false,
+    "stem": "Named after a legendary royal gift of sacred albino beasts too expensive to feed, what playful label tags a charity rummage sale or cheeky gag-gift swap?",
+    "choices": [
+      "Golden goose",
+      "White elephant",
+      "Red herring",
+      "Silver bullet"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "In legend, Siam’s king gifted rare white elephants to rival courtiers—honoring them so richly they couldn’t refuse, yet bankrupting them on hay bills!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_38_flea_market_4_dollar_declaration",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 3,
+    "isBlitzLegal": false,
+    "stem": "Yard-Sale Jackpot: A collector paid $4 at a 1989 Pennsylvania flea market for a gloomy frame—and peeled the backing to discover a $2.4M [ _____ ]!",
+    "choices": [
+      "Picasso charcoal",
+      "Gettysburg draft",
+      "Declaration copy",
+      "Rembrandt sketch"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Hidden behind a dull country print sat one of 24 surviving 1776 Dunlap broadside printings of the Declaration—later resold for $8.1M!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_39_outlet_mall_cheaper_lines",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 3,
+    "isBlitzLegal": false,
+    "stem": "Designer \"factory outlet\" sweaters carry friendlier tags than flagship stores—often not because they’re leftover mall stock, but because brands deliberately do what?",
+    "choices": [
+      "Skip import duties",
+      "Reuse wool scraps",
+      "Sell returned goods",
+      "Sew cheaper lines"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Check the label for tiny extra dots, diamonds, or \"Factory\" stamps—retailers estimate over 80% of outlet-mall apparel is purpose-made at lower fabric cost!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_prc_40_myth_incognito_airfare",
+    "category": "PRICING",
+    "domain": "NUM_GEO",
+    "difficulty": 4,
+    "isBlitzLegal": false,
+    "stem": "Travel-Hack Klaxon! Three of these real-world pricing secrets check out, while one viral browser trick fails every consumer lab test. Spot the myth!",
+    "choices": [
+      "Private browsing cuts airfare",
+      "Costco caps markups near 15%",
+      "Clearance cents hold store codes",
+      "Midweek launches grocery flyers"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Independent studies checked thousands of searches and found zero secret cookie-hike penalty—fares jump simply when the cheapest seat bucket sells out!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_01_birthday_paradox_23_people",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Party Paradox: Gather just [ _____ ] in any room and the mathematical odds that at least two share the exact same birthday already tip past 50%!",
+    "choices": [
+      "15 people",
+      "23 people",
+      "42 people",
+      "65 people"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Your brain checks matches only against YOUR birthday—yet 23 guests create 253 distinct head-to-head pairs, pushing shared-cake odds to 50.7%!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 23,
+      "min": 5,
+      "max": 80,
+      "step": 1,
+      "unit": "people"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_odd_02_standard_deck_52_cards",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Neatly mirroring the weeks of a calendar year across four seasonal suits, a standard bridge or poker deck (minus Jokers) holds exactly how many cards?",
+    "choices": [
+      "44 cards",
+      "48 cards",
+      "52 cards",
+      "56 cards"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Wait till you add all the face values (Ace=1 through King=13) across all four suits plus one Joker: 364 + 1 = 365 days in a year!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "numeric": {
+      "target": 52,
+      "min": 20,
+      "max": 80,
+      "step": 1,
+      "unit": "cards"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_odd_03_chessboard_64_squares",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Grandmaster Grid: Alternating 32 light tiles and 32 dark tiles across an eight-by-eight battlefield, a classic chess or checkerboard contains [ _____ ].",
+    "choices": [
+      "64 squares",
+      "48 squares",
+      "56 squares",
+      "72 squares"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "In legend, doubling one grain of rice across all 64 squares creates 18 quintillion grains—more rice than humanity has harvested in all recorded history!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 64,
+      "min": 32,
+      "max": 100,
+      "step": 2,
+      "unit": "squares"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_odd_04_american_roulette_38_pockets",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Vegas Wheel: Numbered 1 through 36 plus green 0 and double-zero 00, a standard American roulette wheel splits its spinning bowl into exactly [ _____ ].",
+    "choices": [
+      "36 pockets",
+      "37 pockets",
+      "40 pockets",
+      "38 pockets"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Single-number bets still pay 35-to-1 as if there were 36 pockets—those two innocent green zero slots hand Las Vegas a tidy 5.26% house edge!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 38,
+      "min": 20,
+      "max": 60,
+      "step": 1,
+      "unit": "pockets"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_odd_05_monopoly_board_40_spaces",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Passing GO, Jail, Free Parking, and Boardwalk, one complete lap around a classic Monopoly board takes your silver top hat across how many spaces?",
+    "choices": [
+      "32 spaces",
+      "40 spaces",
+      "36 spaces",
+      "48 spaces"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Because Jail draws so much foot traffic, Markov-chain math crowns the Orange street trio (6, 8, and 9 steps from Jail) the board’s stealth money-makers!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "numeric": {
+      "target": 40,
+      "min": 20,
+      "max": 64,
+      "step": 2,
+      "unit": "spaces"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_odd_06_dominoes_double_six_28_tiles",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Tabletop Count: Running from double-blank all the way up to double-six without repeats, a standard pocket set of dominoes contains exactly [ _____ ].",
+    "choices": [
+      "21 tiles",
+      "24 tiles",
+      "28 tiles",
+      "36 tiles"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "That’s the triangular sum 7 + 6 + 5 + 4 + 3 + 2 + 1 = 28—and if you line up every tile end-to-end, all 28 close into one unbroken loop!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 28,
+      "min": 12,
+      "max": 50,
+      "step": 1,
+      "unit": "tiles"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_odd_07_royal_flush_poker_top",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Running Ten, Jack, Queen, King, and Ace all in one matching suit—beating 649,739 other five-card combos—what unbeatable hand reigns atop poker?",
+    "choices": [
+      "Straight flush",
+      "Four Aces",
+      "Full boat",
+      "Royal flush"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Out of 2,598,960 possible five-card deals, literally only FOUR hands in the whole universe are royal flushes—one for hearts, spades, clubs, and diamonds!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_08_blackjack_going_bust",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Tapping the felt for one greedy extra blackjack card and sailing past 21 immediately forfeits your chips—what blunt phrase names that heartbreak?",
+    "choices": [
+      "Going bust",
+      "Going cold",
+      "Going flat",
+      "Going dark"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Even if the dealer ALSO busts thirty seconds later, the casino keeps your chips anyway—that \"player busts first\" rule is the house’s main edge in 21!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_09_texas_holdem_the_flop",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Felt Wire: Once opening Texas Hold’em bets settle, the dealer burns one card face-down and deals three shared community cards together called [ _____ ].",
+    "choices": [
+      "The Turn",
+      "The Flop",
+      "The Draw",
+      "The Cut"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Wait until you see how brutal Hold’em math is: holding two unpaired hole cards, you miss pairing anything on the Flop nearly two-thirds of the time!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_10_poker_tell_giveaway",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "A quick glance toward your chip stack, shaky hands, or a twitchy eyebrow: what crisp phrase names an unconscious giveaway at the card table?",
+    "choices": [
+      "A table read",
+      "A cold bluff",
+      "A classic tell",
+      "A soft fold"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Ironically, pros note that shaky hands at a card table usually signal a MONSTER hand—pure adrenaline from excitement, not bluffing nerves!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_11_clue_whodunit_324_combos",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Six colorful guests, six miniature metal weapons, and nine mansion rooms tucked inside a confidential yellow envelope: what game turns 324 combos into a whodunit?",
+    "choices": [
+      "Mastermind",
+      "Scotland Yard",
+      "Stratego",
+      "Clue (Cluedo)"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Invented by bored British musician Anthony Pratt during WWII air-raid blackouts, the prototype was originally titled \"Murder!\" with a poison vial and axe!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_12_catan_robber_seven",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Hexagonal island of sheep, brick, and wheat where rolling two dice’s most frequent sum—a 7—unleashes a sneaky gray robber pawn: name this modern hit!",
+    "choices": [
+      "Settlers of Catan",
+      "Ticket to Ride",
+      "Carcassonne",
+      "Agricola"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Notice the tiny dots printed under every Catan number token? Five red dots under 6 and 8 literally visualize their 5-in-36 probability per roll!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_13_uno_barbershop_1971",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Invented in a Cincinnati barbershop in 1971 to settle family card arguments, which bright shedding game wrecks friendships with a single Wild Draw Four?",
+    "choices": [
+      "Skip-Bo stack",
+      "UNO card game",
+      "Phase 10 deck",
+      "Crazy Eights"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Barber Merle Robbins scraped together $8,000 to print 5,000 decks out of his shop—selling the rights a year later for $50,000 plus a dime royalty per deck!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_14_one_armed_bandit_slot",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Chrome side lever pulled down to spin three whirling fruit reels of cherries, lemons, and golden bells earned vintage slot machines what outlaw nickname?",
+    "choices": [
+      "Tin highwayman",
+      "Nickel rustler",
+      "One-armed bandit",
+      "Chrome pickpocket"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Even after video slots replaced springs with push-buttons and chips, casinos kept bolting on fake side arms because players love pulling them!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_15_gamblers_fallacy_1913",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Monte Carlo, 1913: After black landed an absurd 26 roulette spins straight, bettors lost millions piling on red thanks to the classic [ _____ ].",
+    "choices": [
+      "Sunk-cost trap",
+      "Hot-hand bias",
+      "Base-rate slip",
+      "Gambler’s fallacy"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The odds of 26 straight blacks are roughly 1 in 67 million—yet on Spin #27, the ivory ball still had zero memory and gave red the exact same sub-50% shot!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_16_three_of_kind_beats_two_pair",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "At showdown, you flip a trio of Jacks while your rival slaps down two Aces and two Kings—under standard poker odds, which hand scoops the pot?",
+    "choices": [
+      "Three of a kind",
+      "Two high pairs",
+      "Split the chips",
+      "High card wins"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Only 54,912 three-of-a-kind combos exist in five-card poker compared to 123,552 two-pair hands—rarer always rules the felt, so trips beat two pair!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_17_myth_hot_craps_shooters",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Casino Floor Klaxon! Three of these gambling truths hold up under probability math, while one slick table superstition busts out fast. Spot the myth!",
+    "choices": [
+      "Casino clocks stay rare on walls",
+      "Hot craps shooters bend dice",
+      "Roulette wheels hold zero memory",
+      "Seven riffles mix cards cleanly"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Casino craps tables force shooters to bounce dice off pyramid-studded rubber backwalls specifically to scramble any thrower’s careful grip or spin!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_18_boxcars_double_sixes",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Rolling twin ones at a craps table draws groans as \"snake eyes,\" while rolling double sixes (1-in-36 odds) earns what rail-yard nickname?",
+    "choices": [
+      "Caboose",
+      "Flatbed",
+      "Boxcars",
+      "Locomotive"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Hold two six-pip cubes side by side and those tidy parallel rows of white dots look just like twin freight-train cars rolling down the track!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_19_craps_pass_line_wager",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "At a loud Vegas craps table, which foundational wager wins instantly on a come-out roll of 7 or 11 and loses right away on 2, 3, or 12?",
+    "choices": [
+      "The Hard Eight",
+      "The Field Box",
+      "The Big Six",
+      "The Pass Line"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "With a razor-slim 1.41% house edge, the Pass Line lets you root alongside the entire cheering crowd—and unlocks Vegas’s famed zero-edge Free Odds bet!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_20_blackjack_insurance_bet",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "When a blackjack dealer flips an Ace up-card, they invite players to lay a tempting side wager paying 2-to-1 against dealer 21—what sucker bet is it?",
+    "choices": [
+      "Insurance",
+      "Surrender",
+      "Double down",
+      "Even money"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Only 16 of 52 cards are ten-valued, making dealer 21 rarer than 2-to-1—handing non-counters a stiff 7%-plus mathematical house edge!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_21_poker_blinds_forced_bets",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "To stop Texas Hold’em players from folding endlessly for free, the two seats left of the dealer button must post forced starter bets before peeking, called what?",
+    "choices": [
+      "The straddles",
+      "The blinds",
+      "The checks",
+      "The splits"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Called \"blinds\" because you toss chips in totally blind before seeing hole cards, rising blinds force tournament pros into dramatic duels!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_22_poker_on_tilt_pinball",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Borrowed from shoving a pinball machine until its pendulum sensor locks the flippers, what short poker phrase means playing wildly after a painful loss?",
+    "choices": [
+      "In steam",
+      "Off rail",
+      "On tilt",
+      "On edge"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "World Series champs admit half of winning poker isn’t card math—it’s resisting emotional tilt when an opponent hits a miraculous two-outer on the river!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_23_croupier_monte_carlo_rake",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Sweeping losing chips off green baize with a long wooden rake while calling \"Rien ne va plus!\" in Monte Carlo: what French title names this table host?",
+    "choices": [
+      "A pit boss",
+      "A concierge",
+      "A sommelier",
+      "A croupier"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Once referring to a rider seated behind a knight’s saddle (\"croupe\"), it drifted to gambling aides standing behind high rollers with coins!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_24_james_bond_baccarat",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Long before Hollywood swapped him into Texas Hold’em, Ian Fleming’s tuxedoed 1953 secret agent James Bond dueled Le Chiffre at high-stakes tables playing what?",
+    "choices": [
+      "Baccarat",
+      "Pinochle",
+      "Euchre",
+      "Faro"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Bond actually played Chemin de Fer, the classic European baccarat variant where players take turns acting as the Bank and sliding cards from a wooden shoe!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_25_scrabble_bingo_50_points",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Tile-Rack Triumph: Playing all seven wooden letters off your Scrabble rack in one dazzling turn earns a 50-point bonus universally cheered as a [ _____ ]!",
+    "choices": [
+      "Jackpot",
+      "Bingo",
+      "Sweep",
+      "Ringer"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Pros memorize high-probability seven-letter \"stems\" like SATIRE and RETINA because adding almost any seventh letter unlocks an instant 50-point Bingo!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_26_cribbage_peg_board",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Slim wooden track drilled with 120 peg holes where players chant \"fifteen-two, fifteen-four\" and score \"his nibs\" racing to 121: name this pub card classic!",
+    "choices": [
+      "Canasta",
+      "Gin Rummy",
+      "Cribbage",
+      "Pinochle"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Invented by dashing 17th-century poet Sir John Suckling, cribbage’s legendary 29-point perfect hand is so rare—1 in 216,580—that pubs frame players’ names!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_27_point_spread_mcneil",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Created by Chicago math teacher Charles McNeil in the 1940s so bettors could back lopsided underdogs cleanly, what scoring handicap levels sports matchups?",
+    "choices": [
+      "Moneyline",
+      "Prop wager",
+      "Futures slip",
+      "Point spread"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Rather than predicting touchdowns, books adjust spreads simply to balance wagers on both sides and pocket their tidy commission!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_28_over_under_totals_bet",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Sportsbook Board: Skipping who wins the game altogether, bettors wagering purely on whether both teams’ combined score clears a set tally play the [ _____ ].",
+    "choices": [
+      "Over-under",
+      "Moneyline",
+      "Teaser card",
+      "Futures bet"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Weather forecasts move NFL totals faster than star quarterbacks—a 25-mph Lake Erie gale in Buffalo can slash an Over-under line by seven points overnight!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_29_expected_value_long_run",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Multiply every possible prize by its exact probability and add them together—in poker and game shows alike, what metric measures a bet’s true long-run worth?",
+    "choices": [
+      "Standard score",
+      "Expected value",
+      "Median payoff",
+      "Variance gap"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "A \"+EV\" call can lose tonight and stay genius—top poker and game-show players judge decisions by expected value, not lucky one-offs!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_30_european_roulette_half_edge",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Playing a European single-zero roulette wheel instead of a Vegas double-zero wheel cuts the casino’s built-in mathematical house edge nearly by what?",
+    "choices": [
+      "Zero (0% edge)",
+      "Double (10.5%)",
+      "Half (2.7% vs 5.3%)",
+      "Tenfold (0.5%)"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Dropping that single extra green \"00\" slot immediately slashes the house advantage from 5.26% down to 2.70%—one of Vegas’s quietest math upgrades!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_31_monopoly_doubles_one_in_six",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Trying to break out of Monopoly Jail without paying $50? On any single roll of two fair six-sided dice, your exact odds of throwing doubles are what?",
+    "choices": [
+      "One in twelve",
+      "One in nine",
+      "One in eighteen",
+      "One in six"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Out of 36 equally likely dice combos, exactly 6 are matching pairs (1-1 through 6-6)—so 6/36 simplifies neatly to 1 in 6, or 16.7% per shake!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_32_lottery_123456_equal_odds",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Buying a 6-of-49 lotto ticket, if you cheekily pick the neat sequence 1-2-3-4-5-6 instead of scrambled numbers, your probability of matching all six balls is what?",
+    "choices": [
+      "Identically equal",
+      "Far lower odds",
+      "Slightly higher",
+      "Officially void"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Every combo holds the exact same 1-in-14M shot—yet skip 1-2-3-4-5-6 anyway, because thousands pick it and would split your jackpot!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_33_blackjack_lowest_house_edge",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Among classic casino-floor games played cleanly with basic strategy, which iconic table game generally hands the player the LOWEST house edge (near 0.5%)?",
+    "choices": [
+      "Big Six wheel",
+      "Blackjack",
+      "Slot machines",
+      "Three-card brag"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Blackjack rewards sharp basic strategy—though watch the felt, because \"6:5 Blackjack\" payouts quietly quadruple the casino’s house edge!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_34_myth_bad_blackjack_teammates",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Card-Table Klaxon! Three of these blackjack facts are 100% legit, while one angry barstool complaint gets busted by probability math. Spot the myth!",
+    "choices": [
+      "Splits let you play two hands",
+      "Basic strategy cuts house edge",
+      "Bad teammates ruin your odds",
+      "Dealers follow strict hit rules"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Simulations prove a wild third-base hitter rescues your hand just as often as they \"steal\" your card—zero long-run harm to your odds!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_35_myth_uno_stack_draw_twos",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Game-Night Klaxon! Three of these classic tabletop rules are genuinely printed in the box, while one fierce family house rule isn’t official. Nab the myth!",
+    "choices": [
+      "Monopoly auctions skipped lots",
+      "Chess pawns promote to queens",
+      "Scrabble allows tile swaps",
+      "UNO lets you stack Draw Twos"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "UNO’s official account stunned the internet in 2019 by confirming official rules forbid stacking +2 on +2 or +4 on +4—though house rules remain undefeated!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_36_backgammon_doubling_cube",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 3,
+    "isBlitzLegal": false,
+    "stem": "Chunky six-sided die marked not 1 through 6, but 2, 4, 8, 16, 32, and 64 so players can ratchet up stakes mid-match: which ancient game relies on it?",
+    "choices": [
+      "Backgammon",
+      "Mahjong",
+      "Pachisi",
+      "Mancala"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Invented in a 1920s New York club, the doubling cube turned a 5,000-year-old dice race into an electric bluffing duel rivaling high-stakes poker!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_37_poker_outs_rescue_cards",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 3,
+    "isBlitzLegal": false,
+    "stem": "Holding four spades after the turn in Texas Hold’em, any of the nine unseen spades left in the deck completes your flush—card sharks call those rescue cards what?",
+    "choices": [
+      "Your pips",
+      "Your outs",
+      "Your blinds",
+      "Your kicks"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "A handy felt shortcut called the \"Rule of 2 and 4\": multiply your outs by 2 with one card left—so 9 flush outs give you right around an 18% river lifeline!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_38_poker_the_nuts_wagon",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 3,
+    "isBlitzLegal": false,
+    "stem": "Old-West legend claims all-in gamblers unscrewed wagon-wheel hardware onto the table to prove they couldn’t flee—giving an unbeatable poker hand what nickname?",
+    "choices": [
+      "The bolts",
+      "The irons",
+      "The nuts",
+      "The locks"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Even if you hold \"the nuts\" on the Flop, stay sharp—a scary Turn or River card can quietly strip your crown and hand the nuts to somebody else!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_39_vigorish_bookie_cut",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 4,
+    "isBlitzLegal": false,
+    "stem": "Traveling via Yiddish from the Russian word for \"winnings,\" what colorful term (often clipped to three letters) names a bookmaker’s built-in betting fee?",
+    "choices": [
+      "The handle",
+      "The chalk",
+      "The layoff",
+      "The vigorish"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Standard -110 odds force you to risk $110 to win $100—meaning you must pick winners better than 52.38% of the time just to outrun the vig and break even!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_odd_40_myth_bidding_one_dollar_price",
+    "category": "ODDS",
+    "domain": "NUM_GEO",
+    "difficulty": 3,
+    "isBlitzLegal": false,
+    "stem": "Game-Show Klaxon! Three of these TV studio realities check out backstage, while one contestant-row rumor flops on the spot. Call out the myth!",
+    "choices": [
+      "Bidding $1 breaks Price rules",
+      "Plinko chips favor middle slots",
+      "Wheel vowels cost $250 flat",
+      "Jeopardy! clues are pre-vetted"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Bidding $1 on Contestants’ Row is 100% legal—and brilliant game theory whenever you suspect all three earlier bidders overshot the real retail price!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_01_dow_jones_30_companies",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Ticker Wire: Expanded to its permanent headcount back in October 1928, the iconic Dow Jones Industrial Average tracks exactly [ _____ ] major U.S. firms.",
+    "choices": [
+      "20 companies",
+      "30 companies",
+      "40 companies",
+      "50 companies"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Not a single one of Charles Dow’s original 1896 dozen remains in the index today—General Electric was the final survivor before exiting in 2018!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 30,
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "companies"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_fin_02_blockbuster_netflix_50m",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Boardroom Blunder, 2000: Blockbuster bosses nearly laughed Netflix’s founders out of Dallas after they offered to sell their DVD mailer for [ _____ ]!",
+    "choices": [
+      "$15 million",
+      "$30 million",
+      "$50 million",
+      "$95 million"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Blockbuster went bankrupt a decade later while Netflix roared past $200B—making that Dallas pass one of business’s costliest snubs!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 50,
+      "min": 10,
+      "max": 120,
+      "step": 5,
+      "unit": "million USD"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_fin_03_fdic_250k_insurance",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Made permanent after the 2008 banking storm, federal FDIC deposit insurance protects checking and savings accounts per depositor, per insured bank, up to what?",
+    "choices": [
+      "$100,000",
+      "$150,000",
+      "$500,000",
+      "$250,000"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Born in 1933 to halt panicked bank runs, the FDIC has never let a single insured depositor lose one penny of covered cash in over ninety years!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "numeric": {
+      "target": 250,
+      "min": 50,
+      "max": 500,
+      "step": 25,
+      "unit": "thousand USD"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_fin_04_fed_12_district_banks",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Spot the letter and number stamped left of Washington on a $1 bill—they identify which of America’s how many regional Federal Reserve district banks issued it?",
+    "choices": [
+      "12 banks",
+      "8 banks",
+      "10 banks",
+      "16 banks"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "A-1 stands for Boston, B-2 for New York, all the way to L-12 for San Francisco—check your wallet right now and see where your dollar started its journey!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "numeric": {
+      "target": 12,
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "unit": "district banks"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_fin_05_new_coke_79_days",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Soda Revolt, 1985: Buried under 400,000 furious calls and basement hoarders, Coca-Cola surrendered and revived Coca-Cola Classic just [ _____ ] after New Coke!",
+    "choices": [
+      "30 days",
+      "79 days",
+      "52 days",
+      "110 days"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Fans swore it was a stunt, yet Coke boss Donald Keough laughed: \"We’re not that dumb, and we’re not that smart!\"—and Classic sales soared!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 79,
+      "min": 15,
+      "max": 120,
+      "step": 1,
+      "unit": "days"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_fin_06_ron_wayne_apple_10_percent",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Garage Regret, 1976: Worried about personal debt 12 days after drafting Apple’s partnership papers, third co-founder Ron Wayne sold his [ _____ ] back for $800!",
+    "choices": [
+      "5% stake",
+      "20% stake",
+      "10% stake",
+      "33% stake"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Unlike broke twenty-somethings Jobs and Wozniak, 41-year-old Wayne owned a house creditors could seize—and insisted he held zero regrets!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 10,
+      "min": 1,
+      "max": 35,
+      "step": 1,
+      "unit": "percent stake"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_fin_07_eastman_kodak_digital_1975",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Its own engineer Steve Sasson built the world’s first digital camera in 1975, yet which Rochester film giant shelved it to protect film rolls—and went bust in 2012?",
+    "choices": [
+      "Polaroid Corp.",
+      "Fujifilm Ltd.",
+      "Agfa Photo",
+      "Eastman Kodak"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Sasson’s toaster-sized prototype took 23 seconds to save a grainy photo onto a cassette tape—execs shrugged, \"Cute, just don’t tell anyone about it!\"",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_08_nintendo_1889_playing_cards",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Long before Mario jumped a single mushroom, which Japanese entertainment titan opened in 1889 crafting hand-painted hanafuda playing cards in Kyoto?",
+    "choices": [
+      "Nintendo",
+      "Sega Corp.",
+      "Capcom Co.",
+      "Konami Ltd."
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Before hitting jackpot gold with arcade cabinets in the late 1970s, Nintendo wildly experimented with taxi fleets, instant rice, and even a plastic vacuum!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_09_3m_post_it_notes",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Rescuing a \"failed\" low-tack glue after a choir singer needed hymn bookmarks that peeled off cleanly, which Minnesota firm turned scrap yellow paper into Post-its?",
+    "choices": [
+      "Avery Dennison",
+      "3M Company",
+      "Mead Paper",
+      "Bic Corp."
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Why iconic canary yellow? Pure accident—the neighboring lab simply happened to have leftover canary-yellow scrap pads sitting around for early test runs!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_10_netflix_red_envelopes",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Mailing red-envelope DVDs with zero late fees in 1997 before pivoting into original streaming series in 2013, which disruptor toppled video-rental storefronts?",
+    "choices": [
+      "Redbox Kiosk",
+      "Hulu Live",
+      "Netflix",
+      "Vudu Video"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Its very first test parcel was a Patsy Cline CD mailed locally to Reed Hastings’s home just to prove discs wouldn’t snap in postal sorters!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_11_airbnb_three_mattresses",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Struggling to pay San Francisco rent in 2007, two designers inflated three vinyl air mattresses and served breakfast to conference guests—birthing what travel giant?",
+    "choices": [
+      "Expedia",
+      "Tripadvisor",
+      "Vrbo Stays",
+      "Airbnb"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "When investors passed in 2008, the founders stayed afloat gluing custom \"Obama O’s\" and \"Cap’n McCain’s\" cereal boxes and selling them at $40!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_12_unicorn_billion_startup",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Silicon Lexicon: Venture investor Aileen Lee coined the mythical nickname [ _____ ] in 2013 for rare privately held startups valued above $1 billion.",
+    "choices": [
+      "Unicorn",
+      "Phoenix",
+      "Griffin",
+      "Centaur"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "In 2013 Lee counted just 39 U.S. unicorns across a full decade—by the 2020s over a thousand joined the herd, forcing analysts to invent $10B \"decacorns\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_13_ipo_initial_public_offering",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Wall Street Bell: When a privately owned firm sells shares to everyday investors on a stock exchange for the very first time, it celebrates its [ _____ ].",
+    "choices": [
+      "Bond auction",
+      "IPO debut",
+      "Proxy vote",
+      "Debt rollover"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Before IPO morning, founders spend two grueling weeks pitching big funds on a cross-country \"roadshow\" to gauge Wall Street appetite!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_14_bull_market_charging_bronze",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Charging 7,100-pound bronze beast dropped guerrilla-style outside Bowling Green in 1989 by sculptor Arturo Di Modica: it symbolizes what rising stock trend?",
+    "choices": [
+      "A stag rally",
+      "A hawk surge",
+      "A bull market",
+      "A lion cycle"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Di Modica spent $360,000 of his own cash and dropped the bull illegally overnight in 1989—New Yorkers loved it so much the city kept it!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_15_nyse_opening_bell",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Gleaming brass gong sounded at 9:30 AM Eastern from a marble Broad Street balcony as guests applaud cheering floor brokers: what signal kicks off U.S. trading?",
+    "choices": [
+      "The Ticker Chime",
+      "The Floor Horn",
+      "The Clearing Gong",
+      "The Opening Bell"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Until 1903, NYSE chairmen actually launched trading by whacking a wooden Chinese gong—and today’s brass bell gets rung on camera nearly 500 times a year!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_16_net_take_home_pay",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Opening your first paycheck and wondering why the deposit looks slimmer than your salary letter? Taxes and withholdings pare gross pay down to what?",
+    "choices": [
+      "Net take-home pay",
+      "Capital gains tax",
+      "Annual wage cap",
+      "Compound interest"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Quick memory trick straight from fishing nets: \"net\" pay is the fish actually trapped inside your net after the tax tide slips back through the mesh!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_17_myth_closing_old_credit_cards",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 1,
+    "isBlitzLegal": false,
+    "stem": "Wallet Klaxon! Three of these everyday money rules hold up with financial planners, while one tidy-sounding bank tip can actually ding you. Spot the myth!",
+    "choices": [
+      "Roth IRA gains grow tax-free",
+      "Closing old cards lifts credit",
+      "Index funds track wide markets",
+      "Carried cards accrue daily APR"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Closing your oldest zero-fee card shrinks available credit and shortens history—often nudging your credit score DOWN instead of up!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_18_xerox_parc_mouse_icons",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Its 1970s Palo Alto lab pioneered the computer mouse, desktop icons, and Ethernet—yet which copier titan famously let Apple and Microsoft commercialize them?",
+    "choices": [
+      "Polaroid Co.",
+      "Wang Labs",
+      "Xerox Corp.",
+      "Sperry Rand"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "After a famous 1979 Xerox PARC tour, a stunned Steve Jobs raced home to build the Macintosh—turning Xerox’s vision into computing history!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_19_nokia_wood_pulp_boots",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Before ruling 1990s pockets with indestructible brick cellphones, which Finnish giant started in 1865 making wood pulp, rubber rain boots, and power cables?",
+    "choices": [
+      "Ericsson",
+      "Siemens",
+      "Alcatel",
+      "Nokia"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Named after the Nokianvirta river beside its first paper mill, Nokia even produced winter car tires right alongside its earliest car phones!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_20_samsung_dried_fish_1938",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Translating to \"Three Stars\" in Korean, which consumer-electronics powerhouse began in 1938 as a modest Daegu trading shop exporting dried fish and noodles?",
+    "choices": [
+      "Samsung",
+      "Hyundai",
+      "LG Group",
+      "Daewoo"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Founder Lee Byung-chul started with forty workers selling local groceries—today Samsung builds everything from smartphones and chips to giant cargo ships!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_21_quibi_175b_six_months",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Streaming Flop, 2020: Burning $1.75 billion on celebrity-packed 10-minute phone-only episodes right as commuters stayed home, [ _____ ] folded after six months!",
+    "choices": [
+      "Tubi",
+      "Quibi",
+      "Pluto TV",
+      "Crackle"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Short for \"quick bites,\" Quibi even blocked users from taking screenshots to share memes—starving its pricey shows of word-of-mouth buzz from Day One!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_22_ford_edsel_1957_lemon",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Chrome \"horse-collar\" grille, push-button steering-wheel gears, and $250M in 1957 hype that flopped overnight: what car became business’s byword for a dud?",
+    "choices": [
+      "AMC Pacer",
+      "Studebaker Lark",
+      "Ford Edsel",
+      "Pontiac Aztek"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Named after Henry Ford’s late son despite his family’s protests, the Edsel arrived right into a sharp recession—and became an instant collector’s joke!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_23_delorean_dmc12_stainless",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Unpainted brushed stainless-steel panels and dramatic gull-wing doors rolled out of Belfast in 1981—what sleek coupe bankrupted its maker before 1985 movie fame?",
+    "choices": [
+      "Bricklin SV-1",
+      "Vector W8",
+      "Tucker 48",
+      "DeLorean DMC-12"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Barely 9,000 DMC-12s ever left the factory before bankruptcy hit in 1982—then *Back to the Future* turned John DeLorean’s flop into pop-culture gold!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_24_golden_parachute_severance",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Negotiating giant cash severance and stock windfalls triggered if an acquirer buys your firm and shows you the door is nicknamed what in corporate suites?",
+    "choices": [
+      "Golden parachute",
+      "Silver handcuff",
+      "Velvet rope",
+      "Brass cushion"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Popularized during the wild 1980s takeover wave, critics mocked golden parachutes for letting ousted CEOs float safely away with tens of millions in cash!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_25_hostile_takeover_tender",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "When an aggressive suitor bypasses a company’s resistant board of directors and pitches a buyout offer straight to shareholders, Wall Street calls the raid what?",
+    "choices": [
+      "Proxy dividend",
+      "Hostile takeover",
+      "Reverse merger",
+      "Shelf offering"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Target boards fight back with medieval-sounding tactics—including \"poison pills,\" \"crown-jewel sales,\" and rescuing \"white knights\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_26_angel_investor_broadway",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Borrowed from wealthy Broadway patrons who risked their own money backing unproven musicals, what heavenly label names individuals who fund brand-new startups?",
+    "choices": [
+      "Seed trustee",
+      "Patron broker",
+      "Angel investor",
+      "Venture warden"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Unlike big VC funds managing pension billions, angels write personal checks early—like Andy Bechtolsheim’s famous $100k check to Google!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_27_bootstrapping_self_funded",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Building a business purely on personal savings and early customer revenue—without taking a dime of outside venture equity or bank loans—is famously called what?",
+    "choices": [
+      "Crowdlending",
+      "Arbitraging",
+      "Factoring",
+      "Bootstrapping"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Giants like Spanx, Mailchimp, and Craigslist all bootstrapped from scratch—letting founders keep control instead of answering to VC boards!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_28_stock_split_four_for_one",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "When a soaring company hands investors four $100 shares in place of every $400 share—leaving total value unchanged while inviting smaller buyers—what move is this?",
+    "choices": [
+      "A stock split",
+      "A share buyback",
+      "A short cover",
+      "A rights issue"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Think of slicing one $20 pizza into eight slices instead of four—you don’t magically gain extra pizza, yet smaller slices make it far easier to trade!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_29_dollar_cost_averaging",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Investing a steady $200 into an index fund every payday regardless of whether markets soar or dip is which calm, automatic wealth-building strategy?",
+    "choices": [
+      "Value indexing",
+      "Dollar-cost averaging",
+      "Yield harvesting",
+      "Margin hedging"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "When shares dip, your fixed $200 automatically buys MORE shares; when prices spike, it buys fewer—quietly taking guesswork and panic out of timing markets!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_30_sunk_cost_fallacy_trap",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Sitting through a dreadful $18 movie or throwing cash at a failing venture purely because you already spent money you can’t recover is what classic mental trap?",
+    "choices": [
+      "Anchoring drift",
+      "Recency bias",
+      "Sunk-cost fallacy",
+      "Endowment pull"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Britain and France kept funding the money-losing Concorde partly over billions already spent—so economists dubbed it the \"Concorde effect\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_31_opportunity_cost_tradeoff",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Economists note that leaving work for grad school costs far more than tuition—you also give up two years of salary, a hidden trade-off officially called what?",
+    "choices": [
+      "Marginal debt",
+      "Carrying fee",
+      "Overhead drag",
+      "Opportunity cost"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Every \"yes\" hides the cost of its next-best \"no\"—from skipping wages for school to stuffing cash under a mattress instead of earning 5%!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_32_stock_ticker_glass_dome",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Glass bell clicking out narrow paper ribbons stamped \"GE 94\" that New Yorkers later showered from skyscrapers onto astronauts and champs: name this vintage machine!",
+    "choices": [
+      "Stock ticker",
+      "Telex puncher",
+      "Pneumatic tube",
+      "Wire register"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Young Thomas Edison improved the stock ticker in 1869 and earned $40,000—funding the Menlo Park workshop that later birthed light bulbs!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_33_two_dollar_bill_trumbull",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Showing Thomas Jefferson up front and John Trumbull’s Declaration of Independence across the back, which rarely spotted U.S. banknote is still legally printed?",
+    "choices": [
+      "The half-dollar note",
+      "The two-dollar bill",
+      "The silver certificate",
+      "The goldback bill"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Over 1.5 billion $2 bills circulate—most hoarded as lucky charms, though racetrack bettors and Clemson football fans spend them eagerly!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_34_credit_union_member_owned",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Unlike Wall Street commercial banks owned by outside stockholders chasing profit, a member-owned, not-for-profit savings cooperative is known as what?",
+    "choices": [
+      "A clearinghouse",
+      "A trust fund",
+      "A credit union",
+      "A thrift broker"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Because credit unions return profits to their own members instead of outside stockholders, they often beat giant banks on car-loan rates!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_35_cashiers_check_issuing_bank",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Selling a classic car to a stranger, why do smart sellers trust a cashier’s check far more than a personal check? Because payout is guaranteed directly by whom?",
+    "choices": [
+      "The buyer’s job",
+      "The federal mint",
+      "The credit bureau",
+      "The issuing bank"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The bank pulls the cash out of the buyer’s account on the spot and signs the check itself—so a genuine cashier’s check cannot bounce for empty funds!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_36_debit_vs_credit_checking_cash",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "If a skimmer steals your card number at a gas pump, why do consumer pros prefer swiping a credit card over debit? A debit swipe drains money straight from where?",
+    "choices": [
+      "Your checking cash",
+      "Your 401(k) account",
+      "The store’s vault",
+      "A reserve escrow"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "With credit-card fraud, thieves stole the BANK’S money while it investigates—whereas a hacked debit card leaves YOUR real rent cash gone!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_37_fixed_mortgage_rate_shield",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Locking in a 30-year fixed-rate home mortgage instead of an adjustable-rate loan buys a homeowner one huge sleep-easy shield—monthly principal-and-interest never does what?",
+    "choices": [
+      "Builds home equity",
+      "Rises with rates",
+      "Allows refinancing",
+      "Accepts extra pay"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Born in the 1930s to replace harsh 5-year balloon loans, America’s 30-year fixed mortgage lets you refinance if rates fall yet blocks hikes!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_38_excite_passed_on_google_1999",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 3,
+    "isBlitzLegal": false,
+    "stem": "In 1999, Larry Page and Sergey Brin offered to sell their clean search startup for just $750,000—which now-forgotten web portal famously turned Google down?",
+    "choices": [
+      "AltaVista",
+      "Lycos",
+      "Excite",
+      "WebCrawler"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Excite’s CEO balked even after Vinod Khosla trimmed the tag from $1M—fearing fast search would send visitors OFF his web portal too fast!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_39_myth_coca_cola_owns_pepsi",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 2,
+    "isBlitzLegal": false,
+    "stem": "Boardroom Klaxon! Three of these wild brand-origin tales are 100% documented history, while one cola conspiracy fails every SEC filing. Spot the myth!",
+    "choices": [
+      "Nike paid $35 for its Swoosh",
+      "IKEA’s founder drove old Volvos",
+      "LEGO makes 300M+ tires yearly",
+      "Coca-Cola owns Pepsi overseas"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Coke and Pepsi have been fierce independent rivals since the 1890s—neither owns the other, yet LEGO really IS Earth’s #1 tiny-tire maker!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_fin_40_myth_torn_bills_worthless",
+    "category": "FINANCE",
+    "domain": "NUM_GEO",
+    "difficulty": 3,
+    "isBlitzLegal": false,
+    "stem": "Treasury Klaxon! Three of these U.S. currency facts are official Mint and Bureau truth, while one pocket-change scare is pure counterfeit. Catch the myth!",
+    "choices": [
+      "Dimes carry 118 edge ridges",
+      "Dollar bills are 75% cotton",
+      "$2 bills stay legal tender",
+      "Torn bills lose all cash value"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "If over 50% of a genuine U.S. bill remains—or Treasury labs verify the rest burned—the Bureau of Engraving replaces it free at face value!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "cardStyle": "SPOT_THE_MYTH"
+  }
+]

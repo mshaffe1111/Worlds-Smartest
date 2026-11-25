@@ -187,6 +187,79 @@ export type BoardTwistIdV7 =
   | 'TWIST_15_SOLENOID_RIGGED_GAMBIT'
   | 'TWIST_16_DOUBLE_STAKE_CORNER';
 
+export type BoardPlayModeV7 =
+  | 'CLASSIC_TOTE'
+  | 'TIC_TAC_LINE'
+  | 'COAST_HEX_BRIDGE'
+  | 'EYE_GUESS_MEMORY'
+  | 'CONCENTRATION_PRIZE_MATCH'
+  | 'MONTY_CURTAIN_DEAL'
+  | 'PRESS_YOUR_LUCK_GREMLIN'
+  | 'BIG_WHEEL_SHOWCASE';
+
+export const ALL_BOARD_PLAY_MODES_V7: readonly BoardPlayModeV7[] = [
+  'CLASSIC_TOTE',
+  'TIC_TAC_LINE',
+  'COAST_HEX_BRIDGE',
+  'EYE_GUESS_MEMORY',
+  'CONCENTRATION_PRIZE_MATCH',
+  'MONTY_CURTAIN_DEAL',
+  'PRESS_YOUR_LUCK_GREMLIN',
+  'BIG_WHEEL_SHOWCASE',
+];
+
+export const BOARD_PLAY_MODE_TITLES_V7: Record<BoardPlayModeV7, string> = {
+  CLASSIC_TOTE: '1964 CLASSIC TOTE',
+  TIC_TAC_LINE: 'HOLLYWOOD SQUARES · 3-IN-A-ROW',
+  COAST_HEX_BRIDGE: 'COAST-TO-COAST BRIDGE',
+  EYE_GUESS_MEMORY: "EYE GUESS '66 · MEMORY FLASH",
+  CONCENTRATION_PRIZE_MATCH: "CONCENTRATION '65 · PRIZE MATCH",
+  MONTY_CURTAIN_DEAL: "LET'S MAKE A DEAL · CURTAIN SHOW",
+  PRESS_YOUR_LUCK_GREMLIN: "PRESS YOUR LUCK '66 · GREMLIN BOARD",
+  BIG_WHEEL_SHOWCASE: '1966 BIG WHEEL SHOWCASE',
+};
+
+export type BoardUnlockTopologyV7 =
+  | 'CLASSIC_OPEN'
+  | 'PYRAMID_CLIMB'
+  | 'KEY_AND_SAFE'
+  | 'CENTER_STARBURST'
+  | 'ROVING_SPOTLIGHT';
+
+export const ALL_BOARD_UNLOCK_TOPOLOGIES_V7: readonly BoardUnlockTopologyV7[] = [
+  'CLASSIC_OPEN',
+  'PYRAMID_CLIMB',
+  'KEY_AND_SAFE',
+  'CENTER_STARBURST',
+  'ROVING_SPOTLIGHT',
+];
+
+export type QuestionCardStyleV7 =
+  | 'CLASSIC_CUE'
+  | 'HEADLINE_BLANK'
+  | 'PICTURE_MONITOR'
+  | 'SPOT_THE_MYTH'
+  | 'BINARY_SPLIT';
+
+export type CpuPlaystyleIdV7 =
+  | 'GAMBLER'
+  | 'BLOCKER'
+  | 'PROFESSOR'
+  | 'HIGH_ROLLER'
+  | 'CLUTCH_SHARK';
+
+export type CpuTemperamentIdV7 =
+  | 'HOTHEAD'
+  | 'ICE_VEINED'
+  | 'STEADY'
+  | 'SHOWBOAT';
+
+export type DifficultyModeV7 =
+  | 'MATINEE_EASY'
+  | 'PRIMETIME_NORMAL'
+  | 'ALLSTAR_HARD'
+  | 'MASTERMIND';
+
 export type ClassicTvTileTwistV7 =
   | 'NONE'
   | 'LOCKED_VAULT'
@@ -194,7 +267,12 @@ export type ClassicTvTileTwistV7 =
   | 'OPPONENT_CHOICE'
   | 'MYSTERY_CURTAIN'
   | 'INSTANT_BARGAIN'
-  | 'SHOWCASE_BONUS';
+  | 'SHOWCASE_BONUS'
+  | 'BIG_WHEEL_SPIN'
+  | 'BLIND_CATEGORY'
+  | 'MYSTERY_CASH'
+  | 'BRASS_KEY'
+  | 'PRESS_LUCK_SPIN';
 
 export interface DailyBroadcastSaveV7 {
   readonly lastPlayedDateIso: string; // YYYY-MM-DD
@@ -227,6 +305,10 @@ export interface BoardTileNodeV7 {
   state: 'OPEN' | 'CLAIMED_PLAYER' | 'CLAIMED_RIVAL' | 'BLITZ_SURVIVOR' | 'RETRACTED';
   tvTwist?: ClassicTvTileTwistV7; // 1966 Network TV Board Twist on this tile
   isVaultLocked?: boolean; // True while LOCKED_VAULT padlock is sealed (unlocks on adjacent claim or 2-streak)
+  isTopologyLocked?: boolean; // True while gated by PYRAMID_CLIMB / KEY_AND_SAFE / CENTER_STARBURST / ROVING_SPOTLIGHT
+  keyholderProtectedTurns?: number; // >0 shields an unlocked Safe tile from CPU sniping for 1 turn!
+  blindCategoryHidden?: boolean; // True on BLIND_CATEGORY ('$600 · ???') until tapped
+  mysteryCashHidden?: boolean; // True on MYSTERY_CASH ('CATEGORY · $???') until tapped
   hasAmberTruce: boolean; // Carmen/Toby/Inez truce ring (+0.35 Mult if respected, breaks trust if poached)
   hasUhfHalo: boolean; // Pirate Channel 83 bonus halo
   isRiggedSolenoid: boolean; // 24Hz shiver + copper spark tell!
@@ -352,6 +434,7 @@ export interface ClueRecordV7 {
   readonly isKlaxonMyth: boolean;
   readonly ahaFactoid: string; // Mandatory 1-line post-answer payoff!
   readonly supportedToys: readonly ToyIdV7[];
+  readonly cardStyle?: QuestionCardStyleV7; // Optional 1966 visual monitor card treatment
   // Optional contraption-specific payloads:
   readonly numeric?: NumericDialPayloadV7;
   readonly balance?: BalanceScalePayloadV7;
@@ -376,7 +459,7 @@ export interface ToyResolutionV7 {
 }
 
 // ----------------------------------------------------------------------------
-// 5. 6 Rivals + 3 Booth Power Brokers (`CastIdV7` x 4 Gouache States)
+// 5. 24 1960s Champions + 3 Booth Power Brokers (`CastIdV7` x 4 Gouache States)
 // ----------------------------------------------------------------------------
 
 export type RivalIdV7 =
@@ -385,7 +468,52 @@ export type RivalIdV7 =
   | 'INEZ_CALLAHAN'
   | 'ALASTAIR_KERR'
   | 'SEO_YUN_KANG'
-  | 'REX_CALLOWAY';
+  | 'REX_CALLOWAY'
+  | 'DOTTY_VANCE'
+  | 'CHET_KOWALSKI'
+  | 'PEGGY_SUE_CONNORS'
+  | 'BUZZ_HALVORSEN'
+  | 'GIGI_ST_CLAIR'
+  | 'WALTER_PRINGLE'
+  | 'BETTY_LOU_HARPER'
+  | 'MILES_ELLINGTON'
+  | 'SYLVIE_BEAUMONT'
+  | 'MARGO_STERLING'
+  | 'HANK_MCCOY'
+  | 'LANA_STARLING'
+  | 'VINCE_CASTELLANO'
+  | 'ARTHUR_PENDLETON'
+  | 'NORMA_JEAN_BAKER'
+  | 'STERLING_VANCE'
+  | 'CLARA_VON_BERG'
+  | 'VICTOR_LAZAR';
+
+export const ALL_RIVAL_IDS_V7: readonly RivalIdV7[] = [
+  'DOTTY_VANCE',
+  'CARMEN_DELGADO',
+  'CHET_KOWALSKI',
+  'PEGGY_SUE_CONNORS',
+  'TOBY_OKAFOR',
+  'INEZ_CALLAHAN',
+  'BUZZ_HALVORSEN',
+  'GIGI_ST_CLAIR',
+  'WALTER_PRINGLE',
+  'BETTY_LOU_HARPER',
+  'MILES_ELLINGTON',
+  'SYLVIE_BEAUMONT',
+  'MARGO_STERLING',
+  'HANK_MCCOY',
+  'ALASTAIR_KERR',
+  'LANA_STARLING',
+  'VINCE_CASTELLANO',
+  'REX_CALLOWAY',
+  'ARTHUR_PENDLETON',
+  'NORMA_JEAN_BAKER',
+  'STERLING_VANCE',
+  'SEO_YUN_KANG',
+  'CLARA_VON_BERG',
+  'VICTOR_LAZAR',
+];
 
 export type BrokerIdV7 = 'GRANT_BELLAMY' | 'ROZ_KORMAN' | 'VERA_KARP';
 export type CastIdV7 = RivalIdV7 | BrokerIdV7;
@@ -405,6 +533,11 @@ export interface CastProfileV7 {
   readonly signatureTellText: string;
   readonly cheatChannel: 'ROW_C_GLINT' | 'SOLENOID_SPARK' | 'FRESNEL_LAMP' | 'HONEST';
   readonly baseAccuracy: number;
+  readonly playstyle?: CpuPlaystyleIdV7;
+  readonly temperament?: CpuTemperamentIdV7;
+  readonly seasonTier?: 1 | 2 | 3 | 4;
+  readonly eraFashionTag?: string;
+  readonly bio?: string;
 }
 
 // ----------------------------------------------------------------------------
@@ -488,6 +621,7 @@ export interface BroadcastSettingsV7 {
   hapticsEnabled: boolean;
   reducedMotion: boolean;
   highContrastBadges: boolean;
+  difficultyMode?: DifficultyModeV7;
 }
 
 export interface EpisodeBlueprintV7 {
@@ -511,6 +645,109 @@ export interface EpisodeBlueprintV7 {
   readonly canaryIsPoisoned: boolean;
 }
 
+export type CareerMedalIdV7 =
+  | 'SHUTOUT_STREAK'
+  | 'SAFE_CRACKER'
+  | 'WHEEL_HIGH_ROLLER'
+  | 'GREMLIN_DODGER'
+  | 'CLUTCH_TURN10_WINNER'
+  | 'SCOUTING_DETECTIVE'
+  | 'NO_LIFELINE_PURIST'
+  | 'RETURNING_CHAMP_CROWN';
+
+export type AwardRarityTierV7 =
+  | 'BRONZE MEDAL'
+  | 'SILVER MEDAL'
+  | 'GOLD TROPHY'
+  | 'PLATINUM CROWN';
+
+export interface CareerMedalSpecV7 {
+  readonly id: CareerMedalIdV7;
+  readonly name: string;
+  readonly tier: AwardRarityTierV7;
+  readonly icon: string;
+  readonly summary: string;
+  readonly bonusCash: number;
+}
+
+export const CAREER_MEDAL_SPECS_V7: Record<CareerMedalIdV7, CareerMedalSpecV7> = {
+  SHUTOUT_STREAK: {
+    id: 'SHUTOUT_STREAK',
+    name: 'Hot-Streak Five',
+    tier: 'GOLD TROPHY',
+    icon: '🔥',
+    summary: 'Rattle off 5+ correct clues in a row during a single broadcast.',
+    bonusCash: 100,
+  },
+  SAFE_CRACKER: {
+    id: 'SAFE_CRACKER',
+    name: 'Gold Vault Safe-Cracker',
+    tier: 'SILVER MEDAL',
+    icon: '🔐',
+    summary: 'Crack open and win a $500 Locked Gold Vault or Brass-Key Safe.',
+    bonusCash: 100,
+  },
+  WHEEL_HIGH_ROLLER: {
+    id: 'WHEEL_HIGH_ROLLER',
+    name: 'Big Wheel High-Roller',
+    tier: 'GOLD TROPHY',
+    icon: '🎡',
+    summary: 'Spin $500+ or 2× Double Dollars on the 20-wedge Studio Big Wheel.',
+    bonusCash: 100,
+  },
+  GREMLIN_DODGER: {
+    id: 'GREMLIN_DODGER',
+    name: 'Signal-Jam Dodger',
+    tier: 'SILVER MEDAL',
+    icon: '⚡',
+    summary: 'Bank Light-Board cash or pass live spins without hitting a Zonk.',
+    bonusCash: 100,
+  },
+  CLUTCH_TURN10_WINNER: {
+    id: 'CLUTCH_TURN10_WINNER',
+    name: 'Turn-10 Showstopper',
+    tier: 'PLATINUM CROWN',
+    icon: '🚨',
+    summary: 'Nail the final Turn-10 Match-Point clue to clinch a tight broadcast.',
+    bonusCash: 125,
+  },
+  SCOUTING_DETECTIVE: {
+    id: 'SCOUTING_DETECTIVE',
+    name: 'Backstage Scout Ribbon',
+    tier: 'BRONZE MEDAL',
+    icon: '📓',
+    summary: 'Log a brand-new Champion Weak Spot or Strong Turf in your Notebook.',
+    bonusCash: 75,
+  },
+  NO_LIFELINE_PURIST: {
+    id: 'NO_LIFELINE_PURIST',
+    name: 'Unassisted Studio Purist',
+    tier: 'GOLD TROPHY',
+    icon: '🎯',
+    summary: 'Win a broadcast with both 50/50 Cut and Audience Poll untouched.',
+    bonusCash: 125,
+  },
+  RETURNING_CHAMP_CROWN: {
+    id: 'RETURNING_CHAMP_CROWN',
+    name: 'Defending Champion Crown',
+    tier: 'PLATINUM CROWN',
+    icon: '👑',
+    summary: 'Defend your title with a 2+ Returning-Champion win streak.',
+    bonusCash: 100,
+  },
+};
+
+export type BroadcastActNumberV7 = 1 | 2 | 3;
+
+export interface NextEpisodeCliffhangerTeaserV7 {
+  readonly episodeCode: string;
+  readonly title: string;
+  readonly rivalId: RivalIdV7;
+  readonly stageCallsign: string;
+  readonly hookCopy: string;
+  readonly stakesTag: string;
+}
+
 export interface CampaignSaveStateV7 {
   readonly version: 'WS_V7_GOLD_1';
   waiver: ContestantWaiverV7 | null;
@@ -523,7 +760,7 @@ export interface CampaignSaveStateV7 {
   activeCoupRegime: CoupRegimeIdV7;
   equippedRelics: OwnedRelicV7[]; // Up to 5 slots (<= 2 MULT_DRIVER)
   unlockedTrophyIds: string[]; // Subset of TROPHY_CATALOG_V7[36].trophyId
-  rivalTrust: Record<RivalIdV7, number>; // -3 .. +3 (drives Toby Mercy Switches, Golden Exits & VIP Jury!)
+  rivalTrust: Partial<Record<RivalIdV7, number>>; // -3 .. +3 (drives Toby Mercy Switches, Golden Exits & VIP Jury!)
   brokerFavor: Record<BrokerIdV7, number>; // Drives Hour-11 Booth Coup & 5 Stage-10 Endings
   boothArrestsCount: number;
   canaryAcceptedCount: number;
@@ -532,5 +769,19 @@ export interface CampaignSaveStateV7 {
   episodesPlayed: number;
   unlockedEndings: string[];
   recentEntityKeys: string[]; // 25-match cross-toy entity cooldown ring
+  scoutingNotebook?: Record<
+    string,
+    {
+      revealedStrong: CategoryIdV7[];
+      revealedWeak: CategoryIdV7[];
+      traitRevealed?: boolean;
+    }
+  >;
+  returningChampStreak?: number;
+  recentBoardCombos?: string[];
+  careerMedalCounts?: Partial<Record<CareerMedalIdV7, number>>;
+  masteredBoardModes?: BoardPlayModeV7[];
+  masteredDifficulties?: DifficultyModeV7[];
+  masteredModeDifficulties?: string[];
   settings: BroadcastSettingsV7;
 }

@@ -401,6 +401,7 @@ export interface InvoluteGearOptionsV7 {
   arborLength?: number;
   roughness?: number;
   metalness?: number;
+  material?: THREE.Material;
   name?: string;
 }
 
@@ -514,11 +515,13 @@ export function createInvoluteGear(opts: InvoluteGearOptionsV7 = {}): THREE.Grou
   gearGeom.translate(0, 0, -coreDepth * 0.5);
   gearGeom.computeVertexNormals();
 
-  const gearMat = new THREE.MeshStandardMaterial({
-    color: gearColorHex,
-    metalness: opts.metalness ?? 0.95,
-    roughness: opts.roughness ?? 0.18,
-  });
+  const gearMat =
+    opts.material ??
+    new THREE.MeshStandardMaterial({
+      color: gearColorHex,
+      metalness: opts.metalness ?? 0.95,
+      roughness: opts.roughness ?? 0.18,
+    });
   const gearMesh = new THREE.Mesh(gearGeom, gearMat);
   gearMesh.castShadow = true;
   gearMesh.receiveShadow = true;
@@ -751,11 +754,11 @@ function buildAntiMoireFloorTextures(kind: AntiMoireFloorKindV7): CachedFloorTex
 
       switch (kind) {
         case 'PARQUET': {
-          // Gleaming 1966 NBC Studio 6A Honey-Teak Broadcast Parquet (warm sunlit satin!)
-          normalStrength = 0.65;
+          // Gleaming 1966 NBC Studio 6A Honey-Teak Broadcast Parquet (rich sunlit plank contrast!)
+          normalStrength = 1.08;
           baseRoughness = 0.21;
           baseMetalness = 0.08;
-          gridDensity = 2.6;
+          gridDensity = 2.5;
           const tiles = 4;
           const tx = Math.floor(u * tiles);
           const ty = Math.floor(v * tiles);
@@ -767,54 +770,56 @@ function buildAntiMoireFloorTextures(kind: AntiMoireFloorKindV7): CachedFloorTex
           const strips = 5;
           const stripIdx = Math.floor(stripCoord * strips);
           const sf = fract(stripCoord * strips);
-          const seamA = smoothstep(0.0, 0.036, sf) * smoothstep(0.0, 0.036, 1.0 - sf);
-          const seamB = smoothstep(0.0, 0.015, alongCoord) * smoothstep(0.0, 0.015, 1.0 - alongCoord);
-          const seam = 0.84 + 0.16 * seamA * seamB;
-          const tone = 0.93 + 0.14 * hash2D(tx * 7 + stripIdx, ty * 11, 19);
+          const seamA = smoothstep(0.0, 0.048, sf) * smoothstep(0.0, 0.048, 1.0 - sf);
+          const seamB = smoothstep(0.0, 0.022, alongCoord) * smoothstep(0.0, 0.022, 1.0 - alongCoord);
+          const seam = 0.66 + 0.34 * seamA * seamB;
+          const tone = 0.84 + 0.32 * hash2D(tx * 7 + stripIdx, ty * 11, 19);
+          const checkerLift = flip ? 1.07 : 0.94;
           const grain = tileFbm(u * 2.0, v * 2.0, 8, 3, 23);
-          r = lerp(84, 122, grain) * tone * seam;
-          g = lerp(48, 72, grain) * tone * seam;
-          b = lerp(26, 42, grain) * tone * seam;
-          h = 0.48 + 0.07 * seam + 0.03 * grain;
-          rough = lerp(0.18, 0.27, 1.0 - seam * 0.6 + grain * 0.14);
+          r = lerp(94, 168, grain) * tone * checkerLift * seam;
+          g = lerp(52, 102, grain) * tone * checkerLift * seam;
+          b = lerp(26, 54, grain) * tone * checkerLift * seam;
+          h = 0.42 + 0.16 * seamA * seamB + 0.06 * grain;
+          rough = lerp(0.17, 0.28, 1.0 - seam * 0.65 + grain * 0.16);
           break;
         }
 
         case 'GRANITE': {
           // 1965 World's Fair Glossy Mid-Century Space-Age Starburst Terrazzo!
-          normalStrength = 0.6;
+          normalStrength = 1.02;
           baseRoughness = 0.19;
-          baseMetalness = 0.14;
+          baseMetalness = 0.15;
           gridDensity = 2.2;
           const slabs = 3;
           const su = fract(u * slabs);
           const sv = fract(v * slabs);
           const brassDivider =
             1.0 -
-            smoothstep(0.0, 0.012, su) *
-              smoothstep(0.0, 0.012, 1 - su) *
-              smoothstep(0.0, 0.012, sv) *
-              smoothstep(0.0, 0.012, 1 - sv);
+            smoothstep(0.0, 0.016, su) *
+              smoothstep(0.0, 0.016, 1 - su) *
+              smoothstep(0.0, 0.016, sv) *
+              smoothstep(0.0, 0.016, 1 - sv);
           const macro = tileFbm(u, v, 6, 4, 41);
-          const chipA = Math.pow(tileNoise(u, v, 42, 47), 3.0);
-          const chipB = Math.pow(tileNoise(u, v, 68, 53), 4.0);
-          const baseR = lerp(42, 74, macro) + chipA * 68 + chipB * 92;
-          const baseG = lerp(74, 116, macro) + chipA * 76 + chipB * 88;
-          const baseB = lerp(108, 154, macro) + chipA * 84 + chipB * 64;
-          r = lerp(baseR, 236, brassDivider * 0.88);
-          g = lerp(baseG, 194, brassDivider * 0.88);
-          b = lerp(baseB, 96, brassDivider * 0.88);
-          h = 0.46 + (1.0 - brassDivider) * 0.1 + chipA * 0.05;
-          rough = lerp(0.18, 0.26, (1 - chipB) * 0.55) * (1.0 - brassDivider * 0.25);
+          const chipA = Math.pow(tileNoise(u, v, 42, 47), 2.4);
+          const chipB = Math.pow(tileNoise(u, v, 68, 53), 3.1);
+          const chipGold = Math.pow(tileNoise(u, v, 54, 61), 4.2);
+          const baseR = lerp(38, 86, macro) + chipA * 88 + chipB * 112 + chipGold * 140;
+          const baseG = lerp(74, 132, macro) + chipA * 96 + chipB * 106 + chipGold * 110;
+          const baseB = lerp(110, 174, macro) + chipA * 102 + chipB * 74 + chipGold * 38;
+          r = lerp(baseR, 246, brassDivider * 0.92);
+          g = lerp(baseG, 202, brassDivider * 0.92);
+          b = lerp(baseB, 98, brassDivider * 0.92);
+          h = 0.44 + (1.0 - brassDivider) * 0.14 + chipA * 0.08 + chipGold * 0.06;
+          rough = lerp(0.17, 0.26, (1 - chipB) * 0.55) * (1.0 - brassDivider * 0.28);
           break;
         }
 
         case 'HERRINGBONE_OAK': {
           // Sunlit 1964 Broadway & Studio 5B Glossy Lacquered Teak Herringbone!
-          normalStrength = 0.68;
+          normalStrength = 1.1;
           baseRoughness = 0.21;
           baseMetalness = 0.08;
-          gridDensity = 3.0;
+          gridDensity = 2.8;
           const freq = 5;
           const rotU = (u + v) * freq;
           const rotV = (u - v) * freq;
@@ -824,52 +829,53 @@ function buildAntiMoireFloorTextures(kind: AntiMoireFloorKindV7): CachedFloorTex
           const pCoord = parity ? fract(rotU * 2) : fract(rotV * 2);
           const lCoord = parity ? fract(rotV * 0.5) : fract(rotU * 0.5);
           const bevelSeam =
-            smoothstep(0.0, 0.045, pCoord) *
-            smoothstep(0.0, 0.045, 1 - pCoord) *
-            smoothstep(0.0, 0.028, lCoord) *
-            smoothstep(0.0, 0.028, 1 - lCoord);
-          const plankVar = 0.89 + 0.22 * hash2D(cellU, cellV, 71);
+            smoothstep(0.0, 0.055, pCoord) *
+            smoothstep(0.0, 0.055, 1 - pCoord) *
+            smoothstep(0.0, 0.034, lCoord) *
+            smoothstep(0.0, 0.034, 1 - lCoord);
+          const plankVar = 0.82 + 0.34 * hash2D(cellU, cellV, 71);
+          const parityLift = parity ? 1.08 : 0.93;
           const fiber = tileFbm(u * 2, v * 2, 12, 3, 79);
-          const seamMix = 0.64 + 0.36 * bevelSeam;
-          r = lerp(66, 114, fiber) * plankVar * seamMix;
-          g = lerp(40, 72, fiber) * plankVar * seamMix;
-          b = lerp(28, 50, fiber) * plankVar * seamMix;
-          h = 0.46 + bevelSeam * 0.18 + fiber * 0.06;
-          rough = lerp(0.19, 0.28, 1.0 - bevelSeam * 0.6);
+          const seamMix = 0.56 + 0.44 * bevelSeam;
+          r = lerp(82, 156, fiber) * plankVar * parityLift * seamMix;
+          g = lerp(46, 94, fiber) * plankVar * parityLift * seamMix;
+          b = lerp(26, 52, fiber) * plankVar * parityLift * seamMix;
+          h = 0.42 + bevelSeam * 0.24 + fiber * 0.08;
+          rough = lerp(0.18, 0.28, 1.0 - bevelSeam * 0.65);
           break;
         }
 
         case 'TOURMALINE_BAIZE': {
           // 1966 CBS Jubilee & Monte Carlo Glossy Emerald-Teal Inlaid Brass Terrazzo!
-          normalStrength = 0.7;
-          baseRoughness = 0.22;
-          baseMetalness = 0.14;
+          normalStrength = 1.04;
+          baseRoughness = 0.21;
+          baseMetalness = 0.16;
           gridDensity = 2.4;
           const border = Math.min(Math.min(u, 1 - u), Math.min(v, 1 - v));
           const brassInlay =
-            smoothstep(0.036, 0.044, border) * (1.0 - smoothstep(0.052, 0.06, border));
+            smoothstep(0.032, 0.044, border) * (1.0 - smoothstep(0.054, 0.066, border));
           const diagA = Math.abs(fract(u + v) - 0.5);
-          const fineBrass = 1.0 - smoothstep(0.005, 0.011, diagA);
+          const fineBrass = 1.0 - smoothstep(0.006, 0.015, diagA);
           const marble = tileFbm(u, v, 7, 3, 109);
-          const speckle = tileNoise(u, v, 64, 103);
-          const emeraldR = lerp(16, 36, marble * 0.65 + speckle * 0.35);
-          const emeraldG = lerp(92, 144, marble * 0.65 + speckle * 0.35);
-          const emeraldB = lerp(96, 142, marble * 0.65 + speckle * 0.35);
-          const inlayMask = clamp01(brassInlay + fineBrass * 0.45);
-          r = lerp(emeraldR, 240, inlayMask);
-          g = lerp(emeraldG, 192, inlayMask);
-          b = lerp(emeraldB, 84, inlayMask);
-          h = 0.46 + marble * 0.08 + inlayMask * 0.16;
-          rough = lerp(0.24, 0.16, inlayMask);
+          const speckle = Math.pow(tileNoise(u, v, 56, 103), 2.2);
+          const emeraldR = lerp(14, 48, marble * 0.6 + speckle * 0.4) + speckle * 38;
+          const emeraldG = lerp(88, 162, marble * 0.6 + speckle * 0.4) + speckle * 42;
+          const emeraldB = lerp(92, 158, marble * 0.6 + speckle * 0.4) + speckle * 34;
+          const inlayMask = clamp01(brassInlay + fineBrass * 0.58);
+          r = lerp(emeraldR, 248, inlayMask);
+          g = lerp(emeraldG, 198, inlayMask);
+          b = lerp(emeraldB, 88, inlayMask);
+          h = 0.44 + marble * 0.1 + speckle * 0.06 + inlayMask * 0.2;
+          rough = lerp(0.24, 0.15, inlayMask);
           break;
         }
 
         case 'DIAMOND_PLATE_STEEL': {
           // 1966 RCA Color Control Studio & Pirate Ship Glossy Cobalt-Teal Deck w/ Brushed Chrome Strips!
-          normalStrength = 0.75;
-          baseRoughness = 0.22;
-          baseMetalness = 0.32;
-          gridDensity = 3.0;
+          normalStrength = 1.12;
+          baseRoughness = 0.21;
+          baseMetalness = 0.34;
+          gridDensity = 2.8;
           const cells = 10;
           const cx = Math.floor(u * cells);
           const cy = Math.floor(v * cells);
@@ -880,54 +886,54 @@ function buildAntiMoireFloorTextures(kind: AntiMoireFloorKindV7): CachedFloorTex
           const ry = (fu - fv) * 0.7071;
           const lugLen = alt ? Math.abs(rx) : Math.abs(ry);
           const lugWid = alt ? Math.abs(ry) : Math.abs(rx);
-          const diamond = 1.0 - smoothstep(0.16, 0.26, lugLen * 0.72 + lugWid * 1.9);
+          const diamond = 1.0 - smoothstep(0.15, 0.27, lugLen * 0.72 + lugWid * 1.85);
           const brushed = tileFbm(u, v, 14, 3, 137);
           const seam =
-            smoothstep(0.0, 0.014, fract(u * 2)) *
-            smoothstep(0.0, 0.014, 1 - fract(u * 2)) *
-            smoothstep(0.0, 0.014, fract(v * 2)) *
-            smoothstep(0.0, 0.014, 1 - fract(v * 2));
+            smoothstep(0.0, 0.018, fract(u * 2)) *
+            smoothstep(0.0, 0.018, 1 - fract(u * 2)) *
+            smoothstep(0.0, 0.018, fract(v * 2)) *
+            smoothstep(0.0, 0.018, 1 - fract(v * 2));
           const chromeStrip = 1.0 - seam;
-          const steelBase = lerp(42, 76, brushed * 0.55 + diamond * 0.45);
-          r = lerp(steelBase * 0.65, 198, chromeStrip * 0.72);
-          g = lerp(steelBase * 1.05, 224, chromeStrip * 0.72);
-          b = lerp(steelBase * 1.48, 242, chromeStrip * 0.72);
-          h = 0.44 + seam * (0.12 + diamond * 0.2) + chromeStrip * 0.08;
-          rough = lerp(0.25, 0.17, clamp01(diamond * 0.6 + chromeStrip));
+          const steelBase = lerp(38, 92, brushed * 0.48 + diamond * 0.52);
+          r = lerp(steelBase * 0.65, 212, chromeStrip * 0.78);
+          g = lerp(steelBase * 1.08, 234, chromeStrip * 0.78);
+          b = lerp(steelBase * 1.54, 250, chromeStrip * 0.78);
+          h = 0.42 + seam * (0.14 + diamond * 0.26) + chromeStrip * 0.1;
+          rough = lerp(0.25, 0.16, clamp01(diamond * 0.65 + chromeStrip));
           break;
         }
 
         case 'BELGIAN_ASTROLABE_MARBLE': {
           // 1966 38th-Floor Executive Penthouse Glossy Midnight-Sapphire & 24K Gold Astrolabe Marble!
-          normalStrength = 0.72;
+          normalStrength = 1.06;
           baseRoughness = 0.18;
-          baseMetalness = 0.18;
+          baseMetalness = 0.2;
           gridDensity = 2.0;
           const dx = u - 0.5;
           const dy = v - 0.5;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          const ringA = 1.0 - smoothstep(0.004, 0.011, Math.abs(dist - 0.36));
-          const ringB = 1.0 - smoothstep(0.003, 0.009, Math.abs(dist - 0.22));
+          const ringA = 1.0 - smoothstep(0.005, 0.014, Math.abs(dist - 0.36));
+          const ringB = 1.0 - smoothstep(0.004, 0.012, Math.abs(dist - 0.22));
           const diagRay =
             dist > 0.06 && dist < 0.44
-              ? 1.0 - smoothstep(0.003, 0.008, Math.min(Math.abs(dx), Math.abs(dy)))
+              ? 1.0 - smoothstep(0.004, 0.011, Math.min(Math.abs(dx), Math.abs(dy)))
               : 0;
-          const brassAstrolabe = clamp01(ringA + ringB + diagRay * 0.85);
+          const brassAstrolabe = clamp01(ringA + ringB + diagRay * 0.9);
 
           const w1 = tileFbm(u, v, 4, 4, 181);
           const w2 = tileFbm(u + w1 * 0.35, v - w1 * 0.28, 5, 4, 193);
           const veinWave = Math.abs(Math.sin((u * 2.5 + v * 3.0 + w2 * 3.4) * Math.PI));
-          const goldVein = Math.pow(1.0 - veinWave, 14.0);
+          const goldVein = Math.pow(1.0 - veinWave, 10.5);
           const cloud = tileFbm(u, v, 8, 3, 199);
 
-          const mR = lerp(24 + cloud * 24, 232, goldVein * 0.76);
-          const mG = lerp(42 + cloud * 32, 192, goldVein * 0.76);
-          const mB = lerp(74 + cloud * 48, 96, goldVein * 0.76);
-          r = lerp(mR, 246, brassAstrolabe);
-          g = lerp(mG, 202, brassAstrolabe);
-          b = lerp(mB, 92, brassAstrolabe);
-          h = 0.5 - goldVein * 0.08 + brassAstrolabe * 0.14 + cloud * 0.04;
-          rough = lerp(0.19 + cloud * 0.06, 0.15, brassAstrolabe);
+          const mR = lerp(22 + cloud * 32, 242, goldVein * 0.84);
+          const mG = lerp(42 + cloud * 44, 198, goldVein * 0.84);
+          const mB = lerp(78 + cloud * 62, 98, goldVein * 0.84);
+          r = lerp(mR, 250, brassAstrolabe);
+          g = lerp(mG, 206, brassAstrolabe);
+          b = lerp(mB, 96, brassAstrolabe);
+          h = 0.48 - goldVein * 0.1 + brassAstrolabe * 0.18 + cloud * 0.05;
+          rough = lerp(0.18 + cloud * 0.06, 0.14, brassAstrolabe);
           break;
         }
       }
@@ -1064,7 +1070,7 @@ export function createAntiMoireFloorMaterial(
     color: tintColor,
     map,
     normalMap,
-    normalScale: new THREE.Vector2(0.11, 0.11),
+    normalScale: new THREE.Vector2(0.36, 0.36),
     roughnessMap,
     roughness: Math.min(0.26, Math.max(0.18, opts.baseRoughness ?? texSet.baseRoughness)),
     metalness: Math.min(0.24, texSet.baseMetalness),
@@ -1076,7 +1082,7 @@ export function createAntiMoireFloorMaterial(
   });
 
   const gridDensity = texSet.gridDensity;
-  mat.customProgramCacheKey = () => `ws_v7_antimoire_glossy_floor_${kind}`;
+  mat.customProgramCacheKey = () => `ws_v7_antimoire_glossy_floor_v2_${kind}`;
   mat.onBeforeCompile = (shader) => {
     shader.uniforms.uMeanFloorColor = { value: meanColor };
     shader.uniforms.uGridDensity = { value: gridDensity };
@@ -1118,8 +1124,8 @@ export function createAntiMoireFloorMaterial(
         #include <map_fragment>
         vec2 fwFloor = fwidth( vWorldPos.xz * uGridDensity );
         float floorFootprint = max( fwFloor.x, fwFloor.y );
-        float moireSuppress = smoothstep( 0.18, 0.82, floorFootprint );
-        diffuseColor.rgb = mix( diffuseColor.rgb, uMeanFloorColor, moireSuppress * 0.88 );
+        float moireSuppress = smoothstep( 1.05, 3.10, floorFootprint );
+        diffuseColor.rgb = mix( diffuseColor.rgb, uMeanFloorColor, moireSuppress * 0.78 );
         `,
       )
       .replace(
@@ -1127,7 +1133,7 @@ export function createAntiMoireFloorMaterial(
         /* glsl */ `
         #include <roughnessmap_fragment>
         vec2 fwRough = fwidth( vWorldPos.xz * uGridDensity );
-        float toksvigFade = smoothstep( 0.18, 0.84, max( fwRough.x, fwRough.y ) );
+        float toksvigFade = smoothstep( 1.05, 3.15, max( fwRough.x, fwRough.y ) );
         roughnessFactor = clamp( mix( roughnessFactor, max( roughnessFactor, 0.42 ), toksvigFade * 0.72 ), 0.16, 0.86 );
         `,
       );
@@ -1333,6 +1339,283 @@ export function createVolumetricLightCone(opts: {
   return { mesh, material };
 }
 
+let cachedTungstenBulbHaloTex: THREE.CanvasTexture | null = null;
+
+/**
+ * Shared 128x128 2700K `#FFD56B` incandescent bulb halation texture (warm filament core +
+ * soft amber TK-41 camera bloom + subtle 4-point studio iris star glint; zero border alpha!).
+ */
+export function getTungstenBulbHaloTexture(): THREE.CanvasTexture {
+  if (cachedTungstenBulbHaloTex) return cachedTungstenBulbHaloTex;
+  const c = document.createElement('canvas');
+  c.width = 128;
+  c.height = 128;
+  const ctx = c.getContext('2d');
+  if (ctx) {
+    ctx.clearRect(0, 0, 128, 128);
+
+    // 1. Soft 2700K radial tungsten halation bloom (strictly fades to 0 alpha before edge!)
+    const rad = ctx.createRadialGradient(64, 64, 2, 64, 64, 60);
+    rad.addColorStop(0.0, 'rgba(255, 252, 236, 0.98)');
+    rad.addColorStop(0.18, 'rgba(255, 224, 132, 0.82)');
+    rad.addColorStop(0.42, 'rgba(255, 186, 66, 0.36)');
+    rad.addColorStop(0.72, 'rgba(244, 148, 28, 0.09)');
+    rad.addColorStop(1.0, 'rgba(244, 148, 28, 0.0)');
+    ctx.fillStyle = rad;
+    ctx.fillRect(0, 0, 128, 128);
+
+    // 2. Subtle 4-point RCA TK-41 lens iris star rays + delicate 45° secondary glint
+    const drawRay = (angleRad: number, halfLen: number, halfWid: number, peakAlpha: number) => {
+      ctx.save();
+      ctx.translate(64, 64);
+      ctx.rotate(angleRad);
+      const rg = ctx.createLinearGradient(-halfLen, 0, halfLen, 0);
+      rg.addColorStop(0.0, 'rgba(255, 232, 162, 0.0)');
+      rg.addColorStop(0.35, `rgba(255, 232, 162, ${(peakAlpha * 0.42).toFixed(3)})`);
+      rg.addColorStop(0.5, `rgba(255, 250, 230, ${peakAlpha.toFixed(3)})`);
+      rg.addColorStop(0.65, `rgba(255, 232, 162, ${(peakAlpha * 0.42).toFixed(3)})`);
+      rg.addColorStop(1.0, 'rgba(255, 232, 162, 0.0)');
+      ctx.fillStyle = rg;
+      ctx.beginPath();
+      ctx.moveTo(-halfLen, 0);
+      ctx.quadraticCurveTo(0, -halfWid, halfLen, 0);
+      ctx.quadraticCurveTo(0, halfWid, -halfLen, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    };
+    drawRay(0, 56, 4.2, 0.54);
+    drawRay(Math.PI * 0.5, 56, 4.2, 0.54);
+    drawRay(Math.PI * 0.25, 36, 2.4, 0.22);
+    drawRay(-Math.PI * 0.25, 36, 2.4, 0.22);
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = THREE.ClampToEdgeWrapping;
+  tex.wrapT = THREE.ClampToEdgeWrapping;
+  (tex.userData as Record<string, unknown>)[SHARED_CAD_TEX_FLAG] = true;
+  cachedTungstenBulbHaloTex = tex;
+  return tex;
+}
+
+export interface TungstenBulbHaloOptionsV7 {
+  scale?: number;
+  opacity?: number;
+  colorHex?: number;
+  material?: THREE.SpriteMaterial;
+  name?: string;
+}
+
+/**
+ * Creates a zero-FBO-risk `2700K` `#FFD56B` incandescent bulb halation `THREE.Sprite`
+ * (`AdditiveBlending`, `depthWrite: false`, `toneMapped: false`).
+ */
+export function createTungstenBulbHaloSprite(opts: TungstenBulbHaloOptionsV7 = {}): THREE.Sprite {
+  const mat =
+    opts.material ??
+    new THREE.SpriteMaterial({
+      map: getTungstenBulbHaloTexture(),
+      color: opts.colorHex ?? 0xffd56b,
+      transparent: true,
+      opacity: opts.opacity ?? 0.72,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      toneMapped: false,
+    });
+  const sprite = new THREE.Sprite(mat);
+  const s = Math.max(0.04, opts.scale ?? 0.22);
+  sprite.scale.set(s, s, 1);
+  sprite.name = opts.name ?? 'TungstenBulbHaloSprite2700K';
+  sprite.renderOrder = 4;
+  (sprite.userData as Record<string, unknown>).baseScale = s;
+  return sprite;
+}
+
+let cachedContactShadowTex: THREE.CanvasTexture | null = null;
+
+/**
+ * Shared 128x128 radial ambient-occlusion contact shadow texture (midnight studio navy-black,
+ * smooth Gaussian/cosine falloff to 0.0 alpha so zero rectangular edge is ever visible).
+ */
+export function getContactShadowTexture(): THREE.CanvasTexture {
+  if (cachedContactShadowTex) return cachedContactShadowTex;
+  const c = document.createElement('canvas');
+  c.width = 128;
+  c.height = 128;
+  const ctx = c.getContext('2d');
+  if (ctx) {
+    ctx.clearRect(0, 0, 128, 128);
+    const grad = ctx.createRadialGradient(64, 64, 4, 64, 64, 62);
+    grad.addColorStop(0.0, 'rgba(6, 13, 26, 0.96)');
+    grad.addColorStop(0.38, 'rgba(6, 13, 26, 0.66)');
+    grad.addColorStop(0.7, 'rgba(6, 13, 26, 0.22)');
+    grad.addColorStop(1.0, 'rgba(6, 13, 26, 0.0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 128, 128);
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = THREE.ClampToEdgeWrapping;
+  tex.wrapT = THREE.ClampToEdgeWrapping;
+  (tex.userData as Record<string, unknown>)[SHARED_CAD_TEX_FLAG] = true;
+  cachedContactShadowTex = tex;
+  return tex;
+}
+
+export interface ContactShadowDiscOptionsV7 {
+  radius?: number;
+  radiusX?: number;
+  radiusZ?: number;
+  opacity?: number;
+  colorHex?: number;
+  yOffset?: number;
+  polygonOffsetFactor?: number;
+  polygonOffsetUnits?: number;
+  material?: THREE.MeshBasicMaterial;
+  name?: string;
+}
+
+/**
+ * Grounds 3D stage pillars, cameras, arches, tile plinths, and cabinet props with a soft
+ * flicker-free contact AO shadow disc (`depthWrite: false`, `polygonOffset: -2`).
+ */
+export function createContactShadowDisc(opts: ContactShadowDiscOptionsV7 = {}): THREE.Mesh {
+  const rx = Math.max(0.04, opts.radiusX ?? opts.radius ?? 0.42);
+  const rz = Math.max(0.04, opts.radiusZ ?? opts.radius ?? 0.42);
+  const geom = new THREE.PlaneGeometry(rx * 2, rz * 2);
+  geom.rotateX(-Math.PI * 0.5);
+  const mat =
+    opts.material ??
+    new THREE.MeshBasicMaterial({
+      map: getContactShadowTexture(),
+      color: opts.colorHex ?? 0xffffff,
+      transparent: true,
+      opacity: opts.opacity ?? 0.54,
+      depthWrite: false,
+      toneMapped: false,
+      polygonOffset: true,
+      polygonOffsetFactor: opts.polygonOffsetFactor ?? -2,
+      polygonOffsetUnits: opts.polygonOffsetUnits ?? -2,
+    });
+  const mesh = new THREE.Mesh(geom, mat);
+  mesh.position.y = opts.yOffset ?? 0.004;
+  mesh.castShadow = false;
+  mesh.receiveShadow = false;
+  mesh.renderOrder = 1;
+  mesh.name = opts.name ?? 'ContactShadowDiscAO';
+  return mesh;
+}
+
+let cachedBrushedAnodizedTex: THREE.CanvasTexture | null = null;
+let cachedWalnutVeneerTex: THREE.CanvasTexture | null = null;
+let cachedDarkLouverBedTex: THREE.CanvasTexture | null = null;
+
+/** Procedural 512x512 fine directional brushed anodized aluminum / brass cabinet texture. */
+export function getBrushedAnodizedTexture(): THREE.CanvasTexture {
+  if (cachedBrushedAnodizedTex) return cachedBrushedAnodizedTex;
+  const c = document.createElement('canvas');
+  c.width = 512;
+  c.height = 512;
+  const ctx = c.getContext('2d');
+  if (ctx) {
+    const base = ctx.createLinearGradient(0, 0, 512, 512);
+    base.addColorStop(0.0, '#E8EFF8');
+    base.addColorStop(0.48, '#FAFCFF');
+    base.addColorStop(1.0, '#D4DFEC');
+    ctx.fillStyle = base;
+    ctx.fillRect(0, 0, 512, 512);
+    for (let y = 0; y < 512; y += 2) {
+      const n = hash2D(y, 17, 31);
+      ctx.fillStyle =
+        n > 0.5
+          ? `rgba(255, 255, 255, ${(0.04 + (n - 0.5) * 0.18).toFixed(3)})`
+          : `rgba(30, 48, 72, ${(0.03 + (0.5 - n) * 0.14).toFixed(3)})`;
+      ctx.fillRect(0, y, 512, 1.5);
+    }
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.anisotropy = 16;
+  (tex.userData as Record<string, unknown>)[SHARED_CAD_TEX_FLAG] = true;
+  cachedBrushedAnodizedTex = tex;
+  return tex;
+}
+
+/** Procedural 512x512 sunlit 1966 book-matched American Walnut / Teak cabinet veneer texture. */
+export function getAmericanWalnutVeneerTexture(): THREE.CanvasTexture {
+  if (cachedWalnutVeneerTex) return cachedWalnutVeneerTex;
+  const c = document.createElement('canvas');
+  c.width = 512;
+  c.height = 512;
+  const ctx = c.getContext('2d');
+  if (ctx) {
+    ctx.fillStyle = '#A8663E';
+    ctx.fillRect(0, 0, 512, 512);
+    for (let y = 0; y < 512; y += 2) {
+      const v = y / 512;
+      const wave = Math.sin(v * Math.PI * 14 + Math.sin(v * Math.PI * 3) * 1.8);
+      const grain = 0.5 + 0.5 * wave;
+      const r = Math.round(lerp(138, 214, grain));
+      const g = Math.round(lerp(82, 142, grain));
+      const b = Math.round(lerp(48, 88, grain));
+      ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+      ctx.fillRect(0, y, 512, 2);
+      if (y % 6 === 0) {
+        const px = Math.floor(hash2D(y, 9, 43) * 440);
+        ctx.fillStyle = 'rgba(72, 36, 18, 0.24)';
+        ctx.fillRect(px, y, 56, 1.2);
+      }
+    }
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.anisotropy = 16;
+  (tex.userData as Record<string, unknown>)[SHARED_CAD_TEX_FLAG] = true;
+  cachedWalnutVeneerTex = tex;
+  return tex;
+}
+
+/** Procedural 512x512 recessed 1966 Broadcast Navy micro-louvered Tote Board bed texture. */
+export function getDarkLouverToteBedTexture(): THREE.CanvasTexture {
+  if (cachedDarkLouverBedTex) return cachedDarkLouverBedTex;
+  const c = document.createElement('canvas');
+  c.width = 512;
+  c.height = 512;
+  const ctx = c.getContext('2d');
+  if (ctx) {
+    const rad = ctx.createRadialGradient(256, 256, 40, 256, 256, 360);
+    rad.addColorStop(0.0, '#183654');
+    rad.addColorStop(0.7, '#0F253D');
+    rad.addColorStop(1.0, '#091829');
+    ctx.fillStyle = rad;
+    ctx.fillRect(0, 0, 512, 512);
+
+    // Crisp horizontal studio acoustic shadowbox louvers + subtle anodized vertical ribs
+    for (let y = 0; y < 512; y += 8) {
+      ctx.fillStyle = 'rgba(4, 10, 20, 0.42)';
+      ctx.fillRect(0, y, 512, 3);
+      ctx.fillStyle = 'rgba(92, 168, 214, 0.14)';
+      ctx.fillRect(0, y + 3, 512, 1.5);
+    }
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.045)';
+    for (let x = 0; x < 512; x += 32) {
+      ctx.fillRect(x, 0, 2, 512);
+    }
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.anisotropy = 16;
+  (tex.userData as Record<string, unknown>)[SHARED_CAD_TEX_FLAG] = true;
+  cachedDarkLouverBedTex = tex;
+  return tex;
+}
+
 /** Sculpted 1966 Mid-Century Atomic Starburst (`ExtrudeGeometry` tapered kite rays + turned central orb). */
 export function createMidCenturyStarburst(opts: {
   radius?: number;
@@ -1395,8 +1678,18 @@ export function createMidCenturyStarburst(opts: {
         receiveShadow: false,
       });
       const tipDist = radius * 1.02;
-      tipOrb.position.set(-Math.sin(angle) * tipDist, Math.cos(angle) * tipDist, 0.02);
+      const tx = -Math.sin(angle) * tipDist;
+      const ty = Math.cos(angle) * tipDist;
+      tipOrb.position.set(tx, ty, 0.02);
       group.add(tipOrb);
+
+      const tipHalo = createTungstenBulbHaloSprite({
+        scale: Math.max(0.16, radius * 0.21),
+        opacity: 0.68,
+        colorHex: 0xffd56b,
+      });
+      tipHalo.position.set(tx, ty, 0.05);
+      group.add(tipHalo);
     }
   }
 
@@ -1419,6 +1712,16 @@ export function createMidCenturyStarburst(opts: {
   hubCore.rotation.x = Math.PI * 0.5;
   hubCore.position.z = depth * 0.32;
   group.add(hubRing, hubCore);
+
+  if (opts.bulbMat) {
+    const hubHalo = createTungstenBulbHaloSprite({
+      scale: Math.max(0.28, radius * 0.44),
+      opacity: 0.62,
+      colorHex: 0xffd56b,
+    });
+    hubHalo.position.set(0, 0, depth * 0.52 + 0.02);
+    group.add(hubHalo);
+  }
 
   return group;
 }
@@ -1489,6 +1792,16 @@ export function createChasingMarqueePillar(opts: {
   const group = new THREE.Group();
   group.name = opts.name ?? 'ChasingMarqueePillar1966';
 
+  // Grounded contact AO shadow disc under marquee pillar flange
+  group.add(
+    createContactShadowDisc({
+      radius: 0.44,
+      opacity: 0.56,
+      yOffset: 0.004,
+      name: 'MarqueePillarContactAO',
+    }),
+  );
+
   // Sculpted circular brass-bolted base plinth resting flush on y = 0.00m
   const baseFlange = createFilletedShaft({
     radius: 0.21,
@@ -1527,7 +1840,7 @@ export function createChasingMarqueePillar(opts: {
   crown.position.y = h + 0.08;
   group.add(crown);
 
-  // Vertical recessed anodized marquee track with `#11` warm 2700K chasing tungsten bulbs
+  // Vertical recessed anodized marquee track with `#11` warm 2700K chasing tungsten bulbs + synced halation sprites
   const bulbHex = opts.bulbHex ?? 0xffd56b;
   const bulbMats: THREE.MeshStandardMaterial[] = [];
   for (let i = 0; i < bulbCount; i++) {
@@ -1562,6 +1875,16 @@ export function createChasingMarqueePillar(opts: {
     });
     bulb.position.set(0, by, localR + 0.038);
     group.add(bulb);
+
+    const haloSprite = createTungstenBulbHaloSprite({
+      scale: 0.24,
+      opacity: 0.72,
+      colorHex: bulbHex,
+    });
+    haloSprite.position.set(0, by, localR + 0.068);
+    group.add(haloSprite);
+    (bMat.userData as Record<string, unknown>).haloSprite = haloSprite;
+
     bulbMats.push(bMat);
   }
 
@@ -1902,10 +2225,28 @@ export class HdrSolenoidSparkBurst {
   }
 }
 
+const DISPOSABLE_MAT_TEX_KEYS = [
+  'map',
+  'normalMap',
+  'roughnessMap',
+  'metalnessMap',
+  'emissiveMap',
+  'alphaMap',
+  'aoMap',
+  'bumpMap',
+  'clearcoatMap',
+  'clearcoatNormalMap',
+  'clearcoatRoughnessMap',
+  'lightMap',
+  'specularIntensityMap',
+  'transmissionMap',
+] as const;
+
 export function disposeObject3DTree(root: THREE.Object3D): void {
   root.traverse((obj) => {
     const mesh = obj as THREE.Mesh;
-    if (mesh.geometry) {
+    // Never dispose Three.js's global shared `THREE.Sprite` geometry!
+    if (mesh.geometry && !(obj as THREE.Sprite).isSprite) {
       mesh.geometry.dispose();
     }
     const mats = Array.isArray(mesh.material)
@@ -1915,7 +2256,7 @@ export function disposeObject3DTree(root: THREE.Object3D): void {
         : [];
     for (const mat of mats) {
       const rec = mat as unknown as Record<string, unknown>;
-      for (const k of ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'emissiveMap']) {
+      for (const k of DISPOSABLE_MAT_TEX_KEYS) {
         const tex = rec[k] as THREE.Texture | undefined;
         if (tex && typeof tex.dispose === 'function') {
           const ud = tex.userData as Record<string, unknown> | undefined;
@@ -1943,5 +2284,25 @@ export function disposeHorologicalFloorCache(): void {
   if (cachedVolumetricConeTex) {
     cachedVolumetricConeTex.dispose();
     cachedVolumetricConeTex = null;
+  }
+  if (cachedTungstenBulbHaloTex) {
+    cachedTungstenBulbHaloTex.dispose();
+    cachedTungstenBulbHaloTex = null;
+  }
+  if (cachedContactShadowTex) {
+    cachedContactShadowTex.dispose();
+    cachedContactShadowTex = null;
+  }
+  if (cachedBrushedAnodizedTex) {
+    cachedBrushedAnodizedTex.dispose();
+    cachedBrushedAnodizedTex = null;
+  }
+  if (cachedWalnutVeneerTex) {
+    cachedWalnutVeneerTex.dispose();
+    cachedWalnutVeneerTex = null;
+  }
+  if (cachedDarkLouverBedTex) {
+    cachedDarkLouverBedTex.dispose();
+    cachedDarkLouverBedTex = null;
   }
 }

@@ -1,0 +1,5094 @@
+[
+  {
+    "canonicalEntityKey": "w4_sci_gad_01_bal_phone_inputs_22",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Bell System tally! Hit 22 classic telephone inputs by pairing the finger holes on a rotary dial with the buttons on a Touch-Tone keypad:",
+    "choices": [
+      "Rotary dial holes + Touch-Tone keys",
+      "Rotary dial holes + 8-Track tracks",
+      "Touch-Tone keys + USB-A pins",
+      "8-Track tracks + Touch-Tone keys"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Western Electric rotary dials held 10 finger holes (1 through 0), while AT&T added the star and pound keys in 1968 to give Touch-Tone phones 12 buttons.",
+    "supportedToys": [
+      "TOY_04_BALANCE_SCALE"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "balance": {
+      "unit": "inputs",
+      "targetSum": 22,
+      "weights": [
+        {
+          "label": "Traffic lenses",
+          "value": 3
+        },
+        {
+          "label": "USB-A pins",
+          "value": 4
+        },
+        {
+          "label": "8-Track tracks",
+          "value": 8
+        },
+        {
+          "label": "Rotary dial holes",
+          "value": 10
+        },
+        {
+          "label": "Touch-Tone keys",
+          "value": 12
+        }
+      ],
+      "validPair": [
+        3,
+        4
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_02_bal_film_cd_155mm",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Studio calipers out! Hit 155 millimeters by pairing standard camera film width with the diameter of a shiny audio Compact Disc:",
+    "choices": [
+      "IMAX film strip + GameCube disc",
+      "35mm camera film + Compact Disc",
+      "Compact Disc + Super 8 movie",
+      "IMAX film strip + Compact Disc"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "35mm motion-picture stock dates back to Edison and Dickson in 1889, while Sony and Philips settled on a 120mm CD diameter to hold over 74 minutes of music.",
+    "supportedToys": [
+      "TOY_04_BALANCE_SCALE"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "balance": {
+      "unit": "mm",
+      "targetSum": 155,
+      "weights": [
+        {
+          "label": "Super 8 movie",
+          "value": 8
+        },
+        {
+          "label": "35mm camera film",
+          "value": 35
+        },
+        {
+          "label": "IMAX film strip",
+          "value": 70
+        },
+        {
+          "label": "GameCube disc",
+          "value": 80
+        },
+        {
+          "label": "Compact Disc",
+          "value": 120
+        }
+      ],
+      "validPair": [
+        1,
+        4
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_03_pat_household_origins",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Plug three household icons into what they were originally built to copy or serve—leave the extra decoy jack UNPLUGGED!",
+    "choices": [
+      "Cold-cream wiper",
+      "Paint-can rim seal",
+      "Garden hose nozzle",
+      "Soldier rifle tool"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Earl Tupper flipped a paint-can rim upside down to invent his burping lid, while Kleenex launched in 1924 strictly as a makeup towel before colds took over.",
+    "supportedToys": [
+      "TOY_09_SWITCHBOARD_PATCHBAY"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "patchbay": {
+      "callers": [
+        "Kleenex tissues",
+        "Tupperware lid",
+        "Swiss Army knife"
+      ],
+      "jacks": [
+        "Cold-cream wiper",
+        "Paint-can rim seal",
+        "Garden hose nozzle",
+        "Soldier rifle tool"
+      ],
+      "correctMapping": [
+        0,
+        1,
+        3
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_04_pat_retro_makers",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Patch three landmark consumer gadgets straight into the powerhouse that launched them—leave the extra decoy jack UNPLUGGED!",
+    "choices": [
+      "Kodak",
+      "Sony",
+      "Nintendo",
+      "Philips"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Gunpei Yokoi dreamed up Nintendo’s pocket Game & Watch in 1980 after spotting a bored commuter tapping an LCD calculator on a Japanese bullet train!",
+    "supportedToys": [
+      "TOY_09_SWITCHBOARD_PATCHBAY"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "patchbay": {
+      "callers": [
+        "Instamatic camera",
+        "Trinitron TV",
+        "Game & Watch"
+      ],
+      "jacks": [
+        "Kodak",
+        "Sony",
+        "Nintendo",
+        "Philips"
+      ],
+      "correctMapping": [
+        0,
+        1,
+        2
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_05_pat_backpanel_jacks",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Wire three classic back-panel plugs straight to the signal they carry—leave the extra decoy jack UNPLUGGED!",
+    "choices": [
+      "Fiber optic beam",
+      "Wired Ethernet",
+      "Composite video",
+      "Studio headphones"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "That sturdy quarter-inch TRS phone plug dates all the way back to 1878 telephone switchboards—making it one of the oldest electrical connectors still in daily use.",
+    "supportedToys": [
+      "TOY_09_SWITCHBOARD_PATCHBAY"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "patchbay": {
+      "callers": [
+        "RJ-45 plug",
+        "RCA yellow jack",
+        "TRS quarter-inch"
+      ],
+      "jacks": [
+        "Fiber optic beam",
+        "Wired Ethernet",
+        "Composite video",
+        "Studio headphones"
+      ],
+      "correctMapping": [
+        1,
+        2,
+        3
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_06_biro_ballpoint_pen",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Annoyed by smudgy fountain ink, journalist László Bíró loaded sticky newspaper ink behind a tiny rolling steel sphere to invent what desk staple?",
+    "choices": [
+      "Fountain nib",
+      "Ballpoint pen",
+      "Felt-tip pen",
+      "Dipping quill"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Royal Air Force pilots loved Bíró’s 1938 design because thick paste ink didn’t leak in high-altitude cockpits—and Brits still call the pen a \"biro\" today!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_07_binder_clip_handles",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Folded black spring-steel triangle with two shiny silver wire ears that flip back to clamp thick scripts without punching holes: name this 1910 clamp!",
+    "choices": [
+      "Staple pinch",
+      "Brass brad",
+      "Binder clip",
+      "Thumb tack"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Washington, D.C. inventor Louis Baltzley created the binder clip so his writer father could swap pages easily—and sold the patent rights for just $24!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_08_waring_blender_salk",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Bankrolled by bandleader Fred Waring in 1937 to whip soda-fountain malts, what spinning-blade kitchen appliance also helped Jonas Salk prep polio vaccines?",
+    "choices": [
+      "Stand mixer unit",
+      "Hand citrus press",
+      "Rotary food mill",
+      "Electric blender"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Biologists bought thousands of Waring Blenders because their rugged bottom blades homogenized tissue samples far faster than hand-grinding with a mortar and pestle.",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_09_lego_1958_clutch_tubes",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Toybox Wire: Thanks to interlocking hollow underside tubes patented in [ _____ ], any classic LEGO brick molded that year still snaps cleanly onto a brand-new set.",
+    "choices": [
+      "1958",
+      "1946",
+      "1971",
+      "1983"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Early 1949 hollow bricks slid right apart when bumped—adding those precision bottom tubes gave LEGO its famed \"clutch power\" down to two-thousandths of a millimeter!",
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 1958,
+      "min": 1935,
+      "max": 1995,
+      "step": 1,
+      "unit": "year"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_10_myth_fridge_charging",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Workshop Klaxon! Three of these wild tech-history claims are 100% real fact, while one popular everyday tip is pure bunk. Spot the myth!",
+    "choices": [
+      "Can openers trailed cans 48 yrs",
+      "Fridges double phone charge",
+      "Lighters beat friction matches",
+      "Fax machines predated phones"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 0,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Chilling a lithium-ion phone inside a fridge actually slows charging ions and invites damaging moisture condensation inside the ports!",
+    "cardStyle": "SPOT_THE_MYTH",
+    "sorter": {
+      "chuteALabel": "TRUE TECH FACT",
+      "chuteBLabel": "GADGET MYTH",
+      "items": [
+        {
+          "label": "Lighters beat matches",
+          "chute": 0
+        },
+        {
+          "label": "Fax beat telephone",
+          "chute": 0
+        },
+        {
+          "label": "Fridge speeds charging",
+          "chute": 1
+        },
+        {
+          "label": "Rice fixes wet phones",
+          "chute": 1
+        },
+        {
+          "label": "Can beat can opener",
+          "chute": 0
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_11_duct_tape_vesta_stoudt",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Silver cloth-backed roll tearable by hand: factory worker Vesta Stoudt wrote to FDR in 1943 pitching what waterproof tape to seal WWII ammo crates?",
+    "choices": [
+      "Masking tape",
+      "Gaffer tape",
+      "Duct tape",
+      "Friction tape"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Apollo 13 astronauts famously used gray duct tape, cardboard flight manuals, and socks to build a square-to-round carbon-dioxide scrubber in space!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_12_bin_vending_machine_alexandria",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Coin-op surprise: which everyday convenience actually debuted FIRST, dispensing measured holy water in ancient Alexandria?",
+    "choices": [
+      "Swiss pocket watch",
+      "Steam rotary press",
+      "Bavarian wall clock",
+      "Vending machine"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "First-century engineer Hero of Alexandria built a brass temple urn where a dropped bronze coin tipped a lever valve to pour one honest splash of holy water.",
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_13_dewar_vacuum_flask",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Scottish physicist James Dewar built a silvered double-walled glass bottle in 1892 to store frigid liquid oxygen—forgetting to patent what picnic icon?",
+    "choices": [
+      "Vacuum flask",
+      "Pressure pot",
+      "Cooler chest",
+      "Chafing dish"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Two Berlin glassblowers saw the commercial potential in 1904, held a naming contest, and trademarked it \"Thermos\" after the Greek word for heat!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_14_spirograph_gears",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Clear toothed plastic rings and tiny pen-holed gears pinned to graph paper: which 1965 British engineering toy lets anyone spin hypnotic floral curves?",
+    "choices": [
+      "Lite-Brite",
+      "Spirograph",
+      "Pantograph",
+      "Magnadoodle"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Mechanical engineer Denys Fisher first tried designing a drafting tool for bomb fuses—before realizing kids would adore the swirling mathematical \"hypotrochoids\"!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_15_walkie_talkie_handset",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Signal Wire, 1940: Motorola’s SCR-536 shrank a 35-pound backpack transceiver into a five-pound battery handset soon nicknamed a [ _____ ] by Allied troops.",
+    "choices": [
+      "Field buzzer",
+      "Shortwave box",
+      "Walkie-talkie",
+      "Ham repeater"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Canadian inventor Donald Hings had already built a portable bush-pilot radio in 1937, and a journalist watching a soldier stroll while chatting coined the catchy name!",
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_16_revolving_door_airlock",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Patented in 1888 by Theophilus Van Kannel, what spinning lobby entrance acts like a permanent airlock so tall skyscrapers don’t lose warm air in winter?",
+    "choices": [
+      "Turnstile gate",
+      "Sliding grate",
+      "Pneumatic door",
+      "Revolving door"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "MIT researchers calculated that a revolving door leaks roughly eight times less conditioned air per passerby than a standard swinging lobby door.",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_17_neon_sign_paris_1910",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Hand-bent glass tubes blazing cherry-red when high voltage jolts a trapped noble gas: Georges Claude unveiled what luminous craft in Paris in 1910?",
+    "choices": [
+      "Neon sign",
+      "Nixie tube",
+      "Arc lamp",
+      "Plasma bar"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Pure neon only glows fiery red-orange—blue and green \"neon\" signs actually rely on argon gas, a tiny drop of mercury, and fluorescent coatings inside the glass!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_18_myth_airport_xray_ssd",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Tech Bench Klaxon! Three of these vintage-to-modern hardware facts hold true, while one widely repeated gadget panic is dead wrong. Spot the myth!",
+    "choices": [
+      "First PC mouse used oak wood",
+      "Airport X-rays wipe phone RAM",
+      "Early TVs spun slotted discs",
+      "Vinyl cuts stereo in 1 track"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Low-dose TSA baggage X-rays can fog high-speed photographic camera film, yet they leave solid-state smartphone memory and laptops completely untouched.",
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_19_bin_mainspring_watch",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Twist the grooved crown on a classic mechanical wristwatch: what tucked-away part actually stores the energy that keeps the hands ticking?",
+    "choices": [
+      "Tiny zinc battery",
+      "Spinning brass disc",
+      "Coiled steel spring",
+      "Sealed air capsule"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "That flat spiral mainspring unwinds slowly through a toothed gear train—while an escapement releases just one tiny metered click several times every second!",
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_20_atm_four_digit_pin",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Inspired by chocolate-bar dispensers in 1967, John Shepherd-Barron capped the PIN at four digits for his wife Caroline when launching what sidewalk gadget?",
+    "choices": [
+      "Pay telephone",
+      "Coin jukebox",
+      "Parking meter",
+      "Cash machine"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Barclays installed that first Enfield, London cash machine in June 1967, and British sitcom actor Reg Varney made the world’s very first televised withdrawal!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_21_upc_barcode_12_digits",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Checkout Wire, 1974: That historic first scanned pack of Wrigley’s gum in Troy, Ohio carried a standard North American UPC-A barcode built from [ _____ ].",
+    "choices": [
+      "12 digits",
+      "8 digits",
+      "10 digits",
+      "16 digits"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The twelfth and final numeral is a clever \"check digit\" calculated from the first eleven—so if a laser misreads one smudged stripe, the register beeps an error!",
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 12,
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "unit": "digits"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_22_kaleidoscope_brewster",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Three long angled mirrors tucked inside a cardboard tube with tumbling colored glass beads: Sir David Brewster sparked an 1816 craze with what toy?",
+    "choices": [
+      "Stereoscope",
+      "Kaleidoscope",
+      "Periscope",
+      "Phenakistoscope"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Over 200,000 kaleidoscopes sold across London and Paris in three months, though pirated copies moved so fast Brewster made almost nothing from his patent!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_23_crystal_radio_no_battery",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Using wire wrapped around an oatmeal box, a tiny galena rock, and headphones, 1920s kids tuned broadcast stations with zero batteries on what receiver?",
+    "choices": [
+      "Spark gap rig",
+      "Tube amp deck",
+      "Crystal radio",
+      "Shortwave key"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Every single speck of energy vibrating the earpiece came directly from the passing AM radio wave—and WWII troops even built \"foxhole radios\" using blued razor blades!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_24_edgerton_strobe_lamp",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "MIT Lab Wire, 1931: Harold Edgerton’s microsecond-flash [ _____ ] froze spinning propellers, milk-drop crowns, and apples pierced cleanly on high-speed film.",
+    "choices": [
+      "Arc lantern",
+      "Laser diode",
+      "Carbon bulb",
+      "Strobe lamp"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "\"Doc\" Edgerton later built giant nighttime aerial strobe rigs for D-Day reconnaissance planes—and partnered with Jacques Cousteau to photograph the deep ocean floor!",
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_25_inkjet_soldering_iron",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "In 1977, a Canon engineer accidentally touched a hot soldering iron to an ink-filled syringe—watching a steam bubble squirt the dot that birthed what device?",
+    "choices": [
+      "Inkjet printer",
+      "Thermal copier",
+      "Mimeograph drum",
+      "Dot-matrix pin"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Thermal inkjet nozzles heat ink past 300°C in a few millionths of a second—firing thousands of microscopic droplets per second faster than a mosquito’s wingbeat!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_26_myth_first_vcr_price",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Living Room Klaxon! Three of these wild retro-computing and video milestones really happened, while one claim is pure fiction. Nab the myth!",
+    "choices": [
+      "Early 5MB drives weighed 1 ton",
+      "First home VCR cost under $100",
+      "Apollo code was woven on looms",
+      "Floppies really bent at first"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Sony’s 1975 Betamax deck launched above $1,200 (over $7,000 in today’s money)—and early 1956 studio Ampex tape recorders cost a jaw-dropping $50,000!",
+    "cardStyle": "SPOT_THE_MYTH",
+    "sorter": {
+      "chuteALabel": "TRUE TECH FACT",
+      "chuteBLabel": "RETRO MYTH",
+      "items": [
+        {
+          "label": "5MB drive weighed a ton",
+          "chute": 0
+        },
+        {
+          "label": "First VCR was under $100",
+          "chute": 1
+        },
+        {
+          "label": "Apollo ROM woven by hand",
+          "chute": 0
+        },
+        {
+          "label": "8-inch floppies flexed",
+          "chute": 0
+        },
+        {
+          "label": "Color TV needed antennas",
+          "chute": 1
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_27_bin_microwave_mesh_holes",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Peek at the perforated black metal screen inside a microwave oven’s glass door: why can you watch popcorn pop while cooking waves stay trapped?",
+    "choices": [
+      "Glass absorbs all radio waves",
+      "Screen magnets pull waves back",
+      "Waves are far wider than holes",
+      "Inner fan blows radiation back"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "At 2.45 GHz, microwave wavelengths span roughly 12 centimeters—far too wide to fit through 1mm holes, while tiny visible light waves zip straight out to your eyes!",
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_28_split_flap_solari_board",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Rows of hinged matte-black cards fluttering around steel axles with an iconic clack-clack cascade in 1960s train terminals: name this Italian display!",
+    "choices": [
+      "Nixie digit array",
+      "Ticker tape ribbon",
+      "Dot-matrix monitor",
+      "Split-flap board"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 0,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Italian brothers Remigio and Fermo Solari perfected modular split-flap boards in Udine—and travelers still adore their crisp mechanical flutter!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_29_fresnel_stepped_lens",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "To stop 1820s French lighthouses from crumbling under giant glass boulders, a physicist sliced a curved optic into stepped rings to invent what?",
+    "choices": [
+      "Fresnel lens",
+      "Parabolic dish",
+      "Prism grating",
+      "Concave mirror"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "That same stepped-ring geometry shrunk into flat plastic sheets powers overhead classroom projectors, car taillights, and modern virtual-reality headsets!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_30_cinema_24_fps_talkies",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Soundstage Wire, 1927: When talkies arrived, studios locked movie projectors onto [ _____ ]—the slowest steady speed that kept optical audio tracks crystal clear.",
+    "choices": [
+      "16 frames/sec",
+      "24 frames/sec",
+      "30 frames/sec",
+      "48 frames/sec"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Projector shutters actually flash each film frame twice (48 flickers a second) so your eye sees silky motion without wasting twice the expensive celluloid stock!",
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 24,
+      "min": 12,
+      "max": 60,
+      "step": 1,
+      "unit": "fps"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_31_nixie_tube_numerals",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Inside this 1955 glass bulb, ten stacked wire numerals from 0 to 9 sit in neon gas so whichever digit gets voltage glows warm amber right through the mesh:",
+    "choices": [
+      "Cathode gun",
+      "Triode valve",
+      "Nixie tube",
+      "Vacuum relay"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Named from Burroughs engineering shorthand \"NIX I\" (Numeric Indicator Experimental), vintage Nixie bulbs lit up 1960s stock tickers, NASA consoles, and lab voltmeters.",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_32_bimetallic_thermostat_strip",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Two thin ribbons of brass and steel welded back-to-back inside an old wall thermostat: warming curls which clever switch sideways to cut power automatically?",
+    "choices": [
+      "Quartz clock crystal",
+      "Glass mercury switch",
+      "Carbon film resistor",
+      "Bimetallic strip"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Because brass expands noticeably more than steel when heated, the bonded strip bends like a gymnast—snapping clothes irons, circuit breakers, and blinkers off with zero chips!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_33_myth_low_ac_cools_faster",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Home Appliance Klaxon! Three of these everyday climate and kitchen facts are pure physics, while one common household belief is wrong. Spot the myth!",
+    "choices": [
+      "Low AC dials chill rooms faster",
+      "Ceiling fans reverse in winter",
+      "Induction heats pans directly",
+      "Toasters rely on glowing nichrome"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Standard home air conditioners blast cold air at one fixed rate—cranking the dial to 60°F instead of 72°F won’t cool the room a single second quicker, it just overshoots!",
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_34_bin_vinyl_outer_groove_speed",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Watch a 12-inch vinyl LP spin at a steady 33⅓ RPM: does the outer groove sweep past the needle quicker or slower than the inner track near the label?",
+    "choices": [
+      "Slower at the outer rim",
+      "Faster at the outer rim",
+      "Exact same linear speed",
+      "Only changes on 45 RPMs"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 0,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Outer tracks sweep past the needle more than twice as fast as inner grooves—which is why record producers place bright, punchy hit singles first on each side!",
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_35_mellotron_tape_keyboard",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Pressing any wooden key on this 1963 British keyboard pulled an eight-second strip of real flute or violin tape across a play head—powering \"Strawberry Fields Forever\":",
+    "choices": [
+      "The Theremin",
+      "The Hammond B3",
+      "The Mellotron",
+      "The Clavinet"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Hold a Mellotron note longer than eight seconds and the spring-loaded tape hits its end and cuts dead—forcing keyboardists to master a sneaky spider-finger walking technique!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_36_transatlantic_cable_newfoundland",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Telegraph Wire, 1866: After four snapped cables, steamship Great Eastern finally linked Valentia Island in Ireland to [ _____ ] for instant transatlantic Morse.",
+    "choices": [
+      "Nova Scotia",
+      "Cape Breton",
+      "Rhode Island",
+      "Newfoundland"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The earlier 1858 cable lasted just three weeks after an impatient chief electrician cranked voltage to 2,000 volts and fried its gutta-percha insulation!",
+    "cardStyle": "HEADLINE_BLANK",
+    "geo": {
+      "lat": 47.8726,
+      "lng": -53.3688,
+      "landmarkLabel": "Heart's Content Cable Station",
+      "regionHint": "Newfoundland, Canada"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_37_pantograph_scaling_bars",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Four hinged brass bars forming an accordion parallelogram anchored at one corner: trace a small map with its pointer and a pencil scales it up automatically!",
+    "choices": [
+      "Pantograph",
+      "Planimeter",
+      "Sextant arm",
+      "Astrolabe"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Jesuit astronomer Christoph Scheiner invented the pantograph in 1603—and Thomas Jefferson loved a twin-pen version called a polygraph that signed copies of every letter!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_38_teleprompter_soap_opera_1950",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Invented in 1950 to rescue frazzled live soap-opera actors, what scrolling mirror rig lets TV anchors read every line while staring straight into the camera lens?",
+    "choices": [
+      "Chroma keyer",
+      "Teleprompter",
+      "Cue card rig",
+      "Boom monitor"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The first CBS prototype scrolled butcher paper across motorized suitcase rollers—before an angled two-way mirror beam-splitter placed text right over the glass lens!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_39_optical_soundtrack_film",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 5,
+    "stem": "Printed right beside the picture frames on classic 35mm movie reels, which jagged white squiggle modulates a tiny projector lamp straight back into dialogue?",
+    "choices": [
+      "Magnetic edge stripe",
+      "Digital timecode bar",
+      "Optical soundtrack",
+      "Projector cue stripe"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Because film jerks frame-by-frame through the gate while sound must glide smoothly, the audio squiggle is printed exactly 21 frames ahead of its matching picture!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_gad_40_myth_color_tv_antenna",
+    "category": "GADGETS",
+    "domain": "SCI_TECH",
+    "difficulty": 5,
+    "stem": "1966 Broadcast Klaxon! Three of these classic home-electronics facts are 100% legit, while one golden-age claim was pure sales hype. Spot the fake!",
+    "choices": [
+      "First Polaroids printed in sepia",
+      "Color CRTs fire 3 electron beams",
+      "Early radio tubes needed warmup",
+      "Color TV needed special antennas"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "RCA engineered 1953 NTSC color to ride existing VHF channels—making \"Color TV Antenna!\" rooftop kits one of the slickest gimmicks of the 1960s!",
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_01_bal_aircraft_engines_12",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Clear the runway! Sum 12 roaring aircraft powerplants by pairing a Boeing 747 jumbo jet with a giant B-52 Stratofortress bomber:",
+    "choices": [
+      "Boeing 737 twin + B-52 bomber",
+      "Boeing 747 jumbo + B-52 bomber",
+      "Boeing 727 trijet + B-52 bomber",
+      "Cessna Skyhawk + B-52 bomber"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Hanging four turbofans under swept wings made the 1969 Boeing 747 an instant icon, while the 1955 B-52 packs eight engines in four twin pods—and still flies today!",
+    "supportedToys": [
+      "TOY_04_BALANCE_SCALE"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "balance": {
+      "unit": "engines",
+      "targetSum": 12,
+      "weights": [
+        {
+          "label": "Cessna Skyhawk",
+          "value": 1
+        },
+        {
+          "label": "Boeing 737 twin",
+          "value": 2
+        },
+        {
+          "label": "Boeing 727 trijet",
+          "value": 3
+        },
+        {
+          "label": "Boeing 747 jumbo",
+          "value": 4
+        },
+        {
+          "label": "B-52 bomber",
+          "value": 8
+        }
+      ],
+      "validPair": [
+        3,
+        4
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_02_bal_rolling_wheels_10",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Tire-kicker math! Hit 10 rolling wheels by pairing Henry Ford’s Model T with NASA’s rock-climbing Mars Curiosity rover:",
+    "choices": [
+      "Standard Model T + Curiosity rover",
+      "Reliant Robin car + Curiosity rover",
+      "Classic Vespa + Curiosity rover",
+      "Reliant Robin car + Standard Model T"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Curiosity’s six aluminum wheels ride on a clever \"rocker-bogie\" suspension so it can climb knee-high Martian boulders without ever tipping over!",
+    "supportedToys": [
+      "TOY_04_BALANCE_SCALE"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "balance": {
+      "unit": "wheels",
+      "targetSum": 10,
+      "weights": [
+        {
+          "label": "Classic Vespa",
+          "value": 2
+        },
+        {
+          "label": "Reliant Robin car",
+          "value": 3
+        },
+        {
+          "label": "Standard Model T",
+          "value": 4
+        },
+        {
+          "label": "Curiosity rover",
+          "value": 6
+        },
+        {
+          "label": "Big-rig tractor",
+          "value": 18
+        }
+      ],
+      "validPair": [
+        2,
+        3
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_03_bal_cylinders_22",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Pop the hoods! Hit 22 firing cylinders by pairing a classic flat-six Porsche 911 with Bugatti’s quad-turbocharged Veyron hypercar:",
+    "choices": [
+      "Fiat 500 + Bugatti Veyron",
+      "Dodge Viper + Bugatti Veyron",
+      "Porsche 911 + Bugatti Veyron",
+      "Porsche 911 + Dodge Viper"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Bugatti packed 16 cylinders into a compact W-block that gulps 45,000 liters of air a minute at 253 mph—emptying its tank in twelve minutes!",
+    "supportedToys": [
+      "TOY_04_BALANCE_SCALE"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "balance": {
+      "unit": "cylinders",
+      "targetSum": 22,
+      "weights": [
+        {
+          "label": "Fiat 500",
+          "value": 2
+        },
+        {
+          "label": "Geo Metro",
+          "value": 3
+        },
+        {
+          "label": "Porsche 911",
+          "value": 6
+        },
+        {
+          "label": "Dodge Viper",
+          "value": 10
+        },
+        {
+          "label": "Bugatti Veyron",
+          "value": 16
+        }
+      ],
+      "validPair": [
+        2,
+        4
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_04_pat_hood_emblems",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Wire three famous European hood emblems straight to the carmaker they represent—leave the extra decoy jack UNPLUGGED!",
+    "choices": [
+      "Ferrari",
+      "Mercedes-Benz",
+      "Audi",
+      "Maserati"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 0,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Audi’s four silver rings symbolize the 1932 merger of four Saxon automakers—Audi, DKW, Horch, and Wanderer—while Maserati flies Neptune’s trident from Bologna!",
+    "supportedToys": [
+      "TOY_09_SWITCHBOARD_PATCHBAY"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "patchbay": {
+      "callers": [
+        "Prancing Horse",
+        "Three-Pointed Star",
+        "Four Linked Rings"
+      ],
+      "jacks": [
+        "Ferrari",
+        "Mercedes-Benz",
+        "Audi",
+        "Maserati"
+      ],
+      "correctMapping": [
+        0,
+        1,
+        2
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_05_pat_apollo_craft_roles",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Patch three historic Apollo mission vehicles straight to their job in space—leave the extra decoy jack UNPLUGGED!",
+    "choices": [
+      "Launch escape tower",
+      "Moon lander",
+      "Orbit command ship",
+      "Surface moon car"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Michael Collins circled the Moon solo inside Columbia for over 21 hours while Eagle sat on the Sea of Tranquility—becoming the loneliest human on every far-side pass!",
+    "supportedToys": [
+      "TOY_09_SWITCHBOARD_PATCHBAY"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "patchbay": {
+      "callers": [
+        "Eagle (Apollo 11)",
+        "Columbia (Apollo 11)",
+        "Lunar Roving Buggy"
+      ],
+      "jacks": [
+        "Launch escape tower",
+        "Moon lander",
+        "Orbit command ship",
+        "Surface moon car"
+      ],
+      "correctMapping": [
+        1,
+        2,
+        3
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_06_crumple_zone_barenyi",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Patented in 1952 by Mercedes-Benz engineer Béla Barényi, what deliberately accordion-folding front frame soaks up crash energy so the passenger cabin stays rigid?",
+    "choices": [
+      "Rollover cage",
+      "Crumple zone",
+      "Torsion beam",
+      "Bumper guard"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Before Barényi, people assumed stiff iron tanks were safer—yet rigid cars slam all the crash force straight into your ribs instead of sacrificing replaceable sheet metal!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_07_porsche_911_peugeot_901",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Sloping teardrop fastback, bug-eyed round fenders, and an engine tucked behind the rear axle: which icon changed its name from 901 after Peugeot objected?",
+    "choices": [
+      "Jaguar E-Type",
+      "Lotus Esprit",
+      "Porsche 911",
+      "Alpine A110"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Peugeot owned French trademarks on three-digit car numbers with a zero in the middle—so Porsche swapped the 0 for a 1 after building just 82 \"901\" cars in 1964!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_08_turn_signal_trafficators",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Before Buick wired flashing corner lamps in 1939, 1920s cars popped little glowing wooden arrows called \"trafficators\" out of the door pillar—early ancestors of what?",
+    "choices": [
+      "Hazard horn",
+      "Brake lamp",
+      "Side mirror",
+      "Turn signal"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Silent-film star Florence Lawrence—who was also a gearhead inventor—built an early mechanical flag-arm turn indicator on her own car roof way back in 1914!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_09_saturn_v_height_363_ft",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Cape Wire, July 1969: Towering sixty feet taller than the Statue of Liberty at [ _____ ], NASA’s three-stage Saturn V Moon rocket shook bleachers three miles away.",
+    "choices": [
+      "363 feet",
+      "245 feet",
+      "480 feet",
+      "590 feet"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Fully fueled on Pad 39A, Saturn V weighed 6.5 million pounds—nearly 85% of that sheer mass was liquid kerosene, liquid hydrogen, and liquid oxygen!",
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 363,
+      "min": 180,
+      "max": 600,
+      "step": 1,
+      "unit": "feet"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_10_myth_diesel_spark_plugs",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Garage Bay Klaxon! Three of these wild automotive claims are 100% legit history and engineering, while one popular belief misfires. Spot the myth!",
+    "choices": [
+      "Airbags fire under 50 millisec",
+      "Diesels fire with spark plugs",
+      "First speed ticket was 8 mph",
+      "First cars used tiller sticks"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Diesel engines have ZERO spark plugs—pistons squeeze air so tightly it heats past 500°C, instantly igniting sprayed diesel fuel by pure compression!",
+    "cardStyle": "SPOT_THE_MYTH",
+    "sorter": {
+      "chuteALabel": "TRUE AUTO FACT",
+      "chuteBLabel": "GARAGE MYTH",
+      "items": [
+        {
+          "label": "First speed ticket 8 mph",
+          "chute": 0
+        },
+        {
+          "label": "Diesels use spark plugs",
+          "chute": 1
+        },
+        {
+          "label": "Early cars had tillers",
+          "chute": 0
+        },
+        {
+          "label": "Wide tires best in snow",
+          "chute": 1
+        },
+        {
+          "label": "Airbags pop in 0.04 sec",
+          "chute": 0
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_11_rail_roundhouse_turntable",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Giant curved brick shed ringing a spinning steel bridge at a steam depot: train crews built what landmark so hulking locomotives could reverse?",
+    "choices": [
+      "Switchback yard",
+      "Coal tipple dock",
+      "Rail roundhouse",
+      "Viaduct trestle"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Once double-ended diesel engines arrived in the 1950s and ran just as easily backward, thousands of grand curved steam roundhouses vanished!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_12_bin_1900_electric_steam_cars",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Turn-of-the-century traffic shock: around the year 1900 on New York and Chicago avenues, which kind of automobile actually outnumbered gasoline cars?",
+    "choices": [
+      "Diesel delivery vans",
+      "Gasoline touring cars",
+      "Turbine luxury coupes",
+      "Electric & steam cars"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "In 1900, 40% of U.S. cars ran on steam and 38% on quiet batteries—gasoline lagged at 22% until cheap Texas oil and Charles Kettering’s 1912 electric starter flipped the race!",
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_13_airbag_hetrick_1951",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Sketched in 1951 after engineer John Hetrick swerved into a ditch protecting his daughter, what steering-wheel cushion inflates via solid propellant in 30 milliseconds?",
+    "choices": [
+      "The airbag",
+      "The headrest",
+      "The roll bar",
+      "The knee pad"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Hetrick took inspiration from compressed-air Navy torpedoes—and modern crash sensors decide to deploy an airbag in just 15 milliseconds!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_14_wright_first_flight_12_sec",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Kitty Hawk Wire, Dec. 1903: Covering 120 feet into a freezing headwind, Orville Wright’s history-making first powered flight lasted just [ _____ ].",
+    "choices": [
+      "38 seconds",
+      "12 seconds",
+      "65 seconds",
+      "90 seconds"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "That first 120-foot hop was shorter than the wingspan of a modern Boeing 747—yet by flight #4 that same afternoon, Wilbur flew 852 feet in 59 seconds!",
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 12,
+      "min": 5,
+      "max": 100,
+      "step": 1,
+      "unit": "seconds"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_15_antilock_brakes_runway_origin",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Born in the 1920s to stop French airplanes from blowing tires on wet runways, what rapid-pulsing system lets drivers steer during a panic stop instead of skidding straight?",
+    "choices": [
+      "Hydraulic clutch",
+      "Overdrive gear",
+      "Anti-lock brakes",
+      "Drum retarder"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Rolling rubber grips road far better than a locked skidding tire—so ABS pulses your brakes up to 15 times a second while your steering still obeys!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_16_overhead_pantograph_rail",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Spring-loaded folding metal diamond perched atop electric trains, skating smoothly beneath a live copper wire even when tunnels dip: name this rig!",
+    "choices": [
+      "Third-rail shoe",
+      "Coupler knuckle",
+      "Brake air hose",
+      "Power pantograph"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Overhead wires deliberately zigzag along straight tracks so the carbon contact bar wears evenly instead of sawing a deep notch right through!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_17_myth_shuttle_srb_shutoff",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Launch Control Klaxon! Three of these nail-biting NASA spaceflight facts are 100% real mission history, while one dramatic claim is bogus. Spot the myth!",
+    "choices": [
+      "Shuttle boosters shut off midair",
+      "Apollo 11 had 25s hover fuel",
+      "Saturn V Stage 1 burned RP-1",
+      "Suits run on low-pressure O2"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Once the Space Shuttle’s twin solid boosters lit, zero off-switch existed—they roared non-stop for two full minutes until every ounce of fuel burned out!",
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_18_bin_sharp_rail_ballast",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Stroll beside any railway and you’ll crunch over jagged rocks under the wooden sleepers: why use angular crushed granite instead of smooth river stones?",
+    "choices": [
+      "Smooth rocks crack in hot sun",
+      "Sharp edges lock ties in place",
+      "Jagged stone blocks rust water",
+      "Smooth gravel weakens signals"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Smooth pebbles would roll out like marbles beneath a 200-ton locomotive, while angular granite locks tight to resist vibration and drains rainwater fast so ties stay dry!",
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_19_odometer_franklin_chariot",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Before dashboards logged highway miles, Roman war chariots and Benjamin Franklin’s postal carriage counted every wagon-wheel turn to track road distance on what gauge?",
+    "choices": [
+      "A tachometer",
+      "A barometer",
+      "An odometer",
+      "An altimeter"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Roman architect Vitruvius described a geared wheel-counter that dropped one bronze pebble into a tin box every Roman mile—so you just counted the pebbles at nightfall!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_20_apollo_13_aquarius_lifeboat",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Houston Wire, April 1970: After an oxygen tank blew 200,000 miles out, Apollo 13’s crew shut down Odyssey and survived inside lunar lander [ _____ ].",
+    "choices": [
+      "Intrepid",
+      "Antares",
+      "Challenger",
+      "Aquarius"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Built to keep two astronauts alive for 45 hours on the Moon, tiny foil-wrapped Aquarius miraculously carried all three men for 83 hours back around the lunar far side!",
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_21_popup_headlights_ban",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Flip a dash switch and two boxy lamps wink upright out of a sleek wedge nose: which retro sports-car icon from the Cord 810 to the Miata vanished by 2004?",
+    "choices": [
+      "Pop-up headlights",
+      "Swept chrome tailfins",
+      "Rear fender skirts",
+      "Spring curb feelers"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Once 1984 U.S. rules allowed sleek flush bulbs—and pedestrian-impact standards tightened—the 2004 Corvette C5 and Lotus Esprit closed the era!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_22_interstate_eisenhower_1919",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Scarred in 1919 when an Army truck convoy took 62 grueling days to cross America on muddy dirt roads, Dwight Eisenhower later signed the 1956 law building what grid?",
+    "choices": [
+      "Lincoln Coast Route",
+      "Interstate system",
+      "National Motor Belt",
+      "Trans-State Parkway"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 0,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The numbering rule is baked into the map: odd numbers (I-5, I-95) run north-south from west to east, while even numbers (I-10, I-90) run east-west from south to north!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_23_bin_airplane_window_pinhole",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Notice the tiny pinhole drilled near the bottom of an airliner’s plastic window at 35,000 feet: what quiet safety job is that breather hole doing?",
+    "choices": [
+      "Draining trapped storm water",
+      "Venting wing jet-fuel fumes",
+      "Equalizing pane air pressure",
+      "Locking the shade in place"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Each jet window actually packs three panes—that tiny bleed hole lets the tough outer pane absorb full cabin pressure while keeping the middle pane clear of frost and fog!",
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_24_tachometer_redline_rpm",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Mounted right beside the speedometer in sports cars, which dial warns drivers away from the redline by counting engine crankshaft revolutions every minute?",
+    "choices": [
+      "Boost gauge",
+      "An ammeter",
+      "An odometer",
+      "A tachometer"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "While family sedans redline near 6,500 RPM, screaming 2000s Formula 1 V10s spun past 19,000 RPM—meaning each piston reversed direction over 600 times every second!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_25_panama_canal_85_feet_lift",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Isthmus Wire, 1914: Filling solely by gravity from jungle lakes, giant concrete water locks hoist ocean freighters [ _____ ] above sea level to cross the Panama Canal.",
+    "choices": [
+      "85 feet",
+      "35 feet",
+      "160 feet",
+      "240 feet"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Not one drop is pumped into the Gatun locks—opening massive culverts pours 52 million gallons of freshwater downhill per ship transit before spilling straight out to sea!",
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 85,
+      "min": 20,
+      "max": 250,
+      "step": 5,
+      "unit": "feet"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_26_myth_reverse_thrust_midair",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Flight Deck Klaxon! Three of these astonishing air-and-rail engineering facts are completely true, while one Hollywood trope is totally bogus. Spot the myth!",
+    "choices": [
+      "Jet wings safely bend 20+ feet",
+      "Planes reverse thrust mid-dive",
+      "Coned train wheels steer curves",
+      "Jet cabins cycle air every 3m"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Airliners lock out thrust reversers with weight-on-wheels switches—deploying one mid-flight wrecks wing lift, so pilots use spoilers to descend!",
+    "cardStyle": "SPOT_THE_MYTH",
+    "sorter": {
+      "chuteALabel": "TRUE FLIGHT FACT",
+      "chuteBLabel": "COCKPIT MYTH",
+      "items": [
+        {
+          "label": "787 wings flex 25 feet",
+          "chute": 0
+        },
+        {
+          "label": "Reversers fire in cruise",
+          "chute": 1
+        },
+        {
+          "label": "Cabin air cycles in 3m",
+          "chute": 0
+        },
+        {
+          "label": "Doors open at 35,000 ft",
+          "chute": 1
+        },
+        {
+          "label": "Train wheels are coned",
+          "chute": 0
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_27_turbocharger_snail_shells",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Twin cast-metal snail shells bolted to an engine’s exhaust pipe, whirling a tiny wheel past 150,000 RPM on waste gas to cram extra air into the cylinders:",
+    "choices": [
+      "Barrel carburetor",
+      "Belt alternator",
+      "Turbocharger",
+      "Spark distributor"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Alfred Büchi patented the turbocharger in 1905 for ship diesels and warplanes—decades before 1970s Saab and Porsche brought \"turbo lag\" to highways!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_28_flight_recorder_david_warren",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Haunted by mysterious 1953 de Havilland Comet jet crashes, Australian chemist David Warren built a fireproof voice-and-data tape unit that became what aviation lifesaver?",
+    "choices": [
+      "Radar transponder",
+      "Autopilot gyro",
+      "Ground beacon",
+      "Flight recorder"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Officials initially dismissed Warren’s 1956 prototype as useless for commercial airlines—until British crash investigators spotted it in Melbourne and ordered it worldwide!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_29_janney_knuckle_coupler",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Before Eli Janney’s 1873 interlocking steel fist replaced manual link-and-pin hooks, thousands of rail brakemen lost hands between boxcars—what automatic latch saved them?",
+    "choices": [
+      "Knuckle coupler",
+      "Buffer spring",
+      "Switch frog",
+      "Boxcar bolster"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Like two cupped hands shaking and locking shut on impact, Janney’s basic geometry still couples virtually every North American freight car 150 years later!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_30_citroen_ds_paris_1955",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Paris Auto Wire, 1955: Boasting self-leveling hydraulic suspension and futuristic shark-nose styling, France’s radical [ _____ ] drew 12,000 orders on day one.",
+    "choices": [
+      "Renault 4CV",
+      "Citroën DS",
+      "Peugeot 403",
+      "Simca Aronde"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "In 1962, French President Charles de Gaulle survived an assassination ambush because his Citroën DS sped away on two shredded tires using its self-leveling hydraulic system!",
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_31_bin_twisted_propeller_blade",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Inspect a classic airplane propeller blade: why is it twisted steeply near the center spinner hub yet flattened out smoothly toward its spinning outer tip?",
+    "choices": [
+      "Hubs need extra cooling vents",
+      "Flat tips cut engine noise only",
+      "The tip slices air much faster",
+      "Twisted roots store spare oil"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Each propeller tip traces a giant circle at hundreds of miles per hour while the hub barely creeps—twisting the angle keeps smooth, uniform forward bite from root to tip!",
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_32_pitot_tube_airspeed",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Slender heated L-shaped steel needle jutting off an airliner’s nose directly into oncoming wind to clock airspeed by ram pressure: name this 1732 French sensor!",
+    "choices": [
+      "Static wick",
+      "Radar dome",
+      "Stall vane",
+      "Pitot tube"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Henri Pitot invented the bent tube in 1732 to clock the River Seine—and flight crews slip bright red \"Remove Before Flight\" covers on it to block wasps!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_33_torque_converter_fluid",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Inside a classic automatic transmission, which doughnut-shaped fluid housing links engine to wheels solely through swirling oil so your car can idle calmly in Drive?",
+    "choices": [
+      "Torque converter",
+      "Flywheel damper",
+      "Shift solenoid",
+      "Rack and pinion"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Picture two box fans facing each other in sealed oil—the engine spins one fan, whose swirling fluid stream smoothly turns the wheels with zero gears!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_34_myth_wider_tires_snow",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Proving Ground Klaxon! Three of these wild vehicle-engineering facts are totally real, while one common driver assumption gets cars stuck. Spot the myth!",
+    "choices": [
+      "Early cars rode wooden spokes",
+      "Wider tires grip deep snow best",
+      "F1 rotors glow 1,000°C orange",
+      "Radar fails deep under seawater"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Fat tires act like snowshoes and float on top of slick slush—skinny rally winter tires slice cleanly down through loose snow to bite firm packed grip underneath!",
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_35_hohmann_transfer_orbit",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "To ferry Mars rovers across interplanetary space without impossible mountains of fuel, NASA fires two brief burns along which 1925 elliptical orbital highway?",
+    "choices": [
+      "Lagrange sling",
+      "Kepler spiral",
+      "Hohmann transfer",
+      "Bipolar loop"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "German city building-inspector Walter Hohmann worked out the math in his spare time in 1925—which is why Mars launch windows only swing open every 26 months!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_36_bonneville_salt_flats_600mph",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Speed Week Wire, 1965: Craig Breedlove’s jet-powered Spirit of America topped 600 mph across the mirror-smooth white crust of Utah’s [ _____ ].",
+    "choices": [
+      "Mojave Dry Lake",
+      "Black Rock Playa",
+      "Alvord Desert",
+      "Bonneville Flats"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Left behind when ancient Lake Bonneville dried up 15,000 years ago, the salt plain is so level you can literally watch Earth’s curve hide distant peaks!",
+    "cardStyle": "HEADLINE_BLANK",
+    "geo": {
+      "lat": 40.7694,
+      "lng": -113.8981,
+      "landmarkLabel": "Bonneville Salt Flats",
+      "regionHint": "Western Utah, USA"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_37_flyball_centrifugal_governor",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Two heavy brass spheres flaring outward like a spinning skater’s arms atop a steam engine, automatically pinching back the throttle before it blows: name this control!",
+    "choices": [
+      "Flyball governor",
+      "Camshaft rocker",
+      "Ratchet pawl",
+      "Pendulum detent"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "James Watt popularized this 1788 negative-feedback loop—which directly inspired the Greek word \"cybernetics\" (steersman) and the gritty phrase \"balls out\" for full speed!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_38_apollo_11_alarm_1202",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Minutes before Apollo 11 touched the Moon, a stray radar switch flooded its 74KB computer—triggering what famed overflow code that Margaret Hamilton’s software shrugged off?",
+    "choices": [
+      "Fault 404",
+      "Alarm 1202",
+      "Code 7700",
+      "Alert 555"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "26-year-old guidance officer Steve Bales yelled \"GO!\" in Houston because Hamilton’s priority-scheduler dropped low-level tasks and kept landing thrusters flying flawlessly!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_39_whitcomb_area_rule_coke_bottle",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 5,
+    "stem": "When 1950s supersonic jets slammed into a wall of transonic drag, Richard Whitcomb pinched fighter waists inward like a classic glass Coke bottle using what principle?",
+    "choices": [
+      "The Venturi Cut",
+      "The Mach Taper",
+      "The Area Rule",
+      "The Coanda Pinch"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Keeping total cross-sectional area smooth from nose to tail cut shockwave drag by up to 60%—letting the sluggish F-102 finally break Mach 1!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_eng_40_bin_vacuum_wide_rocket_bell",
+    "category": "ENGINES",
+    "domain": "SCI_TECH",
+    "difficulty": 5,
+    "stem": "Compare the rocket engine nozzles on a booster’s launch-pad stage versus its deep-space upper stage: which environment calls for a MUCH wider flared exhaust bell?",
+    "choices": [
+      "Dense sea-level air",
+      "Exact same bell width",
+      "Only solid fuel tubes",
+      "Vacuum of deep space"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "At sea level, outside air crushes an oversized exhaust plume and shakes the bell to pieces—in airless space, a giant flared bell wrings out maximum pushing efficiency!",
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_01_bal_forces_rainbow_11",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Lab bench tally! Hit 11 classic physics pillars by pairing the fundamental forces of nature with the colors in Isaac Newton’s rainbow:",
+    "choices": [
+      "Forces of nature + Newton rainbow",
+      "Quark flavor types + Newton motion",
+      "Forces of nature + Quark flavor types",
+      "Newton motion + Newton rainbow"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Gravity, electromagnetism, and the strong and weak nuclear forces rule everything from apples to stars—while Newton added indigo to hit a musical seven colors!",
+    "supportedToys": [
+      "TOY_04_BALANCE_SCALE"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "balance": {
+      "unit": "pillars",
+      "targetSum": 11,
+      "weights": [
+        {
+          "label": "Mars tiny moons",
+          "value": 2
+        },
+        {
+          "label": "Newton motion",
+          "value": 3
+        },
+        {
+          "label": "Forces of nature",
+          "value": 4
+        },
+        {
+          "label": "Quark flavor types",
+          "value": 6
+        },
+        {
+          "label": "Newton rainbow",
+          "value": 7
+        }
+      ],
+      "validPair": [
+        2,
+        4
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_02_bal_metric_zeros_21",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Metric scale check! Hit 21 trailing zeros by pairing a Giga-sized billion with a Tera-sized trillion on the brass balance:",
+    "choices": [
+      "Mega zeros + Tera zeros",
+      "Giga zeros + Tera zeros",
+      "Kilo zeros + Tera zeros",
+      "Mega zeros + Giga zeros"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Giga comes from the Greek word for \"giant\" (9 zeros) and Tera from \"monster\" (12 zeros)—and in 2022 metrologists added Quetta for a mind-boggling 30 zeros!",
+    "supportedToys": [
+      "TOY_04_BALANCE_SCALE"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "balance": {
+      "unit": "zeros",
+      "targetSum": 21,
+      "weights": [
+        {
+          "label": "Hecto zeros",
+          "value": 2
+        },
+        {
+          "label": "Kilo zeros",
+          "value": 3
+        },
+        {
+          "label": "Mega zeros",
+          "value": 6
+        },
+        {
+          "label": "Giga zeros",
+          "value": 9
+        },
+        {
+          "label": "Tera zeros",
+          "value": 12
+        }
+      ],
+      "validPair": [
+        3,
+        4
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_03_bal_optics_angles_102",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Optics protractor! Hit 102 degrees by pairing the red primary rainbow exit angle with one sharp corner of a classic equilateral glass prism:",
+    "choices": [
+      "Right-angle turn + Equilateral prism",
+      "Primary rainbow + Right-angle turn",
+      "Primary rainbow + Equilateral prism",
+      "Equilateral prism + Flat mirror flip"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Sunbeams inside spherical raindrops reflect and exit sharpest at 42° for red—forming a circular arc always centered straight opposite the Sun!",
+    "supportedToys": [
+      "TOY_04_BALANCE_SCALE"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "balance": {
+      "unit": "degrees",
+      "targetSum": 102,
+      "weights": [
+        {
+          "label": "Primary rainbow",
+          "value": 42
+        },
+        {
+          "label": "Equilateral prism",
+          "value": 60
+        },
+        {
+          "label": "Right-angle turn",
+          "value": 90
+        },
+        {
+          "label": "Flat mirror flip",
+          "value": 180
+        },
+        {
+          "label": "Full circle sweep",
+          "value": 360
+        }
+      ],
+      "validPair": [
+        0,
+        1
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_04_pat_everyday_phenomena",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Plug three everyday sights and sounds straight into the physics trick creating them—leave the extra decoy jack UNPLUGGED!",
+    "choices": [
+      "Thin-film wave clash",
+      "Doppler wave shift",
+      "Rayleigh scattering",
+      "Thermal expansion"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Soap bubbles have no colored dye at all—light bouncing off the front and back faces of the ultra-thin water wall collides to amplify shifting rainbow hues!",
+    "supportedToys": [
+      "TOY_09_SWITCHBOARD_PATCHBAY"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "patchbay": {
+      "callers": [
+        "Soap bubble rainbow",
+        "Siren pitch drop",
+        "Blue daytime sky"
+      ],
+      "jacks": [
+        "Thin-film wave clash",
+        "Doppler wave shift",
+        "Rayleigh scattering",
+        "Thermal expansion"
+      ],
+      "correctMapping": [
+        0,
+        1,
+        2
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_05_pat_em_spectrum_jobs",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Wire three everyday invisible rays straight to their band on the light spectrum—leave the extra decoy jack UNPLUGGED!",
+    "choices": [
+      "Gamma burst",
+      "Infrared light",
+      "X-ray beam",
+      "Ultraviolet ray"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Point your smartphone camera at a TV remote and press any button—most phone sensors can actually see the remote’s invisible infrared LED blinking violet-white!",
+    "supportedToys": [
+      "TOY_09_SWITCHBOARD_PATCHBAY"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "patchbay": {
+      "callers": [
+        "TV remote LED",
+        "Airport bag scan",
+        "Sunburn tanning ray"
+      ],
+      "jacks": [
+        "Gamma burst",
+        "Infrared light",
+        "X-ray beam",
+        "Ultraviolet ray"
+      ],
+      "correctMapping": [
+        1,
+        2,
+        3
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_06_thunder_five_seconds_mile",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Storm Watch Wire: Because flash light arrives almost instantly while thunder crawls near 767 mph, every [ _____ ] between flash and boom puts the strike one mile away.",
+    "choices": [
+      "2 seconds",
+      "5 seconds",
+      "9 seconds",
+      "12 seconds"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Sound covers roughly 1,125 feet per second in warm summer air—so five seconds equals 5,625 feet, neatly matching one 5,280-foot mile!",
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 5,
+      "min": 1,
+      "max": 15,
+      "step": 1,
+      "unit": "seconds"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_07_newtons_cradle_spheres",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Five chrome spheres hung shoulder-to-shoulder in a desk frame: drop one left ball, and only the far-right twin snaps out while three middle balls sit still!",
+    "choices": [
+      "Foucault pendulum",
+      "Galileo cylinder",
+      "Newton’s cradle",
+      "Crookes windmill"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Actor Simon Prebble coined the desk toy’s name in 1967, though French physicist Edme Mariotte first demonstrated the chain collision in the 1670s!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_08_sonic_boom_continuous_cone",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Spectators assume a jet pops only once when breaking Mach 1—yet it drags a continuous roaring shockwave carpet across every town below known as what?",
+    "choices": [
+      "Mach tuck",
+      "Vapor cone",
+      "Jet wash",
+      "Sonic boom"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Supersonic airliners actually produce a quick \"double boom\"—one pressure spike slamming off the sharp nosecone and a second spike snapping off the tail!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_09_bin_helium_balloon_accelerating_car",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Tie a floating helium party balloon to your car’s floor and stomp the gas pedal hard: which way does the floating orb surprisingly lean as you launch?",
+    "choices": [
+      "Forward toward windshield",
+      "Backward toward the trunk",
+      "Straight down to the mat",
+      "Spins in tight flat loops"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Heavier cabin air sloshes backward during acceleration just like passengers do—squeezing the lighter helium balloon straight forward like a bubble inside a carpenter’s level!",
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_10_myth_magnets_all_metals",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Physics Lab Klaxon! Three of these surprising material and space facts are 100% legit science, while one everyday belief falls flat. Spot the myth!",
+    "choices": [
+      "Diamonds conduct heat swiftly",
+      "Magnets grab every shiny metal",
+      "Astronauts stretch in micro-G",
+      "Sound speeds up in warm water"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Everyday magnets only pull strongly on ferromagnetic iron, nickel, and cobalt—aluminum soda cans, copper pennies, and pure gold rings completely ignore them!",
+    "cardStyle": "SPOT_THE_MYTH",
+    "sorter": {
+      "chuteALabel": "TRUE LAB FACT",
+      "chuteBLabel": "SCIENCE MYTH",
+      "items": [
+        {
+          "label": "Diamonds conduct heat",
+          "chute": 0
+        },
+        {
+          "label": "Magnets pull aluminum",
+          "chute": 1
+        },
+        {
+          "label": "Spines grow in orbit",
+          "chute": 0
+        },
+        {
+          "label": "Space lasers shine wide",
+          "chute": 1
+        },
+        {
+          "label": "Water beats air sound",
+          "chute": 0
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_11_double_rainbow_inverted_band",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Faint outer color arc floating above a bright storm bow, its stripe order flipped completely upside-down with violet on top because light bounced twice inside each drop:",
+    "choices": [
+      "Sun dog halo",
+      "Brocken specter",
+      "Double rainbow",
+      "Moonbow ring"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The gloomy dark sky sandwiched between the two arches even has a royal name—Alexander’s Band—because raindrops at those angles scatter zero light back toward your eyes!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_12_static_shock_10000_volts",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Shuffle wool socks across dry winter carpet and tap a brass doorknob—what sudden 10,000-volt electron leap stings harmlessly because its spark lasts billionths of a second?",
+    "choices": [
+      "Ground loop",
+      "Eddy pulse",
+      "Arc flash",
+      "Static shock"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 0,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "You don’t even feel a doorknob zap until voltage tops roughly 3,000 volts—and on bone-dry January days, sliding out of a car seat can easily build a 25,000-volt charge!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_13_sunlight_eight_minutes_earth",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Solar Wire: Even screaming across space at 186,282 miles per second, every beam of morning sunshine takes just over [ _____ ] to cross 93 million miles and warm your face.",
+    "choices": [
+      "8 minutes",
+      "2 minutes",
+      "24 minutes",
+      "45 minutes"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "At 8 minutes and 20 seconds of travel time, if the Sun flickered out right now, everyone on Earth would keep sunbathing in cheerful ignorance for more than eight full minutes!",
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 8,
+      "min": 1,
+      "max": 60,
+      "step": 1,
+      "unit": "minutes"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_14_wagon_wheel_illusion_spokes",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Watch a speeding stagecoach in a classic Western and its wooden spoked wheels eerily appear to freeze and spin backward—what camera frame-rate illusion fools your eyes?",
+    "choices": [
+      "Parallax drift",
+      "Wagon-wheel effect",
+      "Persistence lag",
+      "Motion smear"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "When a spoke turns nearly to the next spoke’s slot between frames, your brain picks the shortest jump and misreads the tiny gap as backward spin!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_15_galileo_thermometer_bulbs",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Tall sealed glass cylinder of clear oil bobbing with colorful hand-blown glass spheres hanging brass degree tags: as the room warms, bulbs gently sink inside what beauty?",
+    "choices": [
+      "Storm glass barograph",
+      "Brass sand hourglass",
+      "Galileo thermometer",
+      "Crookes light spinner"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Warmer liquid expands and loses buoyancy, sinking each precisely weighted bulb in turn—so the lowest floating sphere in the top cluster tells you the current room temperature!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_16_bin_hot_chocolate_tapping_pitch",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Stir instant cocoa into hot water and tap the mug’s ceramic bottom repeatedly with your spoon: how does that clinking musical pitch strangely change over the next few seconds?",
+    "choices": [
+      "Pitch drops steadily lower",
+      "Sound vanishes completely",
+      "Pitch stays locked flat",
+      "Pitch climbs steadily higher"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "In the \"Hot Chocolate Effect,\" tiny stirred-in air bubbles slow sound down—as bubbles pop out, sound speeds up and the spoon’s ring climbs nearly an octave!",
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_17_myth_space_lasers_sideways",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Optics Bench Klaxon! Three of these surprising light-and-sound facts are 100% genuine physics, while one movie staple breaks optics rules. Spot the myth!",
+    "choices": [
+      "Space lasers glow sideways bright",
+      "Magenta lacks one rainbow wave",
+      "Car glass blocks sunburn UVB",
+      "Dogs hear past 40,000 hertz"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "You only spot a concert laser beam from the side because fog or dust scatters photons toward your eye—in clean airless outer space, a sideways laser beam is totally invisible!",
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_18_capillary_action_paper_towel",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Touch one dry corner of a paper towel to spilled coffee and the dark stain marches right uphill against gravity—pulled by what narrow-tube force that also feeds tall redwoods?",
+    "choices": [
+      "Osmotic drift",
+      "Capillary action",
+      "Bernoulli lift",
+      "Thermal siphon"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Water molecules cling so tightly to cellulose fibers—and hold hands so firmly with each other—that narrow paper pores yank liquid inches upward with zero pumps!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_19_escape_velocity_7_miles_sec",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Launchpad Wire: To break completely free of Earth’s gravitational grip without ever firing another booster, a departing probe must roar past roughly [ _____ ].",
+    "choices": [
+      "3 miles/sec",
+      "15 miles/sec",
+      "7 miles/sec",
+      "24 miles/sec"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Earth’s escape velocity is 6.95 miles per second (25,020 mph)—yet on tiny low-gravity Mars, a rocket only needs 3.1 miles per second to break away homeward!",
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 7,
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "unit": "mi/sec"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_20_plasma_globe_tesla_tendrils",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Clear glass orb crackling with purple gas filaments from a central coil—touch one finger outside and a bright pink bolt snaps right to your skin!",
+    "choices": [
+      "Van de Graaff",
+      "Crookes tube",
+      "Jacobs ladder",
+      "Plasma globe"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "MIT student Bill Parker created the colorful desk orb in 1971—your touching finger offers high-frequency current an easy grounded shortcut through glass!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_21_center_of_gravity_weebles",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Punch an inflatable sand-bottomed clown bag—or tip a classic 1970s Weeble toy—and it snaps right back upright because its heavy base locks what invisible balance point low?",
+    "choices": [
+      "Center of gravity",
+      "Torque fulcrum",
+      "Inertia axis",
+      "Pivot datum"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Any tilt lifts that lead-filled bottom slightly higher, so gravity snaps it upright—the exact self-righting trick built into stormy Coast Guard lifeboats!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_22_bridge_thermal_expansion_comb",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Cross a big steel bridge and your tires thump across interlocking metal comb teeth—built so sizzling July heat won’t buckle lanes via what effect?",
+    "choices": [
+      "Metal creep",
+      "Thermal expansion",
+      "Wind flutter",
+      "Shear stress"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Hot summer sunshine actually makes the iron Eiffel Tower grow up to six full inches taller—and slightly tilts its tip away from the sunlit side!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_23_crookes_radiometer_lightmill",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Four tiny diamond paddles painted bright silver on one face and soot-black on the back, whirling inside a clear glass bulb the moment windowsill sunlight strikes:",
+    "choices": [
+      "Galileo liquid tube",
+      "Hair hygrometer dial",
+      "Crookes radiometer",
+      "Tesla bladeless disc"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Plot twist: it doesn’t spin from light pressure—pump out ALL the air and it stops! Trace gas molecules kicking harder off warmer black edges push it!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_24_mount_wilson_hubble_1924",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Astronomy Wire, 1924: Peering through the 100-inch Hooker telescope atop California’s [ _____ ], Edwin Hubble proved Andromeda sits far outside our Milky Way.",
+    "choices": [
+      "Mount Whitney",
+      "Mount Shasta",
+      "Mount Rainier",
+      "Mount Wilson"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "In one single glass photographic plate—marked with an excited \"VAR!\" in red ink—Hubble spotted a blinking Cepheid star and instantly expanded the known universe a millionfold!",
+    "cardStyle": "HEADLINE_BLANK",
+    "geo": {
+      "lat": 34.2258,
+      "lng": -118.0572,
+      "landmarkLabel": "Mount Wilson Observatory",
+      "regionHint": "Southern California, USA"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_25_myth_lightning_only_top_down",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "High-Voltage Klaxon! Three of these eye-opening physics facts hold up in every lab, while one widely repeated claim runs completely backward. Spot the myth!",
+    "choices": [
+      "Lightning only shoots top-down",
+      "Wire electrons crawl super slow",
+      "Snow is clear ice scattering",
+      "Glass prisms bend violet most"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "High-speed cameras show upward streamers leaping UP from tall towers to meet cloud leaders—and the blinding return stroke actually shoots from the ground up!",
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_26_bin_finger_in_water_scale",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Set a half-full cup of water on a kitchen scale and dip your fingertip cleanly in without touching the glass: what happens to the displayed weight?",
+    "choices": [
+      "Weight stays completely flat",
+      "Weight reading climbs upward",
+      "Weight dips slightly lighter",
+      "Scale bounces back to zero"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "By Newton’s Third Law, the water pushes UP on your finger with buoyant force—so your finger pushes right back DOWN on the water by the exact weight of the displaced liquid!",
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_27_st_elmos_fire_ship_masts",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "During ocean squalls, 16th-century sailors watched eerie violet-blue flames hiss silently on wooden mast tips—actually plasma corona discharge named what?",
+    "choices": [
+      "Ball lightning",
+      "Foxfire glow",
+      "St. Elmo’s fire",
+      "Corona aurora"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Named for sailors’ patron saint Erasmus, this cool electric glow strips electrons from stormy air around pointy masts—and still dances on jet windshields!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_28_moire_pattern_tv_pinstripes",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Overlap two fine window screens slightly crooked—or wear a tight houndstooth jacket on 1966 color TV—and wild wavy psychedelic ripples shimmer out of nowhere:",
+    "choices": [
+      "Parallax grid",
+      "Bokeh flare",
+      "Caustic ring",
+      "Moiré pattern"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Named after shimmering French watered silk, Moiré beats happen whenever fine fabric stripes clash with a TV camera’s scan lines—why TV wardrobe teams ban tight checks!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_29_supercooling_instant_ice_bottle",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Chill an unopened bottle of pure distilled water below 0°C undisturbed and it stays liquid—until one firm smack freezes it solid in two seconds via:",
+    "choices": [
+      "Supercooling",
+      "Sublimation",
+      "Flash boiling",
+      "Cavitation"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Without dust specks or scratches to seed the first ice crystal, pure water stays liquid down to -40°C—until one jolt sparks an instant frozen chain reaction!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_30_decibels_ten_power_jump",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Acoustics Wire: Because human ears judge loudness on a logarithmic scale, cranking sound up by just [ _____ ] packs ten times the wave power and feels roughly twice as loud.",
+    "choices": [
+      "2 decibels",
+      "10 decibels",
+      "5 decibels",
+      "25 decibels"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "That means a 100-dB rock concert doesn’t just blast slightly harder than a 60-dB conversation—it delivers TEN THOUSAND times as much acoustic energy to your eardrums!",
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 10,
+      "min": 1,
+      "max": 40,
+      "step": 1,
+      "unit": "dB"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_31_gravitational_lensing_einstein_ring",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "When a massive galaxy cluster sits right between Earth and a faraway quasar, its warped gravity bends background starlight into glowing curved cosmic arcs called what?",
+    "choices": [
+      "Relativistic Doppler",
+      "Galactic tidal shear",
+      "Gravitational lensing",
+      "Deep cosmic parallax"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Einstein doubted telescopes would ever spot such warped \"Einstein rings\"—yet today James Webb uses giant galaxy clusters as natural cosmic magnifiers to spy baby galaxies!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_32_bin_open_fridge_warms_room",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Sweltering on a hot afternoon, you prop your kitchen refrigerator door wide open inside a tightly shut room: an hour later, how has the room’s average temperature changed?",
+    "choices": [
+      "Room chills several degrees",
+      "Room stays exact same temp",
+      "Only floor air turns colder",
+      "Room grows slightly warmer"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "A fridge never erases heat—it dumps all the warmth from inside straight out the rear radiator coils, PLUS extra waste heat from the hard-working electric compressor!",
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_33_optical_caustics_pool_coffee",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Shimmering golden light webs dancing on a sunny pool floor—and the bright heart curve gleaming inside a coffee mug—share what luminous term?",
+    "choices": [
+      "Optical caustics",
+      "Newton rings",
+      "Diffraction fans",
+      "Airy disks"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "From the Greek word for \"burning,\" caustics form wherever rippled water or curved mug walls focus scattered light rays onto one razor-bright envelope!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_34_gravity_siphon_hose",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Prime a vinyl hose over a fish-tank rim and water happily climbs uphill before pouring into a floor bucket—driven by air pressure and water weight in:",
+    "choices": [
+      "A Venturi pump",
+      "A fluid siphon",
+      "A Pascal press",
+      "A check valve"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Because Earth’s atmospheric pressure only supports a water column roughly 33 feet high, no ordinary garden-hose siphon can ever haul water over a wall taller than 34 feet!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_35_myth_asteroid_belt_crowded",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Deep-Space Klaxon! Three of these astonishing astronomy facts are 100% real orbital physics, while one classic sci-fi trope is totally fake. Spot the myth!",
+    "choices": [
+      "GPS clocks run Einstein fixes",
+      "Venus spins backward on axis",
+      "Asteroids crowd bumper-to-bumper",
+      "Saturn is less dense than water"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 0,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "The belt between Mars and Jupiter is overwhelmingly empty—major asteroids average 600,000 miles apart, so NASA probes cruise straight through unharmed!",
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_36_olbers_paradox_dark_sky",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Cosmology Wire, 1823: Asking why an infinite universe filled with stars leaves our night sky ink-black instead of blazing bright everywhere is famously known as [ _____ ].",
+    "choices": [
+      "Fermi’s paradox",
+      "Zeno’s paradox",
+      "Twins’ paradox",
+      "Olbers’ paradox"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Edgar Allan Poe nailed the intuition in 1848—our universe is finite in age and expanding, so ultra-distant starlight either hasn’t arrived or stretched red!",
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_37_tennis_racket_dzhanibekov_flip",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Spin a T-handle wingnut in zero gravity—or toss a ping-pong paddle flat—and it mysteriously flips 180 degrees mid-flight repeatedly via what law?",
+    "choices": [
+      "Tennis-racket theorem",
+      "Coriolis orbital drift",
+      "Hooke’s spring torsion",
+      "Bernoulli vortex twist"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Cosmonaut Vladimir Dzhanibekov stunned mission control in 1985 filming a Soviet wingnut flip endlessly in space—and you can try it with a book over a bed!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_38_brewsters_angle_glare_cut",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 5,
+    "stem": "When sunlight bounces off a flat lake or wet highway at one exact glancing tilt, reflected glare polarizes completely horizontally—so polarized shades erase it at what angle?",
+    "choices": [
+      "Critical angle",
+      "Brewster’s angle",
+      "Snell’s angle",
+      "Bragg’s angle"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "On calm water, Brewster’s angle sits near 53°—letting vertical-slit polarized fishing shades wipe out blinding lake glare so anglers spy trout below!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_39_schlieren_imaging_air_plumes",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 5,
+    "stem": "Using just one curved telescope mirror and a razor blade, this 1864 German optical setup makes invisible warm air plumes off a candle—and jet shockwaves—snap onto camera:",
+    "choices": [
+      "Strobe shadowgraph",
+      "Cloud-chamber map",
+      "Schlieren imaging",
+      "Interferometer trace"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "August Toepler built Schlieren optics in 1864 to spot streaks in lens glass—today NASA uses it to photograph supersonic shockwaves against the Sun!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_phy_40_bin_sound_faster_humid_air",
+    "category": "PHYSICS",
+    "domain": "SCI_TECH",
+    "difficulty": 5,
+    "stem": "Compare a steamy 85°F Florida tarmac against a bone-dry 85°F Arizona desert: does a thunderclap actually race slightly faster in damp air or dry air?",
+    "choices": [
+      "Through bone-dry desert air",
+      "Exact same speed at 85°F",
+      "Depends only on wind noise",
+      "Through muggy humid air"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Water vapor (molecular mass 18) is much lighter than nitrogen (28) or oxygen (32)—so humid air is actually LESS dense than dry air, letting sound waves zip slightly faster!",
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_01_bal_carbon_oxygen_protons_14",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Periodic balance check! Hit 14 atomic protons by pairing the carbon inside every pencil tip with the oxygen you breathe every second:",
+    "choices": [
+      "Carbon pencil + Oxygen breath",
+      "Helium balloon + Oxygen breath",
+      "Hydrogen spark + Oxygen breath",
+      "Carbon pencil + Helium balloon"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Carbon (element 6) and oxygen (element 8) together forge both the carbon dioxide you exhale and the sparkling fizz inside soda—summing cleanly to silicon’s 14!",
+    "supportedToys": [
+      "TOY_04_BALANCE_SCALE"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "balance": {
+      "unit": "protons",
+      "targetSum": 14,
+      "weights": [
+        {
+          "label": "Hydrogen spark",
+          "value": 1
+        },
+        {
+          "label": "Helium balloon",
+          "value": 2
+        },
+        {
+          "label": "Carbon pencil",
+          "value": 6
+        },
+        {
+          "label": "Oxygen breath",
+          "value": 8
+        },
+        {
+          "label": "Gold bullion",
+          "value": 79
+        }
+      ],
+      "validPair": [
+        2,
+        3
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_02_bal_mohs_quartz_diamond_17",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Scratch-test tally! Hit 17 Mohs hardness points by pairing beach-sand quartz with the hardest natural mineral on Friedrich Mohs’s scale:",
+    "choices": [
+      "Topaz crystal + Diamond crystal",
+      "Quartz sand + Diamond crystal",
+      "Quartz sand + Topaz crystal",
+      "Calcite rock + Diamond crystal"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Because ordinary quartz sand scores a fierce 7 while soft glass scores roughly 5.5, brushing gritty beach sand off a smartphone screen is how pocket scratches actually happen!",
+    "supportedToys": [
+      "TOY_04_BALANCE_SCALE"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "balance": {
+      "unit": "Mohs",
+      "targetSum": 17,
+      "weights": [
+        {
+          "label": "Talc powder",
+          "value": 1
+        },
+        {
+          "label": "Calcite rock",
+          "value": 3
+        },
+        {
+          "label": "Quartz sand",
+          "value": 7
+        },
+        {
+          "label": "Topaz crystal",
+          "value": 8
+        },
+        {
+          "label": "Diamond crystal",
+          "value": 10
+        }
+      ],
+      "validPair": [
+        2,
+        4
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_03_pat_firework_metal_salts",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Wire three Fourth of July firework bursts straight to the metal salt painting their bright color—leave the extra decoy jack UNPLUGGED!",
+    "choices": [
+      "Barium salt",
+      "Sodium salt",
+      "Cobalt oxide",
+      "Strontium salt"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "True sky-blue fireworks (copper chloride) remain the hardest hue to master—heat the shell a hair too hot and that fragile blue washes out white!",
+    "supportedToys": [
+      "TOY_09_SWITCHBOARD_PATCHBAY"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "patchbay": {
+      "callers": [
+        "Emerald green burst",
+        "Golden yellow star",
+        "Crimson red flare"
+      ],
+      "jacks": [
+        "Barium salt",
+        "Sodium salt",
+        "Cobalt oxide",
+        "Strontium salt"
+      ],
+      "correctMapping": [
+        0,
+        1,
+        3
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_04_pat_classic_alloys",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Patch three workhorse metal alloys straight into the main duo forged inside them—leave the extra decoy jack UNPLUGGED!",
+    "choices": [
+      "Copper plus tin",
+      "Copper plus zinc",
+      "Iron plus chromium",
+      "Lead plus silver"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Ancient smiths stumbled onto bronze by melting soft copper with a pinch of tin—creating a sword metal far harder than either pure ingredient alone!",
+    "supportedToys": [
+      "TOY_09_SWITCHBOARD_PATCHBAY"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "patchbay": {
+      "callers": [
+        "Classic bronze bell",
+        "Shiny brass trumpet",
+        "Stainless cutlery"
+      ],
+      "jacks": [
+        "Copper plus tin",
+        "Copper plus zinc",
+        "Iron plus chromium",
+        "Lead plus silver"
+      ],
+      "correctMapping": [
+        0,
+        1,
+        2
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_05_pat_pantry_scent_molecules",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Plug three unmistakable pantry scents straight into the key aroma molecule giving them punch—leave the extra decoy jack UNPLUGGED!",
+    "choices": [
+      "Capsaicin",
+      "Limonene",
+      "Vanillin",
+      "Menthol"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Fun mirror-image chemistry: twist one single limb of the citrusy limonene molecule sideways into its twin isomer, and your nose smells fresh pine needles instead of oranges!",
+    "supportedToys": [
+      "TOY_09_SWITCHBOARD_PATCHBAY"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "patchbay": {
+      "callers": [
+        "Fresh sliced lemon",
+        "Warm vanilla bean",
+        "Crisp peppermint"
+      ],
+      "jacks": [
+        "Capsaicin",
+        "Limonene",
+        "Vanillin",
+        "Menthol"
+      ],
+      "correctMapping": [
+        1,
+        2,
+        3
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_06_caramelization_pure_sugar",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Unlike steak-searing Maillard browning, heating plain white table sugar solo past 320°F cracks sucrose into hundreds of nutty toffee flavors via what reaction?",
+    "choices": [
+      "Fermentation",
+      "Caramelization",
+      "Emulsification",
+      "Coagulation"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Odorless white sucrose transforms over heat into buttery diacetyl, toasty maltol, and nutty furans—built solely from carbon, hydrogen, and oxygen!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_07_cast_iron_polymerized_oil",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Glossy jet-black nonstick armor baked permanently onto a heavy cast-iron skillet—not leftover bacon grease at all, but superheated fat cross-linked into what coating?",
+    "choices": [
+      "Carbon graphite",
+      "Baked wax glaze",
+      "Polymerized oil",
+      "Iron oxide film"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "When thin oil coats smoking-hot iron, fat chains snap and link into a slick natural plastic—which is why gentle modern dish soap will NOT strip well-baked skillet seasoning!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_08_onion_tears_sulfuric_acid",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Slice a raw yellow onion and ruptured plant cells release volatile sulfur vapors that float straight into your damp eyes to form tiny stinging drops of what harsh acid?",
+    "choices": [
+      "Citric acid",
+      "Formic acid",
+      "Nitric acid",
+      "Sulfuric acid"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Chilling an onion for 20 minutes slows the tear-gas enzyme dramatically—and using a razor-sharp chef’s knife crushes far fewer plant cells than a dull blade!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_09_pure_gold_24_karats",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Bullion Wire: Because pure elemental gold is soft enough to dent with a fingernail, jewelers alloy it with copper or silver—measuring absolute 100% purity at [ _____ ].",
+    "choices": [
+      "24 karats",
+      "14 karats",
+      "18 karats",
+      "32 karats"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The number 24 hails from the medieval German gold Mark coin, which weighed exactly 24 carob seeds (karats)—so 18-karat jewelry is 18 parts gold and 6 parts tougher metal!",
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 24,
+      "min": 8,
+      "max": 36,
+      "step": 1,
+      "unit": "karats"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_10_myth_searing_seals_juices",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Test Kitchen Klaxon! Three of these wild food-chemistry rules are 100% lab-verified, while one famous chef mantra fails every weigh-in. Spot the myth!",
+    "choices": [
+      "Honey lasts thousands of years",
+      "Searing meat seals juices tight",
+      "Copper bowls fluff egg whites",
+      "Chilled onions sting eyes less"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Searing builds irresistible crispy Maillard flavor crust, NOT a waterproof wall—if steak sealed moisture inside, you wouldn’t hear sizzling steam escaping the pan!",
+    "cardStyle": "SPOT_THE_MYTH",
+    "sorter": {
+      "chuteALabel": "TRUE KITCHEN SCI",
+      "chuteBLabel": "COOKING MYTH",
+      "items": [
+        {
+          "label": "Honey lasts millennia",
+          "chute": 0
+        },
+        {
+          "label": "Searing traps meat juice",
+          "chute": 1
+        },
+        {
+          "label": "Copper aids egg foam",
+          "chute": 0
+        },
+        {
+          "label": "Pasta salt adds 20°F",
+          "chute": 1
+        },
+        {
+          "label": "Cold onions sting less",
+          "chute": 0
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_11_silica_gel_shoebox_beads",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Tiny glassy beads sealed inside crinkly paper pillows marked \"DO NOT EAT\" in brand-new shoeboxes, packed with millions of microscopic pores thirsty for stray humidity:",
+    "choices": [
+      "Epsom salt",
+      "Borax beads",
+      "Silica gel",
+      "Pumice dust"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Clear silica gel is chemically harmless sand—the \"DO NOT EAT\" label exists mainly as a choking safeguard and because blue indicator beads add cobalt!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_12_bin_fresh_vs_saltwater_freeze",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Set one mug of clear tap water and one mug of salty ocean water outside on a crisp 30°F (-1°C) porch: which mug turns into solid ice first?",
+    "choices": [
+      "Salty ocean seawater",
+      "Both freeze at exact 32°F",
+      "Saltwater freezes twice fast",
+      "Plain fresh tap water"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Dissolved sodium and chloride ions elbow their way between water molecules so they can’t lock into ice crystals—dropping seawater’s freezing point down to roughly 28.4°F!",
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_13_milk_casein_chili_burn",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Ice water just spreads oily habanero heat around your mouth—which fat-loving milk protein grabs spicy capsaicin like detergent and rinses the burn?",
+    "choices": [
+      "Milk casein",
+      "Milk lactose",
+      "Whey starch",
+      "Calcium salt"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Water and oily capsaicin repel each other, while milk’s casein wraps around spicy droplets like soap bubbles—making cold milk or yogurt the best firehose!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_14_neutral_water_ph_seven",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Chemistry Wire: Sitting midway between battery acid and drain cleaner on Søren Sørensen’s 1909 scale, pure distilled water scores a neutral [ _____ ].",
+    "choices": [
+      "pH 5",
+      "pH 7",
+      "pH 10",
+      "pH 14"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Sørensen invented the pH scale at Denmark’s Carlsberg Beer Lab to keep yeast brews steady—and every 1-point step shifts acidity tenfold!",
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 7,
+      "min": 0,
+      "max": 14,
+      "step": 1,
+      "unit": "pH"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_15_gluten_elastic_bread_mesh",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Wet wheat flour and knead briskly—two proteins called gliadin and glutenin link into stretchy balloons that trap yeast gas inside what dough mesh?",
+    "choices": [
+      "Starch",
+      "Pectin",
+      "Gluten",
+      "Gelatin"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Dry flour in the bag actually contains zero formed gluten—it only springs to life the moment water hydrates those twin proteins and kneading aligns them into elastic sheets!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_16_memory_foam_nasa_seats",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Press your palm into this buttery yellow mattress layer and lift away—your handprint lingers in slow motion thanks to a 1966 NASA shock-absorbing airplane seat foam:",
+    "choices": [
+      "Latex rubber",
+      "Styrofoam core",
+      "Neoprene pad",
+      "Memory foam"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Aeronautical engineer Charles Yost developed \"temper foam\" for NASA test-pilot cushions before hospitals adopted it to stop bedsores—and bedrooms everywhere caught on!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_17_myth_boiling_removes_lead",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Kitchen Lab Klaxon! Three of these everyday household chemistry nuggets are 100% legit science, while one home habit actually backfires. Spot the myth!",
+    "choices": [
+      "Boiling removes dissolved lead",
+      "Bananas emit ripening gas",
+      "Bleach breaks dye carbon bonds",
+      "Copper turns green in moist air"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Boiling kills bacteria and parasites, yet heavy lead never evaporates—so boiling water away actually CONCENTRATES more dissolved lead into every remaining cup!",
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_18_bin_metal_feels_colder_than_wood",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Touch a steel spoon and a wooden cutting board resting side-by-side in a 70°F kitchen: why does the spoon feel noticeably chillier against your fingertips?",
+    "choices": [
+      "Metal sits 10 degrees colder",
+      "Metal steals finger heat faster",
+      "Wood generates faint inner heat",
+      "Steel reflects room warmth away"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Both sit at the exact same 70°F—nerves feel heat LEAVING skin, and steel’s free electrons yank warmth out of your hand hundreds of times faster than wood!",
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_19_pectin_strawberry_jam_gel",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Simmer crushed berries with sugar and a squeeze of lemon juice, and which natural fruit-skin fiber links into a tangled microscopic net turning runny juice into glossy jam?",
+    "choices": [
+      "Casein",
+      "Tannin",
+      "Pectin",
+      "Inulin"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "That squeeze of lemon isn’t just for zing—acid neutralizes negative charges on pectin chains so they stop repelling each other and weave a firm jam matrix!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_20_atmosphere_78_percent_nitrogen",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Atmosphere Wire: Oxygen gets all the glory, yet roughly [ _____ ] of every lungful of dry Earth air you inhale is actually plain, unreactive nitrogen gas.",
+    "choices": [
+      "21 percent",
+      "52 percent",
+      "94 percent",
+      "78 percent"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "It’s a lucky thing nitrogen dilutes our atmosphere—if Earth’s air were pure oxygen, one single summer lightning bolt would turn damp forests into unstoppable blowtorches!",
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 78,
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "%"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_21_ferrofluid_spiky_magnet_oil",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Glossy black ink pooling calmly in a saucer—slide a strong magnet underneath and it instantly erupts into an alien hedgehog of razor-sharp glistening liquid spikes:",
+    "choices": [
+      "Ferrofluid",
+      "Mercury pool",
+      "Liquid crystal",
+      "Pitch bitumen"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "NASA’s Steve Papell invented ferrofluid in 1963 to steer rocket fuel in zero-G with magnets—today it cools high-end tweeter speakers and seals drives!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_22_tannins_dry_tea_wine_mouthfeel",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Over-steep a black tea bag—or sip a bold young Cabernet—and which astringent plant polyphenols bind right onto your slick saliva proteins to leave your tongue papery dry?",
+    "choices": [
+      "Terpenes",
+      "Tannins",
+      "Alkaloids",
+      "Saponins"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Plants brew bitter tannins to deter hungry bugs—and adding a splash of milk to strong British tea lets milk proteins soak up the tannins first so your sip feels silky smooth!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_23_galvanizing_zinc_sacrificial_coat",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Dip steel highway guardrails and fences into molten zinc—what sacrificial shielding process lets zinc corrode first so the iron stays rust-free?",
+    "choices": [
+      "Anodizing",
+      "Tempering",
+      "Galvanizing",
+      "Annealing"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Even if a highway guardrail gets deeply scratched down to bare steel, nearby zinc atoms still sacrifice their own electrons first to protect the exposed iron from rusting!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_24_celluloid_ivory_billiard_balls",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Billiards Wire, 1869: Chasing $10,000 to replace ivory pool balls, John Wesley Hyatt blended camphor and nitrocellulose into [ _____ ], an early plastic.",
+    "choices": [
+      "Phenolic Bakelite",
+      "Clear Cellophane",
+      "Molded Plexiglas",
+      "Celluloid"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Closely related to guncotton, early celluloid pool balls occasionally popped like firecrackers on hard breaks—making Colorado saloon patrons draw guns!",
+    "cardStyle": "HEADLINE_BLANK"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_25_photochromic_silver_halide_glasses",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Step outdoors into midday sun and self-tinting glass eyeglasses mysteriously turn into dark shades because UV light flips microscopic crystals of what light-sensitive salt?",
+    "choices": [
+      "Silver halides",
+      "Cobalt salts",
+      "Lead oxides",
+      "Nickel flakes"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Corning built photochromic lenses in the 1960s using film-style silver chemistry—except trapped inside glass, the silver snaps clear again indoors!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_26_myth_oxygen_burns_without_fuel",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Hazmat Lab Klaxon! Three of these wild element facts are 100% periodic-table truth, while one classic classroom belief flunks chemistry. Spot the myth!",
+    "choices": [
+      "Gallium melts in warm hands",
+      "Pure oxygen burns without fuel",
+      "Gold leaf passes safely eaten",
+      "Bromine stays liquid at 70°F"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Oxygen is an OXIDIZER, never a fuel—strike a spark inside a sealed steel tank of pure oxygen and nothing burns unless grease, metal, or cloth acts as fuel!",
+    "cardStyle": "SPOT_THE_MYTH",
+    "sorter": {
+      "chuteALabel": "TRUE ELEMENT FACT",
+      "chuteBLabel": "CHEM LAB MYTH",
+      "items": [
+        {
+          "label": "Gallium melts in palm",
+          "chute": 0
+        },
+        {
+          "label": "Pure O2 burns solo",
+          "chute": 1
+        },
+        {
+          "label": "Bromine is room liquid",
+          "chute": 0
+        },
+        {
+          "label": "Gold leaf is edible",
+          "chute": 0
+        },
+        {
+          "label": "Boiling removes lead",
+          "chute": 1
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_27_bin_burning_steel_wool_heavier",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Fluff a dry pad of fine steel wool on a kitchen scale and ignite it with a 9-volt battery: once the bright orange sparks fade, does the charred pad weigh MORE or LESS?",
+    "choices": [
+      "Weighs noticeably LESS",
+      "Exact same gram weight",
+      "Weighs noticeably MORE",
+      "Floats briefly upward"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Unlike wood that vents carbon dioxide away as smoke, glowing iron snatches oxygen atoms straight out of thin air and locks them onto the metal as heavier solid iron oxide!",
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_28_hand_warmer_sodium_acetate",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Clear flexible pouch of cool liquid holding a tiny steel clicker disc: flex the tab and snowy white crystals race across the bag, instantly heating to 130°F via what salt?",
+    "choices": [
+      "Calcium chloride",
+      "Ammonium nitrate",
+      "Barium sulfate",
+      "Sodium acetate"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The pouch holds supersaturated vinegar-salt liquid storing trapped heat—boiling the solid puck resets it clear so you can click it warm all winter!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_29_mercaptan_natural_gas_odor",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Pure natural gas piped to home stoves has zero scent—so after a tragic 1937 Texas school blast, utilities began spiking pipelines with what skunk-like sulfur alarm chemical?",
+    "choices": [
+      "Mercaptan",
+      "Formalin",
+      "Camphor",
+      "Ammonia"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Human noses are exquisitely tuned to sulfur—we detect tert-butyl mercaptan below ONE part per billion, like smelling a single drop in an Olympic pool!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_30_periodic_table_118_elements",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "IUPAC Wire, 2016: With the official naming of nihonium, moscovium, tennessine, and oganesson, the seventh full row of the periodic table locked neatly at [ _____ ].",
+    "choices": [
+      "104 elements",
+      "118 elements",
+      "112 elements",
+      "126 elements"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Only the first 94 elements occur naturally in trace or bulk amounts on Earth—everything from 95 (americium) to 118 (oganesson) was forged atom-by-atom inside nuclear labs!",
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 118,
+      "min": 90,
+      "max": 140,
+      "step": 1,
+      "unit": "elements"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_31_dry_erase_silicone_polymer",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Why does permanent marker cling to a whiteboard while dry-erase ink wipes clean? Dry-erase blends pigment with what slippery nonstick release agent?",
+    "choices": [
+      "Refined paraffin wax",
+      "Boiled linseed resin",
+      "Silicone polymer",
+      "Liquid glycerin soap"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Classroom rescue trick: scribble over accidental Sharpie with a dry-erase pen! Its alcohol solvent dissolves the permanent ink so both wipe off together!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_32_sugar_glass_stunt_bottles",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Crystal-clear Hollywood saloon bottles that shatter into harmless sparkly dust over a stuntman’s head—poured from hot melted sucrose and corn syrup instead of silica sand:",
+    "choices": [
+      "Flint glass",
+      "Crown glass",
+      "Lead crystal",
+      "Sugar glass"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Prop makers had to store old sugar-glass bottles in dry cases because humid studio air turned them sticky—and sneaky actors occasionally nibbled broken shards between takes!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_33_tritium_glowing_watch_tubes",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Replacing hazardous radium paint on military dive watches and exit signs, which triple-heavy hydrogen isotope glows non-stop for over a decade inside phosphor glass vials?",
+    "choices": [
+      "Tritium gas",
+      "Deuterium oil",
+      "Krypton vapor",
+      "Cesium salt"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Tritium emits gentle beta electrons too weak to pierce paper or human skin—yet energetic enough to light green phosphor tubes for twelve straight years!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_34_myth_pasta_salt_20_degrees",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Chemistry Klaxon! Three of these surprising material facts hold true under lab instruments, while one classic kitchen claim exaggerates wildly. Spot the myth!",
+    "choices": [
+      "Steel oxide self-heals in air",
+      "Pasta salt adds 20°F to boil",
+      "Water expands 9% into ice",
+      "Pure gold is softer than nails"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Adding a big tablespoon of salt to a gallon of water lifts its boiling point by under 0.2°F—chefs salt pasta water purely for delicious flavor!",
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_35_bin_cold_soda_holds_more_fizz",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Crack open two identical cans of cola—one chilled from the fridge, one heated in a summer car trunk: which keeps fizzy CO2 gas dissolved better?",
+    "choices": [
+      "The warm trunk cola",
+      "Both hold exact same fizz",
+      "The frosty cold cola",
+      "Warm cola traps extra CO2"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Unlike sugar, gases grow LESS soluble as water warms—why warm soda erupts in foam on opening and frigid polar oceans soak up more CO2 than warm seas!",
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_36_salar_de_uyuni_lithium_bolivia",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Battery Wire: Stretching 4,000 square miles across the high Andes, the blinding mirror-flat crust of Bolivia’s [ _____ ] hides one of Earth’s largest lithium brine reserves.",
+    "choices": [
+      "Atacama Basin",
+      "Lake Titicaca",
+      "Patagonian Flats",
+      "Salar de Uyuni"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "After a thin rain, Salar de Uyuni turns into Earth’s biggest natural sky mirror—so perfectly flat that NASA actually uses it to calibrate orbiting satellite altimeters!",
+    "cardStyle": "HEADLINE_BLANK",
+    "geo": {
+      "lat": -20.1338,
+      "lng": -67.4891,
+      "landmarkLabel": "Salar de Uyuni Salt Flat",
+      "regionHint": "Southwest Bolivia"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_37_davy_safety_lamp_wire_gauze",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Brass 1815 coal-miner’s oil lantern wrapped tightly inside a cylinder of fine woven copper wire gauze—cooling any flame so explosive mine methane outside stays unlit:",
+    "choices": [
+      "Davy safety lamp",
+      "Bunsen burner",
+      "Carbide beacon",
+      "Arc miner torch"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Not only did copper mesh halt blasts—if the inner flame stretched taller with a blue halo, miners knew deadly methane gas was creeping into the tunnel!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_38_eutectic_alloy_sprinkler_fuse",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Blend bismuth, lead, tin, and cadmium—metals needing huge heat solo—and suddenly their mix melts in hot tea at 158°F inside fire sprinklers as:",
+    "choices": [
+      "Amorphous steel",
+      "Eutectic alloy",
+      "Noble amalgam",
+      "Shape ceramic"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Chemists pull pranks with eutectic teaspoons that look like solid silver until they melt straight into a puddle at the bottom of a guest’s hot coffee!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_39_ostwald_ripening_freezer_ice_cream",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 5,
+    "stem": "Why does creamy ice cream left in the freezer for two months turn crunchy without thawing? Tiny ice crystals dissolve onto big jagged ones via:",
+    "choices": [
+      "Zone refining",
+      "Cold sintering",
+      "Ostwald ripening",
+      "Crystal creep"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Tiny curved crystals carry higher surface energy than big smooth ones, so water steadily migrates onto giant grains—the exact science of freezer burn!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_che_40_bin_helium_balloon_deflates_fast",
+    "category": "CHEMISTRY",
+    "domain": "SCI_TECH",
+    "difficulty": 5,
+    "stem": "Tie off two identical latex party balloons—one filled with plain breath, one with helium: by the next morning the helium balloon has sagged half-empty because why?",
+    "choices": [
+      "Helium cools and shrinks overnight",
+      "Latex chemically absorbs helium",
+      "Ceiling air crushes the top dome",
+      "Tiny helium slips right through latex"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Single helium atoms are so tiny compared to paired nitrogen and oxygen that they slip straight through invisible latex pores—why Mylar foil lasts weeks!",
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_01_bal_neck_hand_bones_34",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Skeleton tally! Hit 34 human bones by pairing the cervical vertebrae supporting your neck with every tiny bone packed inside a single human hand:",
+    "choices": [
+      "Neck vertebrae + Bones in 1 hand",
+      "Rib pairs + Bones in 1 hand",
+      "Ear bones (1 side) + Bones in 1 hand",
+      "Neck vertebrae + Rib pairs"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Almost every mammal—from tiny field mice to towering giraffes—shares those exact 7 neck vertebrae, while each human hand packs 27 dexterous bones!",
+    "supportedToys": [
+      "TOY_04_BALANCE_SCALE"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "balance": {
+      "unit": "bones",
+      "targetSum": 34,
+      "weights": [
+        {
+          "label": "Ear bones (1 side)",
+          "value": 3
+        },
+        {
+          "label": "Neck vertebrae",
+          "value": 7
+        },
+        {
+          "label": "Rib pairs",
+          "value": 12
+        },
+        {
+          "label": "Bones in 1 hand",
+          "value": 27
+        },
+        {
+          "label": "Full adult body",
+          "value": 206
+        }
+      ],
+      "validPair": [
+        1,
+        3
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_02_bal_lifetime_teeth_52",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Dentist’s chart check! Hit 52 lifetime human teeth by pairing a toddler’s complete baby set with a full adult mouth including wisdom teeth:",
+    "choices": [
+      "Chromosome pairs + Full adult teeth",
+      "Baby milk teeth + Full adult teeth",
+      "Baby milk teeth + Chromosome pairs",
+      "Human lung lobes + Full adult teeth"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Humans grow just two lifetime sets (20 baby + 32 permanent = 52)—whereas sharks cycle through conveyor belts shedding up to 30,000 teeth over a lifetime!",
+    "supportedToys": [
+      "TOY_04_BALANCE_SCALE"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "balance": {
+      "unit": "count",
+      "targetSum": 52,
+      "weights": [
+        {
+          "label": "Heart chambers",
+          "value": 4
+        },
+        {
+          "label": "Human lung lobes",
+          "value": 5
+        },
+        {
+          "label": "Baby milk teeth",
+          "value": 20
+        },
+        {
+          "label": "Chromosome pairs",
+          "value": 23
+        },
+        {
+          "label": "Full adult teeth",
+          "value": 32
+        }
+      ],
+      "validPair": [
+        2,
+        4
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_03_bal_cranial_chromosomes_35",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Anatomy bench check! Hit 35 paired structures by combining the cranial nerves branching from your brain with the chromosome pairs inside each cell:",
+    "choices": [
+      "Classic senses + Chromosome pairs",
+      "Heart valves + Chromosome pairs",
+      "Cranial nerves + Chromosome pairs",
+      "Cranial nerves + Classic senses"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Med students memorize all 12 cranial nerves with cheeky rhymes—from smell (I) and vision (II) down to the wandering vagus nerve (X)!",
+    "supportedToys": [
+      "TOY_04_BALANCE_SCALE"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "balance": {
+      "unit": "pairs",
+      "targetSum": 35,
+      "weights": [
+        {
+          "label": "Eye color cones",
+          "value": 3
+        },
+        {
+          "label": "Heart valves",
+          "value": 4
+        },
+        {
+          "label": "Classic senses",
+          "value": 5
+        },
+        {
+          "label": "Cranial nerves",
+          "value": 12
+        },
+        {
+          "label": "Chromosome pairs",
+          "value": 23
+        }
+      ],
+      "validPair": [
+        3,
+        4
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_04_pat_accidental_breakthroughs",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Plug three world-changing medical breakthroughs straight into the lucky lab accident that sparked them—leave the extra decoy jack UNPLUGGED!",
+    "choices": [
+      "Messy petri dish",
+      "Glowing cathode tube",
+      "Wrong resistor grab",
+      "Boiling willow tea"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "In 1956, Wilson Greatbatch grabbed a 1-megaohm resistor by mistake while building a heart recorder—and watched his circuit tick like a human pulse!",
+    "supportedToys": [
+      "TOY_09_SWITCHBOARD_PATCHBAY"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "patchbay": {
+      "callers": [
+        "Penicillin mold",
+        "X-ray shadow plates",
+        "Cardiac pacemaker"
+      ],
+      "jacks": [
+        "Messy petri dish",
+        "Glowing cathode tube",
+        "Wrong resistor grab",
+        "Boiling willow tea"
+      ],
+      "correctMapping": [
+        0,
+        1,
+        2
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_05_pat_body_quirk_triggers",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Wire three everyday human body quirks straight to the hidden anatomy behind them—leave the extra decoy jack UNPLUGGED!",
+    "choices": [
+      "Kidney filter loop",
+      "Spasming diaphragm",
+      "Tiny hair muscles",
+      "Eustachian tube"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Goosebumps are a furry-mammal leftover—tiny arrector pili muscles once puffed up our ancestors’ thick body fur to trap extra warmth or look bigger to predators!",
+    "supportedToys": [
+      "TOY_09_SWITCHBOARD_PATCHBAY"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "patchbay": {
+      "callers": [
+        "Sudden hiccup jolt",
+        "Goosebump spikes",
+        "Airplane ear pop"
+      ],
+      "jacks": [
+        "Kidney filter loop",
+        "Spasming diaphragm",
+        "Tiny hair muscles",
+        "Eustachian tube"
+      ],
+      "correctMapping": [
+        1,
+        2,
+        3
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_06_pat_vitamin_shortage_diseases",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Patch three historic vitamin deficiencies straight to the illness they triggered—leave the extra decoy jack UNPLUGGED!",
+    "choices": [
+      "Sailor’s scurvy",
+      "Tick Lyme rash",
+      "Soft-bone rickets",
+      "Nerve beriberi"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 0,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Biochemist Casimir Funk coined \"vitamine\" in 1912 after brown rice husks cured beriberi—dropping the \"e\" once labs proved not all vitamins are amines!",
+    "supportedToys": [
+      "TOY_09_SWITCHBOARD_PATCHBAY"
+    ],
+    "cardStyle": "CLASSIC_CUE",
+    "patchbay": {
+      "callers": [
+        "Missing Vitamin C",
+        "Missing Vitamin D",
+        "Missing Vitamin B1"
+      ],
+      "jacks": [
+        "Sailor’s scurvy",
+        "Tick Lyme rash",
+        "Soft-bone rickets",
+        "Nerve beriberi"
+      ],
+      "correctMapping": [
+        0,
+        2,
+        3
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_07_bandaid_earle_dickson_1920",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "In 1920, Johnson & Johnson cotton buyer Earle Dickson pre-stuck gauze pads onto adhesive tape so his wife Josephine could dress kitchen cuts one-handed—inventing what staple?",
+    "choices": [
+      "Ace bandage",
+      "Liquid skin",
+      "The Band-Aid",
+      "Gauze sling"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Sales dragged at first until the company mailed free samples to Boy Scout troops nationwide—turning Dickson’s kitchen love-letter into over 100 billion sticky strips!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_08_snellen_eye_chart_big_e",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Crisp white wall poster topped by one towering capital letter \"E\" shrinking row by row down to pinpoint print—created in 1862 by a Dutch eye doctor to measure 20/20 clarity:",
+    "choices": [
+      "Ishihara plate",
+      "Rorschach card",
+      "Apgar grid",
+      "Snellen chart"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Herman Snellen drew each letter on a strict 5×5 grid—\"20/20\" isn’t superhuman, just reading at 20 feet what healthy eyes should see at 20 feet!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_09_brain_freeze_palate_nerve",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Gulp an icy slushie too fast and rapid chilling of blood vessels along your upper palate fools a shared facial nerve into firing a stabbing forehead twinge nicknamed what?",
+    "choices": [
+      "Brain freeze",
+      "Sinus bounce",
+      "Cold cluster",
+      "Vagal pinch"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Doctors dub it \"sphenopalatine ganglioneuralgia\"—and pressing your warm flat tongue firmly against your palate quickly thaws those chilled arteries!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_10_adult_skeleton_206_bones",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Skeleton Wire: Babies enter the world with roughly 270 soft flexible bones, yet by adulthood dozens fuse tightly together leaving an adult skeleton of exactly [ _____ ].",
+    "choices": [
+      "154 bones",
+      "206 bones",
+      "248 bones",
+      "312 bones"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Over HALF of all 206 bones in your entire body live purely in your hands, wrists, ankles, and feet—106 tiny precision levers built for texting and sprinting!",
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 206,
+      "min": 120,
+      "max": 340,
+      "step": 2,
+      "unit": "bones"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_11_myth_half_heat_escapes_head",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Clinic Klaxon! Three of these wild human-body measurements are 100% genuine anatomy, while one famous cold-weather rule came from a flawed test. Spot the myth!",
+    "choices": [
+      "Hearts beat ~100,000x each day",
+      "Fingernails outgrow toenails",
+      "Half your heat flees your head",
+      "Tongue prints are each unique"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Soldiers in that 1950s Arctic test wore thick parkas everywhere EXCEPT their bare heads—an uncovered head actually leaks only ~10% of body heat!",
+    "cardStyle": "SPOT_THE_MYTH",
+    "sorter": {
+      "chuteALabel": "TRUE BODY FACT",
+      "chuteBLabel": "HEALTH MYTH",
+      "items": [
+        {
+          "label": "Hearts beat 100K/day",
+          "chute": 0
+        },
+        {
+          "label": "50% heat leaves head",
+          "chute": 1
+        },
+        {
+          "label": "Fingernails beat toes",
+          "chute": 0
+        },
+        {
+          "label": "Tilt back nosebleeds",
+          "chute": 1
+        },
+        {
+          "label": "Tongue prints unique",
+          "chute": 0
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_12_ishihara_color_dot_plates",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Circular mosaic bursting with pastel red, tangerine, and mossy-green polka dots concealing a bold secret numeral inside—invented in 1917 Tokyo to screen color vision:",
+    "choices": [
+      "Snellen sheet",
+      "Turing matrix",
+      "Rorschach blot",
+      "Ishihara test"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Dr. Shinobu Ishihara hand-painted the original watercolor plates—and clever \"transformation plates\" reveal a totally different numeral to colorblind eyes!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_13_bin_heart_center_chest_position",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Everyone puts their hand far left during the anthem—yet inside your actual ribcage, where does your beating human heart truly sit?",
+    "choices": [
+      "Center chest, tilted slightly left",
+      "Tucked far under your left armpit",
+      "Right behind your left shoulder",
+      "Resting low near your left hip"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Your heart sits right behind your center breastbone between both lungs—its muscular tip just leans slightly left, carving a neat notch in the left lung!",
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_14_placebo_effect_sugar_pill",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Hand volunteers an inert sugar pill in an official box and their brains genuinely release pain-numbing endorphins—what quirk demands double-blind trials?",
+    "choices": [
+      "Halo reflex",
+      "Placebo effect",
+      "Pavlov loop",
+      "Somatic echo"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Wildly, studies show bigger pills, brand stamps, and TWO sugar pills boost the placebo effect further—and red pills feel peppy while blue feels calming!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_15_human_46_chromosomes_1956",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 1,
+    "stem": "Genetics Wire, 1956: After decades of textbooks wrongly printing 48, Joe Hin Tjio photographed crisp spread cells proving humans actually carry [ _____ ].",
+    "choices": [
+      "28 chromosomes",
+      "64 chromosomes",
+      "46 chromosomes",
+      "92 chromosomes"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Great apes really DO carry 48 chromosomes—somewhere in human evolution, two ancestral ape chromosomes fused end-to-end into our giant Chromosome 2!",
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 46,
+      "min": 16,
+      "max": 100,
+      "step": 2,
+      "unit": "chromosomes"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_16_pruney_fingers_wet_grip",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Surprise twist: bath-soaked fingertips don’t wrinkle from passively soaking up water—your nervous system actively folds them into rain-tire grooves for what clever advantage?",
+    "choices": [
+      "Faster body cooling",
+      "Blocking bath soap",
+      "Trapping skin salt",
+      "Better wet grip"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Patients with severed finger nerves never prune in water, proving it’s an active nerve reflex—and wet wrinkled fingers grip slick marbles measurably faster!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_17_taylor_reflex_hammer_knee",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Triangular cherry-red rubber tomahawk mounted on a slim chrome handle: doctors tap right below your kneecap to fire a spinal-cord kick before your brain even gets the memo!",
+    "choices": [
+      "Reflex hammer",
+      "Tuning fork",
+      "Otoscope wand",
+      "Speculum clip"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Philadelphia doctor John Madison Taylor shaped that iconic tomahawk in 1888—and the knee-jerk loop fires straight through the spinal cord in 50 milliseconds!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_18_myth_tilt_head_back_nosebleed",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "First-Aid Klaxon! Three of these startling human-anatomy facts are 100% doctor-approved truth, while one common home remedy does it backward. Spot the myth!",
+    "choices": [
+      "Babies lack bony kneecaps",
+      "Tilt head back for nosebleeds",
+      "Corneas pull oxygen from air",
+      "Sneezes fling mist 20+ feet"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 3,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Tilting backward drains blood down your throat and upsets your stomach—doctors advise leaning slightly FORWARD while pinching the soft lower nostrils!",
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_19_bin_taller_in_morning_spine",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Mark your height on a doorframe right out of bed versus right before sleep: why are you genuinely up to half an inch taller every single morning?",
+    "choices": [
+      "Leg bones stretch in warm beds",
+      "Foot arches flatten overnight",
+      "Spinal discs re-plump overnight",
+      "Morning posture locks the knees"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Gravity squeezes fluid from the spongy cartilage discs between your vertebrae all day—lying flat overnight lets those cushions rehydrate and plump back up!",
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_20_circadian_rhythm_jet_lag",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Jet lag clobbers travelers crossing six time zones because a pea-sized cluster of 20,000 brain neurons keeps running your body’s 24-hour sleep-wake clock—known as what cycle?",
+    "choices": [
+      "Ultradian pulse",
+      "Homeostatic loop",
+      "Metabolic tide",
+      "Circadian rhythm"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "From Latin \"circa diem\" (around a day), your internal clock runs just over 24 hours—so morning light resets it daily, making westbound flights feel easier!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_21_dna_double_helix_1953",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Cambridge Wire: Guided by Rosalind Franklin’s crisp Photo 51 X-ray cross, biologists published the iconic twisted-ladder double helix of DNA in April [ _____ ].",
+    "choices": [
+      "1953",
+      "1928",
+      "1941",
+      "1966"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Watson and Crick’s Nature paper was barely ONE page long—closing with history’s cheekiest understatement that the helix \"suggests a copying mechanism\"!",
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 1953,
+      "min": 1910,
+      "max": 1980,
+      "step": 1,
+      "unit": "year"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_22_sphygmomanometer_arm_cuff",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Velcro sleeve wrapped snugly around your upper arm and pumped tight with a black rubber bulb while a clinician listens for rhythmic artery thumps: name this tongue-twister!",
+    "choices": [
+      "Lung spirometer tube",
+      "Sphygmomanometer",
+      "Optical pulse monitor",
+      "Electrocardiograph"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 0,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Scipione Riva-Rocci built the inflatable arm cuff in 1896, and Nikolai Korotkoff added the stethoscope trick in 1905 to hear both top and bottom pressures!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_23_phantom_limb_mirror_box",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "Amputees can feel a vivid itch or cramp in a missing hand—what startling brain-map quirk did V.S. Ramachandran soothe using a simple tabletop mirror box?",
+    "choices": [
+      "Split brain",
+      "Bell’s palsy",
+      "Phantom limb",
+      "Locked-in state"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "When a patient watches their remaining hand unclench inside the mirror, visual feedback tricks the brain’s motor cortex into finally releasing the frozen \"phantom\" cramp!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_24_nitrous_oxide_horace_wells_1844",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 2,
+    "stem": "In 1844, dentist Horace Wells saw a carnival volunteer gash his shin under giggly fumes and feel zero pain—testing what gas on his own molar the next day?",
+    "choices": [
+      "Chloroform mist",
+      "Phenol spray",
+      "Carbolic vapor",
+      "Nitrous oxide"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Wells inhaled a leather bag of laughing gas while a partner yanked his molar—waking up thrilled to declare, \"It did not hurt so much as the prick of a pin!\"",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_25_pulse_oximeter_fingertip_clip",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Clipped painlessly onto a hospital patient’s fingertip, which glowing red-and-infrared sensor clocks blood oxygen in seconds without drawing any blood?",
+    "choices": [
+      "Pulse oximeter",
+      "Capnograph clip",
+      "Hematocrit gun",
+      "Glucometer tip"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Oxygen-rich blood glows bright cherry red while oxygen-poor blood looks darker—engineer Takuo Aoyagi turned that color pulse into a fingertip clip in 1974!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_26_myth_yawning_low_oxygen",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Medical Rounds Klaxon! Three of these bizarre hospital and body facts are 100% real physiology, while one classic classroom explanation fails lab tests. Spot the myth!",
+    "choices": [
+      "Hospitals still use live leeches",
+      "Yawning cures low blood oxygen",
+      "Livers regrow from one quarter",
+      "Nostrils swap airflow shifts"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Volunteers breathing extra carbon dioxide or pure oxygen barely yawned differently—research now links yawning to brain cooling and social empathy!",
+    "cardStyle": "SPOT_THE_MYTH",
+    "sorter": {
+      "chuteALabel": "TRUE MED FACT",
+      "chuteBLabel": "BODY MYTH",
+      "items": [
+        {
+          "label": "FDA clears live leeches",
+          "chute": 0
+        },
+        {
+          "label": "Yawns cure low oxygen",
+          "chute": 1
+        },
+        {
+          "label": "Livers regrow 75% back",
+          "chute": 0
+        },
+        {
+          "label": "Nostrils trade turns",
+          "chute": 0
+        },
+        {
+          "label": "People are left-brained",
+          "chute": 1
+        }
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_27_bin_recorded_voice_skull_bass",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Hit play on your own voicemail greeting and you instantly cringe at how thin and squeaky you sound: why does your voice sound so much richer inside your own head live?",
+    "choices": [
+      "Microphones clip low baritone",
+      "Eardrums mute your own speech",
+      "Skull bones add deep bass tones",
+      "Room echoes boost treble only"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Live speech reaches your inner ear through TWO paths—air AND bone conduction straight through your jaw and skull, which warmly amplifies deep bass notes nobody else hears!",
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_28_iron_lung_polio_chamber",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Gleaming steel cylinder enclosing a patient from neck to toe like a submarine hull, cycling air pressure to expand paralyzed polio chests in 1950s wards:",
+    "choices": [
+      "Hyperbaric pod",
+      "Dialysis tank",
+      "Oxygen tent",
+      "Iron lung"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Harvard engineers built the first version in 1928 with two household vacuum blowers—and dedicated polio survivors lived full lives and careers inside them!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_29_photic_sneeze_sunlight_achoo",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Walk out of a dark movie theater into bright noon sunshine and one in four people immediately lets out a loud achoo—name this crossed-wire optic quirk!",
+    "choices": [
+      "Photic sneeze",
+      "Ocular tic",
+      "Solar vertigo",
+      "Vagal blink"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Geneticists gave this inherited trait the cheeky backronym \"ACHOO syndrome\"—Aristotle noticed it 2,300 years ago, and jet-pilot trainers still screen for it!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_30_red_blood_cell_120_days",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Hematology Wire: Squeezing through hair-thin capillaries nonstop, each hardworking red blood cell survives roughly [ _____ ] before your spleen recycles it.",
+    "choices": [
+      "14 days",
+      "120 days",
+      "45 days",
+      "365 days"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "To keep pace with that 120-day turnover, your bone marrow manufactures more than TWO MILLION brand-new red blood cells every single second you’re alive!",
+    "cardStyle": "HEADLINE_BLANK",
+    "numeric": {
+      "target": 120,
+      "min": 10,
+      "max": 400,
+      "step": 5,
+      "unit": "days"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_31_willem_kolff_dialysis_sausage_casing",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "In 1943 occupied Holland, doctor Willem Kolff wired sausage casings, juice cans, and a laundry washer tub together to invent the first lifesaving what?",
+    "choices": [
+      "Heart-lung pump",
+      "Insulin syringe",
+      "Dialysis machine",
+      "Anesthesia rig"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "After 15 tragic failures, Kolff’s 16th patient—a 67-year-old woman in kidney failure—woke up after eleven hours on his sausage-casing drum and lived 7 more years!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_32_eye_floaters_vitreous_shadows",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 3,
+    "stem": "Translucent little cobwebs and beaded squiggles drifting lazily across your view against a bright blue sky—and darting away the split second you try to look straight at them:",
+    "choices": [
+      "Retinal sparks",
+      "Optic halos",
+      "Corneal rings",
+      "Eye floaters"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Romans called them \"flying flies\"—they’re microscopic collagen threads drifting inside your eyeball’s clear jelly, casting soft shadows onto your retina!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_33_proprioception_eyes_closed_nose",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Shut your eyes in a pitch-black room and touch your fingertip cleanly to your nose—which unsung muscle-and-joint feedback sense tracks limbs without sight?",
+    "choices": [
+      "Proprioception",
+      "Nociception",
+      "Interoception",
+      "Equilibrioception"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Stretch sensors in muscles and tendons stream live 3D coordinates to your cerebellum—which is why roadside tests check nose-touching when alcohol dulls it!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_34_framingham_heart_study_1948",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Cardiology Wire, 1948: Tracking 5,000 residents across three generations, the landmark study in [ _____ ], Massachusetts first linked smoking to heart disease.",
+    "choices": [
+      "Worcester",
+      "Framingham",
+      "Springfield",
+      "Cambridge"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Before Framingham researchers coined \"risk factor\" in 1961, many physicians thought clogged arteries and high blood pressure were just unavoidable bad luck!",
+    "cardStyle": "HEADLINE_BLANK",
+    "geo": {
+      "lat": 42.2793,
+      "lng": -71.4162,
+      "landmarkLabel": "Framingham Heart Study",
+      "regionHint": "Massachusetts, USA"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_35_myth_strictly_left_brained",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Neurology Klaxon! Three of these startling human-body truths are 100% surgical reality, while one popular personality claim fails every fMRI scan. Spot the myth!",
+    "choices": [
+      "Brain tissue feels zero pain",
+      "Small intestines span ~20 feet",
+      "People are strictly left-brained",
+      "Stomach linings renew in days"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Brain scans of over 1,000 volunteers proved BOTH hemispheres fire tightly across math, language, and art—nobody is measurably \"left-brained\" or \"right-brained\"!",
+    "cardStyle": "SPOT_THE_MYTH"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_36_synesthesia_hearing_colors",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "For roughly 4% of people—including Franz Liszt and Pharrell Williams—hearing a C-sharp trumpet splashes vivid emerald across their mind’s eye via what trait?",
+    "choices": [
+      "Prosopagnosia",
+      "Aphantasia",
+      "Alexithymia",
+      "Synesthesia"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Some synesthetes even taste words—a rare cross-wiring where simply hearing a common noun like \"prison\" reliably tastes like cold hard-boiled bacon!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_37_bin_red_blood_cells_no_dna",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Crime dramas love pulling genetic profiles from a single drop of blood—yet do your mature, oxygen-carrying red blood cells actually hold any nuclear DNA inside?",
+    "choices": [
+      "No, they eject their nucleus",
+      "Yes, double copies per cell",
+      "Only inside type-O donors",
+      "Only during infant growth"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Mammal red blood cells eject their nucleus to pack maximum hemoglobin—so crime labs actually extract blood DNA solely from the sparse white blood cells!",
+    "cardStyle": "BINARY_SPLIT"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_38_mcgurk_effect_lips_vs_audio",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 4,
+    "stem": "Play crisp audio saying \"ba-ba\" while watching video of lips silently mouthing \"ga-ga,\" and your brain invents a phantom \"da-da\" nobody ever spoke—known as what illusion?",
+    "choices": [
+      "Stroop effect",
+      "McGurk effect",
+      "Shepard tone",
+      "Troxler fade"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Harry McGurk and John MacDonald stumbled onto this in 1976 when a lab tech accidentally dubbed the wrong audio syllable onto a silent lip-reading tape!",
+    "cardStyle": "CLASSIC_CUE"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_39_cortical_homunculus_penfield",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 5,
+    "stem": "Lopsided clay sculpture by neurosurgeon Wilder Penfield with giant hands, lips, and tongue atop a tiny torso—mapping how much brain space each sense claims:",
+    "choices": [
+      "Victorian phrenology",
+      "Vesalius woodcut map",
+      "Cortical homunculus",
+      "Anatomical ecorche"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Penfield mapped that famous \"little man\" in Montreal during awake brain surgeries—gently tapping cortex zones while alert patients felt tingling lips or thumbs!",
+    "cardStyle": "PICTURE_MONITOR"
+  },
+  {
+    "canonicalEntityKey": "w4_sci_med_40_chronostasis_stopped_clock_illusion",
+    "category": "MEDICINE",
+    "domain": "SCI_TECH",
+    "difficulty": 5,
+    "stem": "Glance up at a ticking wall clock and its second hand eerily seems to freeze over a full second—because your brain backdates vision to erase blur in what glitch?",
+    "choices": [
+      "Presbyopia",
+      "Nystagmus",
+      "Scotoma lag",
+      "Chronostasis"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Without this clever mental time-edit—called saccadic masking—every rapid flick of your eyes would make daily life look like a nauseating, shaky handheld camcorder!",
+    "cardStyle": "CLASSIC_CUE"
+  }
+]

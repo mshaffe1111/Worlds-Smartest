@@ -59,7 +59,8 @@
   inset: 0;
   width: 100vw;
   height: 100dvh;
-  z-index: 58;
+  /* Sit cleanly above StudioBroadcastVfxV7 confetti canvas (z-index: 85) and below live toasts (140) */
+  z-index: 92;
   pointer-events: none;
   font-family: var(--wst7-font-body);
   font-size: 15px;
@@ -94,20 +95,27 @@
   overscroll-behavior: contain;
 }
 
-/* Shared #11 Warm 2700K Incandescent Marquee Chaser Bulbs */
+/* Shared #11 Warm 2700K Incandescent Marquee Chaser Bulbs & Halo Blooms */
 .wst7-bulb-dot {
   animation: wst7-bulb-chase 0.96s steps(1, end) infinite;
 }
 
-.wst7-bulb-dot.wst7-c0 {
+.wst7-bulb-halo {
+  animation: wst7-bulb-halo-chase 0.96s steps(1, end) infinite;
+}
+
+.wst7-bulb-dot.wst7-c0,
+.wst7-bulb-halo.wst7-c0 {
   animation-delay: 0s;
 }
 
-.wst7-bulb-dot.wst7-c1 {
+.wst7-bulb-dot.wst7-c1,
+.wst7-bulb-halo.wst7-c1 {
   animation-delay: 0.32s;
 }
 
-.wst7-bulb-dot.wst7-c2 {
+.wst7-bulb-dot.wst7-c2,
+.wst7-bulb-halo.wst7-c2 {
   animation-delay: 0.64s;
 }
 
@@ -128,8 +136,10 @@
 }
 
 .wst7-curtain-backdrop[data-exiting='true'],
-.wst7-bargain-backdrop[data-exiting='true'] {
-  animation: wst7-backdrop-out 0.2s ease-in forwards;
+.wst7-bargain-backdrop[data-exiting='true'],
+.wst7-wheel-backdrop[data-exiting='true'],
+.wst7-gremlin-backdrop[data-exiting='true'] {
+  animation: wst7-backdrop-out 0.18s ease-in forwards;
 }
 
 .wst7-curtain-proscenium {
@@ -478,56 +488,200 @@
   height: 100%;
   position: relative;
   background:
-    linear-gradient(180deg, rgba(6, 14, 24, 0.32) 0%, transparent 18%, transparent 86%, var(--wst7-gold) 94%, var(--wst7-gold-bright) 100%),
+    linear-gradient(
+      180deg,
+      rgba(6, 14, 24, 0.4) 0%,
+      rgba(255, 232, 168, 0.12) 18%,
+      transparent 48%,
+      rgba(255, 206, 98, 0.16) 84%,
+      var(--wst7-gold) 93%,
+      var(--wst7-gold-bright) 97%,
+      var(--wst7-gold-deep) 100%
+    ),
     repeating-linear-gradient(
       90deg,
       var(--wst7-drape-lo) 0px,
-      var(--wst7-drape-mid) 7px,
-      var(--wst7-drape-hi) 13px,
-      var(--wst7-drape-mid) 19px,
-      var(--wst7-drape-lo) 26px
+      var(--wst7-drape-mid) 5px,
+      var(--wst7-drape-hi) 11px,
+      rgba(255, 242, 210, 0.22) 13px,
+      var(--wst7-drape-mid) 18px,
+      var(--wst7-drape-lo) 24px
     );
-  box-shadow: inset 0 -6px 12px rgba(4, 10, 18, 0.45);
+  box-shadow:
+    inset 0 -8px 16px rgba(4, 10, 18, 0.48),
+    inset 0 6px 12px rgba(4, 10, 18, 0.35);
   transition:
-    transform 0.46s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 0.2s ease;
+    transform 0.52s cubic-bezier(0.22, 1.06, 0.32, 1),
+    filter 0.22s ease;
 }
 
 .wst7-drape-left {
   z-index: 2;
   transform-origin: left top;
-  border-right: 2px solid rgba(255, 217, 102, 0.72);
+  border-right: 2.5px solid rgba(255, 217, 102, 0.84);
 }
 
 .wst7-drape-right {
   z-index: 1;
   transform-origin: right top;
   margin-left: -4%;
-  border-left: 2px solid rgba(255, 217, 102, 0.72);
+  border-left: 2.5px solid rgba(255, 217, 102, 0.84);
+}
+
+/* Gold Bullion Tassel Tieback Cords on Velvet Curtains */
+.wst7-drape-tassel {
+  position: absolute;
+  top: 56%;
+  width: 14px;
+  height: 28px;
+  border-radius: 6px 6px 10px 10px;
+  background: linear-gradient(180deg, #fff3b5 0%, var(--wst7-gold) 45%, var(--wst7-gold-deep) 100%);
+  box-shadow:
+    0 3px 6px rgba(4, 10, 18, 0.65),
+    inset 0 2px 0 rgba(255, 255, 255, 0.6);
+  opacity: 0.92;
+  transition: transform 0.48s cubic-bezier(0.22, 1.08, 0.32, 1), opacity 0.28s ease;
+}
+
+.wst7-drape-tassel::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--wst7-gold-bright);
+  box-shadow: 0 2px 4px rgba(4, 10, 18, 0.55);
+}
+
+.wst7-tassel-left {
+  left: 6px;
+}
+
+.wst7-tassel-right {
+  right: 6px;
+}
+
+.wst7-drape-tassel::after {
+  content: '';
+  position: absolute;
+  top: -12px;
+  width: 26px;
+  height: 16px;
+  border-bottom: 3.5px solid var(--wst7-gold-bright);
+  border-radius: 0 0 18px 18px;
+  pointer-events: none;
+}
+
+.wst7-tassel-left::after {
+  left: -8px;
+}
+
+.wst7-tassel-right::after {
+  right: -8px;
+}
+
+/* Warm 2700K Upward Footlight Wash Across Velvet Curtain Hem */
+.wst7-curtain-uplight-wash {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 44%;
+  z-index: 4;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 46% 68% at 24% 100%, rgba(255, 217, 102, 0.34) 0%, transparent 72%),
+    radial-gradient(ellipse 46% 68% at 76% 100%, rgba(255, 217, 102, 0.34) 0%, transparent 72%),
+    linear-gradient(0deg, rgba(255, 206, 92, 0.24) 0%, transparent 100%);
+  transition: opacity 0.32s ease;
+}
+
+.wst7-curtain-arch-btn[data-state='chosen'] .wst7-curtain-uplight-wash {
+  background:
+    radial-gradient(ellipse 68% 82% at 50% 100%, rgba(255, 232, 146, 0.54) 0%, transparent 78%),
+    linear-gradient(0deg, rgba(255, 217, 102, 0.32) 0%, transparent 100%);
 }
 
 /* Warm follow-spot velvet sheen on hover — drapes stay hermetically closed until tapped! */
 .wst7-curtain-arch-btn[data-state='closed']:hover .wst7-drape-left,
 .wst7-curtain-arch-btn[data-state='closed']:hover .wst7-drape-right {
-  filter: brightness(1.12);
+  filter: brightness(1.14);
 }
 
-/* Full theatrical sweep open when chosen! */
+/* Full theatrical sweep open when chosen — pleated bunching & swoop! */
 .wst7-curtain-arch-btn[data-state='chosen'] .wst7-drape-left {
-  transform: translateX(-82%) scaleX(0.22) skewY(-4deg);
+  transform: translateX(-86%) scaleX(0.18) skewY(-6deg);
 }
 
 .wst7-curtain-arch-btn[data-state='chosen'] .wst7-drape-right {
-  transform: translateX(82%) scaleX(0.22) skewY(4deg);
+  transform: translateX(86%) scaleX(0.18) skewY(6deg);
 }
 
 /* Secondary Monty Hall peek on the other two doors! */
 .wst7-curtain-arch-btn[data-state='peek'] .wst7-drape-left {
-  transform: translateX(-72%) scaleX(0.3) skewY(-3deg);
+  transform: translateX(-74%) scaleX(0.26) skewY(-4deg);
 }
 
 .wst7-curtain-arch-btn[data-state='peek'] .wst7-drape-right {
-  transform: translateX(72%) scaleX(0.3) skewY(3deg);
+  transform: translateX(74%) scaleX(0.26) skewY(4deg);
+}
+
+/* 1966 Brass Floor Footlight Shells Row Along the Stage Proscenium Lip */
+.wst7-footlight-bar {
+  position: relative;
+  z-index: 5;
+  width: 96%;
+  margin: -10px auto -2px;
+  height: 22px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  padding: 0 10px;
+  pointer-events: none;
+}
+
+.wst7-footlight-shell {
+  position: relative;
+  width: 28px;
+  height: 16px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.wst7-footlight-glow {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 36px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 80%, rgba(255, 232, 146, 0.72) 0%, rgba(244, 169, 31, 0.26) 46%, transparent 74%);
+  animation: wst7-footlight-pulse 1.8s ease-in-out infinite;
+}
+
+.wst7-fl-c1 .wst7-footlight-glow {
+  animation-delay: 0.45s;
+}
+
+.wst7-fl-c2 .wst7-footlight-glow {
+  animation-delay: 0.9s;
+}
+
+.wst7-footlight-hood {
+  position: relative;
+  z-index: 2;
+  width: 24px;
+  height: 11px;
+  border-radius: 14px 14px 3px 3px;
+  background: linear-gradient(180deg, #fff3b8 0%, var(--wst7-gold) 45%, #7c4804 100%);
+  box-shadow:
+    0 2px 0 var(--wst7-navy-deep),
+    0 -2px 8px rgba(255, 217, 102, 0.65);
 }
 
 /* Center Curtain Number Medallion & Label (Sweeps upward into crown on open) */
@@ -773,7 +927,7 @@
 /* Floating Relic Crest + Tilted 1969 Price-Slash Hangtag */
 .wst7-turntable-crest-row {
   position: relative;
-  z-index: 3;
+  z-index: 5;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -790,18 +944,32 @@
 }
 
 .wst7-price-hangtag {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 6px 14px;
-  background: linear-gradient(135deg, var(--wst7-tangerine) 0%, var(--wst7-cerise) 100%);
+  padding: 7px 16px 7px 26px;
+  background: linear-gradient(135deg, #ff7038 0%, var(--wst7-cerise) 72%, #9a154b 100%);
   color: var(--wst7-cream-bright);
-  clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%);
-  padding-left: 18px;
+  clip-path: polygon(13px 0, 100% 0, 100% 100%, 13px 100%, 0 50%);
   transform: rotate(-3deg);
   box-shadow:
-    0 5px 0 var(--wst7-navy-deep),
-    0 10px 20px rgba(4, 11, 20, 0.65);
+    inset 0 2px 0 rgba(255, 232, 168, 0.72),
+    inset 0 -2px 0 rgba(88, 12, 42, 0.55),
+    0 6px 0 var(--wst7-navy-deep),
+    0 12px 24px rgba(4, 11, 20, 0.72);
+}
+
+.wst7-hangtag-grommet {
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #0b1d30;
+  box-shadow: 0 0 0 2.5px var(--wst7-gold-bright);
 }
 
 .wst7-retail-strike {
@@ -810,9 +978,10 @@
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgba(255, 247, 230, 0.9);
+  color: rgba(255, 247, 230, 0.94);
   text-decoration: line-through;
-  text-decoration-thickness: 2px;
+  text-decoration-color: #ffd966;
+  text-decoration-thickness: 2.5px;
   line-height: 1.1;
 }
 
@@ -822,31 +991,44 @@
   font-weight: 700;
   color: var(--wst7-gold-bright);
   line-height: 1.15;
-  text-shadow: 0 2px 0 rgba(8, 21, 36, 0.65);
+  text-shadow: 0 2px 0 rgba(8, 21, 36, 0.75);
 }
 
 /* Warm Broadcast Cream Studio Cue Plaque Mounted on the Revolving Plinth */
 .wst7-relic-cue-plaque {
   position: relative;
-  z-index: 2;
+  z-index: 4;
+  isolation: isolate;
   width: min(520px, 96%);
-  padding: 20px 20px 16px;
+  padding: 20px 22px 17px;
   border-radius: 18px;
   overflow: hidden;
-  background: linear-gradient(180deg, var(--wst7-cream-bright) 0%, var(--wst7-cream) 100%);
+  background: linear-gradient(180deg, #fffaf0 0%, var(--wst7-cream) 100%);
   color: var(--wst7-ink);
   text-align: center;
   box-shadow:
-    inset 0 3px 0 #ffffff,
+    inset 0 0 0 2.5px rgba(244, 169, 31, 0.62),
+    inset 0 4px 0 #ffffff,
     0 8px 0 var(--wst7-walnut),
-    0 18px 38px rgba(3, 9, 18, 0.8);
+    0 18px 38px rgba(3, 9, 18, 0.84);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
 }
 
-/* Gleaming 1966 Spotlight Specular Sheen Across Plaque */
+.wst7-plaque-brass-cornice {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 7px;
+  z-index: 3;
+  background: linear-gradient(90deg, #b8740a 0%, #ffd966 28%, #fff6cc 50%, #f4a91f 74%, #9e6206 100%);
+  pointer-events: none;
+}
+
+/* Gleaming 1966 Spotlight Specular Sheen Strictly BEHIND Readable Ink Copy */
 .wst7-relic-cue-plaque::after {
   content: '';
   position: absolute;
@@ -854,10 +1036,11 @@
   bottom: 0;
   left: -45%;
   width: 36%;
+  z-index: 1;
   background: linear-gradient(
     105deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.62) 50%,
+    rgba(255, 255, 255, 0.45) 50%,
     transparent 100%
   );
   transform: skewX(-20deg);
@@ -866,6 +1049,8 @@
 }
 
 .wst7-relic-name {
+  position: relative;
+  z-index: 2;
   margin: 0;
   font-family: var(--wst7-font-display);
   font-size: clamp(22px, 5.2vw, 30px);
@@ -874,7 +1059,26 @@
   color: var(--wst7-ink);
 }
 
+.wst7-bargain-plain-rule {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #102a46;
+  color: var(--wst7-gold-bright);
+  font-family: var(--wst7-font-broadcast);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+}
+
 .wst7-relic-perk {
+  position: relative;
+  z-index: 2;
   margin: 0;
   font-family: var(--wst7-font-body);
   font-size: clamp(15px, 3.7vw, 18px);
@@ -906,7 +1110,8 @@
   box-shadow:
     0 5px 0 var(--wst7-gold),
     0 11px 0 var(--wst7-walnut-deep),
-    0 20px 34px rgba(3, 9, 18, 0.9);
+    0 16px 36px rgba(255, 217, 102, 0.24),
+    0 22px 38px rgba(3, 9, 18, 0.92);
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -914,11 +1119,44 @@
 }
 
 .wst7-platter-bulb {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background: var(--wst7-gold-bright);
-  box-shadow: 0 0 10px var(--wst7-gold-bright);
+  box-shadow:
+    0 0 0 2px rgba(10, 26, 44, 0.62),
+    0 0 12px var(--wst7-gold-bright),
+    0 0 20px rgba(255, 196, 48, 0.65);
+}
+
+/* Velvet Showcase Pedestal Base + Studio Floor Mirror Reflection Under Platter */
+.wst7-turntable-pedestal {
+  position: relative;
+  z-index: 0;
+  width: min(440px, 82%);
+  height: 14px;
+  margin-top: -5px;
+  border-radius: 0 0 26px 26px;
+  background: linear-gradient(180deg, #5c2b17 0%, #31140a 65%, #160904 100%);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 217, 102, 0.45),
+    0 8px 18px rgba(3, 9, 18, 0.85);
+}
+
+.wst7-platter-floor-reflection {
+  position: relative;
+  z-index: 0;
+  width: min(510px, 92%);
+  height: 16px;
+  margin-top: -4px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    rgba(255, 217, 102, 0.38) 0%,
+    rgba(25, 191, 208, 0.22) 48%,
+    transparent 82%
+  );
+  pointer-events: none;
 }
 
 /* Sold Stamp Celebration Overlay on BUY */
@@ -1126,17 +1364,56 @@
   animation: wst7-slow-spin 14s linear infinite;
 }
 
+.wst7-secret-rays-counter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(430px, 84vw, 60dvh);
+  height: min(430px, 84vw, 60dvh);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.72;
+}
+
+.wst7-secret-rays-counter svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  animation: wst7-slow-spin 19s linear reverse infinite;
+}
+
+.wst7-secret-crest-wrap {
+  position: relative;
+  z-index: 2;
+  margin-bottom: -8px;
+}
+
+.wst7-secret-crest-svg {
+  width: clamp(86px, 22vw, 118px);
+  height: clamp(86px, 22vw, 118px);
+  display: block;
+  filter: drop-shadow(0 10px 22px rgba(4, 10, 18, 0.85));
+}
+
+.wst7-secret-bulbs-wrap {
+  position: relative;
+  z-index: 2;
+  margin-bottom: -6px;
+}
+
 .wst7-secret-kicker {
   position: relative;
   z-index: 2;
-  padding: 6px 22px;
+  padding: 6px 20px;
   background: linear-gradient(90deg, var(--wst7-cobalt) 0%, var(--wst7-cerise) 50%, var(--wst7-tangerine) 100%);
   color: var(--wst7-cream-bright);
   font-family: var(--wst7-font-broadcast);
-  font-size: clamp(14px, 3.4vw, 17px);
+  font-size: clamp(14px, 3.3vw, 17px);
   font-weight: 900;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
+  white-space: nowrap;
   clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
   box-shadow:
     0 5px 0 var(--wst7-navy-deep),
@@ -1148,8 +1425,10 @@
   position: relative;
   z-index: 2;
   margin: 0;
+  max-width: 16ch;
+  text-wrap: balance;
   font-family: var(--wst7-font-show);
-  font-size: clamp(32px, 8.2vw, 64px);
+  font-size: clamp(31px, 8vw, 62px);
   font-weight: 400;
   line-height: 0.98;
   letter-spacing: 0.015em;
@@ -1161,6 +1440,10 @@
     0 8px 0 var(--wst7-tangerine-deep),
     0 12px 0 var(--wst7-navy-deep),
     0 20px 38px rgba(4, 10, 18, 0.94);
+}
+
+.wst7-secret-line {
+  display: block;
 }
 
 .wst7-secret-pill {
@@ -1441,6 +1724,7 @@
 .wst7-root[data-reduced-motion='true'] .wst7-bulb-dot,
 .wst7-root[data-reduced-motion='true'] .wst7-turntable-rays svg,
 .wst7-root[data-reduced-motion='true'] .wst7-secret-rays-wrap svg,
+.wst7-root[data-reduced-motion='true'] .wst7-secret-rays-counter svg,
 .wst7-root[data-reduced-motion='true'] .wst7-turntable-crest-row,
 .wst7-root[data-reduced-motion='true'] .wst7-turntable-platter,
 .wst7-root[data-reduced-motion='true'] .wst7-bargain-bell-svg,
@@ -1455,6 +1739,7 @@
   .wst7-bulb-dot,
   .wst7-turntable-rays svg,
   .wst7-secret-rays-wrap svg,
+  .wst7-secret-rays-counter svg,
   .wst7-turntable-crest-row,
   .wst7-turntable-platter,
   .wst7-bargain-bell-svg,
@@ -1662,5 +1947,1195 @@
   100% {
     opacity: 0;
     transform: scale(1.12) rotate(1deg);
+  }
+}
+
+/* ============================================================================
+   6. FLICK-TO-SPIN 20-WEDGE 1966 LIVING COLOR STUDIO BIG WHEEL
+   Real Pointer-Drag Flick Physics · 24 Chasing #11 Bulbs · Spring Brass Flapper
+   ============================================================================ */
+
+.wst7-wheel-backdrop {
+  background:
+    radial-gradient(
+      ellipse 84% 62% at 50% 44%,
+      rgba(16, 62, 82, 0.68) 0%,
+      rgba(10, 27, 46, 0.92) 66%,
+      rgba(6, 16, 29, 0.97) 100%
+    );
+  animation: wst7-backdrop-in 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.wst7-wheel-stage {
+  position: relative;
+  width: min(860px, 100%);
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(8px, 1.5dvh, 14px);
+}
+
+.wst7-wheel-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  animation: wst7-drop-spring 0.36s cubic-bezier(0.2, 1.18, 0.34, 1) both;
+}
+
+.wst7-wheel-headline {
+  margin: 2px 0 0;
+  font-family: var(--wst7-font-show);
+  font-size: clamp(26px, 6.6vw, 46px);
+  font-weight: 400;
+  line-height: 0.96;
+  color: var(--wst7-cream-bright);
+  text-shadow:
+    0 2px 0 var(--wst7-gold),
+    0 4px 0 var(--wst7-tangerine),
+    0 7px 0 var(--wst7-navy-deep),
+    0 14px 28px rgba(4, 10, 18, 0.9);
+}
+
+.wst7-wheel-arena {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 8px;
+}
+
+.wst7-wheel-cabinet {
+  position: relative;
+  width: min(350px, 84vw, 47dvh);
+  height: min(350px, 84vw, 47dvh);
+  border-radius: 50%;
+  touch-action: none;
+  cursor: grab;
+  filter: drop-shadow(0 18px 34px rgba(3, 9, 18, 0.88));
+  animation: wst7-turntable-pop 0.4s cubic-bezier(0.18, 1.22, 0.32, 1) both;
+}
+
+.wst7-wheel-stage[data-phase='dragging'] .wst7-wheel-cabinet {
+  cursor: grabbing;
+}
+
+.wst7-wheel-stage[data-phase='spinning'] .wst7-wheel-cabinet,
+.wst7-wheel-stage[data-phase='landed'] .wst7-wheel-cabinet {
+  cursor: default;
+}
+
+.wst7-wheel-bezel-svg,
+.wst7-wheel-rotor,
+.wst7-wheel-disc-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.wst7-wheel-rotor {
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+.wst7-wheel-wedge[data-landed='true'] path:first-child {
+  filter: brightness(1.24) drop-shadow(0 0 12px #ffd966);
+}
+
+.wst7-wheel-flapper {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  width: clamp(36px, 9vw, 48px);
+  height: clamp(46px, 11vw, 60px);
+  z-index: 6;
+  transform: translateX(-50%) rotate(0deg);
+  transform-origin: 50% 13px;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 10px rgba(3, 9, 18, 0.78));
+  will-change: transform;
+}
+
+.wst7-flapper-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.wst7-wheel-flick-hint {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 7;
+  padding: 5px 15px;
+  border-radius: 999px;
+  background: rgba(7, 19, 33, 0.94);
+  color: var(--wst7-gold-bright);
+  font-family: var(--wst7-font-broadcast);
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow:
+    0 0 0 2px var(--wst7-gold-bright),
+    0 8px 18px rgba(3, 9, 18, 0.82);
+  transition: opacity 0.22s ease;
+  animation: wst7-hint-pulse 1.5s ease-in-out infinite;
+}
+
+.wst7-btn-glyph-svg {
+  width: 26px;
+  height: 26px;
+  display: block;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(7, 19, 33, 0.45));
+}
+
+.wst7-wheel-controls {
+  width: min(440px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.wst7-wheel-readout {
+  position: relative;
+  padding: 9px 18px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #13314d 0%, var(--wst7-navy-stage) 100%);
+  box-shadow:
+    inset 0 2.5px 0 var(--wst7-gold-bright),
+    0 5px 0 var(--wst7-navy-deep),
+    0 12px 24px rgba(3, 9, 18, 0.72);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2px;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.wst7-wheel-readout[data-kind='GREMLIN'] {
+  background: linear-gradient(180deg, #4b142c 0%, #240a18 100%);
+  box-shadow:
+    inset 0 2.5px 0 var(--wst7-cerise),
+    0 5px 0 var(--wst7-navy-deep),
+    0 0 24px rgba(230, 59, 122, 0.45);
+}
+
+.wst7-wheel-stage[data-phase='landed'] .wst7-wheel-readout {
+  transform: scale(1.03);
+  background: linear-gradient(180deg, var(--wst7-cream-bright) 0%, var(--wst7-cream) 100%);
+  box-shadow:
+    inset 0 3px 0 var(--wst7-gold),
+    0 6px 0 var(--wst7-walnut),
+    0 0 30px rgba(255, 217, 102, 0.56);
+}
+
+.wst7-wheel-stage[data-phase='landed'][data-land-kind='GREMLIN'] .wst7-wheel-readout {
+  background: linear-gradient(180deg, #e63b7a 0%, #961447 100%);
+  box-shadow:
+    inset 0 3px 0 #ffd966,
+    0 6px 0 var(--wst7-navy-deep),
+    0 0 30px rgba(230, 59, 122, 0.65);
+}
+
+.wst7-wheel-readout-kicker {
+  font-family: var(--wst7-font-broadcast);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wst7-peacock-bright);
+}
+
+.wst7-wheel-stage[data-phase='landed'] .wst7-wheel-readout-kicker {
+  color: var(--wst7-tangerine-deep);
+}
+
+.wst7-wheel-stage[data-phase='landed'][data-land-kind='GREMLIN'] .wst7-wheel-readout-kicker {
+  color: var(--wst7-gold-bright);
+}
+
+.wst7-wheel-readout-val {
+  font-family: var(--wst7-font-solari);
+  font-size: clamp(18px, 4.4vw, 24px);
+  font-weight: 700;
+  color: var(--wst7-gold-bright);
+  line-height: 1.15;
+}
+
+.wst7-wheel-stage[data-phase='landed'] .wst7-wheel-readout-val {
+  color: var(--wst7-ink);
+}
+
+.wst7-wheel-stage[data-phase='landed'][data-land-kind='GREMLIN'] .wst7-wheel-readout-val {
+  color: var(--wst7-cream-bright);
+}
+
+.wst7-btn-wheel-spin {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #ff7b47 0%, #e64819 100%);
+  color: var(--wst7-cream-bright);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 242, 198, 0.72),
+    0 6px 0 #912206,
+    0 14px 28px rgba(4, 11, 20, 0.72);
+}
+
+.wst7-btn-wheel-spin:disabled {
+  cursor: default;
+  opacity: 0.88;
+}
+
+.wst7-wheel-subnote {
+  text-align: center;
+  font-family: var(--wst7-font-broadcast);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--wst7-cream);
+  opacity: 0.92;
+}
+
+/* ============================================================================
+   7. PRESS-YOUR-LUCK 12-PERIMETER-SQUARE LIGHT-BOARD & 1966 STUDIO GREMLIN ZONK
+   Chasing Tungsten Cursor · Cartoon Cable-Chewing Gremlin · Pass Spins Strategy
+   ============================================================================ */
+
+.wst7-stage-overlay:focus {
+  outline: none;
+}
+
+.wst7-gremlin-backdrop {
+  background:
+    radial-gradient(
+      ellipse 86% 64% at 50% 45%,
+      rgba(18, 56, 78, 0.72) 0%,
+      rgba(10, 26, 44, 0.93) 68%,
+      rgba(6, 15, 28, 0.98) 100%
+    );
+  animation: wst7-backdrop-in 0.16s ease-out both;
+}
+
+.wst7-gremlin-stage {
+  position: relative;
+  width: min(640px, 100%);
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(8px, 1.5dvh, 14px);
+}
+
+.wst7-gremlin-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  animation: wst7-drop-spring 0.36s cubic-bezier(0.2, 1.18, 0.34, 1) both;
+}
+
+.wst7-gremlin-headline {
+  margin: 2px 0 0;
+  font-family: var(--wst7-font-show);
+  font-size: clamp(25px, 6.2vw, 44px);
+  font-weight: 400;
+  line-height: 0.98;
+  color: var(--wst7-gold-bright);
+  text-shadow:
+    0 2px 0 var(--wst7-tangerine),
+    0 4px 0 var(--wst7-tangerine-deep),
+    0 6px 0 var(--wst7-navy-deep),
+    0 14px 26px rgba(4, 10, 18, 0.9);
+}
+
+/* 4x4 Hollow Perimeter Light-Board Cabinet */
+.wst7-gremlin-board-frame {
+  position: relative;
+  width: min(540px, 100%);
+  padding: clamp(8px, 1.6vw, 12px);
+  border-radius: 20px;
+  background: linear-gradient(180deg, #163954 0%, #0b1e33 100%);
+  box-shadow:
+    inset 0 3px 0 var(--wst7-gold-bright),
+    inset 0 -3px 0 rgba(244, 169, 31, 0.45),
+    0 9px 0 var(--wst7-walnut),
+    0 20px 40px rgba(3, 9, 18, 0.88);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(4, minmax(62px, auto));
+  gap: clamp(5px, 1.3vw, 9px);
+}
+
+.wst7-gremlin-stage[data-state='gremlin-zonk'] .wst7-gremlin-board-frame {
+  animation: wst7-gremlin-shake 0.48s ease-in-out both;
+  box-shadow:
+    inset 0 3px 0 var(--wst7-cerise),
+    0 9px 0 #5b0c2b,
+    0 0 36px rgba(230, 59, 122, 0.65);
+}
+
+/* Machined 1966 Brass Corner Rivets on Studio Monitor Cabinet */
+.wst7-cabinet-rivet {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 30%, #fffbe2 0%, #ffd966 48%, #8f5304 100%);
+  border: 1px solid #3c1c08;
+  box-shadow: 0 1px 3px rgba(3, 9, 18, 0.8);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.wst7-rivet-tl { top: 4px; left: 4px; }
+.wst7-rivet-tr { top: 4px; right: 4px; }
+.wst7-rivet-bl { bottom: 4px; left: 4px; }
+.wst7-rivet-br { bottom: 4px; right: 4px; }
+
+/* Individual 1966 Backlit Acrylite Perimeter Prize Square */
+.wst7-pyl-square {
+  position: relative;
+  z-index: 1;
+  min-height: 62px;
+  padding: 5px 4px;
+  border-radius: 11px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1px;
+  color: var(--wst7-cream-bright);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 250, 232, 0.42),
+    0 4px 0 rgba(6, 14, 26, 0.62);
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.08s ease,
+    filter 0.08s ease;
+}
+
+.wst7-pyl-square[data-tone='teal'] {
+  background: linear-gradient(180deg, #15b3c4 0%, #007787 100%);
+}
+
+.wst7-pyl-square[data-tone='cobalt'] {
+  background: linear-gradient(180deg, #326de0 0%, #153e99 100%);
+}
+
+.wst7-pyl-square[data-tone='gold'] {
+  background: linear-gradient(180deg, #ffe27a 0%, #e59912 100%);
+  color: var(--wst7-ink);
+}
+
+.wst7-pyl-square[data-tone='tangerine'] {
+  background: linear-gradient(180deg, #ff7c4c 0%, #d44415 100%);
+}
+
+.wst7-pyl-square[data-tone='cerise'] {
+  background: linear-gradient(180deg, #ef4988 0%, #a51d52 100%);
+}
+
+.wst7-pyl-square[data-tone='gremlin'] {
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      #1a1f2e 0px,
+      #1a1f2e 8px,
+      #341328 8px,
+      #341328 16px
+    );
+  color: var(--wst7-gold-bright);
+  box-shadow:
+    inset 0 0 0 2px rgba(230, 59, 122, 0.72),
+    0 4px 0 rgba(6, 14, 26, 0.7);
+}
+
+/* Glowing 2700K Tungsten Bouncing Cursor */
+.wst7-pyl-square[data-lit='true'] {
+  z-index: 4;
+  transform: scale(1.07);
+  filter: brightness(1.22);
+  box-shadow:
+    0 0 0 3.5px var(--wst7-cream-bright),
+    0 0 0 6px var(--wst7-gold-bright),
+    0 0 24px rgba(255, 217, 102, 0.92),
+    inset 0 0 18px rgba(255, 250, 224, 0.55);
+}
+
+.wst7-pyl-square[data-locked='true'] {
+  z-index: 5;
+  transform: scale(1.1);
+  animation: wst7-pyl-lock-pulse 0.42s ease-in-out infinite alternate;
+}
+
+.wst7-pyl-square[data-tone='gremlin'][data-locked='true'] {
+  box-shadow:
+    0 0 0 3.5px #ffd966,
+    0 0 0 7px #e63b7a,
+    0 0 30px rgba(230, 59, 122, 0.95);
+}
+
+.wst7-mini-gremlin-svg {
+  width: 44px;
+  height: 26px;
+  display: block;
+  margin-bottom: 1px;
+  filter: drop-shadow(0 2px 3px rgba(4, 10, 18, 0.72));
+}
+
+.wst7-pyl-sq-main {
+  font-family: var(--wst7-font-broadcast);
+  font-size: clamp(14px, 3.4vw, 18px);
+  font-weight: 900;
+  letter-spacing: 0.01em;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+.wst7-pyl-sq-sub {
+  font-family: var(--wst7-font-broadcast);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+  text-transform: uppercase;
+  opacity: 0.95;
+}
+
+/* Center 2x2 RCA Studio CRT Monitor Well (Live Telemetry OR 1966 UPA Cartoon Gremlin Feed!) */
+.wst7-pyl-center-well {
+  grid-column: 2 / 4;
+  grid-row: 2 / 4;
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 42%, #13314d 0%, #071423 100%);
+  box-shadow:
+    inset 0 0 0 3px rgba(220, 232, 245, 0.45),
+    inset 0 0 0 5px rgba(10, 24, 40, 0.92),
+    inset 0 8px 20px rgba(3, 9, 18, 0.85),
+    0 4px 12px rgba(3, 9, 18, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Curved 1966 RCA Glass Specular Highlight Arc Across CRT Monitor */
+.wst7-pyl-center-well::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    138deg,
+    rgba(255, 252, 240, 0.16) 0%,
+    rgba(255, 252, 240, 0.04) 26%,
+    transparent 44%
+  );
+  pointer-events: none;
+  z-index: 6;
+}
+
+.wst7-pyl-live-monitor {
+  width: 100%;
+  height: 100%;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 5px;
+}
+
+.wst7-pyl-center-well[data-mode='gremlin'] .wst7-pyl-live-monitor {
+  display: none;
+}
+
+.wst7-pyl-spins-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--wst7-gold-bright) 0%, var(--wst7-gold) 100%);
+  color: var(--wst7-ink);
+  box-shadow: 0 3px 0 var(--wst7-navy-deep);
+}
+
+.wst7-pyl-spins-lbl {
+  font-family: var(--wst7-font-broadcast);
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.wst7-pyl-spins-num {
+  font-family: var(--wst7-font-solari);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.wst7-pyl-cash-readout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.wst7-pyl-cash-lbl {
+  font-family: var(--wst7-font-broadcast);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--wst7-peacock-bright);
+  text-transform: uppercase;
+}
+
+.wst7-pyl-cash-val {
+  font-family: var(--wst7-font-solari);
+  font-size: clamp(19px, 4.8vw, 26px);
+  font-weight: 700;
+  color: var(--wst7-cream-bright);
+  line-height: 1.1;
+}
+
+.wst7-pyl-status-line {
+  font-family: var(--wst7-font-broadcast);
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: var(--wst7-gold-bright);
+  text-transform: uppercase;
+  line-height: 1.15;
+}
+
+/* Bespoke 1966 Cartoon Static-Gremlin Broadcast Interruption Monitor! */
+.wst7-pyl-gremlin-monitor {
+  display: none;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-between;
+  background: #071321;
+  animation: wst7-gremlin-tv-flash 0.28s steps(2, end) 3;
+}
+
+.wst7-pyl-center-well[data-mode='gremlin'] .wst7-pyl-gremlin-monitor {
+  display: flex;
+}
+
+.wst7-gremlin-cartoon-svg {
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: block;
+}
+
+.wst7-crt-rollbar {
+  animation: wst7-crt-hold-roll 1.45s linear infinite;
+}
+
+.wst7-scope-lissajous {
+  transform-origin: 140px 88px;
+  animation: wst7-scope-orbit 1.15s ease-in-out infinite alternate;
+}
+
+.wst7-scope-trace-a {
+  transform-origin: 140px 88px;
+  animation: wst7-scope-surge 0.22s steps(2, end) infinite;
+}
+
+.wst7-scope-trace-b {
+  transform-origin: 140px 88px;
+  animation: wst7-scope-harmonic 0.34s ease-in-out infinite alternate;
+}
+
+.wst7-gremlin-sparks-a {
+  transform-origin: 140px 88px;
+  animation: wst7-gremlin-spark-a 0.26s steps(2, end) infinite;
+}
+
+.wst7-gremlin-sparks-b {
+  transform-origin: 140px 88px;
+  animation: wst7-gremlin-spark-b 0.26s steps(2, end) infinite;
+}
+
+.wst7-gremlin-standby-bar {
+  padding: 5px 6px 6px;
+  background: linear-gradient(180deg, #2d0917 0%, #14050c 100%);
+  border-top: 2.5px solid #ff3b4e;
+  box-shadow: inset 0 1px 0 rgba(255, 217, 102, 0.45);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.wst7-gremlin-standby-kicker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: var(--wst7-font-broadcast);
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: var(--wst7-cream-bright);
+  line-height: 1.05;
+  white-space: nowrap;
+}
+
+.wst7-standby-extra {
+  font-family: var(--wst7-font-broadcast);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #ffb8c6;
+  line-height: 1.05;
+  white-space: nowrap;
+}
+
+.wst7-jam-lamp {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff3b4e;
+  box-shadow: 0 0 8px #ff3b4e, 0 0 14px rgba(255, 59, 78, 0.9);
+  flex-shrink: 0;
+  animation: wst7-jam-blink 0.36s steps(2, end) infinite;
+}
+
+.wst7-gremlin-standby-zap {
+  padding: 2px 10px;
+  border-radius: 6px;
+  background: #09131f;
+  border: 1.5px solid rgba(255, 217, 102, 0.72);
+  font-family: var(--wst7-font-solari);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #ffd966;
+  text-shadow: 0 0 10px rgba(255, 185, 56, 0.8);
+  line-height: 1.15;
+}
+
+/* Controls Deck: Big Red STOP! Plunger + Tactical PASS SPINS Button */
+.wst7-gremlin-controls {
+  width: min(540px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.wst7-btn-pyl-stop {
+  background: linear-gradient(180deg, #ff5d3d 0%, #d4261c 100%);
+  color: var(--wst7-cream-bright);
+  box-shadow:
+    inset 0 2.5px 0 rgba(255, 240, 200, 0.72),
+    0 6px 0 #7b120c,
+    0 14px 28px rgba(4, 11, 20, 0.76);
+}
+
+.wst7-btn-pyl-stop:disabled {
+  cursor: default;
+  opacity: 0.72;
+}
+
+.wst7-btn-pyl-pass {
+  min-height: 52px;
+  background: linear-gradient(180deg, #275fd1 0%, #14398c 100%);
+  color: var(--wst7-cream-bright);
+  font-size: clamp(15px, 3.8vw, 18px);
+  box-shadow:
+    inset 0 2px 0 rgba(196, 232, 255, 0.54),
+    0 5px 0 #0a2057,
+    0 10px 22px rgba(4, 11, 20, 0.65);
+}
+
+.wst7-btn-pyl-pass[data-recommended='true']:not(:disabled) {
+  background: linear-gradient(180deg, #ffd45a 0%, #e59612 100%);
+  color: var(--wst7-ink);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 252, 230, 0.85),
+    0 5px 0 #945604,
+    0 0 24px rgba(255, 217, 102, 0.58);
+}
+
+.wst7-btn-pyl-pass:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* ============================================================================
+   8. RESPONSIVE ERGONOMICS FOR BIG WHEEL & PRESS-YOUR-LUCK ACROSS 6 VIEWPORTS
+   ============================================================================ */
+
+/* Narrow Mobile Width (`<= 430px`) — Zero-Clip $99,999 Math Strip & Single-Line Monoscope Bar */
+@media (max-width: 430px) {
+  .wst7-math-lbl-long {
+    display: none;
+  }
+
+  .wst7-score-math-strip {
+    padding: 6px 13px;
+    gap: 6px;
+  }
+
+  .wst7-standby-extra {
+    display: none;
+  }
+
+  .wst7-gremlin-cartoon-svg {
+    max-height: 76px;
+  }
+
+  .wst7-gremlin-standby-bar {
+    padding: 3px 4px 4px;
+    gap: 2px;
+  }
+
+  .wst7-gremlin-standby-kicker {
+    gap: 4px;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+  }
+
+  .wst7-jam-lamp {
+    width: 6px;
+    height: 6px;
+  }
+
+  .wst7-gremlin-standby-zap {
+    padding: 1px 6px;
+    white-space: nowrap;
+  }
+}
+
+/* Compact Mobile Portrait (`390x660`) — Zero Scroll! */
+@media (max-height: 700px) and (orientation: portrait) {
+  .wst7-turntable-pedestal {
+    height: 10px;
+  }
+
+  .wst7-platter-floor-reflection {
+    height: 10px;
+  }
+  .wst7-wheel-stage,
+  .wst7-gremlin-stage {
+    gap: 6px;
+  }
+
+  .wst7-wheel-headline,
+  .wst7-gremlin-headline {
+    font-size: clamp(24px, 6.4vw, 32px);
+  }
+
+  .wst7-wheel-cabinet {
+    width: min(296px, 78vw, 43dvh);
+    height: min(296px, 78vw, 43dvh);
+  }
+
+  .wst7-gremlin-board-frame {
+    padding: 7px;
+    gap: 5px;
+    grid-template-rows: repeat(4, minmax(56px, auto));
+  }
+
+  .wst7-pyl-square {
+    min-height: 56px;
+    padding: 4px 3px;
+  }
+
+  .wst7-gremlin-controls,
+  .wst7-wheel-controls {
+    gap: 7px;
+  }
+}
+
+/* Tablet Landscape (`1024x768`) & Desktop Mid-Height — 2-Column Prime-Time Studio Split */
+@media (min-width: 820px) and (max-height: 820px) and (orientation: landscape) {
+  .wst7-wheel-stage {
+    width: min(920px, 100%);
+    display: grid;
+    grid-template-columns: auto minmax(300px, 370px);
+    grid-template-areas:
+      'wheel head'
+      'wheel ctrl';
+    gap: 12px 28px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .wst7-wheel-arena {
+    grid-area: wheel;
+    padding-top: 6px;
+  }
+
+  .wst7-wheel-cabinet {
+    width: min(440px, 64dvh);
+    height: min(440px, 64dvh);
+  }
+
+  .wst7-wheel-header {
+    grid-area: head;
+    align-self: end;
+  }
+
+  .wst7-wheel-controls {
+    grid-area: ctrl;
+    align-self: start;
+    width: 100%;
+  }
+
+  .wst7-gremlin-stage {
+    width: min(940px, 100%);
+    display: grid;
+    grid-template-columns: minmax(420px, 520px) minmax(280px, 350px);
+    grid-template-areas:
+      'board head'
+      'board ctrl';
+    gap: 14px 24px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .wst7-gremlin-board-frame {
+    grid-area: board;
+  }
+
+  .wst7-gremlin-header {
+    grid-area: head;
+    align-self: end;
+  }
+
+  .wst7-gremlin-controls {
+    grid-area: ctrl;
+    align-self: start;
+    width: 100%;
+  }
+}
+
+/* Ultra-Compact Mobile Landscape (`844x390` / `932x430`) — Guaranteed Zero-Scroll Fit! */
+@media (max-height: 500px) and (orientation: landscape) {
+  .wst7-footlight-bar {
+    height: 16px;
+    margin: -6px auto -2px;
+  }
+
+  .wst7-wheel-stage {
+    width: min(810px, 100%);
+    display: grid;
+    grid-template-columns: auto minmax(260px, 1fr);
+    grid-template-areas:
+      'wheel head'
+      'wheel ctrl';
+    gap: 6px 20px;
+    align-items: center;
+  }
+
+  .wst7-wheel-arena {
+    grid-area: wheel;
+    padding-top: 4px;
+  }
+
+  .wst7-wheel-cabinet {
+    width: min(296px, 78dvh);
+    height: min(296px, 78dvh);
+  }
+
+  .wst7-wheel-header {
+    grid-area: head;
+    align-self: end;
+  }
+
+  .wst7-wheel-headline {
+    font-size: 25px;
+  }
+
+  .wst7-wheel-controls {
+    grid-area: ctrl;
+    align-self: start;
+    width: 100%;
+    gap: 7px;
+  }
+
+  .wst7-wheel-readout {
+    padding: 6px 12px;
+  }
+
+  .wst7-wheel-subnote {
+    display: none;
+  }
+
+  .wst7-gremlin-stage {
+    width: min(820px, 100%);
+    display: grid;
+    grid-template-columns: minmax(360px, 1.15fr) minmax(240px, 0.85fr);
+    grid-template-areas:
+      'board head'
+      'board ctrl';
+    gap: 6px 16px;
+    align-items: center;
+  }
+
+  .wst7-gremlin-board-frame {
+    grid-area: board;
+    padding: 6px;
+    gap: 4px;
+    grid-template-rows: repeat(4, minmax(56px, 64px));
+  }
+
+  .wst7-pyl-square {
+    min-height: 56px;
+    padding: 3px 2px;
+  }
+
+  .wst7-mini-gremlin-svg {
+    width: 24px;
+    height: 18px;
+  }
+
+  .wst7-gremlin-header {
+    grid-area: head;
+    align-self: end;
+  }
+
+  .wst7-gremlin-headline {
+    font-size: 23px;
+  }
+
+  .wst7-standby-extra {
+    display: none;
+  }
+
+  .wst7-gremlin-standby-bar {
+    padding: 3px 4px;
+  }
+
+  .wst7-gremlin-controls {
+    grid-area: ctrl;
+    align-self: start;
+    width: 100%;
+    gap: 8px;
+  }
+}
+
+/* Reduced Motion Respect for New Wheel, Footlights & Gremlin Animations */
+.wst7-root[data-reduced-motion='true'] .wst7-bulb-halo,
+.wst7-root[data-reduced-motion='true'] .wst7-footlight-glow,
+.wst7-root[data-reduced-motion='true'] .wst7-wheel-flick-hint,
+.wst7-root[data-reduced-motion='true'] .wst7-gremlin-board-frame,
+.wst7-root[data-reduced-motion='true'] .wst7-crt-rollbar,
+.wst7-root[data-reduced-motion='true'] .wst7-scope-lissajous,
+.wst7-root[data-reduced-motion='true'] .wst7-scope-trace-a,
+.wst7-root[data-reduced-motion='true'] .wst7-scope-trace-b,
+.wst7-root[data-reduced-motion='true'] .wst7-jam-lamp,
+.wst7-root[data-reduced-motion='true'] .wst7-gremlin-sparks-a,
+.wst7-root[data-reduced-motion='true'] .wst7-gremlin-sparks-b,
+.wst7-root[data-reduced-motion='true'] .wst7-pyl-gremlin-monitor,
+.wst7-root[data-reduced-motion='true'] .wst7-pyl-square[data-locked='true'] {
+  animation: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wst7-bulb-halo,
+  .wst7-footlight-glow,
+  .wst7-wheel-flick-hint,
+  .wst7-gremlin-board-frame,
+  .wst7-crt-rollbar,
+  .wst7-scope-lissajous,
+  .wst7-scope-trace-a,
+  .wst7-scope-trace-b,
+  .wst7-jam-lamp,
+  .wst7-gremlin-sparks-a,
+  .wst7-gremlin-sparks-b,
+  .wst7-pyl-gremlin-monitor,
+  .wst7-pyl-square[data-locked='true'] {
+    animation: none !important;
+  }
+}
+
+@keyframes wst7-scope-orbit {
+  0% {
+    transform: scale(0.95) rotate(-4deg);
+  }
+  100% {
+    transform: scale(1.05) rotate(4deg);
+  }
+}
+
+@keyframes wst7-scope-surge {
+  0% {
+    transform: scaleY(0.92);
+  }
+  100% {
+    transform: scaleY(1.1);
+  }
+}
+
+@keyframes wst7-scope-harmonic {
+  0% {
+    transform: translateY(-3px) scaleY(0.9);
+  }
+  100% {
+    transform: translateY(3px) scaleY(1.12);
+  }
+}
+
+@keyframes wst7-jam-blink {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.22;
+  }
+}
+
+@keyframes wst7-bulb-halo-chase {
+  0%,
+  33% {
+    opacity: 1;
+  }
+  34%,
+  100% {
+    opacity: 0.14;
+  }
+}
+
+@keyframes wst7-crt-hold-roll {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(205px);
+  }
+}
+
+@keyframes wst7-gremlin-tail-wag {
+  0% {
+    transform: rotate(-7deg);
+  }
+  100% {
+    transform: rotate(9deg);
+  }
+}
+
+@keyframes wst7-gremlin-spark-a {
+  0% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+  100% {
+    opacity: 0.15;
+    transform: scale(0.92);
+  }
+}
+
+@keyframes wst7-gremlin-spark-b {
+  0% {
+    opacity: 0.15;
+    transform: scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes wst7-footlight-pulse {
+  0%,
+  100% {
+    opacity: 0.78;
+    transform: translateX(-50%) scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.08);
+  }
+}
+
+@keyframes wst7-hint-pulse {
+  0%,
+  100% {
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    transform: translateX(-50%) scale(1.06);
+  }
+}
+
+@keyframes wst7-pyl-lock-pulse {
+  0% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1.12);
+  }
+}
+
+@keyframes wst7-gremlin-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  18% {
+    transform: translateX(-7px) rotate(-0.8deg);
+  }
+  36% {
+    transform: translateX(7px) rotate(0.8deg);
+  }
+  54% {
+    transform: translateX(-5px) rotate(-0.5deg);
+  }
+  72% {
+    transform: translateX(4px) rotate(0.4deg);
+  }
+}
+
+@keyframes wst7-gremlin-chomp {
+  0% {
+    transform: translateY(-2px) rotate(-2deg);
+  }
+  100% {
+    transform: translateY(3px) rotate(2.5deg);
+  }
+}
+
+@keyframes wst7-gremlin-spark-flash {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.35;
+    transform: scale(1.14);
+  }
+}
+
+@keyframes wst7-gremlin-tv-flash {
+  0% {
+    filter: brightness(1.4) contrast(1.2);
+  }
+  100% {
+    filter: brightness(1) contrast(1);
   }
 }

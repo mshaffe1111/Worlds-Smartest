@@ -1,0 +1,4968 @@
+[
+  {
+    "canonicalEntityKey": "w4_psj_scr_01_flux_capacitor",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "After slipping on a wet toilet lid and bonking his head in 1955, Doc Brown sketched which glowing Y-shaped gizmo that makes time travel possible?",
+    "choices": [
+      "Flux capacitor",
+      "Warp converter",
+      "Chrono coil",
+      "Time carburetor"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Props crews built the famous prop inside a surplus steel utility box using three blinking flash tubes, jumper cables, and red tape!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_02_ferris_bueller",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "A leopard-print vest, a commandeered Chicago parade float belting \"Twist and Shout,\" and a red Ferrari crashing through garage glass: who played hooky?",
+    "choices": [
+      "Marty McFly",
+      "Ferris Bueller",
+      "Billy Madison",
+      "Cameron Frye"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Writer-director John Hughes knocked out the entire screenplay in under a week because he feared a looming 1985 Hollywood writers' strike!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_03_eleven_oscars_record",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Academy Wire: Tied by Ben-Hur, Titanic, and The Lord of the Rings: The Return of the King, the all-time single-film record stands at [ _____ ].",
+    "choices": [
+      "9 Oscars",
+      "10 Oscars",
+      "11 Oscars",
+      "12 Oscars"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The Return of the King is the only member of that elite trio to pull off a clean sweep—winning every single one of its 11 nominations!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "numeric": {
+      "target": 11,
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "unit": "Oscars"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_04_mr_miyagi_chores",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Which wise Okinawa-born handyman secretly taught Daniel LaRusso defensive karate blocks by making him sand wooden decks, paint fences, and wax classic cars?",
+    "choices": [
+      "Master Splinter",
+      "Pai Mei",
+      "Sensei Kreese",
+      "Mr. Miyagi"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Stand-up comic Pat Morita wasn't even the studio's first choice—yet his warm, soulful performance earned him a Best Supporting Actor Oscar nod!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_05_wilson_volleyball",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "A crimson bloody handprint turned into a spiky-haired face on a scuffed white volleyball: what name did Tom Hanks scream across Pacific waves in Cast Away?",
+    "choices": [
+      "Wilson",
+      "Spalding",
+      "Rawlings",
+      "Mikasa"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Screenwriter William Broyles Jr. stranded himself alone on a beach for a week to research the film—and actually befriended a washed-up volleyball!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_06_shrek_brogue",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "After recording almost the entire script in his normal Canadian voice, Mike Myers persuaded DreamWorks to re-animate which green ogre with a Scottish brogue?",
+    "choices": [
+      "Ice Age",
+      "Shrek",
+      "Madagascar",
+      "Megamind"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Myers channeled his mom's Scottish bedtime stories to ditch posh fairy-tale accents—even though re-animating the ogre's lips cost $4 million!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_07_greedo_shot_first_myth",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "Projection Klaxon! Three of these blockbuster backstage nuggets are 100% genuine Hollywood lore, and one cantina memory misses the 1977 cut. Spot the myth!",
+    "choices": [
+      "Jaws's prop shark was called Bruce",
+      "Dumbo never speaks a single word",
+      "Greedo shot first in 1977 theaters",
+      "Scream's mask echoed Munch's painting"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "In May 1977 theaters, Han Solo blasted Greedo cleanly under the table—George Lucas only added Greedo's laser bolt twenty years later in 1997!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_08_kermit_coat_pingpong",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "In 1955, teenage puppeteer Jim Henson snipped up his mother's discarded turquoise spring coat and sliced a Ping-Pong ball in half to stitch which TV star?",
+    "choices": [
+      "Fozzie Bear",
+      "Big Bird",
+      "Oscar the Grouch",
+      "Kermit the Frog"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Kermit originally started out as an abstract lizard-like creature on Washington's late-night show Sam and Friends before growing flippers years later!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_09_little_ricky_1953",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Nielsen Wire, 1953: Beating President Eisenhower's inauguration the next morning, 44 million TV viewers tuned in to I Love Lucy to welcome newborn [ _____ ].",
+    "choices": [
+      "Little Ricky",
+      "Baby Desi",
+      "Junior Fred",
+      "Tiny Arnaz"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "CBS censors forbade saying the word \"pregnant\" on air—and Lucille Ball gave birth to her real son Desi Jr. by C-section the very same day!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_10_blues_brothers_suits",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "Black porkpie hats, skinny ties, dark Wayfarer shades, and 103 smashed police cruisers racing through a Chicago mall: name this 1980 musical duo!",
+    "choices": [
+      "Wayne and Garth",
+      "The Blues Brothers",
+      "Men in Black",
+      "The Coneheads"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "To film that wild indoor chase, the crew leased the shuttered Dixie Square Mall, stocked every empty shop with real merchandise, and wrecked it!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_11_rod_serling_twilight",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Tired of CBS sponsors censoring his hard-hitting social dramas, which chain-smoking writer smuggled moral parables into sci-fi on The Twilight Zone?",
+    "choices": [
+      "Gene Roddenberry",
+      "Paddy Chayefsky",
+      "Rod Serling",
+      "Alfred Hitchcock"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Serling realized network censors panicked over real-world politics yet barely blinked if aliens on Maple Street delivered the exact same critique!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ],
+    "shutters": {
+      "shutters": [
+        "Served as a WWII paratrooper before winning six Emmy Awards",
+        "Battled TV sponsors who scrubbed race and war scripts clean",
+        "Wrote ninety-two episodes of his iconic CBS anthology series",
+        "Stepped calmly into frame in a sharp suit introducing eerie twists"
+      ]
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_12_mash_finale_record",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Pulling 105.9 million Americans to their sets in February 1983, which comedy-drama still holds the all-time U.S. ratings crown for a scripted finale?",
+    "choices": [
+      "Seinfeld",
+      "Happy Days",
+      "All in the Family",
+      "M*A*S*H"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The Korean War lasted barely three years, yet the 4077th surgical camp stayed on CBS prime-time television for eleven unforgettable seasons!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_13_network_mad_as_hell",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Broadcast Wire, 1976: Urging viewers to shove open apartment windows and howl into the night, deranged anchor Howard Beale roared in Network that he was [ _____ ].",
+    "choices": [
+      "Mad as hell",
+      "Done with news",
+      "Sick of lies",
+      "Off the air"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Peter Finch became the first actor ever to win a posthumous Academy Award—his wife Eletha accepted the golden statuette on Oscar night!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_14_totoro_bus_stop",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "Standing soaked beside a wooden Japanese bus stop with a tiny green leaf balanced atop a giant furry gray belly: which 1988 Studio Ghibli gem waits for the Catbus?",
+    "choices": [
+      "Kiki's Delivery Service",
+      "My Neighbor Totoro",
+      "Ponyo on the Cliff",
+      "Princess Mononoke"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Japanese theaters originally double-billed cheerful Totoro alongside heartbreaking Grave of the Fireflies, leaving 1988 audiences emotionally whiplashed!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_15_marge_gunderson_fargo",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Seven months pregnant, polite as warm pie, and sharp as a tack in snowbound Brainerd, Minnesota: which Oscar-winning police chief cracked the Fargo kidnapping?",
+    "choices": [
+      "Clarice Starling",
+      "Mare Sheehan",
+      "Marge Gunderson",
+      "Veronica Mars"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Frances McDormand learned her cheery \"You betcha!\" accent from a Minneapolis dialect coach—and won the first of her three Best Actress Oscars!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_16_friends_nyc_stage_myth",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "Studio Klaxon! Three of these prime-time and cinema trivia gems check out, and one famous Manhattan sitcom claim is pure Hollywood illusion. Spot the fake!",
+    "choices": [
+      "Frasier ran eleven straight seasons",
+      "Will Smith turned down The Matrix",
+      "Sean Connery wore a toupee as Bond",
+      "Friends filmed live in New York"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Except for quick exterior establishing clips, Friends taped all ten seasons on Stage 24 at Warner Bros. Studios in sunny Burbank, California!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_17_quinta_brunson_abbott",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Creating, writing, and starring as upbeat Philadelphia second-grade teacher Janine Teagues, who turned Abbott Elementary into network TV's breakout 2020s sitcom?",
+    "choices": [
+      "Quinta Brunson",
+      "Issa Rae",
+      "Ayo Edebiri",
+      "Mindy Kaling"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Brunson named the fictional school after her real sixth-grade teacher Joyce Abbott—becoming the first Black Lead Comedy Actress Emmy winner since 1981!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_18_michelle_yeoh_oscar",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Hopping universes as beleaguered laundromat owner Evelyn Wang, who became the first Asian woman in Academy history to capture the Best Actress Oscar in 2023?",
+    "choices": [
+      "Cate Blanchett",
+      "Michelle Yeoh",
+      "Sandra Oh",
+      "Zhang Ziyi"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The Daniels originally wrote the lead role for Jackie Chan before realizing flipping it to a stressed-out mom gave the multiverse heart!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_19_forrest_gump_bench",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Which 1994 Best Picture winner digitally stitched its hero right into archival footage shaking hands with JFK, inspiring Elvis's hips, and exposing Watergate?",
+    "choices": [
+      "Big Fish",
+      "Zelig",
+      "Forrest Gump",
+      "Being There"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Savannah's famous Chippewa Square park bench was actually a lightweight fiberglass movie prop—now preserved indoors at the Savannah History Museum!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_20_lucille_ball_desilu_trek",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "When NBC rejected Star Trek's pricey first pilot in 1965, which sitcom titan overruled her own Desilu studio board to fund a second pilot—and saved the Enterprise?",
+    "choices": [
+      "Mary Tyler Moore",
+      "Marlo Thomas",
+      "Dinah Shore",
+      "Lucille Ball"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Ball first thought the title meant USO stars touring abroad, yet her gut instinct launched both Star Trek and Mission: Impossible!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_21_the_graduate_plastics",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Box Office Wire, 1967: Handed one-word career advice—\"Plastics\"—by a pushy family friend, Dustin Hoffman broke out as adrift Ben Braddock in [ _____ ].",
+    "choices": [
+      "The Graduate",
+      "Midnight Cowboy",
+      "Five Easy Pieces",
+      "Harold and Maude"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Although Mrs. Robinson seems twice Benjamin's age on screen, Anne Bancroft was actually just six years older than 29-year-old Dustin Hoffman!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_22_rear_window_courtyard",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "A wheelchair-bound photographer with a plaster leg cast aims a giant telephoto lens across a stifling Greenwich Village courtyard—spying a murder in which 1954 classic?",
+    "choices": [
+      "Dial M for Murder",
+      "Rear Window",
+      "Notorious",
+      "Strangers on a Train"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Paramount excavated Stage 18's basement floor just to fit the towering 31-apartment courtyard—the largest indoor set the studio had ever built!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_23_the_sting_joplin",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Reuniting Paul Newman and Robert Redford as 1936 Chicago grifters running a phony horse-betting parlor, which Best Picture winner revived Scott Joplin's ragtime?",
+    "choices": [
+      "Paper Moon",
+      "Chinatown",
+      "The Sting",
+      "Ocean's Eleven"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Marvin Hamlisch's arrangement of \"The Entertainer\" soared to #3 on the 1974 pop charts—even though ragtime actually peaked decades before 1936!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_24_the_pitt_realtime",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Unfolding across fifteen unbroken real-time hours inside one chaotic Pittsburgh trauma shift, which acclaimed 2025 Noah Wyle drama won the Emmy for Best Drama?",
+    "choices": [
+      "Grey's Anatomy",
+      "Chicago Med",
+      "St. Elsewhere",
+      "The Pitt"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Real ER physicians flooded social media praising its razor-sharp triage realism—from crowded waiting rooms to the brutal toll of back-to-back traumas!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_25_naatu_naatu_rrr",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Filmed outside Ukraine's Mariinskyi Palace with synchronized suspenders-bouncing footwork, which explosive RRR anthem became the first Indian song to win an Oscar?",
+    "choices": [
+      "Naatu Naatu",
+      "Jai Ho",
+      "Chaiyya Chaiyya",
+      "Bole Chudiyan"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Stars N. T. Rama Rao Jr. and Ram Charan drilled 18 exhausting takes for the rapid hook-step until their synchronized ankle kicks matched down to the frame!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_26_twelve_angry_men",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Courtroom Wire, 1957: Sweating inside one cramped Manhattan deliberation chamber, lone holdout Juror 8 flips eleven stubborn minds in [ _____ ].",
+    "choices": [
+      "Witness for the Prosecution",
+      "12 Angry Men",
+      "Anatomy of a Murder",
+      "Inherit the Wind"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Director Sidney Lumet subtly switched from wide lenses to tighter telephoto lenses as tensions boiled, making the room visually shrink around the jurors!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_27_ang_lee_bamboo_duel",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "Two martial artists balancing weightlessly atop swaying emerald bamboo stalks mid-swordfight: who directed both Crouching Tiger, Hidden Dragon and Life of Pi?",
+    "choices": [
+      "Zhang Yimou",
+      "Wong Kar-wai",
+      "Ang Lee",
+      "John Woo"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Stunt riggers suspended Chow Yun-fat and Zhang Ziyi from towering construction cranes in Anhui province—then painstakingly painted out every wire by hand!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_28_pixar_nemo_debut_myth",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "Animation Klaxon! Three of these ink-and-pixel milestones belong in the history books, while one studio debut timeline jumps eight years ahead. Spot the myth!",
+    "choices": [
+      "Snow White took three years to ink",
+      "Shrek won the first Animated Oscar",
+      "WALL-E speaks under twenty words",
+      "Pixar debuted with Finding Nemo"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Pixar changed cinema in November 1995 with Toy Story—eight full years and four feature hits before Marlin ever went searching for Nemo!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_29_gene_rayburn_match_game",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Wielding his unmistakable extra-long skinny Sony wand microphone and trading cheeky blanks with Charles Nelson Reilly, who hosted TV's beloved Match Game?",
+    "choices": [
+      "Gene Rayburn",
+      "Richard Dawson",
+      "Wink Martindale",
+      "Bob Eubanks"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Rayburn chose the skinny \"stick mic\" so he could effortlessly stretch across the podium to catch contestants' laughs without leaning awkwardly into frame!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_30_dolly_zoom_vertigo",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Rolling the camera track backward while smoothly zooming the lens inward—making Chief Brody's beach background warp in Jaws—creates which unsettling shot?",
+    "choices": [
+      "Dutch angle",
+      "Dolly zoom",
+      "Whip pan",
+      "Match cut"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Paramount cameraman Irmin Roberts invented the trick for Hitchcock's 1958 Vertigo—holding the subject steady while background space warps!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_31_seven_samurai_kurosawa",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Tokyo Dispatch, 1954: Pioneering the \"assemble-the-team\" action blueprint later remade as The Magnificent Seven and A Bug's Life, Kurosawa triumphed with [ _____ ].",
+    "choices": [
+      "Rashomon",
+      "Yojimbo",
+      "Seven Samurai",
+      "Hidden Fortress"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Toho froze filming twice when rain blew the budget—so Kurosawa went fishing until bosses realized they had spent too much to cancel!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_32_bicycle_thieves_desica",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Rejecting studio funding tied to casting Cary Grant, Vittorio De Sica hired an actual Rome factory worker to star in which 1948 neorealist landmark?",
+    "choices": [
+      "La Dolce Vita",
+      "Cinema Paradiso",
+      "Rome, Open City",
+      "Bicycle Thieves"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Lamberto Maggiorani only dropped by the audition to accompany his young son—and wound up delivering one of the most heartbreaking performances in cinema!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_33_metropolis_robot",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "Gleaming Art Deco brass armor, crackling neon rings of lightning, and an underground city of marching workers: which 1927 Fritz Lang epic birthed C-3PO's ancestor?",
+    "choices": [
+      "Metropolis",
+      "Nosferatu",
+      "Cabinet of Dr. Caligari",
+      "Things to Come"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Sculptor Walter Schulze-Mittendorff cast the metallic suit from experimental wood putty—leaving actress Brigitte Helm barely able to sit or breathe!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_34_chinatown_bandage",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Keeping Jack Nicholson's private eye sporting a crisp white bandage across his sliced nose for half the film, which 1974 neo-noir exposed Los Angeles water corruption?",
+    "choices": [
+      "The Long Goodbye",
+      "Chinatown",
+      "L.A. Confidential",
+      "The Conversation"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Director Roman Polanski stepped in front of his own camera to play the pint-sized switchblade thug who gives detective Jake Gittes that infamous slice!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_35_welles_best_actor_myth",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "Oscars Klaxon! Three of these legendary auteur anecdotes are documented cinema history, while one golden trophy claim rewrites 1942 Academy night. Spot the lie!",
+    "choices": [
+      "Hitchcock bought up Psycho novels",
+      "Kubrick won his sole Oscar for VFX",
+      "Welles won Best Actor for Kane",
+      "Keaton refused body doubles for stunts"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Gary Cooper beat Orson Welles for Best Actor in 1942 with Sergeant York—Citizen Kane went home with just one Oscar, for Original Screenplay!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_36_flow_latvia_oscar",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Following a dark-gray cat sharing a sailboat with a sleepy capybara through a flooded world with zero spoken dialogue, which 2024 film won Latvia's first Oscar?",
+    "choices": [
+      "Robot Dreams",
+      "Wild Robot",
+      "Snail Memoir",
+      "Flow"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Director Gints Zilbalodis built Flow on a $3.7M budget using free open-source tools—and Latvian museums put the golden statuette on public tour!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_37_jack_foley_sound",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 5,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Soundstage Ledger: Named for the Universal Pictures pioneer who marched in gravel boxes watching Show Boat in 1929, custom synced sound effects are called [ _____ ].",
+    "choices": [
+      "Foley",
+      "ADR dubbing",
+      "Looping",
+      "Walla tracks"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Jack Foley kept a walking cane, squeaky shoes, and crinkled cellophane right beside his mic—inventing live studio audio tricks still used daily!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_38_odessa_steps_potemkin",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 5,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Immortalized by a bouncing runaway baby carriage and homaged in both The Untouchables and The Naked Gun, which 1925 Sergei Eisenstein montage rewrote editing grammar?",
+    "choices": [
+      "Winter Palace",
+      "Odessa Steps",
+      "Neva Bridge",
+      "Kremlin Gate"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Stretching a two-minute descent into nearly seven pulse-pounding minutes via 150 rapid cuts, Eisenstein proved film time bends to rhythm, not clocks!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_39_fellini_eight_and_half",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 5,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "Trapped inside a smoky tunnel traffic jam, a blocked movie director floats right out his car window tethered by an ankle string to a beach: who dreamed up 8½?",
+    "choices": [
+      "Michelangelo Antonioni",
+      "Luchino Visconti",
+      "Federico Fellini",
+      "Roberto Rossellini"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The quirky title tallied Fellini's six previous solo features, two short segments, and one co-directed debut—turning writer's block into cinema gold!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_scr_40_silent_fps_myth",
+    "category": "SCREEN",
+    "domain": "POP_LIT",
+    "difficulty": 5,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "Film-Vault Klaxon! Three of these celluloid craft facts hold up under inspection, while one classic projection-speed assumption runs way too fast. Nab the myth!",
+    "choices": [
+      "Three-strip Technicolor used prisms",
+      "Kurosawa painted storyboards in oil",
+      "Satyajit Ray pawned wife's jewelry",
+      "Silent films ran at 24 frames/sec"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Hand-cranked silent cameras usually rolled around 16 to 20 frames per second—modern 24 fps standardized in the late 1920s for smooth optical sound!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_01_the_temptations_my_girl",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Opening with a famous climbing guitar riff before David Ruffin sings of \"sunshine on a cloudy day,\" which Motown quintet took \"My Girl\" straight to #1 in 1965?",
+    "choices": [
+      "The Temptations",
+      "The Four Tops",
+      "The Miracles",
+      "The Isley Brothers"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Smokey Robinson wrote \"My Girl\" for his wife Claudette—and planned to sing it himself until Ruffin begged for one shot at the mic!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_02_aladdin_sane_bolt",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "A crimson-and-cobalt lightning bolt airbrushed diagonally across pale cheek and collarbone, plus a silver teardrop resting on bone: name this 1973 David Bowie album!",
+    "choices": [
+      "Hunky Dory",
+      "Aladdin Sane",
+      "Diamond Dogs",
+      "Station to Station"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The title is a cheeky pun on \"A Lad Insane,\" and photographer Brian Duffy printed the sleeve using an expensive seven-color process to make that bolt pop!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_03_bohemian_rhapsody_queen",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Billboard Flash: Nearly six minutes long with zero repeating chorus and a headbanging opera bridge, Queen's 1975 epic [ _____ ] roared back to #2 via Wayne's World.",
+    "choices": [
+      "Killer Queen",
+      "Somebody to Love",
+      "Bohemian Rhapsody",
+      "We Are the Champions"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Freddie, Brian, and Roger stacked ~180 vocal overdubs onto analog tape—wearing the magnetic oxide so thin they could see light right through it!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_04_johnny_cash_san_quentin",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Reading the lyrics off a crumpled music stand for the very first time onstage at San Quentin prison in 1969, who debuted \"A Boy Named Sue\" to roaring inmates?",
+    "choices": [
+      "Waylon Jennings",
+      "Merle Haggard",
+      "Willie Nelson",
+      "Johnny Cash"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Children's poet Shel Silverstein played Cash the cheeky ballad at a house party days earlier—and June Carter slipped the lyrics straight in his bag!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_05_mariah_carey_solo_hits",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Boasting five vocal octaves and nineteen Billboard Hot 100 #1s—more than any other solo star—which singer handed her demo tape to Sony chief Tommy Mottola at a party?",
+    "choices": [
+      "Mariah Carey",
+      "Whitney Houston",
+      "Celine Dion",
+      "Janet Jackson"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Mottola popped Carey's cassette into his limo stereo on the ride home, heard two tracks, and ordered his driver to U-turn back to the party to find her!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_06_kiss_makeup_boots",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "Seven-inch silver dragon boots, black-and-white kabuki star-and-bat face paint, and guitars spitting fireworks across arenas: name this 1970s New York rock quartet!",
+    "choices": [
+      "Aerosmith",
+      "KISS",
+      "Alice Cooper",
+      "Twisted Sister"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "For a full decade the band fiercely guarded their unmasked faces—until 1983, when they sat down bare-faced on MTV and boosted album sales overnight!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_07_beatles_grammy_myth",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "Turntable Klaxon! Three of these pop-chart stories are 100% genuine rock lore, while one Fab Four trophy tally pads the shelf way too high. Catch the myth!",
+    "choices": [
+      "Elvis wrote zero of his hits",
+      "Dolly lost a Dolly lookalike contest",
+      "The Beatles won 25 Grammy Awards",
+      "Stevie Wonder hit #1 at age thirteen"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "For all their global dominance, The Beatles won just seven competitive Grammys during their career—plus an eighth in 2025 for \"Now and Then\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_08_the_supremes_twelve",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Before hitting #1 twelve times with sequin gowns and \"Stop! In the Name of Love,\" which Detroit girl trio was nicknamed \"the no-hit Primettes\" around Motown?",
+    "choices": [
+      "The Ronettes",
+      "The Marvelettes",
+      "The Shirelles",
+      "The Supremes"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "They logged nine straight flops before \"Where Did Our Love Go\" soared to #1 in 1964—launching the greatest run by any American vocal group!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_09_neil_diamond_fenway",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Ballpark Wire: Every middle of the eighth inning at Boston's Fenway Park, 37,000 roaring fans yell \"So good! So good!\" along to [ _____ ]'s 1969 smash.",
+    "choices": [
+      "Neil Diamond",
+      "Billy Joel",
+      "Paul Anka",
+      "Barry Manilow"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Diamond hammered out \"Sweet Caroline\" inside a Memphis hotel room in just one hour—and Red Sox DJ Amy Tobey sparked the Fenway tradition around 1997!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_10_brian_wilson_sandbox",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Which Beach Boys mastermind famously hauled eight tons of beach sand straight into his living room so he could wiggle his bare toes beneath his grand piano?",
+    "choices": [
+      "Mike Love",
+      "Brian Wilson",
+      "Dennis Wilson",
+      "Al Jardine"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Despite inventing America's signature surf-rock soundtrack, Brian Wilson feared the ocean—his brother Dennis was the band's lone real surfer!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_11_jimi_hendrix_flames",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "Squirted with Ronsonol lighter fluid and kissed with a match after \"Wild Thing\" at 1967's Monterey Pop: who knelt coaxing flames off his burning Fender guitar?",
+    "choices": [
+      "Pete Townshend",
+      "Eric Clapton",
+      "Jimi Hendrix",
+      "Jimmy Page"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Hendrix had lost a backstage coin flip to The Who over who went first—so after Pete Townshend smashed his gear, Jimi decided only real fire could top it!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_12_bee_gees_falsetto",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Struggling for a comeback in 1975, producer Arif Mardin urged Barry Gibb to scream an octave higher—launching which fraternal trio's disco-era falsetto reign?",
+    "choices": [
+      "Chic Band",
+      "Kool & the Gang",
+      "Village People",
+      "Bee Gees"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Their name began as \"Brothers Gibb,\" and their 103-bpm \"Stayin' Alive\" groove is still taught by medics to pace chest-compression CPR!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_13_take_on_me_sketch",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "MTV Flash, 1985: Blending live-action diner scenes with 3,000 hand-drawn pencil comic sketches, Norwegian synth trio a-ha conquered global charts with [ _____ ].",
+    "choices": [
+      "Take on Me",
+      "Money for Nothing",
+      "Sledgehammer",
+      "Sweet Dreams"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The original 1984 studio single flopped flat—until Warner Bros. re-cut the hook and commissioned Steve Barron's unforgettable sixteen-week animated clip!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_14_james_brown_funky_drummer",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Called \"The Hardest Working Man in Show Business,\" which cape-throwing soul dynamo shouted \"Give the drummer some!\"—spawning hip-hop's most-sampled beat?",
+    "choices": [
+      "Wilson Pickett",
+      "James Brown",
+      "Sam Cooke",
+      "Jackie Wilson"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Drummer Clyde Stubblefield's eight-bar 1969 solo on \"Funky Drummer\" has powered more than 1,500 tracks—from Public Enemy and N.W.A. to Ed Sheeran!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_15_adidas_superstars_msg",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "Forty thousand Madison Square Garden fans hoisted one unlaced white leather shell-toe sneaker into the air in 1986 as Run-D.M.C. rapped about which kicks?",
+    "choices": [
+      "Converse Chuck Taylors",
+      "Nike Air Force 1s",
+      "Adidas Superstars",
+      "Puma Suede Classics"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "An Adidas exec sitting in the crowd was so floored by that sea of raised shoes he signed the first $1 million sneaker endorsement for musicians!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_16_olivia_rodrigo_piano",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Weeping around her suburban neighborhood right after passing her California DMV road test, which Gen-Z songwriter debuted at #1 in 2021 with a heartbreaking ballad?",
+    "choices": [
+      "Tate McRae",
+      "Gracie Abrams",
+      "Sabrina Carpenter",
+      "Olivia Rodrigo"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The opening chime heard right before the first piano chord is the actual open-door dinger recorded inside producer Dan Nigro's Honda Civic!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_17_elvis_1940s_myth",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "Jukebox Klaxon! Three of these backstage music milestones hit the right decade, while one King of Rock timeline jumps the gun by years. Spot the fake!",
+    "choices": [
+      "Elvis topped pop charts in the 1940s",
+      "Weird Al asks artists before parodies",
+      "Beethoven composed after going deaf",
+      "Johnny Cash recorded live in prisons"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Elvis was still in junior high during the late 1940s—he didn't cut his first Sun single \"That's All Right\" until July 1954 at age nineteen!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_18_girl_from_ipanema",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "When Stan Getz needed English vocals for a breezy 1963 bossa nova track, non-singer Astrud Gilberto stepped up to the mic and won Record of the Year with what tune?",
+    "choices": [
+      "Desafinado",
+      "The Girl from Ipanema",
+      "Mas Que Nada",
+      "Corcovado Nights"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Producer Creed Taylor paid Astrud just $120 union session scale—yet her breezy, shy delivery turned it into one of pop's most-covered tunes!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_19_grandmaster_flash_crayon",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Marking exact drum-break grooves on twin vinyl LPs with a wax crayon and crafting felt slipmats, which Bronx electronics student pioneered hip-hop's Quick Mix Theory?",
+    "choices": [
+      "Afrika Bambaataa",
+      "Jam Master Jay",
+      "Grandmaster Flash",
+      "DJ Jazzy Jeff"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Joseph Saddler even soldered his own peekaboo headphone toggle switch out of spare RadioShack parts so he could cue the next beat before crowds heard it!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_20_billie_holiday_gardenia",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Originally pinning a fresh white gardenia beside her ear to hide an accidental curling-iron singe before a show, which jazz icon sang with the lag-behind phrasing of a horn?",
+    "choices": [
+      "Ella Fitzgerald",
+      "Sarah Vaughan",
+      "Nina Simone",
+      "Billie Holiday"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Saxophonist Lester Young dubbed her \"Lady Day,\" and she dubbed him \"Prez\"—their musical telepathy defined 1930s swing ballads!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_21_funk_brothers_motown",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Detroit Session Wire: Playing uncredited behind more Billboard #1 hits than the Beatles, Elvis, and Rolling Stones combined, Motown's house band was called the [ _____ ].",
+    "choices": [
+      "Funk Brothers",
+      "Swampers",
+      "Booker T. Crew",
+      "Muscle Shoals Six"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Bass wizard James Jamerson cut immortal grooves like \"What's Going On\" using just his single right index finger—affectionately nicknamed \"The Hook\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_22_kraftwerk_red_shirts",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "Four deadpan Germans in red shirts and skinny black ties hovering behind glowing custom Düsseldorf synths: which electronic pioneers shaped hip-hop and techno?",
+    "choices": [
+      "Tangerine Dream",
+      "Kraftwerk",
+      "Depeche Mode",
+      "Yellow Magic Orchestra"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "On tour they swapped themselves for motorized mannequins during \"The Robots\"—and their \"Trans-Europe Express\" loop fueled Afrika Bambaataa!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_23_henry_mancini_themes",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Winning twenty Grammys by pairing slinky jazz grooves with Hollywood cool, who composed Peter Gunn, Breakfast at Tiffany's \"Moon River,\" and The Pink Panther theme?",
+    "choices": [
+      "Lalo Schifrin",
+      "Quincy Jones",
+      "Henry Mancini",
+      "Burt Bacharach"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Mancini tailored \"Moon River\" within a tight one-octave range specifically so non-singer Audrey Hepburn could strum it tenderly on a Manhattan fire escape!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_24_cbgb_bowery_punk",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Owner Hilly Kristal named his Bowery dive for \"Country, BlueGrass, and Blues\"—yet which tiny club accidentally launched the Ramones, Blondie, and Talking Heads?",
+    "choices": [
+      "Studio 54",
+      "Max's Club",
+      "Fillmore East",
+      "CBGB"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Kristal enforced one ironclad booking rule: bands had to play original songs—no covers allowed—turning a narrow biker bar into punk rock's global cradle!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_25_patsy_cline_crazy",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Still hobbling on crutches after a head-on car crash that made high notes ache her ribs, which Nashville legend nailed Willie Nelson's \"Crazy\" in one haunting studio take?",
+    "choices": [
+      "Patsy Cline",
+      "Loretta Lynn",
+      "Tammy Wynette",
+      "Kitty Wells"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Cline hated Nelson's jittery spoken demo—until producer Owen Bradley slowed it into a lush waltz, creating the #1 jukebox single of all time!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_26_richie_havens_woodstock",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Festival Wire, 1969: With opening bands trapped in twenty-mile Woodstock gridlock, acoustic powerhouse [ _____ ] played nearly three hours and improvised \"Freedom\" onstage.",
+    "choices": [
+      "Arlo Guthrie",
+      "Richie Havens",
+      "John Sebastian",
+      "Country Joe"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Having exhausted every song he knew through six encores, Havens riffed off the old spiritual \"Motherless Child\" and shouted \"Freedom!\" into rock history!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_27_miles_davis_harmon_mute",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "Often turning his back toward nightclub crowds while pointing a stemless Harmon-muted trumpet toward the floor: which restless trumpeter reinvented jazz four separate times?",
+    "choices": [
+      "Dizzy Gillespie",
+      "Chet Baker",
+      "Miles Davis",
+      "Clifford Brown"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Davis insisted he wasn't snubbing audiences—he faced his rhythm section onstage so he could lock directly into his drummer and bassist's ears!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_28_catgut_violin_myth",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "Orchestra Pit Klaxon! Three of these instrument-shop facts are 100% genuine engineering, while one gruesome fiddle rumor owes its name to a word mix-up. Spot the myth!",
+    "choices": [
+      "Stradivari built harps and guitars",
+      "Concert tubas uncoil to 16 feet",
+      "Grand piano strings pull 20 tons",
+      "Violins used real cat intestines"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Traditional \"catgut\" strings were always twisted from sheep or goat intestines—never house cats; historians trace the term to old \"kit\" pocket fiddles!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_29_stevie_nicks_dreams",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Sneaking into Sly Stone's red-velvet pit studio during Fleetwood Mac's stormy 1976 breakup sessions, who penned the hypnotic #1 smash \"Dreams\" in just ten minutes?",
+    "choices": [
+      "Stevie Nicks",
+      "Christine McVie",
+      "Carole King",
+      "Chrissie Hynde"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Built on just two oscillating chords—F major and G major—\"Dreams\" soared back onto the Billboard Top 20 forty-three years later via a skateboarding TikTok!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_30_thelonious_monk_shades",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Wearing bamboo-framed sunglasses, stabbing jagged angular chords, and hopping off his bench mid-solo to shuffle in circles: which jazz icon wrote \"'Round Midnight\"?",
+    "choices": [
+      "Bud Powell",
+      "Thelonious Monk",
+      "Bill Evans",
+      "Art Tatum"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Monk is jazz's second-most-recorded composer behind Duke Ellington—even though he left behind a remarkably compact catalog of roughly 70 tunes!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_31_les_paul_multitrack",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Studio Ledger, 1948: Bolting an extra recording head onto an Ampex deck inside his garage, guitar inventor [ _____ ] pioneered modern multitrack overdubbing.",
+    "choices": [
+      "Leo Fender",
+      "Chet Atkins",
+      "Les Paul",
+      "Phil Spector"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "He also built \"The Log\"—a solid 4-by-4 pine beam fitted with guitar strings and Epiphone body wings—after nightclub crowds couldn't hear hollow acoustics!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_32_wall_of_sound_gold_star",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Cramming three grand pianos, a pack of guitars, and twin drum kits into tiny Gold Star Studio A so AM car radios boomed like symphonies created which 1963 sound?",
+    "choices": [
+      "Tape Flange",
+      "Slapback Echo",
+      "Stereo Panning",
+      "Wall of Sound"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Phil Spector hated stereo mixes—insisting mono fused twenty Wrecking Crew players into one cavernous pop thunderclap on hits like \"Be My Baby\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_33_king_tubby_dub",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "Towering hand-painted speaker stacks pulsing in Kingston yards while an electronics whiz drops vocals out via spring-reverb faders: who pioneered dub remixing?",
+    "choices": [
+      "King Tubby",
+      "Lee Scratch Perry",
+      "Peter Tosh",
+      "Jimmy Cliff"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Osbourne Ruddock salvaged a four-track mixing desk and played echo knobs like a live instrument—accidentally inventing the modern dance remix!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_34_bo_diddley_square_guitar",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Strumming a custom rectangular cigar-box-style Gretsch guitar, which rock pioneer stamped his name onto the infectious five-beat rhythm driving \"Not Fade Away\" and \"Faith\"?",
+    "choices": [
+      "Muddy Waters",
+      "Bo Diddley",
+      "Howlin' Wolf",
+      "Fats Domino"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Born Ellas Bates, he first built his boxy guitar in high school woodshop—because a skinny rectangular frame made wild onstage hip-swinging far easier!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_35_cd_ninety_min_myth",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "Control Room Klaxon! Three of these wild recording-tech stories are 100% documented studio truth, while one shiny plastic disc spec runs too long. Catch the fake!",
+    "choices": [
+      "Auto-Tune grew from oil-well math",
+      "Sinatra hated Strangers in the Night",
+      "Standard CDs hold 90 stereo minutes",
+      "Stayin' Alive used a taped drum loop"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Standard Red Book audio compact discs cap out at 74 to 80 minutes—and the Bee Gees jokingly credited their spliced tape-loop drummer as \"Bernard Lupe\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_36_rosalia_flamenco_thesis",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Turning her Barcelona college thesis on a 13th-century romance into Grammy-sweeping flamenco-pop album El Mal Querer, which Catalan star later dropped Motomami?",
+    "choices": [
+      "Karol G",
+      "Kali Uchis",
+      "Natalia Lafourcade",
+      "Rosalía"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Trained eight years in classical cante flamenco, she fused revving motorcycles and traditional handclaps into one of the 2020s' boldest pop sounds!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_37_vivaldi_red_priest",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 5,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Venice Gazette, 1725: Nicknamed \"The Red Priest\" for his fiery hair, baroque virtuoso [ _____ ] tucked four matching sonnets right into his seasonal violin scores.",
+    "choices": [
+      "Antonio Vivaldi",
+      "Claudio Monteverdi",
+      "Arcangelo Corelli",
+      "Domenico Scarlatti"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The poems literally map onto his musical sound effects—marking the exact bars where a shepherd's dog barks, summer gnats buzz, and winter teeth chatter!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_38_concert_pitch_440hz",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 5,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Adopted internationally in 1955 so an oboist in Tokyo matches a Steinway in Vienna, what exact vibration rate defines standard concert pitch A above middle C?",
+    "choices": [
+      "432 hertz",
+      "440 hertz",
+      "415 hertz",
+      "452 hertz"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Before 20th-century tuning treaties, \"pitch inflation\" ran wild—brass bands cranked A past 455 Hz to sound brighter, straining singers' vocal cords!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_39_mellotron_tape_flutes",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 5,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "Press any key on this heavy 1963 British wooden console and a hidden magnetic tape strip plays a real recorded flute—giving \"Strawberry Fields\" its eerie opening!",
+    "choices": [
+      "The Clavinet",
+      "The Rhodes Piano",
+      "The Mellotron",
+      "The Ondes Martenot"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Each tape strip sprang back after eight seconds, forcing rock keyboardists to master sneaky finger-swaps on the world's first analog sampler!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_juk_40_beethoven_ninth_london_myth",
+    "category": "JUKEBOX",
+    "domain": "POP_LIT",
+    "difficulty": 5,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "Conservatory Klaxon! Three of these wild classical-master anecdotes are true to the score, while one historic symphony premiere lands in the wrong capital. Nab the myth!",
+    "choices": [
+      "Bach walked 250 miles to hear an organ",
+      "Mozart wrote cheeky bathroom canons",
+      "Boléro repeats one rhythm 169 times",
+      "Beethoven debuted the Ninth in London"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Though London commissioned it, Beethoven premiered his Ninth in Vienna in May 1824—where a soloist gently turned him around to see the roaring ovation!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_01_gollum_riddles_dark",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Hiding on a slimy underground island playing lethal riddles in the dark, which ring-obsessed creature began life as a river-folk hobbit named Sméagol?",
+    "choices": [
+      "Gollum",
+      "Smaug",
+      "Saruman",
+      "Sauron"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "In the 1937 first edition of The Hobbit, Gollum willingly wagered his magic ring—Tolkien rewrote the scene once it became the sinister One Ring!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_02_cat_in_the_hat",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "A towering red-and-white striped stovepipe hat, a floppy bow tie, and a grinning visitor balancing a grumpy fishbowl atop an umbrella on one ball: name this 1957 storybook!",
+    "choices": [
+      "Horton Hears a Who!",
+      "The Cat in the Hat",
+      "Fox in Socks",
+      "One Fish Two Fish"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Challenged to replace dull Dick-and-Jane primers from a first-grade word list, Dr. Seuss built the whole riotous book out of just 236 unique words!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_03_lewis_carroll_rowboat",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Oxford Wire, 1862: Spinning tall tales during a sunny Thames rowboat picnic for young Alice Liddell, shy mathematics tutor Charles Dodgson adopted the pen name [ _____ ].",
+    "choices": [
+      "Mark Twain",
+      "George Eliot",
+      "Lewis Carroll",
+      "L. Frank Baum"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Dodgson built his pen name by turning \"Charles Lutwidge\" into Latin—Carolus Ludovicus—flipping the pair, and anglicizing it back into English!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_04_matilda_trunchbull",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Ignored by her crooked used-car-dealer parents, which five-year-old Roald Dahl bookworm discovers telekinetic powers just in time to topple tyrant Miss Trunchbull?",
+    "choices": [
+      "Pippi Longstocking",
+      "Ramona Quimby",
+      "Harriet Welsch",
+      "Matilda"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "In Roald Dahl's discarded first draft, Matilda was a wicked little prankster—until he flipped her into a kindhearted champion standing up to bullies!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_05_percy_jackson_haley",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "To encourage his son Haley—who had ADHD and dyslexia—middle-school teacher Rick Riordan turned Greek myths into bedtime adventures starring which Camp Half-Blood hero?",
+    "choices": [
+      "Percy Jackson",
+      "Artemis Fowl",
+      "Alex Rider",
+      "Ender Wiggin"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Riordan made his hero's dyslexia a superpower—explaining that demigods' brains are naturally hardwired to read ancient Greek instead of English!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_06_hundred_acre_wood",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "A hand-drawn ink map dotted with Owl's chestnut tree, Eeyore's gloomy thistle patch, and a wooden Poohsticks footbridge: name A. A. Milne's beloved woodland!",
+    "choices": [
+      "Sherwood Forest",
+      "Hundred Acre Wood",
+      "Fangorn Forest",
+      "Forbidden Forest"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Milne modeled it straight off Ashdown Forest's Five Hundred Acre Wood in Sussex—where fans still drop twigs off the real Poohsticks Bridge today!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_07_shakespeare_100_plays_myth",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "Bookshop Klaxon! Three of these classic author stories are 100% genuine literary history, while one Bard catalog count wildly inflates his output. Spot the myth!",
+    "choices": [
+      "Barrie gifted Peter Pan to a hospital",
+      "Seuss wrote Green Eggs on a $50 bet",
+      "Shakespeare wrote 100 stage plays",
+      "Mary Shelley began Frankenstein at 18"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Scholars credit Shakespeare with roughly 37 to 39 plays plus 154 sonnets—still astonishing output, yet nowhere near one hundred stage dramas!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_08_katniss_everdeen_root",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Volunteering in place of her younger sister Prim at District 12's Reaping, which sharp-shooting heroine shares her first name with an edible swamp arrowhead plant?",
+    "choices": [
+      "Tris Prior",
+      "Lyra Belacqua",
+      "Clary Fray",
+      "Katniss Everdeen"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Author Suzanne Collins got the spark for The Hunger Games one night flipping TV channels between bubbly reality-TV competitions and live war coverage!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_09_pennywise_derry_drain",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Paperback Wire, 1986: Luring paper boats toward a rainy storm drain with floating balloons, shapeshifting terror [ _____ ] awakens in Derry, Maine every 27 years.",
+    "choices": [
+      "Pennywise",
+      "Randall Flagg",
+      "Cujo",
+      "Annie Wilkes"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Stephen King dreamed up the monster strolling across a lonely Colorado footbridge, picturing a creepy modern fairy-tale troll lurking underneath!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_10_old_man_and_the_sea",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Ending an unlucky 84-day dry spell by hooking an 18-foot blue marlin off Cuba's coast, weathered fisherman Santiago battles relentless sharks in which 1952 novella?",
+    "choices": [
+      "Treasure Island",
+      "The Old Man and the Sea",
+      "Captains Courageous",
+      "Life of Pi"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Life magazine printed the entire novella in one September 1952 issue—selling 5.3 million copies in two days and helping clinch Hemingway's Nobel!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_11_phantom_tollbooth",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "A bored boy steers a toy electric car past a cardboard booth into Dictionopolis, meeting Tock the ticking watchdog and literally eating his own words: name this 1961 classic!",
+    "choices": [
+      "A Wrinkle in Time",
+      "The Borrowers",
+      "The Phantom Tollbooth",
+      "James and the Giant Peach"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Architect Norton Juster drafted it while procrastinating on an urban-design grant—sharing his Brooklyn brownstone with cartoonist Jules Feiffer!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_12_miss_marple_knitter",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Quietly clicking knitting needles in sleepy village St. Mary Mead, which sharp-eyed sleuth cracks murders by matching killers to old local gossips she knew years ago?",
+    "choices": [
+      "Nancy Drew",
+      "Jessica Fletcher",
+      "Harriet Vane",
+      "Miss Marple"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Agatha Christie modeled Marple partly on her own sweet-looking grandmother—who always politely expected the absolute worst of people and was right!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_13_ray_bradbury_dimes",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Library Ledger, 1953: Feeding dimes into a rented UCLA basement typewriter every thirty minutes, sci-fi poet [ _____ ] typed out Fahrenheit 451 for $9.80 total.",
+    "choices": [
+      "Ray Bradbury",
+      "Arthur C. Clarke",
+      "Robert Heinlein",
+      "Philip K. Dick"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Between sprints, Bradbury dashed upstairs to browse library stacks—and always insisted his novel was more about mindless TV screens than censorship!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_14_phileas_fogg_dateline",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Sure he arrived in London five minutes late and blew his £20,000 Reform Club wager, which Jules Verne globetrotter forgot he gained an entire extra day by heading east?",
+    "choices": [
+      "Captain Nemo",
+      "Phileas Fogg",
+      "Baron Munchausen",
+      "Lemuel Gulliver"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "While the novel ran in French newspaper installments in 1872, real steamship companies actually offered Verne cash bribes to put Fogg aboard their liners!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_15_red_hunting_hat",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "Bought for a single dollar in New York and worn backward with its long peak facing behind him: which quirky trademark cap shields Holden Caulfield from \"phonies\"?",
+    "choices": [
+      "Deerstalker cap",
+      "Tweed newsboy cap",
+      "Red hunting hat",
+      "Green bowler hat"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "J. D. Salinger despised cover art—so after early printings, he insisted The Catcher in the Rye ship in plain covers with zero illustrations!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_16_little_women_concord",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Basing fiery aspiring writer Jo March on her own rebellious youth in Concord, Massachusetts, Louisa May Alcott dashed off which 1868 bestseller in ten hectic weeks?",
+    "choices": [
+      "Anne of Green Gables",
+      "The Secret Garden",
+      "Heidi of the Alps",
+      "Little Women"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Alcott never wanted Jo to marry anyone—only pairing her with quirky older Professor Bhaer to outwit readers begging her to wed Jo to boy-next-door Laurie!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_17_hemingway_pulitzers_myth",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "Reading Room Klaxon! Three of these colorful author day-jobs and mysteries really happened, while one celebrated novelist's trophy tally stretches the truth. Spot the lie!",
+    "choices": [
+      "Hemingway won three Pulitzer Prizes",
+      "Twain piloted Mississippi riverboats",
+      "Orwell served as a Burma policeman",
+      "Christie vanished for eleven days"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Ernest Hemingway won just one Pulitzer Prize—in 1953 for The Old Man and the Sea—before taking home the Nobel Prize in Literature a year later!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_18_arrakis_oregon_dunes",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Inspired after reporting on a real U.S. government effort to tame drifting Oregon coastal sand dunes with grass, Frank Herbert invented which arid spice-world in Dune?",
+    "choices": [
+      "Tatooine",
+      "Arrakis",
+      "Trantor",
+      "Hyperion"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Over twenty mainstream book houses rejected Dune—until Chilton Books, famed for printing auto-repair manuals, gambled on the giant sci-fi epic!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_19_maya_angelou_caged_bird",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Spending five silent childhood years memorizing Shakespeare and Dunbar before finding her booming voice, who authored I Know Why the Caged Bird Sings?",
+    "choices": [
+      "Toni Morrison",
+      "Zora Neale Hurston",
+      "Maya Angelou",
+      "Alice Walker"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "To write uninterrupted, Angelou rented bare local hotel rooms at dawn—stripping wall art and keeping only a Bible, sherry, and legal pads!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_20_kurt_vonnegut_so_it_goes",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Punctuating every death—from bombed soldiers to flat champagne—with the dry refrain \"So it goes\" 106 times in Slaughterhouse-Five, which satirist survived Dresden as a POW?",
+    "choices": [
+      "Joseph Heller",
+      "Thomas Pynchon",
+      "Don DeLillo",
+      "Kurt Vonnegut"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Before fame hit, Vonnegut ran an early Cape Cod Saab dealership—joking Swedes denied him a Nobel Prize because he was so bad at selling cars!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_21_isaac_asimov_three_laws",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Sci-Fi Wire, 1942: Tired of pulp stories where metal servants always ran amok, prolific biochemist [ _____ ] coined \"robotics\" and drafted the Three Laws.",
+    "choices": [
+      "Isaac Asimov",
+      "Stanisław Lem",
+      "H. G. Wells",
+      "Karel Čapek"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Asimov wrote or edited over 500 books spanning nine of the ten main Dewey Decimal categories—missing only Philosophy!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_22_long_john_silver_parrot",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "A tattered X-marked parchment of Spyglass Hill, a crutch tucked under one arm, and a green parrot shrieking \"Pieces of eight!\": who charms young Jim Hawkins on the Hispaniola?",
+    "choices": [
+      "Captain Hook",
+      "Long John Silver",
+      "Captain Ahab",
+      "Captain Flint"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Robert Louis Stevenson based Silver's booming charisma and missing leg on his real poet friend William Ernest Henley—writer of \"Invictus\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_23_percival_everett_james",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Winning the 2025 Pulitzer Prize for \"James\"—retelling Huckleberry Finn through Jim's razor-sharp intellect—which author also inspired the Oscar hit American Fiction?",
+    "choices": [
+      "Colson Whitehead",
+      "Ta-Nehisi Coates",
+      "Percival Everett",
+      "Jesmyn Ward"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "In James, enslaved characters speak flawless educated English among themselves and only switch to broken \"slave talk\" to disarm clueless white listeners!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_24_leguin_left_hand_darkness",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Sweeping both the Hugo and Nebula Awards in 1970, who sent envoy Genly Ai across the frozen planet Gethen in The Left Hand of Darkness?",
+    "choices": [
+      "Margaret Atwood",
+      "Doris Lessing",
+      "Madeleine L'Engle",
+      "Ursula K. Le Guin"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Daughter of two famed Berkeley anthropologists, Le Guin crafted alien worlds like real field studies—complete with kinship rules and folklore!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_25_raymond_chandler_marlowe",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Fired as a California oil executive at age 44 during the Depression, who turned to pulp crime mags and created wisecracking L.A. sleuth Philip Marlowe?",
+    "choices": [
+      "Raymond Chandler",
+      "Dashiell Hammett",
+      "James M. Cain",
+      "Mickey Spillane"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Whenever stuck on a crime plot, Chandler famously advised pulp writers to \"have a man come through a door with a gun in his hand\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_26_cuckoos_nest_kesey",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Paperback Wire, 1962: Narrated by towering Chief Bromden inside an Oregon hospital ward, night orderly Ken Kesey shook counterculture readers with [ _____ ].",
+    "choices": [
+      "The Bell Jar",
+      "One Flew Over the Cuckoo's Nest",
+      "The Electric Kool-Aid Test",
+      "A Clockwork Orange"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Its quirky title comes straight from an old American children's counting rhyme—\"one flew east, one flew west, one flew over the cuckoo's nest\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_27_phantom_of_the_opera",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "A shattered crystal chandelier, reserved Box Five, and a candlelit gondola gliding across an underground Parisian lake: name Gaston Leroux's 1910 gothic thriller!",
+    "choices": [
+      "The Hunchback of Notre-Dame",
+      "Les Misérables",
+      "Phantom of the Opera",
+      "The Picture of Dorian Gray"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Paris's Palais Garnier genuinely hides a vast vaulted cistern beneath its basement—built to weight down the foundations against groundwater!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_28_voltaire_birth_name_myth",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "Archive Klaxon! Three of these classic-author curiosities are 100% documented biography, while one sharp-tongued Enlightenment name claim misses the mark. Spot the lie!",
+    "choices": [
+      "Dante never married his muse Beatrice",
+      "Bram Stoker never visited Transylvania",
+      "Kafka asked Max Brod to burn drafts",
+      "Voltaire used his real birth name"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Born François-Marie Arouet in 1694, he coined \"Voltaire\" after leaving the Bastille—an anagram of Latinized AROVET LI (Arouet the Younger)!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_29_haruki_murakami_baseball",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Watching a 1978 Tokyo baseball game from the outfield grass as Dave Hilton ripped a double, which jazz-bar owner suddenly felt struck to write his first novel?",
+    "choices": [
+      "Haruki Murakami",
+      "Kazuo Ishiguro",
+      "Yukio Mishima",
+      "Banana Yoshimoto"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Stuck on stiff prose, Murakami typed his opening pages in simple English first—then translated them back to Japanese to unlock his breezy voice!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_30_alexandre_dumas_serials",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Paid by the line for gripping Parisian newspaper cliffhangers—and hiring collaborator Auguste Maquet to help plot at breakneck speed—who wrote The Count of Monte Cristo?",
+    "choices": [
+      "Honoré de Balzac",
+      "Alexandre Dumas",
+      "Émile Zola",
+      "Guy de Maupassant"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Because short dialogue lines paid the same as dense paragraphs, Dumas filled serial chapters with laconic servants giving snappy one-word replies!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_31_name_of_the_rose_eco",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Bestseller Wire, 1980: Blending Sherlock Holmes with medieval monastic poisonings inside an octagonal library maze, Italian scholar Umberto Eco stunned readers with [ _____ ].",
+    "choices": [
+      "Foucault's Pendulum",
+      "If on a Winter's Night",
+      "The Name of the Rose",
+      "Invisible Cities"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Eco playfully named his sleuth William of Baskerville and his blind head librarian Jorge of Burgos—saluting both Arthur Conan Doyle and Jorge Luis Borges!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_32_villanelle_poetry",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Built from nineteen interlocking lines where two echoing refrains braid back together at the climax—just like Dylan Thomas's \"Do not go gentle\"—name this strict poetic form!",
+    "choices": [
+      "Sestina",
+      "Terza rima",
+      "Ghazal",
+      "Villanelle"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Once a breezy Italian farm song, its modern 19-line rules froze by accident after French poet Jean Passerat penned one famous 1606 heartbreak gem!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_33_through_looking_glass",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "Stepping right past a misty drawing-room mantelpiece mirror onto a sunlit chessboard dotted with Jabberwocks, Tweedledee, and racing Red Queens: name this 1871 sequel!",
+    "choices": [
+      "Through the Looking-Glass",
+      "The Hunting of the Snark",
+      "The Water-Babies",
+      "Sylvie and Bruno"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The whole book plays out an actual chess problem printed in front—where Alice starts as a White Pawn and becomes Queen on the eighth rank!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_34_shirley_jackson_lottery",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Sparking the biggest flood of angry subscription cancellations in New Yorker history in June 1948, which chilling Shirley Jackson story centers on a battered black box?",
+    "choices": [
+      "The Yellow Wallpaper",
+      "The Lottery",
+      "A Good Man Is Hard to Find",
+      "The Monkey's Paw"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Jackson later marveled that amid hundreds of furious letters, several readers actually asked which New England town held the ritual so they could watch!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_35_homer_paper_myth",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "Library Klaxon! Three of these eccentric writing habits are 100% genuine literary lore, while one ancient Greek stationery detail misses history by centuries. Spot the myth!",
+    "choices": [
+      "Proust lined his bedroom with cork",
+      "Balzac drank dozens of coffees daily",
+      "Homer drafted the Odyssey on paper",
+      "Sartre declined the 1964 Nobel Prize"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Pulp paper wasn't invented in China until 900 years after Homer—his epics began as sung oral verse and were later copied onto Egyptian papyrus!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_36_persepolis_satrapi",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Drawn in stark black-and-white woodcut panels, which acclaimed graphic memoir follows young Marjane Satrapi smuggling Iron Maiden cassettes and Nike sneakers in 1980s Tehran?",
+    "choices": [
+      "Fun Home",
+      "Blankets",
+      "American Born Chinese",
+      "Persepolis"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Named after the ancient ceremonial capital of Persia, the book took off in France first before its animated film adaptation won the Jury Prize at Cannes!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_37_georges_perec_lipogram",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 5,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Paris Press, 1969: Pulling off an outrageous Oulipo dare by drafting a 300-page mystery without once typing the letter \"e,\" playful author [ _____ ] titled it La Disparition.",
+    "choices": [
+      "Georges Perec",
+      "Italo Calvino",
+      "Alain Robbe-Grillet",
+      "Samuel Beckett"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Translator Gilbert Adair even turned it into English as A Void without a single \"e\"—and several French reviewers never noticed the missing vowel!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_38_sappho_tenth_muse",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 5,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Hailed by Plato as the \"Tenth Muse,\" which ancient Greek lyric poet survives mostly in tantalizing torn papyrus fragments rescued from Egyptian mummy wrappings?",
+    "choices": [
+      "Pindar",
+      "Sappho",
+      "Ovid",
+      "Catullus"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Out of nine ancient scrolls celebrated across Greece, only her \"Ode to Aphrodite\" survives intact—yet scholars still unearth lost verses today!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_39_library_of_babel",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 5,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "Endless hexagonal rooms shelved with 410-page books holding every random combo of 25 symbols—hiding both gibberish and your true future: name Borges's 1941 story!",
+    "choices": [
+      "Garden of Forking Paths",
+      "The Book of Sand",
+      "The Library of Babel",
+      "Funes the Memorious"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Borges wrote the dazzling fable during a dull municipal library job in Buenos Aires, ducking into its chilly basement to dream up infinities!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_lit_40_dante_latin_myth",
+    "category": "LITERATURE",
+    "domain": "POP_LIT",
+    "difficulty": 5,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "Rare-Books Klaxon! Three of these odd classical publishing stories are 100% documented history, while one Florentine poet's language choice gets it backwards. Nab the fake!",
+    "choices": [
+      "Gutenberg printed Bibles on calfskin",
+      "Cervantes lost use of his left hand",
+      "Lord Byron kept a pet bear at college",
+      "Dante penned Inferno in pure Latin"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Defying scholarly snobbery, Dante wrote his Divine Comedy in lively everyday Tuscan—helping cement that dialect as modern Italy's national language!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_01_vitruvian_man_ratio",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Blending Roman architecture with Renaissance anatomy, Leonardo da Vinci drew a figure with outstretched arms fitting inside both a circle and a square in what ink study?",
+    "choices": [
+      "Vitruvian Man",
+      "The Thinker Sketch",
+      "David Proportion",
+      "Proportion of Atlas"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "To guard its fragile 1490 ink from light damage, Venice's Accademia locks the drawing in darkness and displays it roughly once a decade!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_02_the_great_wave_hokusai",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "Clawed cobalt-blue ocean crests tower over three rowing wooden fishing boats while tiny snow-capped Mount Fuji sits serene in the trough: name Hokusai's 1831 woodblock print!",
+    "choices": [
+      "Red Fuji at Dawn",
+      "The Great Wave",
+      "Bridge in Sudden Rain",
+      "Sea of Indigo Pines"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Hokusai used newly imported synthetic Prussian blue pigment from Europe—selling cheap prints for the price of two bowls of soba noodles!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_03_picasso_blue_period",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Paris Gallery Wire, 1901: Grieving the sudden loss of close friend Carlos Casagemas, young Picasso painted gaunt blind guitarists in sombre indigo during his [ _____ ].",
+    "choices": [
+      "Rose Period",
+      "Cubist Phase",
+      "Blue Period",
+      "Classic Era"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "X-rays of \"The Old Guitarist\" exposed a ghostly seated woman painted underneath—Picasso was simply too broke in Paris to buy fresh canvas!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_04_frank_lloyd_wright",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Pioneering low-slung Prairie homes, Pennsylvania's waterfall-straddling Fallingwater, and New York's spiraling Guggenheim, who defined organic American architecture?",
+    "choices": [
+      "Mies van der Rohe",
+      "Philip Johnson",
+      "Louis Kahn",
+      "Frank Lloyd Wright"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "When a client complained his leaky roof dripped straight onto his dinner table, Wright famously replied: \"Well, why don't you just move the table?\"",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_05_auguste_rodin_bronze",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "When his 1877 nude sculpture The Age of Bronze looked startlingly lifelike, furious Parisian judges accused which master sculptor of secretly casting a real human body?",
+    "choices": [
+      "Auguste Rodin",
+      "Donatello",
+      "Antonio Canova",
+      "Henry Moore"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Rodin brought photos of his Belgian soldier model to clear his name—and deliberately sculpted later statues larger than life to stop copycat claims!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_06_christinas_world_wyeth",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "A woman in a faded pink dress rests in golden Maine meadow grass, bracing thin arms as she gazes uphill toward a weathered gray clapboard farmhouse: name this 1948 icon!",
+    "choices": [
+      "Sunday on the Meadow",
+      "Christina's World",
+      "New England Autumn",
+      "Farmland at Dusk"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Andrew Wyeth painted neighbor Anna Christina Olson, who had a nerve disorder yet fiercely refused a wheelchair—preferring to crawl across her fields!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_07_picasso_only_abstract_myth",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "Gallery Klaxon! Three of these art-history gems hang straight on the museum wall, while one sweeping claim about a Cubist icon's skills misses completely. Spot the myth!",
+    "choices": [
+      "Da Vinci wrote notebook mirror-script",
+      "Monet dug his own Giverny lily pond",
+      "Picasso painted only abstract art",
+      "Michelangelo signed only his Pietà"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "At just fifteen, Picasso painted lifelike academic portraits so skilled his own art-teacher father handed him his brushes—before Pablo broke the rules!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_08_gustav_klimt_the_kiss",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Shimmering with genuine 24-karat gold leaf, swirling rectangles, and tiny floral circles, which radiant 1908 Viennese masterpiece by Gustav Klimt shows a kneeling embrace?",
+    "choices": [
+      "The Lovers",
+      "Golden Adele",
+      "The Embrace",
+      "The Kiss"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Son of a gold engraver, Klimt layered real gold and silver leaf onto his canvas—and the Austrian state bought it before it was even finished!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_09_sputnik_chandelier_1960s",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 1,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Mid-Century Wire: Shooting brass rods outward from a gleaming central orb into a starburst of bare glowing bulbs, the atomic-age [ _____ ] defined 1960s mod living rooms.",
+    "choices": [
+      "Sputnik chandelier",
+      "Arco floor lamp",
+      "Tiffany shade",
+      "Banker's lantern"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Italian designer Gino Sarfatti actually sketched that spiky starburst in 1939—almost two decades before the 1957 Soviet satellite gave it its name!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_10_norman_rockwell_covers",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Painting 322 Saturday Evening Post covers plus the 1943 Four Freedoms series that raised $132 million in war bonds, who captured small-town America with playful humor?",
+    "choices": [
+      "Maxfield Parrish",
+      "Norman Rockwell",
+      "N. C. Wyeth",
+      "Grant Wood"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Late in life, Rockwell left the Post for Look magazine—painting bold civil-rights landmarks like six-year-old Ruby Bridges striding past tomatoes!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_11_rene_magritte_apple",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "A black bowler hat, red tie, and buttoned dark coat against a cloudy sea—yet a floating crisp green apple hides the man's entire face: who painted The Son of Man?",
+    "choices": [
+      "Max Ernst",
+      "Joan Miró",
+      "René Magritte",
+      "Giorgio de Chirico"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Unlike wilder surrealists, Magritte lived like a quiet Brussels clerk—painting mind-benders in his tidy dining room wearing a crisp jacket and tie!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_12_buckminster_fuller_expo",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Creating Montreal's gleaming 20-story Expo 67 Biosphere dome and the three-wheeled Dymaxion car, which visionary architect popularized the triangular geodesic sphere?",
+    "choices": [
+      "Walter Gropius",
+      "Marcel Breuer",
+      "Richard Neutra",
+      "Buckminster Fuller"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Chemists were so inspired by his sturdy pentagon-and-hexagon domes they named the 60-atom soccer-ball carbon molecule \"buckminsterfullerene\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_13_rembrandt_self_portraits",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Amsterdam Ledger: Leaving over eighty unflinching mirrors of himself from rosy twenty-something grin to sagging bankrupt elder, Dutch master [ _____ ] invented visual memoir.",
+    "choices": [
+      "Rembrandt",
+      "Johannes Vermeer",
+      "Frans Hals",
+      "Peter Paul Rubens"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Unlike flatterers who idealized patrons, Rembrandt practiced wild scowls and raised brows in a mirror—using his own face as a free acting studio!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_14_edward_hopper_jo_model",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Asking his artist wife Josephine to pose for nearly every solitary woman in his sunlit hotel rooms and late-night diners, who turned quiet urban loneliness into iconic art?",
+    "choices": [
+      "George Bellows",
+      "Edward Hopper",
+      "Thomas Hart Benton",
+      "Charles Sheeler"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Jo kept meticulous ledgers sketching every canvas Edward finished, logging his paints, sizes, buyers, and cheeky nicknames for his characters!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_15_terracotta_army_xian",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "Rows of 8,000 life-sized clay archers, charioteers, and armored horses—each bearing unique ears, beards, and topknots—guard an underground tomb in Xi'an as what wonder?",
+    "choices": [
+      "Han Jade Legion",
+      "Ming Porcelain Guard",
+      "Terracotta Army",
+      "Tang Bronze Cavalry"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Farmers digging a well uncovered the clay heads in 1974—the soldiers were once painted bright purple, pink, and turquoise before air faded them!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_16_ansel_adams_roof_deck",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Bolting a wooden shooting deck atop his station wagon to haul a 50-pound camera across Yosemite and New Mexico, who shot crisp monochrome Moonrise over Hernandez?",
+    "choices": [
+      "Walker Evans",
+      "Edward Weston",
+      "Alfred Stieglitz",
+      "Ansel Adams"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Trained as a concert pianist first, Adams famously compared a camera negative to a musical score—and darkroom printing to performing it live!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_17_taj_mahal_gold_myth",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "Blueprint Klaxon! Three of these world-landmark construction facts hold up cleanly, while one dazzling Agra material claim glitters a bit too hard. Spot the myth!",
+    "choices": [
+      "Taj Mahal is carved of solid gold",
+      "Eiffel built a private flat at the top",
+      "Big Ben names the bell, not the tower",
+      "Empire State rose in just 410 days"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "The Taj Mahal is brick clad in luminous white Makrana marble inlaid with jade and jasper—blushing soft pink at dawn and glowing silver by moonlight!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_18_yves_saint_laurent_mod",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Dazzling 1965 Paris with shift dresses modeled straight on Piet Mondrian grids—then debuting Le Smoking tuxedo for women in 1966—which couturier defined mod chic?",
+    "choices": [
+      "Christian Dior",
+      "Yves Saint Laurent",
+      "Pierre Cardin",
+      "Cristóbal Balenciaga"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Before launching his own label, Saint Laurent became head designer at Christian Dior at age twenty-one—earning standing ovations on his debut!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_19_edgar_degas_backstage",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 2,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Skipping breezy outdoor picnics for smoky gaslit rehearsal halls, which French Impressionist drew over 1,500 pastels and canvases of ballet dancers stretching?",
+    "choices": [
+      "Pierre-Auguste Renoir",
+      "Camille Pissarro",
+      "Edgar Degas",
+      "Berthe Morisot"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Degas insisted he didn't paint ballerinas because they were pretty—calling dancers \"a pretext for painting pretty fabrics and rendering movement\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_20_sandro_botticelli_revival",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "So forgotten after his 1510 death that his works gathered dust in Florence storerooms for three centuries, which Renaissance master painted Venus riding a shell?",
+    "choices": [
+      "Fra Angelico",
+      "Piero della Francesca",
+      "Titian Vecellio",
+      "Sandro Botticelli"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "His real surname was Filipepi—\"Botticelli\" means \"little barrel,\" a cheeky nickname originally pinned on his chubby older brother Giovanni!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_21_carmine_cochineal_dye",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Atelier Ledger, 1550: Crushed from 70,000 tiny scale insects scraped off Mexican prickly-pear cacti per pound, vivid [ _____ ] pigment dressed Renaissance cardinals.",
+    "choices": [
+      "Carmine red",
+      "Vermilion clay",
+      "Ochre sienna",
+      "Cobalt crimson"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Spain guarded its cochineal monopoly under penalty of death—and the natural insect dye still tints red lipsticks, Campari, and pink yogurts today!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_22_saarinen_tulip_chair",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "A sleek white molded fiberglass shell tapering smoothly down into one slender round aluminum stem—later gracing Star Trek's Enterprise bridge: name this 1956 seat!",
+    "choices": [
+      "Egg Chair",
+      "Tulip Chair",
+      "Barcelona Chair",
+      "Wassily Chair"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Eero Saarinen swore to wipe out the \"ugly, confusing slum of legs\" crowding under tables—replacing four legs with one sculptural flower stem!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_23_spiral_jetty_utah",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Hauling 6,650 tons of black basalt boulders into Utah's rosy-pink Great Salt Lake in 1970, land artist Robert Smithson coiled a 1,500-foot stone curl titled what?",
+    "choices": [
+      "Lightning Field",
+      "Sun Tunnels",
+      "Spiral Jetty",
+      "Double Negative"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Salt-loving microbes tint the water bubble-gum pink, and high lake levels submerged the artwork for nearly thirty years before drought revealed it!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_24_ukiyo_e_floating_world",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Meaning \"pictures of the floating world,\" which Edo-period Japanese woodblock genre shipped overseas as porcelain packing paper and electrified Monet and Van Gogh?",
+    "choices": [
+      "Sumi-e",
+      "Nihonga",
+      "Origami",
+      "Ukiyo-e"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Van Gogh adored these bold flat-color prints so deeply he collected over 400 sheets and copied Hiroshige's rainy bridges stroke-for-stroke in oil!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_25_migrant_mother_lange",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Turning back twenty miles on a rainy 1936 California highway, Dorothea Lange snapped seven frames inside a Nipomo pea-pickers' tent—capturing what haunting portrait?",
+    "choices": [
+      "Migrant Mother",
+      "Dust Bowl Farmer",
+      "American Sharecropper",
+      "Valley of Tears"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Within days of newspapers printing Florence Owens Thompson's worried gaze, federal officials rushed 20,000 pounds of food straight to the starving camp!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_26_winged_victory_louvre",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Louvre Wire: Crowning the grand Daru staircase as sea wind whips wet carved Parian marble drapery backward, the headless [ _____ ] once rode an ancient Greek warship prow.",
+    "choices": [
+      "Venus of Urbino",
+      "Winged Victory",
+      "Athena Parthenos",
+      "Discobolus"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Diplomat Charles Champoiseau dug up 100+ marble shards on Samothrace in 1863—and its right wing is actually a mirror-image plaster cast of the left!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_27_louise_bourgeois_maman",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "Straddling museum plazas on thirty-foot bronze legs with a wire sac cradling real marble eggs overhead: who sculpted the towering \"Maman\" spiders honoring her mother?",
+    "choices": [
+      "Barbara Hepworth",
+      "Eva Hesse",
+      "Louise Bourgeois",
+      "Niki de Saint Phalle"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Far from horror, Bourgeois called spiders clever, protective healers—honoring her weaver mother who spent her days patiently mending antique cloth!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_28_watercolor_waterproof_myth",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "Studio Easel Klaxon! Three of these fine-art material rules are pure paint-box science, while one wet-medium claim dries completely wrong. Catch the myth!",
+    "choices": [
+      "True fresco locks color in wet lime",
+      "Egg yolk bound medieval icon paints",
+      "Caravaggio skipped pencil sketches",
+      "Watercolors dry 100% waterproof"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Unlike acrylic plastics, gum-arabic watercolors stay water-soluble even decades later—letting artists lift soft highlights back out with a damp brush!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_29_ai_weiwei_sunflower_seeds",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 3,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Hiring 1,600 Jingdezhen artisans to hand-paint 100 million porcelain sunflower seeds blanketing Tate Modern's Turbine Hall in 2010, who created that sea of crunch?",
+    "choices": [
+      "Ai Weiwei",
+      "Takashi Murakami",
+      "Cai Guo-Qiang",
+      "Olafur Eliasson"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Guests walked right across the crunch until curators spotted clouds of fine porcelain dust rising—switching it into a hands-off panoramic sea!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_30_milton_glaser_i_love_ny",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Scribbling a red crayon heart on a torn envelope in the back of a Manhattan cab in 1977—and doing the job completely pro bono—which graphic legend designed \"I ♥ NY\"?",
+    "choices": [
+      "Paul Rand",
+      "Milton Glaser",
+      "Paula Scher",
+      "Stefan Sagmeister"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Glaser figured the state ad campaign would run two months and vanish—so he gave away full rights to history's most-imitated T-shirt emblem!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_31_fauvism_wild_beasts",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Paris Salon Wire, 1905: Seeing a bronze bust amid Matisse's acid-green cheek stripes, critic Louis Vauxcelles quipped \"Donatello among wild beasts\"—naming [ _____ ].",
+    "choices": [
+      "Cubism",
+      "Dadaism",
+      "Fauvism",
+      "Futurism"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Three years later, the exact same tart critic accidentally coined \"Cubism\" too—complaining Georges Braque reduced landscapes to \"little cubes\"!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_32_borobudur_java_stupas",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Built without a drop of mortar out of two million interlocking volcanic stones in 9th-century Java, which stepped Buddhist pyramid crowns its peak with 72 bell-shaped stupas?",
+    "choices": [
+      "Angkor Thom",
+      "Bagan Pagoda",
+      "Prambanan",
+      "Borobudur"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Hidden under volcanic ash and jungle for centuries, the giant stone mandala was rediscovered in 1814 and cleared by 200 workers hacking vines!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_33_yves_klein_ultramarine",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "Edge-to-edge electric matte ultramarine—zero brush lines, zero figures, pure buzzing cobalt velvet—whose patented 1960 pigment formula turned a single color into a trademark?",
+    "choices": [
+      "Yves Klein",
+      "Lucio Fontana",
+      "Ellsworth Kelly",
+      "Ad Reinhardt"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Ordinary oil varnishes dulled ultramarine dust, so Klein worked with a Paris chemist to suspend dry powder in matte resin—keeping its velvet glow!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_34_diego_velazquez_cross",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Sneaking himself with palette and paintbrush right into the royal nursery of Las Meninas, which Baroque court master painted King Philip IV's family for forty years?",
+    "choices": [
+      "Francisco Goya",
+      "Diego Velázquez",
+      "Bartolomé Murillo",
+      "Jusepe de Ribera"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Legend says King Philip IV personally painted the scarlet Cross of Santiago onto Velázquez's chest in the painting after knighting him in 1659!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_35_bauhaus_1955_myth",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "Design Desk Klaxon! Three of these iconic style-history milestones check out cleanly, while one legendary German art-school timeline runs two decades too long. Nab the lie!",
+    "choices": [
+      "Chanel made suntanned skin chic",
+      "Levi's patented copper rivets in 1873",
+      "Germany's Bauhaus ran until 1955",
+      "Pantone began as a print card firm"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Though its sleek ideals still shape modern phones and chairs, Nazi pressure forced Germany's Bauhaus school to close in 1933 after just 14 years!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_36_claes_oldenburg_spoon",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 4,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Blowing up a 45-foot steel clothespin in Philadelphia and a giant cherry-topped spoon bridge in Minneapolis, which 1960s Pop sculptor turned daily items into monuments?",
+    "choices": [
+      "Donald Judd",
+      "Richard Serra",
+      "Dan Flavin",
+      "Claes Oldenburg"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "He also stitched droopy vinyl \"soft sculptures\" of typewriters, light switches, and burgers—poking cheeky fun at stiff bronze civic statues!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_37_anamorphosis_holbein",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 5,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Gallery Ledger, 1533: Stretching a ghostly skull across the carpet of Holbein's The Ambassadors, the optical trick called [ _____ ] snaps sharp only from the side.",
+    "choices": [
+      "Anamorphosis",
+      "Foreshortening",
+      "Tenebrism",
+      "Pentimento"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The exact same stretched-perspective math paints giant highway words and rugby pitch logos today so they look crisp and upright to drivers and TV!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_38_louis_sullivan_function",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 5,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Mentoring young Frank Lloyd Wright while crowning Chicago's steel-framed skyscrapers with lush terracotta scrollwork, who coined \"form ever follows function\" in 1896?",
+    "choices": [
+      "Daniel Burnham",
+      "Louis Sullivan",
+      "Henry H. Richardson",
+      "William Le Baron Jenney"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Far from stark minimalism, Sullivan wrapped his soaring steel frames in botanical terracotta leaves—believing buildings should blossom like nature!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_39_muybridge_horse_panels",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 5,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "Twelve trip-wired cameras lined along a Palo Alto track in 1878 snap crisp frames of galloping mare Sallie Gardner—proving horses go airborne for which photographer?",
+    "choices": [
+      "Mathew Brady",
+      "Étienne-Jules Marey",
+      "Eadweard Muybridge",
+      "Nadar Tournachon"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Hired by rail baron Leland Stanford, his photos stunned artists—who for centuries painted galloping horses splayed out instead of tucked underneath!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_art_40_giotto_oil_glaze_myth",
+    "category": "FINE ARTS",
+    "domain": "POP_LIT",
+    "difficulty": 5,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "Curator's Klaxon! Three of these Old Master biographies check out in Vasari's vaults, while one 14th-century Tuscan studio claim jumps a full century ahead. Spot the fake!",
+    "choices": [
+      "Raphael died on his 37th birthday",
+      "El Greco stretched saints skyward",
+      "Dürer engraved a rhino sight unseen",
+      "Giotto painted using oil glazes"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Painting Padua's Scrovegni Chapel around 1305, Giotto used wet fresco and egg tempera—linseed oil glazing blossomed in Flanders a century later!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_01_carl_sagan_golden_record",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Packing whale songs, greetings in 55 tongues, and Bach onto twin gold-plated discs launched aboard NASA's 1977 Voyager probes, which astronomer chaired the cosmic mixtape?",
+    "choices": [
+      "Carl Sagan",
+      "Edwin Hubble",
+      "Frank Drake",
+      "Freeman Dyson"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "He also slipped in an hour of his future wife Ann Druyan's brainwaves—recorded days after they fell in love—so aliens might hear human romance!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_02_philippe_petit_wire",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "August 7, 1974: A figure in black pauses to lie flat on a slim cable 1,350 feet above stunned Manhattan commuters between the Twin Towers—who pulled off this coup?",
+    "choices": [
+      "Nik Wallenda",
+      "Philippe Petit",
+      "Alain Robert",
+      "Evel Knievel"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Prosecutors dropped charges in exchange for a free kids' show in Central Park—and the Port Authority gifted him a lifetime observation-deck pass!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_03_deep_blue_kasparov_1997",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Tech Wire, May 1997: Stunned after resigning in just nineteen moves of Game 6 in Manhattan, reigning chess king Garry Kasparov lost a landmark match to IBM's [ _____ ].",
+    "choices": [
+      "AlphaZero",
+      "Watson",
+      "Deep Blue",
+      "Stockfish"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Evaluating 200 million moves a second, IBM's chess supercomputer shook Kasparov with one eerie Game 2 move—later traced to a random tie-breaker bug!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_04_earth_day_1970",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Sparked by Senator Gaylord Nelson after a massive Santa Barbara oil spill, which grassroots day drew 20 million Americans into parks and streets on April 22, 1970?",
+    "choices": [
+      "Arbor Day",
+      "Clean Air March",
+      "Green Peace Day",
+      "Earth Day"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "That spring afternoon brought roughly 10% of the U.S. population outdoors—helping push Congress to launch the EPA and Clean Air Act within months!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_05_mr_zip_code_1963",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Rolled out on July 1, 1963 with a jaunty cartoon mailman named Mr. ZIP begging letter writers to add five digits, what stood for \"Zone Improvement Plan\"?",
+    "choices": [
+      "ZIP Code",
+      "Area Code",
+      "Route Number",
+      "Post Box ID"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The Post Office even recruited Broadway star Ethel Merman to belt a peppy ZIP-code jingle to \"Zip-a-Dee-Doo-Dah\" so families learned their five digits!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_06_unisphere_worlds_fair",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "Twelve stories of gleaming stainless-steel continents ringed by three tilted silver satellite orbits in Queens: name the 1964 New York World's Fair centerpiece!",
+    "choices": [
+      "The Trylon",
+      "The Unisphere",
+      "The Atomium",
+      "The Perisphere"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Still standing beside Queens's U.S. Open courts, the 350-ton steel globe presided over the debut of both the Ford Mustang and Belgian waffles!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_07_apollo_color_tv_myth",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "Newsroom Klaxon! Three of these 20th-century tech breakthroughs hit the exact wire record, while one famous 1969 lunar broadcast memory adds extra hue. Spot the myth!",
+    "choices": [
+      "Sputnik 1 was beach-ball sized",
+      "First network email flew in 1971",
+      "Apollo 11 moonwalk aired in color",
+      "Concorde crossed Atlantic in 3 hrs"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "To save weight and bandwidth, Apollo 11's iconic first step beamed down on a black-and-white slow-scan TV camera—color arrived on Apollo 12!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_08_ice_bucket_challenge",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Dousing everyone from Bill Gates and Lady Gaga to Kermit the Frog during summer 2014, which viral video craze raised over $115 million for ALS research in eight weeks?",
+    "choices": [
+      "Planking Craze",
+      "Mannequin Challenge",
+      "Harlem Shake",
+      "Ice Bucket Challenge"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Far from a fleeting stunt, those donations directly funded scientists who discovered NEK1—a major new ALS gene—and sped up a new FDA-approved drug!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_09_disneyland_opening_1955",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 1,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "California Wire, July 1955: Sinking heels into wet asphalt while counterfeit tickets doubled crowds on live ABC TV, [ _____ ] survived its chaotic \"Black Sunday\" debut.",
+    "choices": [
+      "Disneyland",
+      "Knott's Berry Farm",
+      "Universal Studios",
+      "Coney Island"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "During a morning plumbers' strike, Walt Disney had to pick working fountains or restrooms—wisely choosing restrooms, though guests blamed soda!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_10_new_coke_79_days",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Swapping a beloved 99-year-old soda formula in April 1985 sparked 400,000 angry calls, basement hoarding, and a retreat just 79 days later: what fizzled flop was it?",
+    "choices": [
+      "Crystal Pepsi",
+      "New Coke",
+      "Surge Soda",
+      "OK Soda"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "When skeptics whispered the fiasco was a sly marketing stunt, Coca-Cola chief Donald Keough laughed: \"We're not that dumb, and we're not that smart!\"",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_11_hubble_mirror_glasses",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "A foil cylinder 335 miles above Earth whose first 1990 star snapshots came back heartbreakingly fuzzy—until spacewalking astronauts fitted optical \"eyeglasses\" in 1993!",
+    "choices": [
+      "Chandra X-Ray",
+      "Kepler Probe",
+      "Hubble Telescope",
+      "Spitzer Array"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Its main mirror was ground too flat by 1/50th the width of a human hair—yet after the COSTAR fix, it beamed back the iconic Pillars of Creation!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_12_pet_rock_gary_dahl",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Nestling smooth Mexican beach pebbles inside air-holed cardboard boxes with a cheeky training manual, adman Gary Dahl sold 1.5 million of what quirky 1975 fad?",
+    "choices": [
+      "Mood Ring",
+      "Sea-Monkeys",
+      "Chia Pet",
+      "Pet Rock"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Bought at a builders' yard for a penny apiece and sold for $3.95 each, those zero-maintenance stones made Dahl an instant holiday millionaire!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_13_notre_dame_reopening_2024",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Paris Wire, December 2024: Five years after its blazing spire toppled before horrified TV viewers worldwide, ringing bells welcomed crowds back inside restored [ _____ ].",
+    "choices": [
+      "Notre-Dame",
+      "Sainte-Chapelle",
+      "Sacré-Cœur",
+      "Chartres Abbey"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Hewing 2,000 French oaks with medieval hand axes, 2,000 craftspeople also scrubbed centuries of soot off the limestone to reveal dazzling cream walls!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_14_arpanet_lo_1969",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "In October 1969, UCLA student Charley Kline tried typing \"LOGIN\" to Stanford 350 miles away—crashing after just \"LO\" during the debut of which proto-Internet network?",
+    "choices": [
+      "CompuServe",
+      "ARPANET",
+      "Usenet Grid",
+      "Minitel Net"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Professor Leonard Kleinrock beamed that no scripted line could top accidental \"LO\"—echoing Samuel Morse's famed 1844 message, \"Lo and behold!\"",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_15_hula_hoop_1958_craze",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "Candy-striped hollow Marlex plastic rings spinning furiously around millions of suburban 1958 waists—selling 25 million in four months for Wham-O: name this instant craze!",
+    "choices": [
+      "Frisbee Disc",
+      "Slinky Coil",
+      "Hula Hoop",
+      "Pogo Stick"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Inspired by Australian kids twirling bamboo rings, Wham-O couldn't patent a plain circle—so cheap knockoffs ended the craze almost as fast as it rose!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_16_national_55_mph_1974",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Signed into law in January 1974 to stretch rationed gasoline during the OPEC embargo—and protested later by rocker Sammy Hagar—what became the U.S. speed limit?",
+    "choices": [
+      "45 mph",
+      "50 mph",
+      "65 mph",
+      "55 mph"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "To dodge drivers cranking past the cap, U.S. automakers temporarily marked 55 mph in bold red numerals on speedometers and capped dials at 85 mph!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER",
+      "TOY_03_VERNIER_DIAL",
+      "TOY_10_CLIFFHANGERS_THROTTLE"
+    ],
+    "numeric": {
+      "target": 55,
+      "min": 30,
+      "max": 85,
+      "step": 5,
+      "unit": "mph"
+    }
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_17_iphone_app_store_myth",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "Silicon Valley Klaxon! Three of these digital-age origin gems are 100% documented history, while one iconic 2007 smartphone launch memory jumps a year ahead. Spot the fake!",
+    "choices": [
+      "iPhone launched with an App Store",
+      "First YouTube video ran 18 seconds",
+      "Amazon started selling only books",
+      "First SMS text read Merry Christmas"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "When the original iPhone shipped in June 2007, Steve Jobs initially resisted third-party apps—the App Store opened in July 2008 with 500 debut titles!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_18_rosalind_franklin_photo51",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Capturing the razor-sharp X-ray image \"Photo 51\" at King's College London in 1952, which British chemist delivered the key X-shaped clue proving DNA's double helix?",
+    "choices": [
+      "Dorothy Hodgkin",
+      "Rosalind Franklin",
+      "Barbara McClintock",
+      "Lise Meitner"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Because Nobel Prizes are never awarded posthumously, Franklin had passed away four years before Watson, Crick, and Wilkins won the 1962 prize!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_19_edward_r_murrow_mccarthy",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 2,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Signing off every CBS show with \"Good night, and good luck\" after covering London's Blitz live, which news titan confronted Senator Joseph McCarthy on See It Now?",
+    "choices": [
+      "Chet Huntley",
+      "Eric Sevareid",
+      "Edward R. Murrow",
+      "David Brinkley"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Murrow and producer Fred Friendly let McCarthy sink himself by airing the senator's own blistering quotes—drawing 15-to-1 letters cheering Murrow!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_20_rose_parade_first_color_tv",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 3,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Beamed coast-to-coast by NBC on New Year's Day 1954—when barely a few thousand color sets existed—which Pasadena floral spectacle marked nationwide color TV's debut?",
+    "choices": [
+      "Macy's Day Parade",
+      "Mardi Gras Krewe",
+      "Cherry Blossom Walk",
+      "Rose Parade"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "RCA stationed prototype $1,000 color sets inside downtown hotel lobbies and shop windows across 21 cities so crowds could press noses to the glass!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_21_pentagon_papers_ellsberg",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 3,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Press Wire, June 1971: Secretly copying 7,000 classified Vietnam pages at night, analyst Daniel Ellsberg sparked the historic [ _____ ] Supreme Court press-freedom clash.",
+    "choices": [
+      "Pentagon Papers",
+      "Warren Report",
+      "Church Files",
+      "Kerner Dossier"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "When courts paused the New York Times, the Washington Post grabbed the baton—winning a landmark 6-to-3 Supreme Court victory against censorship!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_22_trieste_mariana_trench",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 3,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "A sleek white submarine dangling a round steel sphere under gasoline tanks dives seven miles down in January 1960: where did bathyscaphe Trieste touch bottom?",
+    "choices": [
+      "Puerto Rico Trench",
+      "Mariana Trench",
+      "Mid-Atlantic Ridge",
+      "Tonga Abyss"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "At 35,800 feet down, an outer Plexiglas pane cracked with a gunshot boom—yet Jacques Piccard and Don Walsh stayed calm and spotted living flatfish!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_23_balloon_boy_hoax_2009",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 3,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Halting Denver runways while choppers chased a drifting silver Mylar saucer for two tense hours in October 2009, which viral hoax ended when a kid crawled from his attic?",
+    "choices": [
+      "Crop Circle Kid",
+      "Jetpack Man",
+      "Balloon Boy",
+      "Hovercraft Hoax"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The whole TV stunt unraveled live on Larry King Live that night when six-year-old Falcon blurted: \"You guys said we did this for the show!\"",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_24_silent_spring_carson",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 3,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Warning of a haunting future morning with zero birdsong from unchecked DDT spraying, which 1962 Rachel Carson bestseller launched the modern environmental movement?",
+    "choices": [
+      "The Population Bomb",
+      "A Sand County Almanac",
+      "Limits to Growth",
+      "Silent Spring"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Chemical firms spent $250,000 attacking Carson—which backfired when JFK read her book and convened a White House science panel that backed her up!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_25_macintosh_1984_superbowl",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 3,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Directed by Ridley Scott and aired once during Super Bowl XVIII, an athletic sledgehammer-thrower smashed Big Brother's giant screen to unveil which personal computer?",
+    "choices": [
+      "Macintosh",
+      "Commodore 64",
+      "IBM PCjr",
+      "Atari ST"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Apple's own board hated the ad so fiercely they tried to resell the Super Bowl time—until the ad agency failed to dump the final 60-second slot!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_26_little_rock_nine_1957",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 3,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Arkansas Wire, September 1957: Escorted up Central High's steps by the 101st Airborne under President Eisenhower's orders, brave Black teens entered history as the [ _____ ].",
+    "choices": [
+      "Selma Seven",
+      "Little Rock Nine",
+      "Greensboro Four",
+      "Montgomery Six"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Nine months later, senior Ernest Green became Central High's first Black graduate—with Dr. Martin Luther King Jr. sitting proudly in the family section!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_27_concorde_droop_snoot",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 3,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "A sleek white dart-winged airliner cruising at Mach 2 whose pointed nose hydraulically tilts downward for landing so pilots can actually spot the runway: name this 1976 icon!",
+    "choices": [
+      "Boeing 747SP",
+      "Lockheed Blackbird",
+      "Concorde",
+      "Tupolev Tu-144"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Friction heated Concorde so intensely at 1,350 mph that the fuselage stretched nearly ten inches longer mid-flight—opening a gap by the cockpit panel!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_28_watergate_1974_myth",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 3,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "Teletype Klaxon! Three of these headline dates match the front-page archive, while one infamous Washington hotel break-in timeline drops two years too late. Spot the myth!",
+    "choices": [
+      "Nixon resigned on August 9, 1974",
+      "MTV opened with Apollo 11 footage",
+      "The Berlin Wall stood for 28 years",
+      "Watergate burglary happened in 1974"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 2,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Guard Frank Wills noticed taped door latches at the Watergate on June 17, 1972—sparking a two-year scandal before Nixon resigned in August 1974!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_29_yusuf_dikec_paris_2024",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 3,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Strolling to the Paris 2024 Olympic shooting line in regular glasses, zero blinder lenses, and one hand casually tucked in his pocket to win silver, who went viral?",
+    "choices": [
+      "Yusuf Dikeç",
+      "Kim Ye-ji",
+      "Armand Duplantis",
+      "Stephen Nedoroscik"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "The 51-year-old retired Turkish officer laughed off spy memes—explaining he simply shoots both eyes open and never felt comfortable in bulky gear!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_30_twenty_one_quiz_scandal",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 4,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Shaking TV in 1959 when Columbia professor Charles Van Doren confessed to Congress that producers fed him answers and coached his brow-wipes, which quiz show fell?",
+    "choices": [
+      "$64,000 Question",
+      "Twenty-One",
+      "Name That Tune",
+      "Tic-Tac-Dough"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Outraged by rigged isolation booths, Congress amended the Communications Act in 1960 making quiz-show fixing a federal crime—sparking honest 60s TV!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_31_face_on_mars_viking_1976",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 4,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Space Wire, July 1976: Snapped over the Cydonia plain by NASA's Viking 1 orbiter, low midday sunlight cast eerie shadows across a mile-wide mesa dubbed the [ _____ ].",
+    "choices": [
+      "Pyramid of Phobos",
+      "Canal of Olympus",
+      "Face on Mars",
+      "Gate of Ares"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Tabloids hailed an ancient alien monument for twenty years—until sharp 1998 Mars Global Surveyor photos revealed an ordinary wind-eroded flat-topped hill!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_32_bretton_woods_1944",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 4,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Gathering 730 delegates from 44 Allied nations at a grand New Hampshire mountain resort in July 1944, which summit birthed the World Bank, IMF, and gold-pegged dollar order?",
+    "choices": [
+      "Dumbarton Oaks",
+      "Yalta Conference",
+      "Potsdam Summit",
+      "Bretton Woods"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Reopening the shuttered Mount Washington Hotel in haste, staff painted walls so late that Allied diplomats walked out with wet paint on their tuxedos!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_33_haight_ashbury_1967",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 4,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "Painted VW microbuses, beaded necklaces, and 100,000 flower-crowned wanderers packing Victorian porches near Golden Gate Park in 1967: name this San Francisco intersection!",
+    "choices": [
+      "Haight-Ashbury",
+      "Sunset-Vine",
+      "Castro-Market",
+      "Telegraph-Bancroft"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 2,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "By October 1967, overwhelmed locals staged a mock funeral—\"The Death of Hippie\"—parading a cardboard coffin stuffed with beads and tour-bus flyers!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_34_tylenol_tamper_seals_1982",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 4,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "After seven Chicago deaths from laced capsules in 1982, Johnson & Johnson pulled 31 million bottles and invented triple tamper-evident seals to rescue which brand?",
+    "choices": [
+      "Bayer Aspirin",
+      "Tylenol",
+      "Excedrin",
+      "Advil"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "That swift $100 million recall remains the business-school gold standard of crisis ethics—and gave every medicine bottle on Earth foil neck seals!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_35_welles_riots_myth",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 4,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "Broadcast Desk Klaxon! Three of these vintage TV and radio gems are 100% ratings history, while one Halloween panic tale was hyped by rival newspapers. Spot the myth!",
+    "choices": [
+      "First U.S. TV ad cost nine dollars",
+      "Cronkite choked up announcing JFK",
+      "War of the Worlds caused mass riots",
+      "Color sets lagged B&W until 1972"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 1,
+    "anchorIdx": 3,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "A live phone poll during Welles's 1938 show found barely 2% listening—newspapers blew up a handful of nervous calls to paint radio as reckless!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_36_freedom_riders_1961",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 4,
+    "cardStyle": "CLASSIC_CUE",
+    "stem": "Boarding integrated Greyhound buses out of Washington in May 1961 to test Supreme Court bans on segregated interstate terminals, who forced federal desegregation rules?",
+    "choices": [
+      "Albany Marchers",
+      "Selma Volunteers",
+      "Sit-In Pioneers",
+      "Freedom Riders"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Despite firebombed buses and brutal attacks in Alabama, 400+ volunteers kept riding until the Interstate Commerce Commission banned Jim Crow signs!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_37_stanislav_petrov_1983",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 5,
+    "cardStyle": "HEADLINE_BLANK",
+    "stem": "Cold War Wire, September 1983: Judging a screaming Soviet satellite alert of five U.S. missiles to be a computer glitch, duty officer [ _____ ] likely averted nuclear war.",
+    "choices": [
+      "Stanislav Petrov",
+      "Alexei Leonov",
+      "Oleg Penkovsky",
+      "Viktor Belenko"
+    ],
+    "answerIdx": 0,
+    "poisonedFixIdx": 1,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Petrov reasoned a real first strike would launch hundreds of missiles, not five—and probes confirmed sunlight bouncing off clouds fooled the satellite!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_38_ida_b_wells_data",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 5,
+    "cardStyle": "BINARY_SPLIT",
+    "stem": "Co-owning the Memphis Free Speech and publishing the 1892 statistical exposé Southern Horrors, which fearless reporter pioneered modern data-driven journalism?",
+    "choices": [
+      "Nellie Bly",
+      "Ida B. Wells",
+      "Margaret Fuller",
+      "Martha Gellhorn"
+    ],
+    "answerIdx": 1,
+    "poisonedFixIdx": 0,
+    "waiverPruneIdx": 2,
+    "anchorIdx": 3,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "After mobs burned her press while she traveled, Wells moved to Chicago, co-founded the NAACP, and earned a posthumous Pulitzer citation in 2020!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_39_holmdel_horn_big_bang",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 5,
+    "cardStyle": "PICTURE_MONITOR",
+    "stem": "A 50-foot aluminum sugar-scoop ear on a New Jersey hill where two Bell Labs physicists scrubbed off pigeon droppings in 1964—only to hear the Big Bang's echo inside what?",
+    "choices": [
+      "Arecibo Dish",
+      "Jodrell Bank",
+      "Holmdel Horn",
+      "Green Bank Ear"
+    ],
+    "answerIdx": 2,
+    "poisonedFixIdx": 3,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": false,
+    "ahaFactoid": "Penzias and Wilson blamed the steady hiss on warm \"white dielectric material\" from roosting pigeons—winning the 1978 Nobel once Princeton explained it!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  },
+  {
+    "canonicalEntityKey": "w4_psj_hdl_40_un_hq_geneva_myth",
+    "category": "HEADLINES",
+    "domain": "HIST_FACT",
+    "difficulty": 5,
+    "cardStyle": "SPOT_THE_MYTH",
+    "stem": "World Desk Klaxon! Three of these surprising 20th-century milestones are 100% documented archive fact, while one famous diplomatic address swaps continents. Spot the myth!",
+    "choices": [
+      "Alaska and Hawaii joined in 1959",
+      "First barcode scanned gum in 1974",
+      "Swiss women gained federal vote 1971",
+      "UN headquarters opened in Geneva"
+    ],
+    "answerIdx": 3,
+    "poisonedFixIdx": 2,
+    "waiverPruneIdx": 0,
+    "anchorIdx": 1,
+    "isKlaxonMyth": true,
+    "ahaFactoid": "Geneva hosted the old League of Nations, yet permanent UN headquarters opened along Manhattan's East River in 1951–52 on Rockefeller-gifted land!",
+    "supportedToys": [
+      "TOY_01_KNIFE_SWITCH",
+      "TOY_02_CONFIDENCE_PNEUMATIC",
+      "TOY_06_FUSE_WIRE_SNIPPER"
+    ]
+  }
+]

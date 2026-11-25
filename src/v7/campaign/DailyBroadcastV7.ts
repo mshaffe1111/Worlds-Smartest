@@ -9,10 +9,16 @@
 // ============================================================================
 
 import {
+  ALL_BOARD_PLAY_MODES_V7,
+  ALL_BOARD_UNLOCK_TOPOLOGIES_V7,
   ALL_CATEGORIES_V7,
+  ALL_RIVAL_IDS_V7,
+  BOARD_PLAY_MODE_TITLES_V7,
   DOMAIN_SPECS_V7,
   type BoardIdV7,
+  type BoardPlayModeV7,
   type BoardTwistIdV7,
+  type BoardUnlockTopologyV7,
   type CategoryIdV7,
   type ClassicTvTileTwistV7,
   type DailyBroadcastSaveV7,
@@ -22,7 +28,7 @@ import {
   type StageWorldIdV7,
   type ToyIdV7,
 } from '../contracts_v7';
-import { CAST_PROFILES_V7, RIVAL_IDS_V7 } from './CastAndRelicsCatalogV7';
+import { CAST_PROFILES_V7 } from './CastAndRelicsCatalogV7';
 
 export const DAILY_BROADCAST_STORAGE_KEY_V7 = 'ws_v7_daily_broadcast_save_1';
 
@@ -43,6 +49,9 @@ export interface DailyBroadcastBlueprintV7 extends EpisodeBlueprintV7 {
   readonly recommendedTurns: number; // 6-turn punchy coffee-break show (supports up to 10)
   readonly turnSeeds: readonly number[]; // Deterministic seeds for turns 1..12
   readonly featuredCategories: readonly CategoryIdV7[];
+  readonly boardPlayMode: BoardPlayModeV7; // Deterministic 8-mode rotation
+  readonly unlockTopology: BoardUnlockTopologyV7; // Deterministic 5-topology rotation
+  readonly comboKey: string; // `${boardPlayMode}::${unlockTopology}` (40 unique combos!)
 }
 
 export interface FormatDailyShareCardInputV7 {
@@ -99,7 +108,25 @@ const DAILY_LIVING_COLOR_SHOWCASES: readonly DailyStageShowcaseSpec[] = [
     stageId: 'STAGE_02_IBC_PRIMETIME_JUBILEE',
     boardId: 'BOARD_02_JUBILEE_HEX_BRIDGE',
     twistId: 'TWIST_02_HEX_BRIDGE_CHAIN',
-    bannerTitle: 'Primetime Jubilee Network Hour',
+    bannerTitle: 'Hollywood Honeycomb Network Hour',
+  },
+  {
+    stageId: 'STAGE_03_1926_VAUDEVILLE_PIT',
+    boardId: 'BOARD_03_VAUDEVILLE_GEAR_TRAIN',
+    twistId: 'TWIST_03_ESCAPEMENT_TICK_SHIFT',
+    bannerTitle: 'Burbank Pop-Art Prize Deck',
+  },
+  {
+    stageId: 'STAGE_04_1958_ISOLATION_VAULT',
+    boardId: 'BOARD_04_MAHOGANY_SWITCHBOARD',
+    twistId: 'TWIST_04_SUPERVISORY_RELAY_PAIR',
+    bannerTitle: '$64,000 Isolation Tote Special',
+  },
+  {
+    stageId: 'STAGE_05_1984_LARSON_CRT_LAB',
+    boardId: 'BOARD_05_LARSON_SPIN_RING',
+    twistId: 'TWIST_05_LARSON_HOT_SPOT',
+    bannerTitle: '1967 Apollo Color-Ring Showcase',
   },
   {
     stageId: 'STAGE_06_ATLANTIC_CITY_PIER',
@@ -111,54 +138,154 @@ const DAILY_LIVING_COLOR_SHOWCASES: readonly DailyStageShowcaseSpec[] = [
     stageId: 'STAGE_07_1969_MONTE_CARLO_CASINO',
     boardId: 'BOARD_07_MONTE_CARLO_SHOE',
     twistId: 'TWIST_07_BACCARAT_NATURAL_21',
-    bannerTitle: 'Monte Carlo Satellite Showcase',
+    bannerTitle: 'Monte Carlo Satellite Royale',
   },
   {
     stageId: 'STAGE_08_WORLDS_FAIR_GEODESIC',
     boardId: 'BOARD_08_GEODESIC_SUNDIAL',
     twistId: 'TWIST_08_SOLAR_MERIDIAN_SWEEP',
-    bannerTitle: 'World’s Fair Pavilion Broadcast',
+    bannerTitle: 'World’s Fair Unisphere Broadcast',
+  },
+  {
+    stageId: 'STAGE_09_CHANNEL_83_UHF_BARGE',
+    boardId: 'BOARD_09_PIRATE_UHF_DECK',
+    twistId: 'TWIST_09_PIRATE_CARRIER_LOCK',
+    bannerTitle: 'Channel 83 Offshore Memory Deck',
+  },
+  {
+    stageId: 'STAGE_10_SOVEREIGN_SANCTUM',
+    boardId: 'BOARD_10_SOVEREIGN_ZIGGURAT',
+    twistId: 'TWIST_10_ZIGGURAT_APEX_CROWN',
+    bannerTitle: 'Prime-Time Executive Ziggurat',
   },
   {
     stageId: 'STAGE_05_1984_LARSON_CRT_LAB',
-    boardId: 'BOARD_05_LARSON_SPIN_RING',
-    twistId: 'TWIST_05_LARSON_HOT_SPOT',
-    bannerTitle: '1967 Apollo Memory-Flash Showcase',
+    boardId: 'BOARD_11_WHEW_GAUNTLET',
+    twistId: 'TWIST_11_GAUNTLET_BLOCKADE_BREACH',
+    bannerTitle: 'Coast-to-Coast Spotlight Gauntlet',
+  },
+  {
+    stageId: 'STAGE_10_SOVEREIGN_SANCTUM',
+    boardId: 'BOARD_12_PENDULUM_BALANCE',
+    twistId: 'TWIST_12_FULCRUM_EQUILIBRIUM',
+    bannerTitle: 'Sale of the Century Deal Scale',
   },
 ];
 
 const DAILY_COLD_OPEN_LINES: Record<RivalIdV7, string> = {
+  DOTTY_VANCE:
+    'I packed two blue-ribbon pecan chiffons for the crew—now let’s see whose pantry smarts win America’s Daily Tote!',
   CARMEN_DELGADO:
-    'Same board coast-to-coast today—let’s keep it clean and see whose reflexes hold under the hot lamps!',
+    'Same board coast-to-coast after my Bellevue night shift—play square by the Amber Truce and may the sharpest mind take the purse!',
+  CHET_KOWALSKI:
+    'Laced up my lucky Milwaukee bowling shirt for today’s national feed—touch that top-row five-hundred plaque and watch me roll strikes!',
+  PEGGY_SUE_CONNORS:
+    'Just touched down from Rome on the Pan Am Clipper—fifty million living rooms have their tray tables locked for our Daily spin!',
   TOBY_OKAFOR:
-    'Every relay on today’s Daily Tote Board is humming—watch the Locked Vault and beat my tally if you can!',
+    'Every Con Ed transformer under Studio 6A is humming clean today—watch the Locked Vault and try breaking past my block!',
   INEZ_CALLAHAN:
-    'Fifty million homes get the exact same clues today. Read carefully before you slap that studio button!',
+    'Every household from Maine to Monterey faces the exact same card catalog today—read twice before you ring that studio bell!',
+  BUZZ_HALVORSEN:
+    'Slide rule’s zeroed and Cape Canaveral is tuned to Channel Four—one degree of drift on today’s Daily board and you’re splashdown!',
+  GIGI_ST_CLAIR:
+    'Soho to Manhattan on the same Daily Tote, darling—if a Big Wheel or Mystery Curtain blinks, I’m buying the whole rack!',
+  WALTER_PRINGLE:
+    'Treat today’s coast-to-coast grid like my Sunday Hartford crossword—ink only, zero erasers, and mind where I lay my blocks!',
+  BETTY_LOU_HARPER:
+    'Music Row’s got the studio monitor cranked up back in Nashville—save your sweetest high note for the final two turns, sugar!',
+  MILES_ELLINGTON:
+    'Same sheet music for fifty million cats today, baby—miss one off-beat syncopation on that board and I’m cutting your solo short.',
+  SYLVIE_BEAUMONT:
+    'A nationwide Daily menu deserves three-star nerve, mon cher—hesitate over the high-dollar plaques and your soufflé falls flat!',
+  MARGO_STERLING:
+    'Half of Madison Avenue is scoring today’s broadcast over martinis—I close six-figure boards before the sponsor break!',
+  HANK_MCCOY:
+    'I didn’t fly up from Houston to peck at hundred-dollar gravel—point me at today’s fattest vault and stand clear of the gusher!',
   ALASTAIR_KERR:
-    'Another afternoon, another challenger hoping a Secret Square saves them. Shall we test your nerve?',
-  SEO_YUN_KANG:
-    'I have already priced the odds on today’s board. One slip on the Mystery Curtain and the purse is mine.',
+    'How charming—every parlor in the Republic gets to measure its modest wits against Savile Row’s finest this afternoon.',
+  LANA_STARLING:
+    'Tell the director Camera Two is my good side—coast-to-coast ratings spike whenever I pull a Mystery Curtain on live TV!',
+  VINCE_CASTELLANO:
+    'Every living room in the country gets dealt the exact same shoe today—let’s see if your palms sweat when the late turns tighten.',
   REX_CALLOWAY:
-    'Smile for Camera One, pal—every living room in America is comparing their scorecard against ours today!',
+    'Smile for Camera One, pal—three hundred press boxes from Fenway to Candlestick are grading our Daily scorecard by supper!',
+  ARTHUR_PENDLETON:
+    'An admirable democratic experiment—one identical syllabus from coast to coast. Shall we convene today’s examination?',
+  NORMA_JEAN_BAKER:
+    'Everyone sees the same opening position today, yet almost everyone blunders by Move Four—watch the diagonals before you reach.',
+  STERLING_VANCE:
+    'Broad Street reads today’s Daily Tote like the closing Dow ticker—I’m cornering every high-yield square before the bell.',
+  SEO_YUN_KANG:
+    'Identical variables across every television set in America today—one sloppy hypothesis on the Curtain and the purse is mine.',
+  CLARA_VON_BERG:
+    'Silence in the balcony! Today’s national score demands brisk Viennese tempo—rush my cadence and I shall sweep the podium!',
+  VICTOR_LAZAR:
+    'Fifty million witnesses, one shared Tote Board, and zero margin for superstition—step to the lectern and prove you belong.',
 };
 
-let memoryFallbackSave: DailyBroadcastSaveV7 | null = null;
+type PersistedDailyBroadcastSaveV7 = DailyBroadcastSaveV7 & {
+  /** Pre-today streak base carried in from yesterday so `overwriteOfficialToday` never resets a multi-day streak to 1. */
+  readonly preTodayStreakBase?: number;
+  /** Pre-today best streak so overwriting today's official run keeps `bestStreak` accurate. */
+  readonly preTodayBestStreakBase?: number;
+};
+
+let memoryFallbackSave: PersistedDailyBroadcastSaveV7 | null = null;
+
+const VALID_DAILY_TILE_TOKENS_V7 = new Set<DailyTileHistoryTokenV7>([
+  'WIN',
+  'SECRET_WIN',
+  'VAULT_WIN',
+  'MYSTERY_WIN',
+  'SHOWCASE_WIN',
+  'MISS',
+]);
 
 function pad2(n: number): string {
   return n < 10 ? `0${n}` : `${n}`;
 }
 
-function parseIsoParts(dateIso: string): { year: number; month: number; day: number } {
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateIso.trim());
-  if (!m) {
-    const now = new Date();
-    return { year: now.getFullYear(), month: now.getMonth() + 1, day: now.getDate() };
+function sanitizeDailyNonNegInt(value: unknown, fallback: number = 0): number {
+  if (value === null || value === undefined || typeof value === 'boolean' || value === '') {
+    return fallback;
   }
-  return {
-    year: Number(m[1]),
-    month: Math.max(1, Math.min(12, Number(m[2]))),
-    day: Math.max(1, Math.min(31, Number(m[3]))),
-  };
+  const n = Number(value);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.max(0, Math.floor(n));
+}
+
+function parseStrictIsoParts(
+  dateIso: unknown,
+): { year: number; month: number; day: number } | null {
+  if (typeof dateIso !== 'string') return null;
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateIso.trim());
+  if (!m) return null;
+  const year = Number(m[1]);
+  const month = Number(m[2]);
+  const day = Number(m[3]);
+  if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+  // Reject calendar rollovers such as `2026-02-31`, `2025-02-29`, or `2026-04-31`.
+  const probe = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+  if (
+    probe.getUTCFullYear() !== year ||
+    probe.getUTCMonth() + 1 !== month ||
+    probe.getUTCDate() !== day
+  ) {
+    return null;
+  }
+  return { year, month, day };
+}
+
+/** Returns true strictly when `dateIso` is a valid real calendar `YYYY-MM-DD` (rejects `2026-02-31` rollovers). */
+export function isValidDailyDateIsoV7(dateIso: string): boolean {
+  return parseStrictIsoParts(dateIso) !== null;
+}
+
+function parseIsoParts(dateIso: string): { year: number; month: number; day: number } {
+  const strict = parseStrictIsoParts(dateIso);
+  if (strict) return strict;
+  const now = new Date();
+  return { year: now.getFullYear(), month: now.getMonth() + 1, day: now.getDate() };
 }
 
 /** Returns local calendar date in `YYYY-MM-DD` format. */
@@ -227,7 +354,7 @@ export function getDeterministicDailyTurnSeedV7(
   return h >>> 0;
 }
 
-/** Deterministically builds today's shared 1966 Daily Broadcast blueprint. */
+/** Deterministically builds today's shared 1966 Daily Broadcast blueprint across all 12 Boards, 24 Champions & 40 (8×5) Mode×Topology Combos. */
 export function getTodayBroadcastBlueprintV7(
   dateIso: string = getLocalDateIsoV7(),
 ): DailyBroadcastBlueprintV7 {
@@ -235,14 +362,26 @@ export function getTodayBroadcastBlueprintV7(
   const dailySeed = hashDateSeedV7(dateIso);
   const rng = createMulberry32V7(dailySeed);
   const displayDateShort = formatShortBroadcastDateV7(dateIso);
+  const dayZeroIdx = Math.max(0, dailyNumber - 1);
 
-  const showcaseIdx = (dailyNumber - 1 + Math.floor(rng() * DAILY_LIVING_COLOR_SHOWCASES.length)) %
-    DAILY_LIVING_COLOR_SHOWCASES.length;
+  // Coprime step mod 12 (`gcd(7, 12) === 1`): visits all 12 `BOARD_01..12` showcases every 12 days with 0 repeats!
+  const showcaseIdx = (dayZeroIdx * 7 + 3) % DAILY_LIVING_COLOR_SHOWCASES.length;
   const showcase = DAILY_LIVING_COLOR_SHOWCASES[showcaseIdx];
 
-  const rivalIdx = (dailyNumber + Math.floor(rng() * RIVAL_IDS_V7.length)) % RIVAL_IDS_V7.length;
-  const rivalId = RIVAL_IDS_V7[rivalIdx];
+  // Coprime step mod 24 (`gcd(11, 24) === 1`): visits all 24 Champions every 24 days with 0 back-to-back repeats!
+  const rivalIdx = (dayZeroIdx * 11 + 5) % ALL_RIVAL_IDS_V7.length;
+  const rivalId = ALL_RIVAL_IDS_V7[rivalIdx];
   const rivalProfile = CAST_PROFILES_V7[rivalId];
+
+  // Coprime step mod 40 (`gcd(17, 40) === 1`): visits all 40 `(8 modes × 5 topologies)` combos every 40 days!
+  const totalCombos = ALL_BOARD_PLAY_MODES_V7.length * ALL_BOARD_UNLOCK_TOPOLOGIES_V7.length;
+  const comboSlot = (dayZeroIdx * 17 + 7) % totalCombos;
+  const modeIdx = Math.floor(comboSlot / ALL_BOARD_UNLOCK_TOPOLOGIES_V7.length);
+  const topoIdx = comboSlot % ALL_BOARD_UNLOCK_TOPOLOGIES_V7.length;
+  const boardPlayMode = ALL_BOARD_PLAY_MODES_V7[modeIdx] ?? 'CLASSIC_TOTE';
+  const unlockTopology = ALL_BOARD_UNLOCK_TOPOLOGIES_V7[topoIdx] ?? 'CLASSIC_OPEN';
+  const comboKey = `${boardPlayMode}::${unlockTopology}`;
+  const modeTitle = BOARD_PLAY_MODE_TITLES_V7[boardPlayMode];
 
   // Pick 6 balanced featured categories (at least 1 from each of the 4 domains + 2 wildcards)
   const domains: readonly DomainIdV7[] = ['SCI_TECH', 'POP_LIT', 'NUM_GEO', 'HIST_FACT'];
@@ -265,14 +404,16 @@ export function getTodayBroadcastBlueprintV7(
 
   return {
     episodeNumber: dailyNumber,
-    season: 1,
+    season: rivalProfile.seasonTier ?? 1,
     code: `DAILY #${dailyNumber}`,
-    title: `1966 Daily Broadcast #${dailyNumber} (${displayDateShort}) — ${showcase.bannerTitle}`,
+    title: `1966 Daily Broadcast #${dailyNumber} (${displayDateShort}) — ${showcase.bannerTitle} · ${modeTitle}`,
     stageId: showcase.stageId,
     boardId: showcase.boardId,
     twistId: showcase.twistId,
     rivalId,
-    isRoadshow: showcase.stageId !== 'STAGE_01_IBC_DAYTIME_FUNK' && showcase.stageId !== 'STAGE_02_IBC_PRIMETIME_JUBILEE',
+    isRoadshow:
+      showcase.stageId !== 'STAGE_01_IBC_DAYTIME_FUNK' &&
+      showcase.stageId !== 'STAGE_02_IBC_PRIMETIME_JUBILEE',
     isGoldenExitMatch: false,
     isVaultDrop: false,
     isCoupPivot: false,
@@ -292,20 +433,73 @@ export function getTodayBroadcastBlueprintV7(
     recommendedTurns: 6,
     turnSeeds,
     featuredCategories: featured,
+    boardPlayMode,
+    unlockTopology,
+    comboKey,
   };
 }
 
-/** Classifies a resolved turn into its spoiler-free 1966 TV emoji token. */
+/** Audits deterministic Daily Broadcast coverage across all 12 boards, 24 Champions & 40 (8×5) mode×topology combos. */
+export function verifyDailyBroadcastRotationV7(): {
+  readonly valid: boolean;
+  readonly distinctBoards12: number;
+  readonly distinctRivals24: number;
+  readonly distinctCombos40: number;
+} {
+  const boards = new Set<BoardIdV7>();
+  const rivals = new Set<RivalIdV7>();
+  const combos = new Set<string>();
+  const baseYear = 2026;
+  const baseMonth = 10; // Nov (0-indexed)
+  for (let d = 0; d < 40; d++) {
+    const iso = getLocalDateIsoV7(new Date(baseYear, baseMonth, 1 + d, 12, 0, 0));
+    const bp = getTodayBroadcastBlueprintV7(iso);
+    if (d < 12) boards.add(bp.boardId);
+    if (d < 24) rivals.add(bp.rivalId);
+    combos.add(bp.comboKey);
+  }
+  const hasAllColdOpens = ALL_RIVAL_IDS_V7.every(
+    (id) =>
+      typeof DAILY_COLD_OPEN_LINES[id] === 'string' &&
+      DAILY_COLD_OPEN_LINES[id].trim().length >= 32 &&
+      !DAILY_COLD_OPEN_LINES[id].includes('...'),
+  );
+  return {
+    valid:
+      boards.size === 12 &&
+      rivals.size === 24 &&
+      combos.size === 40 &&
+      hasAllColdOpens,
+    distinctBoards12: boards.size,
+    distinctRivals24: rivals.size,
+    distinctCombos40: combos.size,
+  };
+}
+
+/** Classifies a resolved turn into its celebratory spoiler-free 1966 TV emoji token across all 12 Classic TV Twists. */
 export function classifyDailyTileOutcomeV7(params: {
   readonly scored: boolean;
   readonly tvTwist?: ClassicTvTileTwistV7;
   readonly selectedToy?: ToyIdV7;
 }): DailyTileHistoryTokenV7 {
   if (!params.scored) return 'MISS';
-  if (params.tvTwist === 'SECRET_SQUARE') return 'SECRET_WIN';
-  if (params.tvTwist === 'LOCKED_VAULT') return 'VAULT_WIN';
-  if (params.tvTwist === 'MYSTERY_CURTAIN') return 'MYSTERY_WIN';
+  if (params.tvTwist === 'SECRET_SQUARE' || params.tvTwist === 'OPPONENT_CHOICE') {
+    return 'SECRET_WIN';
+  }
+  if (params.tvTwist === 'LOCKED_VAULT' || params.tvTwist === 'BRASS_KEY') {
+    return 'VAULT_WIN';
+  }
   if (
+    params.tvTwist === 'MYSTERY_CURTAIN' ||
+    params.tvTwist === 'BLIND_CATEGORY' ||
+    params.tvTwist === 'MYSTERY_CASH' ||
+    params.tvTwist === 'INSTANT_BARGAIN'
+  ) {
+    return 'MYSTERY_WIN';
+  }
+  if (
+    params.tvTwist === 'BIG_WHEEL_SPIN' ||
+    params.tvTwist === 'PRESS_LUCK_SPIN' ||
     params.tvTwist === 'SHOWCASE_BONUS' ||
     (params.selectedToy && params.selectedToy !== 'TOY_01_KNIFE_SWITCH')
   ) {
@@ -320,11 +514,11 @@ const TOKEN_TO_EMOJI_PAIR: Record<DailyTileHistoryTokenV7, string> = {
   VAULT_WIN: '🔒🟩',
   MYSTERY_WIN: '❓🟩',
   SHOWCASE_WIN: '🎯🟩',
-  MISS: '🟦🟥',
+  MISS: '🟥',
 };
 
 function formatDollars(amount: number): string {
-  const clean = Math.max(0, Math.round(amount));
+  const clean = Number.isFinite(amount) ? Math.max(0, Math.round(amount)) : 0;
   return `$${clean.toLocaleString('en-US')}`;
 }
 
@@ -333,34 +527,122 @@ export function formatDailyBroadcastEmojiShareCardV7(
   input: FormatDailyShareCardInputV7,
 ): string {
   const shortDate = formatShortBroadcastDateV7(input.dateIso);
-  const line1 = `📺 WORLD'S SMARTEST · 1966 Daily Broadcast #${input.episodeNumber} (${shortDate})`;
+  const epNum =
+    typeof input.episodeNumber === 'number' &&
+    Number.isFinite(input.episodeNumber) &&
+    input.episodeNumber >= 1
+      ? Math.floor(input.episodeNumber)
+      : computeDailyEpisodeNumberV7(input.dateIso);
+  const streak = sanitizeDailyNonNegInt(input.currentStreak, 0);
+  const line1 = `📺 WORLD'S SMARTEST · 1966 Daily Broadcast #${epNum} (${shortDate})`;
   const outcomeTag = input.won ? 'WON!' : 'CLOSE SHOW!';
-  const streakSuffix =
-    input.currentStreak > 0 ? ` (🔥 Streak: ${input.currentStreak})` : '';
+  const streakSuffix = streak > 0 ? ` (🔥 Streak: ${streak})` : '';
   const leadIcon = input.won ? '🏆' : '🎬';
   const line2 = `${leadIcon} ${formatDollars(input.playerCash)} vs Champ ${formatDollars(input.rivalCash)} · ${outcomeTag}${streakSuffix}`;
+  const safeHistory = Array.isArray(input.tileHistory)
+    ? input.tileHistory.filter(
+        (tok): tok is DailyTileHistoryTokenV7 =>
+          typeof tok === 'string' && VALID_DAILY_TILE_TOKENS_V7.has(tok as DailyTileHistoryTokenV7),
+      )
+    : [];
   const emojiGrid =
-    input.tileHistory.length > 0
-      ? input.tileHistory.map((tok) => TOKEN_TO_EMOJI_PAIR[tok] ?? '🟦🟩').join(' ')
+    safeHistory.length > 0
+      ? safeHistory.map((tok) => TOKEN_TO_EMOJI_PAIR[tok] ?? '🟦🟩').join(' ')
       : '🟦🟩';
   return `${line1}\n${line2}\n${emojiGrid}`;
 }
 
-function readRawSaveFromStorage(): DailyBroadcastSaveV7 | null {
+function sanitizeTodayResult(
+  rawResult: unknown,
+  currentStreak: number,
+): DailyBroadcastSaveV7['todayResult'] | undefined {
+  if (!rawResult || typeof rawResult !== 'object' || Array.isArray(rawResult)) {
+    return undefined;
+  }
+  const tr = rawResult as Record<string, unknown>;
+  if (typeof tr.dateIso !== 'string' || !parseStrictIsoParts(tr.dateIso)) {
+    return undefined;
+  }
+  if (!Array.isArray(tr.tileHistory)) {
+    return undefined;
+  }
+  if (
+    typeof tr.episodeNumber !== 'number' ||
+    !Number.isFinite(tr.episodeNumber) ||
+    typeof tr.playerCash !== 'number' ||
+    !Number.isFinite(tr.playerCash) ||
+    typeof tr.rivalCash !== 'number' ||
+    !Number.isFinite(tr.rivalCash) ||
+    typeof tr.won !== 'boolean'
+  ) {
+    return undefined;
+  }
+  const dateIso = tr.dateIso.trim();
+  const episodeNumber = Math.max(1, Math.floor(tr.episodeNumber));
+  const playerCash = Math.max(0, Math.round(tr.playerCash));
+  const rivalCash = Math.max(0, Math.round(tr.rivalCash));
+  const tileHistory = tr.tileHistory.filter(
+    (tok): tok is DailyTileHistoryTokenV7 =>
+      typeof tok === 'string' && VALID_DAILY_TILE_TOKENS_V7.has(tok as DailyTileHistoryTokenV7),
+  );
+  const shareText =
+    typeof tr.shareText === 'string' && tr.shareText.trim().length > 0
+      ? tr.shareText
+      : formatDailyBroadcastEmojiShareCardV7({
+          episodeNumber,
+          dateIso,
+          playerCash,
+          rivalCash,
+          won: tr.won,
+          currentStreak,
+          tileHistory,
+        });
+  return {
+    dateIso,
+    episodeNumber,
+    playerCash,
+    rivalCash,
+    won: tr.won,
+    tileHistory,
+    shareText,
+  };
+}
+
+function readRawSaveFromStorage(): PersistedDailyBroadcastSaveV7 | null {
   try {
     if (typeof window !== 'undefined' && window.localStorage) {
       const raw = window.localStorage.getItem(DAILY_BROADCAST_STORAGE_KEY_V7);
       if (!raw) return memoryFallbackSave;
-      const parsed = JSON.parse(raw) as Partial<DailyBroadcastSaveV7>;
-      if (typeof parsed !== 'object' || parsed === null) return memoryFallbackSave;
+      const parsed = JSON.parse(raw) as Partial<PersistedDailyBroadcastSaveV7> | null;
+      if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+        return memoryFallbackSave;
+      }
+      const lastPlayedDateIso =
+        typeof parsed.lastPlayedDateIso === 'string' && parseStrictIsoParts(parsed.lastPlayedDateIso)
+          ? parsed.lastPlayedDateIso.trim()
+          : '';
+      const currentStreak = sanitizeDailyNonNegInt(parsed.currentStreak, 0);
+      const bestStreak = Math.max(currentStreak, sanitizeDailyNonNegInt(parsed.bestStreak, 0));
+      const gamesPlayed = sanitizeDailyNonNegInt(parsed.gamesPlayed, 0);
+      const gamesWon = Math.min(gamesPlayed, sanitizeDailyNonNegInt(parsed.gamesWon, 0));
+      const todayResult = sanitizeTodayResult(parsed.todayResult, currentStreak);
+      const hasPreTodayStreakBase =
+        typeof parsed.preTodayStreakBase === 'number' && Number.isFinite(parsed.preTodayStreakBase);
+      const hasPreTodayBestBase =
+        typeof parsed.preTodayBestStreakBase === 'number' &&
+        Number.isFinite(parsed.preTodayBestStreakBase);
       return {
-        lastPlayedDateIso: typeof parsed.lastPlayedDateIso === 'string' ? parsed.lastPlayedDateIso : '',
-        currentStreak: Math.max(0, Math.floor(Number(parsed.currentStreak) || 0)),
-        bestStreak: Math.max(0, Math.floor(Number(parsed.bestStreak) || 0)),
-        gamesPlayed: Math.max(0, Math.floor(Number(parsed.gamesPlayed) || 0)),
-        gamesWon: Math.max(0, Math.floor(Number(parsed.gamesWon) || 0)),
-        ...(parsed.todayResult && typeof parsed.todayResult.dateIso === 'string'
-          ? { todayResult: parsed.todayResult }
+        lastPlayedDateIso,
+        currentStreak,
+        bestStreak,
+        gamesPlayed,
+        gamesWon,
+        ...(todayResult ? { todayResult } : {}),
+        ...(hasPreTodayStreakBase
+          ? { preTodayStreakBase: Math.max(0, Math.floor(parsed.preTodayStreakBase!)) }
+          : {}),
+        ...(hasPreTodayBestBase
+          ? { preTodayBestStreakBase: Math.max(0, Math.floor(parsed.preTodayBestStreakBase!)) }
           : {}),
       };
     }
@@ -370,7 +652,7 @@ function readRawSaveFromStorage(): DailyBroadcastSaveV7 | null {
   return memoryFallbackSave;
 }
 
-function writeSaveToStorage(save: DailyBroadcastSaveV7): void {
+function writeSaveToStorage(save: PersistedDailyBroadcastSaveV7): void {
   memoryFallbackSave = save;
   try {
     if (typeof window !== 'undefined' && window.localStorage) {
@@ -385,6 +667,7 @@ function writeSaveToStorage(save: DailyBroadcastSaveV7): void {
 export function getDailyBroadcastSaveV7(
   nowDateIso: string = getLocalDateIsoV7(),
 ): DailyBroadcastSaveV7 {
+  const safeNowIso = parseStrictIsoParts(nowDateIso) ? nowDateIso.trim() : getLocalDateIsoV7();
   const raw = readRawSaveFromStorage();
   if (!raw) {
     return {
@@ -396,12 +679,12 @@ export function getDailyBroadcastSaveV7(
     };
   }
 
-  const yesterdayIso = getPreviousDateIsoV7(nowDateIso);
+  const yesterdayIso = getPreviousDateIsoV7(safeNowIso);
   const streakStillAlive =
-    raw.lastPlayedDateIso === nowDateIso || raw.lastPlayedDateIso === yesterdayIso;
+    raw.lastPlayedDateIso === safeNowIso || raw.lastPlayedDateIso === yesterdayIso;
   const activeStreak = streakStillAlive ? raw.currentStreak : 0;
   const todayResult =
-    raw.todayResult && raw.todayResult.dateIso === nowDateIso ? raw.todayResult : undefined;
+    raw.todayResult && raw.todayResult.dateIso === safeNowIso ? raw.todayResult : undefined;
 
   return {
     lastPlayedDateIso: raw.lastPlayedDateIso,
@@ -423,51 +706,129 @@ export function hasCompletedTodayBroadcastV7(
 export function recordDailyBroadcastCompletionV7(
   input: RecordDailyBroadcastInputV7,
 ): DailyBroadcastSaveV7 {
-  const dateIso = input.dateIso ?? getLocalDateIsoV7();
-  const episodeNumber = input.episodeNumber ?? computeDailyEpisodeNumberV7(dateIso);
+  const dateIso =
+    input.dateIso && parseStrictIsoParts(input.dateIso)
+      ? input.dateIso.trim()
+      : getLocalDateIsoV7();
+  const episodeNumber =
+    typeof input.episodeNumber === 'number' && Number.isFinite(input.episodeNumber)
+      ? Math.max(1, Math.floor(input.episodeNumber))
+      : computeDailyEpisodeNumberV7(dateIso);
+  const rawStored = readRawSaveFromStorage();
   const existing = getDailyBroadcastSaveV7(dateIso);
 
+  const alreadyCompletedToday = Boolean(
+    existing.todayResult && existing.todayResult.dateIso === dateIso,
+  );
   // Preserve official first-play streak & score on same-day "Replay Just for Fun" unless overwrite requested
-  if (existing.todayResult && existing.todayResult.dateIso === dateIso && !input.overwriteOfficialToday) {
+  if (alreadyCompletedToday && !input.overwriteOfficialToday) {
     return existing;
   }
 
   const yesterdayIso = getPreviousDateIsoV7(dateIso);
-  const continuedFromYesterday = existing.lastPlayedDateIso === yesterdayIso && existing.currentStreak > 0;
-  const nextStreak = input.won ? (continuedFromYesterday ? existing.currentStreak + 1 : 1) : 0;
-  const nextBestStreak = Math.max(existing.bestStreak, nextStreak);
-  const nextPlayed = existing.gamesPlayed + 1;
-  const nextWon = existing.gamesWon + (input.won ? 1 : 0);
+  const isOverwritingToday = alreadyCompletedToday && Boolean(input.overwriteOfficialToday);
+
+  // Preserve pre-today streak base when overwriting today so a multi-day streak is NEVER reset to 1!
+  let preTodayStreakBase: number;
+  let preTodayBestStreakBase: number;
+  if (isOverwritingToday) {
+    if (
+      rawStored &&
+      rawStored.lastPlayedDateIso === dateIso &&
+      typeof rawStored.preTodayStreakBase === 'number' &&
+      Number.isFinite(rawStored.preTodayStreakBase)
+    ) {
+      preTodayStreakBase = Math.max(0, Math.floor(rawStored.preTodayStreakBase));
+    } else if (existing.todayResult?.won) {
+      preTodayStreakBase = Math.max(0, existing.currentStreak - 1);
+    } else {
+      preTodayStreakBase = 0;
+    }
+
+    if (
+      rawStored &&
+      rawStored.lastPlayedDateIso === dateIso &&
+      typeof rawStored.preTodayBestStreakBase === 'number' &&
+      Number.isFinite(rawStored.preTodayBestStreakBase)
+    ) {
+      preTodayBestStreakBase = Math.max(0, Math.floor(rawStored.preTodayBestStreakBase));
+    } else {
+      preTodayBestStreakBase = existing.bestStreak;
+    }
+  } else {
+    const continuedFromYesterday =
+      existing.lastPlayedDateIso === yesterdayIso && existing.currentStreak > 0;
+    preTodayStreakBase = continuedFromYesterday ? existing.currentStreak : 0;
+    preTodayBestStreakBase = existing.bestStreak;
+  }
+
+  const nextStreak = input.won ? preTodayStreakBase + 1 : 0;
+  const nextBestStreak = Math.max(preTodayBestStreakBase, nextStreak);
+
+  // Overwriting today's run NEVER double-increments gamesPlayed / gamesWon!
+  let nextPlayed: number;
+  let nextWon: number;
+  if (isOverwritingToday && existing.todayResult) {
+    nextPlayed = Math.max(1, existing.gamesPlayed);
+    const prevWonDelta = existing.todayResult.won ? 1 : 0;
+    const nextWonDelta = input.won ? 1 : 0;
+    nextWon = Math.max(0, Math.min(nextPlayed, existing.gamesWon - prevWonDelta + nextWonDelta));
+  } else {
+    nextPlayed = existing.gamesPlayed + 1;
+    nextWon = existing.gamesWon + (input.won ? 1 : 0);
+  }
+
+  const cleanPlayerCash = Number.isFinite(input.playerCash)
+    ? Math.max(0, Math.round(input.playerCash))
+    : 0;
+  const cleanRivalCash = Number.isFinite(input.rivalCash)
+    ? Math.max(0, Math.round(input.rivalCash))
+    : 0;
+  const cleanHistory = Array.isArray(input.tileHistory)
+    ? input.tileHistory.filter(
+        (tok): tok is DailyTileHistoryTokenV7 =>
+          typeof tok === 'string' && VALID_DAILY_TILE_TOKENS_V7.has(tok as DailyTileHistoryTokenV7),
+      )
+    : [];
 
   const shareText = formatDailyBroadcastEmojiShareCardV7({
     episodeNumber,
     dateIso,
-    playerCash: input.playerCash,
-    rivalCash: input.rivalCash,
+    playerCash: cleanPlayerCash,
+    rivalCash: cleanRivalCash,
     won: input.won,
     currentStreak: nextStreak,
-    tileHistory: input.tileHistory,
+    tileHistory: cleanHistory,
   });
 
-  const updated: DailyBroadcastSaveV7 = {
+  const persisted: PersistedDailyBroadcastSaveV7 = {
     lastPlayedDateIso: dateIso,
     currentStreak: nextStreak,
     bestStreak: nextBestStreak,
     gamesPlayed: nextPlayed,
     gamesWon: nextWon,
+    preTodayStreakBase,
+    preTodayBestStreakBase,
     todayResult: {
       dateIso,
       episodeNumber,
-      playerCash: Math.max(0, Math.round(input.playerCash)),
-      rivalCash: Math.max(0, Math.round(input.rivalCash)),
+      playerCash: cleanPlayerCash,
+      rivalCash: cleanRivalCash,
       won: input.won,
-      tileHistory: [...input.tileHistory],
+      tileHistory: cleanHistory,
       shareText,
     },
   };
 
-  writeSaveToStorage(updated);
-  return updated;
+  writeSaveToStorage(persisted);
+  return {
+    lastPlayedDateIso: persisted.lastPlayedDateIso,
+    currentStreak: persisted.currentStreak,
+    bestStreak: persisted.bestStreak,
+    gamesPlayed: persisted.gamesPlayed,
+    gamesWon: persisted.gamesWon,
+    todayResult: persisted.todayResult,
+  };
 }
 
 /** Shares the spoiler-free retro TV card via native Web Share sheet on mobile/tablet or copies cleanly to clipboard. */

@@ -1,128 +1,36 @@
 {
-  "version": "v7.2-1966-living-color-studio",
+  "version": "v7.6-1966-wrecking-crew-showband",
   "instruments": {
-    "trumpet": [
+    "electric_bass": [
       {
-        "note": "F4",
-        "midi": 65,
-        "file": "inst_trumpet_F4.mp3",
-        "bytes": 18225
-      },
-      {
-        "note": "Bb4",
-        "midi": 70,
-        "file": "inst_trumpet_Bb4.mp3",
-        "bytes": 18225
-      },
-      {
-        "note": "D5",
-        "midi": 74,
-        "file": "inst_trumpet_D5.mp3",
-        "bytes": 18225
-      },
-      {
-        "note": "G5",
-        "midi": 79,
-        "file": "inst_trumpet_G5.mp3",
-        "bytes": 18225
-      }
-    ],
-    "brass": [
-      {
-        "note": "C3",
-        "midi": 48,
-        "file": "inst_brass_C3.mp3",
+        "note": "E1",
+        "midi": 28,
+        "file": "inst_electric_bass_E1.mp3",
         "bytes": 19479
       },
       {
-        "note": "F3",
-        "midi": 53,
-        "file": "inst_brass_F3.mp3",
+        "note": "A1",
+        "midi": 33,
+        "file": "inst_electric_bass_A1.mp3",
         "bytes": 19479
       },
       {
-        "note": "Bb3",
-        "midi": 58,
-        "file": "inst_brass_Bb3.mp3",
+        "note": "D2",
+        "midi": 38,
+        "file": "inst_electric_bass_D2.mp3",
         "bytes": 19479
       },
       {
-        "note": "D4",
-        "midi": 62,
-        "file": "inst_brass_D4.mp3",
+        "note": "G2",
+        "midi": 43,
+        "file": "inst_electric_bass_G2.mp3",
         "bytes": 19479
-      },
-      {
-        "note": "G4",
-        "midi": 67,
-        "file": "inst_brass_G4.mp3",
-        "bytes": 19479
-      }
-    ],
-    "trombone": [
-      {
-        "note": "F2",
-        "midi": 41,
-        "file": "inst_trombone_F2.mp3",
-        "bytes": 18852
       },
       {
         "note": "C3",
         "midi": 48,
-        "file": "inst_trombone_C3.mp3",
-        "bytes": 18852
-      },
-      {
-        "note": "F3",
-        "midi": 53,
-        "file": "inst_trombone_F3.mp3",
-        "bytes": 18852
-      },
-      {
-        "note": "Bb3",
-        "midi": 58,
-        "file": "inst_trombone_Bb3.mp3",
-        "bytes": 18852
-      }
-    ],
-    "muted_trumpet": [
-      {
-        "note": "C4",
-        "midi": 60,
-        "file": "inst_muted_trumpet_C4.mp3",
-        "bytes": 15717
-      },
-      {
-        "note": "F4",
-        "midi": 65,
-        "file": "inst_muted_trumpet_F4.mp3",
-        "bytes": 15717
-      },
-      {
-        "note": "Bb4",
-        "midi": 70,
-        "file": "inst_muted_trumpet_Bb4.mp3",
-        "bytes": 15717
-      }
-    ],
-    "tenor_sax": [
-      {
-        "note": "F3",
-        "midi": 53,
-        "file": "inst_tenor_sax_F3.mp3",
-        "bytes": 18225
-      },
-      {
-        "note": "C4",
-        "midi": 60,
-        "file": "inst_tenor_sax_C4.mp3",
-        "bytes": 18225
-      },
-      {
-        "note": "F4",
-        "midi": 65,
-        "file": "inst_tenor_sax_F4.mp3",
-        "bytes": 18225
+        "file": "inst_electric_bass_C3.mp3",
+        "bytes": 19479
       }
     ],
     "upright_bass": [
@@ -155,6 +63,38 @@
         "midi": 48,
         "file": "inst_upright_bass_C3.mp3",
         "bytes": 17598
+      }
+    ],
+    "electric_piano": [
+      {
+        "note": "C2",
+        "midi": 36,
+        "file": "inst_electric_piano_C2.mp3",
+        "bytes": 24808
+      },
+      {
+        "note": "G2",
+        "midi": 43,
+        "file": "inst_electric_piano_G2.mp3",
+        "bytes": 24808
+      },
+      {
+        "note": "C3",
+        "midi": 48,
+        "file": "inst_electric_piano_C3.mp3",
+        "bytes": 24808
+      },
+      {
+        "note": "G3",
+        "midi": 55,
+        "file": "inst_electric_piano_G3.mp3",
+        "bytes": 24808
+      },
+      {
+        "note": "C4",
+        "midi": 60,
+        "file": "inst_electric_piano_C4.mp3",
+        "bytes": 24808
       }
     ],
     "grand_piano": [
@@ -201,7 +141,245 @@
         "bytes": 26062
       }
     ],
+    "jazz_guitar": [
+      {
+        "note": "E2",
+        "midi": 40,
+        "file": "inst_jazz_guitar_E2.mp3",
+        "bytes": 18852
+      },
+      {
+        "note": "A2",
+        "midi": 45,
+        "file": "inst_jazz_guitar_A2.mp3",
+        "bytes": 18852
+      },
+      {
+        "note": "C3",
+        "midi": 48,
+        "file": "inst_jazz_guitar_C3.mp3",
+        "bytes": 18225
+      },
+      {
+        "note": "G3",
+        "midi": 55,
+        "file": "inst_jazz_guitar_G3.mp3",
+        "bytes": 18225
+      },
+      {
+        "note": "C4",
+        "midi": 60,
+        "file": "inst_jazz_guitar_C4.mp3",
+        "bytes": 18225
+      }
+    ],
+    "clean_guitar": [
+      {
+        "note": "E2",
+        "midi": 40,
+        "file": "inst_clean_guitar_E2.mp3",
+        "bytes": 18852
+      },
+      {
+        "note": "A2",
+        "midi": 45,
+        "file": "inst_clean_guitar_A2.mp3",
+        "bytes": 18852
+      },
+      {
+        "note": "D3",
+        "midi": 50,
+        "file": "inst_clean_guitar_D3.mp3",
+        "bytes": 18852
+      },
+      {
+        "note": "G3",
+        "midi": 55,
+        "file": "inst_clean_guitar_G3.mp3",
+        "bytes": 18852
+      },
+      {
+        "note": "C4",
+        "midi": 60,
+        "file": "inst_clean_guitar_C4.mp3",
+        "bytes": 18852
+      }
+    ],
+    "baritone_sax": [
+      {
+        "note": "A1",
+        "midi": 33,
+        "file": "inst_baritone_sax_A1.mp3",
+        "bytes": 19479
+      },
+      {
+        "note": "D2",
+        "midi": 38,
+        "file": "inst_baritone_sax_D2.mp3",
+        "bytes": 19479
+      },
+      {
+        "note": "G2",
+        "midi": 43,
+        "file": "inst_baritone_sax_G2.mp3",
+        "bytes": 19479
+      },
+      {
+        "note": "C3",
+        "midi": 48,
+        "file": "inst_baritone_sax_C3.mp3",
+        "bytes": 19479
+      }
+    ],
+    "tenor_sax": [
+      {
+        "note": "C3",
+        "midi": 48,
+        "file": "inst_tenor_sax_C3.mp3",
+        "bytes": 18225
+      },
+      {
+        "note": "F3",
+        "midi": 53,
+        "file": "inst_tenor_sax_F3.mp3",
+        "bytes": 18225
+      },
+      {
+        "note": "C4",
+        "midi": 60,
+        "file": "inst_tenor_sax_C4.mp3",
+        "bytes": 18225
+      },
+      {
+        "note": "F4",
+        "midi": 65,
+        "file": "inst_tenor_sax_F4.mp3",
+        "bytes": 18225
+      }
+    ],
+    "trombone": [
+      {
+        "note": "F2",
+        "midi": 41,
+        "file": "inst_trombone_F2.mp3",
+        "bytes": 18852
+      },
+      {
+        "note": "C3",
+        "midi": 48,
+        "file": "inst_trombone_C3.mp3",
+        "bytes": 18852
+      },
+      {
+        "note": "F3",
+        "midi": 53,
+        "file": "inst_trombone_F3.mp3",
+        "bytes": 18852
+      },
+      {
+        "note": "Bb3",
+        "midi": 58,
+        "file": "inst_trombone_Bb3.mp3",
+        "bytes": 18852
+      }
+    ],
+    "brass": [
+      {
+        "note": "C3",
+        "midi": 48,
+        "file": "inst_brass_C3.mp3",
+        "bytes": 19479
+      },
+      {
+        "note": "F3",
+        "midi": 53,
+        "file": "inst_brass_F3.mp3",
+        "bytes": 19479
+      },
+      {
+        "note": "Bb3",
+        "midi": 58,
+        "file": "inst_brass_Bb3.mp3",
+        "bytes": 19479
+      },
+      {
+        "note": "D4",
+        "midi": 62,
+        "file": "inst_brass_D4.mp3",
+        "bytes": 19479
+      },
+      {
+        "note": "G4",
+        "midi": 67,
+        "file": "inst_brass_G4.mp3",
+        "bytes": 19479
+      }
+    ],
+    "muted_trumpet": [
+      {
+        "note": "C4",
+        "midi": 60,
+        "file": "inst_muted_trumpet_C4.mp3",
+        "bytes": 15717
+      },
+      {
+        "note": "F4",
+        "midi": 65,
+        "file": "inst_muted_trumpet_F4.mp3",
+        "bytes": 15717
+      },
+      {
+        "note": "Bb4",
+        "midi": 70,
+        "file": "inst_muted_trumpet_Bb4.mp3",
+        "bytes": 15717
+      }
+    ],
+    "trumpet": [
+      {
+        "note": "C4",
+        "midi": 60,
+        "file": "inst_trumpet_C4.mp3",
+        "bytes": 18225
+      },
+      {
+        "note": "F4",
+        "midi": 65,
+        "file": "inst_trumpet_F4.mp3",
+        "bytes": 18225
+      },
+      {
+        "note": "Bb4",
+        "midi": 70,
+        "file": "inst_trumpet_Bb4.mp3",
+        "bytes": 18225
+      },
+      {
+        "note": "D5",
+        "midi": 74,
+        "file": "inst_trumpet_D5.mp3",
+        "bytes": 18225
+      },
+      {
+        "note": "G5",
+        "midi": 79,
+        "file": "inst_trumpet_G5.mp3",
+        "bytes": 18225
+      }
+    ],
     "vibraphone": [
+      {
+        "note": "C3",
+        "midi": 48,
+        "file": "inst_vibraphone_C3.mp3",
+        "bytes": 24808
+      },
+      {
+        "note": "G3",
+        "midi": 55,
+        "file": "inst_vibraphone_G3.mp3",
+        "bytes": 24808
+      },
       {
         "note": "C4",
         "midi": 60,
@@ -229,6 +407,18 @@
     ],
     "marimba": [
       {
+        "note": "C3",
+        "midi": 48,
+        "file": "inst_marimba_C3.mp3",
+        "bytes": 15090
+      },
+      {
+        "note": "G3",
+        "midi": 55,
+        "file": "inst_marimba_G3.mp3",
+        "bytes": 15090
+      },
+      {
         "note": "C4",
         "midi": 60,
         "file": "inst_marimba_C4.mp3",
@@ -245,26 +435,6 @@
         "midi": 72,
         "file": "inst_marimba_C5.mp3",
         "bytes": 14777
-      }
-    ],
-    "jazz_guitar": [
-      {
-        "note": "C3",
-        "midi": 48,
-        "file": "inst_jazz_guitar_C3.mp3",
-        "bytes": 18225
-      },
-      {
-        "note": "G3",
-        "midi": 55,
-        "file": "inst_jazz_guitar_G3.mp3",
-        "bytes": 18225
-      },
-      {
-        "note": "C4",
-        "midi": 60,
-        "file": "inst_jazz_guitar_C4.mp3",
-        "bytes": 18225
       }
     ],
     "strings": [
@@ -486,6 +656,6 @@
       "source": "MusyngKite:applause:C4"
     }
   },
-  "totalFiles": 79,
-  "totalBytes": 1515353
+  "totalFiles": 106,
+  "totalBytes": 2062914
 }

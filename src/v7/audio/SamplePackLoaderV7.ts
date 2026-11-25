@@ -11,16 +11,20 @@
 // ============================================================================
 
 export type AcousticInstrumentIdV7 =
-  | 'trumpet'
-  | 'brass'
-  | 'trombone'
-  | 'muted_trumpet'
-  | 'tenor_sax'
+  | 'electric_bass'
   | 'upright_bass'
+  | 'electric_piano'
   | 'grand_piano'
+  | 'jazz_guitar'
+  | 'clean_guitar'
+  | 'baritone_sax'
+  | 'tenor_sax'
+  | 'trombone'
+  | 'brass'
+  | 'muted_trumpet'
+  | 'trumpet'
   | 'vibraphone'
   | 'marimba'
-  | 'jazz_guitar'
   | 'strings'
   | 'glockenspiel'
   | 'tubular_bell'
@@ -75,14 +79,21 @@ export interface SamplePackStatsV7 {
 type SampleCategory = 'instrument_perc' | 'instrument_sustained' | 'drum' | 'foley' | 'crowd';
 
 const CORE_INSTRUMENTS: ReadonlySet<AcousticInstrumentIdV7> = new Set([
-  'trumpet',
-  'brass',
+  'electric_bass',
   'upright_bass',
+  'electric_piano',
   'grand_piano',
+  'jazz_guitar',
+  'clean_guitar',
+  'baritone_sax',
+  'tenor_sax',
+  'trombone',
+  'brass',
+  'muted_trumpet',
+  'trumpet',
   'vibraphone',
   'marimba',
-  'jazz_guitar',
-  'glockenspiel',
+  'strings',
   'woodblock',
 ]);
 
@@ -92,25 +103,30 @@ const SUSTAINED_INSTRUMENTS: ReadonlySet<AcousticInstrumentIdV7> = new Set([
   'trombone',
   'muted_trumpet',
   'tenor_sax',
+  'baritone_sax',
   'strings',
 ]);
 
 const INSTRUMENT_FALLBACK_CHAIN: Record<AcousticInstrumentIdV7, readonly AcousticInstrumentIdV7[]> = {
-  trumpet: ['brass', 'muted_trumpet', 'vibraphone', 'grand_piano'],
-  brass: ['trumpet', 'trombone', 'grand_piano'],
-  trombone: ['brass', 'upright_bass', 'grand_piano'],
-  muted_trumpet: ['trumpet', 'brass', 'vibraphone'],
-  tenor_sax: ['brass', 'trumpet', 'trombone', 'grand_piano'],
-  upright_bass: ['grand_piano', 'trombone'],
-  grand_piano: ['vibraphone', 'jazz_guitar', 'marimba'],
-  vibraphone: ['grand_piano', 'marimba', 'glockenspiel'],
-  marimba: ['vibraphone', 'grand_piano', 'woodblock'],
-  jazz_guitar: ['grand_piano', 'vibraphone'],
-  strings: ['brass', 'vibraphone', 'grand_piano'],
-  glockenspiel: ['vibraphone', 'tubular_bell', 'marimba'],
-  tubular_bell: ['glockenspiel', 'vibraphone', 'grand_piano'],
-  woodblock: ['marimba', 'glockenspiel'],
-  timpani: ['upright_bass', 'trombone'],
+  electric_bass: ['upright_bass', 'baritone_sax', 'trombone'],
+  upright_bass: ['electric_bass', 'baritone_sax', 'trombone'],
+  electric_piano: ['grand_piano', 'vibraphone', 'jazz_guitar'],
+  grand_piano: ['electric_piano', 'jazz_guitar', 'vibraphone'],
+  jazz_guitar: ['clean_guitar', 'electric_piano', 'grand_piano'],
+  clean_guitar: ['jazz_guitar', 'electric_piano', 'grand_piano'],
+  baritone_sax: ['trombone', 'tenor_sax', 'electric_bass'],
+  tenor_sax: ['baritone_sax', 'trombone', 'brass', 'electric_piano'],
+  trombone: ['baritone_sax', 'brass', 'tenor_sax', 'upright_bass'],
+  brass: ['trombone', 'tenor_sax', 'muted_trumpet', 'trumpet'],
+  muted_trumpet: ['tenor_sax', 'brass', 'trumpet', 'vibraphone'],
+  trumpet: ['brass', 'muted_trumpet', 'tenor_sax', 'vibraphone'],
+  vibraphone: ['electric_piano', 'marimba', 'grand_piano'],
+  marimba: ['vibraphone', 'electric_piano', 'woodblock'],
+  strings: ['brass', 'electric_piano', 'tenor_sax'],
+  glockenspiel: ['vibraphone', 'electric_piano', 'marimba'],
+  tubular_bell: ['vibraphone', 'glockenspiel', 'grand_piano'],
+  woodblock: ['marimba', 'vibraphone'],
+  timpani: ['upright_bass', 'electric_bass', 'trombone'],
 };
 
 function resolveAudioAssetUrl(relativePath: string): string {
@@ -188,23 +204,66 @@ function trimAndNormalizeBuffer(
   const startIdx = Math.max(0, onsetIdx - preRoll);
   const outLen = Math.max(64, srcLen - startIdx);
 
-  // 3. Target calibrated peak by sample role (caps noise-floor amplification)
-  let targetPeak = 0.86;
+  // 3. Fletcher-Munson Equal-Loudness Calibrated Peak by Instrument Family & Register!
+  // Deep bass/kick/toms (`40-200Hz`) get full `0.94` body; warm midrange guitars/keys/low-horns
+  // get `0.86`; bright upper horns/mallets (`0.70`) & high cymbals/bells (`0.54`) sit naturally back!
+  let targetPeak = 0.84;
   let maxBoost = 24;
-  if (category === 'instrument_sustained') {
-    targetPeak = 0.82;
-    maxBoost = 16;
-  } else if (category === 'instrument_perc') {
-    targetPeak = 0.90;
+  if (
+    sampleId === 'electric_bass' ||
+    sampleId === 'upright_bass' ||
+    sampleId === 'kick' ||
+    sampleId === 'tom_mid' ||
+    sampleId === 'timpani'
+  ) {
+    targetPeak = 0.94;
     maxBoost = 28;
+  } else if (
+    sampleId === 'electric_piano' ||
+    sampleId === 'grand_piano' ||
+    sampleId === 'jazz_guitar' ||
+    sampleId === 'clean_guitar' ||
+    sampleId === 'baritone_sax' ||
+    sampleId === 'trombone' ||
+    sampleId === 'tenor_sax' ||
+    sampleId === 'strings' ||
+    sampleId === 'snare_brush' ||
+    sampleId === 'snare_rim' ||
+    sampleId === 'snare_stick' ||
+    sampleId === 'bongo_lo' ||
+    sampleId === 'bongo_hi'
+  ) {
+    targetPeak = 0.86;
+    maxBoost = 24;
+  } else if (
+    sampleId === 'ride' ||
+    sampleId === 'hihat_closed' ||
+    sampleId === 'hihat_pedal' ||
+    sampleId === 'shaker'
+  ) {
+    targetPeak = 0.70;
+    maxBoost = 18;
+  } else if (
+    sampleId === 'glockenspiel' ||
+    sampleId === 'tubular_bell' ||
+    sampleId === 'tambourine' ||
+    sampleId === 'cowbell' ||
+    sampleId === 'crash'
+  ) {
+    targetPeak = 0.58;
+    maxBoost = 16;
+  } else if (category === 'instrument_sustained' || category === 'instrument_perc') {
+    // trumpet, muted_trumpet, brass, vibraphone, marimba, woodblock
+    targetPeak = 0.72;
+    maxBoost = 20;
   } else if (category === 'drum') {
-    targetPeak = 0.90;
-    maxBoost = 26;
+    targetPeak = 0.78;
+    maxBoost = 22;
   } else if (category === 'foley') {
-    targetPeak = 0.88;
-    maxBoost = sampleId === 'sleigh_sparkle' ? 64 : 26;
+    targetPeak = 0.84;
+    maxBoost = sampleId === 'sleigh_sparkle' ? 48 : 24;
   } else if (category === 'crowd') {
-    targetPeak = 0.80;
+    targetPeak = 0.78;
     maxBoost = 14;
   }
 
@@ -314,8 +373,8 @@ export class SamplePackLoaderV7 {
 
       this.totalFiles = coreJobs.length + bgJobs.length;
 
-      // Load Tier-1 core studio samples with bounded concurrency (10 parallel fetches)
-      await this.runWithConcurrency(coreJobs, 10);
+      // Load Tier-1 core studio samples with bounded concurrency (14 parallel fetches)
+      await this.runWithConcurrency(coreJobs, 14);
       this.coreReady = true;
 
       // Immediately decode Tier-2 orchestral color instruments (strings, sax, trombone, muted trumpet, tubular bells, timpani)

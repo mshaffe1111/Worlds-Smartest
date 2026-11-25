@@ -22,8 +22,8 @@ export interface OfflinePackInfo {
   readonly assetCount: number;
 }
 
-export const OFFLINE_SHELL_CACHE = 'ws-meridian-shell-v5-r2';
-export const OFFLINE_DATA_CACHE = 'ws-meridian-data-v5-r2';
+export const OFFLINE_SHELL_CACHE = 'ws-fifty-million-shell-v7.6.0-goldmaster-r4';
+export const OFFLINE_DATA_CACHE = 'ws-fifty-million-data-v7.6.0-goldmaster-r4';
 export const OFFLINE_PACKS_STORAGE_KEY = 'ws_offline_packs_v2';
 
 const SW_READY_TIMEOUT_MS = 20000;

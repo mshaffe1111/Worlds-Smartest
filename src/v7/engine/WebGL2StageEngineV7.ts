@@ -12,10 +12,6 @@
 // ============================================================================
 
 import * as THREE from 'three';
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import type {
   BroadcastSettingsV7,
   CoupRegimeIdV7,
@@ -131,10 +127,6 @@ export class WebGL2StageEngineV7 {
   public sharedEnvMap: THREE.Texture;
 
   private readonly sharedEnvRT: THREE.WebGLRenderTarget;
-  private readonly composer: EffectComposer;
-  private readonly renderPass: RenderPass;
-  private readonly bloomPass: UnrealBloomPass;
-  private readonly outputPass: OutputPass;
   private readonly solenoidSparks: HdrSolenoidSparkBurst;
 
   // Authentic 300-Footcandle 1966 Living Color Studio Lighting Rig (Warm Key + Cool/Warm Dual Rim Separation!)
@@ -175,6 +167,15 @@ export class WebGL2StageEngineV7 {
   private currentPanX = 0.0;
   private currentPanZ = 0.0;
 
+  // Seasickness-Free 1966 RCA TK-41 Studio Pedestal Motion (±0.03m 0.18Hz idle breathe + ~4% damped focus push-in)
+  private isPhonePortraitViewport = false;
+  private targetFocusX = 0.0;
+  private targetFocusZ = 0.0;
+  private targetFocusZoomBoost = 0.0;
+  private currentFocusX = 0.0;
+  private currentFocusZ = 0.0;
+  private currentFocusZoomBoost = 0.0;
+
   private readonly pointerNdc = new THREE.Vector2();
   private readonly frameListeners = new Set<StageFrameListenerV7>();
   private readonly resizeObserver: ResizeObserver | null = null;
@@ -186,6 +187,9 @@ export class WebGL2StageEngineV7 {
   private fpsAccumSec = 0;
   private fpsFrames = 0;
   private currentFps = 60;
+  private lastCanvasCssW = 0;
+  private lastCanvasCssH = 0;
+  private lastAppliedDpr = 0;
   private isDisposed = false;
 
   constructor(config: WebGL2StageEngineConfigV7) {
@@ -284,33 +288,8 @@ export class WebGL2StageEngineV7 {
     this.solenoidSparks.setPixelRatio(initialDpr);
     this.scene.add(this.solenoidSparks.points);
 
-    // 6. Preserve zero-sample composer references for telemetry compatibility while
-    //    rendering directly via `this.renderer.render(this.scene, this.camera)` for rock-solid D3D11 stability!
-    const rtTarget = new THREE.WebGLRenderTarget(
-      Math.max(1, Math.floor(initW * initialDpr)),
-      Math.max(1, Math.floor(initH * initialDpr)),
-      {
-        type: THREE.HalfFloatType,
-        samples: 0,
-      },
-    );
-    this.composer = new EffectComposer(this.renderer, rtTarget);
-    this.composer.setPixelRatio(initialDpr);
-
-    this.renderPass = new RenderPass(this.scene, this.camera);
-    this.bloomPass = new UnrealBloomPass(
-      new THREE.Vector2(Math.max(1, Math.floor(initW * 0.5)), Math.max(1, Math.floor(initH * 0.5))),
-      0.4,
-      0.32,
-      1.15,
-    );
-    this.outputPass = new OutputPass();
-
-    this.composer.addPass(this.renderPass);
-    this.composer.addPass(this.bloomPass);
-    this.composer.addPass(this.outputPass);
-
-    // 7. Build Initial Grounded Soundstage & Auto-Fit Frustum
+    // 6. Build Initial Grounded Soundstage & Auto-Fit Frustum
+    //    (Zero EffectComposer / UnrealBloomPass FBO allocations — pure rock-solid 4x MSAA direct render!)
     this.setStageWorld(this.activeStageId);
     this.resize(initW, initH);
 
@@ -395,7 +374,7 @@ export class WebGL2StageEngineV7 {
     // In Portrait, zero extra horizontal pad lets the decorative cabinet rails kiss the viewport edges
     // while ALL playable tile faces fill ~90% of phone width (>= 108px per tile on 390px phones!)
     const padX = isPortrait ? 0.0 : 0.12;
-    const padZ = isPortrait ? 0.045 : 0.12;
+    const padZ = isPortrait ? 0.135 : 0.18;
     const minX = THREE.MathUtils.clamp(localBox.min.x - padX, isPortrait ? -1.52 : -2.42, -0.65);
     const maxX = THREE.MathUtils.clamp(localBox.max.x + padX, 0.65, isPortrait ? 1.52 : 2.42);
     const minY = THREE.MathUtils.clamp(localBox.min.y - 0.04, -0.14, 0.12);
@@ -459,28 +438,28 @@ export class WebGL2StageEngineV7 {
 
     if (isPhonePortrait) {
       // Phone Portrait (`375x667`, `390x844`, `390x660`, `430x932`):
-      // Razor-tight tile playfield framing -> tiles fill ~90% screen width (>= 108px/tile on 390px!)
-      // Telephoto 37°-39° lens eliminates back-row keystone pinch so all rows stay massive!
+      // Razor-tight tile playfield framing -> tiles fill ~90-96% screen width (>= 108px/tile on 390px!)
+      // Explicit bottom HUD clearance guarantees 5-row boards on compact `390x660` never clip the mode banner!
+      const isCompactPortrait = h <= 710;
       pitchDeg = 31.4;
       fovDeg = THREE.MathUtils.clamp(38.0 - (aspect - 0.46) * 5.0, 36.0, 39.0);
       maxAllowedNdcX = 0.968;
-      topReservedPx = 58;
-      bottomReservedPx = 56;
-      // Reserve 58px top score strip + sleek band for glowing "ON THE AIR · IN LIVING COLOR" marquee
-      topSafePct = Math.max(0.115, (topReservedPx + 38) / h);
-      bottomSafePct = Math.max(0.065, bottomReservedPx / h);
-      targetCenterYPct = 0.555;
+      topReservedPx = 56;
+      bottomReservedPx = isCompactPortrait ? 98 : 106;
+      topSafePct = Math.max(isCompactPortrait ? 0.148 : 0.125, (topReservedPx + 40) / h);
+      bottomSafePct = Math.max(isCompactPortrait ? 0.148 : 0.125, bottomReservedPx / h);
+      targetCenterYPct = (topSafePct + (1 - bottomSafePct)) * 0.5 + 0.008;
     } else if (isTabletPortrait) {
       // Tablet Portrait (`768x1024`, `820x1180`):
-      // Heroic 92-95% width & 72-78% height framing with marquee crown & glowing pillars!
+      // Heroic 92-95% width & clean clearance above bottom rule banner!
       pitchDeg = 30.2;
       fovDeg = 39.5;
       maxAllowedNdcX = 0.948;
       topReservedPx = 62;
-      bottomReservedPx = 50;
+      bottomReservedPx = 98;
       topSafePct = Math.max(0.145, (topReservedPx + 84) / h);
-      bottomSafePct = Math.max(0.055, bottomReservedPx / h);
-      targetCenterYPct = 0.565;
+      bottomSafePct = Math.max(0.096, bottomReservedPx / h);
+      targetCenterYPct = 0.532;
     } else if (isTabletLandscape) {
       // Tablet Landscape (`1024x768`, `1180x820`):
       pitchDeg = 28.2;
@@ -492,15 +471,15 @@ export class WebGL2StageEngineV7 {
       bottomSafePct = Math.max(0.055, bottomReservedPx / h);
       targetCenterYPct = 0.575;
     } else if (isWidePhoneLandscape) {
-      // Mobile Phone Landscape (`844x390`, `932x430`):
+      // Mobile Phone Landscape (`844x390`, `932x430`): ~5% extra bottom & side breathing room so front brass bezel stays 100% framed!
       pitchDeg = 28.0;
       fovDeg = 43.0;
-      maxAllowedNdcX = 0.9;
-      topReservedPx = 44;
-      bottomReservedPx = 18;
-      topSafePct = Math.max(0.135, (topReservedPx + 12) / h);
-      bottomSafePct = Math.max(0.045, bottomReservedPx / h);
-      targetCenterYPct = 0.555;
+      maxAllowedNdcX = 0.872;
+      topReservedPx = 46;
+      bottomReservedPx = 46;
+      topSafePct = Math.max(0.185, (topReservedPx + 26) / h);
+      bottomSafePct = Math.max(0.118, bottomReservedPx / h);
+      targetCenterYPct = 0.532;
     } else {
       // Desktop Widescreen (`1440x900`, `1920x1080`):
       pitchDeg = 27.2;
@@ -593,6 +572,7 @@ export class WebGL2StageEngineV7 {
 
     this.currentPitchDeg = pitchDeg;
     this.solvedDistance = dist;
+    this.isPhonePortraitViewport = isPhonePortrait;
     this.baseCameraPos.set(0, finalCamY, finalCamZ);
     this.baseLookAt.set(0, finalCamY - dist * sinT, finalCamZ - dist * cosT);
 
@@ -605,7 +585,7 @@ export class WebGL2StageEngineV7 {
     const wingEyeZ = Math.max(2.0, (finalCamZ - wingZ) * cosT + (finalCamY - 1.8) * sinT);
     const wingHalfSpanX = wingEyeZ * tanHalfFov * aspect * 0.945;
     this.activeStageWorld?.setWingSpanX(wingHalfSpanX, wingZ);
-    this.activeStageWorld?.setPortraitFraming?.(isPortrait);
+    this.activeStageWorld?.setPortraitFraming?.(isPortrait, aspect);
 
     // Solve exact world Y at z = -4.46 so the glowing "ON THE AIR · IN LIVING COLOR" sign sits
     // cleanly right beneath the top score strip and just above the Tote Board top edge!
@@ -680,6 +660,34 @@ export class WebGL2StageEngineV7 {
     return 1.0;
   }
 
+  /**
+   * Subtle, seasickness-free RCA TK-41 Studio Pedestal Camera Push-In (~4% default)
+   * toward an active clue tile, TV twist, or Rival turn. Bypassed when `reducedMotion === true`.
+   */
+  public focusBoardPoint(worldX = 0, worldZ = 0, zoomBoost = 0.04): void {
+    if (this.reducedMotion) {
+      this.targetFocusX = 0;
+      this.targetFocusZ = 0;
+      this.targetFocusZoomBoost = 0;
+      return;
+    }
+    const maxShiftX = this.isPhonePortraitViewport ? 0.08 : 0.24;
+    const maxShiftZ = this.isPhonePortraitViewport ? 0.08 : 0.2;
+    this.targetFocusX = THREE.MathUtils.clamp(worldX * 0.16, -maxShiftX, maxShiftX);
+    this.targetFocusZ = THREE.MathUtils.clamp(worldZ * 0.14, -maxShiftZ, maxShiftZ);
+    this.targetFocusZoomBoost = THREE.MathUtils.clamp(zoomBoost, -0.04, 0.08);
+  }
+
+  public clearBoardFocus(): void {
+    this.targetFocusX = 0;
+    this.targetFocusZ = 0;
+    this.targetFocusZoomBoost = 0;
+  }
+
+  public resetBoardFocus(): void {
+    this.clearBoardFocus();
+  }
+
   public panBoardCameraByPixels(deltaPxX: number, deltaPxY: number): void {
     const w = Math.max(1, this.container.clientWidth || 390);
     const h = Math.max(1, this.container.clientHeight || 660);
@@ -701,18 +709,36 @@ export class WebGL2StageEngineV7 {
   }
 
   private applyZoomAndPanToCamera(): void {
+    const effectiveZoom = Math.max(
+      0.75,
+      this.currentUserZoom * (1 + (this.reducedMotion ? 0 : this.currentFocusZoomBoost)),
+    );
     const dir = new THREE.Vector3().subVectors(this.baseCameraPos, this.baseLookAt);
-    const scaledDir = dir.multiplyScalar(1 / Math.max(0.75, this.currentUserZoom));
-    const lookX = this.baseLookAt.x + this.currentPanX;
+    const scaledDir = dir.multiplyScalar(1 / effectiveZoom);
+
+    // Subtle 1966 RCA TK-41 hydraulic pedestal idle breathing (±0.03m at 0.18Hz, zero seasickness!)
+    let breatheX = 0;
+    let breatheY = 0;
+    if (!this.reducedMotion && this.elapsedSec > 0) {
+      const amp = this.isPhonePortraitViewport ? 0.012 : 0.028;
+      const omega = Math.PI * 2 * 0.18;
+      breatheX = Math.sin(this.elapsedSec * omega) * amp;
+      breatheY = Math.cos(this.elapsedSec * omega * 0.86) * (amp * 0.65);
+    }
+
+    const focusX = this.reducedMotion ? 0 : this.currentFocusX;
+    const focusZ = this.reducedMotion ? 0 : this.currentFocusZ;
+
+    const lookX = this.baseLookAt.x + this.currentPanX + focusX;
     const lookY = this.baseLookAt.y;
-    const lookZ = this.baseLookAt.z + this.currentPanZ;
+    const lookZ = this.baseLookAt.z + this.currentPanZ + focusZ;
 
     this.camera.position.set(
-      lookX + scaledDir.x,
-      Math.max(0.85, lookY + scaledDir.y),
+      lookX + scaledDir.x + breatheX,
+      Math.max(0.85, lookY + scaledDir.y + breatheY),
       lookZ + scaledDir.z,
     );
-    this.camera.lookAt(lookX, lookY, lookZ);
+    this.camera.lookAt(lookX + breatheX * 0.35, lookY, lookZ);
     this.camera.updateProjectionMatrix();
     this.camera.updateMatrixWorld();
   }
@@ -782,6 +808,11 @@ export class WebGL2StageEngineV7 {
   public setCardApertureOpen(open: boolean): void {
     this.cardApertureOpen = open;
     this.targetApertureDim = open ? 0.45 : 1.0;
+    if (open && !this.reducedMotion && this.targetFocusZoomBoost < 0.01) {
+      this.targetFocusZoomBoost = 0.038;
+    } else if (!open) {
+      this.clearBoardFocus();
+    }
   }
 
   private applySceneLightDimming(): void {
@@ -817,6 +848,14 @@ export class WebGL2StageEngineV7 {
     count = 28,
   ): void {
     this.solenoidSparks.emit(origin, count);
+  }
+
+  /**
+   * Blinks the upper-proscenium 3D backlit `APPLAUSE` studio lightbox sign in warm
+   * neon amber & crimson on streaks, cheers, Secret Squares, and jackpots!
+   */
+  public triggerStudioApplauseSign(durationSec = 2.4): void {
+    this.activeStageWorld?.triggerApplauseSign?.(durationSec);
   }
 
   // --------------------------------------------------------------------------
@@ -865,6 +904,13 @@ export class WebGL2StageEngineV7 {
   public applySettings(settings: Partial<BroadcastSettingsV7>): void {
     if (typeof settings.reducedMotion === 'boolean') {
       this.reducedMotion = settings.reducedMotion;
+      if (this.reducedMotion) {
+        this.clearBoardFocus();
+        this.currentFocusX = 0;
+        this.currentFocusZ = 0;
+        this.currentFocusZoomBoost = 0;
+        this.applyZoomAndPanToCamera();
+      }
     }
   }
 
@@ -874,13 +920,15 @@ export class WebGL2StageEngineV7 {
     const h = Math.max(1, Math.floor(height));
     const dpr = this.computeSafeDpr();
 
+    this.lastCanvasCssW = w;
+    this.lastCanvasCssH = h;
+    this.lastAppliedDpr = dpr;
+
     this.renderer.setPixelRatio(dpr);
     this.renderer.setSize(w, h, false);
+    this.renderer.setViewport(0, 0, w, h);
+    this.renderer.setScissorTest(false);
     this.solenoidSparks.setPixelRatio(dpr);
-
-    this.composer.setPixelRatio(dpr);
-    this.composer.setSize(w, h);
-    this.bloomPass.setSize(Math.max(1, Math.floor(w * 0.5)), Math.max(1, Math.floor(h * 0.5)));
 
     this.fitBoardToViewport(w, h);
   }
@@ -914,6 +962,29 @@ export class WebGL2StageEngineV7 {
 
   public renderFrameNow(dtSec = 1 / 60): void {
     if (this.isDisposed) return;
+
+    // Synchronous pre-render DPR & viewport guard prevents any `3x3` tiled frame across DPR / resize switches!
+    const curW = Math.max(
+      1,
+      Math.floor(
+        this.container.clientWidth || (typeof window !== 'undefined' ? window.innerWidth : this.lastCanvasCssW || 1),
+      ),
+    );
+    const curH = Math.max(
+      1,
+      Math.floor(
+        this.container.clientHeight || (typeof window !== 'undefined' ? window.innerHeight : this.lastCanvasCssH || 1),
+      ),
+    );
+    const curDpr = this.computeSafeDpr();
+    if (
+      curW !== this.lastCanvasCssW ||
+      curH !== this.lastCanvasCssH ||
+      Math.abs(curDpr - this.lastAppliedDpr) > 0.001
+    ) {
+      this.resize(curW, curH);
+    }
+
     const dt = Math.min(0.05, Math.max(0, dtSec));
     this.elapsedSec += dt;
 
@@ -935,15 +1006,43 @@ export class WebGL2StageEngineV7 {
       this.applySceneLightDimming();
     }
 
+    // Auto-bridge celebration & focus cues emitted by InteractiveBoard3DControllerV7 on boardMount.userData
+    const boardUd = this.boardMount.userData as {
+      __wsApplausePulseSec?: number;
+      __wsFocusHint?: { x: number; z: number; zoomBoost: number; clear?: boolean } | null;
+    };
+    if (boardUd.__wsApplausePulseSec && boardUd.__wsApplausePulseSec > 0) {
+      const dur = boardUd.__wsApplausePulseSec;
+      boardUd.__wsApplausePulseSec = 0;
+      this.triggerStudioApplauseSign(dur);
+    }
+    if (boardUd.__wsFocusHint) {
+      const hint = boardUd.__wsFocusHint;
+      boardUd.__wsFocusHint = null;
+      if (hint.clear) {
+        if (!this.cardApertureOpen) this.clearBoardFocus();
+      } else {
+        this.focusBoardPoint(hint.x, hint.z, hint.zoomBoost);
+      }
+    }
+
     const lerpAlpha = Math.min(1, (dt > 0 ? dt : 1 / 60) * 14);
+    const focusAlpha = 1 - Math.exp(-(dt > 0 ? dt : 1 / 60) * 5.8);
+    this.currentUserZoom += (this.targetUserZoom - this.currentUserZoom) * lerpAlpha;
+    this.currentPanX += (this.targetPanX - this.currentPanX) * lerpAlpha;
+    this.currentPanZ += (this.targetPanZ - this.currentPanZ) * lerpAlpha;
+    this.currentFocusX += (this.targetFocusX - this.currentFocusX) * focusAlpha;
+    this.currentFocusZ += (this.targetFocusZ - this.currentFocusZ) * focusAlpha;
+    this.currentFocusZoomBoost +=
+      (this.targetFocusZoomBoost - this.currentFocusZoomBoost) * focusAlpha;
+
     if (
-      Math.abs(this.currentUserZoom - this.targetUserZoom) > 0.0005 ||
-      Math.abs(this.currentPanX - this.targetPanX) > 0.0005 ||
-      Math.abs(this.currentPanZ - this.targetPanZ) > 0.0005
+      !this.reducedMotion ||
+      Math.abs(this.currentUserZoom - this.targetUserZoom) > 0.0002 ||
+      Math.abs(this.currentPanX - this.targetPanX) > 0.0002 ||
+      Math.abs(this.currentPanZ - this.targetPanZ) > 0.0002 ||
+      Math.abs(this.currentFocusZoomBoost) > 0.0002
     ) {
-      this.currentUserZoom += (this.targetUserZoom - this.currentUserZoom) * lerpAlpha;
-      this.currentPanX += (this.targetPanX - this.currentPanX) * lerpAlpha;
-      this.currentPanZ += (this.targetPanZ - this.currentPanZ) * lerpAlpha;
       this.applyZoomAndPanToCamera();
     }
 
@@ -969,11 +1068,19 @@ export class WebGL2StageEngineV7 {
       cameraY: Number(this.camera.position.y.toFixed(3)),
       apertureDimFactor: Number(this.currentApertureDim.toFixed(3)),
       cardApertureOpen: this.cardApertureOpen,
-      bloomThreshold: this.bloomPass.threshold,
-      bloomStrength: this.bloomPass.strength,
+      bloomThreshold: 1.15,
+      bloomStrength: 0.4,
       userZoom: Number(this.currentUserZoom.toFixed(2)),
       drawCalls: this.renderer.info.render.calls,
       triangles: this.renderer.info.render.triangles,
+    };
+  }
+
+  public getMemoryTelemetry(): { geometries: number; textures: number; programs: number } {
+    return {
+      geometries: this.renderer.info.memory.geometries,
+      textures: this.renderer.info.memory.textures,
+      programs: this.renderer.info.programs?.length ?? 0,
     };
   }
 
@@ -999,9 +1106,6 @@ export class WebGL2StageEngineV7 {
     disposeObject3DTree(this.toyMount);
     disposeObject3DTree(this.trophyMount);
 
-    this.bloomPass.dispose();
-    this.outputPass.dispose();
-    this.composer.dispose();
     this.sharedEnvRT.dispose();
 
     this.renderer.dispose();

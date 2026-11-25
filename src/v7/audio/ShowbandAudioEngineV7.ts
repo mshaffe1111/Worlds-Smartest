@@ -37,6 +37,27 @@ export type CheatTellChannelV7 = 'ROW_C_GLINT' | 'SOLENOID_SPARK' | 'FRESNEL_LAM
 
 export type ShowbandBusIdV7 = 'master' | 'music' | 'sfx' | 'crowd' | 'ambience';
 
+export type SongChartVariantIdV7 = 0 | 1 | 2 | 3 | 4;
+
+export type BandReactionKindV7 =
+  | 'LEAD_CHANGE'
+  | 'HOT_STREAK'
+  | 'CLUTCH_POINT'
+  | 'RIVAL_FUMBLE'
+  | 'LINE_JACKPOT';
+
+export type LifelineCueKindV7 = 'FIFTY_FIFTY' | 'AUDIENCE_POLL';
+
+export type TrophyTierAudioIdV7 = 'BRONZE' | 'SILVER' | 'GOLD' | 'PLATINUM';
+
+export const SONG_CHART_TITLES_V7: Readonly<Record<SongChartVariantIdV7, string>> = {
+  0: 'Chart 0: Tijuana Brass Bounce (Herb Alpert / Dating Game 16-Bar)',
+  1: 'Chart 1: 30 Rock Big-Band Swing Strut (Doc Severinsen / Take Ten 16-Bar)',
+  2: 'Chart 2: Sunset Strip Bossa Nova (Quincy Jones / 1966 Hollywood Bossa 16-Bar)',
+  3: 'Chart 3: Burbank Soul-Organ Go-Go (Booker T. / Laugh-In Leslie B3 16-Bar)',
+  4: 'Chart 4: Midnight Penthouse Showstopper (Prime-Time Double-Dollars 16-Bar)',
+};
+
 export interface BallisticVuStateV7 {
   /** Ballistic VU level in dB relative to 0 VU = -14 dBFS (clamped [-20, +3.5]). */
   vuDb: number;
@@ -196,8 +217,9 @@ export const SHOWBAND_SCENE_SPECS_V7: Readonly<
 // Psychoacoustic Constants & Calibrated Levels
 // ----------------------------------------------------------------------------
 
-const MAX_CONCURRENT_VOICES = 52;
+const MAX_CONCURRENT_VOICES = 96;
 const AMBIENCE_GRAIN_SR = 16000;
+const SHOWBAND_LOOP_BARS = 16;
 
 /** 0 VU = -14.0 dBFS RMS (0.19952623 linear RMS). */
 const VU_ZERO_DBFS = -14.0;
@@ -224,6 +246,8 @@ interface ActiveVoiceHandle {
   endTime: number;
   gainNode: GainNode;
   stopNode: AudioScheduledSourceNode;
+  extraStopNodes?: AudioScheduledSourceNode[];
+  extraGainNodes?: GainNode[];
   stopped: boolean;
 }
 
@@ -288,6 +312,27 @@ function humanizeOffset(bar: number, step: number, salt: number, rangeSec = 0.00
   return (frac * 2 - 1) * rangeSec;
 }
 
+/** C1-continuous unity-gain soft-knee ceiling shaper (exact 1.0x linear below `kneeStart`, smooth tanh cap at `maxOut`). */
+function createUnityKneeCeilingCurve(
+  kneeStart = 0.46,
+  maxOut = 0.68,
+  samples = 1024,
+): Float32Array<ArrayBuffer> {
+  const curve = new Float32Array(samples);
+  const span = Math.max(0.05, maxOut - kneeStart);
+  for (let i = 0; i < samples; i++) {
+    const x = (i * 2) / (samples - 1) - 1;
+    const ax = Math.abs(x);
+    if (ax <= kneeStart) {
+      curve[i] = x;
+    } else {
+      const sign = x < 0 ? -1 : 1;
+      curve[i] = sign * (kneeStart + span * Math.tanh((ax - kneeStart) / span));
+    }
+  }
+  return curve;
+}
+
 /** Soft-ceiling tanh WaveShaper curve strictly bounded at -1.0 dBTP (0.89125). */
 function createBrickwallCeilingCurve(
   ceilingLinear = 0.89125,
@@ -346,13 +391,18 @@ export class ShowbandAudioEngineV7 {
   private readonly samplePack = new SamplePackLoaderV7();
 
   private ctx: AudioContext | null = null;
+  private rhythmFrontInput: GainNode | null = null;
   private musicSanctuaryFilter: BiquadFilterNode | null = null;
   private musicSanctuaryGain: GainNode | null = null;
   private ribbonWarmShelf: BiquadFilterNode | null = null;
+  private ribbonWoodBodyPeak: BiquadFilterNode | null = null;
+  private ribbonUpperMidDip: BiquadFilterNode | null = null;
   private ribbonTopRolloff: BiquadFilterNode | null = null;
   private musicTapeShaper: WaveShaperNode | null = null;
   private musicStingerDuckGain: GainNode | null = null;
+  private chamberPreDelay: DelayNode | null = null;
   private studioChamberConvolver: ConvolverNode | null = null;
+  private chamberWarmLp: BiquadFilterNode | null = null;
   private musicDryGain: GainNode | null = null;
   private musicWetGain: GainNode | null = null;
   private sfxChamberSend: GainNode | null = null;
@@ -366,8 +416,9 @@ export class ShowbandAudioEngineV7 {
   private hammondPercWave: PeriodicWave | null = null;
   private leslieBus: LeslieCabinetBus | null = null;
 
-  // Small hardware-only buffers (Stage 09 UHF barge static + tiny hover micro-click fallback)
+  // Small hardware-only buffers (Stage 09 UHF barge static, 1966 Monoscope RF sync-loss static, hover backup click)
   private uhfCreakBuffer: AudioBuffer | null = null;
+  private monoscopeStaticBuffer: AudioBuffer | null = null;
   private fallbackClickBuffer: AudioBuffer | null = null;
   private chamberIrBytes = 0;
 
@@ -383,23 +434,40 @@ export class ShowbandAudioEngineV7 {
   private ballisticVuLinear = 0;
   private peakHoldRemainingSec = 0;
 
-  // Sequencer & voice pool
+  // Sequencer, 16-bar A-A-B-A song chart rotation & voice pool
   private readonly activeVoices: ActiveVoiceHandle[] = [];
   private isMusicRunning = false;
   private schedulerTimer: ReturnType<typeof setInterval> | null = null;
   private nextSubstepTime = 0;
   private currentBarIndex = 0;
   private currentSubstepInBar = 0;
+  private songChartVariant: SongChartVariantIdV7 = 0;
+  private explicitChartOverride = false;
+  private stageSwitchCounter = 0;
   private ambienceBed: AmbienceBedNodes | null = null;
+  private ambienceBedScene: ShowbandSceneIdV7 | null = null;
+  private ambienceBedHasCrowd = false;
+  private unlockInFlight: Promise<void> | null = null;
+  private samplesReadyCompleted = false;
 
   // Censor mic continuous transformer hold state
   private censorHold: CensorHoldNodes | null = null;
   private censorHoldActive = false;
   private censorCharge01 = 0;
 
-  // Micro-dedupe timestamps (ms)
+  // Micro-dedupe & cross-cue musical phrasing timestamps
   private lastHoverMs = -100;
   private lastDetentMs = -100;
+  private lastWheelPegMs = -100;
+  private slowWheelPegCount = 0;
+  private lastSplitFlapWallMs = -1000;
+  private splitFlapBurstStep = 0;
+  private pylMelodyCursor = 0;
+  private lastExplicitChartSetMs = -1e9;
+  private lastBandReactionTime = -10;
+  private lastCorrectRevealTime = -10;
+  private lastWrongRevealTime = -10;
+  private lastCeremonyFanfareTime = -10;
   private detachUnlockListeners: (() => void) | null = null;
   private disposed = false;
 
@@ -452,6 +520,10 @@ export class ShowbandAudioEngineV7 {
     this.crowdBus = ctx.createGain();
     this.ambienceBus = ctx.createGain();
 
+    // Up-front dry studio pocket input for Electric Bass, Upright Bass, Kick & Snare (tight front-to-back depth!)
+    this.rhythmFrontInput = ctx.createGain();
+    this.rhythmFrontInput.gain.value = 1.0;
+
     // Clue-Reading Sanctuary Peaking EQ (-7.0dB @ 1.8kHz) + -6.5dB calm reading bed attenuation
     this.musicSanctuaryFilter = ctx.createBiquadFilter();
     this.musicSanctuaryFilter.type = 'peaking';
@@ -460,63 +532,86 @@ export class ShowbandAudioEngineV7 {
     this.musicSanctuaryFilter.gain.value = this.clueSanctuaryActive ? -7.0 : 0.0;
 
     this.musicSanctuaryGain = ctx.createGain();
-    this.musicSanctuaryGain.gain.value = this.clueSanctuaryActive ? 0.47 : 1.0;
+    this.musicSanctuaryGain.gain.value = this.clueSanctuaryActive ? 0.37 : 1.0;
 
-    // 1966 RCA 44-BX Ribbon Microphone Studio Coloration (warm 220Hz wood + silky 6.2kHz rolloff)
+    // Authentic 1966 Bill Putnam / Bones Howe Console EQ:
+    // +2.8 dB @ 105 Hz (tight bass & kick foundation), -2.2 dB @ 235 Hz (clears boxy low-mid mud!),
+    // -1.0 dB @ 3,400 Hz (preserves natural guitar string, piano hammer & snare snap!),
+    // -4.0 dB @ 5,500 Hz (silky vintage ribbon top rolloff without dulling articulation)!
     this.ribbonWarmShelf = ctx.createBiquadFilter();
     this.ribbonWarmShelf.type = 'lowshelf';
-    this.ribbonWarmShelf.frequency.value = 220;
-    this.ribbonWarmShelf.gain.value = 1.8;
+    this.ribbonWarmShelf.frequency.value = 105;
+    this.ribbonWarmShelf.gain.value = 2.8;
+
+    this.ribbonWoodBodyPeak = ctx.createBiquadFilter();
+    this.ribbonWoodBodyPeak.type = 'peaking';
+    this.ribbonWoodBodyPeak.frequency.value = 235;
+    this.ribbonWoodBodyPeak.Q.value = 1.05;
+    this.ribbonWoodBodyPeak.gain.value = -2.2;
+
+    this.ribbonUpperMidDip = ctx.createBiquadFilter();
+    this.ribbonUpperMidDip.type = 'peaking';
+    this.ribbonUpperMidDip.frequency.value = 3400;
+    this.ribbonUpperMidDip.Q.value = 0.90;
+    this.ribbonUpperMidDip.gain.value = -1.0;
 
     this.ribbonTopRolloff = ctx.createBiquadFilter();
     this.ribbonTopRolloff.type = 'highshelf';
-    this.ribbonTopRolloff.frequency.value = 6200;
-    this.ribbonTopRolloff.gain.value = -2.2;
+    this.ribbonTopRolloff.frequency.value = 5500;
+    this.ribbonTopRolloff.gain.value = -4.0;
 
     this.musicTapeShaper = ctx.createWaveShaper();
-    this.musicTapeShaper.curve = createWarmTubeSaturationCurve(1.12, 512);
+    this.musicTapeShaper.curve = createWarmTubeSaturationCurve(1.06, 512);
     this.musicTapeShaper.oversample = '2x';
 
     // Broadcast engineer fader duck node for big fanfares, bells, buzzers & wheel spins
     this.musicStingerDuckGain = ctx.createGain();
     this.musicStingerDuckGain.gain.value = 1.0;
 
-    // Stereo 1.35s Capitol Concrete/Wood Studio A Chamber Convolution Reverb
+    // Stereo 1.45s Wooden Chamber Convolution Reverb with 22ms Tape Pre-Delay, 220Hz De-Mud HPF & <2,800Hz Damping!
+    this.chamberPreDelay = ctx.createDelay(0.05);
+    this.chamberPreDelay.delayTime.value = 0.022;
+
     const chamberIr = this.buildStudioChamberImpulse(ctx);
     this.chamberIrBytes = chamberIr.length * chamberIr.numberOfChannels * 4;
     this.studioChamberConvolver = ctx.createConvolver();
     this.studioChamberConvolver.buffer = chamberIr;
 
+    this.chamberWarmLp = ctx.createBiquadFilter();
+    this.chamberWarmLp.type = 'lowpass';
+    this.chamberWarmLp.frequency.value = 2850;
+    this.chamberWarmLp.Q.value = 0.7;
+
     this.musicDryGain = ctx.createGain();
-    this.musicDryGain.gain.value = 0.72;
+    this.musicDryGain.gain.value = 1.03;
     this.musicWetGain = ctx.createGain();
-    this.musicWetGain.gain.value = 0.24;
+    this.musicWetGain.gain.value = 0.28;
 
     // Subtle studio room glue send from SFX bus (puts bells & brass stingers in the same room!)
     this.sfxChamberSend = ctx.createGain();
-    this.sfxChamberSend.gain.value = 0.15;
+    this.sfxChamberSend.gain.value = 0.13;
 
-    // Broadcast Master Glue Compressor (-14 LUFS cohesion, zero VU overload)
+    // Open-Crest Broadcast Glue Compressor (high -10.5dB threshold so rhythm groove NEVER pumps — >=10.5 dB crest!)
     this.broadcastGlueComp = ctx.createDynamicsCompressor();
-    this.broadcastGlueComp.threshold.value = -16.5;
-    this.broadcastGlueComp.knee.value = 10.0;
-    this.broadcastGlueComp.ratio.value = 2.4;
-    this.broadcastGlueComp.attack.value = 0.012;
-    this.broadcastGlueComp.release.value = 0.18;
+    this.broadcastGlueComp.threshold.value = -10.5;
+    this.broadcastGlueComp.knee.value = 12.0;
+    this.broadcastGlueComp.ratio.value = 1.75;
+    this.broadcastGlueComp.attack.value = 0.028;
+    this.broadcastGlueComp.release.value = 0.22;
 
     const makeupGain = ctx.createGain();
-    makeupGain.gain.value = 0.90;
+    makeupGain.gain.value = 0.68;
 
-    // Brickwall Safety Limiter + True-Peak Ceiling Shaper (trimmed -3dB so VU cruises cleanly around -2..0 VU!)
+    // Brickwall Safety Limiter + Unity-Knee True-Peak Ceiling Shaper (preserves >=11 dB acoustic crest factor while capping peaks <= -2.4 dBFS!)
     this.brickwallLimiter = ctx.createDynamicsCompressor();
-    this.brickwallLimiter.threshold.value = -5.0;
+    this.brickwallLimiter.threshold.value = -4.2;
     this.brickwallLimiter.knee.value = 2.0;
     this.brickwallLimiter.ratio.value = 20.0;
     this.brickwallLimiter.attack.value = 0.001;
     this.brickwallLimiter.release.value = 0.085;
 
     this.ceilingShaper = ctx.createWaveShaper();
-    this.ceilingShaper.curve = createBrickwallCeilingCurve(0.615, 1024);
+    this.ceilingShaper.curve = createUnityKneeCeilingCurve(0.56, 0.76, 1024);
     this.ceilingShaper.oversample = '2x';
 
     // Real 1024-sample AnalyserNode on Master Chain
@@ -524,28 +619,67 @@ export class ShowbandAudioEngineV7 {
     this.masterAnalyser.fftSize = 1024;
     this.masterAnalyser.smoothingTimeConstant = 0.0;
 
-    // Wire Music Path: Sanctuary EQ -> Sanctuary -6.5dB Duck -> RCA Ribbon EQ -> Tape Warmth -> Stinger Duck -> Dry + Chamber -> MusicBus
+    // Wire 3D Front-to-Back Music Stage:
+    // - `rhythmFrontInput` (Bass Guitar, Upright Bass, Kick, Snare) -> Sanctuary Gain -> 4-Band Ribbon EQ -> Dry Up-Front!
+    // - `musicSanctuaryFilter` (Guitars L, Keys R, Horns/Strings) -> Sanctuary Gain -> 4-Band Ribbon EQ + 22ms Chamber Room!
+    const roomChamberSend = ctx.createGain();
+    roomChamberSend.gain.value = 1.0;
+    const frontSubtleRoomSend = ctx.createGain();
+    frontSubtleRoomSend.gain.value = 0.08;
+
+    this.musicSanctuaryFilter.connect(roomChamberSend);
+    this.rhythmFrontInput.connect(frontSubtleRoomSend);
+
     this.musicSanctuaryFilter.connect(this.musicSanctuaryGain);
+    this.rhythmFrontInput.connect(this.musicSanctuaryGain);
+
     this.musicSanctuaryGain.connect(this.ribbonWarmShelf);
-    this.ribbonWarmShelf.connect(this.ribbonTopRolloff);
+    this.ribbonWarmShelf.connect(this.ribbonWoodBodyPeak);
+    this.ribbonWoodBodyPeak.connect(this.ribbonUpperMidDip);
+    this.ribbonUpperMidDip.connect(this.ribbonTopRolloff);
     this.ribbonTopRolloff.connect(this.musicTapeShaper);
     this.musicTapeShaper.connect(this.musicStingerDuckGain);
 
-    this.musicStingerDuckGain.connect(this.musicDryGain);
-    this.musicDryGain.connect(this.musicBus);
-    this.musicStingerDuckGain.connect(this.studioChamberConvolver);
-    this.studioChamberConvolver.connect(this.musicWetGain);
-    this.musicWetGain.connect(this.musicBus);
+    // Room Chamber Return (22ms Pre-Delay -> 230Hz Abbey-Road De-Mud HPF -> 1.45s Wooden Convolver -> <2,850Hz Warm Damping)
+    const preDuckMix = ctx.createGain();
+    preDuckMix.gain.value = 1.0;
+    const chamberDeMudHp = ctx.createBiquadFilter();
+    chamberDeMudHp.type = 'highpass';
+    chamberDeMudHp.frequency.value = 230;
+
+    this.musicTapeShaper.disconnect();
+    this.musicStingerDuckGain.disconnect();
+    this.musicTapeShaper.connect(this.musicDryGain);
+    this.musicDryGain.connect(preDuckMix);
+
+    roomChamberSend.connect(this.chamberPreDelay);
+    frontSubtleRoomSend.connect(this.chamberPreDelay);
+    this.chamberPreDelay.connect(chamberDeMudHp);
+    chamberDeMudHp.connect(this.studioChamberConvolver);
+    this.studioChamberConvolver.connect(this.chamberWarmLp);
+    this.chamberWarmLp.connect(this.musicWetGain);
+    this.musicWetGain.connect(preDuckMix);
+
+    preDuckMix.connect(this.musicStingerDuckGain);
+    this.musicStingerDuckGain.connect(this.musicBus);
 
     // Subtle chamber send for SFX stingers into same studio room
     this.sfxBus.connect(this.sfxChamberSend);
     this.sfxChamberSend.connect(this.studioChamberConvolver);
 
-    // Wire 5 XAG Buses -> Master -> Glue -> Limiter -> Ceiling -> Analyser -> Destination
-    this.musicBus.connect(this.masterBus);
-    this.sfxBus.connect(this.masterBus);
-    this.crowdBus.connect(this.masterBus);
-    this.ambienceBus.connect(this.masterBus);
+    // Wire 5 XAG Buses -> C1 Pre-Master Transient Guard (<= -3.3 dBFS) -> Master -> Glue -> Limiter -> Ceiling -> Analyser -> Destination
+    const preMasterSum = ctx.createGain();
+    preMasterSum.gain.value = 1.0;
+    const preMasterGuard = ctx.createWaveShaper();
+    preMasterGuard.curve = createUnityKneeCeilingCurve(0.54, 0.74, 1024);
+    preMasterGuard.oversample = '2x';
+
+    this.musicBus.connect(preMasterSum);
+    this.sfxBus.connect(preMasterSum);
+    this.crowdBus.connect(preMasterSum);
+    this.ambienceBus.connect(preMasterSum);
+    preMasterSum.connect(preMasterGuard);
+    preMasterGuard.connect(this.masterBus);
 
     this.masterBus.connect(this.broadcastGlueComp);
     this.broadcastGlueComp.connect(makeupGain);
@@ -583,60 +717,58 @@ export class ShowbandAudioEngineV7 {
   private initHammondB3AndLeslie(ctx: AudioContext): void {
     if (!this.musicSanctuaryFilter) return;
 
-    // Classic Jimmy Smith / 1966 CBS Studio Organ registration: 88 8000 000 + soft upper sheen
-    // Harmonic indices relative to 16' sub-fundamental (noteFreq * 0.5):
-    // 1 = 16', 2 = 8', 3 = 5-1/3', 4 = 4', 6 = 2-2/3', 8 = 2', 10 = 1-3/5', 12 = 1-1/3', 16 = 1'
+    // Classic Jimmy Smith / 1966 CBS Studio Organ registration: 88 8400 000 smoky lower-drawbar body!
     const realWarm = new Float32Array(17);
     const imagWarm = new Float32Array(17);
-    imagWarm[1] = 0.85; // 16'
+    imagWarm[1] = 0.96; // 16'
     imagWarm[2] = 1.00; // 8'
-    imagWarm[3] = 0.72; // 5-1/3'
-    imagWarm[4] = 0.42; // 4'
-    imagWarm[6] = 0.16; // 2-2/3'
-    imagWarm[8] = 0.12; // 2'
-    imagWarm[10] = 0.05; // 1-3/5'
-    imagWarm[12] = 0.04; // 1-1/3'
-    imagWarm[16] = 0.06; // 1'
+    imagWarm[3] = 0.86; // 5-1/3'
+    imagWarm[4] = 0.48; // 4'
+    imagWarm[6] = 0.14; // 2-2/3'
+    imagWarm[8] = 0.09; // 2'
+    imagWarm[10] = 0.03; // 1-3/5'
+    imagWarm[12] = 0.02; // 1-1/3'
+    imagWarm[16] = 0.03; // 1'
     this.hammondWarmWave = ctx.createPeriodicWave(realWarm, imagWarm, {
       disableNormalization: false,
     });
 
-    // Punchier Booker T. / Soul-Jazz registration: 88 8640 004
+    // Punchier Booker T. / Soul-Jazz registration: 88 8630 002 (thick low-mid growl, silky top!)
     const realSoul = new Float32Array(17);
     const imagSoul = new Float32Array(17);
-    imagSoul[1] = 0.90;
+    imagSoul[1] = 0.98;
     imagSoul[2] = 1.00;
-    imagSoul[3] = 0.84;
-    imagSoul[4] = 0.68;
-    imagSoul[6] = 0.44;
-    imagSoul[8] = 0.24;
-    imagSoul[10] = 0.12;
-    imagSoul[12] = 0.08;
-    imagSoul[16] = 0.22;
+    imagSoul[3] = 0.90;
+    imagSoul[4] = 0.62;
+    imagSoul[6] = 0.36;
+    imagSoul[8] = 0.16;
+    imagSoul[10] = 0.08;
+    imagSoul[12] = 0.05;
+    imagSoul[16] = 0.10;
     this.hammondPercWave = ctx.createPeriodicWave(realSoul, imagSoul, {
       disableNormalization: false,
     });
 
-    // Shared Stereo Leslie 122 Rotary Speaker Cabinet
+    // Shared Stereo Leslie 122 Rotary Speaker Cabinet (anchored Stage Right w/ wide stereo swirl!)
     const input = ctx.createGain();
     input.gain.value = 1.0;
 
-    // Warm 6550 Leslie tube preamp coloration + wooden horn cabinet lowpass
+    // Warm 6550 Leslie tube preamp coloration + smoky 1,750 Hz wooden horn cabinet rolloff
     const preampDrive = ctx.createWaveShaper();
-    preampDrive.curve = createWarmTubeSaturationCurve(1.45, 512);
+    preampDrive.curve = createWarmTubeSaturationCurve(1.55, 512);
 
     const hornCabinetLp = ctx.createBiquadFilter();
     hornCabinetLp.type = 'lowpass';
-    hornCabinetLp.frequency.value = 2650;
-    hornCabinetLp.Q.value = 0.75;
+    hornCabinetLp.frequency.value = 1750;
+    hornCabinetLp.Q.value = 0.72;
 
     const hornBodyPeak = ctx.createBiquadFilter();
     hornBodyPeak.type = 'peaking';
-    hornBodyPeak.frequency.value = 780;
-    hornBodyPeak.Q.value = 0.9;
-    hornBodyPeak.gain.value = 2.4;
+    hornBodyPeak.frequency.value = 620;
+    hornBodyPeak.Q.value = 0.85;
+    hornBodyPeak.gain.value = 3.2;
 
-    // Stereo Dual-Channel Doppler Delay Lines (L & R opposite rotor phase!)
+    // Stereo Dual-Channel Doppler Delay Lines (L & R opposite rotor phase, Stage-Right keyboardist perspective!)
     const delayL = ctx.createDelay(0.02);
     const delayR = ctx.createDelay(0.02);
     delayL.delayTime.value = 0.0028;
@@ -644,8 +776,8 @@ export class ShowbandAudioEngineV7 {
 
     const ampL = ctx.createGain();
     const ampR = ctx.createGain();
-    ampL.gain.value = 0.76;
-    ampR.gain.value = 0.76;
+    ampL.gain.value = 0.62;
+    ampR.gain.value = 0.92;
 
     // Rotary Horn Doppler LFO (0.85 Hz Chorale <-> 5.9 Hz Tremolo!)
     const rotorLfo = ctx.createOscillator();
@@ -727,7 +859,7 @@ export class ShowbandAudioEngineV7 {
    */
   private buildStudioChamberImpulse(ctx: AudioContext): AudioBuffer {
     const sr = ctx.sampleRate || 48000;
-    const dur = 1.35;
+    const dur = 1.52;
     const len = Math.floor(sr * dur);
     const buf = ctx.createBuffer(2, len, sr);
     const left = buf.getChannelData(0);
@@ -736,16 +868,16 @@ export class ShowbandAudioEngineV7 {
     const rngR = createSeededNoise(0x19665354);
 
     const earlyL = [
-      [0.012, 0.34],
-      [0.025, -0.22],
-      [0.041, 0.17],
-      [0.055, -0.12],
+      [0.014, 0.36],
+      [0.029, -0.24],
+      [0.047, 0.19],
+      [0.066, -0.14],
     ];
     const earlyR = [
-      [0.016, 0.32],
-      [0.029, -0.23],
-      [0.044, 0.16],
-      [0.059, -0.11],
+      [0.019, 0.35],
+      [0.034, -0.25],
+      [0.052, 0.18],
+      [0.071, -0.13],
     ];
     for (const [sec, amp] of earlyL) {
       const idx = Math.min(len - 1, Math.floor(sec * sr));
@@ -760,13 +892,13 @@ export class ShowbandAudioEngineV7 {
     let lpR = 0;
     for (let i = 0; i < len; i++) {
       const t = i / sr;
-      const preDelayEnv = Math.min(1, t / 0.014);
-      const dampAlpha = 0.28 * Math.exp(-t * 1.35) + 0.05;
-      const decay = Math.exp(-t / 0.38) * preDelayEnv;
+      const preDelayEnv = Math.min(1, t / 0.018);
+      const dampAlpha = 0.21 * Math.exp(-t * 1.25) + 0.04;
+      const decay = Math.exp(-t / 0.46) * preDelayEnv;
       lpL += dampAlpha * (rngL() - lpL);
       lpR += dampAlpha * (rngR() - lpR);
-      left[i] = (left[i] + lpL * decay * 0.30) * 0.85;
-      right[i] = (right[i] + lpR * decay * 0.30) * 0.85;
+      left[i] = (left[i] + lpL * decay * 0.33) * 0.86;
+      right[i] = (right[i] + lpR * decay * 0.33) * 0.86;
     }
     return buf;
   }
@@ -816,6 +948,31 @@ export class ShowbandAudioEngineV7 {
       for (let i = 0; i < len; i++) ch[i] /= peak;
       this.fallbackClickBuffer = buf;
     }
+
+    // 3. 1966 RCA Monoscope "SIGNAL JAMMED" RF Snow & 60Hz Horizontal-Hold Tear Burst (0.38s)
+    {
+      const sr = 24000;
+      const len = Math.round(0.38 * sr);
+      const buf = ctx.createBuffer(1, len, sr);
+      const ch = buf.getChannelData(0);
+      const rng = createSeededNoise(0x19665a4e);
+      let bp = 0;
+      let lp = 0;
+      for (let i = 0; i < len; i++) {
+        const t = i / sr;
+        const u = i / len;
+        const env = Math.min(1, t / 0.008) * Math.pow(1 - u * 0.72, 1.35);
+        // 60Hz NTSC vertical/horizontal sync-loss tear gate + crisp RF snow!
+        const syncGate = 0.62 + 0.38 * Math.sign(Math.sin(2 * Math.PI * 60 * t + 0.4 * Math.sin(2 * Math.PI * 19 * t)));
+        const w = rng();
+        lp += 0.46 * (w - lp);
+        bp += 0.12 * (lp - bp);
+        const rfBand = lp - bp;
+        const arc = Math.abs(w) > 0.88 ? w * 0.45 : 0;
+        ch[i] = clamp(env * syncGate * (rfBand * 1.35 + arc), -0.95, 0.95);
+      }
+      this.monoscopeStaticBuffer = buf;
+    }
   }
 
   private installAutoUnlockListeners(): void {
@@ -841,26 +998,62 @@ export class ShowbandAudioEngineV7 {
    * recorded acoustic instruments, drums, foley, and crowd!), and starts music.
    */
   public async unlock(): Promise<void> {
+    if (this.disposed) return;
     const ctx = this.ensureAudioGraph();
     if (!ctx) return;
 
-    if (ctx.state === 'suspended') {
+    // Detach window gesture listeners immediately if context is already running (#245 #10)
+    if ((ctx.state as string) === 'running' && this.detachUnlockListeners) {
+      this.detachUnlockListeners();
+      this.detachUnlockListeners = null;
+    }
+
+    // Fast idempotent exit when already unlocked, samples decoded & music running (zero ambience churn!)
+    if (
+      (ctx.state as string) === 'running' &&
+      this.samplesReadyCompleted &&
+      this.isMusicRunning
+    ) {
+      this.rebuildStageAmbienceBed(false);
+      return;
+    }
+
+    if (this.unlockInFlight) {
+      return this.unlockInFlight;
+    }
+
+    this.unlockInFlight = (async () => {
       try {
-        await ctx.resume();
-      } catch {
-        // Browser may require gesture; auto-unlock listener will retry
+        if (ctx.state === 'suspended') {
+          try {
+            await ctx.resume();
+          } catch {
+            // Browser may require gesture; auto-unlock listener will retry
+          }
+        }
+
+        if ((ctx.state as string) === 'running' && this.detachUnlockListeners) {
+          this.detachUnlockListeners();
+          this.detachUnlockListeners = null;
+        }
+
+        if (!this.samplesReadyCompleted) {
+          await this.waitForSamplesReady();
+          this.samplesReadyCompleted = true;
+        }
+
+        if (!this.isMusicRunning && !this.disposed) {
+          this.startMusic();
+        } else if (this.isMusicRunning && !this.disposed) {
+          // Only upgrades ambience bed if crowd sample wasn't decoded yet; never churns an active bed!
+          this.rebuildStageAmbienceBed(false);
+        }
+      } finally {
+        this.unlockInFlight = null;
       }
-    }
+    })();
 
-    // Await Tier-1 core studio samples + allow brief window for Tier-2 orchestral samples
-    await this.waitForSamplesReady();
-
-    if (!this.isMusicRunning && !this.disposed) {
-      this.startMusic();
-    } else if (this.isMusicRunning && !this.disposed) {
-      // Refresh ambience bed once real crowd samples are decoded
-      this.rebuildStageAmbienceBed();
-    }
+    return this.unlockInFlight;
   }
 
   public async waitForSamplesReady(timeoutMs = 2600): Promise<void> {
@@ -893,12 +1086,28 @@ export class ShowbandAudioEngineV7 {
 
   /**
    * Convenience master bus PCM recorder directly on the audio engine (awaits
-   * unlock + full real studio sample loading before capturing!).
+   * unlock + full real studio sample loading before capturing, and computes
+   * true stereo width, crest factor, 3-band spectral balance & dead-air metrics!).
    */
   public async recordMasterAudioSamples(
     durationMs = 4000,
     onCueSchedule?: () => void,
-  ): Promise<{ sampleRate: number; samples: number[]; stats: SamplePackStatsV7 }> {
+  ): Promise<{
+    sampleRate: number;
+    samples: number[];
+    stats: SamplePackStatsV7;
+    stereoMetrics?: {
+      rmsDb: number;
+      peakDb: number;
+      crestDb: number;
+      stereoWidthRatio: number;
+      stereoSideRmsDb: number;
+      lowSub300Db: number;
+      mid300To3kDb: number;
+      airAbove3kDb: number;
+      maxDeadAirMs: number;
+    };
+  }> {
     await this.unlock();
     const ctx = this.getAudioContext();
     const bus = this.masterAnalyser ?? this.masterBus;
@@ -906,17 +1115,55 @@ export class ShowbandAudioEngineV7 {
       return { sampleRate: 44100, samples: [], stats: this.getSamplePackStats() };
     }
 
+    const sr = ctx.sampleRate || 48000;
     const proc = ctx.createScriptProcessor(2048, 2, 1);
     const mute = ctx.createGain();
     mute.gain.value = 0;
     const collected: number[] = [];
 
+    let sumMidSq = 0;
+    let sumSideSq = 0;
+    let peakAbs = 0;
+    let lp300 = 0;
+    let lp3000 = 0;
+    const alpha300 = 1 - Math.exp((-2 * Math.PI * 300) / sr);
+    const alpha3000 = 1 - Math.exp((-2 * Math.PI * 3000) / sr);
+    let sumLowSq = 0;
+    let sumMidBandSq = 0;
+    let sumAirSq = 0;
+    let curQuietSamples = 0;
+    let maxQuietSamples = 0;
+
     proc.onaudioprocess = (ev) => {
       const chL = ev.inputBuffer.getChannelData(0);
       const chR = ev.inputBuffer.numberOfChannels > 1 ? ev.inputBuffer.getChannelData(1) : chL;
       for (let i = 0; i < chL.length; i++) {
-        const mono = 0.5 * (chL[i] + chR[i]);
+        const l = chL[i];
+        const r = chR[i];
+        const mono = 0.5 * (l + r);
+        const side = 0.5 * (l - r);
         collected.push(Number(mono.toFixed(5)));
+
+        const absM = Math.max(Math.abs(l), Math.abs(r));
+        if (absM > peakAbs) peakAbs = absM;
+        sumMidSq += mono * mono;
+        sumSideSq += side * side;
+
+        lp300 += alpha300 * (mono - lp300);
+        lp3000 += alpha3000 * (mono - lp3000);
+        const bandLow = lp300;
+        const bandMid = lp3000 - lp300;
+        const bandAir = mono - lp3000;
+        sumLowSq += bandLow * bandLow;
+        sumMidBandSq += bandMid * bandMid;
+        sumAirSq += bandAir * bandAir;
+
+        if (absM < 0.002) {
+          curQuietSamples++;
+          if (curQuietSamples > maxQuietSamples) maxQuietSamples = curQuietSamples;
+        } else {
+          curQuietSamples = 0;
+        }
       }
     };
 
@@ -924,24 +1171,53 @@ export class ShowbandAudioEngineV7 {
     proc.connect(mute);
     mute.connect(ctx.destination);
 
-    if (onCueSchedule) {
-      onCueSchedule();
-    }
-
-    await sleepMs(durationMs);
-
     try {
-      bus.disconnect(proc);
-      proc.disconnect();
-      mute.disconnect();
-    } catch {
-      // ignore
+      if (onCueSchedule) {
+        onCueSchedule();
+      }
+
+      await sleepMs(durationMs);
+    } finally {
+      proc.onaudioprocess = null;
+      try {
+        bus.disconnect(proc);
+      } catch {
+        // ignore
+      }
+      try {
+        proc.disconnect();
+      } catch {
+        // ignore
+      }
+      try {
+        mute.disconnect();
+      } catch {
+        // ignore
+      }
     }
+
+    const n = Math.max(1, collected.length);
+    const toDb = (lin: number) => Number((lin > 1e-6 ? 20 * Math.log10(lin) : -100).toFixed(2));
+    const midRms = Math.sqrt(sumMidSq / n);
+    const sideRms = Math.sqrt(sumSideSq / n);
+    const rmsDb = toDb(midRms);
+    const peakDb = toDb(peakAbs);
 
     return {
-      sampleRate: Math.round(ctx.sampleRate),
+      sampleRate: Math.round(sr),
       samples: collected,
       stats: this.getSamplePackStats(),
+      stereoMetrics: {
+        rmsDb,
+        peakDb,
+        crestDb: Number((peakDb - rmsDb).toFixed(2)),
+        stereoWidthRatio: Number((midRms > 1e-6 ? sideRms / midRms : 0).toFixed(3)),
+        stereoSideRmsDb: toDb(sideRms),
+        lowSub300Db: toDb(Math.sqrt(sumLowSq / n)),
+        mid300To3kDb: toDb(Math.sqrt(sumMidBandSq / n)),
+        airAbove3kDb: toDb(Math.sqrt(sumAirSq / n)),
+        maxDeadAirMs: Number(((maxQuietSamples / sr) * 1000).toFixed(1)),
+      },
     };
   }
 
@@ -1073,6 +1349,52 @@ export class ShowbandAudioEngineV7 {
     return this.ctx;
   }
 
+  public isAudioUnlocked(): boolean {
+    return Boolean(this.ctx && this.ctx.state === 'running');
+  }
+
+  public getCurrentBarIndex(): number {
+    return this.currentBarIndex;
+  }
+
+  /** Jumps cleanly to any bar `0..15` in the 16-bar A-A-B-A cycle (e.g. Bar 8 B-section bridge). */
+  public seekToBar(barIndex: number): void {
+    const wrapped = ((Math.floor(barIndex) % SHOWBAND_LOOP_BARS) + SHOWBAND_LOOP_BARS) % SHOWBAND_LOOP_BARS;
+    this.currentBarIndex = wrapped;
+    this.currentSubstepInBar = 0;
+    if (this.ctx) {
+      this.nextSubstepTime = Math.max(this.ctx.currentTime + 0.015, this.nextSubstepTime);
+    }
+  }
+
+  /**
+   * Selects one of the 5 distinct 1966 16-bar Showband Song Charts (`0..4`) and
+   * rotates the 3 *Think!* chamber clue beds (`0..2`). Calling with no argument
+   * smoothly auto-advances to the next song chart (e.g. Act-3 Double-Dollars!).
+   */
+  public setSongChartVariant(variantIdx?: number): void {
+    const nextIdx =
+      typeof variantIdx === 'number' && Number.isFinite(variantIdx)
+        ? (((Math.floor(variantIdx) % 5) + 5) % 5)
+        : ((this.songChartVariant + 1) % 5);
+    this.songChartVariant = nextIdx as SongChartVariantIdV7;
+    this.explicitChartOverride = true;
+    this.lastExplicitChartSetMs = this.nowWallMs();
+
+    if (this.ctx && this.leslieBus && !this.clueSanctuaryActive) {
+      const fast = this.songChartVariant === 3 || this.songChartVariant === 4 || (this.currentBarIndex >= 8 && this.currentBarIndex <= 11);
+      this.leslieBus.setFast(fast, this.ctx.currentTime);
+    }
+  }
+
+  public getSongChartVariant(): SongChartVariantIdV7 {
+    return this.songChartVariant;
+  }
+
+  public getSongChartTitle(): string {
+    return SONG_CHART_TITLES_V7[this.songChartVariant];
+  }
+
   // --------------------------------------------------------------------------
   // 3. Voice Pool Manager & Real Studio Sample Players
   // --------------------------------------------------------------------------
@@ -1122,9 +1444,28 @@ export class ShowbandAudioEngineV7 {
       victim.stopped = true;
       const now = this.ctx.currentTime;
       try {
+        if (victim.extraGainNodes) {
+          for (const eg of victim.extraGainNodes) {
+            try {
+              eg.gain.cancelScheduledValues(now);
+              eg.gain.setValueAtTime(0, now);
+            } catch {
+              // ignore
+            }
+          }
+        }
         victim.gainNode.gain.cancelScheduledValues(now);
         victim.gainNode.gain.setTargetAtTime(0.0001, now, 0.002);
         victim.stopNode.stop(now + 0.009);
+        if (victim.extraStopNodes) {
+          for (const extra of victim.extraStopNodes) {
+            try {
+              extra.stop(now + 0.009);
+            } catch {
+              // ignore
+            }
+          }
+        }
       } catch {
         // ignore
       }
@@ -1152,6 +1493,7 @@ export class ShowbandAudioEngineV7 {
     priority: 1 | 2 | 3;
     lowpassHz?: number;
     highpassHz?: number;
+    wahSweep?: boolean;
     pan?: number;
     loop?: boolean;
   }): void {
@@ -1216,6 +1558,28 @@ export class ShowbandAudioEngineV7 {
       tail.connect(lp);
       tail = lp;
     }
+    if (opts.wahSweep) {
+      // Authentic 1966 Studio Rubber Plunger-Mute "WAH-uh!" Formant Sweep!
+      const openAt = startAt + Math.min(0.095, playDur * 0.34);
+      const wahPeak = ctx.createBiquadFilter();
+      wahPeak.type = 'peaking';
+      wahPeak.Q.setValueAtTime(2.6, startAt);
+      wahPeak.gain.setValueAtTime(8.5, startAt);
+      wahPeak.frequency.setValueAtTime(480, startAt);
+      wahPeak.frequency.exponentialRampToValueAtTime(1820, openAt);
+      wahPeak.frequency.exponentialRampToValueAtTime(440, endAt);
+
+      const wahLp = ctx.createBiquadFilter();
+      wahLp.type = 'lowpass';
+      wahLp.Q.setValueAtTime(1.3, startAt);
+      wahLp.frequency.setValueAtTime(820, startAt);
+      wahLp.frequency.exponentialRampToValueAtTime(3100, openAt);
+      wahLp.frequency.exponentialRampToValueAtTime(640, endAt);
+
+      tail.connect(wahPeak);
+      wahPeak.connect(wahLp);
+      tail = wahLp;
+    }
     if (
       typeof opts.pan === 'number' &&
       Math.abs(opts.pan) > 0.01 &&
@@ -1259,26 +1623,91 @@ export class ShowbandAudioEngineV7 {
       releaseSec?: number;
       priority?: 1 | 2 | 3;
       bendToMidi?: number;
+      wahSweep?: boolean;
     },
   ): void {
     const pick = this.samplePack.pickZoneWithFallback(instrumentId, midiNote);
     if (!pick) return;
 
-    const dest = opts?.dest ?? this.musicSanctuaryFilter;
+    const isFrontPocket =
+      instrumentId === 'electric_bass' ||
+      instrumentId === 'upright_bass' ||
+      instrumentId === 'clean_guitar' ||
+      instrumentId === 'jazz_guitar' ||
+      instrumentId === 'electric_piano' ||
+      instrumentId === 'grand_piano' ||
+      instrumentId === 'timpani';
+    const dest =
+      opts?.dest ??
+      (isFrontPocket
+        ? (this.rhythmFrontInput ?? this.musicSanctuaryFilter)
+        : this.musicSanctuaryFilter);
     const endRate =
       typeof opts?.bendToMidi === 'number'
         ? Math.pow(2, (opts.bendToMidi - pick.rootMidi) / 12)
         : undefined;
 
-    const defaultAttack = instrumentId === 'strings' ? 0.065 : 0.003;
+    const defaultAttack = instrumentId === 'strings' ? 0.065 : 0.002;
     const defaultRelease =
       instrumentId === 'strings'
-        ? 0.24
+        ? 0.22
         : instrumentId === 'trumpet' || instrumentId === 'brass' || instrumentId === 'muted_trumpet'
-          ? 0.065
+          ? 0.055
+          : instrumentId === 'electric_bass' || instrumentId === 'upright_bass'
+            ? 0.085
+            : 0.12;
+
+    // 1966 Bill Putnam Mix Clarity:
+    // - One Master Bassist owns 40-145Hz (`0 Hz` HPF + `920..1,150 Hz` articulate pluck/finger snap!)
+    // - Left Guitar & Right Rhodes/Steinway sit up-front (`rhythmFrontInput`), high-passed at `155-165 Hz` with open `4,100-4,600 Hz` string/hammer clarity!
+    // - Horns/Saxes high-pass at `140-180 Hz` so `120-260 Hz` stays 100% mud-free!
+    const defaultHighpass =
+      instrumentId === 'clean_guitar' || instrumentId === 'jazz_guitar'
+        ? 165
+        : instrumentId === 'electric_piano' || instrumentId === 'grand_piano'
+          ? 155
+          : instrumentId === 'trumpet' || instrumentId === 'muted_trumpet' || instrumentId === 'vibraphone' || instrumentId === 'marimba'
+            ? 185
+            : instrumentId === 'brass' || instrumentId === 'tenor_sax' || instrumentId === 'strings'
+              ? 160
+              : instrumentId === 'trombone'
+                ? 115
+                : instrumentId === 'baritone_sax'
+                  ? 88
+                  : undefined;
+
+    const defaultLowpass =
+      !opts?.dest
+        ? instrumentId === 'electric_bass'
+          ? 920
           : instrumentId === 'upright_bass'
-            ? 0.095
-            : 0.14;
+            ? 1120
+            : instrumentId === 'baritone_sax'
+              ? 2750
+              : instrumentId === 'trombone'
+                ? 2950
+                : instrumentId === 'jazz_guitar'
+                  ? 4100
+                  : instrumentId === 'clean_guitar'
+                    ? 4500
+                    : instrumentId === 'electric_piano'
+                      ? 4300
+                      : instrumentId === 'grand_piano'
+                        ? 4600
+                        : instrumentId === 'tenor_sax'
+                          ? 3400
+                          : instrumentId === 'marimba' || instrumentId === 'vibraphone'
+                            ? 3500
+                            : instrumentId === 'strings'
+                              ? 3200
+                              : instrumentId === 'brass' || instrumentId === 'muted_trumpet'
+                                ? 3450
+                                : instrumentId === 'trumpet'
+                                  ? 3650
+                                  : instrumentId === 'glockenspiel' || instrumentId === 'tubular_bell'
+                                    ? 4200
+                                    : undefined
+        : undefined;
 
     this.triggerBuffer({
       buffer: pick.buffer,
@@ -1290,14 +1719,15 @@ export class ShowbandAudioEngineV7 {
       durationSec,
       attackSec: opts?.attackSec ?? defaultAttack,
       releaseSec: opts?.releaseSec ?? defaultRelease,
-      priority: opts?.priority ?? 2,
-      lowpassHz: opts?.lowpassHz,
-      highpassHz: opts?.highpassHz,
+      priority: opts?.priority ?? (isFrontPocket ? 3 : 2),
+      lowpassHz: opts?.lowpassHz ?? defaultLowpass,
+      highpassHz: opts?.highpassHz ?? defaultHighpass,
+      wahSweep: opts?.wahSweep,
       pan: opts?.pan,
     });
   }
 
-  /** Plays a real Boston Jazz Drum Kit recording (`virtuosity_drums` / `VCSL` CC0). */
+  /** Plays a real Boston Jazz Drum Kit recording (`virtuosity_drums` / `VCSL` CC0) with 1966 Hal Blaine tape warmth. */
   private playDrum(
     drumId: string,
     when: number,
@@ -1314,18 +1744,69 @@ export class ShowbandAudioEngineV7 {
   ): void {
     const buf = this.samplePack.getDrum(drumId);
     if (!buf) return;
+    const isMusicDrum = !opts?.dest;
+    const isCoreKit =
+      drumId === 'kick' ||
+      drumId === 'snare_stick' ||
+      drumId === 'snare_brush' ||
+      drumId === 'snare_rim' ||
+      drumId === 'tom_mid';
+    const isBrightCymbal =
+      drumId === 'ride' ||
+      drumId === 'hihat_closed' ||
+      drumId === 'hihat_pedal' ||
+      drumId === 'tambourine' ||
+      drumId === 'shaker' ||
+      drumId === 'crash' ||
+      drumId === 'cowbell';
+
+    // Crisp Hal Blaine Drum Pocket: tight felt kick (1,150Hz), articulate snare/brushes (+1.8dB), silky ride/hats (4,600Hz)!
+    const gainScale = isMusicDrum
+      ? drumId === 'kick'
+        ? 1.18
+        : drumId === 'snare_brush' || drumId === 'snare_stick' || drumId === 'snare_rim'
+          ? 1.24
+          : drumId === 'ride' || drumId === 'hihat_pedal' || drumId === 'hihat_closed'
+            ? 0.88
+            : isBrightCymbal
+              ? 0.72
+              : 1.05
+      : 1.0;
+
+    const defaultDrumLp = isMusicDrum
+      ? drumId === 'kick'
+        ? 1150
+        : drumId === 'tom_mid' || drumId === 'bongo_lo'
+          ? 2800
+          : drumId === 'bongo_hi' || drumId === 'cowbell'
+            ? 3400
+            : drumId === 'snare_brush' || drumId === 'snare_rim' || drumId === 'snare_stick'
+              ? 4800
+              : drumId === 'ride' || drumId === 'hihat_closed' || drumId === 'hihat_pedal' || drumId === 'shaker' || drumId === 'tambourine'
+                ? 4750
+                : drumId === 'crash'
+                  ? 4900
+                  : undefined
+      : undefined;
+
+    const targetDest =
+      opts?.dest ??
+      (isCoreKit
+        ? (this.rhythmFrontInput ?? this.musicSanctuaryFilter)
+        : this.musicSanctuaryFilter);
+
     this.triggerBuffer({
       buffer: buf,
-      dest: opts?.dest ?? this.musicSanctuaryFilter,
+      dest: targetDest,
       when,
-      gain,
+      gain: gain * gainScale,
       playbackRate: opts?.playbackRate ?? 1.0,
       durationSec: opts?.durationSec,
       attackSec: 0.001,
       releaseSec: 0.04,
-      priority: opts?.priority ?? 1,
+      priority: opts?.priority ?? (drumId === 'kick' ? 2 : 1),
       pan: opts?.pan,
-      lowpassHz: opts?.lowpassHz,
+      lowpassHz: opts?.lowpassHz ?? defaultDrumLp,
       highpassHz: opts?.highpassHz,
     });
   }
@@ -1525,7 +2006,7 @@ export class ShowbandAudioEngineV7 {
       0.045,
     );
     this.musicSanctuaryGain?.gain.setTargetAtTime(
-      this.clueSanctuaryActive ? 0.47 : 1.0,
+      this.clueSanctuaryActive ? 0.37 : 1.0,
       now,
       0.065,
     );
@@ -1548,7 +2029,7 @@ export class ShowbandAudioEngineV7 {
       next
     ) {
       this.currentSubstepInBar = 0;
-      this.currentBarIndex = (this.currentBarIndex + 1) % 8;
+      this.currentBarIndex = (this.currentBarIndex + 1) % SHOWBAND_LOOP_BARS;
     }
   }
 
@@ -1564,11 +2045,49 @@ export class ShowbandAudioEngineV7 {
     return this.coupRegime;
   }
 
+  private defaultChartForScene(sceneId: ShowbandSceneIdV7, episodeRotation: number): SongChartVariantIdV7 {
+    switch (sceneId) {
+      case 'GREEN_ROOM':
+        return 0; // Chart 0: Tijuana Brass Bounce
+      case 'STAGE_01_IBC_DAYTIME_FUNK':
+        // Episode 1 starts on Chart 1 (30 Rock Big-Band Swing Strut) so entering from Title immediately plays a fresh tune, then rotates!
+        return ((1 + episodeRotation) % 5) as SongChartVariantIdV7;
+      case 'STAGE_02_IBC_PRIMETIME_JUBILEE':
+        return ((4 + episodeRotation) % 5) as SongChartVariantIdV7;
+      case 'STAGE_03_1926_VAUDEVILLE_PIT':
+        return 3; // Chart 3: Burbank Soul-Organ Go-Go
+      case 'STAGE_06_ATLANTIC_CITY_PIER':
+        return ((0 + episodeRotation) % 5) as SongChartVariantIdV7;
+      case 'STAGE_08_WORLDS_FAIR_GEODESIC':
+        return 2; // Chart 2: Sunset Strip Bossa-Exotica
+      case 'STAGE_10_SOVEREIGN_SANCTUM':
+        return 4; // Chart 4: Midnight Penthouse Showstopper
+      default:
+        return (episodeRotation % 5) as SongChartVariantIdV7;
+    }
+  }
+
   public setScene(sceneId: ShowbandSceneIdV7): void {
     if (!(sceneId in SHOWBAND_SCENE_SPECS_V7)) return;
     if (sceneId !== 'TRAPDOOR_BLITZ') {
       this.baseStageBeforeBlitz = sceneId;
     }
+
+    // Auto-rotate song chart across episode stage entrances while preserving synchronous pre-stage setSongChartVariant() calls!
+    if (sceneId === 'GREEN_ROOM') {
+      if (this.nowWallMs() - this.lastExplicitChartSetMs >= 250) {
+        this.explicitChartOverride = false;
+        this.songChartVariant = 0;
+      }
+    } else if (sceneId !== 'TRAPDOOR_BLITZ') {
+      const rot = this.stageSwitchCounter;
+      this.stageSwitchCounter += 1;
+      if (this.nowWallMs() - this.lastExplicitChartSetMs >= 250) {
+        this.explicitChartOverride = false;
+        this.songChartVariant = this.defaultChartForScene(sceneId, rot);
+      }
+    }
+
     if (this.currentScene === sceneId && this.isMusicRunning) return;
 
     this.currentScene = sceneId;
@@ -1636,20 +2155,36 @@ export class ShowbandAudioEngineV7 {
   // 5. Stage Room Tone & Sealed-Vault Zero-Crowd Ambience Bed
   // --------------------------------------------------------------------------
 
-  private rebuildStageAmbienceBed(): void {
-    if (this.ambienceBed) {
-      this.ambienceBed.stopAll(0.28);
-      this.ambienceBed = null;
-    }
+  private rebuildStageAmbienceBed(force = true): void {
     const ctx = this.ctx;
     if (!ctx || !this.ambienceBus || !this.crowdBus || !this.isMusicRunning) return;
 
-    const now = ctx.currentTime;
     const activeStage =
       this.currentScene === 'TRAPDOOR_BLITZ'
         ? this.baseStageBeforeBlitz
         : this.currentScene;
     const isSealed = this.isSealedVaultScene(this.currentScene);
+    const crowdBuf = this.samplePack.getCrowd('applause_warm');
+    const willHaveCrowd = !isSealed && Boolean(crowdBuf);
+
+    // Guard (#245 #10): Never tear down and respawn an already-running ambience bed for the same stage!
+    if (
+      !force &&
+      this.ambienceBed &&
+      this.ambienceBedScene === activeStage &&
+      (this.ambienceBedHasCrowd || !willHaveCrowd)
+    ) {
+      return;
+    }
+
+    if (this.ambienceBed) {
+      this.ambienceBed.stopAll(0.28);
+      this.ambienceBed = null;
+      this.ambienceBedScene = null;
+      this.ambienceBedHasCrowd = false;
+    }
+
+    const now = ctx.currentTime;
     const stopCallbacks: Array<(fadeSec: number) => void> = [];
 
     if (activeStage === 'STAGE_04_1958_ISOLATION_VAULT') {
@@ -1732,7 +2267,6 @@ export class ShowbandAudioEngineV7 {
     }
 
     // Live Broadcast Audience Stages ONLY: Warm carpeted 1966 studio room presence (NEVER in sealed vaults!)
-    const crowdBuf = this.samplePack.getCrowd('applause_warm');
     if (!isSealed && crowdBuf) {
       const src = ctx.createBufferSource();
       src.buffer = crowdBuf;
@@ -1760,6 +2294,8 @@ export class ShowbandAudioEngineV7 {
       });
     }
 
+    this.ambienceBedScene = activeStage;
+    this.ambienceBedHasCrowd = willHaveCrowd;
     this.ambienceBed = {
       stopAll: (fadeSec: number) => {
         for (const fn of stopCallbacks) {
@@ -1785,7 +2321,7 @@ export class ShowbandAudioEngineV7 {
     if (!this.isMusicRunning) {
       this.isMusicRunning = true;
       this.nextSubstepTime = ctx.currentTime + 0.025;
-      this.rebuildStageAmbienceBed();
+      this.rebuildStageAmbienceBed(true);
     }
 
     if (!this.schedulerTimer) {
@@ -1804,6 +2340,8 @@ export class ShowbandAudioEngineV7 {
     if (this.ambienceBed) {
       this.ambienceBed.stopAll(0.18);
       this.ambienceBed = null;
+      this.ambienceBedScene = null;
+      this.ambienceBedHasCrowd = false;
     }
   }
 
@@ -1832,11 +2370,19 @@ export class ShowbandAudioEngineV7 {
       guard++;
       const spec = SHOWBAND_SCENE_SPECS_V7[this.currentScene];
       const substepsPerBar = this.getCurrentTimeSignature() === '5/4' ? 20 : 16;
-      // Gentle calming tempo shift (~98 BPM) when Merv Griffin *Think!* bed is active on non-blitz stages
+      // Gentle calming tempo shift (~98 BPM) when Merv Griffin *Think!* bed is active on non-blitz stages;
+      // subtle +4 BPM adrenaline lift when Chart 4 (Midnight Penthouse Showstopper) is active in Double-Dollars!
+      const chartBoost =
+        !this.clueSanctuaryActive &&
+        this.currentScene !== 'TRAPDOOR_BLITZ' &&
+        this.explicitChartOverride &&
+        this.songChartVariant === 4
+          ? 4
+          : 0;
       const effectiveBpm =
         this.clueSanctuaryActive && this.currentScene !== 'TRAPDOOR_BLITZ'
           ? Math.min(spec.bpm, 98)
-          : spec.bpm;
+          : spec.bpm + chartBoost;
       const sixteenthSec = 60 / effectiveBpm / 4;
 
       this.scheduleSceneSubstep(
@@ -1853,16 +2399,16 @@ export class ShowbandAudioEngineV7 {
       this.currentSubstepInBar++;
       if (this.currentSubstepInBar >= substepsPerBar) {
         this.currentSubstepInBar = 0;
-        this.currentBarIndex = (this.currentBarIndex + 1) % 8;
+        this.currentBarIndex = (this.currentBarIndex + 1) % SHOWBAND_LOOP_BARS;
       }
     }
   }
 
   /**
-   * Iconic Merv Griffin *"Think!"* / Score Productions Gentle 30-Second Thinking Bed
-   * Played automatically whenever `clueSanctuaryActive === true` on non-Blitz stages!
-   * Soft pizzicato upright bass, delicate real vibraphone + Steinway grand piano
-   * chime pulse, whisper-quiet brushed snare & woodblock, and creamy slow-Leslie Hammond B3.
+   * Iconic 16-Bar (`A-A-B-A`) Merv Griffin *"Think!"* / Score Productions Chamber Thinking Beds!
+   * Rotates across 3 evolving chamber clue beds (`0: Classic Vibe & Felt Piano`,
+   * `1: Cool Jazz Guitar & Marimba Lounge`, `2: Late-Night Celesta & Strings Salon`)
+   * with a warm Bars 8–11 Subdominant Chamber Bridge and feather-light turnaround whispers!
    */
   private scheduleMervThinkBed(
     spec: ShowbandSceneSpecV7,
@@ -1877,104 +2423,1012 @@ export class ShowbandAudioEngineV7 {
     const barDur = sixteenthSec * stepsPerBar;
     const swing = step % 4 === 2 ? sixteenthSec * 0.24 : 0;
     const t = when + swing;
+    const thinkVariant = this.songChartVariant % 3;
+    const isBridge = barIdx >= 8 && barIdx <= 11;
 
-    // Classic gentle 8-bar *Think!* I6 - vi7 - ii7 - V7 turnaround (or moody minor equivalent)
-    const progRoots = isMajor ? [0, 9, 2, 7, 0, 9, 2, 7] : [0, 8, 5, 7, 0, 3, 2, 7];
+    // 16-Bar A-A-B-A *Think!* Harmonic Cycle (with warm Bars 8-11 IVmaj7 -> ivm6 -> iii7 -> V13sus4 Bridge!)
+    const progRoots = isMajor
+      ? [0, 9, 2, 7, 0, 9, 2, 0, 5, 5, 4, 7, 0, 9, 2, 7]
+      : [0, 8, 5, 7, 0, 3, 2, 7, 5, 10, 3, 7, 0, 8, 2, 7];
     const progVoicings: ReadonlyArray<readonly [number, number, number]> = isMajor
       ? [
-          [4, 7, 9],  // I6
-          [3, 7, 10], // vi7
-          [3, 7, 10], // ii7
-          [4, 7, 10], // V7
-          [4, 7, 11], // Imaj7
-          [3, 7, 10], // vi7
-          [3, 7, 10], // ii7
-          [5, 9, 10], // V13sus4
+          [4, 7, 9],  // 0: I6
+          [3, 7, 10], // 1: vi7
+          [3, 7, 10], // 2: ii7
+          [4, 7, 10], // 3: V7
+          [4, 7, 11], // 4: Imaj7
+          [3, 7, 10], // 5: vi7
+          [3, 7, 10], // 6: ii7
+          [4, 10, 14], // 7: I9 (leads into IVmaj7 bridge!)
+          [4, 7, 11], // 8: IVmaj7 (Bridge!)
+          [3, 7, 9],  // 9: ivm6
+          [3, 7, 10], // 10: iii7
+          [5, 9, 10], // 11: V13sus4
+          [4, 7, 9],  // 12: I6
+          [4, 7, 10], // 13: VI7
+          [3, 7, 14], // 14: ii9
+          [5, 9, 10], // 15: V13sus4
         ]
       : [
-          [3, 7, 10], // im7
-          [4, 7, 11], // bVImaj7
-          [3, 7, 10], // ivm7
-          [4, 10, 13], // V7b9
-          [3, 7, 14], // im9
-          [4, 7, 11], // bIIImaj7
-          [3, 6, 10], // iim7b5
-          [4, 10, 13], // V7b9
+          [3, 7, 10], // 0: im7
+          [4, 7, 11], // 1: bVImaj7
+          [3, 7, 10], // 2: ivm7
+          [4, 10, 13], // 3: V7b9
+          [3, 7, 14], // 4: im9
+          [4, 7, 11], // 5: bIIImaj7
+          [3, 6, 10], // 6: iim7b5
+          [4, 10, 13], // 7: V7b9
+          [3, 7, 14], // 8: ivm9 (Bridge!)
+          [4, 7, 10], // 9: bVII9
+          [4, 7, 11], // 10: bIIImaj7
+          [4, 10, 13], // 11: V7b9
+          [3, 7, 14], // 12: im9
+          [4, 7, 11], // 13: bVImaj7
+          [3, 6, 10], // 14: iim7b5
+          [4, 10, 13], // 15: V7b9
         ];
 
     const deg = progRoots[barIdx];
     const tones = progVoicings[barIdx];
     const bassRoot = root - 12 + (deg > 6 ? deg - 12 : deg);
+    const eBassRoot = bassRoot >= 38 ? bassRoot - 12 : bassRoot;
     const chordBase = root + (deg > 7 ? deg - 12 : deg);
+    const gtrBase = chordBase - 12; // Warm E2..G3 guitarist register (Left -0.46)
+    const keysBase = chordBase - 12; // Warm C2..G3 Rhodes/Steinway register (Right +0.44)
 
-    // 1. Soft two-beat pizzicato upright bass (Beats 1 & 3)
-    if (step === 0 || step === 8) {
-      const note = bassRoot + (step === 8 ? 7 : 0);
-      this.playInstrument('upright_bass', note, when, sixteenthSec * 5.8, 0.21, {
-        pan: 0,
-        lowpassHz: 680,
+    // 1. Warm Fingerstyle Electric Bass Guitar + Upright Bass Pocket (Center-Front, <=540 Hz)
+    if (thinkVariant === 1 || isBridge) {
+      if (step % 4 === 0 && step < 16) {
+        const walk = [0, tones[0], 7, barIdx === 11 ? 9 : 5][step / 4];
+        this.playInstrument('electric_bass', eBassRoot + walk, when, sixteenthSec * 4.4, 0.30, {
+          pan: -0.04,
+          lowpassHz: 520,
+        });
+        this.playInstrument('upright_bass', bassRoot + walk, when + 0.003, sixteenthSec * 4.0, 0.17, {
+          pan: 0.03,
+          lowpassHz: 600,
+        });
+      }
+    } else if (step === 0 || step === 8 || step === 14) {
+      const semi = step === 0 ? 0 : step === 8 ? 7 : tones[0];
+      const dur = step === 14 ? sixteenthSec * 2.4 : sixteenthSec * 5.8;
+      this.playInstrument('electric_bass', eBassRoot + semi, when, dur, step === 14 ? 0.22 : 0.31, {
+        pan: -0.04,
+        lowpassHz: 520,
+      });
+      if (step !== 14) {
+        this.playInstrument('upright_bass', bassRoot + semi, when + 0.003, dur, 0.18, {
+          pan: 0.03,
+          lowpassHz: 600,
+        });
+      }
+    }
+
+    // 2. Smoky Slow-Leslie Hammond B3 Pad + Dedicated Left Guitarist (`-0.46`) & Right Keyboardist (`+0.44`)!
+    if (step === 0) {
+      this.playHammondChord(
+        [keysBase + tones[0], keysBase + tones[1], chordBase + tones[2]],
+        when,
+        barDur * 0.92,
+        0.048,
+        { fastLeslie: false, keyClick: false },
+      );
+      if (isBridge || thinkVariant === 2) {
+        this.playInstrument('strings', chordBase + tones[0] - 12, when, barDur * 0.96, 0.085, {
+          pan: -0.32,
+          highpassHz: 160,
+          lowpassHz: 1950,
+        });
+        this.playInstrument('strings', chordBase + tones[2] - 12, when, barDur * 0.96, 0.078, {
+          pan: 0.32,
+          highpassHz: 160,
+          lowpassHz: 1950,
+        });
+      }
+    }
+
+    // Dedicated Studio Guitarist on Stage Left (`pan: -0.46`) gently comping warm chords on every *Think!* bed!
+    if (step === 2 || step === 10 || (thinkVariant === 1 && (step === 4 || step === 12))) {
+      const gtrInst = thinkVariant === 2 ? 'clean_guitar' : 'jazz_guitar';
+      this.playInstrument(gtrInst, gtrBase + tones[0], t, sixteenthSec * 4.2, 0.155, {
+        pan: -0.46,
+        lowpassHz: 1950,
+      });
+      this.playInstrument(gtrInst, gtrBase + tones[2], t + 0.012, sixteenthSec * 4.2, 0.135, {
+        pan: -0.40,
+        lowpassHz: 1950,
       });
     }
 
-    // 2. Whisper-warm slow-Leslie Hammond B3 pad on bar downbeat
-    if (step === 0) {
-      this.playHammondChord(
-        [chordBase + tones[0], chordBase + tones[1]],
-        when,
-        barDur * 0.90,
-        0.028,
-        { fastLeslie: false, keyClick: false },
-      );
-    }
-
-    // 3. Signature *Think!* delicate Vibraphone + Felt Grand Piano quarter-note chime figure
-    if (step === 0 || step === 4 || step === 8 || step === 12) {
-      const beat = step / 4;
-      const vibeMel = isMajor
-        ? [12, 16, 12, 7][beat] // C -> E -> C -> G gentle *Think!* contour!
-        : [12, 15, 12, 7][beat];
-      const targetVibe = root + 12 + (barIdx % 2 === 1 && beat === 1 ? vibeMel - 2 : vibeMel);
-      this.playInstrument(
-        'vibraphone',
-        targetVibe,
-        when + humanizeOffset(barIdx, step, 1, 0.003),
-        sixteenthSec * 3.8,
-        beat === 0 ? 0.135 : 0.105,
-        { pan: 0.24, lowpassHz: 3100 },
-      );
-
-      // Gentle Steinway piano chord whisper on 1 & 3
-      if (beat === 0 || beat === 2) {
-        this.playInstrument('grand_piano', chordBase + tones[0], when + 0.004, sixteenthSec * 5.0, 0.082, {
-          pan: -0.26,
-          lowpassHz: 1850,
-        });
-        this.playInstrument('grand_piano', chordBase + tones[2], when + 0.012, sixteenthSec * 5.0, 0.070, {
-          pan: -0.20,
+    // Dedicated Studio Keyboardist on Stage Right (`pan: +0.44`) playing warm 1966 Fender Rhodes & Felt Piano!
+    if (step === 0 || step === 6 || (isBridge && step === 12)) {
+      this.playInstrument('electric_piano', keysBase + tones[0], t, sixteenthSec * 5.4, 0.165, {
+        pan: 0.44,
+        lowpassHz: 2050,
+      });
+      this.playInstrument('electric_piano', chordBase + tones[1], t + 0.010, sixteenthSec * 5.2, 0.14, {
+        pan: 0.38,
+        lowpassHz: 2050,
+      });
+      if (step === 0) {
+        this.playInstrument('grand_piano', keysBase + tones[2], when + 0.008, sixteenthSec * 5.6, 0.125, {
+          pan: 0.34,
           lowpassHz: 1850,
         });
       }
     }
 
-    // 4. Crisp, feather-light woodblock & wire-brush snare timekeeper
-    if (step === 4 || step === 12) {
-      this.playDrum('snare_brush', when, 0.078, { pan: -0.14, lowpassHz: 3400 });
-      this.playDrum('hihat_pedal', when, 0.052, { pan: -0.22, lowpassHz: 4000 });
+    // 3. Warm Midrange Chamber Melody & Counter-Lines (F3..F4 — ZERO shrill high bells!)
+    const thinkBridgeBar = barIdx - 8; // 0..3 when isBridge
+    if (thinkVariant === 0) {
+      // Bed 0: Classic 1966 Merv *Think!* Warm Low-Mid Vibraphone + Tenor Sax Counter-Whisper
+      if (step === 0 || step === 4 || step === 8 || step === 12) {
+        const beat = step / 4;
+        const vibeMel = isBridge
+          ? [
+              [9, 12, 16, 12],
+              [14, 12, 8, 12],
+              [12, 11, 14, 11],
+              [9, 10, 12, 16],
+            ][thinkBridgeBar][beat]
+          : isMajor
+            ? [12, 16, 12, 7][beat]
+            : [12, 15, 12, 7][beat];
+        const rawVibe = root + (!isBridge && barIdx % 2 === 1 && beat === 1 ? vibeMel - 2 : vibeMel);
+        const targetVibe = rawVibe > 67 ? rawVibe - 12 : rawVibe;
+        this.playInstrument(
+          'vibraphone',
+          targetVibe,
+          when + humanizeOffset(barIdx, step, 1, 0.003),
+          sixteenthSec * 4.2,
+          beat === 0 ? 0.135 : 0.105,
+          { pan: 0.18, lowpassHz: 2250 },
+        );
+      }
+      if ((isBridge || barIdx % 2 === 1) && step === 6) {
+        this.playInstrument('tenor_sax', chordBase + tones[0], t, sixteenthSec * 5.4, 0.115, {
+          pan: -0.18,
+          lowpassHz: 1950,
+        });
+      }
+    } else if (thinkVariant === 1) {
+      // Bed 1: Score Productions Wes Montgomery Thumb-Guitar & Woody Low Marimba Lounge
+      if (isBridge ? (step === 0 || step === 4 || step === 8 || step === 12) : (step === 0 || step === 6 || step === 10)) {
+        const idx = isBridge ? (step / 4) % 3 : step === 0 ? 0 : step === 6 ? 1 : 2;
+        const rawNote = chordBase + tones[idx];
+        const note = rawNote > 65 ? rawNote - 12 : rawNote;
+        this.playInstrument('jazz_guitar', note, t, sixteenthSec * 4.4, 0.145, { pan: -0.34, lowpassHz: 2050 });
+        this.playInstrument('marimba', note, t + 0.006, sixteenthSec * 3.6, 0.115, { pan: 0.22, lowpassHz: 2100 });
+      }
+    } else {
+      // Bed 2: Late-Night Fender Rhodes, Tenor Sax & Baritone Sax Lounge Salon
+      if (isBridge ? (step === 2 || step === 8 || step === 14) : (step === 0 || step === 8)) {
+        const idx = step === 0 ? 1 : step === 8 ? 2 : 0;
+        const melNote = chordBase + tones[idx];
+        this.playInstrument('tenor_sax', melNote > 65 ? melNote - 12 : melNote, t, sixteenthSec * 5.2, 0.125, {
+          pan: -0.16,
+          lowpassHz: 2050,
+        });
+        this.playInstrument('vibraphone', melNote > 67 ? melNote - 12 : melNote, t + 0.005, sixteenthSec * 4.8, 0.105, {
+          pan: 0.24,
+          lowpassHz: 2200,
+        });
+      }
+      if (step === 0 && barIdx % 2 === 0) {
+        this.playInstrument('baritone_sax', bassRoot, when, sixteenthSec * 6.0, 0.105, {
+          pan: -0.24,
+          lowpassHz: 1750,
+        });
+      }
     }
-    if (step === 0 || step === 8 || step === 14) {
-      this.playInstrument(
-        'woodblock',
-        step === 0 ? 79 : 72,
-        t,
-        0.09,
-        step === 14 ? 0.036 : 0.056,
-        { pan: 0.18, lowpassHz: 2500 },
-      );
+
+    // 4. Soft Felt Kick + Feather-Light Brush Timekeeper
+    if (step === 0) {
+      this.playDrum('kick', when, 0.13, { pan: 0, lowpassHz: 720 });
+    }
+    if (step === 4 || step === 12) {
+      this.playDrum('snare_brush', when, 0.085, { pan: -0.10, lowpassHz: 2800 });
+      this.playDrum('hihat_pedal', when, 0.042, { pan: -0.20, lowpassHz: 3200 });
+    }
+    if (thinkVariant === 1 && step % 4 === 2) {
+      this.playDrum('bongo_lo', t, 0.058, { pan: 0.20, lowpassHz: 1900 });
+    } else if (step === 8) {
+      this.playDrum('snare_rim', when, 0.052, { pan: -0.12, lowpassHz: 2400 });
+    }
+    if ((barIdx === 3 || barIdx === 7 || barIdx === 11 || barIdx === 15) && step === 14) {
+      this.playDrum('tom_mid', t, 0.075, { playbackRate: 0.92, pan: 0.16, lowpassHz: 1850 });
+      this.playDrum('snare_brush', t + sixteenthSec * 0.5, 0.068, { pan: -0.12, lowpassHz: 2600 });
     }
   }
 
   /**
-   * 8-Bar 1966 Living Color Network Showband Orchestrator across all 12 scenes!
+   * Authentic 1966 Hal Blaine / Ed Shaughnessy Studio Drummer Turnaround Fills
+   * on Bars 3, 7 (Bridge Launch!), 11 (Bridge Exit!), and 15 (16-Bar Showband Turnaround!).
+   */
+  private scheduleShowbandTurnaroundFill(
+    barIdx: number,
+    step: number,
+    stepsPerBar: number,
+    when: number,
+    swungWhen: number,
+    sixteenthSec: number,
+    style: 'SWING' | 'BOSSA' | 'GOGO' | 'NOIR',
+  ): void {
+    if (barIdx !== 3 && barIdx !== 7 && barIdx !== 11 && barIdx !== 15) return;
+    const end4 = stepsPerBar - 4; // 12 in 4/4, 16 in 5/4
+    const end2 = stepsPerBar - 2; // 14 in 4/4, 18 in 5/4
+    const end6 = stepsPerBar - 6; // 10 in 4/4, 14 in 5/4
+    const scale = style === 'NOIR' ? 0.72 : 1.0;
+
+    if (barIdx === 3) {
+      // Bar 3 (A1 -> A2): Crisp snare/rim + bongo wink
+      if (step === end4) {
+        this.playDrum(style === 'BOSSA' ? 'bongo_hi' : 'snare_rim', when, 0.12 * scale, { pan: 0.16 });
+      } else if (step === end2) {
+        this.playDrum(style === 'NOIR' ? 'snare_brush' : 'snare_stick', swungWhen, 0.14 * scale, { pan: -0.10 });
+        this.playDrum('bongo_lo', swungWhen + 0.006, 0.11 * scale, { pan: 0.24 });
+      }
+    } else if (barIdx === 7) {
+      // Bar 7 (A2 -> Bars 8-11 Soaring Bridge Launch!): Snare -> High Tom -> Low Tom + Kick!
+      if (step === end6) {
+        this.playDrum('snare_stick', swungWhen, 0.14 * scale, { pan: -0.14 });
+      } else if (step === end4) {
+        this.playDrum('tom_mid', when, 0.16 * scale, { playbackRate: 1.16, pan: -0.06 });
+        this.playDrum('bongo_hi', when + 0.005, 0.11 * scale, { pan: 0.26 });
+      } else if (step === end2) {
+        this.playDrum('tom_mid', swungWhen, 0.17 * scale, { playbackRate: 0.90, pan: 0.18 });
+        this.playDrum('kick', swungWhen, 0.15 * scale, { pan: 0 });
+      }
+    } else if (barIdx === 11) {
+      // Bar 11 (Bridge -> A3 Homeward Break!): Syncopated Krupa/Shaughnessy tom-bongo-snare whip!
+      if (step === end6) {
+        this.playDrum('bongo_hi', swungWhen, 0.13 * scale, { pan: 0.24 });
+        this.playDrum('snare_stick', swungWhen, 0.13 * scale, { pan: -0.12 });
+      } else if (step === end4) {
+        this.playDrum('tom_mid', when, 0.16 * scale, { playbackRate: 1.08, pan: 0.08 });
+      } else if (step === end2) {
+        this.playDrum('snare_stick', swungWhen, 0.18 * scale, { pan: -0.10 });
+        this.playDrum('kick', swungWhen, 0.15 * scale, { pan: 0 });
+      }
+    } else if (barIdx === 15) {
+      // Bar 15 (16-Bar Grand Showband Turnaround!): Cascading snare + dual-pitched toms + bongos!
+      if (step === end6) {
+        this.playDrum('snare_stick', swungWhen, 0.15 * scale, { pan: -0.14 });
+      } else if (step === end4) {
+        this.playDrum('tom_mid', when, 0.17 * scale, { playbackRate: 1.18, pan: -0.12 });
+        this.playDrum('bongo_hi', when + 0.004, 0.12 * scale, { pan: 0.28 });
+      } else if (step === end2) {
+        this.playDrum('tom_mid', swungWhen, 0.18 * scale, { playbackRate: 0.88, pan: 0.18 });
+        this.playDrum('snare_stick', swungWhen + 0.008, 0.17 * scale, { pan: -0.08 });
+        this.playDrum('kick', swungWhen, 0.16 * scale, { pan: 0 });
+      }
+    }
+  }
+
+  /**
+   * 5-Song 16-Bar (`A1 - A2 - B - A3`) 1966 Network Showband Chart Performer!
+   * Plays genuinely distinct 1966 band compositions with soaring Bars 8–11 Bridges:
+   * - `0`: *Tijuana Brass Bounce* (Herb Alpert / Dating Game trumpets + marimba)
+   * - `1`: *30 Rock Big-Band Swing Strut* (Doc Severinsen / Take Ten walking swing)
+   * - `2`: *Sunset Strip Bossa Nova* (Quincy Jones / Sergio Mendes '66 bossa clave)
+   * - `3`: *Burbank Soul-Organ Go-Go* (Booker T. / Laugh-In fast-Leslie B3 & mod beat)
+   * - `4`: *Midnight Penthouse Showstopper* (High-Stakes Prime-Time Double-Dollars!)
+   */
+  private scheduleMultiChart16BarShowband(opts: {
+    chart: SongChartVariantIdV7;
+    scene: ShowbandSceneIdV7;
+    barIdx: number;
+    step: number;
+    stepsPerBar: number;
+    when: number;
+    t: number;
+    sixteenthSec: number;
+    barDur: number;
+    root: number;
+    bassRoot: number;
+    chordBase: number;
+    chordTones: readonly [number, number, number];
+  }): void {
+    const {
+      chart,
+      scene,
+      barIdx,
+      step,
+      stepsPerBar,
+      when,
+      t,
+      sixteenthSec,
+      barDur,
+      root,
+      bassRoot,
+      chordBase,
+      chordTones,
+    } = opts;
+    const isBridge = barIdx >= 8 && barIdx <= 11;
+    const isFinalA = barIdx >= 12;
+    const phraseBar = barIdx % 4; // 0..3 inside each 4-bar section
+
+    // Authentic 1966 Bill Putnam / Bones Howe 5-Musician Studio Separation (#240):
+    // - ONE Master Bassist per chart (Chart 0/3/4 = Fender Precision `electric_bass` solo; Chart 1/2 = Ray Brown `upright_bass` solo; ZERO dual-bass phase mud!).
+    // - `gtrBase`:   F3..C4 (53..60) crisp Left Guitarist (`pan: -0.48`, +2.2 dB up-front dry pocket)!
+    // - `keysBase`:  F3..D4 (53..62) clear Right Rhodes / Steinway Keyboardist (`pan: +0.46`, +2.2 dB up-front dry pocket)!
+    // - `warmHorn`:  marcato/staccato midrange brass & reeds (`F3..Bb4`) with -4 dB pad trim so the 4-piece rhythm section breathes with >=10.5 dB crest!
+    const eBassRoot = bassRoot >= 38 ? bassRoot - 12 : bassRoot;
+    const gtrBase = chordBase;
+    const keysBase = chordBase;
+    const warmHorn = (m: number): number => (m > 70 ? m - 12 : m);
+
+    // Whisper-tucked orchestral string sheen (-4.5 dB trim, 220Hz HPF so zero low-mid mud!)
+    if (step === 0) {
+      if (
+        scene === 'STAGE_02_IBC_PRIMETIME_JUBILEE' ||
+        scene === 'STAGE_08_WORLDS_FAIR_GEODESIC' ||
+        scene === 'STAGE_10_SOVEREIGN_SANCTUM' ||
+        (isBridge && (chart === 2 || chart === 4))
+      ) {
+        const strGain = isBridge ? 0.068 : 0.056;
+        this.playInstrument('strings', chordBase + chordTones[0] - 12, when, barDur * 0.78, strGain, {
+          pan: -0.34,
+          highpassHz: 220,
+          lowpassHz: 2350,
+        });
+        this.playInstrument('strings', chordBase + chordTones[2] - 12, when, barDur * 0.78, strGain * 0.9, {
+          pan: 0.34,
+          highpassHz: 220,
+          lowpassHz: 2350,
+        });
+      }
+      if (barIdx === 0 || barIdx === 8 || barIdx === 12) {
+        this.playDrum('crash', when, barIdx === 8 ? 0.095 : 0.078, {
+          pan: -0.28,
+          durationSec: 0.92,
+        });
+      }
+    }
+    if (scene === 'STAGE_06_ATLANTIC_CITY_PIER' && (step === 0 || step === 6 || step === 10)) {
+      this.playDrum('bongo_lo', t, 0.115, { pan: 0.26 });
+    }
+    if (scene === 'STAGE_08_WORLDS_FAIR_GEODESIC' && (step === 2 || step === 10)) {
+      const exoNote = warmHorn(chordBase + chordTones[step === 2 ? 1 : 2]);
+      this.playInstrument('vibraphone', exoNote, t, sixteenthSec * 3.4, 0.105, {
+        pan: step === 2 ? -0.34 : 0.34,
+      });
+    }
+
+    // ========================================================================
+    // BESPOKE 5-CHART B-SECTION BRIDGES (Bars 8-11: IVmaj7 -> ivm6 -> iii7 -> V13)!
+    // Crystal-Clear 5-Musician Separation: 1 Solo Bassist, Crisp Kit, Left Guitar (-0.48), Right Keys (+0.46), Marcato Horns!
+    // ========================================================================
+    if (isBridge) {
+      // 1. SINGLE MASTER BASSIST PER CHART (Chart 1 & 2 = Upright Bass Solo; Chart 0, 3 & 4 = Electric Bass Solo!)
+      if (chart === 2) {
+        if (step === 0 || step === 6 || step === 8 || step === 14) {
+          const bossaBr = step === 0 ? 0 : step === 6 ? chordTones[0] : step === 8 ? 7 : phraseBar === 3 ? 9 : 4;
+          const bDur = step === 0 || step === 8 ? sixteenthSec * 3.8 : sixteenthSec * 2.0;
+          this.playInstrument('upright_bass', bassRoot + bossaBr, when + humanizeOffset(barIdx, step, 8, 0.003), bDur, step === 0 ? 0.36 : 0.29, { pan: -0.02 });
+        }
+      } else if (chart === 1) {
+        if (step % 4 === 0 && step < 16) {
+          const swingBridgeClimbs: ReadonlyArray<readonly [number, number, number, number]> = [
+            [0, 4, 7, 9],
+            [0, 3, 7, 6],
+            [0, 3, 6, 7],
+            [0, 4, 7, 11],
+          ];
+          const bSemi = swingBridgeClimbs[phraseBar][step / 4];
+          this.playInstrument('upright_bass', bassRoot + bSemi, when + humanizeOffset(barIdx, step, 8, 0.003), sixteenthSec * 3.0, step === 0 ? 0.37 : 0.31, { pan: -0.02 });
+        }
+      } else {
+        if (step % 4 === 0 && step < 16) {
+          const elecBridgeClimbs: ReadonlyArray<readonly [number, number, number, number]> = [
+            [0, 4, 7, 9],
+            [0, 3, 7, 6],
+            [0, 3, 7, 10],
+            [0, 4, 7, 9],
+          ];
+          const bSemi = elecBridgeClimbs[phraseBar][step / 4];
+          this.playInstrument('electric_bass', eBassRoot + bSemi, when + humanizeOffset(barIdx, step, 8, 0.003), sixteenthSec * 2.9, step === 0 ? 0.36 : 0.30, { pan: -0.03 });
+        } else if ((chart === 0 || chart === 3) && (step === 6 || step === 14)) {
+          // Carol Kaye / Duck Dunn syncopated eighth-note bass pickup!
+          this.playInstrument('electric_bass', eBassRoot + (step === 6 ? 7 : 12), t, sixteenthSec * 1.65, 0.25, { pan: -0.03 });
+        }
+      }
+
+      // 2. Right-Channel Fender Rhodes & Steinway Comping (`pan: +0.46`, +2.2 dB) + Tucked Rhythmic Hammond B3 Stabs (-4 dB)!
+      if ((chart === 3 && (step === 0 || step === 6 || step === 12)) || (chart !== 3 && step === 0 && phraseBar % 2 === 0)) {
+        this.playHammondChord(
+          [keysBase + chordTones[0], keysBase + chordTones[1], keysBase + chordTones[2]],
+          t,
+          sixteenthSec * 2.8,
+          chart === 3 ? 0.052 : 0.042,
+          { soulful: true, fastLeslie: true, keyClick: true },
+        );
+      }
+      if (step === 0 || step === 6 || step === 12) {
+        this.playInstrument('electric_piano', keysBase + chordTones[0], t, sixteenthSec * 3.1, 0.245, { pan: 0.46 });
+        this.playInstrument('electric_piano', keysBase + chordTones[2], t + 0.007, sixteenthSec * 2.9, 0.205, { pan: 0.40 });
+        if (step !== 6) {
+          this.playInstrument('grand_piano', keysBase + chordTones[1], t + 0.005, sixteenthSec * 2.8, 0.21, { pan: 0.36 });
+        }
+      }
+
+      // 3. Dedicated Left-Channel Guitarist (`pan: -0.48`, +2.2 dB) + Crisp Hal Blaine Drum Pocket
+      if (chart === 2) {
+        if (step === 0 || step === 8) this.playDrum('kick', when, 0.24);
+        if (step === 0 || step === 6 || step === 12) this.playDrum('snare_rim', when, 0.165, { pan: -0.12 });
+        if (step % 2 === 0) this.playDrum('shaker', when, step % 4 === 0 ? 0.075 : 0.048, { pan: -0.24 });
+        if (step === 4 || step === 10 || step === 14) this.playDrum(step === 10 ? 'bongo_hi' : 'bongo_lo', when, 0.13, { pan: 0.24 });
+        if (step === 0 || step === 4 || step === 6 || step === 10 || step === 12) {
+          this.playInstrument('jazz_guitar', gtrBase + chordTones[0], when, sixteenthSec * 2.5, 0.25, { pan: -0.48 });
+          this.playInstrument('jazz_guitar', gtrBase + chordTones[2], when + 0.008, sixteenthSec * 2.4, 0.21, { pan: -0.40 });
+        }
+      } else if (chart === 3) {
+        if (step === 0 || step === 6 || step === 8) this.playDrum('kick', t, step === 0 ? 0.27 : 0.20);
+        if (step === 4 || step === 12) {
+          this.playDrum('snare_stick', when, 0.21, { pan: -0.10 });
+          this.playDrum('tambourine', when + 0.004, 0.095, { pan: 0.30 });
+          this.playInstrument('clean_guitar', gtrBase + chordTones[0], when, sixteenthSec * 2.0, 0.275, { pan: -0.48 });
+          this.playInstrument('clean_guitar', gtrBase + chordTones[1], when + 0.006, sixteenthSec * 1.9, 0.225, { pan: -0.42 });
+        }
+        if (step === 2 || step === 10) {
+          this.playInstrument('clean_guitar', gtrBase + chordTones[2], t, sixteenthSec * 1.8, 0.22, { pan: -0.48 });
+          this.playDrum('bongo_lo', t, 0.125, { pan: 0.24 });
+        }
+        if (step % 2 === 0) this.playDrum('hihat_closed', t, step % 4 === 0 ? 0.09 : 0.06, { pan: -0.22 });
+      } else {
+        if (step === 0 || step === 8) this.playDrum('kick', when, step === 0 ? 0.26 : 0.19);
+        if (step === 0 || step === 4 || step === 6 || step === 8 || step === 12 || step === 14) {
+          this.playDrum('ride', t, step % 4 === 0 ? 0.135 : 0.09, { pan: 0.26, durationSec: 0.38 });
+        }
+        if (step === 4 || step === 12) {
+          this.playDrum('hihat_pedal', when, 0.125, { pan: -0.20 });
+          this.playDrum(chart === 4 ? 'snare_stick' : 'snare_brush', when, 0.20, { pan: -0.10 });
+        }
+        // Freddie Green / Tommy Tedesco crisp rhythm guitar chucks on Stage Left (`-0.48`)!
+        if (step % 4 === 0 || (chart === 0 && (step === 6 || step === 14))) {
+          const gInst = chart === 1 ? 'jazz_guitar' : 'clean_guitar';
+          this.playInstrument(gInst, gtrBase + chordTones[0], t, sixteenthSec * 2.1, 0.255, { pan: -0.48 });
+          this.playInstrument('jazz_guitar', gtrBase + chordTones[2], t + 0.007, sixteenthSec * 2.0, 0.21, { pan: -0.40 });
+        }
+      }
+
+      // 4. Five Marcato/Staccato 1966 Bridge Melodies (Crisp Horn Punch + Breathing Gaps for Rhythm Section!)
+      if (chart === 0) {
+        const tijBridge: ReadonlyArray<Record<number, readonly [number, number, number]>> = [
+          { 0: [9, 5, 2.0], 4: [12, 9, 1.7], 6: [16, 12, 2.8] },
+          { 0: [14, 8, 2.0], 4: [12, 8, 1.7], 6: [8, 5, 2.8] },
+          { 0: [7, 4, 2.0], 4: [11, 7, 1.7], 6: [14, 11, 2.8] },
+          { 0: [9, 4, 2.1], 4: [10, 5, 2.1], 8: [12, 7, 2.2], 12: [16, 10, 2.6] },
+        ];
+        const hit0 = tijBridge[phraseBar][step];
+        if (hit0) {
+          const [leadS, harmS, d16] = hit0;
+          const dur = sixteenthSec * d16;
+          const leadM = warmHorn(root + leadS);
+          const harmM = warmHorn(root + harmS);
+          this.playInstrument('trumpet', leadM, t, dur, 0.15, { pan: 0.16 });
+          this.playInstrument('muted_trumpet', harmM, t + 0.006, dur * 0.92, 0.12, { pan: -0.14 });
+          this.playInstrument('marimba', leadM, t, dur * 0.85, 0.145, { pan: 0.26 });
+          this.playInstrument('trombone', root + harmS - 12, t + 0.005, dur * 0.85, 0.105, { pan: -0.22 });
+        }
+        if (phraseBar < 3 && step === 14) {
+          const ansDur = sixteenthSec * 1.8;
+          this.playInstrument('tenor_sax', chordBase + chordTones[0], t, ansDur, 0.135, { pan: -0.18 });
+          this.playInstrument('trombone', chordBase + chordTones[0] - 12, t + 0.005, ansDur, 0.11, { pan: -0.26 });
+          this.playInstrument('baritone_sax', bassRoot + chordTones[0], t + 0.006, ansDur, 0.105, { pan: 0.20 });
+        }
+      } else if (chart === 1) {
+        const saxSoli: ReadonlyArray<Record<number, readonly [number, number]>> = [
+          { 0: [5, 1.9], 2: [9, 1.7], 6: [12, 2.6] },
+          { 0: [8, 1.9], 2: [12, 1.7], 6: [14, 2.6] },
+          { 0: [7, 1.9], 2: [11, 1.7], 6: [14, 2.6] },
+          { 0: [9, 2.2], 4: [12, 2.2], 8: [14, 2.2], 12: [16, 2.6] },
+        ];
+        const sx = saxSoli[phraseBar][step];
+        if (sx) {
+          const [semi, d16] = sx;
+          const dur = sixteenthSec * d16;
+          this.playInstrument('tenor_sax', warmHorn(root + semi), t, dur, 0.155, { pan: -0.16 });
+          this.playInstrument('baritone_sax', bassRoot + (semi % 12), t + 0.006, dur * 0.88, 0.11, { pan: -0.26 });
+          this.playInstrument('vibraphone', warmHorn(root + semi), t + 0.004, dur * 0.95, 0.13, { pan: 0.24 });
+          if (phraseBar === 3) {
+            this.playInstrument('brass', warmHorn(root + semi), t, dur * 0.9, 0.135, { pan: 0.18 });
+            this.playInstrument('trombone', root + semi - 12, t + 0.006, dur * 0.85, 0.11, { pan: 0.24 });
+          }
+        }
+        if (phraseBar < 3 && step === 14) {
+          const kickDur = sixteenthSec * 1.8;
+          this.playInstrument('brass', chordBase + chordTones[0], t, kickDur, 0.135, { pan: 0.20 });
+          this.playInstrument('trombone', chordBase + chordTones[0] - 12, t, kickDur, 0.11, { pan: -0.22 });
+          this.playInstrument('baritone_sax', bassRoot + 7, t, kickDur, 0.105, { pan: 0.26 });
+        }
+      } else if (chart === 2) {
+        const bossaBridge: ReadonlyArray<Record<number, readonly [number, number, number]>> = [
+          { 0: [16, 9, 4.2], 8: [12, 5, 4.2] },
+          { 0: [14, 8, 4.2], 8: [8, 5, 4.2] },
+          { 0: [11, 7, 4.2], 8: [14, 7, 4.2] },
+          { 0: [16, 9, 2.8], 6: [14, 10, 2.6], 12: [12, 7, 2.8] },
+        ];
+        const bBr = bossaBridge[phraseBar][step];
+        if (bBr) {
+          const [leadS, saxS, d16] = bBr;
+          const dur = sixteenthSec * d16;
+          this.playInstrument('tenor_sax', warmHorn(root + leadS), when, dur, 0.155, { pan: -0.16 });
+          this.playInstrument('muted_trumpet', warmHorn(root + saxS), when + 0.008, dur * 0.92, 0.125, { pan: 0.18 });
+          this.playInstrument('vibraphone', warmHorn(root + leadS), when + 0.005, dur, 0.125, { pan: 0.26 });
+        }
+      } else if (chart === 3) {
+        const organSolo: ReadonlyArray<Record<number, readonly [number, number]>> = [
+          { 0: [9, 2.0], 4: [12, 1.6], 6: [14, 2.2], 10: [16, 2.4] },
+          { 0: [14, 2.0], 4: [12, 1.6], 6: [8, 2.2], 10: [5, 2.4] },
+          { 0: [7, 2.0], 4: [11, 1.6], 6: [12, 2.2], 10: [14, 2.4] },
+          { 0: [9, 1.9], 4: [10, 1.9], 8: [12, 2.0], 12: [16, 2.4] },
+        ];
+        const orgNote = organSolo[phraseBar][step];
+        if (orgNote) {
+          const [semi, d16] = orgNote;
+          const oMidi = warmHorn(root + semi);
+          this.playHammondB3Note(oMidi, t, sixteenthSec * d16, 0.062, {
+            soulful: true,
+            fastLeslie: true,
+            keyClick: true,
+          });
+          this.playInstrument('electric_piano', oMidi, t + 0.004, sixteenthSec * d16 * 0.9, 0.215, { pan: 0.44 });
+        }
+        if (step === 14) {
+          const stDur = sixteenthSec * 1.75;
+          this.playInstrument('baritone_sax', bassRoot + chordTones[0], t, stDur, 0.12, { pan: -0.24 });
+          this.playInstrument('trombone', chordBase + chordTones[0] - 12, t + 0.004, stDur, 0.115, { pan: -0.18 });
+          this.playInstrument('tenor_sax', chordBase + chordTones[2], t + 0.006, stDur, 0.13, { pan: 0.20 });
+          this.playInstrument('brass', chordBase + chordTones[0], t, stDur, 0.125, { pan: 0.16 });
+        }
+      } else {
+        if (step === 0 || (phraseBar === 3 && (step === 8 || step === 12))) {
+          this.playInstrument('timpani', bassRoot + (step >= 8 ? 7 : 0), when, sixteenthSec * 3.0, 0.175, { pan: -0.12 });
+        }
+        const penthouseBridge: ReadonlyArray<Record<number, readonly [number, number, number]>> = [
+          { 0: [12, 5, 2.5], 6: [16, 9, 2.2], 10: [17, 12, 3.0] },
+          { 0: [14, 8, 2.6], 6: [12, 5, 2.2], 10: [8, 5, 2.8] },
+          { 0: [11, 4, 2.5], 6: [12, 7, 2.2], 10: [14, 11, 3.0] },
+          { 0: [10, 4, 2.2], 4: [12, 7, 2.2], 8: [16, 9, 2.3], 12: [19, 12, 2.6] },
+        ];
+        const pBr = penthouseBridge[phraseBar][step];
+        if (pBr) {
+          const [leadS, lowS, d16] = pBr;
+          const dur = sixteenthSec * d16;
+          this.playInstrument('trumpet', warmHorn(root + leadS), t, dur, 0.15, { pan: 0.18 });
+          this.playInstrument('brass', warmHorn(root + lowS), t + 0.005, dur * 0.9, 0.135, { pan: -0.22 });
+          this.playInstrument('trombone', root + lowS - 12, t + 0.008, dur * 0.85, 0.115, { pan: 0.24 });
+          this.playInstrument('baritone_sax', bassRoot + (lowS % 12), t + 0.006, dur * 0.85, 0.11, { pan: -0.26 });
+        }
+      }
+
+      this.scheduleShowbandTurnaroundFill(
+        barIdx,
+        step,
+        stepsPerBar,
+        when,
+        t,
+        sixteenthSec,
+        chart === 2 ? 'BOSSA' : chart === 3 ? 'GOGO' : 'SWING',
+      );
+      return;
+    }
+
+    // ========================================================================
+    // A-Sections (Bars 0-3 `A1`, Bars 4-7 `A2`, Bars 12-15 `A3` Climactic Return):
+    // ========================================================================
+    const section8Idx = isFinalA ? phraseBar + 4 : barIdx;
+
+    // Marcato A3 Climactic Homeward Horn & Sax Tag on Bars 14-15
+    if (isFinalA && barIdx >= 14 && (step === 0 || step === 10)) {
+      const tagSemi = barIdx === 14 ? (step === 0 ? 9 : 14) : (step === 0 ? 16 : 12);
+      this.playInstrument('tenor_sax', warmHorn(root + tagSemi), t, sixteenthSec * 2.2, 0.13, { pan: -0.22 });
+      this.playInstrument('trombone', root + tagSemi - 12, t + 0.005, sixteenthSec * 2.0, 0.105, { pan: 0.24 });
+    }
+
+    switch (chart) {
+      case 0: {
+        // CHART 0: Tijuana Brass & Wrecking Crew Bounce (Title & Daytime Studio 6A!)
+        // 1. SOLO MASTER BASSIST: Carol Kaye Fender Precision Electric Bass (Zero Dual-Bass Mud!)
+        if (step === 0 || step === 4 || step === 8 || step === 12) {
+          const walkIntervals = [0, chordTones[0], 7, phraseBar === 3 ? 11 : 9];
+          const bSemi = walkIntervals[step / 4];
+          this.playInstrument(
+            'electric_bass',
+            eBassRoot + bSemi,
+            when + humanizeOffset(barIdx, step, 1, 0.003),
+            sixteenthSec * 2.85,
+            step === 0 ? 0.36 : 0.30,
+            { pan: -0.03 },
+          );
+        } else if (step === 6 || step === 14) {
+          // Syncopated Wrecking Crew 8th-note bass octave/fifth bounce!
+          this.playInstrument('electric_bass', eBassRoot + (step === 6 ? 7 : 12), t, sixteenthSec * 1.6, 0.24, { pan: -0.03 });
+        }
+
+        // 2. Crisp Hal Blaine Kick + Articulate Brush/Ride/Bongo Pocket
+        if (step === 0 || step === 8 || (step === 6 && phraseBar % 2 === 1)) {
+          this.playDrum('kick', t, step === 0 ? 0.26 : 0.19, { pan: 0 });
+        }
+        if (step === 0 || step === 4 || step === 6 || step === 8 || step === 12 || step === 14) {
+          this.playDrum('ride', t, step % 4 === 0 ? 0.13 : 0.088, { pan: 0.26, durationSec: 0.38 });
+        }
+        if (step === 4 || step === 12) {
+          this.playDrum('hihat_pedal', when, 0.125, { pan: -0.20 });
+          this.playDrum('snare_brush', when, 0.205, { pan: -0.10 });
+          if (barIdx >= 4) {
+            this.playDrum('bongo_lo', when + 0.005, 0.125, { pan: 0.26 });
+          }
+        }
+
+        // 3. DEDICATED LEFT GUITARIST (`pan: -0.48`, +2.2 dB): Tommy Tedesco / Al Caiola Crisp Comp Chucks!
+        if (step === 2 || step === 4 || step === 6 || step === 10 || step === 12 || step === 14) {
+          const isBackbeat = step === 4 || step === 12;
+          this.playInstrument(
+            isBackbeat ? 'clean_guitar' : 'jazz_guitar',
+            gtrBase + chordTones[0],
+            t,
+            sixteenthSec * (isBackbeat ? 1.9 : 1.7),
+            isBackbeat ? 0.265 : 0.215,
+            { pan: -0.48 },
+          );
+          if (isBackbeat || step === 6) {
+            this.playInstrument('jazz_guitar', gtrBase + chordTones[2], t + 0.008, sixteenthSec * 1.85, 0.215, { pan: -0.40 });
+          }
+        }
+
+        // 4. DEDICATED RIGHT KEYBOARDIST (`pan: +0.46`, +2.2 dB): Larry Knechtel Fender Rhodes + Steinway!
+        if (step === 0 || step === 6 || step === 10) {
+          this.playInstrument('electric_piano', keysBase + chordTones[0], t, sixteenthSec * 2.8, step === 0 ? 0.255 : 0.215, { pan: 0.46 });
+          this.playInstrument('electric_piano', keysBase + chordTones[1], t + 0.008, sixteenthSec * 2.6, 0.21, { pan: 0.40 });
+          if (step !== 10) {
+            this.playInstrument('grand_piano', keysBase + chordTones[2], t + 0.005, sixteenthSec * 2.7, 0.205, { pan: 0.36 });
+          }
+        }
+        // Tucked short B3 accent only on Bar 0/4/12 downbeat (-4.5 dB, never a continuous pad!)
+        if (step === 0 && phraseBar % 2 === 0) {
+          this.playHammondChord(
+            [keysBase + chordTones[0], keysBase + chordTones[1]],
+            when,
+            sixteenthSec * 2.6,
+            0.040,
+            { fastLeslie: isFinalA, keyClick: true },
+          );
+        }
+
+        // 5. STACCATO / MARCATO TIJUANA HORNS & WOODY MARIMBA (Crisp Notes + Open Pocket Gaps!)
+        const tijuanaLead: ReadonlyArray<Record<number, readonly [number, number, number]>> = [
+          { 0: [4, 0, 2.0], 4: [7, 4, 1.5], 6: [9, 4, 2.2], 10: [7, 4, 2.5] },
+          { 0: [4, 0, 2.6], 6: [2, -3, 1.5], 8: [0, -3, 2.4] },
+          { 0: [5, 2, 2.0], 4: [9, 5, 1.5], 6: [7, 2, 2.2], 10: [5, 2, 2.5] },
+          { 0: [7, 4, 2.6], 6: [5, 2, 1.5], 8: [4, -1, 2.3] },
+          { 0: [7, 4, 2.0], 4: [9, 4, 1.5], 6: [12, 7, 2.3], 10: [11, 7, 2.5] },
+          { 0: [9, 4, 2.6], 6: [7, 1, 1.5], 8: [4, 1, 2.4] },
+          { 0: [5, 2, 2.0], 4: [9, 5, 1.5], 6: [7, 2, 2.2], 10: [5, 2, 2.4] },
+          { 0: [4, 0, 2.2], 4: [7, 4, 1.9] },
+        ];
+        const hit = tijuanaLead[section8Idx][step];
+        if (hit) {
+          const [leadSemi, harmSemi, dur16] = hit;
+          const noteDur = sixteenthSec * dur16;
+          const leadMidi = warmHorn(root + leadSemi);
+          const harmMidi = warmHorn(root + harmSemi);
+          this.playInstrument('trumpet', leadMidi, t, noteDur, 0.148, { pan: 0.16 });
+          this.playInstrument('muted_trumpet', harmMidi, t + 0.007, noteDur * 0.92, 0.118, { pan: -0.14 });
+          this.playInstrument('marimba', leadMidi, t, noteDur * 0.85, 0.145, { pan: 0.26 });
+        }
+        if (phraseBar === 3 && barIdx !== 15 && step === 12) {
+          this.playInstrument('brass', chordBase + chordTones[0], when, sixteenthSec * 1.9, 0.135, { pan: -0.24 });
+          this.playInstrument('trombone', chordBase + chordTones[0] - 12, when, sixteenthSec * 1.9, 0.11, { pan: 0.22 });
+          this.playInstrument('baritone_sax', bassRoot + chordTones[0], when + 0.006, sixteenthSec * 1.9, 0.105, { pan: -0.28 });
+        } else if (barIdx === 15 && (step === 8 || step === 12 || step === 14)) {
+          const punchDur = step === 14 ? sixteenthSec * 2.6 : sixteenthSec * 1.6;
+          const shift = step === 14 ? 2 : 0;
+          this.playInstrument('brass', chordBase + chordTones[0] + shift, t, punchDur, 0.155, { pan: -0.26 });
+          this.playInstrument('trombone', chordBase - 5 + shift, t, punchDur, 0.125, { pan: 0.24 });
+          this.playInstrument('baritone_sax', bassRoot + shift, t, punchDur, 0.12, { pan: -0.28 });
+        }
+        this.scheduleShowbandTurnaroundFill(barIdx, step, stepsPerBar, when, t, sixteenthSec, 'SWING');
+        break;
+      }
+
+      case 1: {
+        // CHART 1: 30 Rock Big-Band Swing Strut (Count Basie / Doc Severinsen / Freddie Green 16-Bar!)
+        // 1. SOLO MASTER BASSIST: Ray Brown Walking Acoustic Upright Bass (Zero Electric Bass Doubling!)
+        if (step % 4 === 0) {
+          const walkSeq = [0, chordTones[0], 7, phraseBar % 2 === 0 ? 9 : chordTones[2] - 1];
+          const wSemi = walkSeq[step / 4];
+          this.playInstrument(
+            'upright_bass',
+            bassRoot + wSemi,
+            when + humanizeOffset(barIdx, step, 2, 0.003),
+            sixteenthSec * 3.05,
+            step === 0 ? 0.37 : 0.31,
+            { pan: -0.02 },
+          );
+        }
+        if (step === 0 || step === 8 || (step === 10 && phraseBar % 2 === 1)) {
+          this.playDrum('kick', t, step === 0 ? 0.24 : 0.17, { pan: 0 });
+        }
+        if (step === 0 || step === 4 || step === 6 || step === 8 || step === 12 || step === 14) {
+          this.playDrum('ride', t, step % 4 === 0 ? 0.14 : 0.095, { pan: 0.26, durationSec: 0.40 });
+        }
+        if (step === 4 || step === 12) {
+          this.playDrum('hihat_pedal', when, 0.13, { pan: -0.20 });
+          this.playDrum('snare_brush', when, 0.205, { pan: -0.12 });
+        }
+
+        // 2. DEDICATED LEFT GUITARIST (`pan: -0.48`, +2.2 dB): Freddie Green 4-to-the-Bar Rhythm Guitar Chucks!
+        if (step % 4 === 0) {
+          this.playInstrument('jazz_guitar', gtrBase + chordTones[0], when, sixteenthSec * 2.0, 0.275, { pan: -0.48 });
+          this.playInstrument('jazz_guitar', gtrBase + chordTones[2], when + 0.006, sixteenthSec * 1.95, 0.225, { pan: -0.40 });
+        } else if (step === 14 && phraseBar % 2 === 0) {
+          this.playInstrument('clean_guitar', gtrBase + chordTones[1], t, sixteenthSec * 1.7, 0.215, { pan: -0.46 });
+        }
+
+        // 3. DEDICATED RIGHT KEYBOARDIST (`pan: +0.46`, +2.2 dB): Count Basie Steinway Comping + Fender Rhodes!
+        if (step === 0 || step === 6 || (step === 10 && phraseBar % 2 === 0) || (step === 12 && phraseBar % 2 === 1)) {
+          this.playInstrument('grand_piano', keysBase + chordTones[0], t, sixteenthSec * 2.8, 0.255, { pan: 0.46 });
+          this.playInstrument('grand_piano', keysBase + chordTones[2], t + 0.008, sixteenthSec * 2.7, 0.215, { pan: 0.40 });
+          this.playInstrument('electric_piano', keysBase + chordTones[1], t + 0.005, sixteenthSec * 2.8, 0.215, { pan: 0.42 });
+        }
+        if (step === 0 && (phraseBar === 3 || isFinalA)) {
+          this.playHammondChord(
+            [keysBase + chordTones[0], keysBase + chordTones[1]],
+            when,
+            sixteenthSec * 2.8,
+            0.042,
+            { fastLeslie: true, keyClick: true },
+          );
+        }
+
+        // 4. Marcato Sax & Muted-Brass Swing Phrases (Count Basie Space Between Stabs!)
+        const swingStrutHook: ReadonlyArray<Record<number, readonly [number, number]>> = [
+          { 0: [7, 2.0], 6: [9, 1.9], 10: [12, 2.7] },
+          { 0: [9, 2.2], 6: [7, 1.7], 10: [4, 2.5] },
+          { 0: [5, 2.0], 6: [7, 1.9], 10: [9, 2.6] },
+          { 0: [7, 2.2], 4: [5, 1.7], 8: [4, 2.3] },
+          { 0: [7, 2.0], 6: [11, 1.9], 10: [14, 2.7] },
+          { 0: [12, 2.2], 6: [9, 1.7], 10: [6, 2.5] },
+          { 0: [5, 2.0], 4: [7, 1.7], 8: [9, 2.2], 12: [7, 2.0] },
+          { 0: [4, 2.2], 6: [7, 1.9], 10: [12, 2.4] },
+        ];
+        const mHit = swingStrutHook[section8Idx][step];
+        if (mHit) {
+          const [semi, dur16] = mHit;
+          const melMidi = warmHorn(root + semi);
+          this.playInstrument('tenor_sax', melMidi, t, sixteenthSec * dur16, 0.155, { pan: -0.16 });
+          this.playInstrument('vibraphone', melMidi, t + 0.004, sixteenthSec * dur16 * 0.98, 0.135, { pan: 0.24 });
+          this.playInstrument(isFinalA ? 'trumpet' : 'muted_trumpet', melMidi, t + 0.006, sixteenthSec * dur16 * 0.9, 0.125, { pan: 0.18 });
+        }
+        if (phraseBar === 3 && step === 14) {
+          this.playInstrument('brass', chordBase + chordTones[0], t, sixteenthSec * 1.9, 0.14, { pan: -0.24 });
+          this.playInstrument('trombone', chordBase - 5, t, sixteenthSec * 1.9, 0.115, { pan: 0.22 });
+          this.playInstrument('baritone_sax', bassRoot + 7, t, sixteenthSec * 1.9, 0.11, { pan: -0.28 });
+        }
+        this.scheduleShowbandTurnaroundFill(barIdx, step, stepsPerBar, when, t, sixteenthSec, 'SWING');
+        break;
+      }
+
+      case 2: {
+        // CHART 2: Sunset Strip Bossa Nova (Quincy Jones / Sergio Mendes / Joao Gilberto 16-Bar!)
+        // 1. SOLO MASTER BASSIST: Warm Acoustic Upright Bass Bossa Pulse (Zero Electric Bass Doubling!)
+        if (step === 0 || step === 6 || step === 8 || step === 14) {
+          const bossaBass = step === 0 ? 0 : step === 6 ? 7 : step === 8 ? 7 : chordTones[0];
+          const bDur = step === 0 || step === 8 ? sixteenthSec * 3.8 : sixteenthSec * 1.9;
+          this.playInstrument('upright_bass', bassRoot + bossaBass, when + humanizeOffset(barIdx, step, 5, 0.003), bDur, step === 0 ? 0.36 : 0.29, { pan: -0.02 });
+        }
+        if (step === 0 || step === 8) {
+          this.playDrum('kick', when, step === 0 ? 0.23 : 0.17);
+        }
+        const claveSteps = phraseBar % 2 === 0 ? [0, 6, 12] : [2, 8, 12];
+        if (claveSteps.includes(step)) {
+          this.playDrum('snare_rim', when, 0.175, { pan: -0.14 });
+        }
+        if (step % 2 === 0) {
+          this.playDrum('shaker', when, step % 4 === 0 ? 0.075 : 0.048, { pan: -0.24 });
+        }
+        if (step === 4 || step === 10 || step === 14) {
+          this.playDrum(step === 10 ? 'bongo_hi' : 'bongo_lo', when, 0.125, { pan: 0.26 });
+        }
+
+        // DEDICATED LEFT GUITARIST (`pan: -0.48`, +2.2 dB): Joao Gilberto Syncopated Bossa Chords!
+        if (step === 0 || step === 4 || step === 6 || step === 10 || step === 14) {
+          this.playInstrument('jazz_guitar', gtrBase + chordTones[0], when, sixteenthSec * 2.3, 0.265, { pan: -0.48 });
+          this.playInstrument('jazz_guitar', gtrBase + chordTones[2], when + 0.007, sixteenthSec * 2.2, 0.22, { pan: -0.40 });
+        }
+
+        // DEDICATED RIGHT KEYBOARDIST (`pan: +0.46`, +2.2 dB): Sergio Mendes Fender Rhodes + Steinway!
+        if (step === 0 || step === 6 || step === 12) {
+          this.playInstrument('electric_piano', keysBase + chordTones[1], when + 0.004, sixteenthSec * 3.2, 0.25, { pan: 0.46 });
+          this.playInstrument('grand_piano', keysBase + chordTones[2], when + 0.009, sixteenthSec * 3.0, 0.21, { pan: 0.38 });
+        }
+
+        // Airy Stan Getz Tenor Sax + Muted Trumpet + Vibraphone
+        const bossaHook: ReadonlyArray<Record<number, readonly [number, number]>> = [
+          { 0: [9, 2.6], 6: [7, 2.0], 10: [4, 2.8] },
+          { 2: [4, 2.0], 6: [7, 2.2], 10: [9, 2.8] },
+          { 0: [10, 2.6], 6: [9, 2.0], 10: [5, 2.8] },
+          { 2: [7, 2.2], 6: [9, 2.2], 10: [12, 2.8] },
+          { 0: [12, 2.6], 6: [11, 2.0], 10: [7, 2.8] },
+          { 2: [9, 2.2], 6: [6, 2.2], 10: [4, 2.8] },
+          { 0: [5, 2.4], 6: [9, 2.2], 10: [7, 2.6] },
+          { 0: [4, 2.6], 6: [7, 2.0], 10: [9, 2.5] },
+        ];
+        const bNote = bossaHook[section8Idx][step];
+        if (bNote) {
+          const [semi, dur16] = bNote;
+          const mel = warmHorn(root + semi);
+          const dur = sixteenthSec * dur16;
+          this.playInstrument('tenor_sax', mel, when, dur, 0.155, { pan: -0.16 });
+          this.playInstrument('muted_trumpet', mel, when + 0.006, dur * 0.92, 0.12, { pan: 0.16 });
+          this.playInstrument('vibraphone', mel, when + 0.004, dur, 0.125, { pan: 0.26 });
+        }
+        this.scheduleShowbandTurnaroundFill(barIdx, step, stepsPerBar, when, when, sixteenthSec, 'BOSSA');
+        break;
+      }
+
+      case 3: {
+        // CHART 3: Burbank Soul-Organ Go-Go (Booker T. & The M.G.'s / Stax Rhythm Section 16-Bar!)
+        // 1. SOLO MASTER BASSIST: Duck Dunn / Jamerson Syncopated Fender Bass (Zero Upright Doubling!)
+        if (step === 0 || step === 4 || step === 6 || step === 8 || step === 10 || step === 12 || step === 14) {
+          const gogoMap: Record<number, number> = {
+            0: 0,
+            4: chordTones[0],
+            6: 7,
+            8: 0,
+            10: 7,
+            12: phraseBar % 2 === 0 ? 9 : 5,
+            14: 7,
+          };
+          const bSemi = gogoMap[step] ?? 0;
+          const isMain = step % 4 === 0;
+          this.playInstrument(
+            'electric_bass',
+            eBassRoot + bSemi,
+            t + humanizeOffset(barIdx, step, 4, 0.003),
+            isMain ? sixteenthSec * 2.4 : sixteenthSec * 1.6,
+            step === 0 ? 0.37 : isMain ? 0.31 : 0.24,
+            { pan: -0.03 },
+          );
+        }
+
+        // 2. Al Jackson Jr. Tight Stax Kick & Snare Backbeat Pocket
+        if (step === 0 || step === 6 || step === 8) {
+          this.playDrum('kick', t, step === 0 ? 0.27 : 0.20);
+        }
+        if (step === 4 || step === 12) {
+          this.playDrum('snare_stick', when, 0.215, { pan: -0.10 });
+          this.playDrum('tambourine', when + 0.004, 0.095, { pan: 0.30 });
+        }
+        if (step % 2 === 0) {
+          this.playDrum('hihat_closed', t, step % 4 === 0 ? 0.095 : 0.062, { pan: -0.22 });
+        }
+        if (step === 2 || step === 10) {
+          this.playDrum('bongo_lo', t, 0.12, { pan: 0.24 });
+        }
+
+        // 3. DEDICATED LEFT GUITARIST (`pan: -0.48`, +2.2 dB): Steve Cropper Clean Telecaster Backbeat Chops & Riffs!
+        if (step === 4 || step === 12) {
+          this.playInstrument('clean_guitar', gtrBase + chordTones[0], when, sixteenthSec * 1.85, 0.285, { pan: -0.48 });
+          this.playInstrument('clean_guitar', gtrBase + chordTones[1], when + 0.006, sixteenthSec * 1.8, 0.235, { pan: -0.40 });
+        } else if (step === 2 || step === 6 || step === 14) {
+          const riffSemi = step === 2 ? 0 : step === 6 ? chordTones[0] : 7;
+          this.playInstrument('clean_guitar', gtrBase + riffSemi, t, sixteenthSec * 1.75, 0.23, { pan: -0.48 });
+        }
+
+        // 4. DEDICATED RIGHT KEYBOARDIST (`pan: +0.46`, +2.2 dB): Booker T. Short Percussive B3 Stabs (-4 dB) + Fender Rhodes!
+        if (step === 0 || step === 6 || step === 10 || (step === 12 && phraseBar % 2 === 1)) {
+          this.playHammondChord(
+            [keysBase + chordTones[0], keysBase + chordTones[1], keysBase + chordTones[2]],
+            t,
+            sixteenthSec * 2.2,
+            0.052,
+            { soulful: true, fastLeslie: true, keyClick: true },
+          );
+          this.playInstrument('electric_piano', keysBase + chordTones[0], t + 0.004, sixteenthSec * 2.6, 0.255, { pan: 0.46 });
+          this.playInstrument('electric_piano', keysBase + chordTones[2], t + 0.009, sixteenthSec * 2.5, 0.21, { pan: 0.40 });
+        }
+
+        // 5. Staccato Memphis Horns (Tight Punchy Hits + Open Funk Pocket!)
+        const burbankHook: ReadonlyArray<Record<number, readonly [number, number]>> = [
+          { 0: [4, 1.8], 4: [7, 1.4], 6: [9, 2.0], 10: [7, 2.1] },
+          { 0: [4, 2.1], 6: [2, 1.4], 8: [0, 2.1] },
+          { 0: [5, 1.8], 4: [9, 1.4], 6: [7, 2.0], 10: [5, 2.1] },
+          { 0: [4, 2.0], 6: [7, 1.7], 10: [11, 2.0] },
+          { 0: [12, 1.9], 4: [11, 1.4], 6: [9, 2.0], 10: [7, 2.1] },
+          { 0: [9, 2.1], 6: [7, 1.4], 8: [4, 2.1] },
+          { 0: [5, 1.8], 4: [7, 1.4], 6: [9, 2.0], 10: [7, 2.0] },
+          { 0: [4, 2.0], 6: [7, 1.8], 10: [12, 2.1] },
+        ];
+        const bHit = burbankHook[section8Idx][step];
+        if (bHit) {
+          const [semi, dur16] = bHit;
+          const melMidi = warmHorn(root + semi);
+          this.playInstrument('tenor_sax', melMidi, t, sixteenthSec * dur16, 0.148, { pan: 0.16 });
+          this.playInstrument('trombone', melMidi - 12, t + 0.005, sixteenthSec * dur16 * 0.88, 0.11, { pan: -0.18 });
+          this.playInstrument('marimba', melMidi, t, sixteenthSec * dur16 * 0.85, 0.13, { pan: 0.26 });
+        }
+        if (phraseBar === 3 && step === 14) {
+          this.playInstrument('baritone_sax', bassRoot + chordTones[0], t, sixteenthSec * 1.8, 0.12, { pan: -0.26 });
+          this.playInstrument('trombone', chordBase - 5, t, sixteenthSec * 1.8, 0.115, { pan: 0.22 });
+          this.playInstrument('brass', chordBase + chordTones[0], t, sixteenthSec * 1.8, 0.13, { pan: -0.20 });
+        }
+        this.scheduleShowbandTurnaroundFill(barIdx, step, stepsPerBar, when, t, sixteenthSec, 'GOGO');
+        break;
+      }
+
+      case 4: {
+        // CHART 4: Midnight Penthouse Showstopper (Prime-Time Gala / Double-Dollars Wrecking Crew!)
+        // 1. SOLO MASTER BASSIST: Fender Precision Electric Bass + Timpani Downbeat Accent
+        if (step === 0 && phraseBar % 2 === 0) {
+          this.playInstrument('timpani', bassRoot, when, sixteenthSec * 3.0, 0.165, { pan: -0.12 });
+          this.playHammondChord(
+            [keysBase + chordTones[0], keysBase + chordTones[1], keysBase + chordTones[2]],
+            when,
+            sixteenthSec * 2.8,
+            0.046,
+            { soulful: true, fastLeslie: true, keyClick: true },
+          );
+        }
+        if (step % 4 === 0 || step === 6 || step === 14) {
+          const w = step === 6 ? 7 : step === 14 ? 12 : [0, chordTones[0], 7, phraseBar === 3 ? 11 : 9][step / 4];
+          const isBeat = step % 4 === 0;
+          this.playInstrument('electric_bass', eBassRoot + w, t + humanizeOffset(barIdx, step, 9, 0.003), isBeat ? sixteenthSec * 2.85 : sixteenthSec * 1.65, step === 0 ? 0.36 : isBeat ? 0.30 : 0.24, { pan: -0.03 });
+        }
+        if (step === 0 || step === 8) {
+          this.playDrum('kick', when, step === 0 ? 0.26 : 0.19);
+        }
+        if (step === 4 || step === 12) {
+          this.playDrum('snare_stick', when, 0.205, { pan: -0.10 });
+          this.playDrum('hihat_pedal', when, 0.12, { pan: -0.20 });
+        }
+        if (step === 0 || step === 4 || step === 6 || step === 8 || step === 12 || step === 14) {
+          this.playDrum('ride', t, step % 4 === 0 ? 0.13 : 0.088, { pan: 0.26, durationSec: 0.38 });
+        }
+
+        // DEDICATED LEFT GUITARIST (`pan: -0.48`, +2.2 dB) & RIGHT KEYBOARDIST (`pan: +0.46`, +2.2 dB)
+        if (step === 0 || step === 4 || step === 8 || step === 12 || step === 14) {
+          this.playInstrument('clean_guitar', gtrBase + chordTones[0], t, sixteenthSec * 2.0, 0.255, { pan: -0.48 });
+          if (step === 4 || step === 12) {
+            this.playInstrument('jazz_guitar', gtrBase + chordTones[2], when + 0.007, sixteenthSec * 2.0, 0.215, { pan: -0.40 });
+          }
+        }
+        if (step === 0 || step === 6 || step === 12) {
+          this.playInstrument('grand_piano', keysBase + chordTones[0], t, sixteenthSec * 2.9, 0.245, { pan: 0.46 });
+          this.playInstrument('electric_piano', keysBase + chordTones[1], t + 0.007, sixteenthSec * 2.9, 0.23, { pan: 0.40 });
+        }
+
+        const showstopperLead: ReadonlyArray<Record<number, readonly [number, number]>> = [
+          { 0: [4, 2.4], 6: [7, 2.0], 10: [12, 2.8] },
+          { 0: [9, 2.6], 8: [7, 2.4] },
+          { 0: [5, 2.4], 6: [9, 2.0], 10: [12, 2.8] },
+          { 0: [7, 2.4], 8: [9, 2.0], 12: [12, 2.2] },
+          { 0: [12, 2.4], 6: [11, 2.0], 10: [9, 2.8] },
+          { 0: [9, 2.6], 8: [6, 2.4] },
+          { 0: [5, 2.2], 6: [7, 1.9], 10: [9, 2.6] },
+          { 0: [7, 2.2], 8: [12, 1.9], 12: [16, 2.4] },
+        ];
+        const sHit = showstopperLead[section8Idx][step];
+        if (sHit) {
+          const [semi, dur16] = sHit;
+          const leadMidi = warmHorn(root + semi);
+          const dur = sixteenthSec * dur16;
+          this.playInstrument('trumpet', leadMidi, t, dur, 0.15, { pan: 0.18 });
+          this.playInstrument('brass', warmHorn(leadMidi - 5), t + 0.005, dur * 0.9, 0.135, { pan: -0.22 });
+          this.playInstrument('trombone', root + semi - 12, t + 0.007, dur * 0.85, 0.115, { pan: 0.24 });
+          this.playInstrument('baritone_sax', bassRoot + (semi % 12), t + 0.006, dur * 0.85, 0.11, { pan: -0.26 });
+        }
+        this.scheduleShowbandTurnaroundFill(barIdx, step, stepsPerBar, when, t, sixteenthSec, 'SWING');
+        break;
+      }
+    }
+  }
+
+  /**
+   * 16-Bar (`A-A-B-A`, ~32s full song cycle!) 1966 Living Color Network Showband
+   * Orchestrator across all 12 scenes & 5 rotating Song Charts!
    * Every melodic, rhythmic, and harmonic voice is driven by real decoded studio
    * multi-samples + genuine 9-drawbar Hammond B3/Leslie.
    */
@@ -1989,9 +3443,9 @@ export class ShowbandAudioEngineV7 {
   ): void {
     if (!this.musicSanctuaryFilter) return;
 
-    const barIdx = bar % 8;
+    const barIdx = bar % SHOWBAND_LOOP_BARS;
 
-    // When reading a clue (except high-urgency Trapdoor Blitz), glide seamlessly into *Think!* bed
+    // When reading a clue (except high-urgency Trapdoor Blitz), glide seamlessly into 16-bar *Think!* bed
     if (this.clueSanctuaryActive && scene !== 'TRAPDOOR_BLITZ') {
       this.scheduleMervThinkBed(spec, barIdx, step, stepsPerBar, when, sixteenthSec);
       return;
@@ -1999,739 +3453,485 @@ export class ShowbandAudioEngineV7 {
 
     const root = spec.rootMidi;
     const barDur = sixteenthSec * stepsPerBar;
+    const isBridge = barIdx >= 8 && barIdx <= 11;
+    const phraseBar = barIdx % 4;
 
-    // Real 1960s studio jazz & TV showband 8-bar harmonic progressions
-    // Major: F6 | Dm7 | Gm7 | C13 | Fmaj7 | D7 | Gm7 | C9 (transposed to scene root!)
-    const majorRoots = [0, 9, 2, 7, 0, 9, 2, 7];
+    // Full 16-Bar (`A1 - A2 - B - A3`) 1966 Studio Jazz & Showband Harmonic Progressions!
+    // Major:
+    //   A1 (0..3):  I6 | vi7 | ii7 | V13
+    //   A2 (4..7):  Imaj7 | VI7 | ii7 | I9 (V9/IV launching into Bridge!)
+    //   B  (8..11): IVmaj7 | ivm6 | iii7 | V13 (Soaring Subdominant/Chromatic Bridge!)
+    //   A3 (12..15): I6 | VI7 | ii9 | V13 (Climactic Return & Big-Band Turnaround!)
+    const majorRoots = [0, 9, 2, 7, 0, 9, 2, 0, 5, 5, 4, 7, 0, 9, 2, 7];
     const majorVoicings: ReadonlyArray<readonly [number, number, number]> = [
-      [4, 7, 9],  // I6
-      [3, 7, 10], // vi7
-      [3, 7, 10], // ii7
-      [4, 9, 10], // V13
-      [4, 7, 11], // Imaj7
-      [4, 7, 10], // VI7 (sunny secondary dominant!)
-      [3, 7, 10], // ii7
-      [4, 10, 14], // V9
+      [4, 7, 9],   // 0: I6
+      [3, 7, 10],  // 1: vi7
+      [3, 7, 10],  // 2: ii7
+      [4, 9, 10],  // 3: V13
+      [4, 7, 11],  // 4: Imaj7
+      [4, 7, 10],  // 5: VI7
+      [3, 7, 10],  // 6: ii7
+      [4, 10, 14], // 7: I9 (secondary dominant into IVmaj7!)
+      [4, 7, 11],  // 8: IVmaj7 (Soaring Bridge!)
+      [3, 7, 9],   // 9: ivm6
+      [3, 7, 10],  // 10: iii7
+      [4, 9, 10],  // 11: V13
+      [4, 7, 9],   // 12: I6
+      [4, 7, 10],  // 13: VI7
+      [3, 7, 14],  // 14: ii9
+      [4, 9, 10],  // 15: V13
     ];
 
-    // Noir / Suspense: im9 | bVImaj7 | ivm7 | V7b9 | im7 | bIIImaj7 | iim7b5 | V7b9
-    const noirRoots = [0, 8, 5, 7, 0, 3, 2, 7];
+    // Noir / Suspense 16-Bar (`A1 - A2 - B - A3`):
+    //   A1 (0..3):  im9 | bVImaj7 | ivm7 | V7b9
+    //   A2 (4..7):  im7 | bIIImaj7 | iim7b5 | V7b9
+    //   B  (8..11): ivm9 | bVII9 | bIIImaj7 | V7b9 (Cinematic Noir/Spy Bridge!)
+    //   A3 (12..15): im9 | bVImaj7 | iim7b5 | V7b9
+    const noirRoots = [0, 8, 5, 7, 0, 3, 2, 7, 5, 10, 3, 7, 0, 8, 2, 7];
     const noirVoicings: ReadonlyArray<readonly [number, number, number]> = [
-      [3, 7, 14],  // im9
-      [4, 7, 11],  // bVImaj7
-      [3, 7, 10],  // ivm7
-      [4, 10, 13], // V7b9
-      [3, 7, 10],  // im7
-      [4, 7, 11],  // bIIImaj7
-      [3, 6, 10],  // iim7b5
-      [4, 10, 13], // V7b9
+      [3, 7, 14],  // 0: im9
+      [4, 7, 11],  // 1: bVImaj7
+      [3, 7, 10],  // 2: ivm7
+      [4, 10, 13], // 3: V7b9
+      [3, 7, 10],  // 4: im7
+      [4, 7, 11],  // 5: bIIImaj7
+      [3, 6, 10],  // 6: iim7b5
+      [4, 10, 13], // 7: V7b9
+      [3, 7, 14],  // 8: ivm9 (Bridge!)
+      [4, 7, 10],  // 9: bVII9
+      [4, 7, 11],  // 10: bIIImaj7
+      [4, 10, 13], // 11: V7b9
+      [3, 7, 14],  // 12: im9
+      [4, 7, 11],  // 13: bVImaj7
+      [3, 6, 10],  // 14: iim7b5
+      [4, 10, 13], // 15: V7b9
     ];
 
     const isMajor = spec.motifMode === 'MAJOR_6';
     const degShift = (isMajor ? majorRoots : noirRoots)[barIdx];
     const chordTones = (isMajor ? majorVoicings : noirVoicings)[barIdx];
     const bassRoot = root - 12 + (degShift > 6 ? degShift - 12 : degShift);
+    const eBassRoot = bassRoot >= 38 ? bassRoot - 12 : bassRoot;
     const chordBase = root + (degShift > 7 ? degShift - 12 : degShift);
+    const gtrBase = chordBase;
+    const keysBase = chordBase;
+    const warmOuter = (m: number): number => (m > 70 ? m - 12 : m);
 
     // Authentic 59% jazz swing ratio on off-beat eighth notes (steps 2, 6, 10, 14)
     const swingOffset = step % 4 === 2 ? sixteenthSec * 0.34 : 0;
     const t = when + swingOffset;
 
     switch (scene) {
-      case 'GREEN_ROOM': {
-        // ====================================================================
-        // TITLE SCREEN / LIVING COLOR HUB: Herb Alpert *Tijuana Brass* /
-        // *The Dating Game* / *Take Ten* Joyful Upbeat Swing (118 BPM, F Maj)
-        // ====================================================================
-
-        // 1. Bouncy Real Upright Double Bass (2-beat / walking swing!)
-        if (step === 0 || step === 4 || step === 8 || step === 12) {
-          const walkIntervals = [0, chordTones[0], 7, barIdx === 7 ? 11 : 9];
-          const bassNote = bassRoot + walkIntervals[step / 4];
-          this.playInstrument(
-            'upright_bass',
-            bassNote,
-            when + humanizeOffset(barIdx, step, 1, 0.003),
-            sixteenthSec * 3.5,
-            step === 0 ? 0.28 : 0.24,
-            { pan: 0 },
-          );
-        }
-
-        // 2. Real Boston Jazz Kit + Tambourine
-        if (step === 0 || step === 8) {
-          this.playDrum('kick', when, step === 0 ? 0.19 : 0.14, { pan: 0 });
-        }
-        if (step === 0 || step === 4 || step === 6 || step === 8 || step === 12 || step === 14) {
-          this.playDrum('ride', t, step % 4 === 0 ? 0.145 : 0.098, {
-            pan: 0.32,
-            durationSec: 0.42,
-          });
-        }
-        if (step === 4 || step === 12) {
-          this.playDrum('hihat_pedal', when, 0.14, { pan: -0.24 });
-          this.playDrum('snare_brush', when, 0.15, { pan: -0.12 });
-          if (barIdx >= 4) {
-            this.playDrum('tambourine', when + 0.004, 0.11, { pan: 0.36 });
-          }
-        }
-        if (barIdx === 0 && step === 0) {
-          this.playDrum('crash', when, 0.12, { pan: -0.32, durationSec: 1.1 });
-        }
-
-        // 3. Crisp Hollowbody Jazz Guitar *chunk* on 2 & 4 + Steinway Piano Comping
-        if (step === 4 || step === 12) {
-          this.playInstrument('jazz_guitar', chordBase + chordTones[0], when, sixteenthSec * 2.2, 0.13, {
-            pan: -0.32,
-          });
-          this.playInstrument('jazz_guitar', chordBase + chordTones[2], when + 0.009, sixteenthSec * 2.2, 0.11, {
-            pan: -0.26,
-          });
-        }
-        if (step === 0 || step === 6) {
-          for (let i = 0; i < 3; i++) {
-            this.playInstrument(
-              'grand_piano',
-              chordBase + chordTones[i],
-              t + i * 0.010,
-              sixteenthSec * 4.0,
-              step === 0 ? 0.125 : 0.095,
-              { pan: -0.28 + i * 0.06 },
-            );
-          }
-        }
-
-        // 4. Warm 9-Drawbar Hammond B3 + Stereo Leslie 122 Pad
-        if (step === 0) {
-          this.playHammondChord(
-            [chordBase + chordTones[0], chordBase + chordTones[1], chordBase + chordTones[2]],
-            when,
-            barDur * 0.86,
-            0.038,
-            { fastLeslie: barIdx >= 4, keyClick: barIdx % 2 === 0 },
-          );
-        }
-
-        // 5. Catchy 8-Bar Herb Alpert *Tijuana Brass* Dual-Trumpet + Marimba Hook!
-        // Consonant harmonies locked 1:1 to F6 | Dm7 | Gm7 | C13 | Fmaj7 | D7 | Gm7 | C9:
-        const tijuanaLead: ReadonlyArray<Record<number, readonly [number, number, number]>> = [
-          // [leadOffset, harmonyOffset, durSixteenths] relative to F4 (65)
-          { 0: [4, 0, 3.0], 4: [7, 4, 2.0], 6: [9, 4, 3.2], 10: [7, 4, 4.0] },  // Bar 0 (F6): A/F, C/A, D/A, C/A!
-          { 0: [4, 0, 4.2], 6: [2, -3, 2.0], 8: [0, -3, 3.8] },                  // Bar 1 (Dm7): A/F, G/D, F/D!
-          { 0: [5, 2, 3.0], 4: [9, 5, 2.0], 6: [7, 2, 3.2], 10: [5, 2, 4.0] },   // Bar 2 (Gm7): Bb/G, D/Bb, C/G, Bb/G!
-          { 0: [7, 4, 4.2], 6: [5, 2, 2.0], 8: [4, -1, 3.6] },                   // Bar 3 (C13): C/A, Bb/G, A/E!
-          { 0: [7, 4, 3.0], 4: [9, 4, 2.0], 6: [12, 7, 3.4], 10: [11, 7, 4.0] }, // Bar 4 (Fmaj7): C/A, D/A, F/C, E/C!
-          { 0: [9, 4, 4.2], 6: [7, 1, 2.0], 8: [4, 1, 3.8] },                    // Bar 5 (D7): D/A, C/F#, A/F#!
-          { 0: [5, 2, 3.0], 4: [9, 5, 2.0], 6: [7, 2, 3.2], 10: [5, 2, 3.8] },   // Bar 6 (Gm7): Bb/G, D/Bb, C/G, Bb/G!
-          { 0: [4, -1, 3.4], 4: [2, -1, 2.8] },                                  // Bar 7 (C9): A/E, G/E -> Big Band Turnaround!
-        ];
-
-        const hit = tijuanaLead[barIdx][step];
-        if (hit) {
-          const [leadSemi, harmSemi, dur16] = hit;
-          const noteDur = sixteenthSec * dur16;
-          const leadMidi = root + 12 + leadSemi;
-          const harmMidi = root + 12 + harmSemi;
-
-          // Bright Tijuana Lead Trumpet + Harmony Trumpet in sweet 3rds/6ths!
-          this.playInstrument('trumpet', leadMidi, t, noteDur, 0.21, { pan: 0.22 });
-          this.playInstrument('trumpet', harmMidi, t + 0.008, noteDur * 0.94, 0.145, { pan: -0.18 });
-          // Sunny wooden Marimba doubling the melody for authentic *Dating Game* bounce!
-          this.playInstrument('marimba', leadMidi, t, noteDur * 0.88, 0.185, { pan: 0.34 });
-        }
-
-        // Punchy Big-Band Brass & Tenor Sax Answer Stabs on Bar 1, 3, 5 & iconic Bar 7 Turnaround!
-        if ((barIdx === 1 || barIdx === 3 || barIdx === 5) && step === 12) {
-          this.playInstrument('brass', chordBase + chordTones[0], when, sixteenthSec * 3.0, 0.19, { pan: -0.30 });
-          this.playInstrument('brass', chordBase + chordTones[2], when, sixteenthSec * 3.0, 0.17, { pan: 0.30 });
-          this.playInstrument('tenor_sax', chordBase + chordTones[1], when + 0.006, sixteenthSec * 3.2, 0.16, { pan: 0.12 });
-          this.playDrum('snare_stick', when, 0.16, { pan: -0.10 });
-        } else if (barIdx === 7 && (step === 8 || step === 12 || step === 14)) {
-          // Iconic 1966 "BAP - BAP - BA-DAAA!" Turnaround
-          const punchDur = step === 14 ? sixteenthSec * 3.8 : sixteenthSec * 1.9;
-          const shift = step === 14 ? 2 : 0;
-          this.playInstrument('brass', chordBase + chordTones[0] + shift, t, punchDur, 0.23, { pan: -0.32 });
-          this.playInstrument('brass', chordBase + chordTones[2] + shift, t, punchDur, 0.21, { pan: 0.32 });
-          this.playInstrument('trombone', chordBase - 5 + shift, t, punchDur, 0.19, { pan: -0.22 });
-          this.playDrum('snare_stick', t, 0.20, { pan: -0.08 });
-        }
-        break;
-      }
-
-      case 'STAGE_01_IBC_DAYTIME_FUNK': {
-        // ====================================================================
-        // STUDIO 6A LIVING COLOR DAYTIME: *Jeopardy! '64 Take Ten* /
-        // *Hollywood Squares* / *Match Game* Swing Showband (120 BPM, F Maj)
-        // ====================================================================
-
-        // 1. Four-to-the-bar Walking Acoustic Upright Double Bass
-        if (step % 4 === 0) {
-          const walkSeq = [0, chordTones[0], 7, barIdx % 2 === 0 ? 9 : chordTones[2] - 1];
-          this.playInstrument(
-            'upright_bass',
-            bassRoot + walkSeq[step / 4],
-            when + humanizeOffset(barIdx, step, 2, 0.003),
-            sixteenthSec * 3.65,
-            step === 0 ? 0.26 : 0.22,
-            { pan: 0 },
-          );
-        }
-
-        // 2. Swinging Real Jazz Drum Kit
-        if (step === 0 || (step === 10 && barIdx % 2 === 1)) {
-          this.playDrum('kick', t, step === 0 ? 0.18 : 0.12, { pan: 0 });
-        }
-        if (step === 0 || step === 4 || step === 6 || step === 8 || step === 12 || step === 14) {
-          this.playDrum('ride', t, step % 4 === 0 ? 0.15 : 0.098, {
-            pan: 0.30,
-            durationSec: 0.44,
-          });
-        }
-        if (step === 4 || step === 12) {
-          this.playDrum('hihat_pedal', when, 0.14, { pan: -0.22 });
-          this.playDrum('snare_brush', when, 0.15, { pan: -0.14 });
-        }
-        if (step === 14 && barIdx % 2 === 1) {
-          this.playDrum('snare_rim', t, 0.10, { pan: -0.16 });
-        }
-
-        // 3. Steinway Grand Piano + Hollowbody Jazz Guitar Syncopated Comping
-        if (step === 0 || step === 6 || (step === 12 && barIdx % 2 === 1)) {
-          for (let i = 0; i < 3; i++) {
-            this.playInstrument(
-              'grand_piano',
-              chordBase + chordTones[i],
-              t + i * 0.011,
-              sixteenthSec * 4.2,
-              step === 0 ? 0.13 : 0.10,
-              { pan: -0.30 + i * 0.08 },
-            );
-          }
-        }
-        if (step === 4 || step === 12) {
-          this.playInstrument('jazz_guitar', chordBase + chordTones[0], when, sixteenthSec * 2.4, 0.12, {
-            pan: -0.26,
-          });
-        }
-
-        // 4. Creamy Hammond B3 + Stereo Leslie 122 Cushion
-        if (step === 0) {
-          this.playHammondChord(
-            [chordBase + chordTones[0], chordBase + chordTones[1], chordBase + chordTones[2]],
-            when,
-            barDur * 0.88,
-            0.038,
-            { fastLeslie: barIdx === 3 || barIdx === 7, keyClick: true },
-          );
-        }
-
-        // 5. Sparkling Vibraphone + Muted Trumpet / Tenor Sax *Take Ten* Theme
-        const takeTenHook: ReadonlyArray<Record<number, readonly [number, number]>> = [
-          { 0: [7, 3.0], 6: [9, 3.0], 10: [12, 4.5] },
-          { 0: [9, 3.5], 6: [7, 2.5], 10: [4, 4.0] },
-          { 0: [5, 3.0], 6: [7, 3.0], 10: [9, 4.2] },
-          { 0: [7, 3.5], 4: [5, 2.5], 8: [4, 3.5] },
-          { 0: [7, 3.0], 6: [11, 3.0], 10: [14, 4.5] },
-          { 0: [12, 3.5], 6: [9, 2.5], 10: [6, 4.0] },
-          { 0: [5, 3.0], 4: [7, 2.5], 8: [9, 3.5], 12: [7, 3.0] },
-          { 0: [4, 3.5], 6: [7, 3.0] },
-        ];
-
-        const mHit = takeTenHook[barIdx][step];
-        if (mHit) {
-          const [semi, dur16] = mHit;
-          const melMidi = root + 12 + semi;
-          this.playInstrument('vibraphone', melMidi, t, sixteenthSec * dur16 * 1.15, 0.21, {
-            pan: 0.28,
-          });
-          if (barIdx < 4) {
-            this.playInstrument('muted_trumpet', melMidi, t + 0.005, sixteenthSec * dur16, 0.16, {
-              pan: 0.16,
-            });
-          } else {
-            this.playInstrument('tenor_sax', melMidi - 12, t + 0.005, sixteenthSec * dur16, 0.19, {
-              pan: -0.16,
-            });
-            this.playInstrument('trumpet', melMidi, t, sixteenthSec * dur16 * 0.9, 0.14, {
-              pan: 0.20,
-            });
-          }
-        }
-
-        // Brass Section Swell Punctuation on Bars 3 & 7
-        if ((barIdx === 3 || barIdx === 7) && (step === 10 || step === 14)) {
-          this.playInstrument('brass', chordBase + chordTones[0], t, sixteenthSec * 2.8, 0.20, { pan: -0.32 });
-          this.playInstrument('brass', chordBase + chordTones[2], t, sixteenthSec * 2.8, 0.18, { pan: 0.32 });
-          if (barIdx === 7 && step === 14) {
-            this.playDrum('snare_stick', t, 0.17, { pan: -0.10 });
-          }
-        }
-        break;
-      }
-
-      case 'STAGE_02_IBC_PRIMETIME_JUBILEE': {
-        // ====================================================================
-        // 1966 CBS PRIMETIME JUBILEE GALA: Silky Stereo Strings, Big Brass & Piano
-        // ====================================================================
-        if (step === 0) {
-          this.playDrum('kick', when, 0.17);
-          if (barIdx === 0 || barIdx === 4) {
-            this.playDrum('crash', when, 0.12, { pan: -0.30, durationSec: 1.15 });
-          }
-          // Silky high-passed studio strings float above the walking bass
-          this.playInstrument('strings', chordBase + chordTones[0], when, barDur * 0.98, 0.11, {
-            pan: -0.30,
-            highpassHz: 220,
-          });
-          this.playInstrument('strings', chordBase + chordTones[2], when, barDur * 0.98, 0.10, {
-            pan: 0.30,
-            highpassHz: 220,
-          });
-          this.playHammondChord([chordBase + chordTones[0], chordBase + chordTones[1]], when, barDur * 0.85, 0.030);
-        }
-        if (step % 4 === 0) {
-          const w = [0, chordTones[0], 7, barIdx === 7 ? 11 : 9][step / 4];
-          this.playInstrument('upright_bass', bassRoot + w, when + humanizeOffset(barIdx, step, 3, 0.003), sixteenthSec * 3.6, step === 0 ? 0.25 : 0.21);
-        }
-        if (step === 4 || step === 12) {
-          this.playDrum('snare_stick', when, 0.13, { pan: -0.14 });
-          this.playDrum('hihat_pedal', when, 0.12, { pan: -0.22 });
-          this.playDrum('tambourine', when, 0.095, { pan: 0.34 });
-        }
-        if (step === 0 || step === 4 || step === 6 || step === 8 || step === 12 || step === 14) {
-          this.playDrum('ride', t, step % 4 === 0 ? 0.135 : 0.088, { pan: 0.28, durationSec: 0.40 });
-        }
-        // Breezy Hollywood Grand Piano jazz comping + sparkling fills
-        if (step === 0 || step === 6) {
-          for (let i = 0; i < 3; i++) {
-            this.playInstrument('grand_piano', chordBase + chordTones[i], t + i * 0.011, sixteenthSec * 4.2, step === 0 ? 0.12 : 0.095, {
-              pan: -0.26 + i * 0.08,
-            });
-          }
-        }
-        // Glamorous 8-bar CBS Primetime Gala Brass + Trumpet + Glockenspiel theme (D Major!)
-        const jubileeLead: ReadonlyArray<Record<number, readonly [number, number]>> = [
-          { 0: [4, 4.0], 6: [7, 3.2], 10: [12, 4.8] },    // Bar 0 (D6): F#-A-D!
-          { 0: [9, 4.5], 8: [7, 3.8] },                   // Bar 1 (Bm7): B-A!
-          { 0: [5, 3.8], 6: [9, 3.2], 10: [11, 4.5] },    // Bar 2 (Em7): G-B-C#!
-          { 0: [7, 4.0], 8: [9, 3.0], 12: [11, 3.0] },    // Bar 3 (A13): A-B-C#!
-          { 0: [12, 4.0], 6: [11, 3.2], 10: [9, 4.5] },   // Bar 4 (Dmaj7): D-C#-B!
-          { 0: [7, 4.5], 8: [4, 3.8] },                   // Bar 5 (B7): A-F#!
-          { 0: [5, 3.5], 6: [7, 3.0], 10: [9, 4.0] },     // Bar 6 (Em7): G-A-B!
-          { 0: [7, 3.5], 8: [9, 2.8], 12: [12, 3.5] },    // Bar 7 (A9): Gala Turnaround!
-        ];
-        const jHit = jubileeLead[barIdx][step];
-        if (jHit) {
-          const [semi, dur16] = jHit;
-          const leadMidi = root + 12 + semi;
-          this.playInstrument('trumpet', leadMidi, t, sixteenthSec * dur16, 0.18, { pan: 0.22 });
-          this.playInstrument('brass', leadMidi - 5, t + 0.006, sixteenthSec * dur16, 0.15, { pan: -0.24 });
-          if (step === 0 || step === 10) {
-            this.playInstrument('glockenspiel', Math.min(MIDI_C6, leadMidi + 12), t, sixteenthSec * 4.8, 0.095, { pan: 0.34 });
-          }
-          if (barIdx === 3 || barIdx === 7) {
-            this.playInstrument('trombone', root + semi, t, sixteenthSec * dur16, 0.14, { pan: -0.28 });
-          }
-        }
-        break;
-      }
-
-      case 'STAGE_03_1926_VAUDEVILLE_PIT': {
-        // ====================================================================
-        // 1966 BURBANK POP-ART GO-GO ORGAN & BRASS (*Laugh-In / Dating Game* Mod!)
-        // ====================================================================
-        // 1. Punchy Fast-Leslie Hammond B3 Go-Go Syncopated Riff!
-        if (step === 0 || step === 6 || (step === 12 && barIdx % 2 === 1)) {
-          this.playHammondChord(
-            [chordBase + chordTones[0], chordBase + chordTones[1], chordBase + chordTones[2]],
-            t,
-            step === 0 ? sixteenthSec * 4.8 : sixteenthSec * 5.2,
-            0.044,
-            { soulful: true, fastLeslie: true, keyClick: true },
-          );
-        }
-        // 2. Bouncy 1966 Go-Go Upright Bass + Funky Hollowbody Guitar Chops
-        if (step === 0 || step === 4 || step === 8 || step === 12) {
-          const gogoBass = [0, chordTones[0], 7, barIdx % 2 === 0 ? 9 : 5][step / 4];
-          this.playInstrument('upright_bass', bassRoot + gogoBass, when + humanizeOffset(barIdx, step, 4, 0.003), sixteenthSec * 3.4, step === 0 ? 0.25 : 0.21);
-        }
-        if (step === 4 || step === 12) {
-          this.playInstrument('jazz_guitar', chordBase + chordTones[0], when, sixteenthSec * 2.0, 0.125, { pan: -0.32 });
-          this.playInstrument('jazz_guitar', chordBase + chordTones[2], when + 0.008, sixteenthSec * 2.0, 0.11, { pan: -0.24 });
-        }
-        // 3. Infectious 1966 Mod Go-Go Drum & Percussion Groove (Kick, Snare, Tambourine, Bongos!)
-        if (step === 0 || step === 6 || step === 8) {
-          this.playDrum('kick', t, step === 0 ? 0.19 : 0.13);
-        }
-        if (step === 4 || step === 12) {
-          this.playDrum('snare_stick', when, 0.16, { pan: -0.12 });
-          this.playDrum('tambourine', when + 0.004, 0.13, { pan: 0.34 });
-        }
-        if (step % 2 === 0) {
-          this.playDrum('hihat_closed', t, step % 4 === 0 ? 0.105 : 0.068, { pan: -0.24 });
-        }
-        if (step === 2 || step === 10 || step === 14) {
-          this.playDrum(step === 10 ? 'bongo_hi' : 'bongo_lo', t, 0.125, { pan: 0.26 });
-        }
-        // 4. Playful 8-Bar Burbank Pop-Art Brass + Muted Trumpet + Wooden Marimba Hook!
-        const burbankHook: ReadonlyArray<Record<number, readonly [number, number]>> = [
-          { 0: [4, 2.6], 4: [7, 2.0], 6: [9, 3.0], 10: [7, 3.2] },   // Bar 0 (C6): E-G-A-G!
-          { 0: [4, 3.2], 6: [2, 2.0], 8: [0, 3.2] },                  // Bar 1 (Am7): E-D-C!
-          { 0: [5, 2.6], 4: [9, 2.0], 6: [7, 3.0], 10: [5, 3.2] },   // Bar 2 (Dm7): F-A-G-F!
-          { 0: [4, 3.0], 6: [7, 2.5], 10: [11, 3.0] },                // Bar 3 (G13): E-G-B!
-          { 0: [12, 2.8], 4: [11, 2.0], 6: [9, 3.0], 10: [7, 3.2] }, // Bar 4 (Cmaj7): C-B-A-G!
-          { 0: [9, 3.2], 6: [7, 2.0], 8: [4, 3.2] },                  // Bar 5 (A7): A-G-E!
-          { 0: [5, 2.6], 4: [7, 2.0], 6: [9, 3.0], 10: [7, 3.0] },   // Bar 6 (Dm7): F-G-A-G!
-          { 0: [4, 3.0], 6: [2, 2.4] },                               // Bar 7 (G9) -> Brass Go-Go Punch!
-        ];
-        const bHit = burbankHook[barIdx][step];
-        if (bHit) {
-          const [semi, dur16] = bHit;
-          const melMidi = root + 12 + semi;
-          this.playInstrument(barIdx < 4 ? 'muted_trumpet' : 'trumpet', melMidi, t, sixteenthSec * dur16, 0.175, { pan: 0.22 });
-          this.playInstrument('marimba', melMidi, t, sixteenthSec * dur16 * 0.9, 0.17, { pan: 0.34 });
-        }
-        if ((barIdx === 3 || barIdx === 7) && (step === 10 || step === 14)) {
-          this.playInstrument('brass', chordBase + chordTones[0], t, sixteenthSec * 2.5, 0.18, { pan: -0.26 });
-          this.playInstrument('brass', chordBase + chordTones[2], t, sixteenthSec * 2.5, 0.16, { pan: 0.26 });
-          this.playInstrument('trombone', chordBase - 5, t, sixteenthSec * 2.8, 0.16, { pan: -0.22 });
-        }
+      case 'GREEN_ROOM':
+      case 'STAGE_01_IBC_DAYTIME_FUNK':
+      case 'STAGE_02_IBC_PRIMETIME_JUBILEE':
+      case 'STAGE_03_1926_VAUDEVILLE_PIT':
+      case 'STAGE_06_ATLANTIC_CITY_PIER': {
+        this.scheduleMultiChart16BarShowband({
+          chart: this.songChartVariant,
+          scene,
+          barIdx,
+          step,
+          stepsPerBar,
+          when,
+          t,
+          sixteenthSec,
+          barDur,
+          root,
+          bassRoot,
+          chordBase,
+          chordTones,
+        });
         break;
       }
 
       case 'STAGE_04_1958_ISOLATION_VAULT': {
-        // ====================================================================
-        // 1964 "$64,000" ISOLATION BOOTH SUSPENSE NOIR (Sealed Vault, ZERO Crowd!)
-        // ====================================================================
         if (step === 0) {
-          this.playInstrument('timpani', bassRoot + 12, when, sixteenthSec * 5.2, 0.17, { pan: -0.18, lowpassHz: 480 });
-          this.playInstrument('strings', chordBase, when, barDur * 1.0, 0.115, { pan: -0.32, highpassHz: 240, lowpassHz: 2200 });
-          this.playInstrument('strings', chordBase + chordTones[0], when, barDur * 1.0, 0.10, { pan: 0.32, highpassHz: 240, lowpassHz: 2200 });
+          this.playInstrument('timpani', bassRoot, when, sixteenthSec * 4.4, isBridge ? 0.18 : 0.15, { pan: -0.14, lowpassHz: 480 });
+          this.playInstrument('strings', chordBase - 12, when, barDur * 0.85, isBridge ? 0.075 : 0.062, { pan: -0.32, highpassHz: 210, lowpassHz: 2050 });
+          this.playInstrument('strings', chordBase + chordTones[0] - 12, when, barDur * 0.85, isBridge ? 0.068 : 0.056, { pan: 0.32, highpassHz: 210, lowpassHz: 2050 });
+          this.playHammondChord([keysBase + chordTones[0], keysBase + chordTones[1]], when, sixteenthSec * 3.4, isBridge ? 0.042 : 0.034, {
+            fastLeslie: isBridge,
+          });
         }
-        if (step === 0 || step === 8) {
-          this.playInstrument('upright_bass', bassRoot + (step === 8 ? 7 : 0), when, sixteenthSec * 5.6, 0.23, { lowpassHz: 680 });
-          this.playInstrument('woodblock', step === 0 ? 79 : 72, when, 0.08, 0.068, { pan: 0.20, lowpassHz: 2400 });
+        if (isBridge ? step % 4 === 0 : step === 0 || step === 8) {
+          const climb = isBridge ? [0, chordTones[0], 7, 10][step / 4] : step === 8 ? 7 : 0;
+          this.playInstrument('upright_bass', bassRoot + climb, when, sixteenthSec * 3.6, 0.35, { pan: -0.02 });
         }
         if (step === 4 || step === 12) {
-          this.playDrum('snare_brush', when, 0.095, { pan: -0.16, lowpassHz: 3200 });
-          this.playDrum('ride', when, 0.065, { pan: 0.26, durationSec: 0.34, lowpassHz: 4200 });
-          const v = step === 4 ? chordTones[2] : chordTones[1];
-          this.playInstrument('vibraphone', chordBase + v + 12, when, sixteenthSec * 5.6, 0.135, { pan: 0.26 });
+          this.playDrum('snare_brush', when, 0.145, { pan: -0.14, lowpassHz: 3200 });
+          this.playInstrument('jazz_guitar', gtrBase + chordTones[0], when, sixteenthSec * 2.8, 0.225, { pan: -0.48 });
+          this.playInstrument('electric_piano', keysBase + chordTones[1], when + 0.008, sixteenthSec * 3.2, 0.22, { pan: 0.46 });
         }
-        // Expressive Mancini / Hitchcock 2-note noir muted trumpet & tenor sax sighs
-        if (barIdx % 2 === 0 && (step === 6 || step === 10)) {
-          const noirSemi = step === 6 ? chordTones[0] + 12 : chordTones[1] + 12;
-          this.playInstrument('muted_trumpet', chordBase + noirSemi, t, sixteenthSec * 4.8, 0.145, {
-            pan: 0.18,
-            lowpassHz: 2650,
-          });
+        if (isBridge) {
+          const isoBridge: ReadonlyArray<Record<number, readonly [number, number, number]>> = [
+            { 0: [12, 3, 3.6], 8: [10, 7, 3.8] },
+            { 0: [14, 7, 3.6], 8: [10, 4, 3.8] },
+            { 0: [11, 4, 3.6], 8: [7, 0, 3.8] },
+            { 0: [10, 4, 2.8], 6: [13, 7, 2.8], 12: [16, 10, 3.0] },
+          ];
+          const ib = isoBridge[phraseBar][step];
+          if (ib) {
+            const [trpS, saxS, d16] = ib;
+            this.playInstrument('muted_trumpet', warmOuter(chordBase + trpS), t, sixteenthSec * d16, 0.14, { pan: 0.18 });
+            this.playInstrument('tenor_sax', warmOuter(chordBase + saxS), t + 0.008, sixteenthSec * d16, 0.145, { pan: -0.20 });
+          }
+        } else if (barIdx % 2 === 0 && (step === 6 || step === 10)) {
+          const noirSemi = step === 6 ? chordTones[0] : chordTones[1];
+          this.playInstrument('muted_trumpet', warmOuter(chordBase + noirSemi), t, sixteenthSec * 3.2, 0.135, { pan: 0.18 });
         } else if (barIdx % 2 === 1 && (step === 4 || step === 10)) {
           const saxSemi = step === 4 ? chordTones[2] : chordTones[0];
-          this.playInstrument('tenor_sax', chordBase + saxSemi, t, sixteenthSec * 5.2, 0.155, {
-            pan: -0.20,
-            lowpassHz: 2800,
-          });
+          this.playInstrument('tenor_sax', warmOuter(chordBase + saxSemi), t, sixteenthSec * 3.4, 0.145, { pan: -0.18 });
         }
+        this.scheduleShowbandTurnaroundFill(barIdx, step, stepsPerBar, when, t, sixteenthSec, 'NOIR');
         break;
       }
 
       case 'STAGE_05_1984_LARSON_CRT_LAB': {
-        // ====================================================================
-        // 1967 APOLLO COLOR CONTROL PAVILION (Hammond B3, Sax, Vibes, Rim Kit)
-        // ====================================================================
-        if (step === 0) {
-          this.playDrum('kick', when, 0.18);
+        if (step === 0 || (isBridge && step === 6)) {
+          if (step === 0) this.playDrum('kick', when, 0.25);
           this.playHammondChord(
-            [chordBase + chordTones[0], chordBase + chordTones[1], chordBase + chordTones[2]],
-            when,
-            barDur * 0.90,
-            0.044,
-            { soulful: true, fastLeslie: barIdx % 4 === 3, keyClick: true },
+            [keysBase + chordTones[0], keysBase + chordTones[1], keysBase + chordTones[2]],
+            t,
+            sixteenthSec * 2.8,
+            0.048,
+            { soulful: true, fastLeslie: isBridge || phraseBar === 3, keyClick: true },
           );
         }
-        if (step === 0 || step === 6 || step === 8 || step === 12) {
-          this.playInstrument('upright_bass', bassRoot + (step === 12 ? 7 : 0), t, sixteenthSec * 3.4, 0.25);
+        if (isBridge ? step % 4 === 0 : step === 0 || step === 6 || step === 8 || step === 12) {
+          const walk = isBridge ? [0, chordTones[0], 7, 10][step / 4] : step === 12 ? 7 : 0;
+          this.playInstrument('electric_bass', eBassRoot + walk, t, sixteenthSec * 2.8, 0.35, { pan: -0.03 });
         }
         if (step === 4 || step === 12) {
-          this.playDrum('snare_rim', when, 0.15, { pan: -0.14 });
+          this.playDrum('snare_rim', when, 0.195, { pan: -0.12 });
+          this.playInstrument('clean_guitar', gtrBase + chordTones[0], when, sixteenthSec * 2.2, 0.245, { pan: -0.48 });
         }
         if (step % 2 === 0) {
-          this.playDrum('hihat_closed', t, step % 4 === 0 ? 0.10 : 0.068, { pan: 0.22 });
+          this.playDrum('hihat_closed', t, step % 4 === 0 ? 0.09 : 0.06, { pan: 0.20 });
         }
         if (step === 2 || step === 10) {
-          const n = chordTones[step === 2 ? 1 : 2] + 12;
-          this.playInstrument('vibraphone', chordBase + n, t, sixteenthSec * 4.8, 0.14, { pan: 0.28 });
-          this.playInstrument('grand_piano', chordBase + chordTones[0], t, sixteenthSec * 3.8, 0.11, { pan: -0.26 });
+          this.playInstrument('electric_piano', keysBase + chordTones[1], t, sixteenthSec * 3.0, 0.235, { pan: 0.46 });
+          this.playInstrument('grand_piano', keysBase + chordTones[0], t + 0.006, sixteenthSec * 2.8, 0.195, { pan: 0.38 });
         }
-        if (barIdx % 2 === 1 && (step === 0 || step === 6)) {
-          this.playInstrument('tenor_sax', chordBase + (step === 0 ? 10 : 7), t, sixteenthSec * 4.6, 0.165, {
-            pan: -0.16,
-          });
+        if (isBridge) {
+          const apolloBr: ReadonlyArray<Record<number, readonly [number, number]>> = [
+            { 0: [7, 2.6], 6: [10, 2.2], 12: [14, 2.6] },
+            { 0: [12, 2.8], 6: [10, 2.2], 12: [7, 2.6] },
+            { 0: [11, 2.6], 6: [7, 2.2], 12: [4, 2.6] },
+            { 0: [4, 2.2], 4: [7, 2.2], 8: [10, 2.2], 12: [13, 2.5] },
+          ];
+          const ab = apolloBr[phraseBar][step];
+          if (ab) {
+            this.playInstrument('tenor_sax', warmOuter(chordBase + ab[0]), t, sixteenthSec * ab[1], 0.155, { pan: -0.18 });
+            this.playInstrument('jazz_guitar', warmOuter(chordBase + ab[0]), t + 0.006, sixteenthSec * ab[1] * 0.85, 0.205, { pan: -0.44 });
+          }
+          if (step === 8 && phraseBar < 3) {
+            this.playInstrument('baritone_sax', bassRoot + chordTones[0], t, sixteenthSec * 2.0, 0.115, { pan: 0.22 });
+          }
+        } else if (barIdx % 2 === 1 && (step === 0 || step === 6)) {
+          this.playInstrument('tenor_sax', warmOuter(chordBase + (step === 0 ? 10 : 7)), t, sixteenthSec * 2.8, 0.15, { pan: -0.16 });
         }
-        break;
-      }
-
-      case 'STAGE_06_ATLANTIC_CITY_PIER': {
-        // ====================================================================
-        // 1964 STEEL PIER BIG BAND: Boardwalk Brass, Dual Trumpets, Bongos & Swing!
-        // ====================================================================
-        if (step === 0 || step === 4 || step === 8 || step === 12) {
-          const pierWalk = [0, chordTones[0], 7, barIdx === 7 ? 11 : 9][step / 4];
-          this.playInstrument('upright_bass', bassRoot + pierWalk, when + humanizeOffset(barIdx, step, 6, 0.003), sixteenthSec * 3.5, step === 0 ? 0.25 : 0.21);
-        }
-        if (step === 0 || step === 8) {
-          this.playDrum('kick', when, step === 0 ? 0.18 : 0.13);
-        }
-        if (step === 0 || step === 4 || step === 6 || step === 8 || step === 12 || step === 14) {
-          this.playDrum('ride', t, step % 4 === 0 ? 0.13 : 0.088, { pan: 0.30, durationSec: 0.42 });
-        }
-        // Breezy Steel Pier Bongos, Shaker & Snappy Backbeat
-        if (step === 0 || step === 6 || step === 10) {
-          this.playDrum('bongo_hi', t, 0.13, { pan: 0.28 });
-        }
-        if (step === 4 || step === 12) {
-          this.playDrum('bongo_lo', t, 0.115, { pan: 0.22 });
-          this.playDrum('snare_rim', when, 0.135, { pan: -0.12 });
-          this.playInstrument('jazz_guitar', chordBase + chordTones[0], when, sixteenthSec * 2.2, 0.125, { pan: -0.32 });
-          this.playInstrument('jazz_guitar', chordBase + chordTones[1], when + 0.008, sixteenthSec * 2.2, 0.11, { pan: -0.25 });
-        }
-        if (step % 2 === 0) {
-          this.playDrum('shaker', t, step % 4 === 0 ? 0.085 : 0.058, { pan: -0.28 });
-        }
-        if (step === 0) {
-          this.playHammondChord([chordBase + chordTones[0], chordBase + chordTones[2]], when, barDur * 0.84, 0.032);
-        }
-        // Full 8-bar consonant Steel Pier Big Band Brass + Dual Trumpets + Marimba (G Major!)
-        // Locked 1:1 to G6 | Em7 | Am7 | D13 | Gmaj7 | E7 | Am7 | D9:
-        const pierBigBand: ReadonlyArray<Record<number, readonly [number, number, number]>> = [
-          { 0: [4, 0, 3.0], 4: [7, 4, 2.2], 6: [9, 4, 3.2], 10: [7, 4, 3.8] },  // Bar 0 (G6): B/G, D/B, E/B, D/B!
-          { 0: [4, 0, 3.8], 6: [2, -3, 2.2], 8: [0, -3, 3.6] },                  // Bar 1 (Em7): B/G, A/E, G/E!
-          { 0: [5, 2, 3.0], 4: [9, 5, 2.2], 6: [7, 2, 3.2], 10: [5, 2, 3.8] },   // Bar 2 (Am7): C/A, E/C, D/A, C/A!
-          { 0: [7, 4, 3.8], 6: [5, 2, 2.2], 8: [4, -1, 3.4] },                   // Bar 3 (D13): D/B, C/A, B/F#!
-          { 0: [7, 4, 3.0], 4: [9, 4, 2.2], 6: [12, 7, 3.4], 10: [11, 7, 3.8] }, // Bar 4 (Gmaj7): D/B, E/B, G/D, F#/D!
-          { 0: [9, 4, 3.8], 6: [7, 1, 2.2], 8: [4, 1, 3.6] },                    // Bar 5 (E7): E/B, D/G#, B/G#!
-          { 0: [5, 2, 3.0], 4: [9, 5, 2.2], 6: [7, 2, 3.2], 10: [5, 2, 3.6] },   // Bar 6 (Am7): C/A, E/C, D/A, C/A!
-          { 0: [4, -1, 3.2], 4: [2, -1, 2.8] },                                  // Bar 7 (D9) -> Big Band Swell!
-        ];
-        const pHit = pierBigBand[barIdx][step];
-        if (pHit) {
-          const [leadSemi, harmSemi, dur16] = pHit;
-          const lead = root + 12 + leadSemi;
-          const harm = root + 12 + harmSemi;
-          this.playInstrument('trumpet', lead, t, sixteenthSec * dur16, 0.17, { pan: 0.22 });
-          this.playInstrument('trumpet', harm, t + 0.007, sixteenthSec * dur16 * 0.94, 0.12, { pan: -0.18 });
-          this.playInstrument('marimba', lead, t, sixteenthSec * dur16 * 0.86, 0.155, { pan: 0.34 });
-        }
-        // Big-band Brass + Tenor Sax + Trombone Boardwalk Swells on Bars 3 & 7
-        if ((barIdx === 3 || barIdx === 7) && (step === 10 || step === 14)) {
-          this.playInstrument('brass', chordBase + chordTones[0], t, sixteenthSec * 2.8, 0.17, { pan: -0.28 });
-          this.playInstrument('tenor_sax', chordBase + chordTones[2], t, sixteenthSec * 3.0, 0.16, { pan: 0.24 });
-          this.playInstrument('trombone', chordBase - 5, t, sixteenthSec * 2.8, 0.15, { pan: -0.22 });
-        }
+        this.scheduleShowbandTurnaroundFill(barIdx, step, stepsPerBar, when, t, sixteenthSec, 'NOIR');
         break;
       }
 
       case 'STAGE_07_1969_MONTE_CARLO_CASINO': {
-        // ====================================================================
-        // 1969 MONTE CARLO 5/4 SPY LOUNGE (Lalo Schifrin w/ Live 5/4 -> 4/4 Chop!)
-        // ====================================================================
-        const spyBass: Record<number, number> = { 0: 0, 6: 0, 12: 5, 16: 3 };
+        const spyBass: Record<number, number> = isBridge
+          ? { 0: 0, 4: chordTones[0], 8: 7, 12: 10, 16: 7 }
+          : { 0: 0, 6: 0, 12: 5, 16: 3 };
         if (step in spyBass && step < stepsPerBar) {
-          this.playInstrument('upright_bass', bassRoot + spyBass[step], when, sixteenthSec * 3.4, step === 0 ? 0.26 : 0.22);
-          this.playDrum('kick', when, step === 0 ? 0.17 : 0.12);
+          this.playInstrument('upright_bass', bassRoot + spyBass[step], when, sixteenthSec * 3.0, step === 0 ? 0.37 : 0.31, { pan: -0.02 });
+          if (step === 0 || step === 12) {
+            this.playDrum('kick', when, step === 0 ? 0.24 : 0.18);
+          }
         }
         if (step === 0) {
-          this.playInstrument('strings', chordBase + chordTones[0], when, barDur * 0.92, 0.105, { pan: -0.34, highpassHz: 230 });
-          this.playInstrument('strings', chordBase + chordTones[2], when, barDur * 0.92, 0.095, { pan: 0.34, highpassHz: 230 });
+          this.playInstrument('strings', chordBase + chordTones[0] - 12, when, barDur * 0.82, isBridge ? 0.072 : 0.06, { pan: -0.34, highpassHz: 210 });
+          this.playInstrument('strings', chordBase + chordTones[2] - 12, when, barDur * 0.82, isBridge ? 0.066 : 0.055, { pan: 0.34, highpassHz: 210 });
+          this.playHammondChord([keysBase + chordTones[0], keysBase + chordTones[1]], when, sixteenthSec * 3.0, isBridge ? 0.045 : 0.036, {
+            soulful: true,
+            fastLeslie: isBridge,
+          });
         }
-        // Sleek Casino Royale Grand Piano & Hollowbody Guitar Lounge Comping on Beats 1 & 4
-        if (step === 0 || (step === 12 && step < stepsPerBar)) {
-          this.playInstrument('grand_piano', chordBase + chordTones[0], when, sixteenthSec * 4.2, 0.115, { pan: -0.28 });
-          this.playInstrument('grand_piano', chordBase + chordTones[2], when + 0.010, sixteenthSec * 4.2, 0.10, { pan: -0.20 });
-          this.playInstrument('jazz_guitar', chordBase + chordTones[1], when + 0.006, sixteenthSec * 3.4, 0.105, { pan: -0.34 });
+        if (step === 0 || step === 6 || (step === 12 && step < stepsPerBar)) {
+          this.playInstrument('jazz_guitar', gtrBase + chordTones[0], when, sixteenthSec * 2.6, 0.245, { pan: -0.48 });
+          this.playInstrument('electric_piano', keysBase + chordTones[1], when + 0.006, sixteenthSec * 3.0, 0.235, { pan: 0.46 });
+          if (step !== 6) {
+            this.playInstrument('grand_piano', keysBase + chordTones[2], when + 0.010, sixteenthSec * 2.8, 0.20, { pan: 0.38 });
+          }
         }
-        // Signature spy bongos & shaker on 5/4 pulse
         if (step === 0 || step === 6 || step === 12 || (step === 16 && step < stepsPerBar)) {
-          this.playDrum(step === 12 ? 'bongo_hi' : 'bongo_lo', when, 0.135, { pan: 0.26 });
-        }
-        if (step % 2 === 0 && step < stepsPerBar) {
-          this.playDrum('shaker', when, step % 4 === 0 ? 0.08 : 0.052, { pan: -0.26 });
+          this.playDrum(step === 12 ? 'bongo_hi' : 'bongo_lo', when, 0.13, { pan: 0.24 });
         }
         if (step % 4 === 0 && step < stepsPerBar) {
-          this.playDrum('ride', when, 0.105, { pan: 0.30, durationSec: 0.34 });
+          this.playDrum('ride', when, 0.11, { pan: 0.26, durationSec: 0.34 });
         }
         if (step === 4 || step === 12) {
-          this.playDrum('snare_rim', when, 0.115, { pan: -0.14 });
+          this.playDrum('snare_rim', when, 0.165, { pan: -0.12 });
         }
-        // Suave 1969 Riviera Spy Melody: Muted Trumpet + Vibraphone + Smoky Tenor Sax answer!
-        if (barIdx % 2 === 0 && (step === 0 || step === 6 || step === 12)) {
+        if (isBridge && step < stepsPerBar) {
+          const mcBridge: ReadonlyArray<Record<number, readonly [number, number]>> = [
+            { 0: [14, 3.0], 6: [12, 2.8], 12: [10, 2.8], 16: [7, 2.6] },
+            { 0: [10, 3.0], 6: [14, 2.8], 12: [16, 2.8], 16: [14, 2.6] },
+            { 0: [11, 3.0], 6: [14, 2.8], 12: [16, 2.8], 16: [11, 2.6] },
+            { 0: [7, 2.6], 6: [10, 2.6], 12: [13, 2.8], 16: [16, 2.6] },
+          ];
+          const mcb = mcBridge[phraseBar][step];
+          if (mcb) {
+            const [semi, d16] = mcb;
+            this.playInstrument('muted_trumpet', warmOuter(chordBase + semi), when, sixteenthSec * d16, 0.145, { pan: 0.18 });
+            this.playInstrument('tenor_sax', warmOuter(chordBase + semi - 12), when + 0.006, sixteenthSec * d16, 0.15, { pan: -0.18 });
+            if (step === 0 || step === 12) {
+              this.playInstrument('baritone_sax', bassRoot + chordTones[0], when, sixteenthSec * 2.4, 0.115, { pan: -0.26 });
+            }
+          }
+        } else if (barIdx % 2 === 0 && (step === 0 || step === 6 || step === 12)) {
           const spyMel = step === 0 ? 15 : step === 6 ? 14 : 12;
-          this.playInstrument('muted_trumpet', chordBase + spyMel, when, sixteenthSec * 3.8, 0.165, { pan: 0.22 });
-          this.playInstrument('vibraphone', chordBase + spyMel, when, sixteenthSec * 4.4, 0.14, { pan: -0.22 });
+          this.playInstrument('muted_trumpet', warmOuter(chordBase + spyMel), when, sixteenthSec * 2.6, 0.14, { pan: 0.18 });
+          this.playInstrument('vibraphone', warmOuter(chordBase + spyMel), when, sixteenthSec * 3.0, 0.125, { pan: 0.24 });
         } else if (barIdx % 2 === 1 && (step === 6 || step === 12)) {
           const loungeAns = step === 6 ? chordTones[2] : chordTones[0];
-          this.playInstrument('tenor_sax', chordBase + loungeAns, when, sixteenthSec * 4.5, 0.155, { pan: 0.18 });
-          this.playInstrument('vibraphone', chordBase + loungeAns + 12, when, sixteenthSec * 4.4, 0.12, { pan: -0.24 });
+          this.playInstrument('tenor_sax', warmOuter(chordBase + loungeAns), when, sixteenthSec * 3.0, 0.15, { pan: -0.16 });
         }
-        if (barIdx % 4 === 3 && (step === 0 || step === 12)) {
-          this.playInstrument('brass', chordBase + chordTones[0], when, sixteenthSec * 3.0, 0.16, { pan: -0.28 });
-        }
+        this.scheduleShowbandTurnaroundFill(barIdx, step, stepsPerBar, when, when, sixteenthSec, 'BOSSA');
         break;
       }
 
       case 'STAGE_08_WORLDS_FAIR_GEODESIC': {
-        // ====================================================================
-        // 1965 WORLD'S FAIR SPACE-AGE EXOTICA (Esquivel / Stereo Vibes & Strings)
-        // ====================================================================
+        if (this.explicitChartOverride) {
+          this.scheduleMultiChart16BarShowband({
+            chart: this.songChartVariant,
+            scene,
+            barIdx,
+            step,
+            stepsPerBar,
+            when,
+            t,
+            sixteenthSec,
+            barDur,
+            root,
+            bassRoot,
+            chordBase,
+            chordTones,
+          });
+          break;
+        }
         if (step === 0) {
-          this.playDrum('kick', when, 0.16);
-          this.playInstrument('strings', chordBase + chordTones[0], when, barDur * 0.98, 0.11, { pan: -0.38, highpassHz: 220 });
-          this.playInstrument('strings', chordBase + chordTones[2], when, barDur * 0.98, 0.10, { pan: 0.38, highpassHz: 220 });
-          this.playHammondChord([chordBase + chordTones[0], chordBase + chordTones[1]], when, barDur * 0.88, 0.036, {
+          this.playDrum('kick', when, 0.24);
+          this.playInstrument('strings', chordBase + chordTones[0] - 12, when, barDur * 0.85, isBridge ? 0.072 : 0.06, { pan: -0.36, highpassHz: 210 });
+          this.playInstrument('strings', chordBase + chordTones[2] - 12, when, barDur * 0.85, isBridge ? 0.066 : 0.055, { pan: 0.36, highpassHz: 210 });
+          this.playHammondChord([keysBase + chordTones[0], keysBase + chordTones[1]], when, sixteenthSec * 3.0, 0.042, {
             fastLeslie: true,
           });
         }
-        if (step === 0 || step === 8) {
-          this.playInstrument('upright_bass', bassRoot + (step === 8 ? 7 : 0), when, sixteenthSec * 6.0, 0.25);
+        if (isBridge ? step % 4 === 0 : step === 0 || step === 8) {
+          const walk = isBridge ? [0, chordTones[0], 7, 9][step / 4] : step === 8 ? 7 : 0;
+          this.playInstrument('upright_bass', bassRoot + walk, when, sixteenthSec * 3.6, 0.36, { pan: -0.02 });
         }
         if (step === 4 || step === 12) {
-          this.playDrum('snare_brush', when, 0.12, { pan: -0.14 });
-          this.playDrum('bongo_hi', when + 0.008, 0.12, { pan: 0.34 });
+          this.playDrum('snare_brush', when, 0.175, { pan: -0.12 });
+          this.playDrum('bongo_lo', when + 0.008, 0.125, { pan: 0.26 });
+          this.playInstrument('jazz_guitar', gtrBase + chordTones[0], when, sixteenthSec * 2.5, 0.245, { pan: -0.48 });
+        }
+        if (step === 0 || step === 6) {
+          this.playInstrument('electric_piano', keysBase + chordTones[1], t, sixteenthSec * 3.2, 0.24, { pan: 0.46 });
         }
         if (step === 2 || step === 6 || step === 10 || step === 14) {
-          // Ping-pong stereo Marimba & Vibraphone exotica cascade!
-          const tone = chordTones[(step / 4) % 3] + 12;
+          const tone = warmOuter(chordBase + chordTones[Math.floor(step / 4) % 3]);
           const isLeft = step === 2 || step === 10;
-          this.playInstrument(isLeft ? 'marimba' : 'vibraphone', chordBase + tone, t, sixteenthSec * 4.2, 0.155, {
-            pan: isLeft ? -0.38 : 0.38,
+          this.playInstrument(isLeft ? 'marimba' : 'vibraphone', tone, t, sixteenthSec * 3.0, 0.135, {
+            pan: isLeft ? -0.32 : 0.32,
           });
         }
-        if (barIdx % 2 === 0 && (step === 0 || step === 8)) {
-          this.playInstrument('glockenspiel', chordBase + 24 + (step === 8 ? 7 : 4), when, sixteenthSec * 5.2, 0.12, {
-            pan: 0.30,
-          });
+        if (isBridge) {
+          const wfBridge: ReadonlyArray<Record<number, readonly [number, number, number]>> = [
+            { 0: [9, 5, -0.32], 6: [12, 9, 0.32], 10: [16, 12, -0.28] },
+            { 0: [14, 8, 0.32], 6: [12, 8, -0.32], 10: [8, 5, 0.28] },
+            { 0: [7, 4, -0.32], 6: [11, 7, 0.32], 10: [14, 11, -0.28] },
+            { 0: [11, 5, 0.32], 4: [12, 7, -0.32], 8: [14, 9, 0.32], 12: [16, 11, 0] },
+          ];
+          const wfb = wfBridge[phraseBar][step];
+          if (wfb) {
+            const [leadS, harmS, panPos] = wfb;
+            this.playInstrument('muted_trumpet', warmOuter(root + leadS), t, sixteenthSec * 2.6, 0.145, { pan: panPos });
+            this.playInstrument('tenor_sax', warmOuter(root + harmS), t + 0.005, sixteenthSec * 2.6, 0.145, { pan: -panPos });
+            this.playInstrument('trombone', root + harmS - 12, t + 0.008, sixteenthSec * 2.4, 0.115, { pan: -panPos * 0.7 });
+          }
         }
-        if (barIdx === 3 && step === 12) {
-          this.playInstrument('brass', chordBase + chordTones[2], when, sixteenthSec * 3.4, 0.17, { pan: 0 });
-        }
+        this.scheduleShowbandTurnaroundFill(barIdx, step, stepsPerBar, when, t, sixteenthSec, 'BOSSA');
         break;
       }
 
       case 'STAGE_09_CHANNEL_83_UHF_BARGE': {
-        // ====================================================================
-        // 1967 PIRATE CHANNEL 83 BEAT: Soul-Jazz Hammond B3, Sax & Guitar Groove!
-        // ====================================================================
         if (step === 0 || step === 6) {
           this.playHammondChord(
-            [chordBase + chordTones[0], chordBase + chordTones[1], chordBase + chordTones[2]],
+            [keysBase + chordTones[0], keysBase + chordTones[1], keysBase + chordTones[2]],
             t,
-            step === 0 ? sixteenthSec * 4.8 : sixteenthSec * 6.8,
-            0.044,
+            sixteenthSec * 2.4,
+            0.052,
             { soulful: true, fastLeslie: true, keyClick: true },
           );
+          this.playInstrument('electric_piano', keysBase + chordTones[0], t + 0.005, sixteenthSec * 2.8, 0.245, { pan: 0.46 });
         }
-        if (step === 0 || step === 6 || step === 8 || step === 14) {
-          const walk = step === 6 ? 3 : step === 14 ? 7 : 0;
-          this.playInstrument('upright_bass', bassRoot + walk, t, sixteenthSec * 3.3, step === 0 ? 0.25 : 0.21);
+        if (isBridge ? step % 4 === 0 : step === 0 || step === 6 || step === 8 || step === 14) {
+          const walk = isBridge ? [0, chordTones[0], 7, 10][step / 4] : step === 6 ? 3 : step === 14 ? 7 : 0;
+          this.playInstrument('electric_bass', eBassRoot + walk, t, sixteenthSec * 2.5, step === 0 ? 0.37 : 0.30, { pan: -0.03 });
         }
         if (step === 0 || step === 10) {
-          this.playDrum('kick', t, step === 0 ? 0.18 : 0.13);
+          this.playDrum('kick', t, step === 0 ? 0.27 : 0.20);
         }
         if (step === 4 || step === 12) {
-          this.playDrum('snare_stick', when, 0.16, { pan: -0.14 });
-          this.playDrum('hihat_pedal', when, 0.13, { pan: -0.24 });
-          if (barIdx >= 4) {
-            this.playDrum('tambourine', when + 0.005, 0.105, { pan: 0.34 });
-          }
-          this.playInstrument('jazz_guitar', chordBase + chordTones[0], when, sixteenthSec * 2.4, 0.135, {
-            pan: -0.30,
-          });
-          this.playInstrument('jazz_guitar', chordBase + chordTones[2], when + 0.008, sixteenthSec * 2.4, 0.115, {
-            pan: -0.22,
-          });
+          this.playDrum('snare_stick', when, 0.21, { pan: -0.12 });
+          this.playDrum('hihat_pedal', when, 0.12, { pan: -0.20 });
+          this.playInstrument('clean_guitar', gtrBase + chordTones[0], when, sixteenthSec * 2.0, 0.27, { pan: -0.48 });
+          this.playInstrument('clean_guitar', gtrBase + chordTones[1], when + 0.007, sixteenthSec * 1.9, 0.22, { pan: -0.40 });
         }
         if (step === 0 || step === 4 || step === 6 || step === 8 || step === 12 || step === 14) {
-          this.playDrum('ride', t, step % 4 === 0 ? 0.125 : 0.082, { pan: 0.30, durationSec: 0.38 });
+          this.playDrum('ride', t, step % 4 === 0 ? 0.125 : 0.085, { pan: 0.26, durationSec: 0.36 });
         }
-        // Offshore Soul-Beat Tenor Sax + Hollowbody Guitar Call-and-Response!
-        if (barIdx % 2 === 0 && (step === 0 || step === 6 || step === 10)) {
+        if (isBridge) {
+          const uhfBr: ReadonlyArray<Record<number, readonly [number, number]>> = [
+            { 0: [7, 2.0], 4: [10, 1.8], 6: [12, 2.6] },
+            { 0: [14, 2.0], 4: [12, 1.8], 6: [10, 2.6] },
+            { 0: [11, 2.0], 4: [14, 1.8], 6: [16, 2.6] },
+            { 0: [7, 2.0], 4: [10, 2.0], 8: [13, 2.2], 12: [16, 2.5] },
+          ];
+          const ub = uhfBr[phraseBar][step];
+          if (ub) {
+            this.playInstrument('tenor_sax', warmOuter(chordBase + ub[0]), t, sixteenthSec * ub[1], 0.155, { pan: 0.18 });
+            this.playInstrument('clean_guitar', warmOuter(chordBase + ub[0]), t + 0.006, sixteenthSec * ub[1] * 0.85, 0.225, { pan: -0.44 });
+          }
+          if (phraseBar < 3 && step === 14) {
+            this.playInstrument('baritone_sax', bassRoot + chordTones[0], t, sixteenthSec * 1.9, 0.125, { pan: -0.24 });
+            this.playInstrument('trombone', chordBase - 5, t, sixteenthSec * 1.9, 0.115, { pan: 0.22 });
+          }
+        } else if (barIdx % 2 === 0 && (step === 0 || step === 6 || step === 10)) {
           const blues = step === 0 ? 3 : step === 6 ? 5 : 7;
-          this.playInstrument('tenor_sax', chordBase + blues + 12, t, sixteenthSec * 3.8, 0.17, {
-            pan: 0.22,
-          });
+          this.playInstrument('tenor_sax', warmOuter(chordBase + blues), t, sixteenthSec * 2.5, 0.15, { pan: 0.18 });
         } else if (barIdx % 2 === 1 && (step === 2 || step === 8 || step === 12)) {
           const gtrRiff = step === 2 ? 7 : step === 8 ? 5 : 3;
-          this.playInstrument('jazz_guitar', chordBase + gtrRiff + 12, t, sixteenthSec * 3.2, 0.15, {
-            pan: -0.24,
-          });
+          this.playInstrument('clean_guitar', warmOuter(chordBase + gtrRiff), t, sixteenthSec * 2.2, 0.225, { pan: -0.44 });
         }
+        this.scheduleShowbandTurnaroundFill(barIdx, step, stepsPerBar, when, t, sixteenthSec, 'GOGO');
         break;
       }
 
       case 'STAGE_10_SOVEREIGN_SANCTUM': {
-        // ====================================================================
-        // GRAND FINALE SHOWDOWN: Timpani, Full Brass, Stereo Strings & Piano
-        // ====================================================================
-        if (step === 0) {
-          this.playInstrument('timpani', bassRoot + 12, when, sixteenthSec * 4.8, 0.21);
-          this.playDrum('kick', when, 0.18);
-          this.playInstrument('strings', chordBase + chordTones[0], when, barDur * 0.98, 0.12, { pan: -0.34, highpassHz: 220 });
-          this.playInstrument('strings', chordBase + chordTones[2], when, barDur * 0.98, 0.11, { pan: 0.34, highpassHz: 220 });
-          this.playInstrument('brass', chordBase + chordTones[0], when, barDur * 0.68, 0.16, { pan: -0.26 });
-          this.playInstrument('trombone', chordBase - 5, when, barDur * 0.68, 0.15, { pan: 0.26 });
-          if (barIdx === 0 || barIdx === 4) {
-            this.playInstrument('tubular_bell', root + 24, when, barDur * 0.90, 0.12, { pan: 0.32 });
-            this.playDrum('crash', when, 0.12, { pan: -0.28, durationSec: 1.20 });
-          }
-        }
-        if (step === 0 || step === 8) {
-          this.playInstrument('upright_bass', bassRoot + (step === 8 ? 7 : 0), when, sixteenthSec * 6.8, 0.26);
-        }
-        if (step % 4 === 0) {
-          const pNotes = [0, chordTones[0], chordTones[1], chordTones[2] + 12];
-          this.playInstrument('grand_piano', chordBase + pNotes[step / 4], when, sixteenthSec * 4.4, 0.14, {
-            pan: -0.18,
+        if (this.explicitChartOverride) {
+          this.scheduleMultiChart16BarShowband({
+            chart: this.songChartVariant,
+            scene,
+            barIdx,
+            step,
+            stepsPerBar,
+            when,
+            t,
+            sixteenthSec,
+            barDur,
+            root,
+            bassRoot,
+            chordBase,
+            chordTones,
           });
-          this.playInstrument('woodblock', step % 8 === 0 ? 79 : 72, when, 0.08, 0.072, { pan: 0.22 });
-        }
-        if (step === 4 || step === 12) {
-          this.playDrum('snare_stick', when, 0.15, { pan: -0.12 });
-        }
-        break;
-      }
-
-      case 'TRAPDOOR_BLITZ': {
-        // ====================================================================
-        // 148 BPM LIGHTNING ROUND CHASE: Driving Bass, Timpani, Sharp Brass!
-        // ====================================================================
-        if (step === 0 || step === 8) {
-          this.playDrum('kick', when, 0.21);
-          this.playInstrument('timpani', bassRoot + 12 + (step === 8 ? 7 : 0), when, sixteenthSec * 3.2, 0.17);
+          break;
         }
         if (step === 0) {
-          this.playHammondChord([chordBase + chordTones[0], chordBase + chordTones[2]], when, barDur * 0.82, 0.048, {
+          this.playInstrument('timpani', bassRoot, when, sixteenthSec * 3.6, 0.18);
+          this.playDrum('kick', when, 0.26);
+          this.playInstrument('strings', chordBase + chordTones[0] - 12, when, barDur * 0.85, isBridge ? 0.075 : 0.064, { pan: -0.34, highpassHz: 210 });
+          this.playInstrument('strings', chordBase + chordTones[2] - 12, when, barDur * 0.85, isBridge ? 0.068 : 0.058, { pan: 0.34, highpassHz: 210 });
+          this.playInstrument('brass', chordBase + chordTones[0], when, sixteenthSec * 2.8, 0.135, { pan: -0.24 });
+          this.playInstrument('trombone', chordBase - 5, when, sixteenthSec * 2.8, 0.115, { pan: 0.24 });
+          this.playInstrument('baritone_sax', bassRoot, when, sixteenthSec * 2.8, 0.11, { pan: -0.28 });
+          this.playHammondChord([keysBase + chordTones[0], keysBase + chordTones[1]], when, sixteenthSec * 3.0, 0.044, {
             soulful: true,
             fastLeslie: true,
             keyClick: true,
           });
-          this.playInstrument('brass', chordBase + chordTones[0], when, sixteenthSec * 3.8, 0.18, { pan: -0.30 });
-          this.playInstrument('brass', chordBase + chordTones[2], when, sixteenthSec * 3.8, 0.16, { pan: 0.30 });
         }
-        if (step % 2 === 0) {
-          const ost = step === 6 || step === 14 ? 7 : step === 10 ? 3 : 0;
-          this.playInstrument('upright_bass', bassRoot + ost, when, sixteenthSec * 2.0, 0.25);
-          this.playDrum('hihat_closed', when, step % 4 === 0 ? 0.115 : 0.075, { pan: 0.24 });
+        if (isBridge ? step % 4 === 0 : step === 0 || step === 8) {
+          const walk = isBridge ? [0, chordTones[0], 7, 10][step / 4] : step === 8 ? 7 : 0;
+          this.playInstrument('upright_bass', bassRoot + walk, when, sixteenthSec * 3.8, 0.37, { pan: -0.02 });
+        }
+        if (step % 4 === 0) {
+          const pNotes = [0, chordTones[0], chordTones[1], chordTones[2]];
+          this.playInstrument('grand_piano', keysBase + pNotes[step / 4], when, sixteenthSec * 3.0, 0.235, { pan: 0.46 });
+          this.playInstrument('electric_piano', keysBase + pNotes[step / 4], when + 0.006, sixteenthSec * 2.9, 0.21, { pan: 0.38 });
+          this.playInstrument('clean_guitar', gtrBase + chordTones[0], when, sixteenthSec * 2.2, 0.245, { pan: -0.48 });
+        }
+        if (isBridge) {
+          const sovBr: ReadonlyArray<Record<number, readonly [number, number]>> = [
+            { 0: [7, 2.8], 6: [10, 2.4], 10: [14, 3.0] },
+            { 0: [14, 2.8], 6: [10, 2.4], 10: [7, 3.0] },
+            { 0: [11, 2.8], 6: [14, 2.4], 10: [16, 3.0] },
+            { 0: [7, 2.4], 4: [10, 2.4], 8: [13, 2.5], 12: [16, 2.8] },
+          ];
+          const sb = sovBr[phraseBar][step];
+          if (sb) {
+            this.playInstrument('trumpet', warmOuter(chordBase + sb[0]), t, sixteenthSec * sb[1], 0.15, { pan: 0.18 });
+            this.playInstrument('tenor_sax', warmOuter(chordBase + sb[0]), t + 0.006, sixteenthSec * sb[1], 0.15, { pan: -0.20 });
+            if (phraseBar === 3) {
+              this.playInstrument('timpani', bassRoot + (step >= 8 ? 7 : 0), when, sixteenthSec * 2.8, 0.175, { pan: -0.14 });
+            }
+          }
         }
         if (step === 4 || step === 12) {
-          this.playDrum('snare_stick', when, 0.18, { pan: -0.12 });
-          this.playDrum('cowbell', when, 0.105, { pan: 0.32 });
+          this.playDrum('snare_stick', when, 0.20, { pan: -0.10 });
         }
-        if ((barIdx % 2 === 1) && (step === 6 || step === 12 || step === 14)) {
-          this.playInstrument('trumpet', root + 12 + (step === 14 ? 10 : 7), when, sixteenthSec * 2.2, 0.18, {
-            pan: 0.20,
+        this.scheduleShowbandTurnaroundFill(barIdx, step, stepsPerBar, when, t, sixteenthSec, 'SWING');
+        break;
+      }
+
+      case 'TRAPDOOR_BLITZ': {
+        if (step === 0 || step === 8) {
+          this.playDrum('kick', when, 0.27);
+          this.playInstrument('timpani', bassRoot + (step === 8 ? 7 : 0), when, sixteenthSec * 3.2, 0.19);
+        }
+        if (step === 0) {
+          this.playHammondChord([keysBase + chordTones[0], keysBase + chordTones[2]], when, barDur * 0.82, 0.082, {
+            soulful: true,
+            fastLeslie: true,
+            keyClick: true,
           });
-          this.playInstrument('tenor_sax', root + 12 + 3, when, sixteenthSec * 2.2, 0.15, { pan: -0.20 });
+          this.playInstrument('brass', chordBase + chordTones[0], when, sixteenthSec * 3.8, 0.18, { pan: -0.26 });
+          this.playInstrument('baritone_sax', bassRoot + chordTones[0], when, sixteenthSec * 3.8, 0.185, { pan: 0.26 });
         }
+        if (step % 2 === 0) {
+          const ost = isBridge
+            ? [0, 3, 5, 7, 10, 7, 5, 3][(step / 2) % 8]
+            : step === 6 || step === 14
+              ? 7
+              : step === 10
+                ? 3
+                : 0;
+          this.playInstrument('electric_bass', eBassRoot + ost, when, sixteenthSec * 2.1, 0.38, { pan: -0.04 });
+          if (step % 4 === 0) {
+            this.playInstrument('clean_guitar', gtrBase + ost, when, sixteenthSec * 2.4, 0.20, { pan: -0.46 });
+            this.playInstrument('electric_piano', keysBase + chordTones[0], when, sixteenthSec * 2.6, 0.18, { pan: 0.44 });
+          }
+          this.playDrum('hihat_closed', when, step % 4 === 0 ? 0.09 : 0.055, { pan: 0.22 });
+        }
+        if (step === 4 || step === 12) {
+          this.playDrum('snare_stick', when, 0.18, { pan: -0.10 });
+          this.playDrum('bongo_lo', when, 0.115, { pan: 0.26 });
+        }
+        if (isBridge) {
+          const blitzBr: ReadonlyArray<Record<number, number>> = [
+            { 0: 7, 6: 10, 12: 14 },
+            { 0: 14, 6: 10, 12: 7 },
+            { 0: 11, 6: 14, 12: 16 },
+            { 0: 7, 4: 10, 8: 13, 12: 16 },
+          ];
+          const bbSemi = blitzBr[phraseBar][step];
+          if (typeof bbSemi === 'number') {
+            this.playInstrument('tenor_sax', warmOuter(chordBase + bbSemi), when, sixteenthSec * 2.8, 0.19, { pan: 0.20 });
+            this.playInstrument('trombone', chordBase + chordTones[0] - 12, when, sixteenthSec * 2.8, 0.18, { pan: -0.22 });
+          }
+        } else if (barIdx % 2 === 1 && (step === 6 || step === 12 || step === 14)) {
+          this.playInstrument('muted_trumpet', warmOuter(root + (step === 14 ? 10 : 7)), when, sixteenthSec * 2.2, 0.17, { pan: 0.18 });
+          this.playInstrument('tenor_sax', root + 3, when, sixteenthSec * 2.2, 0.175, { pan: -0.20 });
+        }
+        this.scheduleShowbandTurnaroundFill(barIdx, step, stepsPerBar, when, when, sixteenthSec, 'GOGO');
         break;
       }
     }
@@ -2770,69 +3970,81 @@ export class ShowbandAudioEngineV7 {
 
   /**
    * 1966 NBC/CBS "IN LIVING COLOR — LIVE FROM STUDIO 6A!" Opening Showband Fanfare!
-   * Real timpani roll -> dual Tijuana trumpets & brass section flourish -> crash +
-   * shimmering bell tree + Hammond B3 Leslie chord + roaring walk-on studio applause!
+   * Iconic 3-note 30-Rock vibraphone/chime network ID -> timpani roll -> dual Tijuana
+   * trumpets & brass section flourish -> stereo strings + bell tree + fast-Leslie B3 + walk-on roar!
    */
   public playTitleShowtimeFanfare(): void {
     this.haptics.goldResonance();
     const ctx = this.wakeContextSync();
     if (!ctx || !this.sfxBus) return;
 
-    this.duckMusicForStinger(0.24, 1.85, 0.75);
+    this.duckMusicForStinger(0.22, 2.05, 0.78);
     const now = ctx.currentTime;
     const sfx = this.sfxBus;
 
+    // 0. Iconic 1966 3-Note Network Living-Color Chime Pickup (C5 -> A5 -> F5!)
+    const networkIdChimes = [
+      { dt: 0.00, midi: 72, pan: -0.26 },
+      { dt: 0.09, midi: 81, pan: 0.0 },
+      { dt: 0.18, midi: 77, pan: 0.26 },
+    ];
+    for (const ch of networkIdChimes) {
+      this.playInstrument('vibraphone', ch.midi, now + ch.dt, 0.46, 0.23, { dest: sfx, pan: ch.pan, priority: 3 });
+      this.playInstrument('tubular_bell', ch.midi, now + ch.dt + 0.005, 0.52, 0.14, { dest: sfx, pan: -ch.pan * 0.6, priority: 2 });
+    }
+
     // 1. Exciting opening timpani pick-up & snare rim snap
-    this.playInstrument('timpani', 48, now, 0.35, 0.28, { dest: sfx, pan: -0.15, priority: 3 });
-    this.playInstrument('timpani', 53, now + 0.11, 0.45, 0.32, { dest: sfx, pan: 0.15, priority: 3 });
-    this.playDrum('snare_stick', now + 0.16, 0.24, { dest: sfx, pan: -0.10, priority: 3 });
+    this.playInstrument('timpani', 48, now + 0.10, 0.35, 0.26, { dest: sfx, pan: -0.15, priority: 3 });
+    this.playInstrument('timpani', 53, now + 0.22, 0.45, 0.30, { dest: sfx, pan: 0.15, priority: 3 });
+    this.playDrum('snare_stick', now + 0.25, 0.22, { dest: sfx, pan: -0.10, priority: 3 });
 
     // 2. Iconic ascending 1966 TV Living Color Brass + Dual Trumpets in 3rds!
-    // F Major fanfare: C4 -> F4 -> A4 -> C5 -> D5 -> F5!!
     const fanfareBeats = [
-      { dt: 0.18, lead: 72, harm: 69, brass: 60, dur: 0.19 }, // C5 / A4
-      { dt: 0.33, lead: 74, harm: 70, brass: 62, dur: 0.19 }, // D5 / Bb4
-      { dt: 0.48, lead: 76, harm: 72, brass: 64, dur: 0.20 }, // E5 / C5
-      { dt: 0.65, lead: 77, harm: 72, brass: 65, dur: 1.05 }, // F5!! (Grand Living Color Hold!)
+      { dt: 0.27, lead: 72, harm: 69, brass: 60, dur: 0.18 }, // C5 / A4
+      { dt: 0.42, lead: 74, harm: 70, brass: 62, dur: 0.18 }, // D5 / Bb4
+      { dt: 0.57, lead: 76, harm: 72, brass: 64, dur: 0.19 }, // E5 / C5
+      { dt: 0.74, lead: 77, harm: 72, brass: 65, dur: 1.12 }, // F5!! (Grand Living Color Hold!)
     ];
 
     for (const b of fanfareBeats) {
       const at = now + b.dt;
-      this.playInstrument('trumpet', b.lead, at, b.dur, 0.28, { dest: sfx, pan: 0.22, priority: 3 });
-      this.playInstrument('trumpet', b.harm, at + 0.008, b.dur * 0.96, 0.20, { dest: sfx, pan: -0.22, priority: 3 });
-      this.playInstrument('brass', b.brass, at, b.dur, 0.26, { dest: sfx, pan: 0, priority: 3 });
-      this.playInstrument('trombone', b.brass - 12, at, b.dur, 0.22, { dest: sfx, pan: -0.26, priority: 3 });
+      this.playInstrument('trumpet', b.lead, at, b.dur, 0.26, { dest: sfx, pan: 0.22, priority: 3 });
+      this.playInstrument('trumpet', b.harm, at + 0.008, b.dur * 0.96, 0.19, { dest: sfx, pan: -0.22, priority: 3 });
+      this.playInstrument('brass', b.brass, at, b.dur, 0.24, { dest: sfx, pan: 0, priority: 3 });
+      this.playInstrument('trombone', b.brass - 12, at, b.dur, 0.20, { dest: sfx, pan: -0.26, priority: 3 });
     }
 
-    // 3. Downbeat Finale Explosion (t + 0.65s): Crash + Grand Piano + Glockenspiel + Bell Tree + Hammond B3!
-    const climax = now + 0.65;
-    this.playDrum('crash', climax, 0.24, { dest: sfx, pan: -0.30, durationSec: 1.5, priority: 3 });
-    this.playInstrument('timpani', 53, climax, 0.9, 0.32, { dest: sfx, priority: 3 });
-    this.playFoley('sleigh_sparkle', climax + 0.02, 0.24, { dest: sfx, pan: 0.32, priority: 3 });
+    // 3. Downbeat Finale Explosion (t + 0.74s): Crash + Stereo Strings + Piano + Glockenspiel + Bell Tree + Hammond B3!
+    const climax = now + 0.74;
+    this.playDrum('crash', climax, 0.23, { dest: sfx, pan: -0.30, durationSec: 1.55, priority: 3 });
+    this.playInstrument('timpani', 53, climax, 0.92, 0.30, { dest: sfx, priority: 3 });
+    this.playInstrument('strings', 69, climax, 1.15, 0.14, { dest: sfx, pan: -0.34, highpassHz: 240, priority: 2 });
+    this.playInstrument('strings', 77, climax, 1.15, 0.13, { dest: sfx, pan: 0.34, highpassHz: 240, priority: 2 });
+    this.playFoley('sleigh_sparkle', climax + 0.02, 0.25, { dest: sfx, pan: 0.32, priority: 3 });
 
     const sparkleNotes = [65, 69, 72, 74, 77, 81];
     for (let i = 0; i < sparkleNotes.length; i++) {
-      this.playInstrument('grand_piano', sparkleNotes[i], climax + i * 0.038, 0.7, 0.17, {
+      this.playInstrument('grand_piano', sparkleNotes[i], climax + i * 0.038, 0.7, 0.16, {
         dest: sfx,
         pan: -0.28 + i * 0.1,
         priority: 2,
       });
-      this.playInstrument('glockenspiel', Math.min(MIDI_C6, sparkleNotes[i] + 12), climax + 0.06 + i * 0.045, 0.65, 0.14, {
+      this.playInstrument('glockenspiel', Math.min(MIDI_C6, sparkleNotes[i] + 12), climax + 0.06 + i * 0.045, 0.65, 0.13, {
         dest: sfx,
         pan: 0.26,
         priority: 2,
       });
     }
 
-    this.playHammondChord([65, 69, 72, 74], climax, 1.35, 0.085, {
+    this.playHammondChord([65, 69, 72, 74], climax, 1.35, 0.082, {
       soulful: true,
       fastLeslie: true,
       keyClick: true,
     });
 
     // 4. Roaring Live Studio 6A Audience Walk-On Applause & Cheers!
-    this.playCrowd('applause_big', now + 0.42, 0.34, { durationSec: 2.6, attackSec: 0.15 });
-    this.playCrowd('cheer_hurray', now + 0.68, 0.24, { durationSec: 2.1, attackSec: 0.12 });
+    this.playCrowd('applause_big', now + 0.48, 0.34, { durationSec: 2.6, attackSec: 0.15 });
+    this.playCrowd('cheer_hurray', now + 0.74, 0.25, { durationSec: 2.1, attackSec: 0.12 });
   }
 
   /**
@@ -2921,20 +4133,34 @@ export class ShowbandAudioEngineV7 {
     const revealAt = now + cursor + 0.05;
 
     if (outcome === 'ZONK') {
-      // Comical 1960s *Let's Make a Deal* Zonk descending real trombone wah-wah-waaaah!
+      // Comical 1966 *Let's Make a Deal* Plunger-Muted Trombone Section wah-wah-waaaah + crowd groan/laugh!
       const zonk = [
-        { dt: 0.0, midi: 58, bend: 57, dur: 0.28 },
-        { dt: 0.28, midi: 57, bend: 56, dur: 0.28 },
-        { dt: 0.56, midi: 56, bend: 53, dur: 0.65 },
+        { dt: 0.0, midi: 58, bend: 57, dur: 0.26 },
+        { dt: 0.26, midi: 57, bend: 56, dur: 0.26 },
+        { dt: 0.52, midi: 56, bend: 51, dur: 0.68 },
       ];
       for (const z of zonk) {
-        this.playInstrument('trombone', z.midi, revealAt + z.dt, z.dur, 0.30, {
+        this.playInstrument('trombone', z.midi, revealAt + z.dt, z.dur, 0.34, {
           dest: sfx,
           bendToMidi: z.bend,
+          wahSweep: true,
+          pan: -0.14,
           priority: 3,
         });
+        this.playInstrument('muted_trumpet', z.midi + 12, revealAt + z.dt + 0.008, z.dur * 0.92, 0.22, {
+          dest: sfx,
+          bendToMidi: z.bend + 12,
+          wahSweep: true,
+          pan: 0.18,
+          priority: 2,
+        });
       }
-      this.playCrowd('studio_laugh', revealAt + 0.18, 0.32, { durationSec: 2.2 });
+      this.playCrowd('cheer_hurray', revealAt + 0.06, 0.24, {
+        durationSec: 0.80,
+        playbackRate: 0.68,
+        lowpassHz: 980,
+      });
+      this.playCrowd('studio_laugh', revealAt + 0.30, 0.34, { durationSec: 2.2 });
     } else {
       // Exciting Mystery Curtain Prize Reveal!
       this.playFoley('cash_register_bell', revealAt, 0.28, { dest: sfx, priority: 3 });
@@ -3050,42 +4276,847 @@ export class ShowbandAudioEngineV7 {
     }
   }
 
-  /** Motorized 3-sided Trilon tile flip + solenoid latch + warm vibraphone confirmation. */
-  public playTileSelect(): void {
+  /**
+   * Crisp 3-impulse motorized Trilon spindle *clack-clack-lock* + warm studio chime
+   * when tapping a board tile!
+   */
+  public playTileSelectFlip(): void {
     this.haptics.lockThunk();
     const ctx = this.wakeContextSync();
     if (!ctx || !this.sfxBus) return;
 
     const now = ctx.currentTime;
     const sfx = this.sfxBus;
+    const microJitter = ((Math.round(this.nowWallMs()) % 5) - 2) * 0.014;
 
-    // 1. Motorized Trilon flip clack-whirr-CLACK!
+    // Impulse 1 (t+0ms): Motorized Trilon brass spindle release clack + prism air whirr
     this.playFoley('mechanical_clack', now, GAIN_TILE_SELECT_LINEAR, {
       dest: sfx,
-      playbackRate: 1.12,
-      durationSec: 0.085,
+      playbackRate: 1.18 + microJitter,
+      durationSec: 0.058,
+      pan: -0.14,
       priority: 3,
     });
-    this.playFoley('brush_sweep', now + 0.025, 0.12, {
+    this.playFoley('brush_sweep', now + 0.018, 0.095, {
       dest: sfx,
-      playbackRate: 1.45,
-      durationSec: 0.09,
-      lowpassHz: 2400,
+      playbackRate: 1.52,
+      durationSec: 0.075,
+      lowpassHz: 2350,
       priority: 2,
     });
-    this.playFoley('flap_click', now + 0.082, GAIN_TILE_SELECT_LINEAR * 0.95, {
+
+    // Impulse 2 (t+46ms): Mid-rotation prism detent clack
+    this.playFoley('flap_click', now + 0.046, GAIN_TILE_SELECT_LINEAR * 0.88, {
       dest: sfx,
-      playbackRate: 0.88,
-      durationSec: 0.065,
+      playbackRate: 1.08 + microJitter,
+      durationSec: 0.045,
+      pan: 0.02,
+      priority: 3,
+    });
+    this.playInstrument('woodblock', 76, now + 0.046, 0.048, 0.105, {
+      dest: sfx,
+      lowpassHz: 2700,
+      priority: 2,
+    });
+
+    // Impulse 3 (t+94ms): Solid solenoid stop lock!
+    this.playFoley('mechanical_clack', now + 0.094, GAIN_TILE_SELECT_LINEAR * 0.98, {
+      dest: sfx,
+      playbackRate: 0.86 + microJitter,
+      durationSec: 0.072,
+      lowpassHz: 2650,
+      pan: 0.14,
       priority: 3,
     });
 
-    // 2. Warm studio vibraphone selection confirmation note
+    // Warm 2-note harmonically locked studio vibraphone + glockenspiel confirmation chime
     const rootMidi = SHOWBAND_SCENE_SPECS_V7[this.currentScene].rootMidi + 12;
-    this.playInstrument('vibraphone', rootMidi + 7, now + 0.035, 0.34, 0.22, {
+    this.playInstrument('vibraphone', rootMidi + 7, now + 0.042, 0.32, 0.185, {
       dest: sfx,
-      pan: 0.12,
+      pan: 0.10,
       priority: 3,
+    });
+    this.playInstrument('vibraphone', rootMidi + 12, now + 0.092, 0.36, 0.20, {
+      dest: sfx,
+      pan: 0.18,
+      priority: 3,
+    });
+    this.playInstrument('glockenspiel', Math.min(MIDI_C6, rootMidi + 12), now + 0.095, 0.30, 0.095, {
+      dest: sfx,
+      pan: -0.12,
+      lowpassHz: 4800,
+      priority: 2,
+    });
+  }
+
+  /** Motorized 3-sided Trilon tile flip + solenoid latch + warm vibraphone confirmation. */
+  public playTileSelect(): void {
+    this.playTileSelectFlip();
+  }
+
+  /**
+   * Studio Desk Answer Lock-In Sting:
+   * - Normal (`isClutch = false`, `~450ms`): Snappy Bakelite studio button latch +
+   *   warm muted vibraphone/brass/piano anticipation chord.
+   * - Clutch (`isClutch = true`, `~900ms`, close Turns 8–10 / `$500` Vault / Secret Square):
+   *   Dramatic *Millionaire / $64,000*-style double timpani heartbeat pulse +
+   *   rising snare-brush suspense roll + tense muted horn & strings hold!
+   */
+  public playAnswerLockInSting(isClutch = false): void {
+    if (isClutch) {
+      this.haptics.peel(3);
+    } else {
+      this.haptics.lockThunk();
+    }
+
+    const ctx = this.wakeContextSync();
+    if (!ctx || !this.sfxBus) return;
+
+    const now = ctx.currentTime;
+    const sfx = this.sfxBus;
+    const root = SHOWBAND_SCENE_SPECS_V7[this.currentScene].rootMidi;
+
+    if (!isClutch) {
+      // Normal (~450ms): Crisp Bakelite push-button switch + muted vibraphone/brass lock chord
+      this.duckMusicForStinger(0.56, 0.36, 0.28);
+      this.playFoley('flap_click', now, 0.18, {
+        dest: sfx,
+        playbackRate: 1.24,
+        durationSec: 0.036,
+        priority: 3,
+      });
+      this.playFoley('mechanical_clack', now + 0.012, 0.135, {
+        dest: sfx,
+        playbackRate: 1.06,
+        durationSec: 0.055,
+        lowpassHz: 2800,
+        priority: 3,
+      });
+
+      const chordAt = now + 0.024;
+      this.playInstrument('vibraphone', root + 19, chordAt, 0.42, 0.135, {
+        dest: sfx,
+        pan: 0.18,
+        lowpassHz: 3200,
+        priority: 3,
+      });
+      this.playInstrument('vibraphone', root + 24, chordAt + 0.016, 0.41, 0.115, {
+        dest: sfx,
+        pan: -0.14,
+        lowpassHz: 3200,
+        priority: 2,
+      });
+      this.playInstrument('muted_trumpet', root + 19, chordAt + 0.010, 0.38, 0.11, {
+        dest: sfx,
+        pan: 0.12,
+        lowpassHz: 2450,
+        priority: 3,
+      });
+      this.playInstrument('brass', root + 7, chordAt + 0.012, 0.39, 0.105, {
+        dest: sfx,
+        pan: -0.18,
+        lowpassHz: 2100,
+        priority: 2,
+      });
+      this.playInstrument('grand_piano', root + 12, chordAt + 0.008, 0.40, 0.095, {
+        dest: sfx,
+        pan: -0.22,
+        lowpassHz: 2100,
+        priority: 2,
+      });
+      return;
+    }
+
+    // Clutch (~900ms): Dramatic studio lights-down timpani heartbeat + snare-brush roll + tense muted horns!
+    this.duckMusicForStinger(0.24, 0.90, 0.46);
+    this.playFoley('mechanical_clack', now, 0.25, {
+      dest: sfx,
+      playbackRate: 0.92,
+      durationSec: 0.068,
+      priority: 3,
+    });
+    this.playFoley('flap_click', now + 0.014, 0.20, {
+      dest: sfx,
+      playbackRate: 1.18,
+      durationSec: 0.038,
+      priority: 3,
+    });
+
+    // Double Timpani Heartbeat Pulse ("LUB-DUB... LUB-DUB!") + Low Upright Bass Pedal
+    this.playInstrument('upright_bass', root - 12, now + 0.02, 0.85, 0.23, {
+      dest: sfx,
+      lowpassHz: 440,
+      priority: 3,
+    });
+    const heartbeats = [
+      { dt: 0.02, midi: root, gain: 0.26, pan: -0.14 },
+      { dt: 0.19, midi: root + 7, gain: 0.29, pan: 0.14 },
+      { dt: 0.49, midi: root, gain: 0.25, pan: -0.14 },
+      { dt: 0.65, midi: root + 7, gain: 0.30, pan: 0.14 },
+    ];
+    for (const hb of heartbeats) {
+      this.playInstrument('timpani', hb.midi, now + hb.dt, 0.32, hb.gain, {
+        dest: sfx,
+        pan: hb.pan,
+        lowpassHz: 620,
+        priority: 3,
+      });
+    }
+
+    // Crescendoing 7-stroke snare-brush suspense roll across 800ms
+    const rollSteps = 7;
+    for (let i = 0; i < rollSteps; i++) {
+      const u = i / (rollSteps - 1);
+      const at = now + 0.05 + i * 0.108;
+      this.playDrum('snare_brush', at, 0.075 + u * 0.105, {
+        dest: sfx,
+        playbackRate: 0.96 + u * 0.16,
+        durationSec: 0.16,
+        pan: (i % 2 === 0 ? -1 : 1) * 0.12,
+        lowpassHz: 3600,
+        priority: 2,
+      });
+    }
+    this.playFoley('brush_sweep', now + 0.12, 0.13, {
+      dest: sfx,
+      playbackRate: 0.92,
+      durationSec: 0.72,
+      lowpassHz: 2500,
+      priority: 2,
+    });
+
+    // Tense ~860ms Muted Trumpet + Brass + Trombone + Strings Open-5ths Suspense Hold!
+    this.playInstrument('muted_trumpet', root + 19, now + 0.04, 0.84, 0.195, {
+      dest: sfx,
+      pan: 0.20,
+      lowpassHz: 2600,
+      priority: 3,
+    });
+    this.playInstrument('brass', root + 7, now + 0.05, 0.83, 0.18, {
+      dest: sfx,
+      pan: -0.22,
+      lowpassHz: 2200,
+      priority: 3,
+    });
+    this.playInstrument('trombone', root, now + 0.06, 0.82, 0.175, {
+      dest: sfx,
+      pan: -0.26,
+      lowpassHz: 1950,
+      priority: 3,
+    });
+    this.playInstrument('strings', root + 14, now + 0.08, 0.80, 0.13, {
+      dest: sfx,
+      pan: 0.28,
+      highpassHz: 260,
+      priority: 2,
+    });
+    this.playInstrument('vibraphone', root + 24, now + 0.04, 0.84, 0.15, {
+      dest: sfx,
+      pan: -0.18,
+      priority: 2,
+    });
+  }
+
+  /**
+   * Live 1966 Doc Severinsen / Milton DeLugg Studio Band Reactions During Big Moments!
+   * - `LEAD_CHANGE`: Punchy ascending big-band brass walk-up + crash!
+   * - `HOT_STREAK`: Soulful fast-Leslie Hammond B3 palm gliss + high trumpet shake + applause!
+   * - `CLUTCH_POINT`: Tight dramatic timpani + tubular bell + horn stinger!
+   * - `RIVAL_FUMBLE`: Cheeky muted-trumpet/trombone *bada-bump* + snare rimshot + crowd *Ooh!*
+   * - `LINE_JACKPOT`: Full prime-time showband jackpot fanfare + bell tree + roaring cheer!
+   */
+  public playBandReaction(kind: BandReactionKindV7): void {
+    const ctx = this.wakeContextSync();
+    if (!ctx || !this.sfxBus) return;
+
+    const rawNow = ctx.currentTime;
+    const sfx = this.sfxBus;
+    const root = SHOWBAND_SCENE_SPECS_V7[this.currentScene].rootMidi;
+
+    // Natural studio bandleader phrasing when paired back-to-back with a bell or wrong buzzer:
+    let now = rawNow;
+    if (kind === 'RIVAL_FUMBLE' && rawNow - this.lastWrongRevealTime < 0.42) {
+      now = rawNow + 0.36; // Let Edwards AC buzzer ring first, then hit the cheeky rimshot rib!
+    } else if (
+      (kind === 'LEAD_CHANGE' || kind === 'HOT_STREAK' || kind === 'LINE_JACKPOT') &&
+      rawNow - this.lastCorrectRevealTime < 0.48
+    ) {
+      now = rawNow + 0.18; // Let solenoid DING! pop cleanly before the horn section erupts!
+    }
+    if (kind === 'LEAD_CHANGE' || kind === 'HOT_STREAK' || kind === 'LINE_JACKPOT') {
+      this.lastBandReactionTime = rawNow;
+    }
+
+    switch (kind) {
+      case 'LEAD_CHANGE': {
+        this.haptics.goldResonance();
+        this.duckMusicForStinger(0.32, 0.95, 0.45);
+
+        // 4-step punchy big-band horn & bass walk-up + crash cymbal!
+        const walkUp = [
+          { dt: 0.00, semi: 0, dur: 0.12 },
+          { dt: 0.10, semi: 4, dur: 0.12 },
+          { dt: 0.20, semi: 7, dur: 0.12 },
+          { dt: 0.31, semi: 12, dur: 0.56 },
+        ];
+        this.playDrum('snare_stick', now + 0.00, 0.18, { dest: sfx, pan: -0.12, priority: 3 });
+        this.playDrum('tom_mid', now + 0.20, 0.18, { dest: sfx, playbackRate: 1.12, priority: 2 });
+
+        for (const w of walkUp) {
+          const at = now + w.dt;
+          this.playInstrument('trumpet', root + 12 + w.semi, at, w.dur, 0.175, { dest: sfx, pan: 0.22, priority: 3 });
+          this.playInstrument('brass', root + 12 + w.semi - 5, at, w.dur, 0.15, { dest: sfx, pan: -0.22, priority: 3 });
+          this.playInstrument('trombone', root + w.semi, at, w.dur, 0.135, { dest: sfx, pan: -0.26, priority: 2 });
+          this.playInstrument('upright_bass', root - 12 + w.semi, at, w.dur * 1.1, 0.17, { dest: sfx, priority: 2 });
+        }
+
+        const hitAt = now + 0.31;
+        this.playDrum('crash', hitAt, 0.15, { dest: sfx, pan: -0.28, durationSec: 1.15, priority: 3 });
+        this.playDrum('kick', hitAt, 0.15, { dest: sfx, priority: 3 });
+        this.playCrowd('cheer_hurray', now + 0.28, 0.165, { durationSec: 1.5, attackSec: 0.10 });
+        break;
+      }
+
+      case 'HOT_STREAK': {
+        this.haptics.correctBloom();
+        this.duckMusicForStinger(0.34, 1.10, 0.48);
+
+        // 1. Soulful Booker T. / Jimmy Smith Fast-Leslie Hammond B3 Upward Palm Glissando!
+        const glissSemis = [5, 7, 9, 10, 12, 16];
+        for (let i = 0; i < glissSemis.length; i++) {
+          this.playHammondB3Note(root + 12 + glissSemis[i], now + i * 0.028, 0.12, 0.052, {
+            soulful: true,
+            fastLeslie: i === 0 ? true : undefined,
+            keyClick: i === 0 || i === glissSemis.length - 1,
+          });
+        }
+        const organHoldAt = now + 0.18;
+        this.playHammondChord([root + 12, root + 16, root + 19, root + 21], organHoldAt, 0.78, 0.058, {
+          soulful: true,
+          fastLeslie: true,
+          keyClick: true,
+        });
+
+        // 2. Exuberant Doc Severinsen High Trumpet Lip-Trill Shake + Tambourine & Snare!
+        const shakeNotes = [19, 21, 19, 21, 24];
+        for (let i = 0; i < shakeNotes.length; i++) {
+          const isLast = i === shakeNotes.length - 1;
+          this.playInstrument(
+            'trumpet',
+            root + 12 + shakeNotes[i],
+            now + 0.14 + i * 0.068,
+            isLast ? 0.52 : 0.095,
+            isLast ? 0.175 : 0.145,
+            { dest: sfx, pan: 0.20, priority: 3 },
+          );
+        }
+        this.playInstrument('tenor_sax', root + 16, organHoldAt, 0.65, 0.145, { dest: sfx, pan: -0.20, priority: 2 });
+        this.playDrum('snare_stick', organHoldAt, 0.14, { dest: sfx, pan: -0.10, priority: 3 });
+        this.playDrum('tambourine', organHoldAt + 0.02, 0.125, { dest: sfx, pan: 0.32, priority: 2 });
+        this.playCrowd('applause_warm', now + 0.20, 0.205, { durationSec: 1.9, attackSec: 0.10 });
+        this.playCrowd('cheer_hurray', now + 0.30, 0.15, { durationSec: 1.6, attackSec: 0.12 });
+        break;
+      }
+
+      case 'CLUTCH_POINT': {
+        this.haptics.peel(2);
+        this.duckMusicForStinger(0.32, 0.82, 0.42);
+
+        // Tight, high-drama "THIS CLUE FOR THE SHOW!" timpani + horn + tubular bell stinger
+        this.playInstrument('timpani', root + 7, now, 0.24, 0.27, { dest: sfx, pan: -0.16, priority: 3 });
+        this.playDrum('snare_rim', now + 0.07, 0.18, { dest: sfx, priority: 2 });
+        const hitAt = now + 0.14;
+        this.playInstrument('timpani', root, hitAt, 0.62, 0.30, { dest: sfx, pan: 0.14, priority: 3 });
+        this.playInstrument('brass', root + 12, hitAt, 0.60, 0.22, { dest: sfx, pan: -0.24, priority: 3 });
+        this.playInstrument('trombone', root + 7, hitAt, 0.60, 0.20, { dest: sfx, pan: 0.24, priority: 3 });
+        this.playInstrument('muted_trumpet', root + 19, hitAt + 0.01, 0.58, 0.20, { dest: sfx, pan: 0.16, priority: 3 });
+        this.playInstrument('tubular_bell', Math.min(MIDI_C6, root + 24), hitAt, 0.68, 0.16, {
+          dest: sfx,
+          pan: 0.28,
+          priority: 2,
+        });
+        break;
+      }
+
+      case 'RIVAL_FUMBLE': {
+        this.haptics.sightlineSnap();
+        this.duckMusicForStinger(0.38, 0.85, 0.40);
+
+        // Cheeky Tonight-Show / Match-Game muted-trumpet & trombone "bada-bump!" + rimshot + crowd Ooh!
+        this.playInstrument('muted_trumpet', root + 16, now, 0.10, 0.21, { dest: sfx, pan: 0.20, priority: 3 });
+        this.playInstrument('trombone', root + 4, now, 0.10, 0.19, { dest: sfx, pan: -0.20, priority: 2 });
+
+        this.playInstrument('muted_trumpet', root + 15, now + 0.11, 0.10, 0.21, { dest: sfx, pan: 0.20, priority: 3 });
+        this.playInstrument('trombone', root + 3, now + 0.11, 0.10, 0.19, { dest: sfx, pan: -0.20, priority: 2 });
+
+        this.playInstrument('muted_trumpet', root + 12, now + 0.22, 0.24, 0.22, {
+          dest: sfx,
+          bendToMidi: root + 14,
+          pan: 0.20,
+          priority: 3,
+        });
+        this.playInstrument('trombone', root, now + 0.22, 0.26, 0.21, {
+          dest: sfx,
+          bendToMidi: root + 2,
+          pan: -0.20,
+          priority: 3,
+        });
+
+        // Classic studio snare-rimshot ("ba-dum-TSS!") at t+0.39s!
+        this.playDrum('tom_mid', now + 0.34, 0.18, { dest: sfx, playbackRate: 0.94, pan: -0.10, priority: 3 });
+        this.playDrum('snare_stick', now + 0.42, 0.22, { dest: sfx, pan: -0.06, priority: 3 });
+        this.playDrum('snare_rim', now + 0.425, 0.20, { dest: sfx, priority: 3 });
+        this.playDrum('ride', now + 0.43, 0.18, { dest: sfx, playbackRate: 1.16, durationSec: 0.42, pan: 0.26, priority: 2 });
+
+        // Warm studio audience "Ooooh!" + playful chuckle!
+        this.playCrowd('cheer_hurray', now + 0.20, 0.20, {
+          durationSec: 1.05,
+          playbackRate: 0.84,
+          lowpassHz: 1750,
+          attackSec: 0.08,
+        });
+        this.playCrowd('studio_laugh', now + 0.36, 0.20, { durationSec: 1.45, attackSec: 0.10 });
+        break;
+      }
+
+      case 'LINE_JACKPOT': {
+        this.haptics.goldResonance();
+        this.duckMusicForStinger(0.24, 1.65, 0.65);
+
+        // Full 1966 Prime-Time Showband Jackpot Fanfare + Bell Tree + Cash Bell + Roaring Cheer!
+        this.playInstrument('timpani', root, now, 0.30, 0.26, { dest: sfx, priority: 3 });
+        const fanfare = [
+          { dt: 0.00, lead: 7, harm: 4, dur: 0.12 },
+          { dt: 0.10, lead: 9, harm: 5, dur: 0.12 },
+          { dt: 0.20, lead: 12, harm: 9, dur: 0.13 },
+          { dt: 0.32, lead: 16, harm: 12, dur: 0.14 },
+          { dt: 0.46, lead: 19, harm: 16, dur: 0.92 },
+        ];
+        for (const f of fanfare) {
+          const at = now + f.dt;
+          this.playInstrument('trumpet', root + 12 + f.lead, at, f.dur, 0.25, { dest: sfx, pan: 0.22, priority: 3 });
+          this.playInstrument('trumpet', root + 12 + f.harm, at + 0.006, f.dur * 0.95, 0.18, { dest: sfx, pan: -0.18, priority: 3 });
+          this.playInstrument('brass', root + f.lead, at, f.dur, 0.21, { dest: sfx, pan: -0.26, priority: 2 });
+          this.playInstrument('trombone', root + f.harm - 5, at, f.dur, 0.18, { dest: sfx, pan: 0.26, priority: 2 });
+        }
+
+        const climax = now + 0.46;
+        this.playDrum('crash', climax, 0.22, { dest: sfx, pan: -0.28, durationSec: 1.35, priority: 3 });
+        this.playFoley('sleigh_sparkle', climax + 0.01, 0.26, { dest: sfx, pan: 0.30, priority: 3 });
+        this.playFoley('cash_register_bell', climax + 0.04, 0.25, { dest: sfx, priority: 3 });
+        this.playHammondChord([root + 12, root + 16, root + 19, root + 21], climax, 1.05, 0.075, {
+          soulful: true,
+          fastLeslie: true,
+          keyClick: true,
+        });
+
+        this.playCrowd('applause_big', now + 0.26, 0.34, { durationSec: 2.5, attackSec: 0.12 });
+        this.playCrowd('cheer_hurray', now + 0.46, 0.28, { durationSec: 2.1, attackSec: 0.10 });
+        break;
+      }
+    }
+  }
+
+  /**
+   * Tactile 20-Wedge 1966 Studio Big Wheel peg-flapper click:
+   * - Fast spin (`speed01 >= 0.30`): brisk velocity-pitched leather/nickel peg clicks + wooden rim body.
+   * - Final decelerating pegs (`speed01 < 0.30`): spring-steel & oxblood-leather flapper subtly
+   *   TIGHTENS in pitch & double-impulse snap tension across the final 3 pegs (`peg 1 -> 2 -> 3`)!
+   */
+  public playBigWheelPegTick(speed01 = 0.7): void {
+    const wall = this.nowWallMs();
+    if (wall - this.lastWheelPegMs < 11) return;
+    const gapMs = wall - this.lastWheelPegMs;
+    this.lastWheelPegMs = wall;
+
+    const s = clamp(speed01, 0, 1);
+    if (s >= 0.30 || gapMs > 1600) {
+      this.slowWheelPegCount = 0;
+    } else {
+      this.slowWheelPegCount = Math.min(4, this.slowWheelPegCount + 1);
+    }
+
+    this.haptics.spinTick();
+
+    const ctx = this.wakeContextSync();
+    if (!ctx || !this.sfxBus) return;
+
+    // Gentle TV Twist control-booth bed dip while the Big Wheel is spinning so every peg click pops!
+    this.duckMusicForStinger(0.36, 0.42, 0.45);
+
+    const now = ctx.currentTime;
+    const sfx = this.sfxBus;
+    const jitter = ((Math.round(wall) % 5) - 2) * 0.007;
+
+    if (s >= 0.30) {
+      // High/medium velocity spin: smooth aerodynamic flapper click + warm wooden rim
+      this.playFoley('flap_click', now, 0.20 + s * 0.09, {
+        dest: sfx,
+        playbackRate: 0.92 + s * 0.42 + jitter,
+        durationSec: 0.036,
+        pan: -0.08,
+        lowpassHz: 2900 + s * 1300,
+        priority: 3,
+      });
+      this.playInstrument('woodblock', Math.round(72 + s * 7), now + 0.002, 0.050, 0.13 + s * 0.06, {
+        dest: sfx,
+        pan: 0.08,
+        lowpassHz: 2500 + s * 1000,
+        priority: 2,
+      });
+      return;
+    }
+
+    // Final 3+ decelerating pegs (`s < 0.30`): spring-steel flapper bends taut and SNAPS tighter on each peg!
+    const tightIdx = Math.min(3, Math.max(1, this.slowWheelPegCount)); // 1 -> 2 -> 3!
+    // Pre-bend leather rub against brass peg (t+0ms)
+    this.playFoley('flap_click', now, 0.18 + tightIdx * 0.03, {
+      dest: sfx,
+      playbackRate: 0.96 + tightIdx * 0.09 + jitter,
+      durationSec: 0.026,
+      pan: -0.10,
+      lowpassHz: 3100 + tightIdx * 420,
+      priority: 3,
+    });
+    // Taut spring-steel release SNAP-THOCK as wheel barely crests the peg (t+15ms)!
+    const snapAt = now + 0.015;
+    this.playFoley('mechanical_clack', snapAt, 0.20 + tightIdx * 0.035, {
+      dest: sfx,
+      playbackRate: 0.94 + tightIdx * 0.08,
+      durationSec: 0.054,
+      pan: 0.06,
+      lowpassHz: 2600 + tightIdx * 380,
+      priority: 3,
+    });
+    this.playInstrument('woodblock', 73 + tightIdx * 2, snapAt, 0.058, 0.15 + tightIdx * 0.02, {
+      dest: sfx,
+      pan: 0.10,
+      lowpassHz: 2800 + tightIdx * 300,
+      priority: 2,
+    });
+    // Subtle damped spring-steel harmonic ring tightening upward (`79 -> 81 -> 83`)
+    this.playInstrument('vibraphone', 77 + tightIdx * 2, snapAt + 0.002, 0.080, 0.09 + tightIdx * 0.018, {
+      dest: sfx,
+      pan: -0.06,
+      highpassHz: 600,
+      priority: 2,
+    });
+  }
+
+  /**
+   * Vintage 1966 Vacuum-Tube TV Broadcast 1kHz Monoscope Test-Tone Carrier Power-Down Plunge!
+   * Sweeps a bold, warm tube-saturated 1000Hz NBC calibration carrier + 120Hz sync hum
+   * sharply down to 92Hz when the Studio Signal Jams on a `-40%` Monoscope Zonk!
+   */
+  private playBroadcastCarrierDrop(when: number, durationSec = 0.38): void {
+    const ctx = this.ctx;
+    if (!ctx || !this.sfxBus || !this.allocateVoiceSlot(3)) return;
+
+    const startAt = Math.max(ctx.currentTime, when);
+    const endAt = startAt + durationSec;
+
+    const oscCarrier = ctx.createOscillator();
+    const oscHum = ctx.createOscillator();
+    oscCarrier.type = 'sawtooth';
+    oscHum.type = 'sawtooth';
+
+    // Classic 1000Hz NBC Monoscope test tone holding briefly (65ms) then plunging as breaker trips!
+    oscCarrier.frequency.setValueAtTime(1000, startAt);
+    oscCarrier.frequency.setValueAtTime(985, startAt + 0.065);
+    oscCarrier.frequency.exponentialRampToValueAtTime(92, endAt);
+    oscHum.frequency.setValueAtTime(240, startAt);
+    oscHum.frequency.exponentialRampToValueAtTime(52, endAt);
+
+    const gHum = ctx.createGain();
+    gHum.gain.setValueAtTime(0.42, startAt);
+
+    const shaper = ctx.createWaveShaper();
+    if (this.warmTubeCurve) shaper.curve = this.warmTubeCurve;
+
+    const lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.setValueAtTime(2650, startAt);
+    lp.frequency.exponentialRampToValueAtTime(380, endAt);
+    lp.Q.setValueAtTime(1.8, startAt);
+
+    const env = ctx.createGain();
+    env.gain.setValueAtTime(0.0001, startAt);
+    env.gain.linearRampToValueAtTime(0.32, startAt + 0.010);
+    env.gain.setValueAtTime(0.28, startAt + durationSec * 0.62);
+    env.gain.exponentialRampToValueAtTime(0.0001, endAt);
+
+    oscCarrier.connect(shaper);
+    oscHum.connect(gHum);
+    gHum.connect(shaper);
+    shaper.connect(lp);
+    lp.connect(env);
+    env.connect(this.sfxBus);
+
+    oscCarrier.start(startAt);
+    oscHum.start(startAt);
+    oscCarrier.stop(endAt + 0.01);
+    oscHum.stop(endAt + 0.01);
+
+    this.activeVoices.push({
+      priority: 3,
+      startTime: startAt,
+      endTime: endAt,
+      gainNode: env,
+      stopNode: oscCarrier,
+      extraStopNodes: [oscHum],
+      stopped: false,
+    });
+  }
+
+  /**
+   * 1966 RCA Monoscope "PLEASE STAND BY — SIGNAL JAMMED" Studio Gremlin Zonk!
+   * Bold 1kHz broadcast carrier plunge + 60Hz NTSC RF sync-loss static crash + heavy
+   * breaker trip + fat plunger-muted brass section *WAH - WAH - WAH - WAAAAAH!* +
+   * collective studio audience gasp/groan ("Awwww!") & hearty laughter!
+   */
+  public playStudioGremlinZonk(): void {
+    this.haptics.backfireFracture();
+    const ctx = this.wakeContextSync();
+    if (!ctx || !this.sfxBus) return;
+
+    // Dramatic studio band drop-out (0.12) when SIGNAL JAMMED flashes on the CRT!
+    this.duckMusicForStinger(0.12, 2.25, 0.72);
+    const now = ctx.currentTime;
+    const sfx = this.sfxBus;
+
+    // 1. Bold 1966 Broadcast Carrier Plunge + RF Sync-Loss Static Crash + Breaker Slam (0.00s..0.38s)!
+    this.playBroadcastCarrierDrop(now, 0.38);
+    this.playEdwardsAcWrongBuzzer(now, 0.22);
+    this.playDrum('kick', now, 0.32, { dest: sfx, playbackRate: 0.92, lowpassHz: 380, priority: 3 });
+    this.playFoley('mechanical_clack', now + 0.008, 0.32, {
+      dest: sfx,
+      playbackRate: 0.76,
+      durationSec: 0.09,
+      priority: 3,
+    });
+    if (this.monoscopeStaticBuffer) {
+      this.triggerBuffer({
+        buffer: this.monoscopeStaticBuffer,
+        dest: sfx,
+        when: now + 0.005,
+        gain: 0.28,
+        playbackRate: 1.0,
+        endPlaybackRate: 0.72,
+        durationSec: 0.36,
+        highpassHz: 240,
+        lowpassHz: 3400,
+        priority: 3,
+      });
+    }
+    this.playInstrument('jazz_guitar', 54, now + 0.04, 0.20, 0.24, {
+      dest: sfx,
+      bendToMidi: 65,
+      pan: -0.24,
+      priority: 3,
+    });
+    const gremlinScramble = [
+      { dt: 0.03, drum: 'bongo_hi', marimba: 76, pan: 0.26 },
+      { dt: 0.10, drum: 'cowbell', marimba: 72, pan: -0.24 },
+      { dt: 0.18, drum: 'tom_mid', marimba: 67, pan: 0.24 },
+      { dt: 0.26, drum: 'bongo_lo', marimba: 62, pan: -0.18 },
+    ];
+    for (const g of gremlinScramble) {
+      this.playDrum(g.drum, now + g.dt, 0.20, {
+        dest: sfx,
+        playbackRate: 1.12,
+        pan: g.pan,
+        priority: 2,
+      });
+      this.playInstrument('marimba', g.marimba, now + g.dt + 0.008, 0.11, 0.20, {
+        dest: sfx,
+        pan: -g.pan,
+        priority: 2,
+      });
+    }
+
+    // 2. Fat Plunger-Muted Studio Brass Section "WAH - WAH - WAH - WAAAAAAAH!" (0.38s..1.85s)!
+    // Real formant-swept `wahSweep: true` slide trombone + sub-bass trombone + plunger muted trumpet!
+    const wahWah = [
+      { dt: 0.38, midi: 58, bend: 57, dur: 0.24, gain: 0.38 },
+      { dt: 0.63, midi: 57, bend: 56, dur: 0.24, gain: 0.38 },
+      { dt: 0.88, midi: 56, bend: 55, dur: 0.25, gain: 0.39 },
+      { dt: 1.14, midi: 55, bend: 49, dur: 0.76, gain: 0.42 },
+    ];
+    for (const w of wahWah) {
+      const at = now + w.dt;
+      this.playInstrument('trombone', w.midi, at, w.dur, w.gain, {
+        dest: sfx,
+        bendToMidi: w.bend,
+        wahSweep: true,
+        pan: -0.12,
+        priority: 3,
+      });
+      this.playInstrument('trombone', w.midi - 12, at + 0.005, w.dur, w.gain * 0.62, {
+        dest: sfx,
+        bendToMidi: w.bend - 12,
+        lowpassHz: 1400,
+        pan: -0.24,
+        priority: 2,
+      });
+      this.playInstrument('muted_trumpet', w.midi + 12, at + 0.008, w.dur * 0.94, w.gain * 0.66, {
+        dest: sfx,
+        bendToMidi: w.bend + 12,
+        wahSweep: true,
+        pan: 0.18,
+        priority: 3,
+      });
+    }
+    this.playInstrument('timpani', 46, now + 1.15, 0.55, 0.26, {
+      dest: sfx,
+      bendToMidi: 41,
+      lowpassHz: 520,
+      priority: 2,
+    });
+
+    // 3. Surprised collective studio audience Gasp + Groan ("Ooooh / Awwww!") -> hearty studio laughter!
+    this.playCrowd('cheer_hurray', now + 0.10, 0.24, {
+      durationSec: 0.42,
+      playbackRate: 0.92,
+      lowpassHz: 2100,
+      attackSec: 0.03,
+      releaseSec: 0.22,
+    });
+    this.playCrowd('cheer_hurray', now + 0.22, 0.30, {
+      durationSec: 0.96,
+      playbackRate: 0.68,
+      lowpassHz: 980,
+      attackSec: 0.06,
+      releaseSec: 0.38,
+    });
+    this.playCrowd('studio_laugh', now + 0.60, 0.38, {
+      durationSec: 2.35,
+      attackSec: 0.08,
+    });
+  }
+
+  /**
+   * 1966 Studio Lifeline Cues:
+   * - `FIFTY_FIFTY`: Twin solenoid relay chop (`CHOP-CHOP!`) + ascending wooden xylophone/marimba zip!
+   * - `AUDIENCE_POLL`: Warm 300-seat studio crowd murmur swell + rising Solari tote ticks + bell lock!
+   */
+  public playLifelineCue(kind: LifelineCueKindV7): void {
+    const ctx = this.wakeContextSync();
+    if (!ctx || !this.sfxBus) return;
+
+    const now = ctx.currentTime;
+    const sfx = this.sfxBus;
+    const root = SHOWBAND_SCENE_SPECS_V7[this.currentScene].rootMidi + 12;
+
+    if (kind === 'FIFTY_FIFTY') {
+      this.haptics.sightlineSnap();
+      this.duckMusicForStinger(0.36, 0.48, 0.30);
+
+      // Twin heavy studio relay chops knocking out two wrong option lamps!
+      const relays = [
+        { dt: 0.00, rate: 0.94, pan: -0.28 },
+        { dt: 0.13, rate: 1.08, pan: 0.28 },
+      ];
+      for (const r of relays) {
+        const at = now + r.dt;
+        this.playFoley('mechanical_clack', at, 0.27, {
+          dest: sfx,
+          playbackRate: r.rate,
+          durationSec: 0.068,
+          pan: r.pan,
+          priority: 3,
+        });
+        this.playDrum('snare_rim', at + 0.006, 0.17, {
+          dest: sfx,
+          playbackRate: r.rate * 1.18,
+          pan: r.pan,
+          priority: 2,
+        });
+        this.playFoley('flap_click', at + 0.014, 0.18, {
+          dest: sfx,
+          playbackRate: r.rate * 1.35,
+          durationSec: 0.032,
+          pan: r.pan,
+          priority: 2,
+        });
+      }
+
+      // Snappy 5-note upper-register xylophone (marimba + glockenspiel) zip!
+      const zipSemis = [0, 4, 7, 12, 16];
+      for (let i = 0; i < zipSemis.length; i++) {
+        const at = now + 0.045 + i * 0.038;
+        const midi = Math.min(MIDI_C6, root + zipSemis[i]);
+        const pan = -0.28 + (i / (zipSemis.length - 1)) * 0.56;
+        this.playInstrument('marimba', midi, at, 0.15, 0.22, {
+          dest: sfx,
+          pan,
+          priority: 3,
+        });
+        this.playInstrument('glockenspiel', midi, at + 0.004, 0.16, 0.13, {
+          dest: sfx,
+          pan: -pan * 0.5,
+          priority: 2,
+        });
+      }
+      return;
+    }
+
+    // AUDIENCE_POLL: Warm studio crowd voting murmur swell + rising Solari tote ticks + bell lock!
+    this.haptics.peel(2);
+    this.duckMusicForStinger(0.42, 1.12, 0.45);
+
+    this.playCrowd('applause_warm', now, 0.24, {
+      durationSec: 1.05,
+      playbackRate: 0.72,
+      lowpassHz: 1380,
+      attackSec: 0.14,
+      releaseSec: 0.36,
+    });
+    this.playCrowd('studio_clap', now + 0.08, 0.15, {
+      durationSec: 0.85,
+      playbackRate: 0.86,
+      lowpassHz: 1850,
+      attackSec: 0.12,
+      releaseSec: 0.30,
+    });
+
+    // 9 accelerating & rising Solari split-flap tote counter ticks
+    const tickScale = [0, 2, 4, 5, 7, 9, 11, 12, 16];
+    for (let i = 0; i < tickScale.length; i++) {
+      const u = i / (tickScale.length - 1);
+      const at = now + 0.07 + i * 0.074;
+      this.playFoley('flap_click', at, 0.16 + u * 0.06, {
+        dest: sfx,
+        playbackRate: 0.96 + u * 0.48,
+        durationSec: 0.035,
+        pan: -0.24 + u * 0.48,
+        priority: 3,
+      });
+      this.playInstrument('vibraphone', Math.min(MIDI_C6, root + tickScale[i]), at, 0.18, 0.12 + u * 0.05, {
+        dest: sfx,
+        pan: -0.20 + u * 0.40,
+        lowpassHz: 3200,
+        priority: 2,
+      });
+    }
+
+    // Crisp Tote Percentage Lock Bell at t+0.76s!
+    const lockAt = now + 0.76;
+    this.playFoley('typewriter_bell', lockAt, 0.28, {
+      dest: sfx,
+      playbackRate: 1.08,
+      priority: 3,
+    });
+    this.playFoley('cash_register_bell', lockAt + 0.02, 0.20, {
+      dest: sfx,
+      playbackRate: 1.12,
+      durationSec: 0.45,
+      priority: 3,
+    });
+    this.playInstrument('vibraphone', root + 12, lockAt, 0.46, 0.18, { dest: sfx, pan: 0.18, priority: 3 });
+    this.playInstrument('glockenspiel', Math.min(MIDI_C6, root + 16), lockAt + 0.015, 0.44, 0.14, {
+      dest: sfx,
+      pan: -0.18,
+      priority: 2,
     });
   }
 
@@ -3202,8 +5233,71 @@ export class ShowbandAudioEngineV7 {
     this.playDrum('snare_brush', now + 0.015, 0.16, { dest: sfx, durationSec: 0.07, priority: 2 });
   }
 
-  /** Authentic Solari split-flap leaf flutter clack! */
+  /**
+   * 1966 Studio 6A Chasing Light-Board Bounce Tick (Press-Your-Luck Perimeter Light Jump!):
+   * Crisp solenoid lamp relay click + joyful pentatonic wooden xylophone/marimba & vibraphone
+   * light-jump melody panning dynamically around the 12-square perimeter!
+   */
+  public playPressYourLuckBounceTick(stepIdx?: number): void {
+    this.haptics.spinTick();
+    const ctx = this.wakeContextSync();
+    if (!ctx || !this.sfxBus) return;
+
+    // Gentle TV Twist control-booth bed dip while the 12-square light-board cursor bounces!
+    this.duckMusicForStinger(0.38, 0.34, 0.42);
+
+    const now = ctx.currentTime;
+    const sfx = this.sfxBus;
+    const idx =
+      typeof stepIdx === 'number' && Number.isFinite(stepIdx)
+        ? Math.max(0, Math.floor(stepIdx))
+        : this.pylMelodyCursor++;
+    const bounceMel = [0, 4, 7, 9, 12, 16, 12, 9, 7, 4, 9, 14];
+    const semi = bounceMel[idx % bounceMel.length];
+    const rootMidi = SHOWBAND_SCENE_SPECS_V7[this.currentScene].rootMidi + 12;
+    const noteMidi = Math.min(MIDI_C6, rootMidi + semi);
+    const panPos = Math.sin((idx % 12) * ((Math.PI * 2) / 12)) * 0.32;
+
+    this.playFoley('flap_click', now, 0.21, {
+      dest: sfx,
+      playbackRate: 1.12 + (idx % 4) * 0.06,
+      durationSec: 0.034,
+      pan: panPos,
+      priority: 2,
+    });
+    this.playInstrument('marimba', noteMidi, now + 0.002, 0.105, 0.21, {
+      dest: sfx,
+      pan: panPos,
+      priority: 2,
+    });
+    this.playInstrument('vibraphone', noteMidi, now + 0.004, 0.12, 0.13, {
+      dest: sfx,
+      pan: -panPos * 0.5,
+      lowpassHz: 3400,
+      priority: 1,
+    });
+  }
+
+  /**
+   * Authentic Solari split-flap leaf flutter clack — automatically weaving a
+   * joyful Studio 6A pitched xylophone/vibraphone light-jump tone whenever fired
+   * in a rapid Press-Your-Luck lightboard bounce burst (`45..240ms` cadence)!
+   */
   public playSplitFlapTick(): void {
+    const wall = this.nowWallMs();
+    const gap = wall - this.lastSplitFlapWallMs;
+    this.lastSplitFlapWallMs = wall;
+
+    if (gap >= 42 && gap <= 245 && !this.clueSanctuaryActive) {
+      this.splitFlapBurstStep += 1;
+      if (this.splitFlapBurstStep >= 2) {
+        this.playPressYourLuckBounceTick(this.splitFlapBurstStep - 2);
+        return;
+      }
+    } else if (gap > 245) {
+      this.splitFlapBurstStep = 0;
+    }
+
     this.haptics.uiTap();
     const ctx = this.wakeContextSync();
     if (!ctx || !this.sfxBus) return;
@@ -3297,72 +5391,78 @@ export class ShowbandAudioEngineV7 {
 
     if (isKlaxon) {
       this.playKlaxonMythHorn(now, 0.72);
-      this.playInstrument('trombone', 50, now + 0.02, 0.65, 0.28, {
+      this.playInstrument('trombone', 50, now + 0.02, 0.65, 0.20, {
         dest: sfx,
         bendToMidi: 45,
         priority: 3,
       });
-      this.playCrowd('studio_laugh', now + 0.14, 0.30, { durationSec: 2.0 });
+      this.playCrowd('studio_laugh', now + 0.14, 0.22, { durationSec: 2.0 });
       return;
     }
 
     if (isCorrect) {
+      this.lastCorrectRevealTime = now;
+      const bandFanfareAlreadyActive = now - this.lastBandReactionTime < 0.12;
       if (isSealed) {
         // Sealed Vault: Pure horological bronze bell & vibraphone chord (ZERO studio crowd!)
         const vaultChord = [0, 4, 7, 11, 14];
         for (let i = 0; i < vaultChord.length; i++) {
-          this.playInstrument(i % 2 === 0 ? 'glockenspiel' : 'vibraphone', Math.min(MIDI_C6, rootMidi + vaultChord[i]), now + i * 0.045, 0.68, 0.22 - i * 0.02, {
+          this.playInstrument(i % 2 === 0 ? 'glockenspiel' : 'vibraphone', Math.min(MIDI_C6, rootMidi + vaultChord[i]), now + i * 0.045, 0.68, 0.165 - i * 0.015, {
             dest: sfx,
             pan: -0.24 + i * 0.12,
             priority: 3,
           });
         }
-        this.playFoley('typewriter_bell', now, 0.24, { dest: sfx, priority: 3 });
+        this.playFoley('typewriter_bell', now, 0.18, { dest: sfx, priority: 3 });
       } else {
         // Live 1966 TV Studio: Authentic Solenoid Bell DING! + Upbeat Brass/Vibes Sting + Real Applause!
-        this.playFoley('typewriter_bell', now, 0.32, { dest: sfx, playbackRate: 1.04, priority: 3 });
-        this.playInstrument('glockenspiel', Math.min(MIDI_C6, rootMidi + 12), now, 0.55, 0.20, {
+        // Calibrated -2.6 dB headroom so peak sits comfortably <= -3.3 dBFS (0.68) with zero hot transients!
+        this.playFoley('typewriter_bell', now, 0.23, { dest: sfx, playbackRate: 1.04, priority: 3 });
+        this.playInstrument('glockenspiel', Math.min(MIDI_C6, rootMidi + 12), now, 0.55, 0.145, {
           dest: sfx,
           pan: 0.20,
           priority: 3,
         });
 
-        // Upbeat 3-beat major-6/9 showband victory sting!
-        const sting = [
-          { dt: 0.04, lead: 7, harm: 4, dur: 0.18 },
-          { dt: 0.15, lead: 9, harm: 7, dur: 0.18 },
-          { dt: 0.26, lead: 12, harm: 9, dur: 0.62 },
-        ];
-        for (const s of sting) {
-          this.playInstrument('trumpet', rootMidi + s.lead, now + s.dt, s.dur, 0.24, {
-            dest: sfx,
-            pan: 0.22,
-            priority: 3,
-          });
-          this.playInstrument('brass', rootMidi + s.harm, now + s.dt, s.dur, 0.22, {
-            dest: sfx,
-            pan: -0.22,
-            priority: 3,
-          });
-          this.playInstrument('vibraphone', rootMidi + s.lead, now + s.dt, s.dur * 1.2, 0.19, {
-            dest: sfx,
-            pan: 0.28,
-            priority: 2,
-          });
-        }
+        // Skip redundant small 3-note sting only when a full Band Reaction (Jackpot/Lead/Streak) fired in the same frame!
+        if (!bandFanfareAlreadyActive) {
+          const sting = [
+            { dt: 0.04, lead: 7, harm: 4, dur: 0.18 },
+            { dt: 0.15, lead: 9, harm: 7, dur: 0.18 },
+            { dt: 0.26, lead: 12, harm: 9, dur: 0.62 },
+          ];
+          for (const s of sting) {
+            this.playInstrument('trumpet', rootMidi + s.lead, now + s.dt, s.dur, 0.175, {
+              dest: sfx,
+              pan: 0.22,
+              priority: 3,
+            });
+            this.playInstrument('brass', rootMidi + s.harm, now + s.dt, s.dur, 0.16, {
+              dest: sfx,
+              pan: -0.22,
+              priority: 3,
+            });
+            this.playInstrument('vibraphone', rootMidi + s.lead, now + s.dt, s.dur * 1.2, 0.14, {
+              dest: sfx,
+              pan: 0.28,
+              priority: 2,
+            });
+          }
 
-        // Warm live studio audience applause!
-        this.playCrowd('applause_warm', now + 0.08, 0.34, { durationSec: 2.1, attackSec: 0.07 });
+          // Warm live studio audience applause!
+          this.playCrowd('applause_warm', now + 0.10, 0.245, { durationSec: 2.1, attackSec: 0.11 });
+        }
       }
     } else {
+      this.lastWrongRevealTime = now;
       // Authentic 1960s Edwards AC Magnetic Studio Wrong Buzzer (`BRZZZT!`) + muted trombone sigh
       this.playEdwardsAcWrongBuzzer(now, 0.44);
-      this.playInstrument('trombone', rootMidi - 5, now + 0.10, 0.22, 0.20, { dest: sfx, pan: -0.18, priority: 3 });
-      this.playInstrument('trombone', rootMidi - 8, now + 0.24, 0.36, 0.22, { dest: sfx, pan: -0.18, priority: 3 });
+      this.playInstrument('trombone', rootMidi - 5, now + 0.10, 0.22, 0.155, { dest: sfx, pan: -0.18, priority: 3 });
+      this.playInstrument('trombone', rootMidi - 8, now + 0.24, 0.36, 0.17, { dest: sfx, pan: -0.18, priority: 3 });
 
       if (!isSealed) {
         // Gentle, brief sympathetic studio audience reaction (low-passed warm crowd murmur)
-        this.playCrowd('studio_laugh', now + 0.16, 0.13, {
+        this.playCrowd('studio_laugh', now + 0.16, 0.105, {
           durationSec: 0.85,
           playbackRate: 0.84,
           lowpassHz: 1150,
@@ -3423,8 +5523,8 @@ export class ShowbandAudioEngineV7 {
 
     const env = ctx.createGain();
     env.gain.setValueAtTime(0.0001, startAt);
-    env.gain.linearRampToValueAtTime(0.33, startAt + 0.012);
-    env.gain.setValueAtTime(0.30, Math.max(startAt + 0.04, endAt - 0.05));
+    env.gain.linearRampToValueAtTime(0.245, startAt + 0.012);
+    env.gain.setValueAtTime(0.225, Math.max(startAt + 0.04, endAt - 0.05));
     env.gain.exponentialRampToValueAtTime(0.0001, endAt);
 
     oscA.connect(shaper);
@@ -3455,6 +5555,8 @@ export class ShowbandAudioEngineV7 {
       endTime: endAt,
       gainNode: env,
       stopNode: oscA,
+      extraStopNodes: [oscB, oscSub, rattleOsc],
+      extraGainNodes: [rattleDepth],
       stopped: false,
     });
   }
@@ -3509,6 +5611,7 @@ export class ShowbandAudioEngineV7 {
       endTime: when + durationSec,
       gainNode: env,
       stopNode: oscA,
+      extraStopNodes: [oscB],
       stopped: false,
     });
   }
@@ -3535,17 +5638,17 @@ export class ShowbandAudioEngineV7 {
     const upperWeight = Math.cos(phase01 * Math.PI * 0.5);
     const lowerWeight = Math.sin(phase01 * Math.PI * 0.5);
 
-    this.playInstrument('glockenspiel', upperMidi, now, 0.20, 0.18 * Math.max(0.32, upperWeight), {
+    this.playInstrument('glockenspiel', upperMidi, now, 0.20, 0.135 * Math.max(0.32, upperWeight), {
       dest: sfx,
       pan: 0.14,
       priority: 2,
     });
-    this.playInstrument('vibraphone', lowerMidi, now, 0.22, 0.18 * Math.max(0.32, lowerWeight), {
+    this.playInstrument('vibraphone', lowerMidi, now, 0.22, 0.135 * Math.max(0.32, lowerWeight), {
       dest: sfx,
       pan: -0.14,
       priority: 1,
     });
-    this.playFoley('flap_click', now, 0.12, {
+    this.playFoley('flap_click', now, 0.09, {
       dest: sfx,
       playbackRate: 1.1 + (idx % 4) * 0.05,
       durationSec: 0.03,
@@ -3864,26 +5967,153 @@ export class ShowbandAudioEngineV7 {
     }
   }
 
-  /** Living Color Prize Turntable Trophy Unlock Fanfare! */
-  public playTrophyUnlockChime(): void {
+  /**
+   * 4-Tier Differentiated 1966 Trophy, Medal & Unlockable Turntable Fanfares!
+   * Supports `'BRONZE'`, `'SILVER'`, `'GOLD'` (default), and `'PLATINUM'` (or full tier badge strings)
+   * so grinding Medals, Trophies & Sovereign Crowns feels progressively more exhilarating!
+   */
+  public playTrophyUnlockChime(tier?: TrophyTierAudioIdV7 | string): void {
     this.haptics.goldResonance();
     const ctx = this.wakeContextSync();
     if (!ctx || !this.sfxBus) return;
 
-    const now = ctx.currentTime;
+    const rawTier = String(tier ?? 'GOLD').toUpperCase();
+    const resolvedTier: TrophyTierAudioIdV7 = rawTier.includes('PLATINUM')
+      ? 'PLATINUM'
+      : rawTier.includes('SILVER')
+        ? 'SILVER'
+        : rawTier.includes('BRONZE')
+          ? 'BRONZE'
+          : 'GOLD';
+
+    // Bandleader phrasing: if fired in the exact same ceremony frame as `playEpisodeCeremonyFanfare`,
+    // stagger +1.16s as a sparkling 1–2 encore punctuation in the exact stage key (`root`)!
+    const inCeremonyFrame = ctx.currentTime - this.lastCeremonyFanfareTime < 0.25;
+    const now = inCeremonyFrame ? ctx.currentTime + 1.16 : ctx.currentTime;
     const sfx = this.sfxBus;
-    const notes = [65, 69, 72, 77, 81, 84];
-    for (let i = 0; i < notes.length; i++) {
-      this.playInstrument(i < 2 ? 'vibraphone' : 'glockenspiel', notes[i], now + i * 0.055, 0.65, 0.22, {
+    const root = SHOWBAND_SCENE_SPECS_V7[this.currentScene].rootMidi + 12;
+
+    if (resolvedTier === 'BRONZE') {
+      // Crisp enameled bronze medal pin clasp + 3-note vibraphone/muted-trumpet salute!
+      if (inCeremonyFrame) {
+        this.duckMusicForStinger(0.20, 2.55, 0.75);
+      } else {
+        this.duckMusicForStinger(0.52, 0.55, 0.32);
+      }
+      this.playFoley('flap_click', now, 0.22, { dest: sfx, playbackRate: 1.25, durationSec: 0.032, priority: 3 });
+      const bSemis = [0, 4, 7];
+      for (let i = 0; i < bSemis.length; i++) {
+        this.playInstrument('vibraphone', Math.min(MIDI_C6, root + bSemis[i]), now + 0.02 + i * 0.065, 0.45, 0.22, {
+          dest: sfx,
+          pan: -0.18 + i * 0.18,
+          priority: 3,
+        });
+      }
+      this.playInstrument('muted_trumpet', Math.min(MIDI_C6, root + 7), now + 0.15, 0.38, 0.19, { dest: sfx, pan: 0.16, priority: 2 });
+      if (!inCeremonyFrame) {
+        this.playCrowd('studio_clap', now + 0.14, 0.18, { durationSec: 1.1 });
+      }
+      return;
+    }
+
+    if (resolvedTier === 'SILVER') {
+      // Gleaming silver medallion tubular bell + 4-note glockenspiel/trumpet fanfare!
+      if (inCeremonyFrame) {
+        this.duckMusicForStinger(0.20, 2.75, 0.78);
+      } else {
+        this.duckMusicForStinger(0.42, 0.85, 0.40);
+      }
+      this.playInstrument('tubular_bell', Math.min(MIDI_C6, root + 7), now, 0.72, 0.17, { dest: sfx, pan: -0.22, priority: 3 });
+      const sSemis = [0, 4, 7, 12];
+      for (let i = 0; i < sSemis.length; i++) {
+        this.playInstrument(i < 2 ? 'vibraphone' : 'glockenspiel', Math.min(MIDI_C6, root + sSemis[i]), now + i * 0.055, 0.58, 0.21, {
+          dest: sfx,
+          pan: -0.24 + i * 0.16,
+          priority: 3,
+        });
+      }
+      this.playFoley('sleigh_sparkle', now + 0.08, 0.20, { dest: sfx, priority: 2 });
+      this.playInstrument('trumpet', Math.min(MIDI_C6, root + 12), now + 0.18, 0.52, 0.21, { dest: sfx, pan: 0.20, priority: 3 });
+      this.playInstrument('brass', root, now + 0.18, 0.52, 0.20, { dest: sfx, pan: -0.20, priority: 2 });
+      if (!inCeremonyFrame) {
+        this.playCrowd('applause_warm', now + 0.18, 0.22, { durationSec: 1.45 });
+      }
+      return;
+    }
+
+    if (resolvedTier === 'PLATINUM') {
+      // Grand Platinum Sovereign Crown Turntable Fanfare: Timpani + Steinway + Octave Trumpets + Leslie B3 + Ovation!
+      if (inCeremonyFrame) {
+        this.duckMusicForStinger(0.20, 3.10, 0.82);
+      } else {
+        this.duckMusicForStinger(0.24, 1.65, 0.65);
+      }
+      this.playInstrument('timpani', root - 12, now, 0.45, 0.27, { dest: sfx, priority: 3 });
+      const pSemis = [0, 4, 7, 9, 12, 16, 19];
+      for (let i = 0; i < pSemis.length; i++) {
+        const at = now + i * 0.048;
+        const pMidi = Math.min(MIDI_C6, root + pSemis[i]);
+        this.playInstrument('grand_piano', pMidi, at, 0.68, 0.16, { dest: sfx, pan: -0.28 + i * 0.09, priority: 2 });
+        this.playInstrument('glockenspiel', pMidi, at + 0.01, 0.68, 0.18, { dest: sfx, pan: 0.26 - i * 0.08, priority: 3 });
+      }
+      const crownAt = now + 0.34;
+      this.playDrum('crash', crownAt, 0.21, { dest: sfx, pan: -0.28, durationSec: 1.35, priority: 3 });
+      this.playInstrument('tubular_bell', Math.min(MIDI_C6, root + 12), crownAt, 0.95, 0.18, { dest: sfx, pan: 0.28, priority: 3 });
+      this.playInstrument('trumpet', Math.min(MIDI_C6, root + 16), crownAt, 0.85, 0.25, { dest: sfx, pan: 0.22, priority: 3 });
+      this.playInstrument('trumpet', Math.min(MIDI_C6, root + 12), crownAt + 0.006, 0.85, 0.19, { dest: sfx, pan: -0.18, priority: 3 });
+      this.playInstrument('brass', root + 4, crownAt, 0.85, 0.22, { dest: sfx, pan: -0.24, priority: 2 });
+      this.playInstrument('strings', Math.min(MIDI_C6, root + 12), crownAt, 0.95, 0.14, { dest: sfx, pan: 0.32, highpassHz: 240, priority: 2 });
+      this.playFoley('sleigh_sparkle', crownAt + 0.02, 0.26, { dest: sfx, priority: 3 });
+      this.playFoley('cash_register_bell', crownAt + 0.04, 0.22, { dest: sfx, priority: 2 });
+      this.playHammondChord([root, root + 4, root + 7, root + 9], crownAt, 1.0, 0.075, {
+        soulful: true,
+        fastLeslie: true,
+        keyClick: true,
+      });
+      if (!inCeremonyFrame) {
+        this.playCrowd('applause_big', now + 0.22, 0.32, { durationSec: 2.3, attackSec: 0.10 });
+        this.playCrowd('cheer_hurray', now + 0.36, 0.26, { durationSec: 1.9, attackSec: 0.10 });
+      }
+      return;
+    }
+
+    // Default GOLD TROPHY: Rich 6-note vibraphone/glockenspiel arpeggio + dual-trumpet & brass 6/9 triumph!
+    if (inCeremonyFrame) {
+      this.duckMusicForStinger(0.20, 2.85, 0.80);
+    } else {
+      this.duckMusicForStinger(0.32, 1.05, 0.48);
+    }
+    const gSemis = [0, 4, 7, 12, 16, 19];
+    for (let i = 0; i < gSemis.length; i++) {
+      this.playInstrument(i < 2 ? 'vibraphone' : 'glockenspiel', Math.min(MIDI_C6, root + gSemis[i]), now + i * 0.055, 0.65, 0.22, {
         dest: sfx,
         pan: -0.25 + i * 0.1,
         priority: 3,
       });
     }
     this.playFoley('sleigh_sparkle', now + 0.08, 0.24, { dest: sfx, priority: 3 });
-    this.playInstrument('brass', 65, now + 0.24, 0.65, 0.24, { dest: sfx, pan: -0.22, priority: 3 });
-    this.playInstrument('trumpet', 77, now + 0.28, 0.65, 0.22, { dest: sfx, pan: 0.22, priority: 3 });
-    this.playCrowd('applause_warm', now + 0.22, 0.26, { durationSec: 1.8 });
+    this.playFoley('cash_register_bell', now + 0.24, 0.20, { dest: sfx, priority: 2 });
+    this.playInstrument('brass', root, now + 0.24, 0.65, 0.23, { dest: sfx, pan: -0.22, priority: 3 });
+    this.playInstrument('trumpet', Math.min(MIDI_C6, root + 12), now + 0.26, 0.65, 0.22, { dest: sfx, pan: 0.22, priority: 3 });
+    this.playInstrument('trumpet', Math.min(MIDI_C6, root + 7), now + 0.27, 0.62, 0.16, { dest: sfx, pan: -0.16, priority: 2 });
+    if (!inCeremonyFrame) {
+      this.playCrowd('applause_warm', now + 0.22, 0.26, { durationSec: 1.8 });
+    }
+  }
+
+  public playMedalRibbonChime(tier: TrophyTierAudioIdV7 | string = 'BRONZE'): void {
+    this.playTrophyUnlockChime(tier);
+  }
+
+  /**
+   * Certified 1966 Network Winner's Check Ceremony & Broadcast Sign-Off Fanfare!
+   * - `didWin = true`: Perforated check-voucher snap + notary emboss + vintage cash-register bell ->
+   *   timpani pickup -> 5-step dual-trumpet & contrary-motion trombone climb + Steinway grand piano
+   *   upward glissando + stereo strings, tubular bells, bell tree & fast-Leslie B3 Standing Ovation!
+   * - `didWin = false`: Dignified 1966 Prime-Time Parting-Gifts Hollywood cadence + warm studio applause!
+   */
+  public playWinnersCheckCeremony(didWin = true): void {
+    this.playEpisodeCeremonyFanfare(didWin);
   }
 
   /** Episode Win / Loss Ceremony Fanfare proclaiming the 1966 Broadcast Winner! */
@@ -3897,54 +6127,102 @@ export class ShowbandAudioEngineV7 {
     const ctx = this.wakeContextSync();
     if (!ctx || !this.sfxBus) return;
 
-    this.duckMusicForStinger(0.22, didWin ? 2.2 : 1.5, 0.75);
+    this.duckMusicForStinger(0.20, didWin ? 2.45 : 1.65, 0.80);
     const now = ctx.currentTime;
+    this.lastCeremonyFanfareTime = now;
     const sfx = this.sfxBus;
     const root = SHOWBAND_SCENE_SPECS_V7[this.currentScene].rootMidi + 12;
 
     if (didWin) {
-      // Grand Living Color Winner's Broadcast Fanfare + Standing Ovation Roar!
-      this.playInstrument('timpani', 48, now, 0.35, 0.28, { dest: sfx, priority: 3 });
+      // 1. Certified 1966 Winner's Check Voucher Perforation Snap + Notary Stamp + Cash Bell (t+0.00..0.14s)!
+      this.playFoley('brush_sweep', now, 0.19, {
+        dest: sfx,
+        playbackRate: 1.68,
+        durationSec: 0.085,
+        highpassHz: 600,
+        pan: -0.18,
+        priority: 3,
+      });
+      this.playFoley('mechanical_clack', now + 0.045, 0.24, {
+        dest: sfx,
+        playbackRate: 0.86,
+        durationSec: 0.075,
+        pan: 0.14,
+        priority: 3,
+      });
+      this.playFoley('cash_register_bell', now + 0.07, 0.25, {
+        dest: sfx,
+        playbackRate: 1.04,
+        priority: 3,
+      });
+
+      // 2. Timpani Roll Pickup -> 5-Step Dual-Trumpet & Contrary-Motion Trombone Prime-Time Fanfare!
+      this.playInstrument('timpani', root - 19, now + 0.08, 0.26, 0.24, { dest: sfx, pan: -0.14, priority: 3 });
+      this.playInstrument('timpani', root - 12, now + 0.18, 0.35, 0.27, { dest: sfx, pan: 0.14, priority: 3 });
+      this.playDrum('snare_stick', now + 0.17, 0.20, { dest: sfx, pan: -0.10, priority: 2 });
+
       const winNotes = [
-        { dt: 0.0, semi: 0, dur: 0.14 },
-        { dt: 0.12, semi: 4, dur: 0.14 },
-        { dt: 0.24, semi: 7, dur: 0.14 },
-        { dt: 0.36, semi: 9, dur: 0.16 },
-        { dt: 0.50, semi: 12, dur: 1.15 },
+        { dt: 0.18, lead: 0, harm: -5, tromb: -12, dur: 0.13 },
+        { dt: 0.30, lead: 4, harm: 0, tromb: -8, dur: 0.13 },
+        { dt: 0.42, lead: 7, harm: 4, tromb: -5, dur: 0.13 },
+        { dt: 0.54, lead: 9, harm: 5, tromb: -3, dur: 0.15 },
+        { dt: 0.68, lead: 12, harm: 9, tromb: 0, dur: 1.25 },
       ];
       for (const n of winNotes) {
         const at = now + n.dt;
-        this.playInstrument('trumpet', root + n.semi, at, n.dur, 0.28, { dest: sfx, pan: 0.20, priority: 3 });
-        this.playInstrument('brass', root + n.semi - 5, at, n.dur, 0.24, { dest: sfx, pan: -0.22, priority: 3 });
-        this.playInstrument('trombone', root + n.semi - 12, at, n.dur, 0.20, { dest: sfx, pan: -0.28, priority: 3 });
+        this.playInstrument('trumpet', root + n.lead, at, n.dur, 0.26, { dest: sfx, pan: 0.22, priority: 3 });
+        this.playInstrument('trumpet', root + n.harm, at + 0.006, n.dur * 0.96, 0.18, { dest: sfx, pan: -0.18, priority: 3 });
+        this.playInstrument('brass', root + n.harm, at, n.dur, 0.22, { dest: sfx, pan: -0.24, priority: 3 });
+        this.playInstrument('trombone', root + n.tromb, at, n.dur, 0.19, { dest: sfx, pan: -0.28, priority: 2 });
       }
-      const climax = now + 0.50;
-      this.playDrum('crash', climax, 0.24, { dest: sfx, pan: -0.28, durationSec: 1.45, priority: 3 });
-      this.playFoley('sleigh_sparkle', climax + 0.02, 0.26, { dest: sfx, priority: 3 });
-      this.playFoley('cash_register_bell', climax + 0.05, 0.24, { dest: sfx, priority: 3 });
-      this.playHammondChord([root, root + 4, root + 7, root + 9], climax, 1.4, 0.08, {
+
+      // 3. Sweeping Steinway Grand Piano Glissando into Grand Standing Ovation Climax (t+0.68s)!
+      const climax = now + 0.68;
+      const pianoGliss = [0, 4, 7, 9, 12, 16];
+      for (let i = 0; i < pianoGliss.length; i++) {
+        this.playInstrument('grand_piano', root + pianoGliss[i], climax - 0.16 + i * 0.032, 0.72, 0.15, {
+          dest: sfx,
+          pan: -0.30 + i * 0.11,
+          priority: 2,
+        });
+      }
+
+      this.playDrum('crash', climax, 0.23, { dest: sfx, pan: -0.28, durationSec: 1.50, priority: 3 });
+      this.playInstrument('timpani', root - 12, climax, 0.90, 0.28, { dest: sfx, priority: 3 });
+      this.playInstrument('tubular_bell', Math.min(MIDI_C6, root + 12), climax + 0.01, 1.10, 0.16, {
+        dest: sfx,
+        pan: 0.30,
+        priority: 2,
+      });
+      this.playInstrument('strings', root + 4, climax, 1.20, 0.14, { dest: sfx, pan: -0.32, highpassHz: 240, priority: 2 });
+      this.playInstrument('strings', root + 12, climax, 1.20, 0.13, { dest: sfx, pan: 0.32, highpassHz: 240, priority: 2 });
+      this.playFoley('sleigh_sparkle', climax + 0.02, 0.26, { dest: sfx, pan: 0.28, priority: 3 });
+      this.playHammondChord([root, root + 4, root + 7, root + 9], climax, 1.35, 0.078, {
         soulful: true,
         fastLeslie: true,
         keyClick: true,
       });
 
-      this.playCrowd('applause_big', now + 0.32, 0.38, { durationSec: 3.0, attackSec: 0.14 });
-      this.playCrowd('cheer_hurray', now + 0.54, 0.30, { durationSec: 2.5, attackSec: 0.12 });
+      this.playCrowd('applause_warm', now + 0.22, 0.24, { durationSec: 1.4, attackSec: 0.08 });
+      this.playCrowd('applause_big', now + 0.48, 0.36, { durationSec: 3.1, attackSec: 0.16 });
+      this.playCrowd('cheer_hurray', now + 0.70, 0.29, { durationSec: 2.5, attackSec: 0.12 });
     } else {
-      // Classy 1966 game-show "Tough Break" sign-off cadence
+      // Dignified 1966 Prime-Time "Parting Gifts" Hollywood Sign-Off Cadence (lands warmly on tonic I6!)
       const loseNotes = [
-        { dt: 0.0, semi: 7, dur: 0.26 },
-        { dt: 0.24, semi: 5, dur: 0.26 },
-        { dt: 0.48, semi: 3, dur: 0.28 },
-        { dt: 0.74, semi: 0, dur: 0.80 },
+        { dt: 0.00, semi: 7, sax: -1, dur: 0.28 },
+        { dt: 0.26, semi: 4, sax: -3, dur: 0.28 },
+        { dt: 0.52, semi: 2, sax: -5, dur: 0.30 },
+        { dt: 0.80, semi: 0, sax: -8, dur: 0.92 },
       ];
       for (const n of loseNotes) {
         const at = now + n.dt;
-        this.playInstrument('muted_trumpet', root + n.semi, at, n.dur, 0.22, { dest: sfx, pan: 0.18, priority: 3 });
-        this.playInstrument('trombone', root + n.semi - 12, at, n.dur, 0.22, { dest: sfx, pan: -0.20, priority: 3 });
-        this.playInstrument('grand_piano', root + n.semi - 5, at, n.dur * 1.2, 0.16, { dest: sfx, pan: -0.10, priority: 2 });
+        this.playInstrument('muted_trumpet', root + n.semi, at, n.dur, 0.21, { dest: sfx, pan: 0.18, priority: 3 });
+        this.playInstrument('tenor_sax', root + n.sax, at + 0.006, n.dur * 1.05, 0.19, { dest: sfx, pan: -0.18, priority: 2 });
+        this.playInstrument('trombone', root + n.semi - 12, at, n.dur, 0.19, { dest: sfx, pan: -0.24, priority: 2 });
+        this.playInstrument('grand_piano', root + n.semi - 5, at, n.dur * 1.2, 0.15, { dest: sfx, pan: -0.10, priority: 2 });
       }
-      this.playCrowd('applause_warm', now + 0.55, 0.18, { durationSec: 1.6, lowpassHz: 4200 });
+      this.playInstrument('strings', root + 4, now + 0.80, 0.90, 0.12, { dest: sfx, pan: 0.28, highpassHz: 240, priority: 2 });
+      this.playCrowd('applause_warm', now + 0.58, 0.22, { durationSec: 1.85, lowpassHz: 4600 });
     }
   }
 
@@ -3958,11 +6236,29 @@ export class ShowbandAudioEngineV7 {
     this.detachUnlockListeners?.();
     this.detachUnlockListeners = null;
 
+    for (const v of this.activeVoices) {
+      v.stopped = true;
+      try {
+        v.stopNode.stop();
+      } catch {
+        // ignore
+      }
+      if (v.extraStopNodes) {
+        for (const extra of v.extraStopNodes) {
+          try {
+            extra.stop();
+          } catch {
+            // ignore
+          }
+        }
+      }
+    }
+    this.activeVoices.length = 0;
+
     if (this.ctx) {
       void this.ctx.close().catch(() => {});
       this.ctx = null;
     }
-    this.activeVoices.length = 0;
   }
 }
 

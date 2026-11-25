@@ -12,18 +12,29 @@
 // ============================================================================
 
 import {
+  ALL_BOARD_PLAY_MODES_V7,
+  BOARD_PLAY_MODE_TITLES_V7,
+  CAREER_MEDAL_SPECS_V7,
+  type AwardRarityTierV7,
+  type BoardPlayModeV7,
+  type BroadcastActNumberV7,
   type BroadcastSettingsV7,
   type CampaignSaveStateV7,
+  type CareerMedalIdV7,
   type CastIdV7,
   type CategoryIdV7,
   type ClassicTvTileTwistV7,
   type ClueRecordV7,
   type ContestantWaiverV7,
   type CoupRegimeIdV7,
+  type CpuPlaystyleIdV7,
+  type CpuTemperamentIdV7,
   type DayJobIdV7,
+  type DifficultyModeV7,
   type DomainIdV7,
   type EpisodeBlueprintV7,
   type LienGoalIdV7,
+  type NextEpisodeCliffhangerTeaserV7,
   type PortraitEmotionV7,
   type RivalIdV7,
   type StageViceIdV7,
@@ -54,6 +65,12 @@ import {
   type FinaleEndingSpecV7,
   type VipJuryBallotV7,
 } from '../campaign/FiftyMillionCampaignV7';
+import { getTrophyDisplayMetaV7 } from '../engine/LitTrophyVaultV7';
+import {
+  EMCEE_MEDALLION_ASSET_V7,
+  EMCEE_SPRITE_POSITIONS_V7,
+  type EmceeMoodV7,
+} from '../campaign/StudioAnnouncerV7';
 
 // ----------------------------------------------------------------------------
 // 1. Orphan-Proof Copy & Friendly 1966 TV Category + Twist Flare Specs
@@ -234,11 +251,69 @@ const TV_TWIST_FLARE_SPECS_V7: Partial<Record<ClassicTvTileTwistV7, TvTwistFlare
     chipBg: 'rgba(7, 19, 33, 0.36)',
     chipInk: '#fff7e6',
   },
+  BIG_WHEEL_SPIN: {
+    badge: '🎡 WHEEL',
+    flareBanner: '🎡 1966 BIG WHEEL SPIN · BONUS PRIZE!',
+    headerBg: 'linear-gradient(95deg, #c97300 0%, #f4a91f 48%, #0096a6 100%)',
+    headerInk: '#121a2b',
+    chipBg: 'rgba(18, 26, 43, 0.18)',
+    chipInk: '#121a2b',
+  },
+  BLIND_CATEGORY: {
+    badge: '$600 ???',
+    flareBanner: '🔒 $600 BLIND CATEGORY UNSEALED!',
+    headerBg: 'linear-gradient(95deg, #103b96 0%, #2468e0 52%, #0f3788 100%)',
+    headerInk: '#ffffff',
+    chipBg: 'rgba(7, 19, 33, 0.36)',
+    chipInk: '#fff7e6',
+  },
+  MYSTERY_CASH: {
+    badge: '$??? CASH',
+    flareBanner: '💰 MYSTERY CASH ENVELOPE UNSEALED!',
+    headerBg: 'linear-gradient(95deg, #007485 0%, #18a957 52%, #007d8c 100%)',
+    headerInk: '#ffffff',
+    chipBg: 'rgba(7, 19, 33, 0.34)',
+    chipInk: '#fff7e6',
+  },
+  BRASS_KEY: {
+    badge: '🗝️ KEY',
+    flareBanner: '🗝️ BRASS SAFE KEY · WIN TO UNLOCK $500 SAFE!',
+    headerBg: 'linear-gradient(95deg, #b86800 0%, #ffd166 52%, #b86800 100%)',
+    headerInk: '#121a2b',
+    chipBg: 'rgba(18, 26, 43, 0.18)',
+    chipInk: '#121a2b',
+  },
+  PRESS_LUCK_SPIN: {
+    badge: '⚡ LUCK',
+    flareBanner: '⚡ PRESS YOUR LUCK · WIN TO EARN SPINS!',
+    headerBg: 'linear-gradient(95deg, #c93312 0%, #ff6738 50%, #e63b7a 100%)',
+    headerInk: '#ffffff',
+    chipBg: 'rgba(7, 19, 33, 0.36)',
+    chipInk: '#fff7e6',
+  },
 };
 
 // ----------------------------------------------------------------------------
 // 2. Public Interfaces & Event Hooks for Master Engine Integration
 // ----------------------------------------------------------------------------
+
+const SVG_DOSSIER_TAB_1966 =
+  '<svg class="ws7-vec-ico" viewBox="0 0 16 16" width="11" height="11" fill="currentColor" aria-hidden="true"><path d="M1.5 3.2A1.2 1.2 0 0 1 2.7 2h3.6l1.4 1.6h5.6a1.2 1.2 0 0 1 1.2 1.2v7.6a1.2 1.2 0 0 1-1.2 1.2H2.7a1.2 1.2 0 0 1-1.2-1.2V3.2Zm2.3 3.3v1.4h8.4V6.5H3.8Zm0 3v1.4h5.8V9.5H3.8Z"/></svg>';
+
+const SVG_TELL_BEACON_1966 =
+  '<svg class="ws7-vec-ico" viewBox="0 0 16 16" width="11" height="11" fill="currentColor" aria-hidden="true"><path d="M8 1.2 9.9 5l4.2.6-3 3 .7 4.2L8 10.8l-3.8 2 .7-4.2-3-3L6.1 5 8 1.2Z"/></svg>';
+
+const SVG_SCISSORS_1966 =
+  '<svg class="ws7-vec-ico" viewBox="0 0 18 18" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="4.5" cy="5" r="2.2"/><circle cx="4.5" cy="13" r="2.2"/><path d="M6.4 6.3 15.2 13M15.2 5 6.4 11.7"/></svg>';
+
+const SVG_POLL_BARS_1966 =
+  '<svg class="ws7-vec-ico" viewBox="0 0 18 18" width="15" height="15" fill="currentColor" aria-hidden="true"><rect x="2" y="9" width="3.2" height="6.5" rx="0.8"/><rect x="7.4" y="3.5" width="3.2" height="12" rx="0.8"/><rect x="12.8" y="6.5" width="3.2" height="9" rx="0.8"/></svg>';
+
+const SVG_REEL_VAULT_1966 =
+  '<svg class="ws7-vec-ico" viewBox="0 0 16 16" width="15" height="15" fill="none" aria-hidden="true"><rect x="1.2" y="2.2" width="13.6" height="11.6" rx="2.2" stroke="currentColor" stroke-width="1.5"/><circle cx="5.2" cy="7.3" r="2.2" stroke="currentColor" stroke-width="1.4"/><circle cx="10.8" cy="7.3" r="2.2" stroke="currentColor" stroke-width="1.4"/><circle cx="5.2" cy="7.3" r="0.7" fill="currentColor"/><circle cx="10.8" cy="7.3" r="0.7" fill="currentColor"/><path d="M4.2 11.4H11.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
+
+const SVG_BRASS_CLIPBOARD_1966 =
+  '<svg class="ws7-vec-ico" viewBox="0 0 16 16" width="15" height="15" fill="none" aria-hidden="true"><rect x="2.5" y="2.8" width="11" height="11.6" rx="1.8" stroke="currentColor" stroke-width="1.5"/><path d="M5.6 1.5H10.4V3.7H5.6V1.5Z" fill="currentColor"/><path d="M5 6.8H11M5 9.4H11M5 12H8.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
 
 export interface BroadcastChromeCallbacksV7 {
   readonly onStartCampaignMatch?: (
@@ -264,6 +339,7 @@ export interface BroadcastChromeCallbacksV7 {
   readonly onReturnToTitleHub?: () => void;
   readonly onAdjustBoardZoom?: (deltaOrReset: number | 'RESET') => void;
   readonly onToggleFullscreen?: () => void;
+  readonly onUtilityModalStateChange?: (open: boolean) => void;
 }
 
 export interface TopBugSnapshotV7 {
@@ -277,6 +353,9 @@ export interface TopBugSnapshotV7 {
   readonly boothTellLive?: boolean;
   readonly isDailyBroadcast?: boolean;
   readonly dailyEpisodeNumber?: number;
+  readonly actNumber?: BroadcastActNumberV7;
+  readonly isAct2Boosted?: boolean;
+  readonly isFinalWager?: boolean;
   readonly boardModeBanner?: {
     readonly modeTitle: string;
     readonly ruleSummary: string;
@@ -294,13 +373,111 @@ export interface QuestionChassisOpenSpecV7 {
   readonly tvTwist?: ClassicTvTileTwistV7;
   readonly isShowcaseFormat?: boolean;
   readonly showcaseFormatName?: string;
+  readonly fiftyFiftyAvailable?: boolean;
+  readonly audiencePollAvailable?: boolean;
+  readonly onUseFiftyFifty?: () => void;
+  readonly onUseAudiencePoll?: () => void;
+  readonly isMatchPointTurn?: boolean;
+  readonly isAct3Showdown?: boolean;
+  readonly isFinalWager?: boolean;
+  readonly hostIntroLine?: string;
+  readonly hostMood?: EmceeMoodV7;
+}
+
+export interface MatchCurtainRaiserSpecV7 {
+  readonly episodeCode: string;
+  readonly stageTitle: string;
+  readonly matchTitle: string;
+  readonly rivalId: RivalIdV7;
+  readonly boardModeTitle: string;
+  readonly boardRuleSummary: string;
+  readonly topologyBadge?: string;
+  readonly returningChampStreak?: number;
+  readonly scoutedWeak?: readonly CategoryIdV7[];
+  readonly scoutedStrong?: readonly CategoryIdV7[];
+  readonly traitRevealed?: boolean;
+  readonly playstyle?: CpuPlaystyleIdV7;
+  readonly temperament?: CpuTemperamentIdV7;
+  readonly quoteLine?: string;
+  readonly durationMs?: number;
+}
+
+export interface RivalTurnChyronSpecV7 {
+  readonly rivalId: RivalIdV7;
+  readonly headline: string;
+  readonly subline?: string;
+  readonly tone?: 'neutral' | 'claim' | 'miss' | 'zonk' | 'scout';
+  readonly emotion?: PortraitEmotionV7;
+  readonly onSkip?: () => void;
+}
+
+export interface CeremonyExtraSpecV7 {
+  readonly returningChampStreak?: number;
+  readonly newlyScoutedWeak?: readonly CategoryIdV7[];
+  readonly newlyScoutedStrong?: readonly CategoryIdV7[];
+  readonly scoutedPlaystyleLabel?: string;
+  readonly nextRivalName?: string;
+  readonly nextBoardModeTitle?: string;
+  readonly nextCliffhangerTeaser?: NextEpisodeCliffhangerTeaserV7;
+  readonly allowBackstageCustomization?: boolean;
+  readonly earnedCareerMedals?: readonly CareerMedalIdV7[];
+  readonly isCoChampionTie?: boolean;
 }
 
 export interface PostAnswerTheaterSpecV7 {
   readonly resolution: ToyResolutionV7;
   readonly ahaFactoid: string;
   readonly economy: TurnEconomyBreakdownV7;
+  readonly totalTurnNetCash?: number;
+  readonly extraBonusLabel?: string;
   readonly dwellMs?: number;
+  readonly discoveryCallout?: string;
+  readonly hostQuip?: string;
+  readonly hostMood?: EmceeMoodV7;
+}
+
+export interface ActBreakBumperSpecV7 {
+  readonly actTitle?: string;
+  readonly headline?: string;
+  readonly detailLine?: string;
+  readonly durationMs?: number;
+}
+
+export interface FinalBroadcastWagerStageSpecV7 {
+  readonly episodeCode: string;
+  readonly category: CategoryIdV7;
+  readonly playerCash: number;
+  readonly rivalCash: number;
+  readonly rivalId: RivalIdV7;
+  readonly maxWager: number;
+  readonly isScoutedWeak?: boolean;
+  readonly isScoutedStrong?: boolean;
+  readonly hostPromptLine?: string;
+  readonly onWagerTickSfx?: () => void;
+  readonly onLockInSfx?: () => void;
+}
+
+export interface FinalWagerShowdownRevealSpecV7 {
+  readonly category: CategoryIdV7;
+  readonly trueAnswerDisplay: string;
+  readonly ahaFactoid: string;
+  readonly hostQuip: string;
+  readonly hostMood?: EmceeMoodV7;
+  readonly rivalId: RivalIdV7;
+  readonly cpuAnswerText: string;
+  readonly cpuCorrect: boolean;
+  readonly cpuWager: number;
+  readonly prevRivalCash: number;
+  readonly finalRivalCash: number;
+  readonly playerAnswerText: string;
+  readonly playerCorrect: boolean;
+  readonly playerWager: number;
+  readonly prevPlayerCash: number;
+  readonly finalPlayerCash: number;
+  readonly discoveryCallout?: string;
+  readonly dwellMs?: number;
+  readonly onCpuRevealSfx?: (correct: boolean) => void;
+  readonly onPlayerRevealSfx?: (correct: boolean) => void;
 }
 
 const DAY_JOB_LABELS_V7: ReadonlyArray<{
@@ -401,15 +578,19 @@ export class BroadcastChromeUIV7 {
   private readonly rivalDrumEl: HTMLSpanElement;
   private readonly playerDeltaPopEl: HTMLSpanElement;
   private readonly rivalDeltaPopEl: HTMLSpanElement;
+  private readonly turnPillEl: HTMLDivElement;
   private readonly turnKickerEl: HTMLSpanElement;
   private readonly turnNumEl: HTMLSpanElement;
   private readonly streakChipEl: HTMLSpanElement;
+  private readonly rivalNameFullEl: HTMLSpanElement;
+  private readonly rivalNameShortEl: HTMLSpanElement;
   private readonly rivalMedallionEl: HTMLDivElement;
   private readonly rivalEmotionTextEl: HTMLSpanElement;
   private readonly vuMeterWrapEl: HTMLDivElement;
   private readonly vuNeedleLineEl: SVGLineElement;
 
   private readonly rightWingDockEl: HTMLDivElement;
+  private readonly propsBtnEl: HTMLButtonElement;
   private readonly zoomPillEl: HTMLDivElement;
   private readonly arrestSwitchBtn: HTMLButtonElement;
   private readonly censorPaddleBtn: HTMLButtonElement;
@@ -424,20 +605,40 @@ export class BroadcastChromeUIV7 {
   private readonly clueStakesChipEl: HTMLSpanElement;
   private readonly clueTimerPillEl: HTMLSpanElement;
   private readonly clueTimerBarFillEl: HTMLDivElement;
+  private readonly hostDeskStripEl: HTMLDivElement;
+  private readonly hostDeskAvatarEl: HTMLDivElement;
+  private readonly hostDeskQuipEl: HTMLSpanElement;
   private readonly clueStemEl: HTMLParagraphElement;
   private readonly clueStakesMetaEl: HTMLDivElement;
+  private readonly lifelineBarEl: HTMLDivElement;
+  private readonly fiftyFiftyBtnEl: HTMLButtonElement;
+  private readonly audiencePollBtnEl: HTMLButtonElement;
   private readonly toyBayEl: HTMLDivElement;
 
   private readonly modalStageEl: HTMLDivElement;
+  private readonly utilityModalStageEl: HTMLDivElement;
   private readonly liveToastEl: HTMLDivElement;
+  private readonly rivalChyronEl: HTMLDivElement;
   private readonly boardModeRibbonEl: HTMLDivElement;
   private readonly boardModeTagEl: HTMLSpanElement;
   private readonly boardModeRuleEl: HTMLSpanElement;
 
+  private activeUseFiftyFiftyHandler: (() => void) | null = null;
+  private activeUseAudiencePollHandler: (() => void) | null = null;
+  private activeRivalSkipHandler: (() => void) | null = null;
+  private cheatAndMicUnlocked = true;
+  private propsUnlockedInMatch = true;
+  private isQuickPlayMatch = false;
+  private isDailyBroadcastMatch = false;
+
   private activeTimerHandle: number | null = null;
+  private readonly activeFlowTimeouts = new Set<number>();
+  private readonly activeFlowRafs = new Set<number>();
   private activeToastTimeout: number | null = null;
   private activeBoardModeFadeTimeout: number | null = null;
   private activeModalCleanup: (() => void) | null = null;
+  private activeUtilityModalCleanup: (() => void) | null = null;
+  private activeUtilityDismissCleanup: (() => void) | null = null;
   private readonly detachChromeListeners: Array<() => void> = [];
   private questionOpenedAtMs = 0;
   private sawFreshPointerDownInToyBay = false;
@@ -445,7 +646,12 @@ export class BroadcastChromeUIV7 {
   private currentRivalId: RivalIdV7 = 'CARMEN_DELGADO';
   private questionMaxCountdownSec = 30;
   private hasSyncedTopScoresOnce = false;
-  private activeBoardModeBanner: { readonly modeTitle: string; readonly ruleSummary: string } | null = null;
+  private activeBoardModeBanner: {
+    readonly modeTitle: string;
+    readonly ruleSummary: string;
+    readonly compactTitle?: string;
+    readonly compactRuleSummary?: string;
+  } | null = null;
   private boardModeRibbonAutoHidden = false;
 
   private readonly playerRoller: SolariRollerState = {
@@ -510,38 +716,63 @@ export class BroadcastChromeUIV7 {
     this.streakChipEl.textContent = '🔥0';
     this.playerDeltaPopEl = document.createElement('span');
     this.playerDeltaPopEl.className = 'ws7-score-delta-pop';
-    playerLabelRow.append(playerTag, this.streakChipEl, this.playerDeltaPopEl);
+    this.playerDeltaPopEl.dataset.side = 'player';
+    playerLabelRow.append(playerTag, this.streakChipEl);
     this.playerDrumEl = document.createElement('span');
     this.playerDrumEl.className = 'ws7-solari-drum';
     this.renderSolariCharacters(this.playerDrumEl, '$0', '', false);
     playerStack.append(playerLabelRow, this.playerDrumEl);
     this.playerBoxEl.appendChild(playerStack);
 
-    // Center Turn Dial
+    // Center Turn & Live 3-Act Broadcast Dial
     const turnDial = document.createElement('div');
     turnDial.className = 'ws7-turn-pill';
+    turnDial.dataset.act = '1';
+    this.turnPillEl = turnDial;
     this.turnKickerEl = document.createElement('span');
     this.turnKickerEl.className = 'ws7-turn-kicker';
-    this.turnKickerEl.textContent = 'TURN';
+    this.turnKickerEl.textContent = 'ACT I';
     this.turnNumEl = document.createElement('span');
     this.turnNumEl.className = 'ws7-turn-num';
     this.turnNumEl.textContent = '01/10';
     turnDial.append(this.turnKickerEl, this.turnNumEl);
 
-    // CHAMPION Score (Tangerine Tally Bar + Split-Flap Drum + Circular Lens Avatar)
+    // CHAMPION Score (Tangerine Tally Bar + Proud Champion Name + 44px Painted Lens Avatar + 1-Tap Scouting Notebook!)
     this.rivalBoxEl = document.createElement('div');
     this.rivalBoxEl.className = 'ws7-solari-box';
     this.rivalBoxEl.dataset.side = 'rival';
+    this.rivalBoxEl.title = 'Tap to inspect Champion Scouting Notebook & Dossier!';
+    this.rivalBoxEl.setAttribute('role', 'button');
+    this.rivalBoxEl.tabIndex = 0;
+    this.rivalBoxEl.addEventListener('click', () => {
+      if (!this.isUtilityModalOpen()) {
+        this.openScoutingNotebookModal(this.currentRivalId);
+      }
+    });
+    this.rivalBoxEl.addEventListener('keydown', (ev) => {
+      if ((ev.key === 'Enter' || ev.key === ' ') && !this.isUtilityModalOpen()) {
+        ev.preventDefault();
+        this.openScoutingNotebookModal(this.currentRivalId);
+      }
+    });
+
     const rivalStack = document.createElement('div');
     rivalStack.className = 'ws7-score-stack';
     const rivalLabelRow = document.createElement('div');
     rivalLabelRow.className = 'ws7-score-label-row';
     const rivalTag = document.createElement('span');
     rivalTag.className = 'ws7-solari-tag';
-    rivalTag.textContent = 'CHAMP';
+    this.rivalNameFullEl = document.createElement('span');
+    this.rivalNameFullEl.className = 'ws7-champ-name-full';
+    this.rivalNameFullEl.textContent = 'CARMEN DELGADO';
+    this.rivalNameShortEl = document.createElement('span');
+    this.rivalNameShortEl.className = 'ws7-champ-name-short';
+    this.rivalNameShortEl.textContent = 'CARMEN';
+    rivalTag.append(this.rivalNameFullEl, this.rivalNameShortEl);
     this.rivalDeltaPopEl = document.createElement('span');
     this.rivalDeltaPopEl.className = 'ws7-score-delta-pop';
-    rivalLabelRow.append(rivalTag, this.rivalDeltaPopEl);
+    this.rivalDeltaPopEl.dataset.side = 'rival';
+    rivalLabelRow.append(rivalTag);
     this.rivalDrumEl = document.createElement('span');
     this.rivalDrumEl.className = 'ws7-solari-drum';
     this.renderSolariCharacters(this.rivalDrumEl, '$0', '', false);
@@ -553,8 +784,8 @@ export class BroadcastChromeUIV7 {
     this.rivalMedallionEl.className = 'ws7-gouache-medallion';
     this.rivalMedallionEl.dataset.emotion = 'POISED';
     this.rivalEmotionTextEl = document.createElement('span');
-    this.rivalEmotionTextEl.className = 'ws7-rival-emotion-label';
-    this.rivalEmotionTextEl.textContent = 'POISED';
+    this.rivalEmotionTextEl.className = 'ws7-scout-dossier-badge';
+    this.rivalEmotionTextEl.innerHTML = `<span class="ws7-dossier-ico" aria-hidden="true">${SVG_DOSSIER_TAB_1966}</span><span class="ws7-dossier-txt"> DOSSIER</span>`;
     rivalCluster.append(this.rivalMedallionEl, this.rivalEmotionTextEl);
 
     this.rivalBoxEl.append(rivalStack, rivalCluster);
@@ -652,6 +883,7 @@ export class BroadcastChromeUIV7 {
       'Studio Prop Trunk — Equip Passive Score Boosters',
       true,
     );
+    this.propsBtnEl = propsBtn;
     propsBtn.addEventListener('click', () => {
       this.openPropTrunkModal(this.liveMatchScoreForShop !== null);
     });
@@ -701,7 +933,7 @@ export class BroadcastChromeUIV7 {
 
     bugActions.append(rulesBtn, propsBtn, soundBtn, this.fullscreenBugBtn, hubBtn);
     topBug.append(solariPair, this.vuMeterWrapEl, bugActions);
-    this.topBugWrapEl.appendChild(topBug);
+    this.topBugWrapEl.append(topBug, this.playerDeltaPopEl, this.rivalDeltaPopEl);
 
     // ------------------------------------------------------------------------
     // 2. Live-Event Controls (Zero Board Overlap on Mobile & Tablet!)
@@ -714,7 +946,7 @@ export class BroadcastChromeUIV7 {
     this.arrestSwitchBtn.className = 'ws7-arrest-switch';
     this.arrestSwitchBtn.dataset.tellLive = 'false';
     this.arrestSwitchBtn.title =
-      'Tap when your Rival flashes LIVE TELL to bust Control Booth cheating (+$400)!';
+      'Tap when your Rival flashes LIVE TELL to bust Control Booth cheating (+$150–$300 Clean Purse)!';
     this.arrestSwitchBtn.innerHTML =
       '<span>CATCH CHEAT</span><span class="ws7-dock-sub">Wait for Tell</span>';
     this.arrestSwitchBtn.addEventListener('click', () => {
@@ -825,6 +1057,27 @@ export class BroadcastChromeUIV7 {
     this.clueTimerBarFillEl.dataset.phase = 'calm';
     timerTrack.appendChild(this.clueTimerBarFillEl);
 
+    // Compact 34px Live Host Grant Bellamy Desk Strip (Zero-Scroll on 390x660!)
+    this.hostDeskStripEl = document.createElement('div');
+    this.hostDeskStripEl.className = 'ws7-host-desk-strip';
+    this.hostDeskStripEl.dataset.locked = 'false';
+
+    this.hostDeskAvatarEl = document.createElement('div');
+    this.hostDeskAvatarEl.className = 'ws7-host-desk-avatar';
+    this.hostDeskAvatarEl.style.backgroundImage = `url("${EMCEE_MEDALLION_ASSET_V7}")`;
+    this.hostDeskAvatarEl.style.backgroundSize = '200% 200%';
+    this.hostDeskAvatarEl.style.backgroundPosition = EMCEE_SPRITE_POSITIONS_V7.POISED;
+
+    const hostTagEl = document.createElement('span');
+    hostTagEl.className = 'ws7-host-desk-tag';
+    hostTagEl.textContent = 'GRANT:';
+
+    this.hostDeskQuipEl = document.createElement('span');
+    this.hostDeskQuipEl.className = 'ws7-host-desk-quip';
+    this.hostDeskQuipEl.textContent = 'Eyes on the cue card—thirty seconds on the studio clock!';
+
+    this.hostDeskStripEl.append(this.hostDeskAvatarEl, hostTagEl, this.hostDeskQuipEl);
+
     const clueBody = document.createElement('div');
     clueBody.className = 'ws7-clue-body';
 
@@ -835,7 +1088,40 @@ export class BroadcastChromeUIV7 {
     this.clueStakesMetaEl.className = 'ws7-clue-meta-line';
 
     clueBody.append(this.clueStemEl, this.clueStakesMetaEl);
-    vellumPane.append(this.twistFlareStripEl, this.clueHeaderRowEl, timerTrack, clueBody);
+
+    // 2 Classic Studio Lifelines Per Match (✂️ 50/50 Studio Cut & 📊 Studio Audience Poll)
+    this.lifelineBarEl = document.createElement('div');
+    this.lifelineBarEl.className = 'ws7-lifeline-bar';
+
+    this.fiftyFiftyBtnEl = document.createElement('button');
+    this.fiftyFiftyBtnEl.type = 'button';
+    this.fiftyFiftyBtnEl.className = 'ws7-lifeline-btn';
+    this.fiftyFiftyBtnEl.dataset.lifeline = 'fifty-fifty';
+    this.fiftyFiftyBtnEl.innerHTML = `${SVG_SCISSORS_1966}<span>50/50 STUDIO CUT</span>`;
+    this.fiftyFiftyBtnEl.addEventListener('click', () => {
+      if (this.fiftyFiftyBtnEl.disabled) return;
+      this.activeUseFiftyFiftyHandler?.();
+    });
+
+    this.audiencePollBtnEl = document.createElement('button');
+    this.audiencePollBtnEl.type = 'button';
+    this.audiencePollBtnEl.className = 'ws7-lifeline-btn';
+    this.audiencePollBtnEl.dataset.lifeline = 'audience-poll';
+    this.audiencePollBtnEl.innerHTML = `${SVG_POLL_BARS_1966}<span>STUDIO AUDIENCE POLL</span>`;
+    this.audiencePollBtnEl.addEventListener('click', () => {
+      if (this.audiencePollBtnEl.disabled) return;
+      this.activeUseAudiencePollHandler?.();
+    });
+
+    this.lifelineBarEl.append(this.fiftyFiftyBtnEl, this.audiencePollBtnEl);
+    vellumPane.append(
+      this.twistFlareStripEl,
+      this.clueHeaderRowEl,
+      timerTrack,
+      this.hostDeskStripEl,
+      clueBody,
+      this.lifelineBarEl,
+    );
 
     this.toyBayEl = document.createElement('div');
     this.toyBayEl.className = 'ws7-toy-bay';
@@ -894,11 +1180,23 @@ export class BroadcastChromeUIV7 {
     this.modalStageEl.className = 'ws7-eye-stage ws7-hidden';
     this.modalStageEl.dataset.topBugOpen = 'false';
 
+    this.utilityModalStageEl = document.createElement('div');
+    this.utilityModalStageEl.className = 'ws7-eye-stage ws7-utility-stage ws7-hidden';
+    this.utilityModalStageEl.dataset.topBugOpen = 'false';
+
     this.liveToastEl = document.createElement('div');
     this.liveToastEl.className = 'ws7-live-toast-pill ws7-hidden';
     this.liveToastEl.dataset.tone = 'brass';
     this.liveToastEl.setAttribute('role', 'status');
     this.liveToastEl.setAttribute('aria-live', 'polite');
+
+    this.rivalChyronEl = document.createElement('div');
+    this.rivalChyronEl.className = 'ws7-rival-chyron ws7-hidden';
+    this.rivalChyronEl.dataset.tone = 'neutral';
+    this.rivalChyronEl.setAttribute('role', 'status');
+    this.rivalChyronEl.addEventListener('click', () => {
+      this.activeRivalSkipHandler?.();
+    });
 
     this.boardModeRibbonEl = document.createElement('div');
     this.boardModeRibbonEl.className = 'ws7-board-mode-ribbon ws7-hidden';
@@ -913,9 +1211,11 @@ export class BroadcastChromeUIV7 {
       this.topBugWrapEl,
       this.rightWingDockEl,
       this.boardModeRibbonEl,
+      this.rivalChyronEl,
       this.liveToastEl,
       this.questionStageEl,
       this.modalStageEl,
+      this.utilityModalStageEl,
     );
     this.host.appendChild(this.rootEl);
 
@@ -927,6 +1227,7 @@ export class BroadcastChromeUIV7 {
   }
 
   public dispose(): void {
+    this.hideUtilityModalStage();
     this.hideModalStage();
     for (const unsub of this.detachChromeListeners) {
       unsub();
@@ -1050,6 +1351,14 @@ export class BroadcastChromeUIV7 {
       deltaPopEl.dataset.sign = delta > 0 ? 'pos' : 'neg';
       deltaPopEl.textContent =
         delta > 0 ? `+$${delta.toLocaleString()}` : `-$${Math.abs(delta).toLocaleString()}`;
+      if (typeof window !== 'undefined') {
+        const rect = boxEl.getBoundingClientRect();
+        if (rect.width > 0) {
+          const clampedLeft = Math.max(8, Math.min(window.innerWidth - 96, Math.round(rect.left + 4)));
+          deltaPopEl.style.left = `${clampedLeft}px`;
+          deltaPopEl.style.top = `${Math.max(46, Math.round(rect.bottom + 3))}px`;
+        }
+      }
       deltaPopEl.dataset.show = 'false';
       void deltaPopEl.offsetWidth; // restart keyframe cleanly
       deltaPopEl.dataset.show = 'true';
@@ -1099,22 +1408,233 @@ export class BroadcastChromeUIV7 {
   // Top Broadcast Ribbon, Analog VU Needle, Lens Portraits & Live Controls
   // --------------------------------------------------------------------------
 
+  public setProgressiveUnlocks(opts: {
+    readonly showPropsButton: boolean;
+    readonly showCheatAndMicControls: boolean;
+    readonly isQuickPlay?: boolean;
+    readonly isDailyBroadcast?: boolean;
+  }): void {
+    this.propsUnlockedInMatch = opts.showPropsButton;
+    this.isQuickPlayMatch = Boolean(opts.isQuickPlay);
+    this.isDailyBroadcastMatch = Boolean(opts.isDailyBroadcast);
+    this.propsBtnEl.classList.toggle('ws7-hidden', !opts.showPropsButton);
+    this.cheatAndMicUnlocked = opts.showCheatAndMicControls;
+    this.arrestSwitchBtn.classList.toggle('ws7-hidden', !opts.showCheatAndMicControls);
+    this.censorPaddleBtn.classList.toggle('ws7-hidden', !opts.showCheatAndMicControls);
+  }
+
   public showTopBroadcastBug(
     visible: boolean = true,
     showRightWingControls: boolean = true,
   ): void {
     this.topBugWrapEl.classList.toggle('ws7-hidden', !visible);
-    this.rightWingDockEl.classList.toggle('ws7-hidden', !(visible && showRightWingControls));
+    this.rightWingDockEl.classList.toggle(
+      'ws7-hidden',
+      !(visible && showRightWingControls && this.cheatAndMicUnlocked),
+    );
     this.modalStageEl.dataset.topBugOpen = visible ? 'true' : 'false';
+    this.utilityModalStageEl.dataset.topBugOpen = visible ? 'true' : 'false';
     if (!visible) {
       this.liveToastEl.classList.add('ws7-hidden');
+      this.rivalChyronEl.classList.add('ws7-hidden');
       this.hasSyncedTopScoresOnce = false;
+      this.liveMatchScoreForShop = null;
     }
     this.syncBoardModeRibbonVisibility();
   }
 
+  public showRivalTurnChyron(spec: RivalTurnChyronSpecV7): void {
+    const profile = CAST_PROFILES_V7[spec.rivalId] ?? CAST_PROFILES_V7.CARMEN_DELGADO;
+    this.activeRivalSkipHandler = spec.onSkip ?? null;
+    this.rivalChyronEl.dataset.tone = spec.tone ?? 'neutral';
+    this.rivalChyronEl.innerHTML = '';
+
+    const left = document.createElement('div');
+    left.className = 'ws7-rival-chyron-left';
+    const pic = document.createElement('div');
+    pic.className = 'ws7-gouache-medallion';
+    this.bindPortraitAsset(pic, spec.rivalId, spec.emotion ?? 'POISED');
+
+    const copy = document.createElement('div');
+    copy.className = 'ws7-rival-chyron-copy';
+    const head = document.createElement('div');
+    head.className = 'ws7-rival-chyron-head';
+    head.textContent = spec.headline || `${profile.name} ON THE CLOCK`;
+    copy.appendChild(head);
+    if (spec.subline) {
+      const sub = document.createElement('div');
+      sub.className = 'ws7-rival-chyron-sub';
+      sub.textContent = spec.subline;
+      copy.appendChild(sub);
+    }
+    left.append(pic, copy);
+
+    const skipBtn = document.createElement('button');
+    skipBtn.type = 'button';
+    skipBtn.className = 'ws7-rival-skip-btn';
+    skipBtn.textContent = 'SKIP ⏭';
+    skipBtn.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      this.activeRivalSkipHandler?.();
+    });
+
+    this.rivalChyronEl.append(left, skipBtn);
+    this.rivalChyronEl.classList.remove('ws7-hidden');
+    this.syncBoardModeRibbonVisibility();
+  }
+
+  public hideRivalTurnChyron(): void {
+    this.activeRivalSkipHandler = null;
+    this.rivalChyronEl.classList.add('ws7-hidden');
+    this.syncBoardModeRibbonVisibility();
+  }
+
+  public playMatchCurtainRaiser(spec: MatchCurtainRaiserSpecV7): Promise<void> {
+    this.clearActiveTimer();
+    const reduced = this.campaign.getState().settings.reducedMotion;
+    const durationMs = Math.max(800, spec.durationMs ?? (reduced ? 1800 : 2850));
+    const profile = CAST_PROFILES_V7[spec.rivalId] ?? CAST_PROFILES_V7.CARMEN_DELGADO;
+
+    const scoutedWeak = spec.scoutedWeak ?? [];
+    const weakSlots: string[] = [];
+    for (let i = 0; i < 3; i += 1) {
+      weakSlots.push(
+        scoutedWeak[i] ? `💡 ${getFriendlyTvCategoryLabelV7(scoutedWeak[i])}` : '???',
+      );
+    }
+    const scoutedStrong = spec.scoutedStrong ?? [];
+    const strongSummary =
+      scoutedStrong.length > 0
+        ? ` · ★ Turf: ${scoutedStrong.map((c) => getFriendlyTvCategoryLabelV7(c)).join(', ')}`
+        : '';
+
+    const traitTag =
+      spec.traitRevealed && (spec.playstyle || profile.playstyle)
+        ? `${(spec.playstyle ?? profile.playstyle ?? '').replace(/_/g, ' ')} · ${(spec.temperament ?? profile.temperament ?? 'STEADY').replace(/_/g, ' ')}`
+        : 'PLAYSTYLE: REVEALS IN TURN 2+';
+
+    return new Promise((resolve) => {
+      let finished = false;
+      let skipTimeout: number | null = null;
+      const openedAt = typeof performance !== 'undefined' ? performance.now() : 0;
+
+      const card = document.createElement('div');
+      card.className = 'ws7-curtain-raiser';
+      card.style.setProperty('--ws7-dwell-ms', `${durationMs}ms`);
+
+      const header = document.createElement('div');
+      header.className = 'ws7-sheet-header ws7-curtain-header-marquee';
+      const bulbsHtml = Array.from({ length: 14 }, (_, idx) => {
+        const phase = idx % 2 === 0 ? 'even' : 'odd';
+        return `<span class="ws7-curtain-bulb" data-phase="${phase}"></span>`;
+      }).join('');
+      const cleanMatchTitle = spec.matchTitle.replace(/\s*\([^)]+\)\s*$/, '').trim() || spec.matchTitle;
+      const shortRole = (profile.title.split('—')[0] ?? profile.title).trim().toUpperCase();
+      header.innerHTML = `
+        <div class="ws7-curtain-bulb-rail" aria-hidden="true">${bulbsHtml}</div>
+        <div class="ws7-curtain-header-row">
+          <svg class="ws7-curtain-starburst-svg" viewBox="0 0 56 56" width="42" height="42" aria-hidden="true">
+            <circle cx="28" cy="28" r="26" fill="#071321" stroke="#f4a91f" stroke-width="1.8"/>
+            <polygon points="28,3 31,20 44,8 35,23 52,22 36,28 52,34 35,33 44,48 31,36 28,53 25,36 12,48 21,33 4,34 20,28 4,22 21,23 12,8 25,20" fill="#ffd56b"/>
+            <polygon points="28,9 30,22 41,15 33,25 47,28 33,31 41,41 30,34 28,47 26,34 15,41 23,31 9,28 23,25 15,15 26,22" fill="#ff6738" opacity="0.92"/>
+            <circle cx="28" cy="28" r="7.5" fill="#0096a6" stroke="#fff7e6" stroke-width="1.6"/>
+            <circle cx="28" cy="28" r="3" fill="#fff7e6"/>
+          </svg>
+          <div style="min-width:0;flex:1 1 auto;">
+            <div class="ws7-subtitle-kicker">LIVE IN LIVING COLOR · ${spec.episodeCode}</div>
+            <h2 class="ws7-display-title ws7-curtain-title">${cleanMatchTitle}</h2>
+          </div>
+        </div>
+      `;
+
+      const body = document.createElement('div');
+
+      if (spec.returningChampStreak && spec.returningChampStreak >= 1) {
+        const crown = document.createElement('div');
+        crown.className = 'ws7-champ-crown-banner';
+        crown.textContent = `👑 DEFENDING ${spec.returningChampStreak}-DAY STUDIO CHAMPION STREAK!`;
+        body.appendChild(crown);
+      }
+
+      const tapeBand = document.createElement('div');
+      tapeBand.className = 'ws7-curtain-tape-band';
+      const pic = document.createElement('div');
+      pic.className = 'ws7-gouache-medallion';
+      pic.dataset.size = 'lg';
+      this.bindPortraitAsset(pic, spec.rivalId, 'POISED');
+
+      const rawQuote = (spec.quoteLine ?? profile.bio ?? profile.signatureTellText).trim();
+      const firstSentenceMatch = rawQuote.match(/^[^.!?]+[.!?]/);
+      const compactQuote =
+        rawQuote.length <= 115
+          ? rawQuote
+          : firstSentenceMatch && firstSentenceMatch[0].length <= 120
+            ? firstSentenceMatch[0]
+            : `${rawQuote.slice(0, 108).replace(/\s+\S*$/, '')}!`;
+
+      const meta = document.createElement('div');
+      meta.style.flex = '1 1 auto';
+      meta.style.minWidth = '0';
+      meta.innerHTML = `
+        <div class="ws7-curtain-role-kicker">TONIGHT’S CHAMPION · ${shortRole}</div>
+        <div class="ws7-curtain-champ-name">${profile.name}</div>
+        <div class="ws7-curtain-trait-pill">${traitTag}</div>
+        <div class="ws7-curtain-quote">${formatOrphanProofCopyV7(compactQuote)}</div>
+        <div class="ws7-curtain-scout-line">WEAK SPOTS: ${weakSlots.join('\u00A0·\u00A0')}${strongSummary}</div>
+      `;
+      tapeBand.append(pic, meta);
+
+      const modeBand = document.createElement('div');
+      modeBand.className = 'ws7-curtain-mode-band';
+      modeBand.innerHTML = `
+        <div style="font-family:var(--ws7-font-broadcast);font-size:14px;font-weight:900;color:#007d8c;letter-spacing:0.05em;">★ BOARD FORMAT · ${spec.boardModeTitle}${spec.topologyBadge ? ` (${spec.topologyBadge})` : ''}</div>
+        <div style="font-size:14.5px;font-weight:700;color:#121a2b;line-height:1.3;">${formatOrphanProofCopyV7(spec.boardRuleSummary)}</div>
+      `;
+
+      const dwellTrack = document.createElement('div');
+      dwellTrack.className = 'ws7-theater-dwell-track';
+      const dwellBar = document.createElement('div');
+      dwellBar.className = 'ws7-theater-dwell-bar';
+      dwellTrack.appendChild(dwellBar);
+
+      const skipFooter = document.createElement('div');
+      skipFooter.className = 'ws7-curtain-skip-footer';
+      skipFooter.textContent = 'STEP UP TO PODIUM → (TAP TO START)';
+
+      body.append(tapeBand, modeBand, dwellTrack, skipFooter);
+      card.append(header, body);
+
+      const finish = (): void => {
+        if (finished) return;
+        finished = true;
+        if (skipTimeout !== null) {
+          this.clearFlowTimeout(skipTimeout);
+          skipTimeout = null;
+        }
+        this.hideModalStage();
+        resolve();
+      };
+
+      card.addEventListener('click', () => {
+        const elapsed =
+          typeof performance !== 'undefined' ? performance.now() - openedAt : 999;
+        if (elapsed >= 180) {
+          finish();
+        }
+      });
+
+      this.mountModalContent(card, finish);
+      skipTimeout = this.scheduleFlowTimeout(finish, durationMs);
+    });
+  }
+
   public setBoardModeBanner(
-    banner: { readonly modeTitle: string; readonly ruleSummary: string } | null,
+    banner: {
+      readonly modeTitle: string;
+      readonly ruleSummary: string;
+      readonly compactTitle?: string;
+      readonly compactRuleSummary?: string;
+    } | null,
   ): void {
     if (this.activeBoardModeFadeTimeout !== null) {
       window.clearTimeout(this.activeBoardModeFadeTimeout);
@@ -1123,8 +1643,28 @@ export class BroadcastChromeUIV7 {
     this.activeBoardModeBanner = banner;
     this.boardModeRibbonAutoHidden = false;
     if (banner) {
-      this.boardModeTagEl.textContent = `★ ${banner.modeTitle}`;
-      this.boardModeRuleEl.textContent = banner.ruleSummary;
+      const fullTag = `★ ${banner.modeTitle}`;
+      const shortTag = `★ ${banner.compactTitle ?? banner.modeTitle}`;
+      const fullRule = banner.ruleSummary;
+      const shortRule = banner.compactRuleSummary ?? banner.ruleSummary;
+      this.boardModeTagEl.innerHTML = '';
+      const tagFullEl = document.createElement('span');
+      tagFullEl.className = 'ws7-mode-copy-full';
+      tagFullEl.textContent = fullTag;
+      const tagCompactEl = document.createElement('span');
+      tagCompactEl.className = 'ws7-mode-copy-compact';
+      tagCompactEl.textContent = shortTag;
+      this.boardModeTagEl.append(tagFullEl, tagCompactEl);
+
+      this.boardModeRuleEl.innerHTML = '';
+      const ruleFullEl = document.createElement('span');
+      ruleFullEl.className = 'ws7-mode-copy-full';
+      ruleFullEl.textContent = fullRule;
+      const ruleCompactEl = document.createElement('span');
+      ruleCompactEl.className = 'ws7-mode-copy-compact';
+      ruleCompactEl.textContent = shortRule;
+      this.boardModeRuleEl.append(ruleFullEl, ruleCompactEl);
+
       // Auto-fade bottom mode ribbon after 4.5s so the 3D stage & board stay 100% unobstructed!
       this.activeBoardModeFadeTimeout = window.setTimeout(() => {
         this.boardModeRibbonAutoHidden = true;
@@ -1141,7 +1681,8 @@ export class BroadcastChromeUIV7 {
   private syncBoardModeRibbonVisibility(): void {
     const topBugVisible = !this.topBugWrapEl.classList.contains('ws7-hidden');
     const questionOpen = !this.questionStageEl.classList.contains('ws7-hidden');
-    const modalOpen = !this.modalStageEl.classList.contains('ws7-hidden');
+    const modalOpen =
+      !this.modalStageEl.classList.contains('ws7-hidden') || this.isUtilityModalOpen();
     const toastVisible = !this.liveToastEl.classList.contains('ws7-hidden');
     const liveAlertBusy =
       this.arrestSwitchBtn.dataset.tellLive === 'true' ||
@@ -1201,13 +1742,35 @@ export class BroadcastChromeUIV7 {
 
     const totalTurns = snap.totalTurns ?? 10;
     const clampedTurn = Math.max(1, Math.min(totalTurns, snap.turnNumber));
-    const compactHeader = typeof window !== 'undefined' && window.innerWidth <= 560;
-    this.turnKickerEl.textContent = snap.isDailyBroadcast
-      ? compactHeader
-        ? 'DAILY'
-        : `DAILY${snap.dailyEpisodeNumber ? ` #${snap.dailyEpisodeNumber}` : ''}`
-      : 'TURN';
-    this.turnNumEl.textContent = `${String(clampedTurn).padStart(2, '0')}/${String(totalTurns).padStart(2, '0')}`;
+    if (snap.isDailyBroadcast) {
+      this.turnPillEl.dataset.act = 'daily';
+      this.turnKickerEl.innerHTML = snap.dailyEpisodeNumber
+        ? `<span class="ws7-turn-full">DAILY #${snap.dailyEpisodeNumber}</span><span class="ws7-turn-short">DAILY</span>`
+        : 'DAILY';
+      this.turnNumEl.textContent = `${String(clampedTurn).padStart(2, '0')}/${String(totalTurns).padStart(2, '0')}`;
+    } else {
+      const actNum: BroadcastActNumberV7 =
+        snap.actNumber ??
+        (snap.isFinalWager || clampedTurn >= totalTurns
+          ? 3
+          : clampedTurn >= 6
+            ? 2
+            : 1);
+      this.turnPillEl.dataset.act = String(actNum);
+      const turnDigits = `${String(clampedTurn).padStart(2, '0')}/${String(totalTurns).padStart(2, '0')}`;
+      if (actNum === 3) {
+        this.turnKickerEl.textContent = 'ACT III';
+        this.turnNumEl.innerHTML =
+          '<span class="ws7-turn-full">FINAL WAGER</span><span class="ws7-turn-short">WAGER</span>';
+      } else if (actNum === 2) {
+        this.turnKickerEl.innerHTML =
+          '<span class="ws7-turn-full">ACT II · 1.5×</span><span class="ws7-turn-short">ACT II</span>';
+        this.turnNumEl.textContent = turnDigits;
+      } else {
+        this.turnKickerEl.textContent = 'ACT I';
+        this.turnNumEl.textContent = turnDigits;
+      }
+    }
 
     const streakVal = Math.max(0, snap.streak);
     this.streakChipEl.dataset.active = streakVal >= 2 ? 'true' : 'false';
@@ -1219,10 +1782,24 @@ export class BroadcastChromeUIV7 {
       this.censorPaddleBtn.dataset.sabotageActive = sabotageLikely ? 'true' : 'false';
     }
 
+    const rivalProfile = CAST_PROFILES_V7[snap.rivalId] ?? CAST_PROFILES_V7.CARMEN_DELGADO;
+    const fullUpper = rivalProfile.name.toUpperCase();
+    const nameParts = rivalProfile.name.trim().split(/\s+/);
+    const rawFirst = (nameParts[0] ?? rivalProfile.name).toUpperCase();
+    const rawLast = (nameParts[nameParts.length - 1] ?? rawFirst).toUpperCase();
+    const firstUpper = rawFirst.length <= 7 ? rawFirst : rawLast.length <= 7 ? rawLast : rawFirst.slice(0, 7);
+    if (this.rivalNameFullEl.textContent !== fullUpper) {
+      this.rivalNameFullEl.textContent = fullUpper;
+    }
+    if (this.rivalNameShortEl.textContent !== firstUpper) {
+      this.rivalNameShortEl.textContent = firstUpper;
+    }
+
     const emotion = snap.rivalEmotion ?? 'POISED';
     if (this.currentRivalId !== snap.rivalId) {
       this.currentRivalId = snap.rivalId;
       this.bindPortraitAsset(this.rivalMedallionEl, snap.rivalId, emotion);
+      this.setRivalEmotion(emotion);
     } else {
       this.setRivalEmotion(emotion);
     }
@@ -1256,13 +1833,159 @@ export class BroadcastChromeUIV7 {
     const spec = PORTRAIT_SPRITE_POSITIONS_V7[emotion];
     this.rivalMedallionEl.dataset.emotion = emotion;
     this.rivalMedallionEl.style.backgroundPosition = spec.bgPosition;
-    this.rivalEmotionTextEl.textContent = spec.badgeLabel;
+    this.rivalEmotionTextEl.dataset.tell = emotion === 'TELL' ? 'true' : 'false';
+    this.rivalEmotionTextEl.innerHTML =
+      emotion === 'TELL'
+        ? `<span class="ws7-dossier-ico" aria-hidden="true">${SVG_TELL_BEACON_1966}</span><span class="ws7-dossier-txt"> TELL!</span>`
+        : `<span class="ws7-dossier-ico" aria-hidden="true">${SVG_DOSSIER_TAB_1966}</span><span class="ws7-dossier-txt"> DOSSIER</span>`;
+  }
+
+  public openScoutingDossierModal(focusRivalId?: RivalIdV7, onClose?: () => void): void {
+    this.openScoutingNotebookModal(focusRivalId, onClose);
+  }
+
+  public openScoutingNotebookModal(focusRivalId?: RivalIdV7, onClose?: () => void): void {
+    const dismiss = (): void => {
+      this.hideUtilityModalStage();
+      onClose?.();
+    };
+    let activeId: RivalIdV7 = focusRivalId ?? this.currentRivalId ?? 'CARMEN_DELGADO';
+
+    const renderNotebook = (): void => {
+      const save = this.campaign.getState();
+      const notebookMap = save.scoutingNotebook ?? {};
+      const allRivalIds = (Object.keys(CAST_PROFILES_V7) as CastIdV7[]).filter(
+        (id): id is RivalIdV7 => CAST_PROFILES_V7[id].role !== 'BOOTH_BROKER',
+      );
+      let totalWeakDiscovered = 0;
+      for (const id of allRivalIds) {
+        totalWeakDiscovered += notebookMap[id]?.revealedWeak?.length ?? 0;
+      }
+
+      const panel = document.createElement('div');
+      panel.className = 'ws7-mahogany-panel';
+      panel.setAttribute('role', 'dialog');
+      panel.setAttribute('aria-label', '1966 Studio Champion Scouting Notebook');
+
+      const header = this.createDismissibleSheetHeader(
+        `STUDIO 6A SCOUTING NOTEBOOK · ${totalWeakDiscovered} / ${allRivalIds.length * 3} WEAK SPOTS LOGGED`,
+        '1966 Champion Scouting Dossier',
+        dismiss,
+        'Close Scouting Notebook',
+      );
+
+      const body = document.createElement('div');
+      body.className = 'ws7-sheet-body';
+
+      const focusProfile = CAST_PROFILES_V7[activeId] ?? CAST_PROFILES_V7.CARMEN_DELGADO;
+      const focusEntry = notebookMap[activeId];
+      const revealedWeak = focusEntry?.revealedWeak ?? [];
+      const revealedStrong = focusEntry?.revealedStrong ?? [];
+      const traitLine =
+        focusEntry?.traitRevealed && focusProfile.playstyle
+          ? `${focusProfile.playstyle.replace(/_/g, ' ')} · ${(focusProfile.temperament ?? 'STEADY').replace(/_/g, ' ')}`
+          : 'MIND-GAME STYLE: ??? (REVEALS IN TURN 2+)';
+
+      const hero = document.createElement('div');
+      hero.className = 'ws7-scouting-featured-hero';
+      const heroPic = document.createElement('div');
+      heroPic.className = 'ws7-gouache-medallion';
+      heroPic.dataset.size = 'lg';
+      this.bindPortraitAsset(heroPic, activeId, 'POISED');
+
+      const weakChipsHtml = [0, 1, 2]
+        .map((idx) => {
+          const cat = revealedWeak[idx];
+          return cat
+            ? `<span class="ws7-scout-chip" data-kind="weak">💡 ${getFriendlyTvCategoryLabelV7(cat)} (+0.5×)</span>`
+            : `<span class="ws7-scout-chip" data-kind="unknown">💡 WEAK SPOT #${idx + 1}: ???</span>`;
+        })
+        .join('');
+
+      const strongChipsHtml = [0, 1, 2]
+        .map((idx) => {
+          const cat = revealedStrong[idx];
+          return cat
+            ? `<span class="ws7-scout-chip" data-kind="strong">★ ${getFriendlyTvCategoryLabelV7(cat)}</span>`
+            : `<span class="ws7-scout-chip" data-kind="unknown">★ STRONG TURF #${idx + 1}: ???</span>`;
+        })
+        .join('');
+
+      const heroMeta = document.createElement('div');
+      heroMeta.style.flex = '1 1 320px';
+      heroMeta.style.minWidth = '0';
+      heroMeta.innerHTML = `
+        <div style="font-family:var(--ws7-font-broadcast);font-size:14px;font-weight:900;color:#ff9c78;letter-spacing:0.06em;">SEASON ${focusProfile.seasonTier ?? 1} CHAMPION · ${focusProfile.title.toUpperCase()}</div>
+        <div style="font-size:21px;font-weight:900;color:#fff7e6;margin:2px 0;">${focusProfile.name} <span style="font-size:14px;color:#ffd56b;font-weight:800;">· ${traitLine}</span></div>
+        <div style="font-size:14.5px;color:#d6e2ec;font-weight:600;line-height:1.4;margin-top:3px;">${formatOrphanProofCopyV7(focusProfile.bio ?? focusProfile.signatureTellText)}</div>
+        <div class="ws7-scouting-pill-row">${weakChipsHtml}</div>
+        <div class="ws7-scouting-pill-row">${strongChipsHtml}</div>
+      `;
+      hero.append(heroPic, heroMeta);
+      body.appendChild(hero);
+
+      // 24-Champion Roster Ledger
+      const rosterList = document.createElement('div');
+      rosterList.className = 'ws7-editorial-list';
+      for (const rId of allRivalIds) {
+        const prof = CAST_PROFILES_V7[rId];
+        const ent = notebookMap[rId];
+        const wCount = ent?.revealedWeak?.length ?? 0;
+        const sCount = ent?.revealedStrong?.length ?? 0;
+        const row = document.createElement('div');
+        row.className = 'ws7-editorial-row';
+        row.dataset.unlocked = rId === activeId || wCount > 0 || sCount > 0 ? 'true' : 'false';
+
+        const pic = document.createElement('div');
+        pic.className = 'ws7-gouache-medallion';
+        this.bindPortraitAsset(pic, rId, 'POISED');
+
+        const meta = document.createElement('div');
+        meta.className = 'ws7-editorial-meta';
+        meta.innerHTML = `
+          <div style="font-family:var(--ws7-font-broadcast);font-size:14px;font-weight:900;color:#007d8c;letter-spacing:0.04em;">SEASON ${prof.seasonTier ?? 1} · ${wCount}/3 WEAK SPOTS · ${sCount}/3 STRONG TURF</div>
+          <div style="font-size:16px;font-weight:800;color:#121a2b;">${prof.name}${rId === this.currentRivalId ? ' · (ON STAGE)' : ''}</div>
+          <div style="font-size:14px;color:#384660;font-weight:600;">${prof.title}</div>
+        `;
+
+        const viewBtn = document.createElement('button');
+        viewBtn.type = 'button';
+        viewBtn.className = rId === activeId ? 'ws7-teal-btn' : 'ws7-dossier-inspect-btn';
+        viewBtn.textContent = rId === activeId ? 'VIEWING ✓' : 'INSPECT';
+        viewBtn.addEventListener('click', () => {
+          activeId = rId;
+          renderNotebook();
+        });
+
+        row.append(pic, meta, viewBtn);
+        rosterList.appendChild(row);
+      }
+      body.appendChild(rosterList);
+
+      const footer = document.createElement('div');
+      footer.className = 'ws7-sheet-footer';
+      const doneBtn = document.createElement('button');
+      doneBtn.type = 'button';
+      doneBtn.className = 'ws7-primary-btn';
+      doneBtn.textContent = 'BACK TO STUDIO 6A →';
+      doneBtn.addEventListener('click', dismiss);
+      footer.appendChild(doneBtn);
+
+      panel.append(header, body, footer);
+      this.mountUtilityModalContent(panel, dismiss);
+    };
+
+    renderNotebook();
   }
 
   public setBoothTellActive(active: boolean): void {
+    const hasSignet = this.campaign
+      .getState()
+      .equippedRelics.some((r) => r.relicId === 'relic_subpoena_wax_signet');
+    const bounty = hasSignet ? 300 : 150;
     this.arrestSwitchBtn.dataset.tellLive = active ? 'true' : 'false';
     this.arrestSwitchBtn.innerHTML = active
-      ? '<span>🚨 CHEAT LIVE!</span><span class="ws7-dock-sub">Tap for +$400</span>'
+      ? `<span>CHEAT LIVE!</span><span class="ws7-dock-sub">Tap +$${bounty} Clean</span>`
       : '<span>CATCH CHEAT</span><span class="ws7-dock-sub">Wait for Tell</span>';
     this.syncBoardModeRibbonVisibility();
   }
@@ -1293,6 +2016,7 @@ export class BroadcastChromeUIV7 {
   ): void {
     const profile = CAST_PROFILES_V7[castId];
     const spec = PORTRAIT_SPRITE_POSITIONS_V7[emotion];
+    el.dataset.castId = castId;
     el.dataset.emotion = emotion;
 
     const applySprite = (): void => {
@@ -1301,7 +2025,10 @@ export class BroadcastChromeUIV7 {
       el.style.backgroundPosition = spec.bgPosition;
     };
 
-    if (this.portraitLoadedCache.has(profile.portraitAsset)) {
+    if (
+      profile.portraitAsset.startsWith('data:') ||
+      this.portraitLoadedCache.has(profile.portraitAsset)
+    ) {
       applySprite();
       return;
     }
@@ -1314,6 +2041,7 @@ export class BroadcastChromeUIV7 {
       const img = new Image();
       img.onload = () => {
         this.portraitLoadedCache.add(profile.portraitAsset);
+        if (el.dataset.castId !== castId) return;
         applySprite();
       };
       img.src = profile.portraitAsset;
@@ -1483,13 +2211,39 @@ export class BroadcastChromeUIV7 {
   // Screen 2: 1966 IBC Contestant Release Clipboard (Pinned CTA Footer!)
   // --------------------------------------------------------------------------
 
-  public showReleaseWaiver(): Promise<ContestantWaiverV7> {
-    this.clearActiveTimer();
+  public showReleaseWaiver(opts?: {
+    readonly betweenEpisodes?: boolean;
+  }): Promise<ContestantWaiverV7> {
+    const isBetweenEpisodes = Boolean(opts?.betweenEpisodes);
+    if (!isBetweenEpisodes) {
+      this.clearActiveTimer();
+    }
     return new Promise((resolve) => {
-      let selectedJob: DayJobIdV7 = 'PATENT_CLERK';
-      let selectedVice: StageViceIdV7 = 'SCOREBOARD_GRUDGE';
-      let selectedGoal: LienGoalIdV7 = 'CLEAN_PURSE_250K';
+      let resolvedOnce = false;
+      let preMatchInterval: number | null = null;
+      const existingWaiver = this.campaign.getState().waiver;
+      let selectedJob: DayJobIdV7 = existingWaiver?.dayJob ?? 'PATENT_CLERK';
+      let selectedVice: StageViceIdV7 = existingWaiver?.stageVice ?? 'SCOREBOARD_GRUDGE';
+      let selectedGoal: LienGoalIdV7 = existingWaiver?.lienGoal ?? 'CLEAN_PURSE_250K';
       let remainingSec = 60;
+
+      const clearLocalWaiverTimer = (): void => {
+        if (preMatchInterval !== null) {
+          window.clearInterval(preMatchInterval);
+          preMatchInterval = null;
+        }
+        if (!isBetweenEpisodes) {
+          this.clearActiveTimer();
+        }
+      };
+
+      const cancelBetweenEpisodes = (): void => {
+        if (resolvedOnce) return;
+        resolvedOnce = true;
+        clearLocalWaiverTimer();
+        this.hideUtilityModalStage();
+        resolve(this.campaign.ensureDefaultWaiverIfMissing());
+      };
 
       const board = document.createElement('div');
       board.className = 'ws7-waiver-clipboard';
@@ -1504,15 +2258,32 @@ export class BroadcastChromeUIV7 {
       topRow.style.gap = '10px';
       const kicker = document.createElement('span');
       kicker.className = 'ws7-subtitle-kicker';
-      kicker.textContent = 'IBC STUDIO 6A · CONTESTANT SIGN-IN CLIPBOARD';
+      kicker.textContent = isBetweenEpisodes
+        ? 'IBC STUDIO 6A · GREEN-ROOM CONTESTANT PERKS'
+        : 'IBC STUDIO 6A · CONTESTANT SIGN-IN CLIPBOARD';
+
       const timerBadge = document.createElement('span');
       timerBadge.className = 'ws7-clue-timer-pill';
       timerBadge.textContent = '60s';
-      topRow.append(kicker, timerBadge);
+
+      if (isBetweenEpisodes) {
+        const closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.className = 'ws7-sheet-close-btn';
+        closeBtn.setAttribute('aria-label', 'Close Contestant Perks');
+        closeBtn.title = 'Close Contestant Perks';
+        closeBtn.textContent = '✕';
+        closeBtn.addEventListener('click', cancelBetweenEpisodes);
+        topRow.append(kicker, closeBtn);
+      } else {
+        topRow.append(kicker, timerBadge);
+      }
 
       const heading = document.createElement('h2');
       heading.className = 'ws7-display-title';
-      heading.textContent = 'Pick Your Contestant Style Before Going Live';
+      heading.textContent = isBetweenEpisodes
+        ? 'Adjust Your Contestant Perks for Next Broadcast'
+        : 'Pick Your Contestant Style Before Going Live';
       masthead.append(topRow, heading);
 
       const body = document.createElement('div');
@@ -1558,12 +2329,17 @@ export class BroadcastChromeUIV7 {
       };
 
       const finishWaiver = (): void => {
-        this.clearActiveTimer();
+        if (resolvedOnce) return;
+        resolvedOnce = true;
+        clearLocalWaiverTimer();
         const stamped = this.campaign.stampReleaseWaiver(
           selectedJob,
           selectedVice,
           selectedGoal,
         );
+        if (isBetweenEpisodes) {
+          this.hideUtilityModalStage();
+        }
         resolve(stamped);
       };
 
@@ -1597,22 +2373,29 @@ export class BroadcastChromeUIV7 {
       const sealBtn = document.createElement('button');
       sealBtn.type = 'button';
       sealBtn.className = 'ws7-primary-btn';
-      sealBtn.textContent = 'SIGN & WALK INTO STUDIO\u00A06A →';
+      sealBtn.textContent = isBetweenEpisodes
+        ? 'SAVE PERKS & RETURN ✓'
+        : 'SIGN & WALK INTO STUDIO\u00A06A →';
       sealBtn.addEventListener('click', finishWaiver);
       footer.appendChild(sealBtn);
 
       body.append(jobGroup, viceGroup, goalGroup);
       board.append(masthead, body, footer);
-      this.mountModalContent(board);
 
-      this.activeTimerHandle = window.setInterval(() => {
-        remainingSec -= 1;
-        timerBadge.textContent = `${Math.max(0, remainingSec)}s`;
-        timerBadge.dataset.urgent = remainingSec <= 10 ? 'true' : 'false';
-        if (remainingSec <= 0) {
-          finishWaiver();
-        }
-      }, 1000);
+      if (isBetweenEpisodes) {
+        this.mountUtilityModalContent(board, cancelBetweenEpisodes);
+      } else {
+        this.mountModalContent(board);
+        preMatchInterval = window.setInterval(() => {
+          remainingSec -= 1;
+          timerBadge.textContent = `${Math.max(0, remainingSec)}s`;
+          timerBadge.dataset.urgent = remainingSec <= 10 ? 'true' : 'false';
+          if (remainingSec <= 0) {
+            finishWaiver();
+          }
+        }, 1000);
+        this.activeTimerHandle = preMatchInterval;
+      }
     });
   }
 
@@ -1667,8 +2450,14 @@ export class BroadcastChromeUIV7 {
       castRow.className = 'ws7-callsheet-cast-row';
 
       const rivalProfile = CAST_PROFILES_V7[blueprint.rivalId];
-      const friendlyWeakList = rivalProfile.weakCategories
-        .map((c) => getFriendlyTvCategoryLabelV7(c))
+      const scoutedWeakForSheet =
+        this.campaign.getState().scoutingNotebook?.[blueprint.rivalId]?.revealedWeak ?? [];
+      const friendlyWeakList = [0, 1, 2]
+        .map((idx) =>
+          scoutedWeakForSheet[idx]
+            ? `💡 ${getFriendlyTvCategoryLabelV7(scoutedWeakForSheet[idx])}`
+            : '???',
+        )
         .join(' · ');
 
       const rivalCard = document.createElement('div');
@@ -1681,7 +2470,7 @@ export class BroadcastChromeUIV7 {
       rivalMeta.innerHTML = `
         <div style="font-family:var(--ws7-font-broadcast);font-size:14px;color:#ff9c78;font-weight:800;letter-spacing:0.06em;">TONIGHT’S CHAMPION</div>
         <div style="font-size:19px;font-weight:800;color:#fff7e6;margin:2px 0;">${rivalProfile.name}</div>
-        <div style="font-size:14px;color:#ffd56b;font-weight:700;">Weak Spots: ${friendlyWeakList}</div>
+        <div style="font-size:14px;color:#ffd56b;font-weight:700;">Scouted Weak Spots: ${friendlyWeakList}</div>
       `;
       rivalCard.append(rivalPic, rivalMeta);
 
@@ -1714,7 +2503,7 @@ export class BroadcastChromeUIV7 {
       const teletype = document.createElement('div');
       teletype.className = 'ws7-teletype-strip';
       teletype.textContent = blueprint.boothCheatHint;
-      window.setTimeout(() => {
+      this.scheduleFlowTimeout(() => {
         teletype.dataset.faded = 'true';
         teletype.textContent =
           'STAGE MANAGER CLEARED THE WIRE — TARGET THE CHAMPION’S WEAK-SPOT TILES!';
@@ -1811,6 +2600,39 @@ export class BroadcastChromeUIV7 {
     return this.toyBayEl;
   }
 
+  public syncLifelineButtons(
+    fiftyFiftyAvailable: boolean,
+    audiencePollAvailable: boolean,
+  ): void {
+    this.fiftyFiftyBtnEl.disabled = !fiftyFiftyAvailable;
+    this.fiftyFiftyBtnEl.innerHTML = fiftyFiftyAvailable
+      ? `${SVG_SCISSORS_1966}<span>50/50 STUDIO CUT</span>`
+      : `${SVG_SCISSORS_1966}<span>50/50 USED</span>`;
+
+    this.audiencePollBtnEl.disabled = !audiencePollAvailable;
+    this.audiencePollBtnEl.innerHTML = audiencePollAvailable
+      ? `${SVG_POLL_BARS_1966}<span>STUDIO AUDIENCE POLL</span>`
+      : `${SVG_POLL_BARS_1966}<span>POLL USED</span>`;
+  }
+
+  public setQuestionPollSummary(summaryText: string): void {
+    const existing = this.clueStakesMetaEl.dataset.baseTags ?? '';
+    this.clueStakesMetaEl.textContent = existing
+      ? `${existing}  ·  ${summaryText}`
+      : summaryText;
+  }
+
+  public updateQuestionHostLine(
+    text: string,
+    mood: EmceeMoodV7 = 'WINK',
+    lockedIn: boolean = false,
+  ): void {
+    this.hostDeskStripEl.dataset.locked = lockedIn ? 'true' : 'false';
+    this.hostDeskAvatarEl.style.backgroundPosition =
+      EMCEE_SPRITE_POSITIONS_V7[mood] ?? EMCEE_SPRITE_POSITIONS_V7.POISED;
+    this.hostDeskQuipEl.textContent = formatOrphanProofCopyV7(text);
+  }
+
   public openQuestionChassis(spec: QuestionChassisOpenSpecV7): HTMLDivElement {
     const activeTwist: ClassicTvTileTwistV7 =
       spec.tvTwist && spec.tvTwist !== 'NONE'
@@ -1824,20 +2646,56 @@ export class BroadcastChromeUIV7 {
     const domainRibbon = LIVING_COLOR_DOMAIN_RIBBONS_V7[spec.clue.domain];
 
     // Apply Dramatic 1966 Living Color Twist Flare to Monitor & Header!
-    this.questionChassisEl.dataset.twist = activeTwist;
-    this.clueHeaderRowEl.dataset.flare = flareSpec ? 'true' : 'false';
+    this.questionChassisEl.dataset.twist = spec.isFinalWager ? 'SECRET_SQUARE' : activeTwist;
+    this.clueHeaderRowEl.dataset.flare =
+      flareSpec || spec.isMatchPointTurn || spec.isFinalWager ? 'true' : 'false';
 
-    if (flareSpec) {
+    if (spec.isFinalWager) {
+      this.clueHeaderRowEl.style.background =
+        'linear-gradient(95deg, #10357a 0%, #1e56c5 48%, #b86800 100%)';
+      this.clueHeaderRowEl.style.color = '#ffffff';
+      this.clueStakesChipEl.style.background = 'rgba(7, 19, 33, 0.42)';
+      this.clueStakesChipEl.style.color = '#ffd56b';
+
+      this.twistFlareStripEl.dataset.twist = 'SECRET_SQUARE';
+      this.twistFlareStripEl.textContent =
+        spec.baseChips > 0
+          ? `★ ACT III · FINAL BROADCAST WAGER · $${spec.baseChips.toLocaleString()} AT STAKE!`
+          : '★ ACT III · FINAL BROADCAST WAGER · SAFE $0 PLAY!';
+      this.twistFlareStripEl.classList.remove('ws7-hidden');
+    } else if (spec.isMatchPointTurn) {
+      this.clueHeaderRowEl.style.background =
+        'linear-gradient(95deg, #a81812 0%, #e03e36 52%, #b86800 100%)';
+      this.clueHeaderRowEl.style.color = '#ffffff';
+      this.clueStakesChipEl.style.background = 'rgba(7, 19, 33, 0.36)';
+      this.clueStakesChipEl.style.color = '#ffd56b';
+
+      this.twistFlareStripEl.dataset.twist = 'MATCH_POINT';
+      this.twistFlareStripEl.textContent = '🚨 THIS CLUE FOR THE SHOW! · FINAL TURN MATCH POINT!';
+      this.twistFlareStripEl.classList.remove('ws7-hidden');
+    } else if (flareSpec) {
       this.clueHeaderRowEl.style.background = flareSpec.headerBg;
       this.clueHeaderRowEl.style.color = flareSpec.headerInk;
       this.clueStakesChipEl.style.background = flareSpec.chipBg;
       this.clueStakesChipEl.style.color = flareSpec.chipInk;
 
+      const cleanShowcaseName = spec.showcaseFormatName
+        ? spec.showcaseFormatName.toUpperCase().replace(/^STUDIO\s+/i, '')
+        : '';
       this.twistFlareStripEl.dataset.twist = activeTwist;
       this.twistFlareStripEl.textContent =
-        activeTwist === 'SHOWCASE_BONUS' && spec.showcaseFormatName
-          ? `★ STUDIO SHOWCASE · ${spec.showcaseFormatName.toUpperCase()} ★`
+        activeTwist === 'SHOWCASE_BONUS' && cleanShowcaseName
+          ? `★ STUDIO SHOWCASE · ${cleanShowcaseName}`
           : flareSpec.flareBanner;
+      this.twistFlareStripEl.classList.remove('ws7-hidden');
+    } else if (spec.isAct3Showdown) {
+      this.clueHeaderRowEl.style.background = domainRibbon.bg;
+      this.clueHeaderRowEl.style.color = domainRibbon.ink;
+      this.clueStakesChipEl.style.background = domainRibbon.chipBg;
+      this.clueStakesChipEl.style.color = domainRibbon.chipInk;
+
+      this.twistFlareStripEl.dataset.twist = 'SECRET_SQUARE';
+      this.twistFlareStripEl.textContent = '⚡ DOUBLE-DOLLARS SHOWDOWN · 1.5× ACT III STAKES!';
       this.twistFlareStripEl.classList.remove('ws7-hidden');
     } else {
       this.clueHeaderRowEl.style.background = domainRibbon.bg;
@@ -1851,16 +2709,39 @@ export class BroadcastChromeUIV7 {
     }
 
     const friendlyCat = getFriendlyTvCategoryLabelV7(spec.clue.category);
-    this.domainPillEl.textContent = `${friendlyCat} · $${spec.baseChips}`;
+    const headerCatLabel =
+      friendlyCat.toUpperCase() === spec.clue.category || friendlyCat.includes(spec.clue.category)
+        ? friendlyCat
+        : `${spec.clue.category} · ${friendlyCat}`;
+    this.domainPillEl.innerHTML = '';
+    const catWrapEl = document.createElement('span');
+    catWrapEl.className = 'ws7-cat-label-wrap';
+    catWrapEl.textContent = headerCatLabel;
+    const cashPillEl = document.createElement('span');
+    cashPillEl.className = 'ws7-cat-cash-pill';
+    cashPillEl.textContent = `$${spec.baseChips}`;
+    this.domainPillEl.append(catWrapEl, cashPillEl);
 
-    // Keep header stakes chip razor-compact (NEVER duplicate the full twist banner title so 30s clock NEVER clips on 360–430px phones!)
+    // Keep header stakes chip razor-compact & 1:1 exact with Post-Answer totalMult (e.g. 1.35x -> 1.35x, 1.50x -> 1.5x!)
     const chipParts: string[] = [];
-    if (spec.liveMultPreview > 1.05) {
-      chipParts.push(`${spec.liveMultPreview.toFixed(1)}×`);
+    if (spec.liveMultPreview > 1.02) {
+      const m = Math.round(spec.liveMultPreview * 100) / 100;
+      const fmtMult = Math.abs(Math.round(m * 10) - m * 10) < 0.005 ? m.toFixed(1) : m.toFixed(2);
+      chipParts.push(`${fmtMult}×`);
     } else if (flareSpec) {
       chipParts.push(flareSpec.badge);
     }
     this.clueStakesChipEl.textContent = chipParts.join(' ');
+
+    // Live Host Grant Bellamy 1-Line Studio Desk Setup
+    const defaultHostIntro = spec.isFinalWager
+      ? `Final Wager on the line—$${spec.baseChips.toLocaleString()} riding on ${friendlyCat}!`
+      : `${friendlyCat} for $${spec.baseChips}—thirty seconds on the Studio 6A clock!`;
+    this.updateQuestionHostLine(
+      spec.hostIntroLine || defaultHostIntro,
+      spec.hostMood ?? (spec.isFinalWager || spec.isMatchPointTurn ? 'INTENSE' : 'POISED'),
+      false,
+    );
 
     // Big, Arm's-Length Readable Clue Stem
     const formattedStem = formatOrphanProofCopyV7(spec.clue.stem);
@@ -1870,7 +2751,25 @@ export class BroadcastChromeUIV7 {
     const bonusTags: string[] = [];
     if (spec.isWheelhouse) bonusTags.push('★ CHAMPION WEAK SPOT (+0.5× BONUS)');
     if (spec.hasAmberTruce) bonusTags.push('✦ STUDIO TRUCE BONUS (+0.35×)');
-    this.clueStakesMetaEl.textContent = bonusTags.join('  ·  ');
+    const baseTags = bonusTags.join('  ·  ');
+    this.clueStakesMetaEl.dataset.baseTags = baseTags;
+    this.clueStakesMetaEl.textContent = baseTags;
+
+    this.activeUseFiftyFiftyHandler = spec.onUseFiftyFifty ?? null;
+    this.activeUseAudiencePollHandler = spec.onUseAudiencePoll ?? null;
+    const hasFifty = Boolean(spec.onUseFiftyFifty);
+    const hasPoll = Boolean(spec.onUseAudiencePoll);
+    const showLifelines = hasFifty || hasPoll;
+    this.lifelineBarEl.classList.toggle('ws7-hidden', !showLifelines);
+    this.lifelineBarEl.dataset.single = hasFifty !== hasPoll ? 'true' : 'false';
+    this.fiftyFiftyBtnEl.classList.toggle('ws7-hidden', !hasFifty);
+    this.audiencePollBtnEl.classList.toggle('ws7-hidden', !hasPoll);
+    if (showLifelines) {
+      this.syncLifelineButtons(
+        Boolean(spec.fiftyFiftyAvailable),
+        Boolean(spec.audiencePollAvailable),
+      );
+    }
 
     this.questionMaxCountdownSec = Math.max(
       1,
@@ -1902,21 +2801,28 @@ export class BroadcastChromeUIV7 {
   public closeQuestionChassis(): void {
     this.questionStageEl.classList.add('ws7-hidden');
     this.questionChassisEl.dataset.twist = 'NONE';
+    this.activeUseFiftyFiftyHandler = null;
+    this.activeUseAudiencePollHandler = null;
     this.toyBayEl.innerHTML = '';
     this.syncBoardModeRibbonVisibility();
   }
 
   // --------------------------------------------------------------------------
-  // Screen 5: 1.80s 4-Beat Post-Answer Theater Showcase
+  // Screen 5: 2.20s High-Contrast Post-Answer Solari Showcase (Tap-to-Skip >=500ms)
   // --------------------------------------------------------------------------
 
   public playPostAnswerTheater(spec: PostAnswerTheaterSpecV7): Promise<void> {
     this.closeQuestionChassis();
-    const dwellMs = Math.max(1800, spec.dwellMs ?? 1800);
+    const dwellMs = Math.max(1850, spec.dwellMs ?? 2200);
 
     return new Promise((resolve) => {
+      let resolved = false;
+      let autoTimeout: number | null = null;
+      const openedAt = typeof performance !== 'undefined' ? performance.now() : 0;
+
       const card = document.createElement('div');
       card.className = 'ws7-theater-card';
+      card.style.cursor = 'pointer';
       card.style.setProperty('--ws7-dwell-ms', `${dwellMs}ms`);
 
       const crest = document.createElement('div');
@@ -1937,6 +2843,30 @@ export class BroadcastChromeUIV7 {
       const creamBand = document.createElement('div');
       creamBand.className = 'ws7-theater-cream-band';
 
+      if (spec.hostQuip) {
+        const hostRow = document.createElement('div');
+        hostRow.className = 'ws7-theater-host-row';
+        const hostPic = document.createElement('div');
+        hostPic.className = 'ws7-host-desk-avatar';
+        hostPic.dataset.size = 'md';
+        const mood: EmceeMoodV7 =
+          spec.hostMood ??
+          (spec.resolution.isCorrect
+            ? 'WINK'
+            : spec.resolution.triggeredKlaxon
+              ? 'GASP'
+              : 'POISED');
+        hostPic.style.backgroundImage = `url("${EMCEE_MEDALLION_ASSET_V7}")`;
+        hostPic.style.backgroundSize = '200% 200%';
+        hostPic.style.backgroundPosition = EMCEE_SPRITE_POSITIONS_V7[mood];
+
+        const hostBubble = document.createElement('div');
+        hostBubble.className = 'ws7-theater-host-copy';
+        hostBubble.innerHTML = `<span class="ws7-theater-host-name">GRANT BELLAMY:</span> “${formatOrphanProofCopyV7(spec.hostQuip)}”`;
+        hostRow.append(hostPic, hostBubble);
+        creamBand.appendChild(hostRow);
+      }
+
       const answerKicker = document.createElement('div');
       answerKicker.className = 'ws7-theater-answer-kicker';
       answerKicker.textContent = spec.resolution.isCorrect
@@ -1945,22 +2875,27 @@ export class BroadcastChromeUIV7 {
 
       const answerPlaque = document.createElement('div');
       answerPlaque.className = 'ws7-theater-answer';
-      answerPlaque.style.opacity = '0';
-      answerPlaque.style.transition = 'opacity 0.18s ease';
       answerPlaque.textContent = spec.resolution.trueAnswerDisplay;
 
       const ahaRibbon = document.createElement('div');
       ahaRibbon.className = 'ws7-aha-ribbon';
-      ahaRibbon.style.opacity = '0';
-      ahaRibbon.style.transition = 'opacity 0.2s ease';
       ahaRibbon.textContent = formatOrphanProofCopyV7(spec.ahaFactoid);
 
       creamBand.append(answerKicker, answerPlaque, ahaRibbon);
 
+      if (spec.discoveryCallout) {
+        const discEl = document.createElement('div');
+        discEl.style.fontFamily = 'var(--ws7-font-broadcast)';
+        discEl.style.fontSize = '14.5px';
+        discEl.style.fontWeight = '900';
+        discEl.style.color = '#0e7c40';
+        discEl.textContent = spec.discoveryCallout;
+        creamBand.appendChild(discEl);
+      }
+
+      // High-Contrast Solari Odometer Row — Crisp & Visible Immediately (Rolls at t+120ms!)
       const odoRow = document.createElement('div');
       odoRow.className = 'ws7-odometer-row';
-      odoRow.style.opacity = '0';
-      odoRow.style.transition = 'opacity 0.2s ease';
 
       const chipsCell = document.createElement('span');
       chipsCell.className = 'ws7-odometer-cell';
@@ -1976,17 +2911,25 @@ export class BroadcastChromeUIV7 {
       const eqSign = document.createElement('span');
       eqSign.textContent = '=';
 
+      const finalOdometerTarget = spec.totalTurnNetCash ?? spec.economy.netCashDelta;
       const cashCell = document.createElement('span');
       cashCell.className = 'ws7-odometer-cell';
       cashCell.dataset.total = 'true';
-      if (spec.economy.netCashDelta < 0) {
+      if (finalOdometerTarget < 0) {
         cashCell.dataset.negative = 'true';
-      } else if (spec.economy.netCashDelta === 0) {
+      } else if (finalOdometerTarget === 0) {
         cashCell.dataset.zero = 'true';
       }
-      cashCell.textContent = spec.economy.netCashDelta > 0 ? '+$0' : '$0';
+      cashCell.textContent = finalOdometerTarget > 0 ? '+$0' : '$0';
 
-      odoRow.append(chipsCell, multSign, multCell, eqSign, cashCell);
+      if (spec.extraBonusLabel) {
+        const bonusCell = document.createElement('span');
+        bonusCell.className = 'ws7-odometer-cell';
+        bonusCell.textContent = spec.extraBonusLabel;
+        odoRow.append(chipsCell, multSign, multCell, bonusCell, eqSign, cashCell);
+      } else {
+        odoRow.append(chipsCell, multSign, multCell, eqSign, cashCell);
+      }
 
       const dwellTrack = document.createElement('div');
       dwellTrack.className = 'ws7-theater-dwell-track';
@@ -1994,21 +2937,46 @@ export class BroadcastChromeUIV7 {
       dwellBar.className = 'ws7-theater-dwell-bar';
       dwellTrack.appendChild(dwellBar);
 
-      card.append(crest, creamBand, odoRow, dwellTrack);
-      this.mountModalContent(card);
+      const skipHint = document.createElement('div');
+      skipHint.className = 'ws7-theater-skip-hint';
+      skipHint.textContent = 'TAP ANYWHERE TO CONTINUE';
 
-      window.setTimeout(() => {
-        answerPlaque.style.opacity = '1';
-      }, 90);
-      window.setTimeout(() => {
-        ahaRibbon.style.opacity = '1';
-      }, 220);
-      window.setTimeout(() => {
-        odoRow.style.opacity = '1';
-        const target = spec.economy.netCashDelta;
+      card.append(crest, creamBand, odoRow, dwellTrack, skipHint);
+
+      const finishTheater = (): void => {
+        if (resolved) return;
+        resolved = true;
+        if (autoTimeout !== null) {
+          this.clearFlowTimeout(autoTimeout);
+          autoTimeout = null;
+        }
+        this.hideModalStage();
+        resolve();
+      };
+
+      card.addEventListener('click', () => {
+        const elapsed =
+          typeof performance !== 'undefined' ? performance.now() - openedAt : 999;
+        if (elapsed >= 500) {
+          finishTheater();
+        }
+      });
+
+      this.mountModalContent(card, () => {
+        const elapsed =
+          typeof performance !== 'undefined' ? performance.now() - openedAt : 999;
+        if (elapsed >= 500) {
+          finishTheater();
+        }
+      });
+
+      this.scheduleFlowTimeout(() => {
+        if (resolved) return;
+        const target = finalOdometerTarget;
         const start = performance.now();
-        const rollDuration = 420;
+        const rollDuration = 400;
         const stepRoll = (now: number): void => {
+          if (resolved) return;
           const p = Math.min(1, (now - start) / rollDuration);
           const cur = Math.round(target * p) || 0;
           cashCell.textContent =
@@ -2018,16 +2986,454 @@ export class BroadcastChromeUIV7 {
                 ? '$0'
                 : `-$${Math.abs(cur).toLocaleString()}`;
           if (p < 1) {
-            window.requestAnimationFrame(stepRoll);
+            this.scheduleFlowRaf(stepRoll);
           }
         };
-        window.requestAnimationFrame(stepRoll);
-      }, 380);
+        this.scheduleFlowRaf(stepRoll);
+      }, 120);
 
-      window.setTimeout(() => {
+      autoTimeout = this.scheduleFlowTimeout(finishTheater, dwellMs);
+    });
+  }
+
+  // --------------------------------------------------------------------------
+  // Screen 5B: 1966 Act-Break Bumper & Act III Final Broadcast Wager Climax
+  // --------------------------------------------------------------------------
+
+  public playActBreakBumper(spec?: ActBreakBumperSpecV7): Promise<void> {
+    this.clearActiveTimer();
+    const durationMs = Math.max(900, spec?.durationMs ?? 1650);
+
+    return new Promise((resolve) => {
+      let resolved = false;
+      let autoTimer: number | null = null;
+      const openedAt = typeof performance !== 'undefined' ? performance.now() : 0;
+
+      const finish = (): void => {
+        if (resolved) return;
+        resolved = true;
+        if (autoTimer !== null) {
+          this.clearFlowTimeout(autoTimer);
+          autoTimer = null;
+        }
         this.hideModalStage();
         resolve();
-      }, dwellMs);
+      };
+
+      const card = document.createElement('div');
+      card.className = 'ws7-act-bumper-card';
+      card.style.cursor = 'pointer';
+      card.style.setProperty('--ws7-dwell-ms', `${durationMs}ms`);
+
+      const bulbRail = document.createElement('div');
+      bulbRail.className = 'ws7-curtain-bulb-rail';
+      for (let i = 0; i < 14; i += 1) {
+        const b = document.createElement('span');
+        b.className = 'ws7-curtain-bulb';
+        b.style.animationDelay = `${(i % 4) * 0.12}s`;
+        bulbRail.appendChild(b);
+      }
+
+      const actTitle = spec?.actTitle ?? '★ ACT II · DOUBLE-DOLLARS & TWISTS! ★';
+      const headline =
+        spec?.headline ?? 'Fresh Tote Board Re-Racked · 1.5× Boosted Stakes!';
+      const detail =
+        spec?.detailLine ??
+        'Watch for Instant Bargain Turntables, Brass Safe Keys & Control Booth A Tells!';
+
+      const inner = document.createElement('div');
+      inner.className = 'ws7-act-bumper-inner';
+      inner.innerHTML = `
+        <div class="ws7-subtitle-kicker">STUDIO 6A LIVE NETWORK INTERMISSION</div>
+        <h2 class="ws7-act-bumper-title">${actTitle}</h2>
+        <div class="ws7-act-bumper-chips">
+          <span class="ws7-act-bumper-chip">🔄 FRESH TOTE RACK</span>
+          <span class="ws7-act-bumper-chip" data-gold="true">⚡ 1.5× STAKES LIVE</span>
+          <span class="ws7-act-bumper-chip">🔔 BARGAINS & TELLS</span>
+        </div>
+        <div class="ws7-act-bumper-detail">${formatOrphanProofCopyV7(`${headline} — ${detail}`)}</div>
+      `;
+
+      const dwellTrack = document.createElement('div');
+      dwellTrack.className = 'ws7-theater-dwell-track';
+      const dwellBar = document.createElement('div');
+      dwellBar.className = 'ws7-theater-dwell-bar';
+      dwellTrack.appendChild(dwellBar);
+
+      const skipBar = document.createElement('div');
+      skipBar.className = 'ws7-curtain-skip-footer';
+      skipBar.textContent = 'TAP ANYWHERE TO LAUNCH ACT II →';
+
+      card.append(bulbRail, inner, dwellTrack, skipBar);
+
+      card.addEventListener('click', () => {
+        const elapsed = typeof performance !== 'undefined' ? performance.now() - openedAt : 999;
+        if (elapsed >= 140) finish();
+      });
+
+      this.mountModalContent(card, () => {
+        const elapsed = typeof performance !== 'undefined' ? performance.now() - openedAt : 999;
+        if (elapsed >= 140) finish();
+      });
+      autoTimer = this.scheduleFlowTimeout(finish, durationMs);
+    });
+  }
+
+  public playFinalBroadcastWagerStage(spec: FinalBroadcastWagerStageSpecV7): Promise<number> {
+    this.clearActiveTimer();
+    return new Promise((resolve) => {
+      let resolved = false;
+      const maxWager = Math.max(500, Math.floor(spec.maxWager));
+      const hasHouseFloor = spec.playerCash < 500;
+      const rivalProfile = CAST_PROFILES_V7[spec.rivalId] ?? CAST_PROFILES_V7.CARMEN_DELGADO;
+      const rivalFirst = rivalProfile.name.split(/\s+/)[0] ?? rivalProfile.name;
+      const friendlyCategory = getFriendlyTvCategoryLabelV7(spec.category);
+
+      // Compute authentic game-theory Cover / Catch-Up preset & strategy hint!
+      const playerCash = Math.max(0, Math.floor(spec.playerCash));
+      const rivalCash = Math.max(0, Math.floor(spec.rivalCash));
+      const rivalMax = Math.max(500, rivalCash);
+      const rawCoverNeeded = Math.max(0, rivalCash + rivalMax + 50 - playerCash);
+      const coverPreset =
+        playerCash > rivalCash && rawCoverNeeded > 0 && rawCoverNeeded < maxWager
+          ? Math.min(maxWager, Math.ceil(rawCoverNeeded / 50) * 50)
+          : null;
+      const catchUpNeeded =
+        playerCash < rivalCash
+          ? Math.min(maxWager, Math.ceil((rivalCash - playerCash + 50) / 50) * 50)
+          : null;
+
+      let strategyHint: string;
+      if (playerCash > rivalCash + rivalMax) {
+        strategyHint = `💡 RUNAWAY LEAD: A $0 Safe Wager guarantees victory over ${rivalFirst}!`;
+      } else if (playerCash > rivalCash && coverPreset !== null) {
+        strategyHint = `💡 COVER MATH: Wager $${coverPreset.toLocaleString()} to lock out ${rivalFirst} even if they double!`;
+      } else if (playerCash === rivalCash) {
+        strategyHint = `💡 DEAD-EVEN TIE: Out-wager or out-answer ${rivalFirst} to claim the Studio 6A Crown!`;
+      } else if (catchUpNeeded !== null && playerCash + maxWager > rivalCash) {
+        strategyHint = `💡 COMEBACK SHOT: Wager $${catchUpNeeded.toLocaleString()}+ to overtake ${rivalFirst}${hasHouseFloor ? ' ($500 House Grudge Stake active!)' : ''}!`;
+      } else {
+        strategyHint = `💡 ALL-IN CLIMAX: Go All-In ($${maxWager.toLocaleString()}) and hope ${rivalFirst} stumbles!`;
+      }
+
+      const w25 = Math.min(maxWager, Math.max(50, Math.round((maxWager * 0.25) / 50) * 50));
+      const w50 = Math.min(maxWager, Math.max(100, Math.round((maxWager * 0.5) / 50) * 50));
+      const thirdPresetVal =
+        coverPreset !== null && coverPreset !== w25 && coverPreset !== maxWager
+          ? coverPreset
+          : catchUpNeeded !== null && catchUpNeeded !== w25 && catchUpNeeded < maxWager
+            ? catchUpNeeded
+            : w50;
+      const thirdPresetLabel =
+        coverPreset !== null && thirdPresetVal === coverPreset
+          ? 'COVER BET'
+          : catchUpNeeded !== null && thirdPresetVal === catchUpNeeded
+            ? 'OVERTAKE'
+            : '50% STAKE';
+
+      let selectedWager =
+        playerCash > rivalCash + rivalMax
+          ? 0
+          : coverPreset !== null
+            ? coverPreset
+            : catchUpNeeded !== null
+              ? catchUpNeeded
+              : w50;
+
+      const presets: ReadonlyArray<{ label: string; amount: number }> = [
+        { label: 'SAFE · $0', amount: 0 },
+        { label: `25% · $${w25.toLocaleString()}`, amount: w25 },
+        { label: `${thirdPresetLabel} · $${thirdPresetVal.toLocaleString()}`, amount: thirdPresetVal },
+        {
+          label: `${hasHouseFloor ? 'GRUDGE MAX' : 'ALL-IN'} · $${maxWager.toLocaleString()}`,
+          amount: maxWager,
+        },
+      ];
+
+      const panel = document.createElement('div');
+      panel.className = 'ws7-mahogany-panel ws7-final-wager-card ws7-final-wager-panel';
+      panel.setAttribute('role', 'dialog');
+      panel.setAttribute('aria-label', 'Act III Final Broadcast Wager');
+
+      const header = document.createElement('div');
+      header.className = 'ws7-sheet-header ws7-final-wager-header';
+      header.innerHTML = `
+        <div class="ws7-subtitle-kicker"><span class="ws7-turn-full">${spec.episodeCode} · ACT III CLIMAX · TURN 10 OF 10</span><span class="ws7-turn-short">${spec.episodeCode} · ACT III · TURN 10/10</span></div>
+        <h2 class="ws7-display-title">★ Final Broadcast Wager ★</h2>
+      `;
+
+      const body = document.createElement('div');
+      body.className = 'ws7-sheet-body ws7-final-wager-body';
+
+      // Compact Host Grant Bellamy Strip
+      const hostStrip = document.createElement('div');
+      hostStrip.className = 'ws7-host-desk-strip ws7-final-wager-host';
+      const hostPic = document.createElement('div');
+      hostPic.className = 'ws7-host-desk-avatar';
+      hostPic.style.backgroundImage = `url("${EMCEE_MEDALLION_ASSET_V7}")`;
+      hostPic.style.backgroundSize = '200% 200%';
+      hostPic.style.backgroundPosition = EMCEE_SPRITE_POSITIONS_V7.INTENSE;
+      const hostCopy = document.createElement('span');
+      hostCopy.className = 'ws7-host-desk-quip';
+      hostCopy.textContent = formatOrphanProofCopyV7(
+        spec.hostPromptLine ??
+          'Grant Bellamy: “Fifty million watching—place your Final Broadcast Wager before we unseal the vault!”',
+      );
+      hostStrip.append(hostPic, hostCopy);
+
+      // Dual Scoreboard + Cover Math Hint
+      const scoreBand = document.createElement('div');
+      scoreBand.className = 'ws7-final-wager-scores';
+      scoreBand.innerHTML = `
+        <div class="ws7-final-score-cell" data-side="player">
+          <span class="ws7-final-score-tag">YOU${hasHouseFloor ? ' · $500 GRUDGE MAX' : ''}</span>
+          <span class="ws7-final-score-val">$${playerCash.toLocaleString()}</span>
+        </div>
+        <div class="ws7-final-score-cell" data-side="rival">
+          <span class="ws7-final-score-tag">${rivalProfile.name.toUpperCase()}</span>
+          <span class="ws7-final-score-val">$${rivalCash.toLocaleString()}</span>
+        </div>
+      `;
+
+      const hintBar = document.createElement('div');
+      hintBar.className = 'ws7-final-wager-hint';
+      hintBar.textContent = strategyHint;
+
+      // Glowing 1966 Backlit Acrylite Final Category Plaque (Clue Still Sealed!)
+      const catPlaque = document.createElement('div');
+      catPlaque.className = 'ws7-final-wager-category-plaque';
+      const scoutBadge = spec.isScoutedWeak
+        ? '<span class="ws7-final-scout-tag" data-kind="weak">💡 RIVAL WEAK SPOT!</span>'
+        : spec.isScoutedStrong
+          ? '<span class="ws7-final-scout-tag" data-kind="strong">★ RIVAL STRONG TURF</span>'
+          : '';
+      catPlaque.innerHTML = `
+        <div class="ws7-final-cat-kicker"><span class="ws7-turn-full">TONIGHT’S FINAL CATEGORY · CLUE SEALED</span><span class="ws7-turn-short">FINAL CATEGORY · CLUE SEALED</span></div>
+        <div class="ws7-final-cat-title">${friendlyCategory} ${scoutBadge}</div>
+      `;
+
+      // 4 Strategic 1-Tap Wager Presets + Fine-Tune Stepper
+      const controlsWrap = document.createElement('div');
+      controlsWrap.className = 'ws7-final-wager-controls';
+
+      const presetGrid = document.createElement('div');
+      presetGrid.className = 'ws7-final-preset-grid';
+      const presetBtns: HTMLButtonElement[] = [];
+
+      const readoutValEl = document.createElement('span');
+      readoutValEl.className = 'ws7-final-stepper-val';
+
+      const lockBtn = document.createElement('button');
+      lockBtn.type = 'button';
+      lockBtn.className = 'ws7-primary-btn ws7-final-lock-btn';
+
+      const syncWagerUi = (): void => {
+        selectedWager = Math.max(0, Math.min(maxWager, Math.round(selectedWager / 50) * 50));
+        readoutValEl.textContent = `$${selectedWager.toLocaleString()}`;
+        lockBtn.textContent = `LOCK IN $${selectedWager.toLocaleString()} FINAL WAGER →`;
+        for (let i = 0; i < presets.length; i += 1) {
+          presetBtns[i].dataset.active = presets[i].amount === selectedWager ? 'true' : 'false';
+        }
+      };
+
+      for (const p of presets) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'ws7-final-preset-btn';
+        b.textContent = p.label;
+        b.addEventListener('click', () => {
+          selectedWager = p.amount;
+          spec.onWagerTickSfx?.();
+          syncWagerUi();
+        });
+        presetBtns.push(b);
+        presetGrid.appendChild(b);
+      }
+
+      const stepperRow = document.createElement('div');
+      stepperRow.className = 'ws7-final-stepper-row';
+      const minusBtn = document.createElement('button');
+      minusBtn.type = 'button';
+      minusBtn.className = 'ws7-final-step-btn';
+      minusBtn.textContent = '− $50';
+      minusBtn.addEventListener('click', () => {
+        selectedWager = Math.max(0, selectedWager - 50);
+        spec.onWagerTickSfx?.();
+        syncWagerUi();
+      });
+
+      const plusBtn = document.createElement('button');
+      plusBtn.type = 'button';
+      plusBtn.className = 'ws7-final-step-btn';
+      plusBtn.textContent = '+ $50';
+      plusBtn.addEventListener('click', () => {
+        selectedWager = Math.min(maxWager, selectedWager + 50);
+        spec.onWagerTickSfx?.();
+        syncWagerUi();
+      });
+
+      stepperRow.append(minusBtn, readoutValEl, plusBtn);
+      controlsWrap.append(presetGrid, stepperRow);
+
+      body.append(hostStrip, scoreBand, hintBar, catPlaque, controlsWrap);
+
+      const footer = document.createElement('div');
+      footer.className = 'ws7-sheet-footer ws7-final-wager-footer';
+      lockBtn.addEventListener('click', () => {
+        if (resolved) return;
+        resolved = true;
+        spec.onLockInSfx?.();
+        this.hideModalStage();
+        resolve(selectedWager);
+      });
+      footer.appendChild(lockBtn);
+
+      syncWagerUi();
+      panel.append(header, body, footer);
+      this.mountModalContent(panel);
+    });
+  }
+
+  public playFinalWagerShowdownReveal(spec: FinalWagerShowdownRevealSpecV7): Promise<void> {
+    this.closeQuestionChassis();
+    const dwellMs = Math.max(2400, spec.dwellMs ?? 3500);
+
+    return new Promise((resolve) => {
+      let resolved = false;
+      let autoTimer: number | null = null;
+      const openedAt = typeof performance !== 'undefined' ? performance.now() : 0;
+      const rivalProfile = CAST_PROFILES_V7[spec.rivalId] ?? CAST_PROFILES_V7.CARMEN_DELGADO;
+      const playerWonShow = spec.finalPlayerCash > spec.finalRivalCash;
+
+      const card = document.createElement('div');
+      card.className = 'ws7-theater-card ws7-final-reveal-card';
+      card.style.cursor = 'pointer';
+      card.style.setProperty('--ws7-dwell-ms', `${dwellMs}ms`);
+
+      const crest = document.createElement('div');
+      crest.className = 'ws7-theater-crest';
+      crest.dataset.verdict = playerWonShow ? 'correct' : spec.playerCorrect ? 'partial' : 'wrong';
+      crest.textContent = playerWonShow
+        ? '★ FINAL WAGER SHOWDOWN · YOU WIN! ★'
+        : '★ FINAL BROADCAST WAGER TALLY ★';
+
+      const creamBand = document.createElement('div');
+      creamBand.className = 'ws7-theater-cream-band ws7-final-reveal-cream';
+
+      const hostRow = document.createElement('div');
+      hostRow.className = 'ws7-theater-host-row';
+      const hostPic = document.createElement('div');
+      hostPic.className = 'ws7-host-desk-avatar';
+      hostPic.dataset.size = 'md';
+      const mood: EmceeMoodV7 = spec.hostMood ?? (playerWonShow ? 'WINK' : 'INTENSE');
+      hostPic.style.backgroundImage = `url("${EMCEE_MEDALLION_ASSET_V7}")`;
+      hostPic.style.backgroundSize = '200% 200%';
+      hostPic.style.backgroundPosition = EMCEE_SPRITE_POSITIONS_V7[mood];
+      const hostBubble = document.createElement('div');
+      hostBubble.className = 'ws7-theater-host-copy';
+      hostBubble.innerHTML = `<span class="ws7-theater-host-name">GRANT BELLAMY:</span> “${formatOrphanProofCopyV7(spec.hostQuip)}”`;
+      hostRow.append(hostPic, hostBubble);
+
+      const answerLine = document.createElement('div');
+      answerLine.className = 'ws7-final-reveal-answer';
+      answerLine.innerHTML = `<span class="ws7-theater-answer-kicker">OFFICIAL ANSWER:</span> <strong>${spec.trueAnswerDisplay}</strong>`;
+
+      const ahaRibbon = document.createElement('div');
+      ahaRibbon.className = 'ws7-aha-ribbon';
+      ahaRibbon.textContent = formatOrphanProofCopyV7(spec.ahaFactoid);
+
+      creamBand.append(hostRow, answerLine, ahaRibbon);
+
+      // 2-Beat Podium Showdown Strip (Beat 1: Champion Wager & Answer -> Beat 2: Player Wager & Answer!)
+      const podiumGrid = document.createElement('div');
+      podiumGrid.className = 'ws7-final-podium-grid';
+
+      const cpuDeltaStr = spec.cpuCorrect
+        ? `+$${spec.cpuWager.toLocaleString()}`
+        : `-$${spec.cpuWager.toLocaleString()}`;
+      const cpuCard = document.createElement('div');
+      cpuCard.className = 'ws7-final-podium-box';
+      cpuCard.dataset.revealed = 'false';
+      cpuCard.dataset.verdict = spec.cpuCorrect ? 'hit' : 'miss';
+      cpuCard.innerHTML = `
+        <div class="ws7-final-podium-top">
+          <span>${rivalProfile.name.toUpperCase()}</span>
+          <span class="ws7-final-podium-wager">WAGERED $${spec.cpuWager.toLocaleString()}</span>
+        </div>
+        <div class="ws7-final-podium-ans">“${spec.cpuAnswerText}”</div>
+        <div class="ws7-final-podium-tot">
+          <span>${spec.cpuCorrect ? `✓ CORRECT (${cpuDeltaStr})` : `✕ MISSED (${cpuDeltaStr})`}</span>
+          <strong>$${spec.finalRivalCash.toLocaleString()}</strong>
+        </div>
+      `;
+
+      const playerDeltaStr = spec.playerCorrect
+        ? `+$${spec.playerWager.toLocaleString()}`
+        : `-$${spec.playerWager.toLocaleString()}`;
+      const playerCard = document.createElement('div');
+      playerCard.className = 'ws7-final-podium-box';
+      playerCard.dataset.revealed = 'false';
+      playerCard.dataset.verdict = spec.playerCorrect ? 'hit' : 'miss';
+      playerCard.innerHTML = `
+        <div class="ws7-final-podium-top">
+          <span>★ YOU (PODIUM ONE)</span>
+          <span class="ws7-final-podium-wager">WAGERED $${spec.playerWager.toLocaleString()}</span>
+        </div>
+        <div class="ws7-final-podium-ans">“${spec.playerAnswerText}”</div>
+        <div class="ws7-final-podium-tot">
+          <span>${spec.playerCorrect ? `★ CORRECT! (${playerDeltaStr})` : `✕ MISSED (${playerDeltaStr})`}</span>
+          <strong>$${spec.finalPlayerCash.toLocaleString()}</strong>
+        </div>
+      `;
+
+      podiumGrid.append(cpuCard, playerCard);
+
+      const dwellTrack = document.createElement('div');
+      dwellTrack.className = 'ws7-theater-dwell-track';
+      const dwellBar = document.createElement('div');
+      dwellBar.className = 'ws7-theater-dwell-bar';
+      dwellTrack.appendChild(dwellBar);
+
+      const skipHint = document.createElement('div');
+      skipHint.className = 'ws7-theater-skip-hint';
+      skipHint.textContent = 'TAP ANYWHERE TO ENTER WINNER’S CEREMONY →';
+
+      card.append(crest, creamBand, podiumGrid, dwellTrack, skipHint);
+
+      const finish = (): void => {
+        if (resolved) return;
+        resolved = true;
+        if (autoTimer !== null) {
+          this.clearFlowTimeout(autoTimer);
+          autoTimer = null;
+        }
+        this.hideModalStage();
+        resolve();
+      };
+
+      card.addEventListener('click', () => {
+        const elapsed = typeof performance !== 'undefined' ? performance.now() - openedAt : 999;
+        if (elapsed >= 600) finish();
+      });
+
+      this.mountModalContent(card, () => {
+        const elapsed = typeof performance !== 'undefined' ? performance.now() - openedAt : 999;
+        if (elapsed >= 600) finish();
+      });
+
+      this.scheduleFlowTimeout(() => {
+        if (resolved) return;
+        cpuCard.dataset.revealed = 'true';
+        spec.onCpuRevealSfx?.(spec.cpuCorrect);
+      }, 140);
+
+      this.scheduleFlowTimeout(() => {
+        if (resolved) return;
+        playerCard.dataset.revealed = 'true';
+        spec.onPlayerRevealSfx?.(spec.playerCorrect);
+      }, 820);
+
+      autoTimer = this.scheduleFlowTimeout(finish, dwellMs);
     });
   }
 
@@ -2042,14 +3448,26 @@ export class BroadcastChromeUIV7 {
     return new Promise((resolve) => {
       let remainingSec = 12;
       let shattered = false;
-      const hasUvRelic = this.campaign
-        .getState()
-        .equippedRelics.some((r) => r.relicId === 'relic_uv_blacklight_loupe');
+      let resolvedOnce = false;
+      const equippedRelics = this.campaign.getState().equippedRelics;
+      const hasUvRelic = equippedRelics.some((r) => r.relicId === 'relic_uv_blacklight_loupe');
+      const hasSignetRelic = equippedRelics.some(
+        (r) => r.relicId === 'relic_subpoena_wax_signet',
+      );
+      const burnCleanBonus = hasSignetRelic ? 275 : 125;
       let uvOn = hasUvRelic;
 
       const card = document.createElement('div');
       card.className = 'ws7-canary-card';
       card.dataset.uv = 'false';
+
+      const airMailTop = document.createElement('div');
+      airMailTop.className = 'ws7-par-avion-trim';
+      airMailTop.setAttribute('aria-hidden', 'true');
+
+      const airMailBottom = document.createElement('div');
+      airMailBottom.className = 'ws7-par-avion-trim';
+      airMailBottom.setAttribute('aria-hidden', 'true');
 
       const inner = document.createElement('div');
       inner.className = 'ws7-canary-inner';
@@ -2063,7 +3481,7 @@ export class BroadcastChromeUIV7 {
       const kicker = document.createElement('span');
       kicker.className = 'ws7-subtitle-kicker';
       kicker.style.color = '#0f3a4d';
-      kicker.textContent = `COMMERCIAL BREAK · ${CAST_PROFILES_V7[blueprint.canaryBroker].name.toUpperCase()} COURIER`;
+      kicker.textContent = `PAR AVION · COMMERCIAL BREAK · ${CAST_PROFILES_V7[blueprint.canaryBroker].name.toUpperCase()} COURIER`;
       const timerPill = document.createElement('span');
       timerPill.className = 'ws7-clue-timer-pill';
       timerPill.textContent = '12s';
@@ -2085,12 +3503,11 @@ export class BroadcastChromeUIV7 {
       sealBtn.type = 'button';
       sealBtn.className = 'ws7-wax-seal-btn';
       sealBtn.innerHTML = `
-        <svg viewBox="0 0 80 80" width="72" height="72" aria-hidden="true">
-          <polygon points="40,6 68,18 46,38 28,22" fill="#e03e36" stroke="#fff7e6" stroke-width="1.3"/>
-          <polygon points="68,18 74,50 48,46 46,38" fill="#c42b23" stroke="#fff7e6" stroke-width="1.3"/>
-          <polygon points="74,50 44,74 36,50 48,46" fill="#eb4d44" stroke="#fff7e6" stroke-width="1.3"/>
-          <polygon points="44,74 12,58 26,40 36,50" fill="#b3241d" stroke="#fff7e6" stroke-width="1.3"/>
-          <polygon points="12,58 14,22 28,22 46,38 26,40" fill="#d9342b" stroke="#fff7e6" stroke-width="1.3"/>
+        <svg viewBox="0 0 80 80" width="76" height="76" aria-hidden="true">
+          <circle cx="40" cy="40" r="36" fill="#c42b23" stroke="#9e1c15" stroke-width="2.5"/>
+          <circle cx="40" cy="40" r="29" fill="none" stroke="#ffd56b" stroke-width="1.4" stroke-dasharray="3 2"/>
+          <polygon points="40,12 44,28 58,20 48,34 64,40 48,46 58,60 44,52 40,68 36,52 22,60 32,46 16,40 32,34 22,20 36,28" fill="#eb4d44" opacity="0.85"/>
+          <circle cx="40" cy="40" r="19" fill="#b3241d" stroke="#fff7e6" stroke-width="1.4"/>
           <text x="40" y="45" text-anchor="middle" fill="#fff7e6" font-family="Jost, sans-serif" font-size="14" font-weight="900">OPEN</text>
         </svg>
       `;
@@ -2120,11 +3537,14 @@ export class BroadcastChromeUIV7 {
       noteBox.appendChild(poisonStamp);
 
       const syncUvState = (): void => {
-        card.dataset.uv = uvOn ? 'true' : 'false';
-        poisonStamp.classList.toggle('ws7-hidden', !uvOn);
+        const allowReveal = hasUvRelic && uvOn;
+        card.dataset.uv = allowReveal ? 'true' : 'false';
+        poisonStamp.classList.toggle('ws7-hidden', !allowReveal);
       };
 
       const finishChoice = (choice: 'POCKET' | 'BURN'): void => {
+        if (resolvedOnce) return;
+        resolvedOnce = true;
         this.clearActiveTimer();
         this.campaign.recordCanaryChoice(choice, blueprint.canaryBroker);
         this.hideModalStage();
@@ -2134,14 +3554,17 @@ export class BroadcastChromeUIV7 {
       const controlsRow = document.createElement('div');
       controlsRow.className = 'ws7-btn-row';
 
-      const uvBtn = document.createElement('button');
-      uvBtn.type = 'button';
-      uvBtn.className = 'ws7-teal-btn';
-      uvBtn.textContent = hasUvRelic ? 'TOGGLE UV CHECK' : 'CHECK FOR RIGGING';
-      uvBtn.addEventListener('click', () => {
-        uvOn = !uvOn;
-        syncUvState();
-      });
+      if (hasUvRelic) {
+        const uvBtn = document.createElement('button');
+        uvBtn.type = 'button';
+        uvBtn.className = 'ws7-teal-btn';
+        uvBtn.textContent = 'TOGGLE UV CHECK';
+        uvBtn.addEventListener('click', () => {
+          uvOn = !uvOn;
+          syncUvState();
+        });
+        controlsRow.appendChild(uvBtn);
+      }
 
       const pocketBtn = document.createElement('button');
       pocketBtn.type = 'button';
@@ -2152,10 +3575,10 @@ export class BroadcastChromeUIV7 {
       const burnBtn = document.createElement('button');
       burnBtn.type = 'button';
       burnBtn.className = 'ws7-crimson-btn';
-      burnBtn.textContent = 'BURN ON AIR (+$125 CLEAN)';
+      burnBtn.textContent = `BURN ON AIR (+$${burnCleanBonus} CLEAN)`;
       burnBtn.addEventListener('click', () => finishChoice('BURN'));
 
-      controlsRow.append(uvBtn, pocketBtn, burnBtn);
+      controlsRow.append(pocketBtn, burnBtn);
       openedBody.append(noteBox, controlsRow);
 
       sealBtn.addEventListener('click', () => {
@@ -2167,7 +3590,7 @@ export class BroadcastChromeUIV7 {
       });
 
       inner.append(topRow, title, sealWrap, openedBody);
-      card.appendChild(inner);
+      card.append(airMailTop, inner, airMailBottom);
       this.mountModalContent(card);
 
       this.activeTimerHandle = window.setInterval(() => {
@@ -2190,14 +3613,25 @@ export class BroadcastChromeUIV7 {
     playerMatchScore: number,
     rivalMatchScore: number,
     summary: EpisodeOutcomeSummaryV7,
-  ): Promise<void> {
+    ceremonyExtra?: CeremonyExtraSpecV7,
+  ): Promise<'NEXT_EPISODE' | 'PLAY_AGAIN' | 'SAVE_AND_EXIT'> {
     this.clearActiveTimer();
     return new Promise((resolve) => {
+      let resolvedOnce = false;
+      const finishCeremony = (
+        action: 'NEXT_EPISODE' | 'PLAY_AGAIN' | 'SAVE_AND_EXIT',
+      ): void => {
+        if (resolvedOnce) return;
+        resolvedOnce = true;
+        this.hideModalStage();
+        resolve(action);
+      };
+
       const renderCeremony = (): void => {
         const save = this.campaign.getState();
         const rivalName = CAST_PROFILES_V7[blueprint.rivalId].name;
         const panel = document.createElement('div');
-        panel.className = 'ws7-mahogany-panel';
+        panel.className = 'ws7-mahogany-panel ws7-ceremony-panel';
 
         const header = document.createElement('div');
         header.className = summary.wonMatch
@@ -2207,33 +3641,133 @@ export class BroadcastChromeUIV7 {
           ? 'linear-gradient(135deg, #007d8c 0%, #0b2d47 100%)'
           : 'linear-gradient(135deg, #b83b18 0%, #0b1d30 100%)';
 
+        const headerRow = document.createElement('div');
+        headerRow.className = 'ws7-sheet-header-row';
+        const headerTitles = document.createElement('div');
+        headerTitles.className = 'ws7-sheet-header-titles';
+
         const kicker = document.createElement('div');
         kicker.className = 'ws7-subtitle-kicker';
-        kicker.textContent = `${blueprint.code} OFFICIAL BROADCAST TALLY · ${
-          summary.wonMatch ? '★ CHAMPION DEFEATED!' : 'COMEBACK POT BANKED'
-        }`;
+        kicker.textContent = `${blueprint.code} OFFICIAL BROADCAST TALLY · ✓ PROGRESS SAVED`;
 
+        const isCoChamp = Boolean(ceremonyExtra?.isCoChampionTie && summary.wonMatch);
+        const isZeroZeroTie =
+          !summary.wonMatch && playerMatchScore === rivalMatchScore && playerMatchScore === 0;
         const heading = document.createElement('h2');
         heading.className = 'ws7-display-title';
-        heading.textContent = summary.wonMatch
-          ? `Studio 6A Victory Over ${rivalName}!`
-          : `${rivalName} Took the Hour — $${summary.grudgeBountyStoredOnLoss.toLocaleString()} Carried Over`;
-        header.append(kicker, heading);
+        heading.textContent = isCoChamp
+          ? `Studio 6A Co-Champions With ${rivalName}!`
+          : summary.wonMatch
+            ? `Studio 6A Victory Over ${rivalName}!`
+            : isZeroZeroTie
+              ? `Deadlock at $0 — $${summary.grudgeBountyStoredOnLoss.toLocaleString()} Comeback Voucher Held`
+              : `${rivalName} Took the Hour — $${summary.grudgeBountyStoredOnLoss.toLocaleString()} Carried Over`;
+        headerTitles.append(kicker, heading);
+
+        const closeSaveBtn = document.createElement('button');
+        closeSaveBtn.type = 'button';
+        closeSaveBtn.className = 'ws7-sheet-close-btn';
+        closeSaveBtn.setAttribute('aria-label', 'Save and exit to Title Menu');
+        closeSaveBtn.title = 'Save & Exit to Title Menu';
+        closeSaveBtn.textContent = '✕';
+        closeSaveBtn.addEventListener('click', () => finishCeremony('SAVE_AND_EXIT'));
+
+        headerRow.append(headerTitles, closeSaveBtn);
+        header.appendChild(headerRow);
 
         const body = document.createElement('div');
         body.className = 'ws7-sheet-body';
 
+        const champStreak = ceremonyExtra?.returningChampStreak ?? save.returningChampStreak ?? 0;
+        if (summary.wonMatch && champStreak >= 1) {
+          const crown = document.createElement('div');
+          crown.className = 'ws7-champ-crown-banner';
+          crown.textContent =
+            champStreak >= 2
+              ? `👑 ${champStreak}-DAY RETURNING STUDIO CHAMPION STREAK! (+$${champStreak * 75} CROWN BONUS)`
+              : '👑 NEW STUDIO 6A RETURNING CHAMPION CROWNED!';
+          body.appendChild(crown);
+        }
+
         // Full-Bleed Pablo Ferro Score Showdown Split Banner
+        const playerSideTag = isCoChamp
+          ? '★ YOU (CO-CHAMPION)'
+          : summary.wonMatch
+            ? '★ YOU (WINNER)'
+            : 'YOU';
+        const rivalSideTag = isCoChamp
+          ? `★ ${rivalName.toUpperCase()} (CO-CHAMPION)`
+          : !summary.wonMatch && !isZeroZeroTie
+            ? `★ ${rivalName.toUpperCase()}`
+            : rivalName.toUpperCase();
         const versus = document.createElement('div');
         versus.className = 'ws7-ceremony-versus';
         versus.innerHTML = `
           <div class="ws7-ceremony-side" data-side="player">
-            <span style="font-family:var(--ws7-font-broadcast);font-size:14px;font-weight:900;letter-spacing:0.08em;color:#ffd56b;">${summary.wonMatch ? '★ YOU (WINNER)' : 'YOU'}</span>
+            <span style="font-family:var(--ws7-font-broadcast);font-size:14px;font-weight:900;letter-spacing:0.08em;color:#ffd56b;">${playerSideTag}</span>
             <span class="ws7-ceremony-score-big">$${Math.floor(playerMatchScore).toLocaleString()}</span>
           </div>
           <div class="ws7-ceremony-side" data-side="rival">
-            <span style="font-family:var(--ws7-font-broadcast);font-size:14px;font-weight:900;letter-spacing:0.08em;color:#ffe3d3;">${!summary.wonMatch ? `★ ${rivalName.toUpperCase()}` : rivalName.toUpperCase()}</span>
+            <span style="font-family:var(--ws7-font-broadcast);font-size:14px;font-weight:900;letter-spacing:0.08em;color:#ffe3d3;">${rivalSideTag}</span>
             <span class="ws7-ceremony-score-big">$${Math.floor(rivalMatchScore).toLocaleString()}</span>
+          </div>
+        `;
+
+        // Certified 1966 Network Winner's Check (or Exact Comeback Voucher Held for Next Broadcast!)
+        const checkAmount = Math.max(
+          0,
+          Math.floor(
+            summary.wonMatch
+              ? summary.cleanCashAdded + summary.contrabandCashAdded
+              : summary.grudgeBountyStoredOnLoss,
+          ),
+        );
+        const epSerial = String(blueprint.episodeNumber).padStart(3, '0');
+        const checkEl = document.createElement('div');
+        checkEl.className = 'ws7-winners-check-1966';
+        checkEl.innerHTML = `
+          <div class="ws7-check-main-col">
+            <div class="ws7-check-bank-row">
+              <svg class="ws7-check-rosette-svg" viewBox="0 0 44 44" width="38" height="38" aria-hidden="true">
+                <circle cx="22" cy="22" r="20" fill="#0b2238" stroke="#9c6a12" stroke-width="1.8"/>
+                <circle cx="22" cy="22" r="16" fill="none" stroke="#f4a91f" stroke-width="1" stroke-dasharray="2.4 1.8"/>
+                <path d="M22 29 C18 19 10 18 7 23 C5 26 9 30 14 29 Z" fill="#f4a91f"/>
+                <path d="M22 29 C17 15 10 10 10 14 C9 19 14 25 20 29 Z" fill="#ff6738"/>
+                <path d="M22 28 C20 13 17 7 19 8 C21 9 22 18 22 28 Z" fill="#e63b7a"/>
+                <path d="M22 28 C22 18 23 9 25 8 C27 7 24 13 22 28 Z" fill="#1e56c5"/>
+                <path d="M22 29 C26 25 35 19 34 14 C34 10 27 15 22 29 Z" fill="#0096a6"/>
+                <circle cx="22" cy="14" r="2.1" fill="#fff7e6"/>
+              </svg>
+              <div style="min-width:0;flex:1 1 auto;">
+                <div class="ws7-check-bank-kicker" style="font-family:var(--ws7-font-broadcast);font-size:14px;font-weight:900;color:#0f3a4d;letter-spacing:0.05em;">IBC · 30 ROCKEFELLER PLAZA, N.Y. · NO. 1966-${epSerial}</div>
+                <div class="ws7-check-payee-line" style="font-size:15px;font-weight:800;color:#121a2b;margin-top:1px;">${
+                  isCoChamp
+                    ? 'PAY TO THE ORDER OF: STUDIO 6A CO-CHAMPION'
+                    : summary.wonMatch
+                      ? 'PAY TO THE ORDER OF: STUDIO 6A RETURNING CHAMPION'
+                      : 'CERTIFIED COMEBACK VOUCHER · HELD FOR NEXT BROADCAST'
+                }</div>
+              </div>
+            </div>
+            <div class="ws7-check-words-line">${this.formatCheckAmountWords1966(checkAmount)}</div>
+            <div class="ws7-check-sig-micr-row">
+              <span class="ws7-check-micr">⑆0210-0002⑆  ⑈1966-${epSerial}⑈  ⑈06A⑈</span>
+              <span class="ws7-check-sig-wrap">
+                <svg viewBox="0 0 144 28" width="124" height="24" aria-hidden="true">
+                  <path d="M8 19 C4 11, 11 3, 19 4 C24 5, 22 14, 15 17 C19 18, 24 13, 25 20 C26 25, 19 25, 17 21" fill="none" stroke="#123866" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M25 16 C28 11, 30 18, 34 14 C37 11, 38 18, 42 14 C45 11, 47 18, 51 13 C54 8, 55 18, 60 15" fill="none" stroke="#123866" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M49 10 L58 9" fill="none" stroke="#123866" stroke-width="1.4" stroke-linecap="round"/>
+                  <path d="M69 20 L74 4 M72 6 C80 3, 84 8, 76 12 C85 12, 84 20, 71 19" fill="none" stroke="#123866" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M81 16 C85 12, 88 5, 86 16 C90 12, 93 5, 91 16 C95 12, 98 17, 101 13 C104 11, 106 17, 110 13 C113 11, 116 17, 120 13 C122 18, 118 24, 113 22" fill="none" stroke="#123866" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M14 23 Q74 20 136 22" fill="none" stroke="#123866" stroke-width="1.15" stroke-linecap="round" opacity="0.82"/>
+                </svg>
+                <span style="font-family:var(--ws7-font-display);font-style:italic;font-size:14px;color:#384660;">Grant Bellamy, Exec. Producer</span>
+              </span>
+            </div>
+          </div>
+          <div class="ws7-check-stub-col">
+            <span style="font-family:var(--ws7-font-broadcast);font-size:14px;font-weight:900;color:#0f3a4d;letter-spacing:0.06em;">${summary.wonMatch ? 'CERTIFIED PURSE' : 'VOUCHER CREDIT'}</span>
+            <span class="ws7-check-amount-pill">$${checkAmount.toLocaleString()}</span>
           </div>
         `;
 
@@ -2288,7 +3822,138 @@ export class BroadcastChromeUIV7 {
         wheelCol.appendChild(wheelMeta);
 
         grid.append(ledger, wheelCol);
-        body.append(versus, grid);
+        body.append(versus, checkEl);
+
+        // Wave-4 1966 Broadcast Achievement Ribbons & Medals Rack (Directly beneath Certified Check!)
+        const earnedMedals = ceremonyExtra?.earnedCareerMedals ?? [];
+        if (earnedMedals.length > 0) {
+          const medalRack = document.createElement('div');
+          medalRack.className = 'ws7-medal-rack';
+          const medalCounts = save.careerMedalCounts ?? {};
+          const pillsHtml = earnedMedals
+            .map((mId) => {
+              const spec = CAREER_MEDAL_SPECS_V7[mId];
+              const count = medalCounts[mId] ?? 1;
+              return `<span class="ws7-career-medal-pill" data-tier="${spec.tier}" title="${spec.summary}">${spec.icon} ${spec.name.toUpperCase()} (+$${spec.bonusCash}${count > 1 ? ` · ×${count}` : ''})</span>`;
+            })
+            .join('');
+          medalRack.innerHTML = `
+            <div style="font-family:var(--ws7-font-broadcast);font-size:14px;font-weight:900;color:#ffd56b;letter-spacing:0.06em;">🏅 1966 BROADCAST ACHIEVEMENT MEDALS AWARDED THIS SHOW</div>
+            <div class="ws7-medal-pill-grid">${pillsHtml}</div>
+          `;
+          body.appendChild(medalRack);
+        }
+
+        // 1966 TV Guide "NEXT TIME ON WORLD'S SMARTEST..." Plot Cliffhanger Preview Card!
+        if (
+          ceremonyExtra?.allowBackstageCustomization &&
+          !blueprint.isFinale &&
+          ceremonyExtra.nextCliffhangerTeaser
+        ) {
+          const teaser = ceremonyExtra.nextCliffhangerTeaser;
+          const nextProf =
+            CAST_PROFILES_V7[teaser.rivalId] ?? CAST_PROFILES_V7.CARMEN_DELGADO;
+          const cliffCard = document.createElement('div');
+          cliffCard.className = 'ws7-next-time-cliffhanger-card';
+
+          const cliffKicker = document.createElement('div');
+          cliffKicker.className = 'ws7-next-time-kicker';
+          cliffKicker.textContent = `📺 NEXT TIME ON WORLD’S SMARTEST · ${teaser.episodeCode} · ${teaser.stakesTag}`;
+
+          const cliffRow = document.createElement('div');
+          cliffRow.className = 'ws7-next-time-row';
+
+          const nextPic = document.createElement('div');
+          nextPic.className = 'ws7-gouache-medallion';
+          this.bindPortraitAsset(nextPic, teaser.rivalId, 'POISED');
+
+          const cliffCopy = document.createElement('div');
+          cliffCopy.className = 'ws7-next-time-copy';
+          cliffCopy.innerHTML = `
+            <div class="ws7-next-time-title">“${teaser.title}” · vs. ${nextProf.name} <span class="ws7-next-time-stage">(${teaser.stageCallsign})</span></div>
+            <div class="ws7-next-time-hook">${formatOrphanProofCopyV7(teaser.hookCopy)}</div>
+          `;
+
+          cliffRow.append(nextPic, cliffCopy);
+          cliffCard.append(cliffKicker, cliffRow);
+          body.appendChild(cliffCard);
+        }
+
+        body.appendChild(grid);
+
+        // Loss-Empathy Persistent Run Gains (Zero Wasted Runs!)
+        if (!summary.wonMatch && summary.grudgeBountyStoredOnLoss > 0) {
+          const empathyCard = document.createElement('div');
+          empathyCard.className = 'ws7-vellum-card';
+          empathyCard.dataset.accent = 'tangerine';
+          empathyCard.innerHTML = `<strong style="font-size:14.5px;color:#b32620;">🔥 COMEBACK VOUCHER BANKED (+$${summary.grudgeBountyStoredOnLoss.toLocaleString()}):</strong> <span style="font-size:14.5px;font-weight:700;">50% of your match score is locked into the Grudge Comeback Pot for your next win—plus all Scouted Tells & Career Ribbons stay permanently!</span>`;
+          body.appendChild(empathyCard);
+        }
+
+        const newWeak = ceremonyExtra?.newlyScoutedWeak ?? [];
+        const newStrong = ceremonyExtra?.newlyScoutedStrong ?? [];
+        if (newWeak.length > 0 || newStrong.length > 0 || ceremonyExtra?.scoutedPlaystyleLabel) {
+          const scoutCard = document.createElement('div');
+          scoutCard.className = 'ws7-vellum-card';
+          scoutCard.dataset.accent = 'gold';
+          const parts: string[] = [];
+          if (newWeak.length > 0) {
+            parts.push(
+              `💡 Weak Spots Found: ${newWeak.map((c) => getFriendlyTvCategoryLabelV7(c)).join(', ')}`,
+            );
+          }
+          if (newStrong.length > 0) {
+            parts.push(
+              `★ Strong Turf: ${newStrong.map((c) => getFriendlyTvCategoryLabelV7(c)).join(', ')}`,
+            );
+          }
+          if (ceremonyExtra?.scoutedPlaystyleLabel) {
+            parts.push(`Style: ${ceremonyExtra.scoutedPlaystyleLabel}`);
+          }
+          scoutCard.innerHTML = `<strong style="display:inline-flex;align-items:center;gap:5px;font-size:14.5px;color:#0f3a4d;">${SVG_DOSSIER_TAB_1966}<span>SCOUTING NOTEBOOK UPDATED (${rivalName}):</span></strong> <span style="font-size:14.5px;font-weight:700;">${parts.join(' · ')}</span>`;
+          body.appendChild(scoutCard);
+        }
+
+        // Zeigarnik "NEXT UNLOCKABLE & TROPHY CLOSE TO COMPLETION" Progress Teaser!
+        const equippedSet = new Set(save.equippedRelics.map((r) => r.relicId));
+        const nextCleanProp = [...RELIC_CATALOG_V7]
+          .filter((r) => r.ledgerKind === 'CLEAN' && !equippedSet.has(r.relicId))
+          .sort((a, b) => a.costCash - b.costCash)[0];
+        const unlockedSet = new Set(save.unlockedTrophyIds);
+        const nextTrophy =
+          TROPHY_CATALOG_V7.find((t) => !unlockedSet.has(t.trophyId) && t.season <= save.season) ??
+          TROPHY_CATALOG_V7.find((t) => !unlockedSet.has(t.trophyId));
+        const masteredModesCount = save.masteredBoardModes?.length ?? 0;
+
+        if (nextCleanProp || nextTrophy) {
+          const progressCard = document.createElement('div');
+          progressCard.className = 'ws7-unlock-progress-card';
+          const propRatio = nextCleanProp
+            ? Math.min(1, Math.max(0.06, save.cleanPurseCash / Math.max(1, nextCleanProp.costCash)))
+            : 1;
+          const propPct = Math.round(propRatio * 100);
+          const cashShortfall = nextCleanProp
+            ? Math.max(0, nextCleanProp.costCash - save.cleanPurseCash)
+            : 0;
+          const propLine = nextCleanProp
+            ? cashShortfall === 0
+              ? `★ PROP READY TO PACK IN SHOP: ${nextCleanProp.name} ($${nextCleanProp.costCash})!`
+              : `NEXT STUDIO PROP (${propPct}%): ${nextCleanProp.name} — Only $${cashShortfall.toLocaleString()} Clean Purse away!`
+            : `ALL CLEAN STUDIO PROPS READY · ${unlockedSet.size}/36 TROPHIES EARNED`;
+          const trophyLine = nextTrophy
+            ? `🏆 NEXT TROPHY TARGET: ${nextTrophy.name} — ${nextTrophy.unlockRuleText}`
+            : '🏆 ALL 36 BROADCAST TROPHIES UNLOCKED!';
+
+          progressCard.innerHTML = `
+            <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;">
+              <span style="font-family:var(--ws7-font-broadcast);font-size:14px;font-weight:900;color:#007d8c;letter-spacing:0.04em;">${propLine}</span>
+              <span style="font-family:var(--ws7-font-broadcast);font-size:14px;font-weight:900;color:#0f3a4d;">${masteredModesCount}/${ALL_BOARD_PLAY_MODES_V7.length} BOARD MODES MASTERED</span>
+            </div>
+            <div class="ws7-unlock-meter-track"><div class="ws7-unlock-meter-fill" style="width:${propPct}%;"></div></div>
+            <div style="font-size:14px;font-weight:700;color:#384660;">${formatOrphanProofCopyV7(trophyLine)}</div>
+          `;
+          body.appendChild(progressCard);
+        }
 
         if (summary.liberatedRival) {
           const libBanner = document.createElement('div');
@@ -2308,29 +3973,88 @@ export class BroadcastChromeUIV7 {
         }
 
         const footer = document.createElement('div');
-        footer.className = 'ws7-sheet-footer';
+        footer.className = 'ws7-sheet-footer ws7-ceremony-footer';
+        const isCampaignMode = Boolean(ceremonyExtra?.allowBackstageCustomization);
+        footer.dataset.mode = isCampaignMode ? 'campaign' : 'quickplay';
+
+        const saveExitBtn = document.createElement('button');
+        saveExitBtn.type = 'button';
+        saveExitBtn.className = 'ws7-ceremony-save-exit-btn';
+        saveExitBtn.title = 'Save all progress, medals & cash and return to the Start Screen';
+        saveExitBtn.innerHTML = `${SVG_REEL_VAULT_1966}<span>SAVE &amp; EXIT</span>`;
+        saveExitBtn.addEventListener('click', () => {
+          finishCeremony('SAVE_AND_EXIT');
+        });
+        footer.appendChild(saveExitBtn);
+
+        if (isCampaignMode) {
+          footer.dataset.hasBackstageRow = 'true';
+          const perksBtn = document.createElement('button');
+          perksBtn.type = 'button';
+          perksBtn.className = 'ws7-secondary-btn ws7-ceremony-perks-btn';
+          perksBtn.innerHTML = `${SVG_BRASS_CLIPBOARD_1966}<span>PERKS</span>`;
+          perksBtn.addEventListener('click', () => {
+            void this.showReleaseWaiver({ betweenEpisodes: true }).then(() => renderCeremony());
+          });
+
+          const shopBtn = document.createElement('button');
+          shopBtn.type = 'button';
+          shopBtn.className = 'ws7-teal-btn ws7-ceremony-shop-btn';
+          const slotCountLabel = `(${save.equippedRelics.length}/${MAX_TRUNK_SLOTS_V7})`;
+          shopBtn.innerHTML = `<span class="ws7-shop-full">★ PROP SHOP ${slotCountLabel}</span><span class="ws7-shop-compact">★ PROPS ${slotCountLabel}</span>`;
+          shopBtn.addEventListener('click', () => {
+            this.openPropTrunkModal(false, () => renderCeremony());
+          });
+
+          footer.append(perksBtn, shopBtn);
+        }
 
         const nextBtn = document.createElement('button');
         nextBtn.type = 'button';
-        nextBtn.className = 'ws7-primary-btn';
-        nextBtn.textContent =
-          blueprint.isFinale && summary.wonMatch
-            ? 'WATCH STAGE-10 FINALE EPILOGUE →'
-            : summary.triggeredVaultDropNext
-              ? 'ENTER 2:30 AM VAULT SHOWDOWN →'
-              : `NEXT BROADCAST: ${formatEpisodeCodeV7(summary.nextEpisodeNumber)} →`;
+        nextBtn.className = 'ws7-primary-btn ws7-ceremony-next-btn';
+        const compactNextMode = ceremonyExtra?.nextBoardModeTitle
+          ? ceremonyExtra.nextBoardModeTitle
+              .replace(/^HOLLYWOOD SQUARES\s*·\s*/i, '')
+              .replace(/^CONCENTRATION '65\s*·\s*/i, '')
+              .replace(/^LET'S MAKE A DEAL\s*·\s*/i, '')
+              .replace(/^PRESS YOUR LUCK '66\s*·\s*/i, '')
+          : '';
+        const shortNextName = ceremonyExtra?.nextRivalName
+          ? (ceremonyExtra.nextRivalName.trim().split(/\s+/)[0] ?? ceremonyExtra.nextRivalName)
+          : '';
+        const teaserText = !isCampaignMode
+          ? 'PLAY ANOTHER SHOW →'
+          : ceremonyExtra?.nextRivalName && compactNextMode
+            ? `UP NEXT: vs. ${ceremonyExtra.nextRivalName} · ${compactNextMode}! →`
+            : `NEXT BROADCAST: ${formatEpisodeCodeV7(summary.nextEpisodeNumber)} →`;
+        const shortTeaserText = !isCampaignMode
+          ? 'PLAY AGAIN →'
+          : shortNextName
+            ? `UP NEXT: VS. ${shortNextName.toUpperCase()} →`
+            : `NEXT: ${formatEpisodeCodeV7(summary.nextEpisodeNumber)} →`;
+        if (blueprint.isFinale && summary.wonMatch) {
+          nextBtn.textContent = 'WATCH STAGE-10 FINALE EPILOGUE →';
+        } else if (summary.triggeredVaultDropNext) {
+          nextBtn.textContent = 'ENTER 2:30 AM VAULT SHOWDOWN →';
+        } else {
+          nextBtn.innerHTML = `<span class="ws7-next-cta-full">${teaserText}</span><span class="ws7-next-cta-short">${shortTeaserText}</span>`;
+        }
         nextBtn.addEventListener('click', () => {
           if (blueprint.isFinale && summary.wonMatch) {
-            void this.playEndingEpilogue(summary.unlockedEnding ?? undefined).then(resolve);
+            void this.playEndingEpilogue(summary.unlockedEnding ?? undefined).then(() => {
+              if (!resolvedOnce) {
+                resolvedOnce = true;
+                resolve('SAVE_AND_EXIT');
+              }
+            });
           } else {
-            this.hideModalStage();
-            resolve();
+            finishCeremony(isCampaignMode ? 'NEXT_EPISODE' : 'PLAY_AGAIN');
           }
         });
 
         footer.appendChild(nextBtn);
         panel.append(header, body, footer);
-        this.mountModalContent(panel);
+        this.mountModalContent(panel, () => finishCeremony('SAVE_AND_EXIT'));
       };
 
       renderCeremony();
@@ -2390,6 +4114,7 @@ export class BroadcastChromeUIV7 {
             b.textContent = opt.title;
             b.addEventListener('click', () => {
               activeEnding = opt;
+              this.campaign.commitFinaleEndingSelection(opt.endingId);
               renderEnding();
             });
             switchRow.appendChild(b);
@@ -2405,6 +4130,7 @@ export class BroadcastChromeUIV7 {
         doneBtn.className = 'ws7-primary-btn';
         doneBtn.textContent = 'RETURN TO STUDIO 6A HUB';
         doneBtn.addEventListener('click', () => {
+          this.campaign.commitFinaleEndingSelection(activeEnding.endingId);
           this.hideModalStage();
           resolve();
         });
@@ -2415,6 +4141,70 @@ export class BroadcastChromeUIV7 {
 
       renderEnding();
     });
+  }
+
+  private formatCheckAmountWords1966(amount: number): string {
+    const clean = Math.max(0, Math.min(999_999, Math.floor(amount)));
+    if (clean === 0) return 'ZERO AND 00/100 DOLLARS ★★★★';
+    const ones = [
+      '',
+      'ONE',
+      'TWO',
+      'THREE',
+      'FOUR',
+      'FIVE',
+      'SIX',
+      'SEVEN',
+      'EIGHT',
+      'NINE',
+      'TEN',
+      'ELEVEN',
+      'TWELVE',
+      'THIRTEEN',
+      'FOURTEEN',
+      'FIFTEEN',
+      'SIXTEEN',
+      'SEVENTEEN',
+      'EIGHTEEN',
+      'NINETEEN',
+    ];
+    const tens = [
+      '',
+      '',
+      'TWENTY',
+      'THIRTY',
+      'FORTY',
+      'FIFTY',
+      'SIXTY',
+      'SEVENTY',
+      'EIGHTY',
+      'NINETY',
+    ];
+    const underThousand = (n: number): string => {
+      const parts: string[] = [];
+      if (n >= 100) {
+        parts.push(`${ones[Math.floor(n / 100)]} HUNDRED`);
+        n %= 100;
+      }
+      if (n >= 20) {
+        const t = tens[Math.floor(n / 10)];
+        const o = ones[n % 10];
+        parts.push(o ? `${t}-${o}` : t);
+      } else if (n > 0) {
+        parts.push(ones[n]);
+      }
+      return parts.join(' ');
+    };
+    const chunks: string[] = [];
+    const thousands = Math.floor(clean / 1000);
+    const rem = clean % 1000;
+    if (thousands > 0) {
+      chunks.push(`${underThousand(thousands)} THOUSAND`);
+    }
+    if (rem > 0) {
+      chunks.push(underThousand(rem));
+    }
+    return `${chunks.join(' ')} AND 00/100 DOLLARS ★★★★`;
   }
 
   private buildBrassLienWheelSvg(paidCount: number): string {
@@ -2486,8 +4276,8 @@ export class BroadcastChromeUIV7 {
 
   public openHowToPlayModal(onClose?: () => void): void {
     const dismiss = (): void => {
-      if (onClose) onClose();
-      else this.hideModalStage();
+      this.hideUtilityModalStage();
+      onClose?.();
     };
 
     const panel = document.createElement('div');
@@ -2495,8 +4285,14 @@ export class BroadcastChromeUIV7 {
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-label', 'How to Play World’s Smartest');
 
+    const headerKicker = this.isDailyBroadcastMatch
+      ? 'DAILY 1966 BROADCAST · OFFICIAL CONTESTANT BRIEFING'
+      : this.isQuickPlayMatch
+        ? '1966 QUICK SHOW · STUDIO 6A BRIEFING'
+        : '1966 STUDIO 6A · CONTESTANT BRIEFING';
+
     const header = this.createDismissibleSheetHeader(
-      '1966 STUDIO 6A · CONTESTANT BRIEFING',
+      headerKicker,
       'How to Play World’s Smartest',
       dismiss,
       'Close How to Play Guide',
@@ -2516,24 +4312,48 @@ export class BroadcastChromeUIV7 {
       body.appendChild(modeCallout);
     }
 
-    const rules: ReadonlyArray<{ title: string; copy: string }> = [
-      {
-        title: '1. TAP A TILE ON THE GIANT TOTE BOARD',
-        copy: 'Pick any open dollar square ($150–$500) on the illuminated 3D board. You get a generous 30-second studio clock! Most questions are classic 4-choice trivia, mixed with special 1966 TV Showcase bonus formats.',
-      },
-      {
-        title: '2. SIX CLASSIC 1966 BOARD MODES & TV TWISTS',
-        copy: 'Different stages play by iconic 1960s rules—3-in-a-Row Jackpots, Coast-to-Coast Bridges, Eye Guess Memory Flashes, Concentration Prize Pairs, Curtain Deals & Classic Tote—plus 🔒 Locked Vaults, ⭐ 2× Secret Squares, 🎭 Opponent’s Choice, and 🔔 Instant Bargains!',
-      },
-      {
-        title: '3. OUTBANK THE CHAMPION IN 10 TURNS',
-        copy: 'You and the reigning Champion alternate turns. Target tiles marked ★ Weak Spot for +0.5× multipliers—and if the Champion misses, their square rebounds open with +$50 bonus cash for you to steal!',
-      },
-      {
-        title: '4. WATCH FOR BACKSTAGE RIGGING & PROP BOOSTERS',
-        copy: 'In later episodes, crooked Champions get secret cues from Control Booth A—tap the flashing red CATCH CHEAT alert for +$400! Visit the Prop Shop anytime to pack score-multiplying studio relics.',
-      },
-    ];
+    const isExhibitionRules = this.isQuickPlayMatch || this.isDailyBroadcastMatch;
+    const rules: ReadonlyArray<{ title: string; copy: string }> = isExhibitionRules
+      ? [
+          {
+            title: '1. TAP AN OPEN SQUARE & USE YOUR 2 LIFELINES',
+            copy: 'Pick any open dollar square ($150–$600) on the illuminated 3D Tote Board with a calm 32-second clock. Stuck on a tough clue? Use 50/50 Studio Cut or Studio Audience Poll once per broadcast!',
+          },
+          {
+            title: '2. PLAY TONIGHT’S 1966 BOARD TWISTS & BONUS WHEELS',
+            copy: 'Crack $500 Gold Vaults via an adjacent win or 2-streak (with a 1-turn shield!), flip hidden 2× Secret Squares, pull Velvet Mystery Curtains, or spin the 20-wedge Big Wheel & Studio Light-Board!',
+          },
+          {
+            title: '3. SCOUT CHAMPION WEAK SPOTS (+0.5× BONUS)',
+            copy: 'Every Champion has 3 secret weak categories and 3 strong turfs. Watch their smirks and fumbles—logged Weak Spots boost your multiplier by +0.5× permanently in your Scouting Notebook!',
+          },
+          {
+            title: this.isDailyBroadcastMatch
+              ? '4. OUTBANK THE CHAMPION & SHARE YOUR DAILY CARD'
+              : '4. SURGE IN ACT II (1.5×) & ACT III FINAL WAGER',
+            copy: this.isDailyBroadcastMatch
+              ? 'Everyone worldwide plays the exact same seeded Daily Broadcast board. Outbank today’s Champion to extend your streak and copy your spoiler-free 1966 TV emoji grid!'
+              : 'Turn 6 re-racks a fresh 1.5× Double-Dollars board, and Turn 10 culminates in the Act III Final Broadcast Wager Showdown ($500 House Grudge Stake floor if trailing)!',
+          },
+        ]
+      : [
+          {
+            title: '1. TAP A TILE & USE YOUR 2 STUDIO LIFELINES',
+            copy: 'Pick any open dollar square ($150–$600) on the illuminated 3D Tote Board with a calm 32-second clock. Stuck on a tough clue? Use 50/50 Studio Cut or Studio Audience Poll once per show!',
+          },
+          {
+            title: '2. EIGHT 1966 BOARD MODES & WILD TV TWISTS',
+            copy: 'Every broadcast mixes 8 classic TV formats—Big Wheel Showcase, Light-Board Bonanza, 3-in-a-Row, Coast-to-Coast Bridge, Eye Guess Memory, Concentration Pairs, Curtain Deals & Classic Tote—plus Brass Safe Keys (1-turn shield!), Locked Vaults, and 2× Secret Squares!',
+          },
+          {
+            title: '3. SCOUT 24 CHAMPIONS & 3-ACT FINAL WAGER',
+            copy: 'Champions start with hidden ??? weak spots—log permanent +0.5× Weak Spots in your Scouting Notebook! Turn 6 boosts stakes to 1.5×, and Turn 10 triggers the Final Broadcast Wager!',
+          },
+          {
+            title: '4. BUST BOOTH RIGGING & PACK STUDIO PROPS',
+            copy: 'From Episode 2 onward, crooked Champions get secret cues from Control Booth A—slap the flashing red CATCH CHEAT switch for +$150–$300 Clean Purse! Visit the Prop Shop between shows to equip score-multiplying studio props.',
+          },
+        ];
 
     const list = document.createElement('div');
     list.className = 'ws7-guide-list';
@@ -2549,14 +4369,30 @@ export class BroadcastChromeUIV7 {
     footer.className = 'ws7-sheet-footer';
 
     if (this.liveMatchScoreForShop !== null) {
-      const propsQuickBtn = document.createElement('button');
-      propsQuickBtn.type = 'button';
-      propsQuickBtn.className = 'ws7-teal-btn';
-      propsQuickBtn.textContent = '★ PROP SHOP';
-      propsQuickBtn.addEventListener('click', () => {
-        this.openPropTrunkModal(true);
+      const saveExitQuickBtn = document.createElement('button');
+      saveExitQuickBtn.type = 'button';
+      saveExitQuickBtn.className = 'ws7-ceremony-save-exit-btn';
+      saveExitQuickBtn.innerHTML = `${SVG_REEL_VAULT_1966}<span>SAVE &amp; EXIT</span>`;
+      saveExitQuickBtn.addEventListener('click', () => {
+        this.hideUtilityModalStage();
+        if (this.callbacks.onReturnToTitleHub) {
+          this.callbacks.onReturnToTitleHub();
+        } else {
+          this.showTitleHub();
+        }
       });
-      footer.appendChild(propsQuickBtn);
+      footer.appendChild(saveExitQuickBtn);
+
+      if (this.propsUnlockedInMatch && !this.isDailyBroadcastMatch) {
+        const propsQuickBtn = document.createElement('button');
+        propsQuickBtn.type = 'button';
+        propsQuickBtn.className = 'ws7-teal-btn';
+        propsQuickBtn.textContent = '★ PROP SHOP';
+        propsQuickBtn.addEventListener('click', () => {
+          this.openPropTrunkModal(true);
+        });
+        footer.appendChild(propsQuickBtn);
+      }
     }
 
     const doneBtn = document.createElement('button');
@@ -2567,7 +4403,7 @@ export class BroadcastChromeUIV7 {
     footer.appendChild(doneBtn);
 
     panel.append(header, body, footer);
-    this.mountModalContent(panel, dismiss);
+    this.mountUtilityModalContent(panel, dismiss);
   }
 
   public openPropTrunkModal(
@@ -2575,8 +4411,8 @@ export class BroadcastChromeUIV7 {
     onClose?: () => void,
   ): void {
     const dismiss = (): void => {
-      if (onClose) onClose();
-      else this.hideModalStage();
+      this.hideUtilityModalStage();
+      onClose?.();
     };
     let statusBanner = '';
     const render = (): void => {
@@ -2729,7 +4565,7 @@ export class BroadcastChromeUIV7 {
       footer.appendChild(closeBtn);
 
       panel.append(header, body, footer);
-      this.mountModalContent(panel, dismiss);
+      this.mountUtilityModalContent(panel, dismiss);
     };
     render();
   }
@@ -2739,87 +4575,108 @@ export class BroadcastChromeUIV7 {
     catalog: readonly TrophySpecV7[] = TROPHY_CATALOG_V7,
   ): void {
     const dismiss = (): void => {
-      if (onClose) onClose();
-      else this.hideModalStage();
+      this.hideUtilityModalStage();
+      onClose?.();
     };
     let filterSeason: 0 | 1 | 2 | 3 | 4 = 0;
-    const unlockedInit = new Set(this.campaign.getState().unlockedTrophyIds);
-    const firstEarned = catalog.find((c) => unlockedInit.has(c.trophyId));
+    const unlocked = new Set(this.campaign.getState().unlockedTrophyIds);
+    const firstEarned = catalog.find((c) => unlocked.has(c.trophyId));
     let selectedTrophyId = firstEarned?.trophyId ?? catalog[0]?.trophyId ?? 'trophy_s1_01';
 
-    const render = (): void => {
-      const unlocked = new Set(this.campaign.getState().unlockedTrophyIds);
-      const activeSpec =
-        catalog.find((c) => c.trophyId === selectedTrophyId) ?? catalog[0];
-      const activeUnlocked = unlocked.has(activeSpec.trophyId);
+    const panel = document.createElement('div');
+    panel.className = 'ws7-mahogany-panel ws7-vault-modal-panel';
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-label', '36 Broadcast Awards Trophy Vault');
 
-      const panel = document.createElement('div');
-      panel.className = 'ws7-mahogany-panel';
-      panel.setAttribute('role', 'dialog');
-      panel.setAttribute('aria-label', '36 Broadcast Awards Trophy Vault');
+    const header = this.createDismissibleSheetHeader(
+      `3D STUDIO TROPHY TURNTABLE · ${unlocked.size} OF ${catalog.length} EARNED`,
+      '36 Broadcast Awards',
+      dismiss,
+      'Close Trophy Vault',
+    );
 
-      const header = this.createDismissibleSheetHeader(
-        `3D STUDIO TROPHY TURNTABLE · ${unlocked.size} OF ${catalog.length} EARNED`,
-        '36 Broadcast Awards',
-        dismiss,
-        'Close Trophy Vault',
-      );
+    const body = document.createElement('div');
+    body.className = 'ws7-sheet-body';
 
-      const body = document.createElement('div');
-      body.className = 'ws7-sheet-body';
+    // Single Persistent 3D Turntable Showcase Band (Reused across ALL/S1..S4 tabs — ZERO WebGLRenderer churn!)
+    const showcaseRow = document.createElement('div');
+    showcaseRow.className = 'ws7-vault-3d-showcase';
 
-      // Full-Bleed 3D Turntable Showcase Band (ZERO inner border box!)
-      const showcaseRow = document.createElement('div');
-      showcaseRow.className = 'ws7-vault-3d-showcase';
+    const stageBox = document.createElement('div');
+    stageBox.className = 'ws7-vault-3d-stage';
+    stageBox.id = 'ws7-vault-3d-stage';
 
-      const stageBox = document.createElement('div');
-      stageBox.className = 'ws7-vault-3d-stage';
-      stageBox.id = 'ws7-vault-3d-stage';
+    const plaqueCol = document.createElement('div');
+    plaqueCol.className = 'ws7-vault-3d-plaque';
+    const updateShowcasePlaque = (spec: TrophySpecV7, isOpen: boolean): void => {
+      const displayMeta = getTrophyDisplayMetaV7(spec.trophyId);
+      const tierLabel: AwardRarityTierV7 = displayMeta.tierBadge;
+      const cleanRule = spec.unlockRuleText.replace(/^Quick Win:\s*/i, '');
+      plaqueCol.innerHTML = `
+        <div style="font-family:var(--ws7-font-broadcast);font-size:14px;font-weight:900;color:${isOpen ? '#ffd56b' : '#bfd0e0'};">${isOpen ? '★ EARNED & LIT ON TURNTABLE' : 'SILHOUETTED LOCKED AWARD'} · ${tierLabel}</div>
+        <div style="font-family:var(--ws7-font-showlogo);font-size:21px;color:#fff7e6;line-height:1.12;">${spec.name}</div>
+        <div style="font-family:var(--ws7-font-broadcast);font-size:14px;color:#22c7d8;font-weight:800;">“${spec.engraving}” · ${displayMeta.formLabel}</div>
+        <div style="font-size:14px;color:#d6e2ec;line-height:1.3;">${isOpen ? formatOrphanProofCopyV7(cleanRule) : `HOW TO UNLOCK: ${formatOrphanProofCopyV7(cleanRule)}`}</div>
+      `;
+    };
+    const initialSpec = catalog.find((c) => c.trophyId === selectedTrophyId) ?? catalog[0];
+    updateShowcasePlaque(initialSpec, unlocked.has(initialSpec.trophyId));
+    showcaseRow.append(stageBox, plaqueCol);
 
-      const plaqueCol = document.createElement('div');
-      plaqueCol.className = 'ws7-vault-3d-plaque';
-      const updateShowcasePlaque = (spec: TrophySpecV7, isOpen: boolean): void => {
-        plaqueCol.innerHTML = `
-          <div style="font-family:var(--ws7-font-broadcast);font-size:14px;font-weight:900;color:${isOpen ? '#ffd56b' : '#bfd0e0'};">${isOpen ? '★ EARNED & LIT ON TURNTABLE' : 'LOCKED AWARD PREVIEW'} · SEASON 0${spec.season}</div>
-          <div style="font-family:var(--ws7-font-showlogo);font-size:22px;color:#fff7e6;">${spec.name}</div>
-          <div style="font-family:var(--ws7-font-broadcast);font-size:14.5px;color:#22c7d8;font-weight:800;">“${spec.engraving}”</div>
-          <div style="font-size:14.5px;color:#d6e2ec;">${formatOrphanProofCopyV7(spec.unlockRuleText)}</div>
-        `;
-      };
-      updateShowcasePlaque(activeSpec, activeUnlocked);
-      showcaseRow.append(stageBox, plaqueCol);
+    // 8 Board-Mode Mastery Stickers Bar
+    const saveSnapshot = this.campaign.getState();
+    const masteredSet = new Set<BoardPlayModeV7>(saveSnapshot.masteredBoardModes ?? []);
+    const stickerBar = document.createElement('div');
+    stickerBar.className = 'ws7-mastery-sticker-row';
+    const shortModeNames: Record<BoardPlayModeV7, string> = {
+      CLASSIC_TOTE: 'CLASSIC TOTE',
+      TIC_TAC_LINE: '3-IN-A-ROW',
+      COAST_HEX_BRIDGE: 'COAST BRIDGE',
+      EYE_GUESS_MEMORY: 'EYE GUESS',
+      CONCENTRATION_PRIZE_MATCH: 'PRIZE MATCH',
+      MONTY_CURTAIN_DEAL: 'CURTAIN DEAL',
+      PRESS_YOUR_LUCK_GREMLIN: 'GREMLIN BOARD',
+      BIG_WHEEL_SHOWCASE: 'BIG WHEEL',
+    };
+    stickerBar.innerHTML = ALL_BOARD_PLAY_MODES_V7.map((mode) => {
+      const earned = masteredSet.has(mode);
+      return `<span class="ws7-mastery-sticker" data-earned="${earned}" title="${BOARD_PLAY_MODE_TITLES_V7[mode]}">${earned ? '✓' : '○'} ${shortModeNames[mode]}</span>`;
+    }).join('');
 
-      // Sticky Broadcast Tab Rail (Grid equal-columns — 0px horizontal tab clip on 375px & 768px!)
-      const tabRail = document.createElement('div');
-      tabRail.className = 'ws7-tab-rail';
-      const tabs: ReadonlyArray<{ s: 0 | 1 | 2 | 3 | 4; shortLabel: string; longSuffix: string; title: string }> = [
-        { s: 0, shortLabel: 'ALL', longSuffix: ' 36', title: 'All 36 Awards' },
-        { s: 1, shortLabel: 'S1', longSuffix: ' · GOLD', title: 'Season 1 Awards' },
-        { s: 2, shortLabel: 'S2', longSuffix: ' · ROAD', title: 'Season 2 Awards' },
-        { s: 3, shortLabel: 'S3', longSuffix: ' · COUP', title: 'Season 3 Awards' },
-        { s: 4, shortLabel: 'S4', longSuffix: ' · VIP', title: 'Season 4 Awards' },
-      ];
-      for (const t of tabs) {
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'ws7-tab-btn';
-        b.dataset.active = filterSeason === t.s ? 'true' : 'false';
-        b.title = t.title;
-        b.innerHTML = `<span>${t.shortLabel}<span class="ws7-tab-long">${t.longSuffix}</span></span>`;
-        b.addEventListener('click', () => {
-          filterSeason = t.s;
-          render();
-        });
-        tabRail.appendChild(b);
+    // Sticky Broadcast Tab Rail
+    const tabRail = document.createElement('div');
+    tabRail.className = 'ws7-tab-rail';
+    const tabs: ReadonlyArray<{ s: 0 | 1 | 2 | 3 | 4; shortLabel: string; longSuffix: string; title: string }> = [
+      { s: 0, shortLabel: 'ALL', longSuffix: ' 36', title: 'All 36 Awards' },
+      { s: 1, shortLabel: 'S1', longSuffix: ' · STUDIO 6A', title: 'Season 1 Studio 6A Awards' },
+      { s: 2, shortLabel: 'S2', longSuffix: ' · ROADSHOW', title: 'Season 2 Roadshow Awards' },
+      { s: 3, shortLabel: 'S3', longSuffix: ' · PRIMETIME', title: 'Season 3 Primetime Awards' },
+      { s: 4, shortLabel: 'S4', longSuffix: ' · FINALE', title: 'Season 4 Finale Awards' },
+    ];
+    const tabBtns: Array<{ s: 0 | 1 | 2 | 3 | 4; btn: HTMLButtonElement }> = [];
+
+    const list = document.createElement('div');
+    list.className = 'ws7-editorial-list';
+
+    const renderFilteredList = (): void => {
+      for (const tb of tabBtns) {
+        tb.btn.dataset.active = tb.s === filterSeason ? 'true' : 'false';
       }
-
-      // Flush Warm Cream Broadcast Honors Index
-      const list = document.createElement('div');
-      list.className = 'ws7-editorial-list';
+      list.innerHTML = '';
       const shown = catalog.filter((c) => filterSeason === 0 || c.season === filterSeason);
+      if (shown.length > 0 && !shown.some((c) => c.trophyId === selectedTrophyId)) {
+        const nextSpec = shown.find((c) => unlocked.has(c.trophyId)) ?? shown[0];
+        selectedTrophyId = nextSpec.trophyId;
+        const nextOpen = unlocked.has(nextSpec.trophyId);
+        updateShowcasePlaque(nextSpec, nextOpen);
+        this.callbacks.onSelectTrophyIn3DVault?.(nextSpec.trophyId, nextOpen);
+      }
       const rowNodes: HTMLDivElement[] = [];
       for (const tr of shown) {
         const isOpen = unlocked.has(tr.trophyId);
+        const trMeta = getTrophyDisplayMetaV7(tr.trophyId);
+        const tierLabel: AwardRarityTierV7 = trMeta.tierBadge;
+        const cleanRule = tr.unlockRuleText.replace(/^Quick Win:\s*/i, '');
         const row = document.createElement('div');
         row.className = 'ws7-editorial-row';
         row.dataset.unlocked = isOpen ? 'true' : 'false';
@@ -2828,9 +4685,9 @@ export class BroadcastChromeUIV7 {
         row.dataset.trophyId = tr.trophyId;
         row.innerHTML = `
           <div class="ws7-editorial-meta">
-            <div style="font-family:var(--ws7-font-broadcast);font-size:14px;font-weight:900;color:${isOpen ? '#b86800' : '#0f3a4d'};">${isOpen ? '★ EARNED' : 'LOCKED'} · SEASON 0${tr.season}</div>
+            <div style="font-family:var(--ws7-font-broadcast);font-size:14px;font-weight:900;color:${isOpen ? '#b86800' : '#0f3a4d'};">${isOpen ? `★ EARNED · ${tierLabel}` : `LOCKED · ${tierLabel}`} · SEASON 0${tr.season} · +${trMeta.rarityPoints} PTS</div>
             <div style="font-size:16px;font-weight:800;color:#121a2b;">${tr.name} <span style="font-weight:600;color:#384660;">— “${tr.engraving}”</span></div>
-            <div style="font-size:14px;color:#384660;font-weight:600;">${formatOrphanProofCopyV7(tr.unlockRuleText)}</div>
+            <div style="font-size:14px;color:#384660;font-weight:700;">${isOpen ? formatOrphanProofCopyV7(cleanRule) : `HOW TO UNLOCK: ${formatOrphanProofCopyV7(cleanRule)}`}</div>
           </div>
         `;
         row.addEventListener('click', () => {
@@ -2844,36 +4701,53 @@ export class BroadcastChromeUIV7 {
         rowNodes.push(row);
         list.appendChild(row);
       }
-
-      const footer = document.createElement('div');
-      footer.className = 'ws7-sheet-footer';
-      const closeBtn = document.createElement('button');
-      closeBtn.type = 'button';
-      closeBtn.className = 'ws7-secondary-btn';
-      closeBtn.textContent = 'CLOSE TROPHY VAULT';
-      closeBtn.addEventListener('click', dismiss);
-      footer.appendChild(closeBtn);
-
-      body.append(showcaseRow, tabRail, list);
-      panel.append(header, body, footer);
-      this.mountModalContent(panel, dismiss);
-
-      const cleanup = this.callbacks.onMountTrophyVault3D?.(
-        stageBox,
-        activeSpec.trophyId,
-        activeUnlocked,
-      );
-      if (typeof cleanup === 'function') {
-        this.activeModalCleanup = cleanup;
-      }
+      list.scrollTop = 0;
     };
-    render();
+
+    for (const t of tabs) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ws7-tab-btn';
+      b.dataset.active = filterSeason === t.s ? 'true' : 'false';
+      b.title = t.title;
+      b.innerHTML = `<span>${t.shortLabel}<span class="ws7-tab-long">${t.longSuffix}</span></span>`;
+      b.addEventListener('click', () => {
+        if (filterSeason === t.s) return;
+        filterSeason = t.s;
+        renderFilteredList();
+      });
+      tabBtns.push({ s: t.s, btn: b });
+      tabRail.appendChild(b);
+    }
+
+    const footer = document.createElement('div');
+    footer.className = 'ws7-sheet-footer';
+    const closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.className = 'ws7-secondary-btn';
+    closeBtn.textContent = 'CLOSE TROPHY VAULT';
+    closeBtn.addEventListener('click', dismiss);
+    footer.appendChild(closeBtn);
+
+    renderFilteredList();
+    body.append(showcaseRow, stickerBar, tabRail, list);
+    panel.append(header, body, footer);
+    this.mountUtilityModalContent(panel, dismiss);
+
+    const cleanup = this.callbacks.onMountTrophyVault3D?.(
+      stageBox,
+      initialSpec.trophyId,
+      unlocked.has(initialSpec.trophyId),
+    );
+    if (typeof cleanup === 'function') {
+      this.activeUtilityModalCleanup = cleanup;
+    }
   }
 
   public openEpisodeJumpModal(onClose?: () => void): void {
     const dismiss = (): void => {
-      if (onClose) onClose();
-      else this.hideModalStage();
+      this.hideUtilityModalStage();
+      onClose?.();
     };
     let selectedSeason: 1 | 2 | 3 | 4 = this.campaign.getState().season;
     let selectedRegime: CoupRegimeIdV7 = this.campaign.getState().activeCoupRegime;
@@ -2976,6 +4850,7 @@ export class BroadcastChromeUIV7 {
         cueBtn.style.flex = '0 0 auto';
         cueBtn.textContent = `PLAY ${bp.code}`;
         cueBtn.addEventListener('click', () => {
+          this.hideUtilityModalStage();
           this.campaign.jumpToEpisode(
             ep,
             selectedSeason >= 3 && selectedRegime !== 'NONE' ? selectedRegime : undefined,
@@ -2997,15 +4872,19 @@ export class BroadcastChromeUIV7 {
       footer.appendChild(closeBtn);
 
       panel.append(header, body, footer);
-      this.mountModalContent(panel, dismiss);
+      this.mountUtilityModalContent(panel, dismiss);
     };
     render();
   }
 
+  public openAudioSettingsModal(onClose?: () => void): void {
+    this.openSettingsModal(onClose);
+  }
+
   public openSettingsModal(onClose?: () => void): void {
     const dismiss = (): void => {
-      if (onClose) onClose();
-      else this.hideModalStage();
+      this.hideUtilityModalStage();
+      onClose?.();
     };
     const render = (): void => {
       const settings = this.campaign.getState().settings;
@@ -3102,10 +4981,12 @@ export class BroadcastChromeUIV7 {
         void (async () => {
           if (this.callbacks.onToggleFullscreen) {
             this.callbacks.onToggleFullscreen();
-            window.setTimeout(() => render(), 120);
+            window.setTimeout(() => {
+              if (this.isUtilityModalOpen()) render();
+            }, 120);
           } else {
             await this.handleFullscreenToggle();
-            render();
+            if (this.isUtilityModalOpen()) render();
           }
         })();
       });
@@ -3125,31 +5006,67 @@ export class BroadcastChromeUIV7 {
       toggleBand.appendChild(toggleRow);
       body.appendChild(toggleBand);
 
+      // CPU Champion Difficulty Mode Selector (Matinee Easy / Prime-Time Normal / All-Star Hard / Mastermind)
+      const diffBand = document.createElement('div');
+      diffBand.className = 'ws7-sheet-band';
+      const diffKicker = document.createElement('div');
+      diffKicker.className = 'ws7-subtitle-kicker';
+      diffKicker.style.marginBottom = '8px';
+      diffKicker.style.textAlign = 'center';
+      diffKicker.textContent = 'CPU CHAMPION DIFFICULTY · HONEST ACCURACY TIER';
+      const diffRow = document.createElement('div');
+      diffRow.className = 'ws7-btn-row';
+      const currentDiff: DifficultyModeV7 = settings.difficultyMode ?? 'PRIMETIME_NORMAL';
+      const diffChoices: ReadonlyArray<{ id: DifficultyModeV7; label: string }> = [
+        { id: 'MATINEE_EASY', label: 'MATINEE (EASY)' },
+        { id: 'PRIMETIME_NORMAL', label: 'PRIME-TIME (NORMAL)' },
+        { id: 'ALLSTAR_HARD', label: 'ALL-STAR (HARD)' },
+        { id: 'MASTERMIND', label: 'MASTERMIND' },
+      ];
+      for (const d of diffChoices) {
+        const db = document.createElement('button');
+        db.type = 'button';
+        db.className = currentDiff === d.id ? 'ws7-teal-btn' : 'ws7-secondary-btn';
+        db.textContent = d.label;
+        db.addEventListener('click', () => {
+          const updated = this.campaign.updateSettings({ difficultyMode: d.id });
+          this.applySettingsAttributes(updated);
+          this.callbacks.onSettingsChanged?.(updated);
+          render();
+        });
+        diffRow.appendChild(db);
+      }
+      diffBand.append(diffKicker, diffRow);
+      body.appendChild(diffBand);
+
       const footer = document.createElement('div');
       footer.className = 'ws7-sheet-footer';
 
       if (this.liveMatchScoreForShop !== null) {
-        const propBtn = document.createElement('button');
-        propBtn.type = 'button';
-        propBtn.className = 'ws7-teal-btn';
-        propBtn.textContent = '★ PROP SHOP';
-        propBtn.addEventListener('click', () => {
-          this.openPropTrunkModal(true);
-        });
-
         const hubBtn = document.createElement('button');
         hubBtn.type = 'button';
-        hubBtn.className = 'ws7-secondary-btn';
-        hubBtn.textContent = '⌂ TITLE HUB';
+        hubBtn.className = 'ws7-ceremony-save-exit-btn';
+        hubBtn.innerHTML = `${SVG_REEL_VAULT_1966}<span>SAVE &amp; EXIT</span>`;
         hubBtn.addEventListener('click', () => {
+          this.hideUtilityModalStage();
           if (this.callbacks.onReturnToTitleHub) {
             this.callbacks.onReturnToTitleHub();
           } else {
             this.showTitleHub();
           }
         });
+        footer.appendChild(hubBtn);
 
-        footer.append(propBtn, hubBtn);
+        if (this.propsUnlockedInMatch && !this.isDailyBroadcastMatch) {
+          const propBtn = document.createElement('button');
+          propBtn.type = 'button';
+          propBtn.className = 'ws7-teal-btn';
+          propBtn.textContent = '★ PROP SHOP';
+          propBtn.addEventListener('click', () => {
+            this.openPropTrunkModal(true);
+          });
+          footer.appendChild(propBtn);
+        }
       }
 
       const closeBtn = document.createElement('button');
@@ -3160,13 +5077,24 @@ export class BroadcastChromeUIV7 {
       footer.appendChild(closeBtn);
 
       panel.append(header, body, footer);
-      this.mountModalContent(panel, dismiss);
+      this.mountUtilityModalContent(panel, dismiss);
     };
     render();
   }
 
   public getSaveSnapshot(): CampaignSaveStateV7 {
     return this.campaign.getState();
+  }
+
+  public isUtilityModalOpen(): boolean {
+    return !this.utilityModalStageEl.classList.contains('ws7-hidden');
+  }
+
+  public isAnyModalOpen(): boolean {
+    return (
+      !this.modalStageEl.classList.contains('ws7-hidden') ||
+      !this.utilityModalStageEl.classList.contains('ws7-hidden')
+    );
   }
 
   // --------------------------------------------------------------------------
@@ -3178,9 +5106,98 @@ export class BroadcastChromeUIV7 {
     this.rootEl.dataset.reducedMotion = settings.reducedMotion ? 'true' : 'false';
   }
 
+  private scheduleFlowTimeout(fn: () => void, ms: number): number {
+    const id = window.setTimeout(() => {
+      this.activeFlowTimeouts.delete(id);
+      fn();
+    }, ms);
+    this.activeFlowTimeouts.add(id);
+    return id;
+  }
+
+  private clearFlowTimeout(id: number): void {
+    window.clearTimeout(id);
+    this.activeFlowTimeouts.delete(id);
+  }
+
+  private scheduleFlowRaf(fn: (now: number) => void): number {
+    const id = window.requestAnimationFrame((now) => {
+      this.activeFlowRafs.delete(id);
+      fn(now);
+    });
+    this.activeFlowRafs.add(id);
+    return id;
+  }
+
   private activeModalDismissCleanup: (() => void) | null = null;
 
+  private mountUtilityModalContent(content: HTMLElement, onDismiss?: () => void): void {
+    if (this.activeUtilityModalCleanup) {
+      this.activeUtilityModalCleanup();
+      this.activeUtilityModalCleanup = null;
+    }
+    if (this.activeUtilityDismissCleanup) {
+      this.activeUtilityDismissCleanup();
+      this.activeUtilityDismissCleanup = null;
+    }
+    this.utilityModalStageEl.innerHTML = '';
+    this.utilityModalStageEl.appendChild(content);
+    this.utilityModalStageEl.classList.remove('ws7-hidden');
+    this.utilityModalStageEl.scrollTop = 0;
+
+    if (onDismiss) {
+      const onStageClick = (ev: MouseEvent): void => {
+        if (ev.target === this.utilityModalStageEl) {
+          onDismiss();
+        }
+      };
+      const onKeyDown = (ev: KeyboardEvent): void => {
+        if (ev.key === 'Escape') {
+          ev.preventDefault();
+          ev.stopImmediatePropagation();
+          onDismiss();
+        }
+      };
+      this.utilityModalStageEl.addEventListener('click', onStageClick);
+      window.addEventListener('keydown', onKeyDown, true);
+      this.activeUtilityDismissCleanup = () => {
+        this.utilityModalStageEl.removeEventListener('click', onStageClick);
+        window.removeEventListener('keydown', onKeyDown, true);
+      };
+    }
+
+    this.callbacks.onUtilityModalStateChange?.(true);
+    this.syncBoardModeRibbonVisibility();
+  }
+
+  public hideUtilityModalStage(): void {
+    if (this.activeUtilityModalCleanup) {
+      this.activeUtilityModalCleanup();
+      this.activeUtilityModalCleanup = null;
+    }
+    if (this.activeUtilityDismissCleanup) {
+      this.activeUtilityDismissCleanup();
+      this.activeUtilityDismissCleanup = null;
+    }
+    this.utilityModalStageEl.innerHTML = '';
+    this.utilityModalStageEl.classList.add('ws7-hidden');
+    this.callbacks.onUtilityModalStateChange?.(false);
+    this.syncBoardModeRibbonVisibility();
+  }
+
+  private clearScoreDeltaPops(): void {
+    for (const roller of [this.playerRoller, this.rivalRoller]) {
+      if (roller.deltaTimeout !== null) {
+        window.clearTimeout(roller.deltaTimeout);
+        roller.deltaTimeout = null;
+      }
+    }
+    this.playerDeltaPopEl.dataset.show = 'false';
+    this.rivalDeltaPopEl.dataset.show = 'false';
+  }
+
   private mountModalContent(content: HTMLElement, onDismiss?: () => void): void {
+    this.clearScoreDeltaPops();
     if (this.activeModalCleanup) {
       this.activeModalCleanup();
       this.activeModalCleanup = null;
@@ -3201,7 +5218,7 @@ export class BroadcastChromeUIV7 {
         }
       };
       const onKeyDown = (ev: KeyboardEvent): void => {
-        if (ev.key === 'Escape') {
+        if (ev.key === 'Escape' && !this.isUtilityModalOpen()) {
           ev.preventDefault();
           onDismiss();
         }
@@ -3214,6 +5231,7 @@ export class BroadcastChromeUIV7 {
       };
     }
 
+    this.callbacks.onUtilityModalStateChange?.(true);
     this.syncBoardModeRibbonVisibility();
   }
 
@@ -3229,6 +5247,9 @@ export class BroadcastChromeUIV7 {
     }
     this.modalStageEl.innerHTML = '';
     this.modalStageEl.classList.add('ws7-hidden');
+    if (!this.isUtilityModalOpen()) {
+      this.callbacks.onUtilityModalStateChange?.(false);
+    }
     this.syncBoardModeRibbonVisibility();
   }
 
@@ -3237,5 +5258,13 @@ export class BroadcastChromeUIV7 {
       window.clearInterval(this.activeTimerHandle);
       this.activeTimerHandle = null;
     }
+    for (const tid of this.activeFlowTimeouts) {
+      window.clearTimeout(tid);
+    }
+    this.activeFlowTimeouts.clear();
+    for (const rid of this.activeFlowRafs) {
+      window.cancelAnimationFrame(rid);
+    }
+    this.activeFlowRafs.clear();
   }
 }
