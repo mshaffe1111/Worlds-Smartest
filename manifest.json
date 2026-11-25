@@ -1,13 +1,13 @@
 {
-  "name": "World's Smartest",
+  "name": "World's Smartest: Fifty Million Watching",
   "short_name": "World's Smartest",
-  "description": "Prime-Time Global Trivia Championship — 7 Interactive Formats, Living Gimmick Boards & 32 Escalating Venues.",
+  "description": "1966 In Living Color Network TV Trivia Showpiece — 6 Distinct Board Modes, Real Showband Orchestra & Shareable Daily Broadcast.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#050811",
-  "theme_color": "#050811",
+  "background_color": "#0B1D30",
+  "theme_color": "#0B1D30",
   "icons": [
     {
       "src": "./icon-192.png",
