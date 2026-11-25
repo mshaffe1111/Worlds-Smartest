@@ -1,0 +1,491 @@
+{
+  "version": "v7.2-1966-living-color-studio",
+  "instruments": {
+    "trumpet": [
+      {
+        "note": "F4",
+        "midi": 65,
+        "file": "inst_trumpet_F4.mp3",
+        "bytes": 18225
+      },
+      {
+        "note": "Bb4",
+        "midi": 70,
+        "file": "inst_trumpet_Bb4.mp3",
+        "bytes": 18225
+      },
+      {
+        "note": "D5",
+        "midi": 74,
+        "file": "inst_trumpet_D5.mp3",
+        "bytes": 18225
+      },
+      {
+        "note": "G5",
+        "midi": 79,
+        "file": "inst_trumpet_G5.mp3",
+        "bytes": 18225
+      }
+    ],
+    "brass": [
+      {
+        "note": "C3",
+        "midi": 48,
+        "file": "inst_brass_C3.mp3",
+        "bytes": 19479
+      },
+      {
+        "note": "F3",
+        "midi": 53,
+        "file": "inst_brass_F3.mp3",
+        "bytes": 19479
+      },
+      {
+        "note": "Bb3",
+        "midi": 58,
+        "file": "inst_brass_Bb3.mp3",
+        "bytes": 19479
+      },
+      {
+        "note": "D4",
+        "midi": 62,
+        "file": "inst_brass_D4.mp3",
+        "bytes": 19479
+      },
+      {
+        "note": "G4",
+        "midi": 67,
+        "file": "inst_brass_G4.mp3",
+        "bytes": 19479
+      }
+    ],
+    "trombone": [
+      {
+        "note": "F2",
+        "midi": 41,
+        "file": "inst_trombone_F2.mp3",
+        "bytes": 18852
+      },
+      {
+        "note": "C3",
+        "midi": 48,
+        "file": "inst_trombone_C3.mp3",
+        "bytes": 18852
+      },
+      {
+        "note": "F3",
+        "midi": 53,
+        "file": "inst_trombone_F3.mp3",
+        "bytes": 18852
+      },
+      {
+        "note": "Bb3",
+        "midi": 58,
+        "file": "inst_trombone_Bb3.mp3",
+        "bytes": 18852
+      }
+    ],
+    "muted_trumpet": [
+      {
+        "note": "C4",
+        "midi": 60,
+        "file": "inst_muted_trumpet_C4.mp3",
+        "bytes": 15717
+      },
+      {
+        "note": "F4",
+        "midi": 65,
+        "file": "inst_muted_trumpet_F4.mp3",
+        "bytes": 15717
+      },
+      {
+        "note": "Bb4",
+        "midi": 70,
+        "file": "inst_muted_trumpet_Bb4.mp3",
+        "bytes": 15717
+      }
+    ],
+    "tenor_sax": [
+      {
+        "note": "F3",
+        "midi": 53,
+        "file": "inst_tenor_sax_F3.mp3",
+        "bytes": 18225
+      },
+      {
+        "note": "C4",
+        "midi": 60,
+        "file": "inst_tenor_sax_C4.mp3",
+        "bytes": 18225
+      },
+      {
+        "note": "F4",
+        "midi": 65,
+        "file": "inst_tenor_sax_F4.mp3",
+        "bytes": 18225
+      }
+    ],
+    "upright_bass": [
+      {
+        "note": "E1",
+        "midi": 28,
+        "file": "inst_upright_bass_E1.mp3",
+        "bytes": 17598
+      },
+      {
+        "note": "A1",
+        "midi": 33,
+        "file": "inst_upright_bass_A1.mp3",
+        "bytes": 17598
+      },
+      {
+        "note": "D2",
+        "midi": 38,
+        "file": "inst_upright_bass_D2.mp3",
+        "bytes": 17598
+      },
+      {
+        "note": "G2",
+        "midi": 43,
+        "file": "inst_upright_bass_G2.mp3",
+        "bytes": 17598
+      },
+      {
+        "note": "C3",
+        "midi": 48,
+        "file": "inst_upright_bass_C3.mp3",
+        "bytes": 17598
+      }
+    ],
+    "grand_piano": [
+      {
+        "note": "C2",
+        "midi": 36,
+        "file": "inst_grand_piano_C2.mp3",
+        "bytes": 26062
+      },
+      {
+        "note": "G2",
+        "midi": 43,
+        "file": "inst_grand_piano_G2.mp3",
+        "bytes": 26062
+      },
+      {
+        "note": "C3",
+        "midi": 48,
+        "file": "inst_grand_piano_C3.mp3",
+        "bytes": 26062
+      },
+      {
+        "note": "G3",
+        "midi": 55,
+        "file": "inst_grand_piano_G3.mp3",
+        "bytes": 26062
+      },
+      {
+        "note": "C4",
+        "midi": 60,
+        "file": "inst_grand_piano_C4.mp3",
+        "bytes": 26062
+      },
+      {
+        "note": "G4",
+        "midi": 67,
+        "file": "inst_grand_piano_G4.mp3",
+        "bytes": 26062
+      },
+      {
+        "note": "C5",
+        "midi": 72,
+        "file": "inst_grand_piano_C5.mp3",
+        "bytes": 26062
+      }
+    ],
+    "vibraphone": [
+      {
+        "note": "C4",
+        "midi": 60,
+        "file": "inst_vibraphone_C4.mp3",
+        "bytes": 24808
+      },
+      {
+        "note": "F4",
+        "midi": 65,
+        "file": "inst_vibraphone_F4.mp3",
+        "bytes": 24808
+      },
+      {
+        "note": "Bb4",
+        "midi": 70,
+        "file": "inst_vibraphone_Bb4.mp3",
+        "bytes": 24808
+      },
+      {
+        "note": "E5",
+        "midi": 76,
+        "file": "inst_vibraphone_E5.mp3",
+        "bytes": 24808
+      }
+    ],
+    "marimba": [
+      {
+        "note": "C4",
+        "midi": 60,
+        "file": "inst_marimba_C4.mp3",
+        "bytes": 14777
+      },
+      {
+        "note": "G4",
+        "midi": 67,
+        "file": "inst_marimba_G4.mp3",
+        "bytes": 14777
+      },
+      {
+        "note": "C5",
+        "midi": 72,
+        "file": "inst_marimba_C5.mp3",
+        "bytes": 14777
+      }
+    ],
+    "jazz_guitar": [
+      {
+        "note": "C3",
+        "midi": 48,
+        "file": "inst_jazz_guitar_C3.mp3",
+        "bytes": 18225
+      },
+      {
+        "note": "G3",
+        "midi": 55,
+        "file": "inst_jazz_guitar_G3.mp3",
+        "bytes": 18225
+      },
+      {
+        "note": "C4",
+        "midi": 60,
+        "file": "inst_jazz_guitar_C4.mp3",
+        "bytes": 18225
+      }
+    ],
+    "strings": [
+      {
+        "note": "C3",
+        "midi": 48,
+        "file": "inst_strings_C3.mp3",
+        "bytes": 33689
+      },
+      {
+        "note": "G3",
+        "midi": 55,
+        "file": "inst_strings_G3.mp3",
+        "bytes": 33689
+      },
+      {
+        "note": "C4",
+        "midi": 60,
+        "file": "inst_strings_C4.mp3",
+        "bytes": 33689
+      },
+      {
+        "note": "G4",
+        "midi": 67,
+        "file": "inst_strings_G4.mp3",
+        "bytes": 33689
+      }
+    ],
+    "glockenspiel": [
+      {
+        "note": "C5",
+        "midi": 72,
+        "file": "inst_glockenspiel_C5.mp3",
+        "bytes": 16971
+      },
+      {
+        "note": "G5",
+        "midi": 79,
+        "file": "inst_glockenspiel_G5.mp3",
+        "bytes": 16971
+      }
+    ],
+    "tubular_bell": [
+      {
+        "note": "C5",
+        "midi": 72,
+        "file": "inst_tubular_bell_C5.mp3",
+        "bytes": 24808
+      },
+      {
+        "note": "G5",
+        "midi": 79,
+        "file": "inst_tubular_bell_G5.mp3",
+        "bytes": 24808
+      }
+    ],
+    "woodblock": [
+      {
+        "note": "C5",
+        "midi": 72,
+        "file": "inst_woodblock_C5.mp3",
+        "bytes": 6313
+      },
+      {
+        "note": "G5",
+        "midi": 79,
+        "file": "inst_woodblock_G5.mp3",
+        "bytes": 6313
+      }
+    ],
+    "timpani": [
+      {
+        "note": "C3",
+        "midi": 48,
+        "file": "inst_timpani_C3.mp3",
+        "bytes": 16971
+      },
+      {
+        "note": "G3",
+        "midi": 55,
+        "file": "inst_timpani_G3.mp3",
+        "bytes": 16971
+      }
+    ]
+  },
+  "drums": {
+    "kick": {
+      "file": "drum_kick.mp3",
+      "bytes": 7723,
+      "source": "virtuosity_drums:Samples/kickmic/kick/kickmic_kick_snoff_vl4_rr1.flac"
+    },
+    "snare_stick": {
+      "file": "drum_snare_stick.mp3",
+      "bytes": 6992,
+      "source": "virtuosity_drums:Samples/mid/snare/mid_snare_center_vl4.flac"
+    },
+    "snare_brush": {
+      "file": "drum_snare_brush.mp3",
+      "bytes": 6260,
+      "source": "virtuosity_drums:Samples/mid/snareoff/mid_snareoff_center_vl4.flac"
+    },
+    "snare_rim": {
+      "file": "drum_snare_rim.mp3",
+      "bytes": 5163,
+      "source": "virtuosity_drums:Samples/mid/snare/mid_snare_crossstick_vl4.flac"
+    },
+    "hihat_closed": {
+      "file": "drum_hihat_closed.mp3",
+      "bytes": 4432,
+      "source": "virtuosity_drums:Samples/mid/hh/mid_hh_closed_vl4_rr1.flac"
+    },
+    "hihat_pedal": {
+      "file": "drum_hihat_pedal.mp3",
+      "bytes": 4797,
+      "source": "virtuosity_drums:Samples/mid/hh/mid_hh_34_vl4_rr1.flac"
+    },
+    "ride": {
+      "file": "drum_ride.mp3",
+      "bytes": 15769,
+      "source": "virtuosity_drums:Samples/mid/flatride/mid_flatride_crash_vl4.flac"
+    },
+    "crash": {
+      "file": "drum_crash.mp3",
+      "bytes": 22717,
+      "source": "virtuosity_drums:Samples/mid/crash/mid_crash_crash_vl3_rr1.flac"
+    },
+    "tambourine": {
+      "file": "drum_tambourine.mp3",
+      "bytes": 7357,
+      "source": "virtuosity_drums:Samples/perc/close/tambourine/Tamb1_Shake_rr10_Close.wav"
+    },
+    "cowbell": {
+      "file": "drum_cowbell.mp3",
+      "bytes": 6992,
+      "source": "virtuosity_drums:Samples/perc/close/cowbell/Cowbell1_Normal_v3_rr1_Close.wav"
+    },
+    "tom_mid": {
+      "file": "drum_tom_mid.mp3",
+      "bytes": 9186,
+      "source": "virtuosity_drums:Samples/mid/htom/mid_htom_center_vl4.flac"
+    },
+    "bongo_hi": {
+      "file": "drum_bongo_hi.mp3",
+      "bytes": 5894,
+      "source": "VCSL:Membranophones/Struck Membranophones/Bongos/BongoH_Hit1_v1_rr1_Mid.wav"
+    },
+    "bongo_lo": {
+      "file": "drum_bongo_lo.mp3",
+      "bytes": 6626,
+      "source": "VCSL:Membranophones/Struck Membranophones/Bongos/BongoH_Hit1_v1_rr2_Mid.wav"
+    },
+    "shaker": {
+      "file": "drum_shaker.mp3",
+      "bytes": 4797,
+      "source": "VCSL:Idiophones/Struck Idiophones/Cabasa/Cabasa1_Hit_rr1_Mid.wav"
+    }
+  },
+  "foley": {
+    "sleigh_sparkle": {
+      "file": "foley_sleigh_sparkle.mp3",
+      "bytes": 23449,
+      "source": "VCSL:Idiophones/Struck Idiophones/Bell Tree/Individual/BellTree_Hit_A#5_rr1_Mid.wav"
+    },
+    "cash_register_bell": {
+      "file": "foley_cash_register_bell.mp3",
+      "bytes": 21254,
+      "source": "WikimediaCommons:File:Cash register.ogg"
+    },
+    "mechanical_clack": {
+      "file": "foley_mechanical_clack.mp3",
+      "bytes": 7357,
+      "source": "WikimediaCommons:File:WWS Typewriter.ogg"
+    },
+    "flap_click": {
+      "file": "foley_flap_click.mp3",
+      "bytes": 2968,
+      "source": "WikimediaCommons:File:WWS Typewriter.ogg"
+    },
+    "typewriter_bell": {
+      "file": "foley_typewriter_bell.mp3",
+      "bytes": 11746,
+      "source": "WikimediaCommons:File:WWS Typewriter.ogg"
+    },
+    "studio_bell_gong": {
+      "file": "foley_studio_bell_gong.mp3",
+      "bytes": 23449,
+      "source": "WikimediaCommons:File:Gong or bell vibrant (short).ogg"
+    },
+    "brush_sweep": {
+      "file": "foley_brush_sweep.mp3",
+      "bytes": 5529,
+      "source": "VCSL/Virtuosity:brush_sweep"
+    }
+  },
+  "crowd": {
+    "applause_warm": {
+      "file": "crowd_applause_warm.mp3",
+      "bytes": 48683,
+      "source": "WikimediaCommons:File:Applause ii.ogg"
+    },
+    "applause_big": {
+      "file": "crowd_applause_big.mp3",
+      "bytes": 60020,
+      "source": "WikimediaCommons:File:Applause.ogg"
+    },
+    "cheer_hurray": {
+      "file": "crowd_cheer_hurray.mp3",
+      "bytes": 45757,
+      "source": "WikimediaCommons:File:Clapping hurray.ogg"
+    },
+    "studio_laugh": {
+      "file": "crowd_studio_laugh.mp3",
+      "bytes": 32017,
+      "source": "WikimediaCommons:File:Small group laughter.ogg"
+    },
+    "studio_clap": {
+      "file": "crowd_studio_clap.mp3",
+      "bytes": 37346,
+      "source": "MusyngKite:applause:C4"
+    }
+  },
+  "totalFiles": 79,
+  "totalBytes": 1515353
+}

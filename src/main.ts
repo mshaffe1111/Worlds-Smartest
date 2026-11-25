@@ -1,14 +1,15 @@
 /// <reference types="vite/client" />
 // ============================================================================
-// WORLD'S SMARTEST v6.0 — Master Ultra-HD 3D Showtime Entry Point (`src/main.ts`)
-// 10 Architectural 3D Stage Worlds · 100 3D Twist Boards · 100 Zero-Scroll Toys ·
-// 4K Natural Earth Relief Globe · 36 3D Trophies & Medals · 4-Bay Neve Desk ·
-// 14 Original Abbey-Road Symphonies · 1.28M Calibrated Zero-Repeat Clues
+// WORLD'S SMARTEST: FIFTY MILLION WATCHING (v7.0 Gold Master)
+// Master Entry Point (`src/main.ts`)
+// 10 Grounded 3-Layer Soundstages · 12 Interactive +22° Contraption Boards ·
+// 14 1-Gesture Tactile Contraptions · 4K Relief Globe · 20 Cyanotype Plates ·
+// 12-Gate Anti-Slop Corpus · Genre-Honest Showband Score · 90-Ep Campaign ·
+// 36 Lit 24K Gold / Blued Steel / Grand-Feu / Platinum Sovereign Trophies
 // ============================================================================
 
-import './styles/sovereign.css';
-import './styles/ultrahd_v6.css';
-import { bootShowtimeV6 } from './v6/bootShowtimeV6';
+import './styles/broadcast_v7.css';
+import { bootShowtimeV7 } from './v7/ShowtimeAppV7';
 
 interface OfflineSwClientModule {
   registerOfflineServiceWorker?: () => Promise<unknown>;
@@ -18,7 +19,7 @@ const offlineSwClientLoaders = import.meta.glob<OfflineSwClientModule>(
   './pwa/OfflineServiceWorkerClient.ts',
 );
 
-const SW_UPGRADE_RELOAD_KEY = 'ws_sw_upgraded_v6_r1';
+const SW_UPGRADE_RELOAD_KEY = 'ws_sw_upgraded_v7_r1';
 
 function scheduleOfflineServiceWorkerRegistration(): void {
   if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
@@ -81,7 +82,13 @@ function bootstrap(): void {
     throw new Error('Missing #canvas-root or #ui-root mount elements in index.html.');
   }
 
-  const app = bootShowtimeV6(canvasRoot, vfxCanvas, uiRoot);
+  // Hide unused 2D vfx-canvas overlay so WebGL2 hardware stage & raycasting are 100% crisp
+  if (vfxCanvas) {
+    vfxCanvas.style.display = 'none';
+    vfxCanvas.style.pointerEvents = 'none';
+  }
+
+  const app = bootShowtimeV7(canvasRoot, uiRoot);
 
   window.addEventListener('beforeunload', () => {
     app.dispose();

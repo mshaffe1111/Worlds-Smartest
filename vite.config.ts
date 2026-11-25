@@ -5,18 +5,13 @@ export default defineConfig({
   build: {
     target: 'es2022',
     sourcemap: false,
-    chunkSizeWarningLimit: 650,
+    chunkSizeWarningLimit: 700,
     rollupOptions: {
       output: {
         manualChunks(id: string) {
           const normalized = id.replace(/\\/g, '/');
           if (normalized.includes('/node_modules/')) {
-            if (
-              normalized.includes('/node_modules/troika-') ||
-              normalized.includes('/node_modules/bidi-js/') ||
-              normalized.includes('/node_modules/webgl-sdf-generator/') ||
-              normalized.includes('/node_modules/three/examples/')
-            ) {
+            if (normalized.includes('/node_modules/three/examples/')) {
               return 'three-addons';
             }
             if (normalized.includes('/node_modules/three/')) {
@@ -24,41 +19,20 @@ export default defineConfig({
             }
             return 'vendor';
           }
-          if (normalized.includes('/src/v6/engine/')) return 'v6-engine';
-          if (normalized.includes('/src/v6/boards/')) return 'v6-boards';
-          if (normalized.includes('/src/v6/toys/')) return 'v6-toys';
-          if (
-            normalized.includes('/src/v6/ui/') ||
-            normalized.includes('/src/v6/fun/') ||
-            normalized.includes('/src/v6/story/')
-          ) {
-            return 'v6-ui-fun';
+          if (normalized.includes('/src/v7/engine/') || normalized.includes('/src/v6/engine/')) {
+            return 'v7-engine';
           }
-          if (normalized.includes('/src/v6/corpus/') || normalized.includes('/src/v6/audio/')) {
-            return 'v6-corpus-audio';
+          if (normalized.includes('/src/v7/boards/')) {
+            return 'v7-boards';
           }
-          if (normalized.includes('/src/cinema/')) return 'cinema';
-          if (normalized.includes('/src/meta/')) return 'meta';
-          if (normalized.includes('/src/narrative/')) return 'narrative';
-          if (normalized.includes('/src/forge/')) return 'forge';
-          if (normalized.includes('/src/stage3d/')) return 'stage3d';
-          if (normalized.includes('/src/modes/')) return 'modes';
-          if (
-            normalized.includes('/src/ui/BriefingCategoriesModal') ||
-            normalized.includes('/src/ui/BriefingTaxonomyAdapter') ||
-            normalized.includes('/src/ui/CampaignSaveSlotsModal') ||
-            normalized.includes('/src/ui/EvidenceDossierModal') ||
-            normalized.includes('/src/ui/PassportObservatoryModal') ||
-            normalized.includes('/src/ui/CutscenePlayer')
-          ) {
-            return 'ui-modals';
+          if (normalized.includes('/src/v7/toys/') || normalized.includes('/src/v6/toys/')) {
+            return 'v7-toys';
           }
-          if (
-            normalized.includes('/src/characters/') ||
-            normalized.includes('/src/ergonomics/') ||
-            normalized.includes('/src/audio/')
-          ) {
-            return 'systems';
+          if (normalized.includes('/src/v7/audio/')) {
+            return 'v7-audio';
+          }
+          if (normalized.includes('/src/v7/campaign/') || normalized.includes('/src/v7/ui/')) {
+            return 'v7-campaign-ui';
           }
           return undefined;
         },

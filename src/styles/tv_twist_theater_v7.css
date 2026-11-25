@@ -1,0 +1,1666 @@
+/* ============================================================================
+   WORLD'S SMARTEST: FIFTY MILLION WATCHING — 1966 "IN LIVING COLOR" TWIST SUITE
+   `src/styles/tv_twist_theater_v7.css`
+   Iconic 1966–1969 Network TV Board Twist Theater:
+     1. Let's Make a Deal — Curtain #1, #2, #3 Velvet Proscenium Reveal
+     2. Sale of the Century (1969) — Revolving Instant Bargain Prize Turntable
+     3. Hollywood Squares / Jeopardy! '64 — 1.1s Kinetic Secret Square Starburst
+   Zero AI Boxes · Zero Muddy Brown · >= 14px Type Floor · >= 48x48px Targets
+   ============================================================================ */
+
+:root {
+  --wst7-navy-deep: #071321;
+  --wst7-navy-stage: #0b1d30;
+  --wst7-peacock-deep: #0f3a4d;
+  --wst7-peacock: #0096a6;
+  --wst7-peacock-bright: #19bfd0;
+  --wst7-gold: #f4a91f;
+  --wst7-gold-bright: #ffd966;
+  --wst7-gold-deep: #9e6206;
+  --wst7-tangerine: #ff6738;
+  --wst7-tangerine-deep: #b8320c;
+  --wst7-cobalt: #1e56c5;
+  --wst7-cobalt-deep: #102e78;
+  --wst7-cerise: #e63b7a;
+  --wst7-cerise-deep: #961447;
+  --wst7-cream: #f7eedb;
+  --wst7-cream-bright: #fff7e6;
+  --wst7-walnut: #6e3b23;
+  --wst7-walnut-deep: #0b1d30;
+  --wst7-ink: #121a2b;
+  --wst7-ink-soft: #2c3a52;
+  --wst7-emerald: #18a957;
+  --wst7-emerald-bright: #2ecc71;
+
+  --wst7-font-show: 'Caprasimo', Georgia, serif;
+  --wst7-font-display: 'Jost', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --wst7-font-broadcast: 'Jost', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --wst7-font-solari: 'Michroma', 'Jost', sans-serif;
+  --wst7-font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --wst7-safe-top: env(safe-area-inset-top, 0px);
+  --wst7-safe-right: env(safe-area-inset-right, 0px);
+  --wst7-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --wst7-safe-left: env(safe-area-inset-left, 0px);
+}
+
+/* ----------------------------------------------------------------------------
+   0. Root Stage Host & Accessibility Primitives
+   ---------------------------------------------------------------------------- */
+
+.wst7-root,
+.wst7-root * {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.wst7-root {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  z-index: 58;
+  pointer-events: none;
+  font-family: var(--wst7-font-body);
+  font-size: 15px;
+  line-height: 1.35;
+  color: var(--wst7-cream-bright);
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+  overflow: hidden;
+}
+
+.wst7-hidden {
+  display: none !important;
+}
+
+.wst7-stage-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding:
+    calc(var(--wst7-safe-top) + 12px)
+    calc(var(--wst7-safe-right) + 12px)
+    calc(var(--wst7-safe-bottom) + 14px)
+    calc(var(--wst7-safe-left) + 12px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Shared #11 Warm 2700K Incandescent Marquee Chaser Bulbs */
+.wst7-bulb-dot {
+  animation: wst7-bulb-chase 0.96s steps(1, end) infinite;
+}
+
+.wst7-bulb-dot.wst7-c0 {
+  animation-delay: 0s;
+}
+
+.wst7-bulb-dot.wst7-c1 {
+  animation-delay: 0.32s;
+}
+
+.wst7-bulb-dot.wst7-c2 {
+  animation-delay: 0.64s;
+}
+
+/* ============================================================================
+   1. LET'S MAKE A DEAL — MYSTERY CURTAIN #1, #2, #3 PROSCENIUM STAGE
+   Sculptural 3-Arch Velvet Theater Stage — ZERO Rectangular SaaS Modal Boxes!
+   ============================================================================ */
+
+.wst7-curtain-backdrop {
+  background:
+    radial-gradient(
+      ellipse 84% 58% at 50% 44%,
+      rgba(15, 57, 76, 0.54) 0%,
+      rgba(10, 28, 46, 0.84) 62%,
+      rgba(6, 16, 29, 0.94) 100%
+    );
+  animation: wst7-backdrop-in 0.26s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.wst7-curtain-backdrop[data-exiting='true'],
+.wst7-bargain-backdrop[data-exiting='true'] {
+  animation: wst7-backdrop-out 0.2s ease-in forwards;
+}
+
+.wst7-curtain-proscenium {
+  position: relative;
+  width: min(920px, 100%);
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(10px, 1.8dvh, 18px);
+}
+
+/* Overhead Chasing Marquee Header Crown */
+.wst7-curtain-crown {
+  position: relative;
+  width: min(680px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  animation: wst7-drop-spring 0.38s cubic-bezier(0.2, 1.18, 0.34, 1) both;
+}
+
+.wst7-crown-bulbs-svg {
+  width: min(460px, 90vw);
+  height: 30px;
+  display: block;
+  margin-bottom: -4px;
+  pointer-events: none;
+}
+
+.wst7-kicker-ribbon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 5px 18px;
+  background: linear-gradient(
+    90deg,
+    var(--wst7-cerise) 0%,
+    var(--wst7-tangerine) 52%,
+    var(--wst7-gold) 100%
+  );
+  color: var(--wst7-cream-bright);
+  font-family: var(--wst7-font-broadcast);
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+  box-shadow:
+    0 4px 0 var(--wst7-navy-deep),
+    0 10px 22px rgba(4, 11, 20, 0.65);
+}
+
+.wst7-curtain-headline {
+  margin: 2px 0 0;
+  font-family: var(--wst7-font-show);
+  font-size: clamp(28px, 6.8vw, 50px);
+  font-weight: 400;
+  line-height: 0.98;
+  letter-spacing: 0.015em;
+  color: var(--wst7-cream-bright);
+  text-shadow:
+    0 2px 0 var(--wst7-gold),
+    0 4px 0 var(--wst7-tangerine),
+    0 7px 0 var(--wst7-navy-deep),
+    0 14px 28px rgba(4, 10, 18, 0.88);
+}
+
+/* 3-Curtain Proscenium Stage Deck */
+.wst7-curtain-stage-deck {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.wst7-curtain-trio {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(8px, 2vw, 18px);
+  align-items: stretch;
+}
+
+/* Individual Sculpted 1966 Proscenium Curtain Archway Button */
+.wst7-curtain-arch-btn {
+  --wst7-drape-hi: #f24c8c;
+  --wst7-drape-mid: #d62868;
+  --wst7-drape-lo: #85103d;
+  --wst7-alcove-glow: rgba(255, 217, 102, 0.42);
+
+  position: relative;
+  appearance: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  touch-action: manipulation;
+  min-width: 96px;
+  min-height: clamp(226px, 38dvh, 326px);
+  border-radius: 56px 56px 10px 10px;
+  background: linear-gradient(180deg, #102a42 0%, #081728 100%);
+  color: var(--wst7-cream-bright);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    inset 0 3px 0 var(--wst7-gold-bright),
+    inset 3px 0 0 rgba(244, 169, 31, 0.55),
+    inset -3px 0 0 rgba(244, 169, 31, 0.55),
+    0 10px 26px rgba(3, 9, 18, 0.78);
+  transition:
+    transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.2s ease,
+    opacity 0.28s ease,
+    filter 0.22s ease;
+  animation: wst7-arch-rise 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.wst7-curtain-arch-btn[data-curtain='1'] {
+  --wst7-drape-hi: #f65392;
+  --wst7-drape-mid: #d6296b;
+  --wst7-drape-lo: #7d0f3a;
+  animation-delay: 0.04s;
+}
+
+.wst7-curtain-arch-btn[data-curtain='2'] {
+  --wst7-drape-hi: #1ec6d8;
+  --wst7-drape-mid: #008c9c;
+  --wst7-drape-lo: #004c57;
+  animation-delay: 0.1s;
+}
+
+.wst7-curtain-arch-btn[data-curtain='3'] {
+  --wst7-drape-hi: #3b76ea;
+  --wst7-drape-mid: #1c4fb8;
+  --wst7-drape-lo: #0e2869;
+  animation-delay: 0.16s;
+}
+
+.wst7-curtain-arch-btn:focus-visible {
+  outline: 3px solid var(--wst7-gold-bright);
+  outline-offset: 3px;
+}
+
+.wst7-curtain-arch-btn[data-state='closed']:hover {
+  transform: translateY(-5px);
+  box-shadow:
+    inset 0 4px 0 #fff3b8,
+    inset 3px 0 0 var(--wst7-gold-bright),
+    inset -3px 0 0 var(--wst7-gold-bright),
+    0 0 26px rgba(255, 217, 102, 0.42),
+    0 16px 32px rgba(3, 9, 18, 0.84);
+}
+
+.wst7-curtain-arch-btn[data-state='closed']:active {
+  transform: translateY(2px) scale(0.985);
+}
+
+.wst7-curtain-arch-btn[data-state='chosen'] {
+  cursor: default;
+  transform: translateY(-4px) scale(1.025);
+  z-index: 5;
+  box-shadow:
+    inset 0 4px 0 #fff6cc,
+    inset 4px 0 0 var(--wst7-gold-bright),
+    inset -4px 0 0 var(--wst7-gold-bright),
+    0 0 38px rgba(255, 217, 102, 0.68),
+    0 18px 38px rgba(3, 9, 18, 0.9);
+}
+
+.wst7-curtain-arch-btn[data-state='peek'] {
+  cursor: default;
+  opacity: 0.8;
+  filter: saturate(0.88);
+}
+
+/* Illuminated Studio Prize Alcove Behind Velvet Curtains */
+.wst7-curtain-alcove {
+  position: absolute;
+  inset: 28px 6px 8px;
+  z-index: 1;
+  border-radius: 36px 36px 8px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 6px 8px;
+  text-align: center;
+  background:
+    radial-gradient(
+      circle at 50% 36%,
+      rgba(255, 240, 179, 0.95) 0%,
+      rgba(255, 198, 76, 0.44) 44%,
+      rgba(13, 38, 60, 0.92) 92%
+    );
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.86);
+  transition:
+    opacity 0.32s ease,
+    transform 0.42s cubic-bezier(0.18, 1.24, 0.32, 1);
+}
+
+.wst7-curtain-alcove[data-tone='steal'] {
+  background:
+    radial-gradient(
+      circle at 50% 36%,
+      rgba(255, 232, 184, 0.95) 0%,
+      rgba(255, 103, 56, 0.56) 48%,
+      rgba(18, 34, 58, 0.94) 94%
+    );
+}
+
+.wst7-curtain-alcove[data-tone='double'] {
+  background:
+    radial-gradient(
+      circle at 50% 36%,
+      rgba(255, 248, 204, 0.98) 0%,
+      rgba(244, 169, 31, 0.62) 50%,
+      rgba(16, 40, 64, 0.94) 94%
+    );
+}
+
+.wst7-curtain-alcove[data-tone='swap'] {
+  background:
+    radial-gradient(
+      circle at 50% 36%,
+      rgba(218, 253, 255, 0.95) 0%,
+      rgba(0, 150, 166, 0.58) 50%,
+      rgba(13, 34, 56, 0.94) 94%
+    );
+}
+
+.wst7-curtain-arch-btn[data-state='chosen'] .wst7-curtain-alcove {
+  visibility: visible;
+  opacity: 1;
+  transform: scale(1);
+}
+
+.wst7-curtain-arch-btn[data-state='peek'] .wst7-curtain-alcove {
+  visibility: visible;
+  opacity: 0.92;
+  transform: scale(0.94);
+}
+
+.wst7-alcove-prop-svg {
+  width: clamp(54px, 12vw, 84px);
+  height: clamp(54px, 12vw, 84px);
+  display: block;
+  filter: drop-shadow(0 6px 12px rgba(7, 19, 34, 0.55));
+}
+
+.wst7-alcove-plaque {
+  width: 100%;
+  padding: 6px 6px;
+  border-radius: 10px;
+  background: var(--wst7-cream-bright);
+  color: var(--wst7-ink);
+  box-shadow:
+    0 4px 0 var(--wst7-walnut-deep),
+    0 8px 18px rgba(4, 11, 20, 0.55);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.wst7-alcove-amount {
+  font-family: var(--wst7-font-broadcast);
+  font-size: clamp(15px, 3.6vw, 21px);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  line-height: 1.08;
+  color: var(--wst7-ink);
+  text-transform: uppercase;
+}
+
+.wst7-alcove-sub {
+  font-family: var(--wst7-font-broadcast);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  line-height: 1.12;
+  color: var(--wst7-cerise-deep);
+  text-transform: uppercase;
+}
+
+.wst7-alcove-peek-tag {
+  font-family: var(--wst7-font-broadcast);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--wst7-gold-bright);
+  text-shadow: 0 2px 6px rgba(4, 10, 18, 0.95);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.wst7-curtain-arch-btn[data-state='chosen'] .wst7-alcove-peek-tag,
+.wst7-curtain-arch-btn[data-state='peek'] .wst7-alcove-peek-tag {
+  opacity: 1;
+}
+
+/* Scalloped 1966 Gold Bullion Proscenium Valance at Top of Each Arch */
+.wst7-curtain-valance {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 36px;
+  z-index: 4;
+  background:
+    radial-gradient(circle at 12px 36px, transparent 10px, var(--wst7-gold) 10.5px, var(--wst7-gold-deep) 13px, transparent 13.5px) repeat-x,
+    linear-gradient(180deg, var(--wst7-gold-bright) 0%, var(--wst7-gold) 68%, var(--wst7-gold-deep) 100%);
+  background-size: 24px 36px, 100% 28px;
+  background-repeat: repeat-x, no-repeat;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 6px rgba(4, 10, 18, 0.55));
+}
+
+/* Pleated Velvet Theater Drapes (Left & Right Halves Physically Part!) */
+.wst7-curtain-drapes {
+  position: absolute;
+  inset: 22px 3px 3px;
+  z-index: 3;
+  display: flex;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: 34px 34px 8px 8px;
+}
+
+.wst7-drape-panel {
+  flex: 0 0 52%;
+  width: 52%;
+  height: 100%;
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(6, 14, 24, 0.32) 0%, transparent 18%, transparent 86%, var(--wst7-gold) 94%, var(--wst7-gold-bright) 100%),
+    repeating-linear-gradient(
+      90deg,
+      var(--wst7-drape-lo) 0px,
+      var(--wst7-drape-mid) 7px,
+      var(--wst7-drape-hi) 13px,
+      var(--wst7-drape-mid) 19px,
+      var(--wst7-drape-lo) 26px
+    );
+  box-shadow: inset 0 -6px 12px rgba(4, 10, 18, 0.45);
+  transition:
+    transform 0.46s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.2s ease;
+}
+
+.wst7-drape-left {
+  z-index: 2;
+  transform-origin: left top;
+  border-right: 2px solid rgba(255, 217, 102, 0.72);
+}
+
+.wst7-drape-right {
+  z-index: 1;
+  transform-origin: right top;
+  margin-left: -4%;
+  border-left: 2px solid rgba(255, 217, 102, 0.72);
+}
+
+/* Warm follow-spot velvet sheen on hover — drapes stay hermetically closed until tapped! */
+.wst7-curtain-arch-btn[data-state='closed']:hover .wst7-drape-left,
+.wst7-curtain-arch-btn[data-state='closed']:hover .wst7-drape-right {
+  filter: brightness(1.12);
+}
+
+/* Full theatrical sweep open when chosen! */
+.wst7-curtain-arch-btn[data-state='chosen'] .wst7-drape-left {
+  transform: translateX(-82%) scaleX(0.22) skewY(-4deg);
+}
+
+.wst7-curtain-arch-btn[data-state='chosen'] .wst7-drape-right {
+  transform: translateX(82%) scaleX(0.22) skewY(4deg);
+}
+
+/* Secondary Monty Hall peek on the other two doors! */
+.wst7-curtain-arch-btn[data-state='peek'] .wst7-drape-left {
+  transform: translateX(-72%) scaleX(0.3) skewY(-3deg);
+}
+
+.wst7-curtain-arch-btn[data-state='peek'] .wst7-drape-right {
+  transform: translateX(72%) scaleX(0.3) skewY(3deg);
+}
+
+/* Center Curtain Number Medallion & Label (Sweeps upward into crown on open) */
+.wst7-curtain-badge-stack {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  transition:
+    transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.26s ease;
+}
+
+.wst7-curtain-medallion {
+  width: clamp(58px, 14vw, 78px);
+  height: clamp(58px, 14vw, 78px);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fffaf0 0%, var(--wst7-cream) 65%, #e8d4ad 100%);
+  color: var(--wst7-ink);
+  box-shadow:
+    0 0 0 4px var(--wst7-gold),
+    0 6px 0 var(--wst7-walnut-deep),
+    0 12px 24px rgba(4, 10, 18, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--wst7-font-show);
+  font-size: clamp(30px, 7vw, 42px);
+  line-height: 1;
+}
+
+.wst7-curtain-door-title {
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(8, 21, 36, 0.86);
+  color: var(--wst7-gold-bright);
+  font-family: var(--wst7-font-broadcast);
+  font-size: clamp(14px, 3.2vw, 16px);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 10px rgba(3, 9, 18, 0.65);
+}
+
+.wst7-curtain-arch-btn[data-state='chosen'] .wst7-curtain-badge-stack,
+.wst7-curtain-arch-btn[data-state='peek'] .wst7-curtain-badge-stack {
+  transform: translateY(-90px) scale(0.55);
+  opacity: 0;
+}
+
+/* Midnight Navy & Harvest Gold Proscenium Stage Apron + Footlight Reveal Banner */
+.wst7-stage-apron {
+  position: relative;
+  z-index: 4;
+  margin-top: -4px;
+  padding: 12px 18px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #13314d 0%, var(--wst7-navy-stage) 100%);
+  box-shadow:
+    inset 0 3px 0 var(--wst7-gold-bright),
+    0 8px 0 var(--wst7-navy-deep),
+    0 18px 34px rgba(3, 9, 18, 0.84);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  transition: background 0.25s ease, transform 0.25s cubic-bezier(0.2, 1.2, 0.34, 1);
+}
+
+.wst7-stage-apron[data-revealed='true'] {
+  background: linear-gradient(180deg, var(--wst7-cream-bright) 0%, var(--wst7-cream) 100%);
+  color: var(--wst7-ink);
+  transform: scale(1.015);
+  box-shadow:
+    inset 0 3px 0 var(--wst7-gold),
+    0 7px 0 var(--wst7-walnut-deep),
+    0 0 30px rgba(255, 217, 102, 0.45),
+    0 18px 36px rgba(3, 9, 18, 0.86);
+}
+
+.wst7-apron-primary {
+  font-family: var(--wst7-font-broadcast);
+  font-size: clamp(16px, 3.9vw, 22px);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  line-height: 1.18;
+  color: var(--wst7-gold-bright);
+}
+
+.wst7-stage-apron[data-revealed='true'] .wst7-apron-primary {
+  color: var(--wst7-ink);
+}
+
+.wst7-apron-secondary {
+  font-family: var(--wst7-font-body);
+  font-size: clamp(14px, 3.2vw, 16px);
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--wst7-cream);
+}
+
+.wst7-stage-apron[data-revealed='true'] .wst7-apron-secondary {
+  color: var(--wst7-ink-soft);
+}
+
+/* ============================================================================
+   2. SALE OF THE CENTURY (1969) — INSTANT BARGAIN REVOLVING PRIZE TURNTABLE
+   Twin Follow-Spots · Revolving Lacquer Platter · 1-Tap BUY or PASS!
+   ============================================================================ */
+
+.wst7-bargain-backdrop {
+  background:
+    radial-gradient(
+      ellipse 82% 64% at 50% 46%,
+      rgba(16, 56, 78, 0.72) 0%,
+      rgba(11, 29, 48, 0.93) 72%,
+      rgba(7, 19, 33, 0.97) 100%
+    );
+  animation: wst7-backdrop-in 0.26s ease-out both;
+}
+
+/* Gleaming Animated 1966 Dual Theatrical Follow-Spotlights */
+.wst7-bargain-backdrop::before,
+.wst7-bargain-backdrop::after {
+  content: '';
+  position: fixed;
+  top: -14%;
+  width: 68vw;
+  height: 118dvh;
+  pointer-events: none;
+  z-index: 0;
+  transform-origin: 50% 0%;
+}
+
+.wst7-bargain-backdrop::before {
+  left: -8%;
+  background: conic-gradient(
+    from 154deg at 50% 0%,
+    transparent 0deg,
+    rgba(255, 217, 102, 0.26) 15deg,
+    rgba(255, 247, 230, 0.14) 22deg,
+    transparent 36deg
+  );
+  animation: wst7-spot-left 4.4s ease-in-out infinite alternate;
+}
+
+.wst7-bargain-backdrop::after {
+  right: -8%;
+  background: conic-gradient(
+    from 170deg at 50% 0%,
+    transparent 0deg,
+    rgba(25, 191, 208, 0.24) 15deg,
+    rgba(255, 217, 102, 0.12) 22deg,
+    transparent 36deg
+  );
+  animation: wst7-spot-right 4.8s ease-in-out infinite alternate;
+}
+
+.wst7-bargain-ensemble {
+  position: relative;
+  z-index: 2;
+  width: min(640px, 100%);
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(10px, 1.8dvh, 16px);
+}
+
+/* Swinging Studio Bell & Header */
+.wst7-bargain-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  animation: wst7-drop-spring 0.38s cubic-bezier(0.2, 1.18, 0.34, 1) both;
+}
+
+.wst7-bell-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.wst7-bargain-bell-svg {
+  width: 40px;
+  height: 40px;
+  display: block;
+  transform-origin: 50% 12%;
+  animation: wst7-bell-ring 0.62s ease-in-out 2;
+  filter: drop-shadow(0 4px 10px rgba(255, 217, 102, 0.55));
+}
+
+.wst7-bargain-headline {
+  margin: 0;
+  font-family: var(--wst7-font-show);
+  font-size: clamp(30px, 7.2vw, 52px);
+  font-weight: 400;
+  line-height: 0.96;
+  color: var(--wst7-gold-bright);
+  text-shadow:
+    0 2px 0 var(--wst7-tangerine),
+    0 4px 0 var(--wst7-tangerine-deep),
+    0 6px 0 var(--wst7-navy-deep),
+    0 14px 28px rgba(4, 10, 18, 0.9);
+}
+
+/* Revolving Prize Turntable Centerpiece */
+.wst7-turntable-showcase {
+  position: relative;
+  width: 100%;
+  padding: 12px 8px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: wst7-turntable-pop 0.44s cubic-bezier(0.18, 1.2, 0.32, 1) 0.05s both;
+}
+
+.wst7-turntable-rays {
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  width: min(440px, 94vw, 68dvh);
+  height: min(440px, 94vw, 68dvh);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.wst7-turntable-rays svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  animation: wst7-slow-spin 34s linear infinite;
+}
+
+/* Floating Relic Crest + Tilted 1969 Price-Slash Hangtag */
+.wst7-turntable-crest-row {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: -10px;
+  animation: wst7-crest-float 2.6s ease-in-out infinite;
+}
+
+.wst7-relic-crest-svg {
+  width: clamp(64px, 15vw, 86px);
+  height: clamp(64px, 15vw, 86px);
+  display: block;
+  filter: drop-shadow(0 8px 18px rgba(4, 12, 22, 0.72));
+}
+
+.wst7-price-hangtag {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 6px 14px;
+  background: linear-gradient(135deg, var(--wst7-tangerine) 0%, var(--wst7-cerise) 100%);
+  color: var(--wst7-cream-bright);
+  clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%);
+  padding-left: 18px;
+  transform: rotate(-3deg);
+  box-shadow:
+    0 5px 0 var(--wst7-navy-deep),
+    0 10px 20px rgba(4, 11, 20, 0.65);
+}
+
+.wst7-retail-strike {
+  font-family: var(--wst7-font-broadcast);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 247, 230, 0.9);
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  line-height: 1.1;
+}
+
+.wst7-bargain-price {
+  font-family: var(--wst7-font-solari);
+  font-size: clamp(18px, 4.4vw, 24px);
+  font-weight: 700;
+  color: var(--wst7-gold-bright);
+  line-height: 1.15;
+  text-shadow: 0 2px 0 rgba(8, 21, 36, 0.65);
+}
+
+/* Warm Broadcast Cream Studio Cue Plaque Mounted on the Revolving Plinth */
+.wst7-relic-cue-plaque {
+  position: relative;
+  z-index: 2;
+  width: min(520px, 96%);
+  padding: 20px 20px 16px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--wst7-cream-bright) 0%, var(--wst7-cream) 100%);
+  color: var(--wst7-ink);
+  text-align: center;
+  box-shadow:
+    inset 0 3px 0 #ffffff,
+    0 8px 0 var(--wst7-walnut),
+    0 18px 38px rgba(3, 9, 18, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Gleaming 1966 Spotlight Specular Sheen Across Plaque */
+.wst7-relic-cue-plaque::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -45%;
+  width: 36%;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.62) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  pointer-events: none;
+  animation: wst7-specular-sweep 3.6s ease-in-out infinite;
+}
+
+.wst7-relic-name {
+  margin: 0;
+  font-family: var(--wst7-font-display);
+  font-size: clamp(22px, 5.2vw, 30px);
+  font-weight: 900;
+  line-height: 1.12;
+  color: var(--wst7-ink);
+}
+
+.wst7-relic-perk {
+  margin: 0;
+  font-family: var(--wst7-font-body);
+  font-size: clamp(15px, 3.7vw, 18px);
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--wst7-ink-soft);
+  max-width: 44ch;
+}
+
+/* 3D-Perspective Revolving Lacquer & Marquee Turntable Platter Base */
+.wst7-turntable-platter {
+  position: relative;
+  z-index: 1;
+  width: min(560px, 100%);
+  height: 36px;
+  margin-top: -10px;
+  border-radius: 50%;
+  background:
+    linear-gradient(
+      90deg,
+      #0a4f59 0%,
+      var(--wst7-peacock-bright) 28%,
+      #fff5c0 50%,
+      var(--wst7-peacock) 72%,
+      #0a4f59 100%
+    );
+  background-size: 200% 100%;
+  animation: wst7-platter-sheen 2.8s linear infinite;
+  box-shadow:
+    0 5px 0 var(--wst7-gold),
+    0 11px 0 var(--wst7-walnut-deep),
+    0 20px 34px rgba(3, 9, 18, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 26px;
+}
+
+.wst7-platter-bulb {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--wst7-gold-bright);
+  box-shadow: 0 0 10px var(--wst7-gold-bright);
+}
+
+/* Sold Stamp Celebration Overlay on BUY */
+.wst7-sold-stamp {
+  position: absolute;
+  top: 44%;
+  left: 50%;
+  z-index: 8;
+  transform: translate(-50%, -50%) rotate(-10deg) scale(0.4);
+  padding: 8px 24px;
+  border-radius: 12px;
+  background: var(--wst7-emerald);
+  color: var(--wst7-cream-bright);
+  font-family: var(--wst7-font-show);
+  font-size: clamp(26px, 6vw, 40px);
+  letter-spacing: 0.04em;
+  box-shadow:
+    0 0 0 4px var(--wst7-gold-bright),
+    0 12px 28px rgba(4, 12, 22, 0.85);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.wst7-bargain-ensemble[data-decision='BUY'] .wst7-sold-stamp {
+  animation: wst7-stamp-slam 0.34s cubic-bezier(0.18, 1.35, 0.32, 1) forwards;
+}
+
+/* Live Solari Scoreboard Cash Comparison Ribbon (Single Sleek Line Across All Phones!) */
+.wst7-score-math-strip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  gap: 8px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: rgba(11, 29, 48, 0.9);
+  box-shadow:
+    inset 0 2px 0 rgba(25, 191, 208, 0.5),
+    0 6px 16px rgba(3, 9, 18, 0.65);
+}
+
+.wst7-math-item {
+  font-family: var(--wst7-font-broadcast);
+  font-size: clamp(14px, 3.5vw, 15px);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--wst7-cream);
+}
+
+.wst7-math-item strong {
+  font-family: var(--wst7-font-broadcast);
+  font-size: clamp(15px, 3.8vw, 17px);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  color: var(--wst7-gold-bright);
+  margin-left: 3px;
+}
+
+.wst7-math-arrow {
+  color: var(--wst7-peacock-bright);
+  font-size: 16px;
+  font-weight: 900;
+}
+
+/* 1-Tap Tactile Broadcast Push-Button Pair (PASS vs BUY FOR $X) */
+.wst7-bargain-actions {
+  width: min(560px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wst7-action-btn {
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  width: 100%;
+  min-height: 58px;
+  padding: 12px 20px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  font-family: var(--wst7-font-broadcast);
+  font-size: clamp(17px, 4.2vw, 21px);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition:
+    transform 0.12s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.14s ease,
+    box-shadow 0.12s ease;
+}
+
+.wst7-action-btn:focus-visible {
+  outline: 3px solid var(--wst7-gold-bright);
+  outline-offset: 3px;
+}
+
+.wst7-action-btn:hover:not(:disabled) {
+  filter: brightness(1.06);
+  transform: translateY(-2px);
+}
+
+.wst7-action-btn:active:not(:disabled) {
+  transform: translateY(3px);
+}
+
+.wst7-btn-buy {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #ff7b47 0%, #e64819 100%);
+  color: var(--wst7-cream-bright);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 242, 198, 0.7),
+    0 6px 0 #912206,
+    0 14px 28px rgba(4, 11, 20, 0.72);
+}
+
+.wst7-btn-buy::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -40%;
+  width: 30%;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(255, 247, 220, 0.42) 50%,
+    transparent 100%
+  );
+  transform: skewX(-22deg);
+  pointer-events: none;
+  animation: wst7-specular-sweep 3.2s ease-in-out 0.6s infinite;
+}
+
+.wst7-btn-buy:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  filter: grayscale(0.35);
+}
+
+.wst7-btn-pass {
+  min-height: 52px;
+  background: linear-gradient(180deg, #194361 0%, #0f2a40 100%);
+  color: var(--wst7-cream-bright);
+  box-shadow:
+    inset 0 2px 0 rgba(190, 236, 248, 0.36),
+    0 5px 0 #071523,
+    0 10px 22px rgba(4, 11, 20, 0.64);
+}
+
+/* ============================================================================
+   3. HOLLYWOOD SQUARES / JEOPARDY! '64 — 1.1s SECRET SQUARE STARBURST SPLASH
+   Pure Morton Goldsholl / Saul Bass Kinetic Vector Burst — ZERO Modal Boxes!
+   ============================================================================ */
+
+.wst7-secret-backdrop {
+  background:
+    radial-gradient(
+      circle at 50% 48%,
+      rgba(244, 169, 31, 0.3) 0%,
+      rgba(13, 34, 56, 0.72) 54%,
+      rgba(7, 19, 34, 0.86) 100%
+    );
+  animation: wst7-secret-lifecycle 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.wst7-secret-sculpture {
+  position: relative;
+  width: min(760px, 96vw);
+  margin: auto;
+  padding: 36px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+  animation: wst7-secret-burst-pop 1.1s cubic-bezier(0.18, 1.26, 0.32, 1) forwards;
+}
+
+.wst7-secret-rays-wrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(560px, 96vw, 76dvh);
+  height: min(560px, 96vw, 76dvh);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.wst7-secret-rays-wrap svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  animation: wst7-slow-spin 14s linear infinite;
+}
+
+.wst7-secret-kicker {
+  position: relative;
+  z-index: 2;
+  padding: 6px 22px;
+  background: linear-gradient(90deg, var(--wst7-cobalt) 0%, var(--wst7-cerise) 50%, var(--wst7-tangerine) 100%);
+  color: var(--wst7-cream-bright);
+  font-family: var(--wst7-font-broadcast);
+  font-size: clamp(14px, 3.4vw, 17px);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+  box-shadow:
+    0 5px 0 var(--wst7-navy-deep),
+    0 12px 24px rgba(4, 10, 18, 0.72);
+  transform: rotate(-1.5deg);
+}
+
+.wst7-secret-headline {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  font-family: var(--wst7-font-show);
+  font-size: clamp(32px, 8.2vw, 64px);
+  font-weight: 400;
+  line-height: 0.98;
+  letter-spacing: 0.015em;
+  color: var(--wst7-cream-bright);
+  transform: rotate(-1.5deg);
+  text-shadow:
+    0 2px 0 var(--wst7-gold),
+    0 5px 0 var(--wst7-tangerine),
+    0 8px 0 var(--wst7-tangerine-deep),
+    0 12px 0 var(--wst7-navy-deep),
+    0 20px 38px rgba(4, 10, 18, 0.94);
+}
+
+.wst7-secret-pill {
+  position: relative;
+  z-index: 2;
+  padding: 8px 24px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--wst7-gold-bright) 0%, var(--wst7-gold) 100%);
+  color: var(--wst7-ink);
+  font-family: var(--wst7-font-solari);
+  font-size: clamp(14px, 3.4vw, 18px);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  box-shadow:
+    0 5px 0 var(--wst7-walnut-deep),
+    0 12px 26px rgba(4, 10, 18, 0.8);
+}
+
+/* ============================================================================
+   4. RESPONSIVE ERGONOMICS: TABLETS, DESKTOPS & MOBILE LANDSCAPE (844x390)
+   ============================================================================ */
+
+@media (min-width: 580px) {
+  .wst7-bargain-actions {
+    flex-direction: row-reverse;
+    align-items: stretch;
+  }
+
+  .wst7-btn-buy {
+    flex: 1.35 1 0;
+  }
+
+  .wst7-btn-pass {
+    flex: 1 1 0;
+    min-height: 58px;
+  }
+}
+
+@media (min-width: 768px) and (min-height: 700px) {
+  .wst7-curtain-arch-btn {
+    min-height: clamp(280px, 42dvh, 360px);
+    border-radius: 76px 76px 14px 14px;
+  }
+
+  .wst7-bargain-ensemble {
+    width: min(700px, 94vw);
+    gap: 20px;
+  }
+
+  .wst7-relic-crest-svg {
+    width: 96px;
+    height: 96px;
+  }
+
+  .wst7-relic-cue-plaque {
+    width: min(600px, 96%);
+    padding: 26px 32px 22px;
+    gap: 8px;
+  }
+
+  .wst7-turntable-platter {
+    width: min(620px, 98%);
+    height: 42px;
+  }
+
+  .wst7-bargain-actions {
+    width: min(600px, 100%);
+    gap: 16px;
+  }
+
+  .wst7-action-btn,
+  .wst7-btn-pass {
+    min-height: 64px;
+    font-size: 20px;
+  }
+}
+
+/* Compact Mobile Portrait (`375x667` / `390x660`) — Guaranteed 0px Vertical Scroll! */
+@media (max-height: 700px) and (orientation: portrait) {
+  .wst7-stage-overlay {
+    padding:
+      calc(var(--wst7-safe-top) + 8px)
+      calc(var(--wst7-safe-right) + 12px)
+      calc(var(--wst7-safe-bottom) + 10px)
+      calc(var(--wst7-safe-left) + 12px);
+  }
+
+  .wst7-bargain-ensemble {
+    gap: 8px;
+  }
+
+  .wst7-crown-bulbs-svg {
+    height: 24px;
+    margin-bottom: -6px;
+  }
+
+  .wst7-bargain-bell-svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .wst7-bargain-headline {
+    font-size: clamp(27px, 7vw, 34px);
+  }
+
+  .wst7-turntable-showcase {
+    padding: 6px 6px 14px;
+  }
+
+  .wst7-relic-crest-svg {
+    width: 58px;
+    height: 58px;
+  }
+
+  .wst7-relic-cue-plaque {
+    padding: 14px 16px 12px;
+    gap: 4px;
+  }
+
+  .wst7-relic-name {
+    font-size: 21px;
+  }
+
+  .wst7-relic-perk {
+    font-size: 15px;
+    line-height: 1.3;
+  }
+
+  .wst7-turntable-platter {
+    height: 28px;
+  }
+
+  .wst7-bargain-side-col,
+  .wst7-bargain-actions {
+    gap: 8px;
+  }
+
+  .wst7-action-btn {
+    min-height: 52px;
+    padding: 10px 16px;
+  }
+
+  .wst7-btn-pass {
+    min-height: 50px;
+  }
+}
+
+/* Ultra-Compact Mobile Landscape (`844x390` / `932x430`) — Zero-Scroll Fit! */
+@media (max-height: 500px) and (orientation: landscape) {
+  .wst7-stage-overlay {
+    padding:
+      calc(var(--wst7-safe-top) + 6px)
+      calc(var(--wst7-safe-right) + 14px)
+      calc(var(--wst7-safe-bottom) + 8px)
+      calc(var(--wst7-safe-left) + 14px);
+  }
+
+  .wst7-curtain-proscenium {
+    gap: 6px;
+  }
+
+  .wst7-crown-bulbs-svg {
+    display: none;
+  }
+
+  .wst7-curtain-headline {
+    font-size: clamp(22px, 4.4vw, 30px);
+  }
+
+  .wst7-curtain-arch-btn {
+    min-height: clamp(168px, 48dvh, 204px);
+    border-radius: 40px 40px 8px 8px;
+  }
+
+  .wst7-curtain-valance {
+    height: 24px;
+  }
+
+  .wst7-curtain-medallion {
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+  }
+
+  .wst7-alcove-prop-svg {
+    width: 48px;
+    height: 48px;
+  }
+
+  .wst7-stage-apron {
+    padding: 7px 14px;
+  }
+
+  /* Side-by-side Turntable + Controls in Landscape so everything fits in 390px! */
+  .wst7-bargain-ensemble {
+    width: min(820px, 100%);
+    display: grid;
+    grid-template-columns: 1.15fr 0.95fr;
+    grid-template-areas:
+      'head head'
+      'turn side';
+    gap: 8px 18px;
+    align-items: center;
+  }
+
+  .wst7-bargain-header {
+    grid-area: head;
+    flex-direction: row;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .wst7-bargain-headline {
+    font-size: 26px;
+  }
+
+  .wst7-bargain-bell-svg {
+    width: 30px;
+    height: 30px;
+  }
+
+  .wst7-turntable-showcase {
+    grid-area: turn;
+    padding: 4px 4px 10px;
+  }
+
+  .wst7-relic-crest-svg {
+    width: 52px;
+    height: 52px;
+  }
+
+  .wst7-relic-cue-plaque {
+    padding: 12px 14px 10px;
+  }
+
+  .wst7-relic-name {
+    font-size: 19px;
+  }
+
+  .wst7-relic-perk {
+    font-size: 14px;
+  }
+
+  .wst7-turntable-platter {
+    height: 24px;
+  }
+
+  .wst7-bargain-side-col {
+    grid-area: side;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .wst7-bargain-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .wst7-action-btn,
+  .wst7-btn-pass {
+    min-height: 50px;
+    padding: 8px 14px;
+    font-size: 16px;
+  }
+}
+
+.wst7-bargain-side-col {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Reduced Motion Respect */
+.wst7-root[data-reduced-motion='true'] .wst7-bulb-dot,
+.wst7-root[data-reduced-motion='true'] .wst7-turntable-rays svg,
+.wst7-root[data-reduced-motion='true'] .wst7-secret-rays-wrap svg,
+.wst7-root[data-reduced-motion='true'] .wst7-turntable-crest-row,
+.wst7-root[data-reduced-motion='true'] .wst7-turntable-platter,
+.wst7-root[data-reduced-motion='true'] .wst7-bargain-bell-svg,
+.wst7-root[data-reduced-motion='true'] .wst7-bargain-backdrop::before,
+.wst7-root[data-reduced-motion='true'] .wst7-bargain-backdrop::after,
+.wst7-root[data-reduced-motion='true'] .wst7-relic-cue-plaque::after,
+.wst7-root[data-reduced-motion='true'] .wst7-btn-buy::after {
+  animation: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wst7-bulb-dot,
+  .wst7-turntable-rays svg,
+  .wst7-secret-rays-wrap svg,
+  .wst7-turntable-crest-row,
+  .wst7-turntable-platter,
+  .wst7-bargain-bell-svg,
+  .wst7-bargain-backdrop::before,
+  .wst7-bargain-backdrop::after,
+  .wst7-relic-cue-plaque::after,
+  .wst7-btn-buy::after {
+    animation: none !important;
+  }
+}
+
+/* ============================================================================
+   5. KEYFRAME CHOREOGRAPHY
+   ============================================================================ */
+
+@keyframes wst7-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes wst7-backdrop-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes wst7-drop-spring {
+  0% {
+    opacity: 0;
+    transform: translateY(-18px) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes wst7-arch-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes wst7-turntable-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes wst7-bulb-chase {
+  0%,
+  33% {
+    opacity: 1;
+    fill: #fff4b8;
+    filter: drop-shadow(0 0 6px #ffd966);
+  }
+  34%,
+  100% {
+    opacity: 0.34;
+    fill: #d48817;
+    filter: none;
+  }
+}
+
+@keyframes wst7-slow-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes wst7-crest-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes wst7-platter-sheen {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 200% 50%;
+  }
+}
+
+@keyframes wst7-spot-left {
+  0% {
+    transform: rotate(-7deg);
+    opacity: 0.78;
+  }
+  100% {
+    transform: rotate(9deg);
+    opacity: 1;
+  }
+}
+
+@keyframes wst7-spot-right {
+  0% {
+    transform: rotate(8deg);
+    opacity: 0.78;
+  }
+  100% {
+    transform: rotate(-8deg);
+    opacity: 1;
+  }
+}
+
+@keyframes wst7-specular-sweep {
+  0%,
+  24% {
+    left: -48%;
+  }
+  62%,
+  100% {
+    left: 128%;
+  }
+}
+
+@keyframes wst7-bell-ring {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-16deg);
+  }
+  40% {
+    transform: rotate(15deg);
+  }
+  60% {
+    transform: rotate(-10deg);
+  }
+  80% {
+    transform: rotate(8deg);
+  }
+}
+
+@keyframes wst7-stamp-slam {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(-14deg) scale(1.7);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(-9deg) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(-10deg) scale(1);
+  }
+}
+
+@keyframes wst7-secret-lifecycle {
+  0% {
+    opacity: 0;
+  }
+  16% {
+    opacity: 1;
+  }
+  82% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes wst7-secret-burst-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.45) rotate(-4deg);
+  }
+  26% {
+    opacity: 1;
+    transform: scale(1.04) rotate(0deg);
+  }
+  78% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.12) rotate(1deg);
+  }
+}
