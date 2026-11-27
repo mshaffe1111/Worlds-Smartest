@@ -17,13 +17,21 @@
 // ============================================================================
 
 import type {
+  BrokerIdV7,
   CastIdV7,
   CategoryIdV7,
   ClassicTvTileTwistV7,
   EpisodeBlueprintV7,
+  PostAnswerFlavorKindV8,
   RivalIdV7,
   StageWorldIdV7,
 } from '../contracts_v7';
+import {
+  CAST_PROFILES_V7,
+  CAST_TV_GUIDE_BIOS_V7,
+  CHAMPION_VOICE_KITS_V7,
+  type ChampionVoiceKitV7,
+} from './CastAndRelicsCatalogV7';
 import { computeDailyEpisodeNumberV7 } from './DailyBroadcastV7';
 
 // ----------------------------------------------------------------------------
@@ -71,7 +79,28 @@ export type AnnouncerEventIdV7 =
   | 'SCOUTING_DISCOVERY'
   | 'RIVAL_TURN_CALL'
   | 'BRASS_KEY_UNLOCK'
-  | 'BLIND_MYSTERY_REVEAL';
+  | 'BLIND_MYSTERY_REVEAL'
+  | 'MYTH_KLAXON_TRAP'
+  | 'WRONG_PICK_WIT'
+  | 'DIAL_NEAR_MISS_PRAISE'
+  | 'QUICK_DRAW_STAMP'
+  | 'REBOUND_POT_SCOOP';
+
+export type ChampionReactionKindV7 =
+  | 'SMIRK'
+  | 'FUMBLE'
+  | 'CLUTCH'
+  | 'ZONK'
+  | 'WHEEL'
+  | 'SCOUT_STRONG'
+  | 'SCOUT_WEAK';
+
+export interface ChampionTvGuideCloseUpV7 {
+  readonly tvGuideListing: string;
+  readonly dossierHintStrong: string;
+  readonly dossierHintWeak: string;
+  readonly greenRoomDossier: string;
+}
 
 export type EmceeMoodV7 = 'POISED' | 'WINK' | 'GASP' | 'INTENSE';
 
@@ -133,6 +162,8 @@ export interface AnnouncerContextV7 {
   readonly outcomeLabel?: string;
   readonly spinsCount?: number;
   readonly moodOverride?: EmceeMoodV7;
+  readonly victim?: 'PLAYER' | 'RIVAL';
+  readonly scoutKind?: 'WEAK' | 'STRONG';
 }
 
 export interface AnnouncerMatchSnapshotV7 {
@@ -381,6 +412,11 @@ const EVENT_PRIORITY_V7: Record<AnnouncerEventIdV7, number> = {
   RIVAL_TURN_CALL: 68,
   OPPONENT_CHOICE_CHALLENGE: 66,
   HOT_STREAK_2X: 60,
+  MYTH_KLAXON_TRAP: 88,
+  REBOUND_POT_SCOOP: 86,
+  DIAL_NEAR_MISS_PRAISE: 82,
+  QUICK_DRAW_STAMP: 81,
+  WRONG_PICK_WIT: 75,
 };
 
 const EVENT_EMCEE_MOOD_V7: Record<AnnouncerEventIdV7, EmceeMoodV7> = {
@@ -398,6 +434,7 @@ const EVENT_EMCEE_MOOD_V7: Record<AnnouncerEventIdV7, EmceeMoodV7> = {
   CONCENTRATION_PRIZE_MATCH: 'POISED',
   BIG_WHEEL_JACKPOT: 'POISED',
   SCOUTING_DISCOVERY: 'POISED',
+  REBOUND_POT_SCOOP: 'POISED',
   RIVAL_MISS_REBOUND: 'WINK',
   MYSTERY_CURTAIN_REVEAL: 'WINK',
   OPPONENT_CHOICE_CHALLENGE: 'WINK',
@@ -406,11 +443,15 @@ const EVENT_EMCEE_MOOD_V7: Record<AnnouncerEventIdV7, EmceeMoodV7> = {
   BIG_WHEEL_SPIN_START: 'WINK',
   BLIND_MYSTERY_REVEAL: 'WINK',
   RIVAL_TURN_CALL: 'WINK',
+  WRONG_PICK_WIT: 'WINK',
+  DIAL_NEAR_MISS_PRAISE: 'WINK',
   GREMLIN_ZONK_BLOWUP: 'GASP',
   BOOTH_RIGGING_BUSTED: 'GASP',
+  MYTH_KLAXON_TRAP: 'GASP',
   FINAL_2_TURN_NAILBITER: 'INTENSE',
   COMEBACK_LEAD_CHANGE: 'INTENSE',
   GREMLIN_PASS_SPINS: 'INTENSE',
+  QUICK_DRAW_STAMP: 'INTENSE',
 };
 
 // ----------------------------------------------------------------------------
@@ -951,6 +992,72 @@ export const STUDIO_ANNOUNCER_LINES_V7: readonly StudioAnnouncerLineSpecV7[] = [
     ['ART_FLEMING_HOST', '📺 BOARD EXCHANGE', 'Control shifts across the stage as {rival} tries {category}—{outcome}'],
     ['GRANT_BELLAMY_MC', '📺 CHAMPION’S GAMBIT', '{rival} tests the waters in {category}—{outcome}'],
   ]),
+
+  // ========= 14. UPGRADE #7 — KLAXON, YDKJ/QI WIT & REBOUND CALLS (50) ======
+  ...buildLineBank('MYTH_KLAXON_TRAP', 'CERISE', [
+    ['GRANT_BELLAMY_MC', '🚨 POPULAR MYTH KLAXON!', 'AWOOOOGA! Sound the Popular-Myth Klaxon—every barbershop in America swears that’s true, and every encyclopedia disagrees!'],
+    ['PETER_MARSHALL_WIT', '🚨 FOLKLORE TRAP SPRUNG!', 'Clang-clang-clang! You stepped square into our writers’ juiciest urban-legend bear trap!'],
+    ['DON_PARDO_BOOTH', '🚨 KLAXON ALERT · BUSTED!', 'RED BEACON FLASHING IN STUDIO 6A! Another classic schoolyard myth claims a prime-time victim!'],
+    ['ART_FLEMING_HOST', '🚨 FAMOUS MISCONCEPTION!', 'Ah, the Popular-Myth Klaxon! Millions repeat that yarn at dinner parties, yet our Standards vault marks it bogus!'],
+    ['GRANT_BELLAMY_MC', '🚨 URBAN LEGEND BITES!', 'Hear that submarine horn? That answer is 100% Grade-A cocktail-party fiction, challenger!'],
+    ['PETER_MARSHALL_WIT', '🚨 GOTCHA BY THE KLAXON!', 'Don’t feel bad—three network vice presidents and my brother-in-law fell for that exact myth during rehearsal!'],
+    ['DON_PARDO_BOOTH', '🚨 MYTH ALARM RINGING!', 'AWOOOOGA! Our research desk laid out the velvet bait and the Popular-Myth Klaxon collects again!'],
+    ['ART_FLEMING_HOST', '🚨 OLD WIVES’ TALE TRAP!', 'So tempting, so widely quoted, and so thoroughly debunked—the Studio Klaxon takes a bow!'],
+    ['GRANT_BELLAMY_MC', '🚨 SEDUCTIVE FICTION!', 'If sounding plausible paid cash, you’d own 30 Rock—alas, the Popular-Myth Klaxon knows better!'],
+    ['PETER_MARSHALL_WIT', '🚨 PAGE ONE IN THE MYTH BOOK!', 'Put another notch on the Klaxon horn—that’s history’s most famous wrong answer in Living Color!'],
+  ]),
+
+  ...buildLineBank('WRONG_PICK_WIT', 'TANGERINE', [
+    ['PETER_MARSHALL_WIT', '🎙️ SWING & A WINK', 'Spoken with the ringing authority of a senator—and just as allergic to the actual facts!'],
+    ['GRANT_BELLAMY_MC', '🎙️ BOLDLY INCORRECT', 'Magnificent posture on the buzzer, challenger; tragic news from the sealed answer envelope!'],
+    ['ART_FLEMING_HOST', '🎙️ CLOSE ONLY IN HORSESHOES', 'Our Standards judge admired your optimism in {category}, though the magnetic buzzer begged to differ!'],
+    ['PETER_MARSHALL_WIT', '🎙️ WRONG ENVELOPE!', 'That would be a terrific answer to an entirely different question on Channel 9—shake it off!'],
+    ['DON_PARDO_BOOTH', '🎙️ STUDIO BUZZER RASPS!', 'BRZZZT! Fifty million living rooms just yelled four different answers at the dog—regroup next pick!'],
+    ['GRANT_BELLAMY_MC', '🎙️ NICE TRY, CHALLENGER', 'Ten points for panache under three hundred footcandles, zero dollars from our stingy accounting desk!'],
+    ['PETER_MARSHALL_WIT', '🎙️ TOUGH BREAK ON {category}!', 'Oof—even our cue-card fellow winced, and he’s holding the answers upside down!'],
+    ['ART_FLEMING_HOST', '🎙️ SLIPPED PAST THE CHIME', 'Tricky distractor in {category}! File that factoid away and ambush {rival} on the bounce!'],
+    ['GRANT_BELLAMY_MC', '🎙️ DRY HOLE ON THE TOTE', 'Confident thumb, theatrical pause, wrong button—fortunately ten turns leave plenty of runway!'],
+    ['PETER_MARSHALL_WIT', '🎙️ PAGING ENCYCLOPEDIA!', 'Somewhere a high-school teacher just spilled hot Sanka on the ottoman—steal the momentum right back!'],
+  ]),
+
+  ...buildLineBank('DIAL_NEAR_MISS_PRAISE', 'EMERALD', [
+    ['ART_FLEMING_HOST', '🎯 RAZOR-SHARP CALIBRATION!', 'Within a coat of lacquer of the dead-center bullseye—superb Range Dial touch under studio lights!'],
+    ['GRANT_BELLAMY_MC', '🎯 PRECISION INSTRUMENT!', 'Our Swiss watchmaker in Booth A just whistled—you parked that needle right inside the money band!'],
+    ['PETER_MARSHALL_WIT', '🎯 SHAVED IT CLOSE!', 'Couldn’t slip a subway token between your pointer and the exact mark—sweet estimation!'],
+    ['DON_PARDO_BOOTH', '🎯 RIGHT IN THE GREEN ZONE!', 'THE RANGE BAND LIGHTS EMERALD! Calibrated like a Cape Canaveral flight engineer in Living Color!'],
+    ['ART_FLEMING_HOST', '🎯 DEAD-EYE ESTIMATE!', 'Ninety-plus percent accuracy on the dial! That’s how seasoned pros turn tough numbers into cash!'],
+    ['GRANT_BELLAMY_MC', '🎯 VELVET THUMB ON THE DIAL', 'Barely a whisker off the pinpoint number—Standards & Practices happily pays out on that craft!'],
+    ['PETER_MARSHALL_WIT', '🎯 PRICE-TAG WIZARDRY!', 'Have you been weighing groceries by hand? That dial needle stopped right beside the gold star!'],
+    ['DON_PARDO_BOOTH', '🎯 PINPOINT STUDIO GAUGE!', 'Ding! That’s jewel-bearing accuracy on {category}—{rival} didn’t expect math that tight!'],
+    ['ART_FLEMING_HOST', '🎯 MICROMETER TOUCH!', 'Steady wrist, eagle eye—parking the dial that close to true north earns prime-time applause!'],
+    ['GRANT_BELLAMY_MC', '🎯 CALCULATED TO A HAIR', 'Not a wild guess in sight—pure analytical poise right inside our green tolerance arc!'],
+  ]),
+
+  ...buildLineBank('QUICK_DRAW_STAMP', 'GOLD', [
+    ['DON_PARDO_BOOTH', '⚡ QUICK-DRAW BUZZER!', 'BLINK AND YOU MISSED IT! Locked in under three seconds before the studio clock barely ticked!'],
+    ['GRANT_BELLAMY_MC', '⚡ LIGHTNING AT PODIUM ONE!', 'Fastest thumb on Sixth Avenue—our brass section nearly choked on their mouthpieces trying to keep up!'],
+    ['PETER_MARSHALL_WIT', '⚡ SMOKE OFF THE BUTTON!', 'Careful, you’ll melt the Acrylite! Answered {category} before our boom-mic guy found first gear!'],
+    ['ART_FLEMING_HOST', '⚡ INSTANT RECALL!', 'Sub-three-second reflex! Nothing rattles {rival} faster than a challenger firing off the hip!'],
+    ['DON_PARDO_BOOTH', '⚡ SNAPSHOT BULLSEYE!', 'BAM—DING! That Quick-Draw lock-in echoed from 30 Rock straight to Burbank in record time!'],
+    ['GRANT_BELLAMY_MC', '⚡ ZERO HESITATION', 'Ice-cold reflex under hot lamps—you knew {category} before I finished clearing my throat!'],
+    ['PETER_MARSHALL_WIT', '⚡ SPEED LIMIT BROKEN!', 'Call the highway patrol—Podium One just clocked a sub-three-second Quick-Draw in Living Color!'],
+    ['ART_FLEMING_HOST', '⚡ HAIR-TRIGGER CHIME!', 'Textbook buzzer speed! Quick-Draw answers keep the tempo brisk and the Champion on their heels!'],
+    ['DON_PARDO_BOOTH', '⚡ ELECTRIC THUMB SPEED!', 'The solenoid bell barely had time to coil its spring—instant Quick-Draw strike on {category}!'],
+    ['GRANT_BELLAMY_MC', '⚡ PURE REFLEX GOLD', 'Sharp mind, quicker finger—that’s how five-week champions command the eight o’clock hour!'],
+  ]),
+
+  ...buildLineBank('REBOUND_POT_SCOOP', 'EMERALD', [
+    ['DON_PARDO_BOOTH', '💰 REBOUND POT SCOOPED!', 'SWOOP AND COLLECT! You emptied the glowing +{rebound} Studio Rebound Pot straight into your bankroll!'],
+    ['PETER_MARSHALL_WIT', '💰 FINDERS KEEPERS · +{rebound}!', 'Thank you very much! {rival} left +{rebound} sitting in the center pot and you vacuumed every cent!'],
+    ['ART_FLEMING_HOST', '💰 +{rebound} POT CLAIMED!', 'Opportunistic quiz play! Nailing that clue sweeps the entire +{rebound} Studio Rebound Pot home!'],
+    ['GRANT_BELLAMY_MC', '💰 CENTER POT SWEPT CLEAN', 'Never leave loose bullion on the stage apron—+{rebound} Rebound Pot added to your Split-Flap!'],
+    ['DON_PARDO_BOOTH', '💰 EXTRA +{rebound} WINDFALL!', 'Clack-clack-clack! The glowing Rebound Pot pours +{rebound} bonus dollars onto Podium One!'],
+    ['PETER_MARSHALL_WIT', '💰 CLEANUP ON AISLE SIX!', 'One rival miss, one sharp challenger, and +{rebound} vanishes from the center pot into your pocket!'],
+    ['ART_FLEMING_HOST', '💰 SWEETENED BY +{rebound}!', 'That’s two wins in one swing—base plaque dollars plus the +{rebound} Studio Rebound Pot!'],
+    ['GRANT_BELLAMY_MC', '💰 THE HOUSE POT PAYS OUT', 'Poise pays extra dividends tonight—+{rebound} from the Rebound Pot certified to your purse!'],
+    ['DON_PARDO_BOOTH', '💰 JACKPOT ON THE BOUNCE!', 'Emerald lamps flashing! You cashed {category} and scooped the +{rebound} Rebound Pot clean!'],
+    ['PETER_MARSHALL_WIT', '💰 ROBBERY IN BROAD DAYLIGHT!', 'Legal in all fifty states—snatching +{rebound} out of the Rebound Pot while {rival} watches!'],
+  ]),
 ];
 
 const DAILY_BROADCAST_KICKOFF_LINES_V7: readonly StudioAnnouncerLineSpecV7[] = buildLineBank(
@@ -1120,11 +1227,11 @@ body:has(.ws7-announcer-stage[data-hidden='false']) .ws7-board-mode-banner {
   align-items: center;
   padding: 4px 14px 4px 11px;
   margin-left: -4px;
-  background: rgba(11, 29, 48, 0.94);
-  color: #f4a91f;
+  background: linear-gradient(180deg, #6E3B23 0%, #4E2714 100%);
+  color: #FFE48F;
   clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
   font-family: 'Jost', 'Plus Jakarta Sans', sans-serif;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 800;
   letter-spacing: 0.05em;
   line-height: 1.2;
@@ -1132,7 +1239,7 @@ body:has(.ws7-announcer-stage[data-hidden='false']) .ws7-board-mode-banner {
   white-space: nowrap;
 }
 
-/* Main Diagonal Lower-Third Broadcast Super Blade */
+/* Main Diagonal Lower-Third Sunlit Broadcast Cream & Brass Super Blade */
 .ws7-announcer-body-blade {
   position: relative;
   display: flex;
@@ -1141,10 +1248,13 @@ body:has(.ws7-announcer-stage[data-hidden='false']) .ws7-board-mode-banner {
   padding: 9px 26px 10px 16px;
   background: linear-gradient(
     98deg,
-    rgba(11, 29, 48, 0.96) 0%,
-    rgba(11, 29, 48, 0.92) 78%,
-    rgba(30, 86, 197, 0.82) 100%
+    rgba(255, 253, 247, 0.98) 0%,
+    rgba(250, 242, 223, 0.97) 78%,
+    rgba(242, 228, 198, 0.96) 100%
   );
+  border-top: 2px solid #D9A441;
+  border-bottom: 2px solid #6E3B23;
+  box-shadow: 0 10px 26px rgba(52, 24, 10, 0.34);
   clip-path: polygon(11px 0, 100% 0, calc(100% - 15px) 100%, 0 100%);
 }
 
@@ -1155,7 +1265,7 @@ body:has(.ws7-announcer-stage[data-hidden='false']) .ws7-board-mode-banner {
   left: 0;
   top: 0;
   bottom: 0;
-  width: 6px;
+  width: 7px;
   background: var(--ws7-chyron-accent);
 }
 
@@ -1166,14 +1276,14 @@ body:has(.ws7-announcer-stage[data-hidden='false']) .ws7-board-mode-banner {
   height: 50px;
   min-width: 50px;
   border-radius: 50%;
-  background-color: #0b1d30;
+  background-color: #F5E9CE;
   background-repeat: no-repeat;
   background-size: 200% 200%;
   background-position: 0% 0%;
-  border: 2.5px solid #f4a91f;
+  border: 2.5px solid #6E3B23;
   box-shadow:
-    0 3px 12px rgba(11, 29, 48, 0.78),
-    0 0 0 2px var(--ws7-chyron-accent);
+    0 3px 10px rgba(74, 36, 18, 0.28),
+    0 0 0 2px #D9A441;
   flex-shrink: 0;
   overflow: hidden;
   transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
@@ -1211,13 +1321,13 @@ body:has(.ws7-announcer-stage[data-hidden='false']) .ws7-board-mode-banner {
   height: 20px;
   min-width: 20px;
   border-radius: 50%;
-  background: #0b1d30;
-  border: 1.5px solid #f4a91f;
+  background: #6E3B23;
+  border: 1.5px solid #FFD166;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #f4a91f;
-  filter: drop-shadow(0 1px 4px rgba(11, 29, 48, 0.85));
+  color: #FFD166;
+  filter: drop-shadow(0 1px 4px rgba(58, 28, 12, 0.55));
 }
 
 .ws7-announcer-mic-emblem svg {
@@ -1247,14 +1357,14 @@ body:has(.ws7-announcer-stage[data-hidden='false']) .ws7-board-mode-banner {
   margin: 0;
   font-family: 'Plus Jakarta Sans', 'Jost', sans-serif;
   font-size: clamp(15px, 1.55vw, 18px);
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.32;
   letter-spacing: 0.005em;
-  color: #f7eedb;
+  color: #141B29;
   word-break: normal;
   overflow-wrap: normal;
   hyphens: none;
-  text-shadow: 0 1px 2px rgba(11, 29, 48, 0.9);
+  text-shadow: none;
 }
 
 @keyframes ws7ChyronRuleWipe {
@@ -1333,32 +1443,47 @@ body:has(.ws7-announcer-stage[data-hidden='false']) .ws7-board-mode-banner {
   }
 }
 
-/* Mobile Landscape (844x390): Ultra-sleek lower-left chyron */
+/* Mobile Landscape (844x390): Ultra-slim 34px centered chyron clearing bottom 3D board bezel */
 @media (max-height: 480px) and (orientation: landscape) {
   .ws7-announcer-stage {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 6px);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 2px);
     left: calc(env(safe-area-inset-left, 0px) + 10px);
-    justify-content: flex-start;
+    right: calc(env(safe-area-inset-right, 0px) + 10px);
+    justify-content: center;
   }
 
   .ws7-announcer-ribbon {
-    max-width: min(560px, 76vw);
+    max-width: min(680px, 88vw);
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .ws7-announcer-speaker-blade,
+  .ws7-announcer-kicker-blade,
+  .ws7-announcer-spectrum-rule {
+    display: none;
   }
 
   .ws7-announcer-body-blade {
-    padding: 5px 16px 5px 12px;
-    gap: 9px;
+    padding: 3px 14px 3px 10px;
+    gap: 8px;
   }
 
   .ws7-announcer-emcee-medallion {
-    width: 38px;
-    height: 38px;
-    min-width: 38px;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+  }
+
+  .ws7-announcer-mic-emblem {
+    display: none;
   }
 
   .ws7-announcer-copy {
-    font-size: 14.5px;
-    line-height: 1.24;
+    font-size: 13px;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
   }
 }
 
@@ -1464,6 +1589,60 @@ function preventOrphanWord(text: string): string {
   return `${trimmed.slice(0, lastSpace)}\u00A0${trimmed.slice(lastSpace + 1)}`;
 }
 
+const BROKER_DOSSIER_FALLBACKS_V8: Record<
+  BrokerIdV7,
+  Omit<ChampionTvGuideCloseUpV7, 'tvGuideListing'>
+> = {
+  GRANT_BELLAMY: {
+    greenRoomDossier:
+      'Checked his gold cufflinks in Camera One’s lens hood while privately signaling Control Booth A to keep the Penthouse elevator locked.',
+    dossierHintStrong:
+      'Effortless command of silver-screen lore, royal dynasties, classic literature, and hit-parade standards.',
+    dossierHintWeak:
+      'Leaves everyday checkout prices, world maps, wire headlines, and slippery logic traps to his writers.',
+  },
+  ROZ_KORMAN: {
+    greenRoomDossier:
+      'Stacked three wax-sealed canary sponsor envelopes beside the master switcher and warned the stage manager to protect the eight o’clock share.',
+    dossierHintStrong:
+      'Lethal Madison Avenue fluency in high finance, retail markups, and house probabilities.',
+    dossierHintWeak:
+      'Dismisses hospital triage charts, fireside folklore, and lab physics as low-rating dead air.',
+  },
+  VERA_KARP: {
+    greenRoomDossier:
+      'Calibrated two brass Standards & Practices stopwatches against the master studio clock and logged every voltage spike under Podium Two.',
+    dossierHintStrong:
+      'Sleepless investigator’s grip on logical fallacies, front-page wire records, and precision vocabulary.',
+    dossierHintWeak:
+      'Spends zero off-duty hours around jukebox singles, stadium box scores, or Hollywood gossip.',
+  },
+};
+
+function isRivalIdInVoiceKitsV8(id: CastIdV7 | undefined): id is RivalIdV7 {
+  return Boolean(id && Object.prototype.hasOwnProperty.call(CHAMPION_VOICE_KITS_V7, id));
+}
+
+export function getChampionTvGuideCloseUpV7(castId: CastIdV7): ChampionTvGuideCloseUpV7 {
+  const tvGuideListing =
+    CAST_TV_GUIDE_BIOS_V7[castId] ?? CAST_PROFILES_V7[castId]?.bio ?? '';
+  if (isRivalIdInVoiceKitsV8(castId)) {
+    const kit: ChampionVoiceKitV7 = CHAMPION_VOICE_KITS_V7[castId];
+    return {
+      tvGuideListing,
+      dossierHintStrong: kit.dossierHintStrong,
+      dossierHintWeak: kit.dossierHintWeak,
+      greenRoomDossier: kit.greenRoomDossier,
+    };
+  }
+  const brokerFallback =
+    BROKER_DOSSIER_FALLBACKS_V8[castId as BrokerIdV7] ?? BROKER_DOSSIER_FALLBACKS_V8.GRANT_BELLAMY;
+  return {
+    tvGuideListing,
+    ...brokerFallback,
+  };
+}
+
 export function interpolateAnnouncerTemplateV7(
   template: string,
   ctx: AnnouncerContextV7 = {},
@@ -1481,12 +1660,22 @@ export function interpolateAnnouncerTemplateV7(
 
   const categoryName = ctx.category
     ? SPOKEN_CATEGORY_NAMES_V7[ctx.category] ?? ctx.category
-    : 'that plaque';
+    : 'that square';
 
   const playerCash = ctx.playerCash ?? 0;
   const rivalCash = ctx.rivalCash ?? 0;
   const diff = Math.abs(playerCash - rivalCash);
-  const reboundBonus = ctx.reboundBonus ?? 50;
+  const hasExplicitCashDelta =
+    typeof ctx.cashDelta === 'number' &&
+    Number.isFinite(ctx.cashDelta) &&
+    Math.round(Math.abs(ctx.cashDelta)) > 0;
+  const absCashDelta = hasExplicitCashDelta ? Math.round(Math.abs(ctx.cashDelta!)) : 0;
+
+  const reboundBonus =
+    typeof ctx.reboundBonus === 'number' && Number.isFinite(ctx.reboundBonus) && ctx.reboundBonus > 0
+      ? Math.round(ctx.reboundBonus)
+      : 50;
+
   const resolvedDailyNum = (() => {
     if (
       typeof ctx.dailyEpisodeNumber === 'number' &&
@@ -1516,21 +1705,115 @@ export function interpolateAnnouncerTemplateV7(
     ? `Daily Broadcast #${resolvedDailyNum}`
     : ctx.blueprint?.code ?? 'Tonight’s Broadcast';
 
-  const rendered = template
+  let working = template;
+
+  // 1. Safe {cash} handling — NEVER renders "$0", "-$300", or "$0 wipeout!"
+  if (working.includes('{cash}')) {
+    if (hasExplicitCashDelta) {
+      working = working.replace(/\{cash\}/g, formatDollarsV7(absCashDelta));
+    } else {
+      const looksLikeZonk =
+        /wipeout|Zonk|test pattern|Monoscope|carrier|static|blackout|fault|fined|cost me|ate \{cash\}|stole \{cash\}|raked \{cash\}|sacrificed \{cash\}|liquidated \{cash\}|incinerated \{cash\}|shattered.*\{cash\}|dent me for \{cash\}|vandalized.*\{cash\}/i.test(
+          working,
+        );
+      if (looksLikeZonk) {
+        working = working
+          .replace(/for a \{cash\} wipeout/gi, 'for a brutal Studio Gremlin wipeout')
+          .replace(/a painful \{cash\} Zonk/gi, 'a brutal Studio Gremlin wipeout')
+          .replace(/eating \{cash\}/gi, 'unleashing a brutal Studio Gremlin wipeout')
+          .replace(/wiped \{cash\} clean off my box score/gi, 'triggered a brutal Studio Gremlin wipeout')
+          .replace(/wiped \{cash\}/gi, 'triggered a brutal Studio Gremlin wipeout')
+          .replace(/wipes \{cash\} off the Split-Flap/gi, 'triggers a brutal Studio Gremlin wipeout')
+          .replace(/torched \{cash\} off my billings/gi, 'dealt a brutal Studio Gremlin wipeout')
+          .replace(/torched \{cash\}/gi, 'dealt a brutal Studio Gremlin wipeout')
+          .replace(/trimmed \{cash\}/gi, 'dealt a brutal Studio Gremlin wipeout')
+          .replace(/swallowed \{cash\} whole/gi, 'dealt a brutal Studio Gremlin wipeout')
+          .replace(/clipped \{cash\} off the ledger/gi, 'dealt a brutal Studio Gremlin wipeout')
+          .replace(
+            /\{cash\} evaporating into a prime-time test pattern/gi,
+            'a brutal Studio Gremlin wipeout flashing across the screen',
+          )
+          .replace(/AND \{cash\}/g, 'in a brutal Studio Gremlin wipeout')
+          .replace(/\{cash\} vanished/gi, 'a brutal Studio Gremlin wipeout struck')
+          .replace(/for \{cash\}/gi, 'with a brutal Studio Gremlin wipeout')
+          .replace(/\{cash\}/g, 'a brutal Studio Gremlin wipeout');
+      } else if (playerCash > 0) {
+        working = working.replace(/\{cash\}/g, formatDollarsV7(playerCash));
+      } else {
+        working = working
+          .replace(/\{cash\} richer/gi, 'richer in broadcast cash')
+          .replace(/for \{cash\}/gi, 'for prime-time cash')
+          .replace(/\{cash\}/g, 'prime-time cash');
+      }
+    }
+  }
+
+  // 2. Safe {outcome} handling — NEVER renders "—Big Broadcast Cash!" or mid-sentence "! on"
+  if (working.includes('{outcome}')) {
+    const rawOutcome = (ctx.outcomeLabel ?? '').trim();
+    const isTerminalOutcome = /\{outcome\}\s*$/.test(working);
+    const looksLikeScouting = /dossier|notebook|logged|scouting|tell/i.test(working);
+    if (rawOutcome.length > 0) {
+      const stripped = rawOutcome.replace(/[.!?]+$/g, '').trim();
+      const replacement = isTerminalOutcome ? `${stripped}!` : stripped;
+      working = working.replace(/\{outcome\}/g, replacement);
+    } else if (isTerminalOutcome) {
+      const fallbackClause = hasExplicitCashDelta
+        ? `banks ${formatDollarsV7(absCashDelta)} clean on Podium Two!`
+        : 'locks that square onto Podium Two!';
+      working = working.replace(/—\s*\{outcome\}\s*$/, ` — ${fallbackClause}`).replace(/\{outcome\}/g, fallbackClause);
+    } else if (looksLikeScouting) {
+      const scoutPhrase =
+        ctx.scoutKind === 'STRONG' ? 'a trademark Strong Turf' : 'a telltale Weak Spot';
+      working = working.replace(/\{outcome\}/g, scoutPhrase);
+    } else {
+      const midPhrase = hasExplicitCashDelta
+        ? formatDollarsV7(absCashDelta)
+        : 'a top-dollar jackpot wedge';
+      working = working.replace(/\{outcome\}/g, midPhrase);
+    }
+  }
+
+  // 3. Safe {spins} handling — NEVER fabricates "2" when spinsCount is omitted, singularizes "1 spin"
+  if (working.includes('{spins}')) {
+    const validSpins =
+      typeof ctx.spinsCount === 'number' &&
+      Number.isFinite(ctx.spinsCount) &&
+      Math.round(ctx.spinsCount) > 0
+        ? Math.round(ctx.spinsCount)
+        : null;
+    if (validSpins !== null) {
+      working = working.replace(/\{spins\}/g, String(validSpins));
+      if (validSpins === 1) {
+        working = working
+          .replace(/\b1 ((?:[\w-]+\s+){0,3})spins\b/gi, '1 $1spin')
+          .replace(/\b1 ((?:[\w-]+\s+){0,3})drops\b/gi, '1 $1drop');
+      }
+    } else {
+      working = working
+        .replace(/Passing \{spins\} spins/gi, 'Passing those live spins')
+        .replace(/\{spins\} spins/gi, 'those live spins')
+        .replace(/\{spins\} live/gi, 'those live')
+        .replace(/\{spins\} /g, 'those ')
+        .replace(/\{spins\}/g, 'live');
+    }
+  }
+
+  const rendered = working
     .replace(/\{rival\}/g, rivalName)
     .replace(/\{stage\}/g, stageName)
     .replace(/\{category\}/g, categoryName)
     .replace(/\{playerCash\}/g, formatDollarsV7(playerCash))
     .replace(/\{rivalCash\}/g, formatDollarsV7(rivalCash))
-    .replace(/\{cash\}/g, formatDollarsV7(ctx.cashDelta ?? playerCash))
     .replace(/\{rebound\}/g, formatDollarsV7(reboundBonus))
     .replace(/\{lead\}/g, formatDollarsV7(Math.max(10, diff)))
     .replace(/\{gap\}/g, diff === 0 ? 'a dead-even tie' : formatDollarsV7(diff))
     .replace(/\{streak\}/g, String(Math.max(2, ctx.streak ?? 2)))
     .replace(/\{turn\}/g, String(ctx.turnNumber ?? 9))
     .replace(/\{episode\}/g, episodeLabel)
-    .replace(/\{outcome\}/g, ctx.outcomeLabel ?? 'Big Broadcast Cash!')
-    .replace(/\{spins\}/g, String(Math.max(1, ctx.spinsCount ?? 2)));
+    .replace(/!{2,}/g, '!')
+    .replace(/!\./g, '!')
+    .replace(/\s{2,}/g, ' ');
 
   return preventOrphanWord(rendered);
 }
@@ -1574,6 +1857,11 @@ export function getAnnouncerCatalogStatsV7(): AnnouncerCatalogStatsV7 {
     RIVAL_TURN_CALL: 0,
     BRASS_KEY_UNLOCK: 0,
     BLIND_MYSTERY_REVEAL: 0,
+    MYTH_KLAXON_TRAP: 0,
+    WRONG_PICK_WIT: 0,
+    DIAL_NEAR_MISS_PRAISE: 0,
+    QUICK_DRAW_STAMP: 0,
+    REBOUND_POT_SCOOP: 0,
   };
 
   for (const line of STUDIO_ANNOUNCER_LINES_V7) {
@@ -1614,6 +1902,8 @@ export class StudioAnnouncerControllerV7 {
   private readonly shuffleBags = new Map<string, StudioAnnouncerLineSpecV7[]>();
   private readonly lastLineIdByBucket = new Map<string, string>();
   private readonly spokenLineIdsSession = new Set<string>();
+  private readonly championQuipBags = new Map<string, string[]>();
+  private readonly lastChampionQuipByKey = new Map<string, string>();
 
   private rngState: number;
   private reducedMotion: boolean;
@@ -1869,16 +2159,65 @@ export class StudioAnnouncerControllerV7 {
         : this.drawNonRepeatingLine(event, resolvedStageId);
     const personaMeta = PERSONA_DISPLAY_LABELS_V7[lineSpec.persona];
     const rivalIdForQuip = effectiveCtx.rivalId ?? effectiveCtx.blueprint?.rivalId;
-    const useChampionQuip =
+    const validRivalId = isRivalIdInVoiceKitsV8(rivalIdForQuip) ? rivalIdForQuip : undefined;
+
+    let renderedText: string;
+    if (
       event === 'EPISODE_KICKOFF' &&
-      rivalIdForQuip &&
-      CHAMPION_ANNOUNCER_QUIPS_V7[rivalIdForQuip] &&
+      validRivalId &&
+      CHAMPION_ANNOUNCER_QUIPS_V7[validRivalId] &&
       !effectiveCtx.isDailyBroadcast &&
-      this.nextRandom01() < 0.45;
-    const rawTemplate = useChampionQuip
-      ? CHAMPION_ANNOUNCER_QUIPS_V7[rivalIdForQuip!][Math.floor(this.nextRandom01() * 2)]
-      : lineSpec.template;
-    const renderedText = interpolateAnnouncerTemplateV7(rawTemplate, effectiveCtx);
+      this.nextRandom01() < 0.45
+    ) {
+      const rawQuip =
+        CHAMPION_ANNOUNCER_QUIPS_V7[validRivalId][Math.floor(this.nextRandom01() * 2)];
+      renderedText = interpolateAnnouncerTemplateV7(rawQuip, effectiveCtx);
+    } else if (
+      event === 'RIVAL_TURN_CALL' &&
+      validRivalId &&
+      !effectiveCtx.outcomeLabel &&
+      this.nextRandom01() < 0.8
+    ) {
+      renderedText = this.getChampionReactionQuip(validRivalId, 'SMIRK', effectiveCtx);
+    } else if (
+      event === 'RIVAL_MISS_REBOUND' &&
+      validRivalId &&
+      this.nextRandom01() < 0.72
+    ) {
+      renderedText = this.getChampionReactionQuip(validRivalId, 'FUMBLE', effectiveCtx);
+    } else if (
+      event === 'BIG_WHEEL_SPIN_START' &&
+      validRivalId &&
+      this.nextRandom01() < 0.6
+    ) {
+      renderedText = this.getChampionReactionQuip(validRivalId, 'WHEEL', effectiveCtx);
+    } else if (
+      event === 'GREMLIN_ZONK_BLOWUP' &&
+      validRivalId &&
+      effectiveCtx.victim !== 'PLAYER' &&
+      this.nextRandom01() < 0.8
+    ) {
+      renderedText = this.getChampionReactionQuip(validRivalId, 'ZONK', effectiveCtx);
+    } else if (
+      event === 'SCOUTING_DISCOVERY' &&
+      validRivalId &&
+      !effectiveCtx.outcomeLabel &&
+      this.nextRandom01() < 0.82
+    ) {
+      renderedText = this.getChampionReactionQuip(
+        validRivalId,
+        effectiveCtx.scoutKind === 'STRONG' ? 'SCOUT_STRONG' : 'SCOUT_WEAK',
+        effectiveCtx,
+      );
+    } else if (
+      event === 'FINAL_2_TURN_NAILBITER' &&
+      validRivalId &&
+      this.nextRandom01() < 0.5
+    ) {
+      renderedText = this.getChampionReactionQuip(validRivalId, 'CLUTCH', effectiveCtx);
+    } else {
+      renderedText = interpolateAnnouncerTemplateV7(lineSpec.template, effectiveCtx);
+    }
     const rawKicker = (ctx.customBadgeOverride ?? lineSpec.kickerTag).trim();
     const kickerTag = rawKicker.includes('{')
       ? interpolateAnnouncerTemplateV7(rawKicker, effectiveCtx).replace(/\u00A0/g, ' ')
@@ -2001,6 +2340,74 @@ export class StudioAnnouncerControllerV7 {
       window.clearTimeout(this.hideTimerHandle);
       this.hideTimerHandle = null;
     }
+  }
+
+  // --------------------------------------------------------------------------
+  // Champion Voice Kit & TV Guide Close-Up Resurrection (All 24 Champions + 3 Brokers)
+  // --------------------------------------------------------------------------
+
+  public getChampionReactionQuip(
+    rivalId: RivalIdV7,
+    kind: ChampionReactionKindV7,
+    ctx: AnnouncerContextV7 = {},
+  ): string {
+    const kit = CHAMPION_VOICE_KITS_V7[rivalId] ?? CHAMPION_VOICE_KITS_V7.CARMEN_DELGADO;
+    let candidates: readonly string[];
+    switch (kind) {
+      case 'SMIRK':
+        candidates = kit.smirkLines;
+        break;
+      case 'FUMBLE':
+        candidates = kit.fumbleLines;
+        break;
+      case 'CLUTCH':
+        candidates = [kit.clutchLine];
+        break;
+      case 'ZONK':
+        candidates = [kit.zonkLine];
+        break;
+      case 'WHEEL':
+        candidates = [kit.wheelLine];
+        break;
+      case 'SCOUT_STRONG':
+        candidates = [kit.scoutStrongCall];
+        break;
+      case 'SCOUT_WEAK':
+        candidates = [kit.scoutWeakCall];
+        break;
+    }
+
+    const bagKey = `${rivalId}::${kind}`;
+    let bag = this.championQuipBags.get(bagKey);
+    if (!bag || bag.length === 0) {
+      const pool = [...candidates];
+      for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(this.nextRandom01() * (i + 1));
+        const tmp = pool[i];
+        pool[i] = pool[j];
+        pool[j] = tmp;
+      }
+      const prev = this.lastChampionQuipByKey.get(bagKey);
+      if (pool.length > 1 && pool[pool.length - 1] === prev) {
+        const tmp = pool[pool.length - 1];
+        pool[pool.length - 1] = pool[0];
+        pool[0] = tmp;
+      }
+      bag = pool;
+      this.championQuipBags.set(bagKey, bag);
+    }
+
+    const rawTemplate = bag.pop()!;
+    this.lastChampionQuipByKey.set(bagKey, rawTemplate);
+    return interpolateAnnouncerTemplateV7(rawTemplate, {
+      rivalId,
+      reboundBonus: ctx.reboundBonus ?? 50,
+      ...ctx,
+    });
+  }
+
+  public getChampionTvGuideCloseUp(castId: CastIdV7): ChampionTvGuideCloseUpV7 {
+    return getChampionTvGuideCloseUpV7(castId);
   }
 
   // --------------------------------------------------------------------------
@@ -2163,15 +2570,59 @@ export class StudioAnnouncerControllerV7 {
   public onScoutingDiscovery(
     ctx: AnnouncerContextV7 & { readonly kind?: 'WEAK' | 'STRONG' } = {},
   ): AnnouncerCueEmittedV7 | null {
-    const label =
-      ctx.outcomeLabel ??
-      (ctx.kind === 'STRONG' ? '★ STRONG CATEGORY!' : '💡 WEAK SPOT FOUND!');
+    const scoutKind = ctx.kind ?? ctx.scoutKind ?? 'WEAK';
     return this.announce('SCOUTING_DISCOVERY', {
       forceImmediate: true,
-      outcomeLabel: label,
+      scoutKind,
       customBadgeOverride:
         ctx.customBadgeOverride ??
-        (ctx.kind === 'STRONG' ? '★ STRONG SPOT LOGGED!' : '💡 WEAK SPOT FOUND!'),
+        (scoutKind === 'STRONG' ? '★ STRONG SPOT LOGGED!' : '💡 WEAK SPOT FOUND!'),
+      ...ctx,
+    });
+  }
+
+  public onMythKlaxonTrap(ctx: AnnouncerContextV7 = {}): AnnouncerCueEmittedV7 | null {
+    return this.announce('MYTH_KLAXON_TRAP', {
+      forceImmediate: true,
+      moodOverride: 'GASP',
+      ...ctx,
+    });
+  }
+
+  public onWrongPickWit(ctx: AnnouncerContextV7 = {}): AnnouncerCueEmittedV7 | null {
+    return this.announce('WRONG_PICK_WIT', {
+      forceImmediate: true,
+      moodOverride: 'WINK',
+      ...ctx,
+    });
+  }
+
+  public onDialNearMissPraise(ctx: AnnouncerContextV7 = {}): AnnouncerCueEmittedV7 | null {
+    return this.announce('DIAL_NEAR_MISS_PRAISE', {
+      forceImmediate: true,
+      moodOverride: 'WINK',
+      ...ctx,
+    });
+  }
+
+  public onQuickDrawStamp(ctx: AnnouncerContextV7 = {}): AnnouncerCueEmittedV7 | null {
+    return this.announce('QUICK_DRAW_STAMP', {
+      forceImmediate: true,
+      moodOverride: 'INTENSE',
+      ...ctx,
+    });
+  }
+
+  public onReboundPotScoop(ctx: AnnouncerContextV7 = {}): AnnouncerCueEmittedV7 | null {
+    const potAmount =
+      ctx.reboundBonus && ctx.reboundBonus > 0
+        ? ctx.reboundBonus
+        : ctx.cashDelta && Math.abs(ctx.cashDelta) > 0
+          ? Math.abs(ctx.cashDelta)
+          : 100;
+    return this.announce('REBOUND_POT_SCOOP', {
+      forceImmediate: true,
+      reboundBonus: potAmount,
       ...ctx,
     });
   }
@@ -2357,12 +2808,17 @@ export interface HostQuestionIntroContextV7 {
   readonly seed?: number;
 }
 
+export { StudioAnnouncerControllerV7 as StudioAnnouncerV7 };
+
 export interface HostAnswerRevealContextV7 {
   readonly correct: boolean;
   readonly cashWon: number;
   readonly streak: number;
   readonly rivalName: string;
   readonly wasFinalWager?: boolean;
+  readonly flavor?: PostAnswerFlavorKindV8;
+  readonly reboundPotWon?: number;
+  readonly shutterMultiplier?: number;
   readonly seed?: number;
 }
 
@@ -2640,9 +3096,41 @@ const HOST_REVEAL_MISS_V7: readonly { readonly headline: string; readonly quip: 
   { headline: 'UNLUCKY DRAW!', quip: 'A classic 1966 stumper—take a breath and steal the momentum right back!' },
 ];
 
+const HOST_REVEAL_FLAVOR_OVERRIDES_V8: Record<
+  Exclude<PostAnswerFlavorKindV8, 'STANDARD'>,
+  readonly { readonly headline: string; readonly quip: string; readonly mood: EmceeMoodV7 }[]
+> = {
+  MYTH_KLAXON: [
+    { headline: '🚨 POPULAR-MYTH KLAXON!', quip: 'AWOOOOGA! Half of America repeats that yarn—our Standards vault knows better!', mood: 'GASP' },
+    { headline: '🚨 MYTH TRAP SPRUNG!', quip: 'Clang goes the Klaxon! A world-famous cocktail-party myth claims another victim!', mood: 'GASP' },
+    { headline: '🚨 URBAN LEGEND BUSTED!', quip: 'Don’t sweat it—three network VPs fell for that exact misconception in rehearsal!', mood: 'WINK' },
+  ],
+  QUICK_DRAW: [
+    { headline: '⚡ QUICK-DRAW BULLSEYE!', quip: 'Smoke off the button! +{cash} locked in under three seconds flat!', mood: 'INTENSE' },
+    { headline: '⚡ SUB-3s BUZZER BEATER!', quip: 'Fastest thumb on Sixth Avenue—+{cash} before the brass section could blink!', mood: 'INTENSE' },
+    { headline: '⚡ LIGHTNING LOCK-IN!', quip: 'Zero hesitation under hot lamps—+{cash} puts {rival} on instant notice!', mood: 'WINK' },
+  ],
+  DIAL_BULLSEYE: [
+    { headline: '🎯 DEAD-CENTER DIAL HIT!', quip: 'Swiss-watch precision! +{cash} right inside the exact Range Game band!', mood: 'POISED' },
+    { headline: '🎯 PINPOINT CALIBRATION!', quip: 'Parked the needle on a dime for +{cash}—Booth A is tipping its cap!', mood: 'WINK' },
+  ],
+  DIAL_NEAR_MISS: [
+    { headline: '🎯 RAZOR-CLOSE DIAL!', quip: 'Within a coat of varnish of the exact mark—+{cash} for sharp estimation!', mood: 'WINK' },
+    { headline: '🎯 MICROMETER TOUCH!', quip: 'Ninety-plus percent dial accuracy banks +{cash} under bright lights!', mood: 'WINK' },
+  ],
+  REBOUND_SCOOP: [
+    { headline: '💰 REBOUND POT SCOOPED!', quip: 'Clean sweep! +{cash} banked including the glowing Studio Rebound Pot!', mood: 'POISED' },
+    { headline: '💰 HOUSE POT CLAIMED!', quip: '{rival} left cash on the stage apron and you scooped +{cash} clean!', mood: 'WINK' },
+  ],
+  SHUTTER_EARLY_SOLVE: [
+    { headline: '🔥 EARLY-SHUTTER GENIUS!', quip: 'Solved before the wall even finished opening—+{cash} multiplier windfall!', mood: 'INTENSE' },
+    { headline: '🔥 LATERAL MASTERSTROKE!', quip: 'Only Connect brilliance in Living Color—+{cash} rolls onto Podium One!', mood: 'POISED' },
+  ],
+};
+
 /**
  * Returns a warm celebratory or dry empathetic Grant Bellamy Post-Answer Reveal
- * headline, hostQuip (`<= 95` chars), and reactive portrait mood across 50 templates!
+ * headline, hostQuip (`<= 95` chars), and reactive portrait mood across 65+ templates!
  */
 export function getHostAnswerRevealLineV7(
   ctx: HostAnswerRevealContextV7,
@@ -2654,7 +3142,12 @@ export function getHostAnswerRevealLineV7(
   let picked: { readonly headline: string; readonly quip: string };
   let mood: EmceeMoodV7;
 
-  if (ctx.wasFinalWager) {
+  if (!ctx.wasFinalWager && ctx.flavor && ctx.flavor !== 'STANDARD') {
+    const flavorPool = HOST_REVEAL_FLAVOR_OVERRIDES_V8[ctx.flavor];
+    const entry = flavorPool[pickHostIndexV7(flavorPool.length, ctx.seed)];
+    picked = { headline: entry.headline, quip: entry.quip };
+    mood = entry.mood;
+  } else if (ctx.wasFinalWager) {
     if (ctx.correct) {
       picked =
         HOST_REVEAL_FINAL_WIN_V7[pickHostIndexV7(HOST_REVEAL_FINAL_WIN_V7.length, ctx.seed)];

@@ -289,6 +289,19 @@ export interface DailyBroadcastSaveV7 {
     readonly tileHistory: readonly ('WIN' | 'SECRET_WIN' | 'VAULT_WIN' | 'MYSTERY_WIN' | 'SHOWCASE_WIN' | 'MISS')[];
     readonly shareText: string;
   };
+  /** Strictly isolated Past-Show Archive Tape completions (never alters live streak!). */
+  readonly archiveResults?: Readonly<
+    Record<
+      string,
+      {
+        readonly dailyNumber: number;
+        readonly playerCash: number;
+        readonly rivalCash: number;
+        readonly won: boolean;
+        readonly playedAtIso: string;
+      }
+    >
+  >;
 }
 
 export interface BoardTileNodeV7 {
@@ -314,6 +327,7 @@ export interface BoardTileNodeV7 {
   isRiggedSolenoid: boolean; // 24Hz shiver + copper spark tell!
   isRivalTarget: boolean; // Visible Rival intent crosshair
   isWheelhouse: boolean; // Rival weak-spot (+0.5x bonus!) or strong-spot
+  revealedConcentrationPrize?: string; // Stamped Concentration prize icon for Match-Steal!
 }
 
 // ----------------------------------------------------------------------------
@@ -612,12 +626,27 @@ export interface TrophySpecV7 {
 // 7. Broadcast Match State, Options & 90-Episode Branching Campaign Save
 // ----------------------------------------------------------------------------
 
+export type QuestionTimerModeV8 = 'OFF' | 90 | 45 | 30 | 15;
+
+export const QUESTION_TIMER_MODES_V8: readonly QuestionTimerModeV8[] = [
+  'OFF',
+  90,
+  45,
+  30,
+  15,
+] as const;
+
 export interface BroadcastSettingsV7 {
   masterVolume: number; // 0..100
   musicVolume: number; // 0..100
   sfxVolume: number; // 0..100
   crowdVolume: number; // 0..100
   ambienceVolume: number; // 0..100
+  voiceVolume?: number; // 0..100 (default 88 — Studio Announcer, Grant Bellamy & Gremlin VO)
+  questionTimerMode?: QuestionTimerModeV8; // 'OFF' (No Timer) | 90 | 45 | 30 (default) | 15
+  autoPlayShowIntro?: boolean; // Plays 10s 1966 Network TV Show Intro before broadcasts (default true)
+  muteFirstTimeTips?: boolean; // Allows muting 1st-occurrence contextual explainer cards (default false)
+  muteAutoQuestionTips?: boolean; // Alias for muting 1st-occurrence contextual explainer cards (default false)
   hapticsEnabled: boolean;
   reducedMotion: boolean;
   highContrastBadges: boolean;
@@ -784,4 +813,426 @@ export interface CampaignSaveStateV7 {
   masteredDifficulties?: DifficultyModeV7[];
   masteredModeDifficulties?: string[];
   settings: BroadcastSettingsV7;
+}
+
+// ============================================================================
+// 8. v8.0 "SWEEPS WEEK DELUXE" CANONICAL SHARED CONTRACTS
+// ============================================================================
+
+/** Upgrade #1 — Dual Studio Cast + Raspy Gremlin Pre-Baked Offline Voice Bank */
+export type VoiceSpeakerIdV8 =
+  | 'BOOTH_ANNOUNCER'
+  | 'GRANT_BELLAMY'
+  | 'STUDIO_GREMLIN';
+
+export type VoicePriorityTierV8 = 1 | 2 | 3; // 3 = Bumper/Twist/Jackpot/Ceremony, 2 = Host Call, 1 = Quip
+
+export type StudioVoiceCueIdV8 =
+  // Show Open & 3-Act Bumpers (Booth Announcer)
+  | 'VO_COLD_OPEN_WELCOME'
+  | 'VO_SHOW_CURTAIN_RAISER'
+  | 'VO_ACT2_DOUBLE_STAKES'
+  | 'VO_ACT3_FINAL_WAGER_INTRO'
+  | 'VO_DAILY_BROADCAST_OPEN'
+  | 'VO_COUCH_2P_OPEN'
+  // Signature TV Board Twists & Side-Games (Booth Announcer)
+  | 'VO_TWIST_SECRET_SQUARE'
+  | 'VO_TWIST_GOLD_VAULT_OPEN'
+  | 'VO_TWIST_BIG_WHEEL_SPIN'
+  | 'VO_TWIST_BIG_WHEEL_JACKPOT'
+  | 'VO_TWIST_BIG_WHEEL_DOUBLE'
+  | 'VO_TWIST_LIGHT_BOARD_OPEN'
+  | 'VO_TWIST_LIGHT_BOARD_PASS'
+  | 'VO_TWIST_MYSTERY_CURTAIN'
+  | 'VO_TWIST_OPPONENT_CHOICE'
+  | 'VO_TWIST_PRIZE_MATCH_STEAL'
+  | 'VO_BOOTH_TELL_ALERT'
+  | 'VO_BOOTH_FEED_INTERCEPTED'
+  // Curtain Call Instant Bargain Desk (Grant Bellamy & Booth)
+  | 'VO_BARGAIN_ROLLOUT'
+  | 'VO_BARGAIN_SOLD'
+  | 'VO_BARGAIN_NO_SALE'
+  // Post-Answer Comedy, Myth Klaxon, Streaks & Rebound Pot (Grant Bellamy & Booth)
+  | 'VO_MYTH_KLAXON_1'
+  | 'VO_MYTH_KLAXON_2'
+  | 'VO_QUICK_DRAW_1'
+  | 'VO_QUICK_DRAW_2'
+  | 'VO_DIAL_BULLSEYE'
+  | 'VO_DIAL_NEAR_MISS'
+  | 'VO_SHUTTER_EARLY_JACKPOT'
+  | 'VO_REBOUND_POT_SCOOP'
+  | 'VO_STREAK_3_HOT'
+  | 'VO_STREAK_5_UNSTOPPABLE'
+  | 'VO_HOST_RIGHT_1'
+  | 'VO_HOST_RIGHT_2'
+  | 'VO_HOST_RIGHT_3'
+  | 'VO_HOST_RIGHT_4'
+  | 'VO_HOST_WRONG_1'
+  | 'VO_HOST_WRONG_2'
+  | 'VO_HOST_WRONG_3'
+  | 'VO_HOST_WRONG_4'
+  // Final Broadcast Wager & Ceremonies (Grant Bellamy & Booth)
+  | 'VO_FINAL_WAGER_LOCKED'
+  | 'VO_FINAL_REVEAL_SHOWDOWN'
+  | 'VO_CEREMONY_NEW_CHAMPION'
+  | 'VO_CEREMONY_RETURNING_STREAK'
+  | 'VO_CEREMONY_CLOSE_LOSS'
+  | 'VO_CEREMONY_CO_CHAMPION'
+  | 'VO_CEREMONY_DAILY_WIN'
+  | 'VO_CEREMONY_COUCH_WINNER'
+  // 8 Hanna-Barbera / UPA Slapstick Studio Gremlin Voice Gags
+  | 'VO_GREMLIN_REEL_MOWER'
+  | 'VO_GREMLIN_CANISTER_VAC'
+  | 'VO_GREMLIN_JACKHAMMER'
+  | 'VO_GREMLIN_TNT_PLUNGER'
+  | 'VO_GREMLIN_CABLE_SHEARS'
+  | 'VO_GREMLIN_WATUSI_BROOM'
+  | 'VO_GREMLIN_CATWALK_MAGNET'
+  | 'VO_GREMLIN_TIN_UFO'
+  // --- v8.1 Expanded Variety Multi-Take Pack (+65 Non-Repeating Studio Takes = 120 Total!) ---
+  // TV Show 10s Intro & 1966 End Credits Sign-Offs (Booth Announcer & Grant Bellamy)
+  | 'VO_TV_INTRO_1'
+  | 'VO_TV_INTRO_2'
+  | 'VO_TV_INTRO_3'
+  | 'VO_TV_INTRO_4'
+  | 'VO_COLD_OPEN_ALT_1'
+  | 'VO_COLD_OPEN_ALT_2'
+  | 'VO_COLD_OPEN_ALT_3'
+  | 'VO_CREDITS_SIGNOFF_1'
+  | 'VO_CREDITS_SIGNOFF_2'
+  | 'VO_CREDITS_SIGNOFF_3'
+  | 'VO_CREDITS_SIGNOFF_4'
+  // Expanded Host Correct Answer Praise (Grant Bellamy — 8 Fresh Takes -> 12 Total!)
+  | 'VO_HOST_RIGHT_5'
+  | 'VO_HOST_RIGHT_6'
+  | 'VO_HOST_RIGHT_7'
+  | 'VO_HOST_RIGHT_8'
+  | 'VO_HOST_RIGHT_9'
+  | 'VO_HOST_RIGHT_10'
+  | 'VO_HOST_RIGHT_11'
+  | 'VO_HOST_RIGHT_12'
+  // Expanded Host Miss / Encouragement Wit (Grant Bellamy — 6 Fresh Takes -> 10 Total!)
+  | 'VO_HOST_WRONG_5'
+  | 'VO_HOST_WRONG_6'
+  | 'VO_HOST_WRONG_7'
+  | 'VO_HOST_WRONG_8'
+  | 'VO_HOST_WRONG_9'
+  | 'VO_HOST_WRONG_10'
+  // Studio Cheat / Lifeline Calls (Grant Bellamy & Booth — 50/50, Audience Poll, Free Swap)
+  | 'VO_LIFELINE_5050_1'
+  | 'VO_LIFELINE_5050_2'
+  | 'VO_LIFELINE_5050_3'
+  | 'VO_LIFELINE_POLL_1'
+  | 'VO_LIFELINE_POLL_2'
+  | 'VO_LIFELINE_POLL_3'
+  | 'VO_LIFELINE_SWAP_1'
+  | 'VO_LIFELINE_SWAP_2'
+  | 'VO_LIFELINE_SWAP_3'
+  // Expanded Streaks, Comebacks & Rival Reactions (Grant Bellamy & Booth)
+  | 'VO_STREAK_HOT_ALT_1'
+  | 'VO_STREAK_HOT_ALT_2'
+  | 'VO_STREAK_HOT_ALT_3'
+  | 'VO_COMEBACK_SURGE_1'
+  | 'VO_COMEBACK_SURGE_2'
+  | 'VO_RIVAL_STUMBLED_1'
+  | 'VO_RIVAL_STUMBLED_2'
+  | 'VO_RIVAL_STUMBLED_3'
+  | 'VO_BOOTH_BUSTED_ALT_1'
+  | 'VO_BOOTH_BUSTED_ALT_2'
+  // Expanded Board Twists, Showcases, Bargain, Klaxon & Couch Pass-Turn
+  | 'VO_SECRET_SQUARE_ALT_1'
+  | 'VO_SECRET_SQUARE_ALT_2'
+  | 'VO_GOLD_VAULT_ALT_1'
+  | 'VO_GOLD_VAULT_ALT_2'
+  | 'VO_BIG_WHEEL_ALT_1'
+  | 'VO_BIG_WHEEL_ALT_2'
+  | 'VO_MYSTERY_CURTAIN_ALT_1'
+  | 'VO_MYSTERY_CURTAIN_ALT_2'
+  | 'VO_SHOWCASE_SPOTLIGHT_1'
+  | 'VO_SHOWCASE_SPOTLIGHT_2'
+  | 'VO_SHOWCASE_SPOTLIGHT_3'
+  | 'VO_BARGAIN_ROLLOUT_ALT_1'
+  | 'VO_BARGAIN_SOLD_ALT_1'
+  | 'VO_MYTH_KLAXON_3'
+  | 'VO_REBOUND_SCOOP_ALT_1'
+  | 'VO_COUCH_PASS_TURN_1'
+  | 'VO_COUCH_PASS_TURN_2'
+  // Extra Studio Gremlin Taunts (Studio Gremlin)
+  | 'VO_GREMLIN_TAUNT_1'
+  | 'VO_GREMLIN_TAUNT_2'
+  | 'VO_GREMLIN_TAUNT_3'
+  | 'VO_GREMLIN_TAUNT_4';
+
+export type StudioVoicePoolIdV8 =
+  | 'POOL_TV_INTRO'
+  | 'POOL_COLD_OPEN'
+  | 'POOL_ACT2_BUMPER'
+  | 'POOL_ACT3_WAGER'
+  | 'POOL_HOST_RIGHT'
+  | 'POOL_HOST_WRONG'
+  | 'POOL_QUICK_DRAW'
+  | 'POOL_STREAK_HOT'
+  | 'POOL_COMEBACK'
+  | 'POOL_LIFELINE_5050'
+  | 'POOL_LIFELINE_POLL'
+  | 'POOL_LIFELINE_SWAP'
+  | 'POOL_SECRET_SQUARE'
+  | 'POOL_GOLD_VAULT'
+  | 'POOL_BIG_WHEEL'
+  | 'POOL_LIGHT_BOARD'
+  | 'POOL_MYSTERY_CURTAIN'
+  | 'POOL_SHOWCASE_INTRO'
+  | 'POOL_BARGAIN_OPEN'
+  | 'POOL_BARGAIN_SOLD'
+  | 'POOL_BARGAIN_NOSALE'
+  | 'POOL_MYTH_KLAXON'
+  | 'POOL_REBOUND_SCOOP'
+  | 'POOL_RIVAL_STUMBLED'
+  | 'POOL_BOOTH_BUSTED'
+  | 'POOL_COUCH_PASS'
+  | 'POOL_CREDITS_SIGNOFF'
+  | 'POOL_GREMLIN_GLEE';
+
+export interface StudioVoiceCueSpecV8 {
+  readonly cueId: StudioVoiceCueIdV8;
+  readonly speaker: VoiceSpeakerIdV8;
+  readonly priority: VoicePriorityTierV8;
+  readonly mp3Path: string; // ./assets/v7/audio/vo/<file>.mp3
+  readonly subtitle: string;
+  readonly durationSecEst: number;
+}
+
+/** Upgrade #2 — Retro 1966 TV Picture-in-Picture Character Reaction Window */
+export interface ReactionPipSpecV8 {
+  readonly castId: CastIdV7;
+  readonly displayName?: string;
+  readonly emotion: PortraitEmotionV7;
+  readonly badgeLabel: string; // e.g. 'LIVE BOOTH TELL!', 'BUSTED!', 'CLUTCH SURGE', 'PODIUM 2'
+  readonly quipText: string;
+  readonly accentHex?: string;
+  readonly durationMs?: number;
+}
+
+/** Upgrade #5 — 8 Hanna-Barbera / UPA 1966 Animated Studio Gremlin Skits */
+export type GremlinSkitIdV8 =
+  | 'REEL_MOWER'
+  | 'CANISTER_VAC'
+  | 'JACKHAMMER_SANDBAG'
+  | 'TNT_PLUNGER'
+  | 'CABLE_SHEARS'
+  | 'WATUSI_BROOM'
+  | 'CATWALK_MAGNET'
+  | 'TIN_UFO';
+
+export const ALL_GREMLIN_SKIT_IDS_V8: readonly GremlinSkitIdV8[] = [
+  'REEL_MOWER',
+  'CANISTER_VAC',
+  'JACKHAMMER_SANDBAG',
+  'TNT_PLUNGER',
+  'CABLE_SHEARS',
+  'WATUSI_BROOM',
+  'CATWALK_MAGNET',
+  'TIN_UFO',
+];
+
+export interface GremlinSkitPlayInputV8 {
+  readonly skitId?: GremlinSkitIdV8;
+  readonly seed?: number;
+  readonly victimName: string;
+  readonly isPlayerVictim: boolean;
+  readonly scoreBefore: number;
+  readonly cashLost: number;
+  readonly newGremlinCount: number; // 1..4 spring-loaded pop-up markers!
+  readonly reducedMotion?: boolean;
+  readonly onPlayFoghorn?: () => void;
+  readonly onPlayBoing?: () => void;
+  readonly onPlayVoiceSting?: (skitId: GremlinSkitIdV8) => void;
+}
+
+/** Upgrade #6 — Mid-Show "Sale of the Century" Curtain Call Instant Bargain */
+export type InstantBargainKindV8 =
+  | 'GOLD_PROP'
+  | 'NEXT_TILE_2X'
+  | 'FINAL_WAGER_SHIELD';
+
+export interface InstantBargainItemV8 {
+  readonly kind: InstantBargainKindV8;
+  readonly title: string;
+  readonly subtitle: string;
+  readonly costLiveCash: number; // $250..$450 deducted from live match score!
+  readonly badgeTag: string;
+  readonly relicId?: string;
+}
+
+export interface InstantBargainChoiceResultV8 {
+  readonly accepted: boolean;
+  readonly chosenItem: InstantBargainItemV8 | null;
+}
+
+/** Upgrade #7 & #8 — Post-Answer Wit, Myth Klaxon, Rebound Pot & 4-Shutter Ladder */
+export type PostAnswerFlavorKindV8 =
+  | 'MYTH_KLAXON'
+  | 'QUICK_DRAW'
+  | 'DIAL_BULLSEYE'
+  | 'DIAL_NEAR_MISS'
+  | 'REBOUND_SCOOP'
+  | 'SHUTTER_EARLY_SOLVE'
+  | 'STANDARD';
+
+export const SHUTTER_REEL_MULTIPLIER_LADDER_V8 = [2.0, 1.6, 1.3, 1.0] as const;
+
+/** Upgrade #9 — 2-Player Couch / Tablet Pass-and-Play Showdown */
+export interface CouchPlayerConfigV8 {
+  readonly podiumIndex: 0 | 1;
+  readonly name: string;
+  readonly avatarId: CastIdV7;
+  readonly accentHex: string;
+}
+
+export interface CouchShowdownLaunchSpecV8 {
+  readonly podium1: CouchPlayerConfigV8;
+  readonly podium2: CouchPlayerConfigV8;
+  readonly totalTurns: 6 | 10;
+  readonly stageId: StageWorldIdV7;
+  readonly boardPlayMode: BoardPlayModeV7;
+  readonly questionTimerMode?: QuestionTimerModeV8;
+}
+
+export interface CouchSecretFinalWagerResultV8 {
+  readonly p1Wager: number;
+  readonly p2Wager: number;
+  readonly p1ChoiceIdx: 0 | 1 | 2 | 3;
+  readonly p2ChoiceIdx: 0 | 1 | 2 | 3;
+  readonly p1TimeSec: number;
+  readonly p2TimeSec: number;
+}
+
+/** Upgrade #10 — Deluxe Daily 1966 Broadcast Tape Archive & Retro TV Share PNG */
+export interface DailyPercentileRankV8 {
+  readonly percentile: number; // e.g. 98 -> Top 2%
+  readonly topPercentLabel: string; // e.g. "TOP 2%"
+  readonly rankTitle: string; // e.g. "NETWORK SOVEREIGN", "EXECUTIVE PRODUCER"
+  readonly badgeColorHex: string;
+  readonly studioNote: string;
+}
+
+export interface DailyArchiveEntryV8 {
+  readonly dailyNumber: number;
+  readonly dateIso: string;
+  readonly displayDateShort: string;
+  readonly rivalId: RivalIdV7;
+  readonly stageId: StageWorldIdV7;
+  readonly boardPlayMode: BoardPlayModeV7;
+  readonly isToday: boolean;
+  readonly officialTodayCash?: number;
+  readonly officialTodayWon?: boolean;
+  readonly archiveReplayCash?: number;
+  readonly archiveReplayWon?: boolean;
+}
+
+/** Upgrade #11 — Historical Career Analytics & Category Drill-Down Ledger */
+export interface CategoryStatCounterV8 {
+  attempts: number;
+  correct: number;
+  totalResponseMs: number;
+  cashEarned: number;
+  currentStreak: number;
+  bestStreak: number;
+}
+
+export interface ToyFormatStatCounterV8 {
+  attempts: number;
+  correct: number;
+  totalResponseMs: number;
+  cashEarned: number;
+}
+
+export interface BoardModeStatCounterV8 {
+  played: number;
+  won: number;
+  bestCash: number;
+  totalCash: number;
+}
+
+export interface MatchHistoryPointV8 {
+  readonly tsIso: string;
+  readonly matchType: 'CAMPAIGN' | 'DAILY' | 'QUICK_PLAY' | 'COUCH_2P';
+  readonly label: string; // e.g. 'S01E03', 'DAILY #144', 'QUICK'
+  readonly boardPlayMode: BoardPlayModeV7;
+  readonly rivalName: string;
+  readonly playerCash: number;
+  readonly rivalCash: number;
+  readonly won: boolean;
+  readonly cluesAnswered: number;
+  readonly cluesCorrect: number;
+  readonly bestMatchStreak: number;
+}
+
+export interface LifelineStatCounterV8 {
+  fiftyFiftyUsed: number;
+  fiftyFiftyWins: number;
+  audiencePollUsed: number;
+  audiencePollWins: number;
+  freeSwapUsed: number;
+  freeSwapWins: number;
+}
+
+export interface CareerStatsLedgerV8 {
+  readonly version: 'WS_CAREER_STATS_V8_1';
+  seededFromLegacySave: boolean;
+  totalMatchesPlayed: number;
+  totalMatchesWon: number;
+  totalCluesAnswered: number;
+  totalCluesCorrect: number;
+  totalResponseMs: number;
+  lifetimeCashEarned: number;
+  highestSingleMatchCash: number;
+  currentAnswerStreak: number;
+  bestAnswerStreakEver: number;
+  currentMatchWinStreak: number;
+  bestMatchWinStreakEver: number;
+  finalWagersAttempted: number;
+  finalWagersWon: number;
+  vaultsCracked: number;
+  bargainsBought: number;
+  gremlinsSurvived: number;
+  byCategory: Partial<Record<CategoryIdV7, CategoryStatCounterV8>>;
+  byToy: Partial<Record<ToyIdV7, ToyFormatStatCounterV8>>;
+  byCardStyle: Partial<Record<QuestionCardStyleV7, ToyFormatStatCounterV8>>;
+  byBoardMode: Partial<Record<BoardPlayModeV7, BoardModeStatCounterV8>>;
+  lifelines: LifelineStatCounterV8;
+  recentMatches: MatchHistoryPointV8[]; // Rolling last 40 episodes for interactive trend graphs!
+}
+
+/** Upgrade #12 — 10-Second 1966 Network TV Show Intro & 1960s End Credits */
+export interface ShowBroadcastIntroOptsV8 {
+  readonly modeLabel: string; // e.g. 'PRIME-TIME CAMPAIGN · S01E01', 'DAILY 1966 BROADCAST #144', '2-PLAYER COUCH SHOWDOWN'
+  readonly episodeSubtitle: string; // e.g. 'IBC STUDIO 6A · NEW YORK'
+  readonly boardFormatLabel: string;
+  readonly rivalName: string;
+  readonly rivalTitle: string;
+  readonly rivalCastId: CastIdV7;
+  readonly challengerName?: string;
+  readonly challengerCastId?: CastIdV7;
+  readonly durationMs?: number; // default 10000ms (exact 10.0s TV intro!)
+  readonly reducedMotion?: boolean;
+  readonly onPlayIntroFanfare?: () => void;
+  readonly onPlayIntroVoice?: () => void;
+  readonly onStopIntroAudio?: () => void;
+}
+
+export interface ShowEndCreditsOptsV8 {
+  readonly didWin: boolean;
+  readonly modeLabel: string;
+  readonly playerName: string;
+  readonly playerCash: number;
+  readonly rivalName: string;
+  readonly rivalCash: number;
+  readonly rivalCastId: CastIdV7;
+  readonly bestStreakInMatch: number;
+  readonly accuracyPct: number;
+  readonly durationMs?: number; // default 9500ms
+  readonly reducedMotion?: boolean;
+  readonly onPlayCreditsTheme?: () => void;
+  readonly onPlaySignoffVoice?: () => void;
 }

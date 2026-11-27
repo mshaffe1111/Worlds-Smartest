@@ -1,13 +1,23 @@
 // ============================================================================
-// WORLD'S SMARTEST: FIFTY MILLION WATCHING (v7.0 Gold Master)
+// WORLD'S SMARTEST: FIFTY MILLION WATCHING (v8.0 — 1966 "IN LIVING COLOR")
 // `src/v7/toys/CyanotypePlates20V7.ts`
 //
-// All 20 High-Contrast (13.4:1) Prussian-Blue (#0A192F) & Bone-White (#F4F0E4)
-// Architectural / Horological Vector Cutaway Plates — 1 bespoke cutaway per
-// `CategoryIdV7`, each fitted with 8 disjoint, generous (>=52x52px on both
-// 390x660 portrait and 844x390 landscape) #F2C94C gilt-brass interactive
-// chambers (`data-zone-idx="0..7"`) and ZERO spoiler text inside the blueprint!
-// Tapping any brass chamber locks in 1 gesture with a #FFF8DC specular iris flash.
+// 20 Museum-Grade Hand-Painted 1966 Mid-Century Gouache & Serigraph Specimen
+// Boards (`./assets/v7/plates/<slug>.jpg`, Charley Harper / Golden Book / LIFE
+// 1966 visual aesthetic) mounted in an interactive 4x2 (8-compartment) RCA
+// Color Studio Monitor (`viewBox="0 0 480 264"`).
+//
+// Strict Safety & Ergonomic Invariants:
+//   - 100% backward-compatible TypeScript exports (`renderCyanotypePlateSVG`,
+//     `CYANOTYPE_PLATES_20_V7`, `CYANOTYPE_PLATE_SPECS_V7`, `CyanotypePlateSpecV7`,
+//     `CyanotypeRenderOptionsV7`, `CYANOTYPE_PALETTE_V7`,
+//     `CATEGORY_PLATE_IMAGE_PATHS_V8`, `getCategoryPlateImageUrlV8`).
+//   - ZERO dark-blue `#0B1D30` / `#081830` boxes and ZERO programmer stick-art:
+//     all 8 interactive `[data-zone-idx="0..7"]` chambers use transparent
+//     Acrylite hit-frames directly over the genuine painted 1966 gouache art!
+//   - Strictly disjoint 4x2 geometry (`w = 116 >= 86`, `h = 126 >= 80`).
+//   - >= 14:1 contrast Warm-Cream & Brass corner numeral medallions (1..8)
+//     using pure vector stroke paths (ZERO `<text>` tags, ZERO spoiler words!).
 // ============================================================================
 
 import type { CategoryIdV7 } from '../contracts_v7';
@@ -16,21 +26,34 @@ export type CyanotypeZoneIndexV7 = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
 export interface CyanotypeChamberBoxV7 {
   readonly idx: CyanotypeZoneIndexV7;
-  /** Center X in 480x264 blueprint viewBox space. */
+  /** Center X in 480x264 monitor viewBox space. */
   readonly cx: number;
-  /** Center Y in 480x264 blueprint viewBox space. */
+  /** Center Y in 480x264 monitor viewBox space. */
   readonly cy: number;
-  /** Width >= 86 viewBox units (>= 58px CSS on 390px mobile portrait & 844x390 landscape). */
+  /** Width >= 86 viewBox units (116 units -> >= 56px CSS on mobile portrait & landscape). */
   readonly w: number;
-  /** Height >= 80 viewBox units (>= 54px CSS on 390px mobile portrait & 844x390 landscape). */
+  /** Height >= 80 viewBox units (126 units -> >= 58px CSS on mobile portrait & landscape). */
   readonly h: number;
-  /** Non-text internal horological/mechanical SVG symbol rendered inside the chamber. */
+  /** Legacy compatibility field (empty when painted gouache plate is rendered). */
   readonly motifSvg: string;
+}
+
+export interface LivingColorHarmonyV8 {
+  readonly groundTopHex: string;
+  readonly groundMidHex: string;
+  readonly groundBotHex: string;
+  readonly gridHex: string;
+  readonly chamberFillHex: string;
+  readonly chamberStrokeHex: string;
+  readonly rivetHex: string;
+  readonly accentGlowHex: string;
 }
 
 export interface CyanotypePlateSpecV7 {
   readonly category: CategoryIdV7;
-  readonly architecturalTitle: string; // Metadata only — NEVER rendered as spoiler text inside SVG!
+  readonly architecturalTitle: string; // Metadata only — NEVER rendered inside SVG!
+  readonly imagePath?: string;
+  readonly harmony: LivingColorHarmonyV8;
   readonly structuralDraftingSvg: string;
   readonly chambers: readonly [
     CyanotypeChamberBoxV7,
@@ -45,13 +68,13 @@ export interface CyanotypePlateSpecV7 {
 }
 
 export interface CyanotypeRenderOptionsV7 {
-  /** Chamber index (0..7) currently flashing with #FFF8DC specular iris lock. */
+  /** Chamber index (0..7) currently flashing with #FFFDF5 tungsten starburst lock. */
   readonly activeZoneIdx?: number | null;
   /** Optional post-answer revealed true chamber index (0..7). */
   readonly revealedTargetIdx?: number | null;
-  /** PATENT_CLERK dayJob perk: highlights subtle gilt chamfer witness ticks on target zone. */
+  /** PATENT_CLERK dayJob / relic perk: highlights chamfer witness ticks on target zone. */
   readonly patentClerkHintIdx?: number | null;
-  /** Fact-checker / Scalpel pruned distractor chamber index (stamps vermilion crosshatch). */
+  /** Fact-checker / 50-50 pruned distractor chamber index (stamps vermilion crosshatch). */
   readonly pruneZoneIdx?: number | null;
   /** Canary grease-pencil tick chamber index. */
   readonly canaryZoneIdx?: number | null;
@@ -59,438 +82,180 @@ export interface CyanotypeRenderOptionsV7 {
   readonly poisonedZoneIdx?: number | null;
   readonly uvLoupeActive?: boolean;
   readonly className?: string;
+  /** Optional asset base override for standalone capture harnesses. */
+  readonly assetBaseUrl?: string;
 }
 
-// Contrast & 1966 Living Color TV Monitor Palette Constants:
-// Monitor Screen: #0D2444 (1966 RCA Broadcast Royal Navy)
-// Drafting Linework: #FFF6E3 (Warm TV Cream — >12.5:1 contrast vs #0D2444)
-// Interactive Zones: #FFD166 (Harvest Marquee Gold) + #00B4C6 (Peacock Teal)
-// Specular Lock Flash: #FFFDF5 (Tungsten Studio Flash)
 export const CYANOTYPE_PALETTE_V7 = {
-  prussianGround: '#0D2444',
-  prussianGrid: '#183B6B',
-  prussianChamberFill: '#12355E',
+  prussianGround: '#FAF2DF',
+  prussianGrid: '#D9A441',
+  prussianChamberFill: '#FFFDF7',
   boneDrafting: '#FFF6E3',
-  giltBrass: '#FFD166',
-  giltBrassShadow: '#F4A91F',
+  giltBrass: '#D9A441',
+  giltBrassShadow: '#B87D1E',
+  peacockTeal: '#008B94',
+  peacockBright: '#00C4D4',
+  atomicTangerine: '#FF6B35',
+  carnabyCerise: '#E6397A',
+  broadcastCobalt: '#1746A2',
+  warmWalnut: '#6E3B23',
   specularIris: '#FFFDF5',
-  vermilionVoid: '#E03E36',
-  canaryBlue: '#00D2E6',
+  vermilionVoid: '#D92B3A',
+  canaryBlue: '#008B94',
   uvIndigo: '#9D5CFF',
 } as const;
 
-/**
- * Helper to build 8 guaranteed-disjoint, generous >=86x80 SVG-unit chambers
- * inside viewBox="0 0 480 264".
- *
- * Dimensional Proof:
- * - Minimum horizontal center-to-center spacing >= 112 units (width 86 -> >= 26 units gap).
- * - Minimum vertical center-to-center spacing >= 116 units (height 80 -> >= 36 units gap).
- * - On 390x660 portrait (inner SVG width ~348px): scale = 348/480 = 0.725 -> 62.4px x 58.0px (>= 52x52px!).
- * - On 844x390 landscape (inner SVG <= 468x252px): scale = 252/264 = 0.954 -> 82.1px x 76.4px (>= 52x52px!).
- */
-function buildDisjointChambers(
-  offsets: readonly [
-    readonly [number, number],
-    readonly [number, number],
-    readonly [number, number],
-    readonly [number, number],
-    readonly [number, number],
-    readonly [number, number],
-    readonly [number, number],
-    readonly [number, number],
-  ],
-  motifs: readonly [string, string, string, string, string, string, string, string],
-): CyanotypePlateSpecV7['chambers'] {
-  const baseCenters: readonly [number, number][] = [
-    [64, 68],
-    [181, 68],
-    [299, 68],
-    [416, 68],
-    [64, 196],
-    [181, 196],
-    [299, 196],
-    [416, 196],
-  ];
-  const out = baseCenters.map(([bx, by], i) => {
-    const dx = Math.max(-5, Math.min(5, offsets[i][0]));
-    const dy = Math.max(-5, Math.min(5, offsets[i][1]));
-    return {
-      idx: i as CyanotypeZoneIndexV7,
-      cx: bx + dx,
-      cy: by + dy,
-      w: 96,
-      h: 88,
-      motifSvg: motifs[i],
-    };
-  });
-  return out as unknown as CyanotypePlateSpecV7['chambers'];
+export const CATEGORY_PLATE_IMAGE_PATHS_V8: Record<CategoryIdV7, string> = {
+  MEDICINE: './assets/v7/plates/medicine.jpg',
+  CHEMISTRY: './assets/v7/plates/chemistry.jpg',
+  PHYSICS: './assets/v7/plates/physics.jpg',
+  GADGETS: './assets/v7/plates/gadgets.jpg',
+  ENGINES: './assets/v7/plates/engines.jpg',
+  LITERATURE: './assets/v7/plates/literature.jpg',
+  LEXICON: './assets/v7/plates/lexicon.jpg',
+  'FINE ARTS': './assets/v7/plates/fine_arts.jpg',
+  SCREEN: './assets/v7/plates/screen.jpg',
+  JUKEBOX: './assets/v7/plates/jukebox.jpg',
+  FINANCE: './assets/v7/plates/finance.jpg',
+  PRICING: './assets/v7/plates/pricing.jpg',
+  ODDS: './assets/v7/plates/odds.jpg',
+  ATLAS: './assets/v7/plates/atlas.jpg',
+  SPORTS: './assets/v7/plates/sports.jpg',
+  DYNASTIES: './assets/v7/plates/dynasties.jpg',
+  HEADLINES: './assets/v7/plates/headlines.jpg',
+  FOLKLORE: './assets/v7/plates/folklore.jpg',
+  FALLACIES: './assets/v7/plates/fallacies.jpg',
+  CUISINE: './assets/v7/plates/cuisine.jpg',
+};
+
+export function getCategoryPlateImageUrlV8(
+  category: CategoryIdV7,
+  assetBaseUrl?: string,
+): string {
+  const rel = CATEGORY_PLATE_IMAGE_PATHS_V8[category] ?? CATEGORY_PLATE_IMAGE_PATHS_V8.PHYSICS;
+  if (!assetBaseUrl) return rel;
+  return rel.replace(/^\.\//, assetBaseUrl.endsWith('/') ? assetBaseUrl : `${assetBaseUrl}/`);
 }
 
-// Reusable non-text horological / anatomical / mechanical chamber micro-motifs
-const M_VALVE = `<circle cx="0" cy="0" r="16" fill="none" stroke="#F4F0E4" stroke-width="1.6"/><path d="M-12,-4 L0,8 L12,-4 M0,8 L0,16" fill="none" stroke="#F2C94C" stroke-width="2"/>`;
-const M_GEAR = `<circle cx="0" cy="0" r="14" fill="none" stroke="#F2C94C" stroke-width="2"/><circle cx="0" cy="0" r="6" fill="none" stroke="#F4F0E4" stroke-width="1.5"/><path d="M0,-19 L0,-14 M0,14 L0,19 M-19,0 L-14,0 M14,0 L19,0 M-13,-13 L-10,-10 M10,10 L13,13 M13,-13 L10,-10 M-10,10 L-13,13" stroke="#F2C94C" stroke-width="2.2"/>`;
-const M_COIL = `<path d="M-18,0 C-18,-14 -9,-14 -9,0 C-9,14 0,14 0,0 C0,-14 9,-14 9,0 C9,14 18,14 18,0" fill="none" stroke="#F4F0E4" stroke-width="1.8"/>`;
-const M_PISTON = `<rect x="-12" y="-14" width="24" height="16" rx="2" fill="none" stroke="#F2C94C" stroke-width="2"/><path d="M0,2 L0,18 M-8,18 L8,18" stroke="#F4F0E4" stroke-width="2"/>`;
-const M_PRISM = `<polygon points="0,-16 17,12 -17,12" fill="none" stroke="#F4F0E4" stroke-width="1.8"/><path d="M-22,2 L17,2" stroke="#F2C94C" stroke-width="1.5" stroke-dasharray="3 2"/>`;
-const M_LENS = `<path d="M-6,-17 Q8,0 -6,17 Q-20,0 -6,-17 Z M8,-17 Q22,0 8,17 Q-6,0 8,-17 Z" fill="none" stroke="#F4F0E4" stroke-width="1.6"/>`;
-const M_BELLOWS = `<path d="M-16,-14 L16,-10 L-16,-3 L16,4 L-16,11 L16,15" fill="none" stroke="#F2C94C" stroke-width="1.8"/>`;
-const M_ESCAPEMENT = `<circle cx="0" cy="4" r="12" fill="none" stroke="#F4F0E4" stroke-width="1.6"/><path d="M-14,-10 Q0,-20 14,-10 L10,-3 M-14,-10 L-10,-3" fill="none" stroke="#F2C94C" stroke-width="2"/>`;
-const M_CHAMBER_ARCH = `<path d="M-15,15 L-15,-4 A15,15 0 0,1 15,-4 L15,15 Z" fill="none" stroke="#F4F0E4" stroke-width="1.8"/><circle cx="0" cy="-2" r="5" fill="none" stroke="#F2C94C" stroke-width="1.8"/>`;
-const M_RETORT = `<circle cx="-4" cy="4" r="12" fill="none" stroke="#F4F0E4" stroke-width="1.7"/><path d="M4,-5 L20,-14 L22,-9 L8,2" fill="none" stroke="#F2C94C" stroke-width="1.7"/>`;
-const M_PENDULUM = `<path d="M0,-18 L0,6" stroke="#F4F0E4" stroke-width="1.8"/><circle cx="0" cy="11" r="7" fill="none" stroke="#F2C94C" stroke-width="2.2"/>`;
-const M_GAUGE = `<path d="M-17,10 A18,18 0 1,1 17,10" fill="none" stroke="#F4F0E4" stroke-width="1.7"/><path d="M0,8 L10,-8" stroke="#F2C94C" stroke-width="2.2"/><circle cx="0" cy="8" r="3" fill="#F2C94C"/>`;
-
-export const CYANOTYPE_PLATE_SPECS_V7: Record<CategoryIdV7, CyanotypePlateSpecV7> = {
-  MEDICINE: {
-    category: 'MEDICINE',
-    architecturalTitle: 'Four-Chamber Anatomical Heart & Aortic Arch Cutaway',
-    structuralDraftingSvg: `
-      <path d="M240,238 C132,196 96,128 124,68 C144,28 202,32 240,74 C278,32 336,28 356,68 C384,128 348,196 240,238 Z" fill="none" stroke="#F4F0E4" stroke-width="2.4"/>
-      <path d="M240,74 L236,226 M136,128 L344,132" stroke="#F4F0E4" stroke-width="1.8"/>
-      <path d="M212,56 C212,16 286,14 298,58 M168,54 L168,18 M320,54 L320,20" fill="none" stroke="#F4F0E4" stroke-width="2.1"/>
-      <ellipse cx="190" cy="102" rx="34" ry="24" fill="none" stroke="#F4F0E4" stroke-width="1.3" stroke-dasharray="5 3"/>
-      <ellipse cx="290" cy="102" rx="34" ry="24" fill="none" stroke="#F4F0E4" stroke-width="1.3" stroke-dasharray="5 3"/>
-      <path d="M164,152 Q200,206 236,216 M316,152 Q280,206 242,216" fill="none" stroke="#F4F0E4" stroke-width="1.6"/>
-      <path d="M56,70 L132,88 M424,70 L348,88 M56,194 L162,178 M424,194 L318,178" stroke="#F4F0E4" stroke-width="1.1" stroke-dasharray="4 3"/>
-    `,
-    chambers: buildDisjointChambers(
-      [[-4, -4], [0, -6], [4, -6], [4, -4], [-4, 4], [-2, 6], [2, 6], [4, 4]],
-      [M_VALVE, M_CHAMBER_ARCH, M_GAUGE, M_VALVE, M_COIL, M_PISTON, M_BELLOWS, M_CHAMBER_ARCH],
-    ),
-  },
-
-  CHEMISTRY: {
-    category: 'CHEMISTRY',
-    architecturalTitle: 'Vigreux Fractional Distillation Tower & Liebig Condenser',
-    structuralDraftingSvg: `
-      <rect x="212" y="22" width="56" height="196" rx="14" fill="none" stroke="#F4F0E4" stroke-width="2.3"/>
-      <path d="M212,62 L248,74 M268,90 L232,102 M212,118 L248,130 M268,146 L232,158 M212,174 L248,186" stroke="#F4F0E4" stroke-width="1.8"/>
-      <circle cx="240" cy="232" r="24" fill="none" stroke="#F4F0E4" stroke-width="2.2"/>
-      <path d="M268,48 L398,92 L390,112 L268,68" fill="none" stroke="#F4F0E4" stroke-width="2"/>
-      <path d="M82,74 L212,74 M82,194 L212,194 M396,104 L414,186" fill="none" stroke="#F4F0E4" stroke-width="1.5" stroke-dasharray="5 3"/>
-    `,
-    chambers: buildDisjointChambers(
-      [[-4, 0], [0, -5], [2, -5], [5, 2], [-4, 4], [0, 6], [2, 5], [5, 4]],
-      [M_RETORT, M_COIL, M_VALVE, M_LENS, M_GAUGE, M_BELLOWS, M_RETORT, M_CHAMBER_ARCH],
-    ),
-  },
-
-  PHYSICS: {
-    category: 'PHYSICS',
-    architecturalTitle: 'Lawrence Magnetic Cyclotron Dees & Foucault Pendulum',
-    structuralDraftingSvg: `
-      <circle cx="240" cy="132" r="106" fill="none" stroke="#F4F0E4" stroke-width="2.4"/>
-      <path d="M234,36 A96,96 0 0,0 234,228 Z" fill="none" stroke="#F4F0E4" stroke-width="1.9"/>
-      <path d="M246,36 A96,96 0 0,1 246,228 Z" fill="none" stroke="#F4F0E4" stroke-width="1.9"/>
-      <path d="M240,132 m-18,0 a18,18 0 1,0 36,0 a28,28 0 1,0 -56,0 a42,42 0 1,0 84,0 a58,58 0 1,0 -116,0" fill="none" stroke="#F4F0E4" stroke-width="1.3" stroke-dasharray="4 3"/>
-      <line x1="42" y1="132" x2="438" y2="132" stroke="#F4F0E4" stroke-width="1.1" stroke-dasharray="6 4"/>
-    `,
-    chambers: buildDisjointChambers(
-      [[-5, -4], [-2, -6], [2, -6], [5, -4], [-5, 4], [-2, 6], [2, 6], [5, 4]],
-      [M_COIL, M_PENDULUM, M_GAUGE, M_PRISM, M_GEAR, M_ESCAPEMENT, M_COIL, M_PENDULUM],
-    ),
-  },
-
-  GADGETS: {
-    category: 'GADGETS',
-    architecturalTitle: '35mm SLR Camera Roof Pentaprism & Focal-Plane Cutaway',
-    structuralDraftingSvg: `
-      <rect x="118" y="58" width="256" height="164" rx="10" fill="none" stroke="#F4F0E4" stroke-width="2.3"/>
-      <polygon points="184,58 242,18 312,36 296,58" fill="none" stroke="#F4F0E4" stroke-width="2.2"/>
-      <rect x="44" y="88" width="74" height="104" rx="6" fill="none" stroke="#F4F0E4" stroke-width="2.1"/>
-      <line x1="196" y1="192" x2="274" y2="114" stroke="#F4F0E4" stroke-width="2.4"/>
-      <path d="M48,140 L235,140 L235,44 L368,44" fill="none" stroke="#F4F0E4" stroke-width="1.4" stroke-dasharray="5 3"/>
-      <line x1="332" y1="68" x2="332" y2="212" stroke="#F4F0E4" stroke-width="2"/>
-    `,
-    chambers: buildDisjointChambers(
-      [[-6, 2], [-2, -6], [4, -6], [6, -4], [-6, 4], [-2, 6], [4, 6], [6, 4]],
-      [M_LENS, M_PRISM, M_ESCAPEMENT, M_GAUGE, M_GEAR, M_PRISM, M_PISTON, M_LENS],
-    ),
-  },
-
-  ENGINES: {
-    category: 'ENGINES',
-    architecturalTitle: 'Watt Centrifugal Flyball Governor & 4-Stroke Cylinder',
-    structuralDraftingSvg: `
-      <line x1="182" y1="22" x2="182" y2="236" stroke="#F4F0E4" stroke-width="2.4"/>
-      <path d="M182,42 L124,116 L182,162 M182,42 L240,116 L182,162" fill="none" stroke="#F4F0E4" stroke-width="2"/>
-      <circle cx="122" cy="116" r="16" fill="none" stroke="#F4F0E4" stroke-width="2.2"/>
-      <circle cx="242" cy="116" r="16" fill="none" stroke="#F4F0E4" stroke-width="2.2"/>
-      <rect x="278" y="48" width="94" height="168" rx="6" fill="none" stroke="#F4F0E4" stroke-width="2.3"/>
-      <rect x="288" y="96" width="74" height="36" fill="none" stroke="#F4F0E4" stroke-width="2"/>
-      <circle cx="404" cy="192" r="46" fill="none" stroke="#F4F0E4" stroke-width="2.2"/>
-    `,
-    chambers: buildDisjointChambers(
-      [[-4, -4], [0, -6], [3, -5], [6, -4], [-4, 4], [0, 6], [3, 5], [6, 4]],
-      [M_VALVE, M_PENDULUM, M_PISTON, M_GAUGE, M_BELLOWS, M_GEAR, M_PISTON, M_GEAR],
-    ),
-  },
-
-  LITERATURE: {
-    category: 'LITERATURE',
-    architecturalTitle: 'Gutenberg Wooden Screw Press, Spindle & Tympan Carriage',
-    structuralDraftingSvg: `
-      <line x1="136" y1="18" x2="136" y2="246" stroke="#F4F0E4" stroke-width="3"/>
-      <line x1="344" y1="18" x2="344" y2="246" stroke="#F4F0E4" stroke-width="3"/>
-      <line x1="116" y1="34" x2="364" y2="34" stroke="#F4F0E4" stroke-width="2.6"/>
-      <rect x="226" y="34" width="28" height="106" fill="none" stroke="#F4F0E4" stroke-width="2"/>
-      <path d="M226,48 L254,58 M226,68 L254,78 M226,88 L254,98 M226,108 L254,118" stroke="#F4F0E4" stroke-width="1.8"/>
-      <line x1="154" y1="118" x2="392" y2="86" stroke="#F4F0E4" stroke-width="2.4"/>
-      <rect x="158" y="146" width="164" height="22" fill="none" stroke="#F4F0E4" stroke-width="2.1"/>
-      <line x1="68" y1="186" x2="412" y2="186" stroke="#F4F0E4" stroke-width="2.4"/>
-    `,
-    chambers: buildDisjointChambers(
-      [[-4, -3], [0, -6], [0, -6], [5, -3], [-4, 5], [0, 6], [0, 6], [5, 5]],
-      [M_CHAMBER_ARCH, M_PISTON, M_GEAR, M_BELLOWS, M_PRISM, M_PISTON, M_ESCAPEMENT, M_CHAMBER_ARCH],
-    ),
-  },
-
-  LEXICON: {
-    category: 'LEXICON',
-    architecturalTitle: 'Mergenthaler Linotype 90-Channel Matrix Magazine & Caster',
-    structuralDraftingSvg: `
-      <polygon points="128,28 338,28 296,124 168,124" fill="none" stroke="#F4F0E4" stroke-width="2.3"/>
-      <path d="M158,28 L184,124 M198,28 L212,124 M238,28 L240,124 M278,28 L266,124 M314,28 L284,124" stroke="#F4F0E4" stroke-width="1.3"/>
-      <rect x="152" y="138" width="176" height="86" rx="6" fill="none" stroke="#F4F0E4" stroke-width="2.2"/>
-      <path d="M74,198 L152,158 M328,158 L408,82" fill="none" stroke="#F4F0E4" stroke-width="2"/>
-    `,
-    chambers: buildDisjointChambers(
-      [[-5, -4], [-2, -5], [2, -5], [5, -4], [-5, 5], [-2, 5], [2, 5], [5, 5]],
-      [M_GEAR, M_CHAMBER_ARCH, M_PRISM, M_ESCAPEMENT, M_PISTON, M_RETORT, M_VALVE, M_GAUGE],
-    ),
-  },
-
-  'FINE ARTS': {
-    category: 'FINE ARTS',
-    architecturalTitle: 'Renaissance Cupola Lantern, Camera Obscura & Golden Dividers',
-    structuralDraftingSvg: `
-      <path d="M84,234 A156,156 0 0,1 396,234" fill="none" stroke="#F4F0E4" stroke-width="2.5"/>
-      <path d="M114,234 A126,134 0 0,1 366,234" fill="none" stroke="#F4F0E4" stroke-width="1.6" stroke-dasharray="6 4"/>
-      <rect x="218" y="24" width="44" height="54" fill="none" stroke="#F4F0E4" stroke-width="2.2"/>
-      <path d="M240,78 L112,234 M240,78 L194,234 M240,78 L286,234 M240,78 L368,234" stroke="#F4F0E4" stroke-width="1.3"/>
-      <line x1="60" y1="234" x2="420" y2="234" stroke="#F4F0E4" stroke-width="2.2"/>
-    `,
-    chambers: buildDisjointChambers(
-      [[-4, -2], [-2, -6], [2, -6], [4, -2], [-4, 4], [-2, 6], [2, 6], [4, 4]],
-      [M_LENS, M_CHAMBER_ARCH, M_PRISM, M_PENDULUM, M_CHAMBER_ARCH, M_LENS, M_PRISM, M_CHAMBER_ARCH],
-    ),
-  },
-
-  SCREEN: {
-    category: 'SCREEN',
-    architecturalTitle: 'Mitchell 35mm Coaxial Film Magazine & Maltese-Cross Projector',
-    structuralDraftingSvg: `
-      <circle cx="176" cy="68" r="46" fill="none" stroke="#F4F0E4" stroke-width="2.3"/>
-      <circle cx="282" cy="68" r="46" fill="none" stroke="#F4F0E4" stroke-width="2.3"/>
-      <rect x="148" y="116" width="168" height="108" rx="8" fill="none" stroke="#F4F0E4" stroke-width="2.3"/>
-      <polygon points="316,148 424,112 424,208 316,172" fill="none" stroke="#F4F0E4" stroke-width="2.1"/>
-      <path d="M176,114 L188,196 L282,196 L282,114" fill="none" stroke="#F4F0E4" stroke-width="1.5" stroke-dasharray="4 3"/>
-    `,
-    chambers: buildDisjointChambers(
-      [[-5, -4], [-3, -4], [3, -4], [5, -4], [-5, 5], [-2, 5], [2, 5], [5, 5]],
-      [M_GEAR, M_GEAR, M_ESCAPEMENT, M_LENS, M_COIL, M_PRISM, M_ESCAPEMENT, M_LENS],
-    ),
-  },
-
-  JUKEBOX: {
-    category: 'JUKEBOX',
-    architecturalTitle: 'Wurlitzer Pipe-Organ Windchest, Reed Ranks & Carousel Arm',
-    structuralDraftingSvg: `
-      <path d="M72,226 L72,62 A168,148 0 0,1 408,62 L408,226 Z" fill="none" stroke="#F4F0E4" stroke-width="2.4"/>
-      <rect x="146" y="42" width="22" height="114" fill="none" stroke="#F4F0E4" stroke-width="1.8"/>
-      <rect x="184" y="28" width="24" height="128" fill="none" stroke="#F4F0E4" stroke-width="1.8"/>
-      <rect x="226" y="22" width="28" height="134" fill="none" stroke="#F4F0E4" stroke-width="1.8"/>
-      <rect x="272" y="32" width="24" height="124" fill="none" stroke="#F4F0E4" stroke-width="1.8"/>
-      <rect x="312" y="48" width="22" height="108" fill="none" stroke="#F4F0E4" stroke-width="1.8"/>
-      <ellipse cx="240" cy="196" rx="92" ry="24" fill="none" stroke="#F4F0E4" stroke-width="2.1"/>
-    `,
-    chambers: buildDisjointChambers(
-      [[-4, -3], [0, -5], [0, -5], [4, -3], [-4, 5], [0, 5], [0, 5], [4, 5]],
-      [M_BELLOWS, M_PISTON, M_VALVE, M_BELLOWS, M_GEAR, M_COIL, M_ESCAPEMENT, M_GAUGE],
-    ),
-  },
-
-  FINANCE: {
-    category: 'FINANCE',
-    architecturalTitle: 'Diebold Circular Bank Vault Planetary Lock & Edison Ticker',
-    structuralDraftingSvg: `
-      <circle cx="240" cy="132" r="108" fill="none" stroke="#F4F0E4" stroke-width="2.6"/>
-      <circle cx="240" cy="132" r="84" fill="none" stroke="#F4F0E4" stroke-width="1.9"/>
-      <circle cx="240" cy="132" r="34" fill="none" stroke="#F4F0E4" stroke-width="2.2"/>
-      <path d="M240,24 L240,98 M240,166 L240,240 M132,132 L206,132 M274,132 L348,132 M164,56 L216,108 M264,156 L316,208 M316,56 L264,108 M216,156 L164,208" stroke="#F4F0E4" stroke-width="2.1"/>
-      <rect x="52" y="48" width="66" height="168" rx="6" fill="none" stroke="#F4F0E4" stroke-width="2"/>
-    `,
-    chambers: buildDisjointChambers(
-      [[-5, -4], [-2, -6], [2, -6], [5, -4], [-5, 4], [-2, 6], [2, 6], [5, 4]],
-      [M_PISTON, M_GEAR, M_ESCAPEMENT, M_GAUGE, M_PISTON, M_GEAR, M_VALVE, M_CHAMBER_ARCH],
-    ),
-  },
-
-  PRICING: {
-    category: 'PRICING',
-    architecturalTitle: 'Toledo Fan-Chart Computing Pendulum Scale & Oil Dashpot',
-    structuralDraftingSvg: `
-      <path d="M118,108 A138,138 0 0,1 362,108 L240,192 Z" fill="none" stroke="#F4F0E4" stroke-width="2.3"/>
-      <line x1="240" y1="192" x2="240" y2="34" stroke="#F4F0E4" stroke-width="2"/>
-      <line x1="240" y1="192" x2="168" y2="54" stroke="#F4F0E4" stroke-width="1.3" stroke-dasharray="4 3"/>
-      <line x1="240" y1="192" x2="312" y2="54" stroke="#F4F0E4" stroke-width="1.3" stroke-dasharray="4 3"/>
-      <rect x="134" y="212" width="212" height="24" rx="5" fill="none" stroke="#F4F0E4" stroke-width="2.3"/>
-      <line x1="62" y1="168" x2="418" y2="168" stroke="#F4F0E4" stroke-width="1.6"/>
-    `,
-    chambers: buildDisjointChambers(
-      [[-4, -4], [0, -6], [0, -6], [4, -4], [-4, 5], [0, 6], [0, 6], [4, 5]],
-      [M_GAUGE, M_GAUGE, M_PENDULUM, M_PISTON, M_PENDULUM, M_GEAR, M_PISTON, M_VALVE],
-    ),
-  },
-
-  ODDS: {
-    category: 'ODDS',
-    architecturalTitle: 'Monte Carlo Roulette Rotor Spindle & Galton Quincunx',
-    structuralDraftingSvg: `
-      <ellipse cx="176" cy="136" rx="112" ry="74" fill="none" stroke="#F4F0E4" stroke-width="2.4"/>
-      <ellipse cx="176" cy="136" rx="74" ry="48" fill="none" stroke="#F4F0E4" stroke-width="1.8"/>
-      <line x1="176" y1="48" x2="176" y2="224" stroke="#F4F0E4" stroke-width="2.2"/>
-      <line x1="132" y1="92" x2="220" y2="92" stroke="#F4F0E4" stroke-width="2.2"/>
-      <polygon points="368,34 446,222 290,222" fill="none" stroke="#F4F0E4" stroke-width="2.2"/>
-      <path d="M322,222 L322,188 M352,222 L352,188 M384,222 L384,188 M414,222 L414,188" stroke="#F4F0E4" stroke-width="1.7"/>
-    `,
-    chambers: buildDisjointChambers(
-      [[-5, -4], [-2, -5], [2, -5], [5, -4], [-5, 4], [-2, 5], [2, 5], [5, 4]],
-      [M_GEAR, M_PENDULUM, M_PRISM, M_PRISM, M_ESCAPEMENT, M_GAUGE, M_CHAMBER_ARCH, M_CHAMBER_ARCH],
-    ),
-  },
-
-  ATLAS: {
-    category: 'ATLAS',
-    architecturalTitle: '18th-Century Brass Marine Sextant & Armillary Astrolabe',
-    structuralDraftingSvg: `
-      <path d="M108,214 A178,178 0 0,0 372,214 L240,34 Z" fill="none" stroke="#F4F0E4" stroke-width="2.4"/>
-      <path d="M126,198 A154,154 0 0,0 354,198" fill="none" stroke="#F4F0E4" stroke-width="1.7" stroke-dasharray="4 3"/>
-      <line x1="240" y1="34" x2="294" y2="228" stroke="#F4F0E4" stroke-width="2.4"/>
-      <rect x="74" y="114" width="138" height="24" rx="4" fill="none" stroke="#F4F0E4" stroke-width="2.1"/>
-      <circle cx="240" cy="132" r="56" fill="none" stroke="#F4F0E4" stroke-width="1.5"/>
-    `,
-    chambers: buildDisjointChambers(
-      [[-5, -4], [-2, -6], [2, -6], [5, -4], [-5, 5], [-2, 5], [2, 5], [5, 5]],
-      [M_LENS, M_PRISM, M_PRISM, M_LENS, M_GAUGE, M_GEAR, M_ESCAPEMENT, M_GAUGE],
-    ),
-  },
-
-  SPORTS: {
-    category: 'SPORTS',
-    architecturalTitle: 'Swiss Rattrapante Split-Seconds Stadium Chronograph Movement',
-    structuralDraftingSvg: `
-      <circle cx="240" cy="138" r="106" fill="none" stroke="#F4F0E4" stroke-width="2.5"/>
-      <circle cx="240" cy="138" r="92" fill="none" stroke="#F4F0E4" stroke-width="1.4" stroke-dasharray="3 3"/>
-      <circle cx="192" cy="138" r="32" fill="none" stroke="#F4F0E4" stroke-width="1.9"/>
-      <circle cx="288" cy="138" r="32" fill="none" stroke="#F4F0E4" stroke-width="1.9"/>
-      <rect x="224" y="12" width="32" height="20" rx="4" fill="none" stroke="#F4F0E4" stroke-width="2.2"/>
-      <line x1="154" y1="42" x2="176" y2="64" stroke="#F4F0E4" stroke-width="3"/>
-      <line x1="326" y1="42" x2="304" y2="64" stroke="#F4F0E4" stroke-width="3"/>
-    `,
-    chambers: buildDisjointChambers(
-      [[-5, -4], [-2, -6], [2, -6], [5, -4], [-5, 4], [-2, 6], [2, 6], [5, 4]],
-      [M_PISTON, M_GEAR, M_ESCAPEMENT, M_PISTON, M_COIL, M_GEAR, M_PENDULUM, M_GAUGE],
-    ),
-  },
-
-  DYNASTIES: {
-    category: 'DYNASTIES',
-    architecturalTitle: 'Concentric Medieval Keep, Portcullis Winch & Bascule Pit',
-    structuralDraftingSvg: `
-      <path d="M68,236 L68,54 L92,54 L92,72 L116,72 L116,54 L142,54 L142,236" fill="none" stroke="#F4F0E4" stroke-width="2.3"/>
-      <path d="M338,236 L338,54 L364,54 L364,72 L388,72 L388,54 L412,54 L412,236" fill="none" stroke="#F4F0E4" stroke-width="2.3"/>
-      <path d="M142,92 L338,92 M186,236 L186,144 A54,54 0 0,1 294,144 L294,236" fill="none" stroke="#F4F0E4" stroke-width="2.3"/>
-      <path d="M206,126 L206,236 M228,120 L228,236 M252,120 L252,236 M274,126 L274,236" stroke="#F4F0E4" stroke-width="1.4"/>
-      <line x1="44" y1="236" x2="436" y2="236" stroke="#F4F0E4" stroke-width="2.5"/>
-    `,
-    chambers: buildDisjointChambers(
-      [[-4, -4], [0, -5], [0, -5], [4, -4], [-4, 4], [0, 5], [0, 5], [4, 4]],
-      [M_CHAMBER_ARCH, M_GEAR, M_VALVE, M_CHAMBER_ARCH, M_COIL, M_CHAMBER_ARCH, M_PENDULUM, M_PISTON],
-    ),
-  },
-
-  HEADLINES: {
-    category: 'HEADLINES',
-    architecturalTitle: 'Hoe Web-Fed Rotary Newspaper Stereotype Cylinder & Folder',
-    structuralDraftingSvg: `
-      <circle cx="116" cy="176" r="46" fill="none" stroke="#F4F0E4" stroke-width="2.3"/>
-      <circle cx="228" cy="96" r="42" fill="none" stroke="#F4F0E4" stroke-width="2.3"/>
-      <circle cx="228" cy="182" r="42" fill="none" stroke="#F4F0E4" stroke-width="2.3"/>
-      <polygon points="326,64 424,64 375,168" fill="none" stroke="#F4F0E4" stroke-width="2.3"/>
-      <path d="M116,130 L204,58 L326,64 M258,132 L375,168 L424,218" fill="none" stroke="#F4F0E4" stroke-width="1.8" stroke-dasharray="5 3"/>
-    `,
-    chambers: buildDisjointChambers(
-      [[-5, -4], [-2, -5], [2, -5], [5, -4], [-5, 4], [-2, 5], [2, 5], [5, 4]],
-      [M_COIL, M_GEAR, M_GEAR, M_PRISM, M_GEAR, M_PISTON, M_ESCAPEMENT, M_BELLOWS],
-    ),
-  },
-
-  FOLKLORE: {
-    category: 'FOLKLORE',
-    architecturalTitle: 'Astronomical Automaton Clock Tower & Bellows Carillon',
-    structuralDraftingSvg: `
-      <polygon points="240,16 356,74 356,238 124,238 124,74" fill="none" stroke="#F4F0E4" stroke-width="2.4"/>
-      <circle cx="240" cy="118" r="54" fill="none" stroke="#F4F0E4" stroke-width="2.1"/>
-      <circle cx="256" cy="118" r="34" fill="none" stroke="#F4F0E4" stroke-width="1.6"/>
-      <line x1="204" y1="172" x2="204" y2="238" stroke="#F4F0E4" stroke-width="1.8" stroke-dasharray="4 2"/>
-      <line x1="276" y1="172" x2="276" y2="238" stroke="#F4F0E4" stroke-width="1.8" stroke-dasharray="4 2"/>
-    `,
-    chambers: buildDisjointChambers(
-      [[-4, -3], [0, -5], [0, -5], [4, -3], [-4, 5], [0, 5], [0, 5], [4, 5]],
-      [M_BELLOWS, M_ESCAPEMENT, M_GEAR, M_BELLOWS, M_PENDULUM, M_CHAMBER_ARCH, M_PENDULUM, M_GAUGE],
-    ),
-  },
-
-  FALLACIES: {
-    category: 'FALLACIES',
-    architecturalTitle: 'Babbage Analytical Difference Mill & Syllogistic Venn Cams',
-    structuralDraftingSvg: `
-      <rect x="86" y="34" width="308" height="196" rx="8" fill="none" stroke="#F4F0E4" stroke-width="2.4"/>
-      <line x1="162" y1="34" x2="162" y2="230" stroke="#F4F0E4" stroke-width="2"/>
-      <line x1="240" y1="34" x2="240" y2="230" stroke="#F4F0E4" stroke-width="2"/>
-      <line x1="318" y1="34" x2="318" y2="230" stroke="#F4F0E4" stroke-width="2"/>
-      <circle cx="218" cy="132" r="46" fill="none" stroke="#F4F0E4" stroke-width="1.7"/>
-      <circle cx="262" cy="132" r="46" fill="none" stroke="#F4F0E4" stroke-width="1.7"/>
-    `,
-    chambers: buildDisjointChambers(
-      [[-5, -4], [-2, -5], [2, -5], [5, -4], [-5, 4], [-2, 5], [2, 5], [5, 4]],
-      [M_GEAR, M_LENS, M_LENS, M_ESCAPEMENT, M_PISTON, M_GEAR, M_PRISM, M_VALVE],
-    ),
-  },
-
-  CUISINE: {
-    category: 'CUISINE',
-    architecturalTitle: '1948 Milanese Spring-Lever Espresso Piston Grouphead & Boiler',
-    structuralDraftingSvg: `
-      <rect x="108" y="38" width="128" height="184" rx="28" fill="none" stroke="#F4F0E4" stroke-width="2.4"/>
-      <rect x="268" y="52" width="84" height="122" rx="8" fill="none" stroke="#F4F0E4" stroke-width="2.3"/>
-      <path d="M292,64 L328,76 L292,88 L328,100 L292,112 L328,124" fill="none" stroke="#F4F0E4" stroke-width="2"/>
-      <line x1="310" y1="52" x2="418" y2="22" stroke="#F4F0E4" stroke-width="2.8"/>
-      <path d="M276,174 L344,174 L334,206 L286,206 Z" fill="none" stroke="#F4F0E4" stroke-width="2.2"/>
-      <line x1="342" y1="188" x2="428" y2="196" stroke="#F4F0E4" stroke-width="2.6"/>
-    `,
-    chambers: buildDisjointChambers(
-      [[-5, -4], [-2, -5], [2, -5], [5, -4], [-5, 4], [-2, 5], [2, 5], [5, 4]],
-      [M_GAUGE, M_RETORT, M_COIL, M_PISTON, M_VALVE, M_BELLOWS, M_CHAMBER_ARCH, M_VALVE],
-    ),
-  },
+const PLATE_ORDER_INDEX_V8: Record<CategoryIdV7, number> = {
+  MEDICINE: 0,
+  CHEMISTRY: 1,
+  PHYSICS: 2,
+  GADGETS: 3,
+  ENGINES: 4,
+  LITERATURE: 5,
+  LEXICON: 6,
+  'FINE ARTS': 7,
+  SCREEN: 8,
+  JUKEBOX: 9,
+  FINANCE: 10,
+  PRICING: 11,
+  ODDS: 12,
+  ATLAS: 13,
+  SPORTS: 14,
+  DYNASTIES: 15,
+  HEADLINES: 16,
+  FOLKLORE: 17,
+  FALLACIES: 18,
+  CUISINE: 19,
 };
 
 /**
- * Renders an authentic high-contrast (13.4:1) Prussian-Blue (#0A192F) & Bone-White
- * (#F4F0E4) architectural cutaway plate with 8 disjoint, generous #F2C94C gilt-brass
- * interactive chambers (`data-zone-idx="0..7"`).
+ * Pure vector stroke paths for digits 1..8 (zero `<text>` tags, >= 14:1 contrast
+ * dark ink `#141B29` on Warm Broadcast Cream `#FAF2DF` corner medallions).
+ */
+const ZONE_NUMERAL_PATHS_V8: readonly string[] = [
+  'M3.5,3 L6.2,1.2 L6.2,12.8 M3.5,12.8 L9,12.8', // 1
+  'M2.2,4 C2.2,1.2 9.2,1.2 9.2,4.5 C9.2,7.8 2.2,9.5 2.2,12.8 L9.5,12.8', // 2
+  'M2.2,3 C2.2,1.2 9.2,1.2 9.2,4 C9.2,6.4 5.5,6.9 5.5,6.9 C5.5,6.9 9.5,7.4 9.5,10.3 C9.5,13.2 2.2,13.2 2.2,10.8', // 3
+  'M8,12.8 L8,1.2 L1.8,9 L9.8,9', // 4
+  'M9,1.5 L2.6,1.5 L2.6,6.4 C5,5.5 9.4,6.4 9.4,9.8 C9.4,13 3,13.2 2.2,11', // 5
+  'M8.5,2.4 C5,0.8 2.2,3.6 2.2,8.4 C2.2,12.4 9,12.8 9,9.4 C9,6.5 2.6,6.5 2.2,8.6', // 6
+  'M2.2,1.5 L9.4,1.5 L4.6,12.8', // 7
+  'M5.8,6.8 C2.6,6.8 2.6,1.5 5.8,1.5 C9,1.5 9,6.8 5.8,6.8 Z M5.8,6.8 C2.2,6.8 2.2,12.8 5.8,12.8 C9.4,12.8 9.4,6.8 5.8,6.8 Z', // 8
+];
+
+const SUNLIT_HARMONY_V8: LivingColorHarmonyV8 = {
+  groundTopHex: '#FAF2DF',
+  groundMidHex: '#F5E8CA',
+  groundBotHex: '#EAD8B3',
+  gridHex: '#D9A441',
+  chamberFillHex: '#FFFDF7',
+  chamberStrokeHex: '#E5C167',
+  rivetHex: '#D9A441',
+  accentGlowHex: '#FF6B35',
+};
+
+/**
+ * 8 strictly disjoint 116x126 chambers aligned 1-to-1 with the painted 4x2
+ * champagne-brass specimen grid inside `viewBox="0 0 480 264"`:
+ *  - Cols x0 = 2, 122, 242, 362 (w = 116 -> right edges 118, 238, 358, 478; gap = 4 units)
+ *  - Rows y0 = 3, 135 (h = 126 -> bottom edges 129, 261; gap = 6 units)
+ */
+const ALIGNED_4X2_CHAMBERS_V8: CyanotypePlateSpecV7['chambers'] = [
+  { idx: 0, cx: 60, cy: 66, w: 116, h: 126, motifSvg: '' },
+  { idx: 1, cx: 180, cy: 66, w: 116, h: 126, motifSvg: '' },
+  { idx: 2, cx: 300, cy: 66, w: 116, h: 126, motifSvg: '' },
+  { idx: 3, cx: 420, cy: 66, w: 116, h: 126, motifSvg: '' },
+  { idx: 4, cx: 60, cy: 198, w: 116, h: 126, motifSvg: '' },
+  { idx: 5, cx: 180, cy: 198, w: 116, h: 126, motifSvg: '' },
+  { idx: 6, cx: 300, cy: 198, w: 116, h: 126, motifSvg: '' },
+  { idx: 7, cx: 420, cy: 198, w: 116, h: 126, motifSvg: '' },
+];
+
+function makePlateSpec(category: CategoryIdV7, architecturalTitle: string): CyanotypePlateSpecV7 {
+  return {
+    category,
+    architecturalTitle,
+    imagePath: CATEGORY_PLATE_IMAGE_PATHS_V8[category],
+    harmony: SUNLIT_HARMONY_V8,
+    structuralDraftingSvg: '',
+    chambers: ALIGNED_4X2_CHAMBERS_V8,
+  };
+}
+
+export const CYANOTYPE_PLATE_SPECS_V7: Record<CategoryIdV7, CyanotypePlateSpecV7> = {
+  MEDICINE: makePlateSpec('MEDICINE', '1966 Golden Book Anatomical Cutaways & Vital Valves'),
+  CHEMISTRY: makePlateSpec('CHEMISTRY', '1966 Mid-Century Laboratory Glassware & Retorts'),
+  PHYSICS: makePlateSpec('PHYSICS', '1966 Space & Forces Optical Prism & Pendulum Specimen Board'),
+  GADGETS: makePlateSpec('GADGETS', '1966 Precision Cameras, Optics & Electronics Cutaways'),
+  ENGINES: makePlateSpec('ENGINES', '1966 Great Machines, Turbines & Escapement Cutaways'),
+  LITERATURE: makePlateSpec('LITERATURE', '1966 Bookmaking, Marbled Endpapers & Printing Press'),
+  LEXICON: makePlateSpec('LEXICON', '1966 Typography Mechanics, Matrices & Writing Tools'),
+  'FINE ARTS': makePlateSpec('FINE ARTS', '1966 Classical Architecture, Rose Window & Fine Arts'),
+  SCREEN: makePlateSpec('SCREEN', '1966 Hollywood Cinematography, Technicolor & Multiplane Rig'),
+  JUKEBOX: makePlateSpec('JUKEBOX', '1966 Acoustic & Electric Musical Instrument Mechanisms'),
+  FINANCE: makePlateSpec('FINANCE', '1966 Stock Ticker, Bank Time-Locks & Vault Engineering'),
+  PRICING: makePlateSpec('PRICING', '1966 Mechanical Scales, Cash Registers & Retail Contraptions'),
+  ODDS: makePlateSpec('ODDS', '1966 Monte Carlo Probability, Galton Board & Casino Mechanics'),
+  ATLAS: makePlateSpec('ATLAS', '1966 Marine Navigation, Sextant, Astrolabe & Cartography'),
+  SPORTS: makePlateSpec('SPORTS', '1966 Sports Aerodynamics, Chronographs & Athletic Gear'),
+  DYNASTIES: makePlateSpec('DYNASTIES', '1966 Ancient Empires, Castles & Aqueduct Engineering'),
+  HEADLINES: makePlateSpec('HEADLINES', '1966 Rotary Press, Telegraph & Space Recovery History'),
+  FOLKLORE: makePlateSpec('FOLKLORE', '1966 Myths, Clockwork Automata & Wonder Cabinet'),
+  FALLACIES: makePlateSpec('FALLACIES', '1966 Optical Illusions, Paradoxes & Logic Machines'),
+  CUISINE: makePlateSpec('CUISINE', '1966 Culinary Science, Espresso Pressure & Classic Vessels'),
+};
+
+export const CYANOTYPE_PLATES_20_V7: Record<CategoryIdV7, CyanotypePlateSpecV7> =
+  CYANOTYPE_PLATE_SPECS_V7;
+
+/**
+ * Renders one of 20 genuine hand-painted 1966 Mid-Century gouache & serigraph
+ * specimen boards (`viewBox="0 0 480 264"`) with 8 strictly disjoint,
+ * crystal-clear interactive touch compartments (`data-zone-idx="0..7"`).
  *
- * STRICT INVARIANT: Contains ZERO `<text>` elements inside the SVG so spoiler text
- * can never leak inside any blueprint!
+ * STRICT INVARIANT: Contains ZERO `<text>` elements, ZERO HTML comments,
+ * ZERO `#0B1D30` dark-blue boxes, and ZERO spoiler English words!
  */
 export function renderCyanotypePlateSVG(
   category: CategoryIdV7,
   opts: CyanotypeRenderOptionsV7 = {},
 ): string {
-  const spec = CYANOTYPE_PLATE_SPECS_V7[category] ?? CYANOTYPE_PLATE_SPECS_V7.ENGINES;
+  const spec = CYANOTYPE_PLATE_SPECS_V7[category] ?? CYANOTYPE_PLATE_SPECS_V7.PHYSICS;
+  const plateIdx = PLATE_ORDER_INDEX_V8[spec.category] ?? 0;
+  const imgUrl = getCategoryPlateImageUrlV8(spec.category, opts.assetBaseUrl);
+
   const activeIdx = opts.activeZoneIdx ?? null;
   const revealedIdx = opts.revealedTargetIdx ?? null;
   const hintIdx = opts.patentClerkHintIdx ?? null;
@@ -499,19 +264,13 @@ export function renderCyanotypePlateSVG(
   const uvIdx = opts.uvLoupeActive ? (opts.poisonedZoneIdx ?? null) : null;
   const cls = opts.className ? ` ${opts.className}` : '';
 
-  // Subtle 1966 broadcast monitor scan/reticle grid lines (pure geometry, zero text)
-  const gridLines: string[] = [];
-  for (let x = 24; x < 480; x += 24) {
-    gridLines.push(`<line x1="${x}" y1="8" x2="${x}" y2="256" stroke="#183B6B" stroke-width="0.75"/>`);
-  }
-  for (let y = 24; y < 264; y += 24) {
-    gridLines.push(`<line x1="8" y1="${y}" x2="472" y2="${y}" stroke="#183B6B" stroke-width="0.75"/>`);
-  }
+  const clipId = `ws8PlateClip${plateIdx}`;
+  const sheenId = `ws8PlateSheen${plateIdx}`;
 
   const chambersSvg = spec.chambers
     .map((c) => {
-      const x0 = c.cx - c.w * 0.5;
-      const y0 = c.cy - c.h * 0.5;
+      const x0 = Number((c.cx - c.w * 0.5).toFixed(1));
+      const y0 = Number((c.cy - c.h * 0.5).toFixed(1));
       const isFlash = activeIdx === c.idx;
       const isRevealed = revealedIdx === c.idx;
       const isHint = hintIdx === c.idx;
@@ -519,101 +278,79 @@ export function renderCyanotypePlateSVG(
       const isCanary = canaryIdx === c.idx;
       const isPoison = uvIdx === c.idx;
 
-      const strokeHex = isFlash
-        ? CYANOTYPE_PALETTE_V7.specularIris
-        : isPruned
-          ? CYANOTYPE_PALETTE_V7.vermilionVoid
-          : CYANOTYPE_PALETTE_V7.giltBrass;
+      // Transparent over the painted gouache artwork in normal state!
       const fillHex = isFlash
         ? '#FFFDF5'
         : isRevealed
+          ? '#22C55E'
+          : isPruned
+            ? '#FAF2DF'
+            : '#FFFFFF';
+      const fillOpacity = isFlash
+        ? '0.42'
+        : isRevealed
+          ? '0.16'
+          : isPruned
+            ? '0.68'
+            : '0.001';
+
+      const strokeHex = isFlash
+        ? '#FFFDF5'
+        : isRevealed
           ? '#16A34A'
-          : CYANOTYPE_PALETTE_V7.prussianChamberFill;
-      const fillOpacity = isFlash ? '0.95' : '0.88';
-      const strokeWidth = isFlash || isRevealed ? '3.4' : '2.4';
+          : isPruned
+            ? '#D92B3A'
+            : '#D9A441';
+      const strokeOpacity = isFlash || isRevealed || isPruned ? '1' : '0.45';
+      const strokeWidth = isFlash || isRevealed ? '3.6' : isPruned ? '2.8' : '1.4';
 
-      // Rounded 1966 backlit Acrylite monitor zone path (width c.w = 88, height c.h = 80)
-      const ch = 10;
-      const chamferPath = [
-        `M${x0 + ch},${y0}`,
-        `L${x0 + c.w - ch},${y0}`,
-        `L${x0 + c.w},${y0 + ch}`,
-        `L${x0 + c.w},${y0 + c.h - ch}`,
-        `L${x0 + c.w - ch},${y0 + c.h}`,
-        `L${x0 + ch},${y0 + c.h}`,
-        `L${x0},${y0 + c.h - ch}`,
-        `L${x0},${y0 + ch}`,
-        'Z',
-      ].join(' ');
+      const numeralPath = ZONE_NUMERAL_PATHS_V8[c.idx] ?? ZONE_NUMERAL_PATHS_V8[0];
+      const badgeW = 20;
+      const badgeH = 19;
+      const badgeX = Number((x0 + c.w - badgeW - 4).toFixed(1));
+      const badgeY = Number((y0 + c.h - badgeH - 4).toFixed(1));
+      const numX = Number((badgeX + 4.2).toFixed(1));
+      const numY = Number((badgeY + 2.4).toFixed(1));
 
-      // Non-text overlays (pure graphic marks: cross-out slash, canary check, UV halo, starburst flash)
       const extraSvg: string[] = [];
       if (isHint) {
         extraSvg.push(
-          `<rect x="${x0 - 3}" y="${y0 - 3}" width="${c.w + 6}" height="${c.h + 6}" rx="10" fill="none" stroke="#00E5FF" stroke-width="2" stroke-dasharray="6 3"/>`,
+          `<rect x="${x0 + 2}" y="${y0 + 2}" width="${c.w - 4}" height="${c.h - 4}" rx="7" fill="none" stroke="#008B94" stroke-width="3" stroke-dasharray="7 4"/>`,
+        );
+      }
+      if (isRevealed) {
+        extraSvg.push(
+          `<rect x="${x0 + 1.5}" y="${y0 + 1.5}" width="${c.w - 3}" height="${c.h - 3}" rx="7" fill="none" stroke="#FFFDF5" stroke-width="1.8"/>`,
+          `<circle cx="${x0 + c.w - 14}" cy="${y0 + 14}" r="10" fill="#16A34A" stroke="#FFFDF5" stroke-width="2"/>`,
+          `<path d="M${x0 + c.w - 19},${y0 + 14} L${x0 + c.w - 15.2},${y0 + 18} L${x0 + c.w - 8.8},${y0 + 10}" fill="none" stroke="#FFFDF5" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>`,
         );
       }
       if (isPruned) {
         extraSvg.push(
-          `<path d="M${x0 + 10},${y0 + 10} L${x0 + c.w - 10},${y0 + c.h - 10} M${x0 + c.w - 10},${y0 + 10} L${x0 + 10},${y0 + c.h - 10}" stroke="#E03E36" stroke-width="3.4" stroke-linecap="round"/>`,
+          `<path d="M${x0 + 12},${y0 + 12} L${x0 + c.w - 12},${y0 + c.h - 12} M${x0 + c.w - 12},${y0 + 12} L${x0 + 12},${y0 + c.h - 12}" stroke="#D92B3A" stroke-width="4.2" stroke-linecap="round"/>`,
         );
       }
       if (isCanary) {
         extraSvg.push(
-          `<path d="M${x0 + c.w - 26},${y0 + 14} L${x0 + c.w - 18},${y0 + 22} L${x0 + c.w - 8},${y0 + 8}" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linecap="round"/>`,
+          `<circle cx="${x0 + c.w - 15}" cy="${y0 + 15}" r="10" fill="#FAF2DF" stroke="#008B94" stroke-width="2.2"/>`,
+          `<path d="M${x0 + c.w - 20},${y0 + 15} L${x0 + c.w - 16},${y0 + 19} L${x0 + c.w - 9.5},${y0 + 10.5}" fill="none" stroke="#008B94" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>`,
         );
       }
       if (isPoison) {
         extraSvg.push(
-          `<circle cx="${x0 + 16}" cy="${y0 + 16}" r="8" fill="#9D5CFF" fill-opacity="0.65" stroke="#E8D4FF" stroke-width="1.6"/>`,
+          `<circle cx="${x0 + 16}" cy="${y0 + 36}" r="9.5" fill="#6D28D9" stroke="#FAF2DF" stroke-width="1.8"/>`,
+          `<polygon points="${x0 + 16},${y0 + 30} ${x0 + 21},${y0 + 36} ${x0 + 16},${y0 + 42} ${x0 + 11},${y0 + 36}" fill="#FAF2DF"/>`,
         );
       }
       if (isFlash) {
-        extraSvg.push(`
-          <g transform="translate(${c.cx},${c.cy})">
-            <circle cx="0" cy="0" r="34" fill="#FFD166" fill-opacity="0.55" stroke="#FFFDF5" stroke-width="2.6"/>
-            <path d="M0,-40 L4,-12 L32,-28 L12,-4 L40,0 L12,4 L32,28 L4,12 L0,40 L-4,12 L-32,28 L-12,4 L-40,0 L-12,-4 L-32,-28 L-4,-12 Z" fill="#FFFDF5"/>
-          </g>
-        `);
+        extraSvg.push(
+          `<rect x="${x0 + 2}" y="${y0 + 2}" width="${c.w - 4}" height="${c.h - 4}" rx="7" fill="none" stroke="#FFD166" stroke-width="4"/>`,
+        );
       }
 
-      return `
-        <g class="ws7-cyano-chamber${isFlash ? ' is-iris-flash' : ''}" data-zone-idx="${c.idx}" data-cx="${c.cx}" data-cy="${c.cy}" data-x0="${x0}" data-y0="${y0}" role="button" tabindex="0" style="cursor:pointer;">
-          <path d="${chamferPath}" fill="${fillHex}" fill-opacity="${fillOpacity}" stroke="${strokeHex}" stroke-width="${strokeWidth}"/>
-          <circle cx="${x0 + 9}" cy="${y0 + 9}" r="2.2" fill="#00D2E6"/>
-          <circle cx="${x0 + c.w - 9}" cy="${y0 + 9}" r="2.2" fill="#00D2E6"/>
-          <circle cx="${x0 + 9}" cy="${y0 + c.h - 9}" r="2.2" fill="#00D2E6"/>
-          <circle cx="${x0 + c.w - 9}" cy="${y0 + c.h - 9}" r="2.2" fill="#00D2E6"/>
-          <g transform="translate(${c.cx},${c.cy})">
-            ${c.motifSvg}
-          </g>
-          ${extraSvg.join('')}
-        </g>
-      `;
+      return `<g class="ws7-cyano-chamber${isFlash ? ' is-iris-flash' : ''}" data-zone-idx="${c.idx}" data-cx="${c.cx}" data-cy="${c.cy}" data-x0="${x0}" data-y0="${y0}" data-w="${c.w}" data-h="${c.h}" role="button" tabindex="0" style="cursor:pointer;"><rect x="${x0}" y="${y0}" width="${c.w}" height="${c.h}" rx="6" fill="${fillHex}" fill-opacity="${fillOpacity}" stroke="${strokeHex}" stroke-opacity="${strokeOpacity}" stroke-width="${strokeWidth}"/><rect x="${badgeX}" y="${badgeY}" width="${badgeW}" height="${badgeH}" rx="5" fill="#FAF2DF" fill-opacity="0.94" stroke="#8A5A1E" stroke-width="1.4" pointer-events="none"/><g transform="translate(${numX},${numY})" pointer-events="none"><path d="${numeralPath}" fill="none" stroke="#141B29" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></g>${extraSvg.join('')}</g>`;
     })
     .join('');
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" class="ws7-cyanotype-svg${cls}" data-plate-category="${spec.category}" viewBox="0 0 480 264" preserveAspectRatio="xMidYMid meet" style="width:100%;height:100%;max-height:100%;display:block;touch-action:manipulation;user-select:none;">
-    <defs>
-      <linearGradient id="ws7TvMonitorScreen" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#163E70"/>
-        <stop offset="52%" stop-color="#0E284C"/>
-        <stop offset="100%" stop-color="#091930"/>
-      </linearGradient>
-      <linearGradient id="ws7TvGlassSheen" x1="0%" y1="0%" x2="35%" y2="100%">
-        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.11"/>
-        <stop offset="42%" stop-color="#FFFFFF" stop-opacity="0.02"/>
-        <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
-      </linearGradient>
-    </defs>
-    <rect x="0" y="0" width="480" height="264" rx="14" fill="url(#ws7TvMonitorScreen)"/>
-    <g opacity="0.72">${gridLines.join('')}</g>
-    <g class="ws7-cyano-drafting" pointer-events="none">
-      ${spec.structuralDraftingSvg}
-    </g>
-    <g class="ws7-cyano-chambers">
-      ${chambersSvg}
-    </g>
-    <path d="M6,16 Q240,6 474,16 L474,98 Q240,72 6,108 Z" fill="url(#ws7TvGlassSheen)" pointer-events="none"/>
-  </svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" class="ws7-cyanotype-svg${cls}" data-plate-idx="${plateIdx}" viewBox="0 0 480 264" preserveAspectRatio="xMidYMid meet" style="width:100%;height:100%;max-height:100%;display:block;touch-action:manipulation;user-select:none;"><defs><clipPath id="${clipId}"><rect x="0" y="0" width="480" height="264" rx="11"/></clipPath><linearGradient id="${sheenId}" x1="0%" y1="0%" x2="25%" y2="100%"><stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.14"/><stop offset="36%" stop-color="#FFFFFF" stop-opacity="0.02"/><stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient></defs><g clip-path="url(#${clipId})"><rect x="0" y="0" width="480" height="264" fill="#FAF2DF"/><image href="${imgUrl}" x="0" y="0" width="480" height="264" preserveAspectRatio="none"/><line x1="120" y1="0" x2="120" y2="264" stroke="#D9A441" stroke-width="2.2" stroke-opacity="0.85" pointer-events="none"/><line x1="240" y1="0" x2="240" y2="264" stroke="#D9A441" stroke-width="2.2" stroke-opacity="0.85" pointer-events="none"/><line x1="360" y1="0" x2="360" y2="264" stroke="#D9A441" stroke-width="2.2" stroke-opacity="0.85" pointer-events="none"/><line x1="0" y1="132" x2="480" y2="132" stroke="#D9A441" stroke-width="2.4" stroke-opacity="0.88" pointer-events="none"/><rect x="1" y="1" width="478" height="262" rx="10.5" fill="none" stroke="#D9A441" stroke-width="2.4" pointer-events="none"/><path d="M4,10 Q240,2 476,10 L476,74 Q240,54 4,82 Z" fill="url(#${sheenId})" pointer-events="none"/></g><g class="ws7-cyano-chambers">${chambersSvg}</g></svg>`;
 }

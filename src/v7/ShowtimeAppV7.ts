@@ -13,6 +13,7 @@
 import * as THREE from 'three';
 import {
   ALL_CATEGORIES_V7,
+  ALL_GREMLIN_SKIT_IDS_V8,
   ALL_RIVAL_IDS_V7,
   type BoardIdV7,
   type BoardTwistIdV7,
@@ -22,6 +23,7 @@ import {
   type CampaignSaveStateV7,
   type CategoryIdV7,
   type ClueRecordV7,
+  type CouchShowdownLaunchSpecV8,
   type CoupRegimeIdV7,
   type CpuPlaystyleIdV7,
   type CpuTemperamentIdV7,
@@ -29,6 +31,7 @@ import {
   type DifficultyTierV7,
   type DomainIdV7,
   type EpisodeBlueprintV7,
+  type GremlinSkitIdV8,
   CAREER_MEDAL_SPECS_V7,
   type CareerMedalIdV7,
   type NextEpisodeCliffhangerTeaserV7,
@@ -80,14 +83,31 @@ import {
   type EmceeMoodV7,
 } from './campaign/StudioAnnouncerV7';
 import {
+  buildDailyArchiveCatalogV8,
+  buildDailyBroadcastBlueprintV7,
   classifyDailyTileOutcomeV7,
+  computeDailyPercentileRankV8,
+  formatDailyBroadcastEmojiShareCardV7,
   getDailyBroadcastSaveV7,
   getDeterministicDailyTurnSeedV7,
+  getLocalDateIsoV7,
   getTodayBroadcastBlueprintV7,
+  recordArchiveDailyResultV8,
   recordDailyBroadcastCompletionV7,
   type DailyBroadcastBlueprintV7,
   type DailyTileHistoryTokenV7,
 } from './campaign/DailyBroadcastV7';
+import {
+  loadCareerStatsLedgerV8,
+  recordBargainBoughtStatV8,
+  recordClueAttemptStatV8,
+  recordFinalWagerStatV8,
+  recordGremlinSurvivedStatV8,
+  recordLifelineUsedStatV8,
+  recordMatchCompletedStatV8,
+  recordVaultCrackedStatV8,
+} from './campaign/CareerStatsLedgerV8';
+import { CpuTwistAndHeelDirectorV8 } from './campaign/CpuTwistAndHeelDirectorV8';
 import {
   CorpusManagerV7,
   getFriendlyCategoryLabelV7,
@@ -102,6 +122,7 @@ import {
   type MountedTactileContraptionV7,
   type TactileSfxEventV7,
 } from './toys/TactileContraptions14V7';
+import { mountFourShutterLadderDeluxeV8 } from './toys/FourShutterLadderDeluxeV8';
 import { BroadcastChromeUIV7 } from './ui/BroadcastChromeUIV7';
 import {
   TitleAndOnboardingControllerV7,
@@ -112,6 +133,44 @@ import {
   type BigWheelSpinResultV7,
 } from './ui/TvTwistTheaterV7';
 import { StudioBroadcastVfxV7 } from './vfx/StudioBroadcastVfxV7';
+import { ReactionPipMonitorV8 } from './ui/ReactionPipMonitorV8';
+import {
+  StudioReboundPotControllerV8,
+  evaluatePostAnswerFlavorV8,
+  flashPopularMythKlaxonV8,
+} from './ui/KlaxonAndReboundStageV8';
+import { runCurtainCallBargainShowpieceV8 } from './ui/CurtainCallBargainShowpieceV8';
+import { playGremlinCartoonSkitV8 } from './ui/GremlinCartoonTheaterV8';
+import {
+  CouchPartyMatchDirectorV8,
+  openCouchPartySetupSheetV8,
+  runCouchBlindFinalShowdownV8,
+  showCouchWinnerCheckCeremonyV8,
+} from './ui/CouchPartyShowdownDeluxeV8';
+import { openBroadcastTapeVaultDrawerV8 } from './ui/BroadcastTapeVaultDrawerV8';
+import {
+  renderWalnutConsoleTvShareCanvasV8,
+  shareWalnutTvCardImageV8,
+} from './ui/WalnutTvShareCanvasV8';
+import { openCareerStatsDashboardModalV8 } from './ui/CareerStatsDashboardV8';
+import {
+  getQuestionPlainMicroTipV8,
+  maybeOpenFirstTimeCoachV8,
+  normalizeQuestionTimerModeV8,
+  openStudioCoachOnDemandV8,
+  resolveBoardModeGuideKeyV8,
+  resolveQuestionGuideKeyV8,
+  resolveQuestionTimerSecondsV8,
+  setAutoTipsMutedV8,
+  type StudioCheatIdV8,
+} from './ui/SmartStudioCoachV8';
+import {
+  isAutoPlayShowIntroEnabledV8,
+  play1966EndCreditsV8,
+  playBroadcastShowIntroV8,
+  preloadBroadcastIntroPlatesV8,
+  setAutoPlayShowIntroEnabledV8,
+} from './ui/ShowBroadcastIntroAndCreditsV8';
 
 const SHOWRUNNER_META_STORAGE_KEY_V7 = 'ws_v7_showrunner_meta_1';
 
@@ -160,12 +219,18 @@ export class ShowtimeAppV7 {
   public readonly twistTheater: TvTwistTheaterV7;
   public readonly announcer: StudioAnnouncerControllerV7;
   public readonly vfx: StudioBroadcastVfxV7;
+  public readonly pipMonitor: ReactionPipMonitorV8;
+  public readonly reboundPot: StudioReboundPotControllerV8;
+  private readonly cpuHeelDirector = new CpuTwistAndHeelDirectorV8();
 
   private readonly canvasRoot: HTMLElement;
   private readonly uiRoot: HTMLElement;
   private activeVaultRenderer: LitTrophyVaultRendererV7 | null = null;
   private activeContraption: MountedTactileContraptionV7 | null = null;
   private instantBargainOfferedInMatch = false;
+  private activeCouchDirector: CouchPartyMatchDirectorV8 | null = null;
+  private isArchiveDailyReplay = false;
+  private inQaQueryPreviewMode = false;
 
   // Live Match Runtime State
   private phase: MatchPhaseV7 = 'HUB';
@@ -187,6 +252,7 @@ export class ShowtimeAppV7 {
   private cpuStreak = 0;
   private cpuTiltTurnsRemaining = 0;
   private correctCountInMatch = 0;
+  private cluesAnsweredInMatch = 0;
   private blitzCorrectCount = 0;
   private isBlitzPhase = false;
   private isAct3Showdown = false;
@@ -195,9 +261,17 @@ export class ShowtimeAppV7 {
   private skipCurtainRaiserOnce = false;
   private boardSelectArmedAtMs = 0;
 
-  // 2 Classic Studio Lifelines Per Match + Scouting Trackers
+  // 3 Illuminated Studio Cheats Per Match + Bargain Perks + Non-Nagging Coach State
   private fiftyFiftyAvailableInMatch = true;
   private audiencePollAvailableInMatch = true;
+  private freeSwapAvailableInMatch = true;
+  private finalWagerShieldArmedInMatch = false;
+  private activeNoTimerInTurn = false;
+  private coachModalOpen = false;
+  private activeTurnLifelineUsed: StudioCheatIdV8 | null = null;
+  private gremlinSkitCursor = 0;
+  private gremlinHitCountPlayerInMatch = 0;
+  private gremlinHitCountRivalInMatch = 0;
   private newlyScoutedWeakInMatch: CategoryIdV7[] = [];
   private newlyScoutedStrongInMatch: CategoryIdV7[] = [];
   private pendingDiscoveryBannerText: string | null = null;
@@ -429,7 +503,31 @@ export class ShowtimeAppV7 {
       onUtilityModalStateChange: (open) => {
         if (open) {
           this.announcer.dismissImmediate();
+          this.pipMonitor.hide();
         }
+      },
+      onStartCouchParty: () => {
+        void this.unlockAudioAndSyncHub();
+        this.audio.playTileSelect();
+        void this.openCouchPartyFlow();
+      },
+      onOpenCareerStats: () => {
+        void this.unlockAudioAndSyncHub();
+        this.audio.playUiTap();
+        this.openCareerStatsDashboard();
+      },
+      onOpenDailyTapeVault: () => {
+        void this.unlockAudioAndSyncHub();
+        this.audio.playUiTap();
+        this.openDailyBroadcastTapeVault();
+      },
+      onPlayEndCredits: () => {
+        void this.unlockAudioAndSyncHub();
+        void this.playBroadcastEndCreditsNow();
+      },
+      onOpenWalnutShareCard: () => {
+        void this.unlockAudioAndSyncHub();
+        void this.shareOrDownloadWalnutTvCard();
       },
     });
 
@@ -454,6 +552,29 @@ export class ShowtimeAppV7 {
         void this.unlockAudioAndSyncHub();
         this.audio.playTileSelect();
         void this.handleQuickPlayLaunch(sel);
+      },
+      onStartCouchParty: () => {
+        void this.unlockAudioAndSyncHub();
+        this.audio.playTileSelect();
+        void this.openCouchPartyFlow();
+      },
+      onOpenCareerStats: () => {
+        void this.unlockAudioAndSyncHub();
+        this.audio.playUiTap();
+        this.openCareerStatsDashboard();
+      },
+      onOpenDailyTapeVault: () => {
+        void this.unlockAudioAndSyncHub();
+        this.audio.playUiTap();
+        this.openDailyBroadcastTapeVault();
+      },
+      onOpenWalnutShareCard: () => {
+        void this.unlockAudioAndSyncHub();
+        void this.shareOrDownloadWalnutTvCard();
+      },
+      onPlayEndCredits: () => {
+        void this.unlockAudioAndSyncHub();
+        void this.playBroadcastEndCreditsNow();
       },
       isAudioUnlocked: () => this.audio.isAudioUnlocked(),
       onRequestAudioUnlock: async () => {
@@ -576,6 +697,22 @@ export class ShowtimeAppV7 {
       container: document.getElementById('app') ?? document.body,
       reducedMotion: initialSave.settings.reducedMotion,
     });
+
+    this.pipMonitor = new ReactionPipMonitorV8(this.uiRoot, {
+      reducedMotion: initialSave.settings.reducedMotion,
+      interactiveDismiss: true,
+    });
+
+    this.reboundPot = new StudioReboundPotControllerV8(this.uiRoot, {
+      reducedMotion: initialSave.settings.reducedMotion,
+      onDropSfx: () => this.audio.playSplitFlapTick(),
+      onScoopSfx: () => this.audio.showpieceFoley.playReboundPotScoop(),
+    });
+    this.reboundPot.setVisible(false);
+
+    // Seed legacy stats once if needed & pre-warm 1966 painted intro plates
+    loadCareerStatsLedgerV8(initialSave, getDailyBroadcastSaveV7());
+    preloadBroadcastIntroPlatesV8([this.activeBlueprint.rivalId]);
 
     // 5. Attach Direct 3D Raycast Pointer, Touch & Keyboard Ergonomics
     this.bindInputListeners();
@@ -948,11 +1085,54 @@ export class ShowtimeAppV7 {
       this.engine.renderFrameNow(1 / 60);
 
       if (qaView === 'BOARD') {
+        this.inQaQueryPreviewMode = true;
         const rb = this.board.getBoardModeRuleBanner();
         this.ui.setBoardModeBanner(rb);
         return;
       }
+      if (qaView === 'CAREER_STATS') {
+        this.inQaQueryPreviewMode = true;
+        this.openCareerStatsDashboard();
+        return;
+      }
+      if (qaView === 'TV_INTRO') {
+        this.inQaQueryPreviewMode = true;
+        const rp = CAST_PROFILES_V7[this.activeBlueprint.rivalId] ?? CAST_PROFILES_V7.CARMEN_DELGADO;
+        void playBroadcastShowIntroV8(this.uiRoot, {
+          modeLabel: `PRIME-TIME CAMPAIGN · ${this.activeBlueprint.code}`,
+          episodeSubtitle: 'IBC TELEVISION CITY · STUDIO 6A',
+          boardFormatLabel: BOARD_MODE_RULE_BANNERS_V7[this.activePlayMode].modeTitle,
+          rivalName: rp.name,
+          rivalTitle: rp.title,
+          rivalCastId: this.activeBlueprint.rivalId,
+          durationMs: 10000,
+        });
+        return;
+      }
+      if (qaView === 'END_CREDITS') {
+        this.inQaQueryPreviewMode = true;
+        void this.playBroadcastEndCreditsNow();
+        return;
+      }
+      if (qaView === 'COUCH_PARTY') {
+        this.inQaQueryPreviewMode = true;
+        void this.openCouchPartyFlow();
+        return;
+      }
+      if (qaView === 'TAPE_VAULT') {
+        this.inQaQueryPreviewMode = true;
+        this.openDailyBroadcastTapeVault();
+        return;
+      }
+      if (qaView === 'SMART_COACH') {
+        this.inQaQueryPreviewMode = true;
+        void openStudioCoachOnDemandV8(this.uiRoot, 'TOY_03_VERNIER_DIAL', {
+          reducedMotion: this.campaign.getState().settings.reducedMotion,
+        });
+        return;
+      }
       if (qaView === 'QUESTION_4CHOICE' || qaView === 'QUESTION_SHOWCASE') {
+        this.inQaQueryPreviewMode = true;
         const toy: ToyIdV7 =
           qaView === 'QUESTION_4CHOICE'
             ? 'TOY_01_KNIFE_SWITCH'
@@ -1209,6 +1389,14 @@ export class ShowtimeAppV7 {
     this.titleHub.setReducedMotion(settings.reducedMotion);
     this.twistTheater.setReducedMotion(settings.reducedMotion);
     this.vfx.setReducedMotion(settings.reducedMotion);
+    this.pipMonitor.setReducedMotion(settings.reducedMotion);
+    this.reboundPot.setReducedMotion(settings.reducedMotion);
+    if (typeof settings.autoPlayShowIntro === 'boolean') {
+      setAutoPlayShowIntroEnabledV8(settings.autoPlayShowIntro);
+    }
+    if (typeof settings.muteAutoQuestionTips === 'boolean') {
+      setAutoTipsMutedV8(settings.muteAutoQuestionTips);
+    }
     this.announcer.setAccessibility({
       reducedMotion: settings.reducedMotion,
       highContrast: settings.highContrastBadges,
@@ -1251,12 +1439,17 @@ export class ShowtimeAppV7 {
   }
 
   private async handleQuickPlayLaunch(selection?: QuickPlaySelectionV7): Promise<void> {
-    if (selection?.difficultyMode) {
+    if (selection?.difficultyMode || selection?.questionTimerMode !== undefined) {
       const updated = this.campaign.updateSettings({
-        difficultyMode: selection.difficultyMode,
+        ...(selection.difficultyMode ? { difficultyMode: selection.difficultyMode } : {}),
+        ...(selection.questionTimerMode !== undefined
+          ? { questionTimerMode: selection.questionTimerMode }
+          : {}),
       });
       this.applyBroadcastSettings(updated);
     }
+    this.activeCouchDirector = null;
+    this.isArchiveDailyReplay = false;
     const save = this.campaign.getState();
     const freshSeed = this.generateFreshMatchSeed(save.episodesPlayed + 17);
     const combo = drawCombinatorialBoardComboV7({
@@ -1272,6 +1465,8 @@ export class ShowtimeAppV7 {
 
   private async launchCampaignWithColdOpenIfNeeded(bp: EpisodeBlueprintV7): Promise<void> {
     const launchGen = ++this.matchGenerationId;
+    this.activeCouchDirector = null;
+    this.isArchiveDailyReplay = false;
     const save = this.campaign.getState();
     this.campaign.ensureDefaultWaiverIfMissing();
 
@@ -1282,7 +1477,9 @@ export class ShowtimeAppV7 {
       (save.episodesPlayed === 0 && bp.episodeNumber === 1);
 
     if (shouldPlayColdOpen) {
+      void this.audio.voices.playPoolVoice('POOL_COLD_OPEN');
       await this.titleHub.playStoryAndRulesColdOpen({ episodeBlueprint: bp });
+      this.audio.voices.stopCurrentVoice(0.05);
       if (this.disposed || launchGen !== this.matchGenerationId) return;
     } else {
       this.titleHub.hideAll();
@@ -1297,9 +1494,16 @@ export class ShowtimeAppV7 {
     await this.startMatch(bp, false, false);
   }
 
-  public async startDailyBroadcastMatch(): Promise<void> {
+  public async startDailyBroadcastMatch(explicitDateIso?: string): Promise<void> {
     const launchGen = ++this.matchGenerationId;
-    const dailyBp = getTodayBroadcastBlueprintV7();
+    this.activeCouchDirector = null;
+    const todayIso = getLocalDateIsoV7();
+    const targetIso = explicitDateIso && explicitDateIso.trim() ? explicitDateIso.trim() : todayIso;
+    const dailyBp =
+      targetIso === todayIso
+        ? getTodayBroadcastBlueprintV7()
+        : buildDailyBroadcastBlueprintV7(targetIso);
+    this.isArchiveDailyReplay = targetIso !== todayIso;
     this.activeDailyBlueprint = dailyBp;
     this.dailyTileHistory = [];
     this.titleHub.hideAll();
@@ -1317,6 +1521,13 @@ export class ShowtimeAppV7 {
 
   public returnToTitleHub(): void {
     this.matchGenerationId += 1;
+    this.activeCouchDirector = null;
+    this.isArchiveDailyReplay = false;
+    this.coachModalOpen = false;
+    this.pipMonitor.hide();
+    this.reboundPot.resetPot();
+    this.reboundPot.setVisible(false);
+    this.audio.voices.stopCurrentVoice(0.05);
     this.disposeActiveContraption();
     this.twistTheater.cancelActive();
     this.ui.closeQuestionChassis();
@@ -1529,6 +1740,7 @@ export class ShowtimeAppV7 {
     this.cpuStreak = 0;
     this.cpuTiltTurnsRemaining = 0;
     this.correctCountInMatch = 0;
+    this.cluesAnsweredInMatch = 0;
     this.blitzCorrectCount = 0;
     this.isBlitzPhase = false;
     this.isAct3Showdown = false;
@@ -1540,7 +1752,17 @@ export class ShowtimeAppV7 {
 
     this.fiftyFiftyAvailableInMatch = true;
     this.audiencePollAvailableInMatch = true;
+    this.freeSwapAvailableInMatch = true;
+    this.finalWagerShieldArmedInMatch = false;
+    this.activeNoTimerInTurn = false;
+    this.coachModalOpen = false;
+    this.activeTurnLifelineUsed = null;
+    this.gremlinHitCountPlayerInMatch = 0;
+    this.gremlinHitCountRivalInMatch = 0;
     this.usedLifelineInMatch = false;
+    this.reboundPot.resetPot();
+    this.reboundPot.setVisible(true);
+    this.pipMonitor.hide();
     this.maxStreakInMatch = 0;
     this.crackedVaultOrSafeInMatch = false;
     this.bigWheelHighRollInMatch = false;
@@ -1581,6 +1803,15 @@ export class ShowtimeAppV7 {
     });
 
     this.corpus.resetMatchCadence(this.activeMatchSeedOffset);
+    this.cpuHeelDirector.resetForMatch({
+      matchSeed: this.activeMatchSeedOffset,
+      rivalId: effectiveBp.rivalId,
+      episodeNumber: effectiveBp.episodeNumber,
+      seasonTier: effectiveBp.season,
+      totalTurns: this.totalTurnsInCurrentMatch,
+      isQuickPlay: this.isQuickPlay,
+      isDailyBroadcast: dailyBroadcast,
+    });
 
     // Warm season corpus shard in background
     void this.corpus.warmSeasonShards(effectiveBp.season);
@@ -1632,9 +1863,52 @@ export class ShowtimeAppV7 {
     const notebook = this.getOrInitRivalNotebook(effectiveBp.rivalId);
     const stageSpec = STAGE_WORLD_SPECS_V7[effectiveBp.stageId];
 
-    // Open Every Match With the ~3s Skippable 'In Living Color' Curtain-Raiser + Tale-of-the-Tape!
-    if (!this.skipCurtainRaiserOnce) {
+    // Optional 10-Second 1966 Network TV Show Intro (Peacock -> Studio 6A Crane -> Saul Bass Star Billing!)
+    const autoIntroEnabled =
+      save.settings.autoPlayShowIntro !== false && isAutoPlayShowIntroEnabledV8();
+    const isCouchMode = Boolean(this.activeCouchDirector);
+
+    if (!this.skipCurtainRaiserOnce && !this.inQaQueryPreviewMode && autoIntroEnabled) {
+      const introModeLabel = isCouchMode
+        ? '2-PLAYER COUCH SHOWDOWN'
+        : dailyBroadcast
+          ? `DAILY 1966 BROADCAST #${this.activeDailyBlueprint?.dailyNumber ?? 1}`
+          : this.isQuickPlay
+            ? 'QUICK SHOW BROADCAST'
+            : `PRIME-TIME CAMPAIGN · ${effectiveBp.code}`;
+      preloadBroadcastIntroPlatesV8([effectiveBp.rivalId]);
+      await playBroadcastShowIntroV8(this.uiRoot, {
+        modeLabel: introModeLabel,
+        episodeSubtitle: `${stageSpec.name.toUpperCase()} · IN LIVING COLOR`,
+        boardFormatLabel: BOARD_MODE_RULE_BANNERS_V7[this.activePlayMode].modeTitle,
+        rivalName: isCouchMode
+          ? (this.activeCouchDirector?.spec.podium2.name ?? rivalProfile.name)
+          : rivalProfile.name,
+        rivalTitle: isCouchMode ? 'Podium 2 Challenger' : rivalProfile.title,
+        rivalCastId: isCouchMode
+          ? (this.activeCouchDirector?.spec.podium2.avatarId ?? effectiveBp.rivalId)
+          : effectiveBp.rivalId,
+        challengerName: isCouchMode ? this.activeCouchDirector?.spec.podium1.name : undefined,
+        challengerCastId: isCouchMode ? this.activeCouchDirector?.spec.podium1.avatarId : undefined,
+        reducedMotion: save.settings.reducedMotion,
+        onPlayIntroFanfare: () => this.audio.playBroadcastShowIntroFanfare(),
+        onPlayIntroVoice: () => {
+          void this.audio.voices.playPoolVoice('POOL_TV_INTRO');
+        },
+        onStopIntroAudio: () => {
+          this.audio.voices.stopCurrentVoice(0.05);
+        },
+      });
+      if (this.disposed || gen !== this.matchGenerationId) return;
+      // Sync user toggle if flipped inside the TV intro header
+      const afterToggle = isAutoPlayShowIntroEnabledV8();
+      if (afterToggle !== save.settings.autoPlayShowIntro) {
+        this.campaign.updateSettings({ autoPlayShowIntro: afterToggle });
+      }
+    } else if (!this.skipCurtainRaiserOnce && !isCouchMode) {
+      // Fast ~3s Skippable 'In Living Color' Curtain-Raiser when 10s TV Intro is toggled off!
       this.triggerApplauseSign(2.4);
+      void this.audio.voices.playPoolVoice('POOL_COLD_OPEN');
       await this.ui.playMatchCurtainRaiser({
         episodeCode: dailyBroadcast
           ? `DAILY #${this.activeDailyBlueprint?.dailyNumber ?? 1}`
@@ -1659,6 +1933,20 @@ export class ShowtimeAppV7 {
       if (this.disposed || gen !== this.matchGenerationId) return;
     }
     this.skipCurtainRaiserOnce = false;
+
+    if (isCouchMode && this.activeCouchDirector) {
+      await this.activeCouchDirector.playTurnHandoffBanner(
+        this.uiRoot,
+        1,
+        this.totalTurnsInCurrentMatch,
+        {
+          reducedMotion: save.settings.reducedMotion,
+          onTapSfx: () => this.audio.playUiTap(),
+          onSwooshSfx: () => this.audio.playTileSelect(),
+        },
+      );
+      if (this.disposed || gen !== this.matchGenerationId) return;
+    }
 
     // Announce the active 1966 Board Gameplay Mode & Trigger Eye-Guess Memory Flash if applicable!
     this.ui.setBoardModeBanner(ruleBanner);
@@ -1702,6 +1990,19 @@ export class ShowtimeAppV7 {
     }
 
     this.beginBoardSelectTurn();
+
+    // Non-nagging 1st-occurrence-ONLY Board Format Cue Card (never repeats once seen!)
+    if (!this.inQaQueryPreviewMode) {
+      const boardGuideKey = resolveBoardModeGuideKeyV8(this.activePlayMode);
+      void maybeOpenFirstTimeCoachV8(this.uiRoot, boardGuideKey, {
+        muteGlobalSetting: Boolean(save.settings.muteAutoQuestionTips),
+        reducedMotion: save.settings.reducedMotion,
+        onTapSfx: () => this.audio.playUiTap(),
+        onMuteAutoTipsChange: (muted) => {
+          this.campaign.updateSettings({ muteAutoQuestionTips: muted });
+        },
+      });
+    }
   }
 
   private beginBoardSelectTurn(): void {
@@ -1785,12 +2086,13 @@ export class ShowtimeAppV7 {
     const channel: CheatTellChannelV7 =
       rival.cheatChannel !== 'HONEST' ? rival.cheatChannel : 'SOLENOID_SPARK';
     const hasMatchingSpotterRelic = assist.spotsCheatChannels.includes(channel);
+    const tellSpec = this.cpuHeelDirector.getTellTelegraphSpec(this.turnNumber, {
+      playerCash: this.playerMatchScore,
+      rivalCash: this.rivalMatchScore,
+      hasMatchingSpotterRelic,
+    });
     const isTellTurn =
-      (rival.cheatChannel !== 'HONEST' &&
-        (this.turnNumber === 2 ||
-          this.turnNumber === 5 ||
-          this.turnNumber === 8 ||
-          (hasMatchingSpotterRelic && (this.turnNumber === 4 || this.turnNumber === 6)))) ||
+      tellSpec.active ||
       (this.activeBlueprint.isFinale && (this.turnNumber === 3 || this.turnNumber === 7));
 
     if (!isTellTurn) {
@@ -1798,14 +2100,19 @@ export class ShowtimeAppV7 {
       return;
     }
 
+    const activeChannel: CheatTellChannelV7 = tellSpec.active ? tellSpec.channel : channel;
     this.boothTellActive = true;
-    this.boothTellChannel = channel;
-    this.boothTellRemainingSec = hasMatchingSpotterRelic ? 12.0 : 8.0;
+    this.boothTellChannel = activeChannel;
+    this.boothTellRemainingSec = tellSpec.active
+      ? tellSpec.windowDurationSec
+      : hasMatchingSpotterRelic
+        ? 12.0
+        : 8.0;
     this.boothTellSparkAccumSec = 0;
 
-    if (channel === 'ROW_C_GLINT') {
+    if (activeChannel === 'ROW_C_GLINT') {
       this.engine.triggerRowCGlint(true);
-    } else if (channel === 'FRESNEL_LAMP') {
+    } else if (activeChannel === 'FRESNEL_LAMP') {
       this.engine.triggerFresnelTell(true);
     } else {
       const riggedTile =
@@ -1817,7 +2124,13 @@ export class ShowtimeAppV7 {
       }
     }
 
-    this.audio.playCheatTell(channel);
+    this.audio.playCheatTell(activeChannel);
+    if (tellSpec.suggestedVoiceCue) {
+      void this.audio.voices.playCue(tellSpec.suggestedVoiceCue);
+    }
+    if (tellSpec.reactionPip) {
+      this.pipMonitor.showReaction(tellSpec.reactionPip);
+    }
     this.ui.setRivalEmotion('TELL');
     this.ui.setBoothTellActive(true);
   }
@@ -1839,28 +2152,37 @@ export class ShowtimeAppV7 {
       this.audio.playBoothArrestSiren();
       this.triggerApplauseSign(2.4);
       this.boothArrestsInMatch += 1;
-      this.cpuTiltTurnsRemaining = 2;
+      const hasSignet = this.campaign
+        .getState()
+        .equippedRelics.some((r) => r.relicId === 'relic_subpoena_wax_signet');
+      const bust = this.cpuHeelDirector.recordBoothBust({
+        turnNumber: this.turnNumber,
+        hasSubpoenaSignet: hasSignet,
+      });
+      this.cpuTiltTurnsRemaining = bust.tiltTurns;
       let toastMsg: string;
       if (this.isQuickPlay) {
-        const hasSignet = this.campaign
-          .getState()
-          .equippedRelics.some((r) => r.relicId === 'relic_subpoena_wax_signet');
-        const quickBonus = hasSignet ? 300 : 150;
+        const quickBonus = bust.signetBoostedBountyCash;
         this.playerMatchScore += quickBonus;
-        toastMsg = `BOOTH FEED INTERCEPTED! +$${quickBonus} MATCH BONUS!`;
+        toastMsg = bust.lockoutBanner
+          ? `${bust.lockoutBanner} +$${quickBonus} MATCH BONUS!`
+          : `BOOTH FEED INTERCEPTED! +$${quickBonus} MATCH BONUS!`;
       } else {
-        // `recordLiveBoothArrest` credits `+$150` (`+$300` w/ Wax Signet) directly to `cleanPurseCash` —
-        // do NOT also add to `playerMatchScore` (prevents banking twice at Ceremony!).
+        // `recordLiveBoothArrest` credits Clean Purse directly — do NOT also add to `playerMatchScore`!
         const res = this.campaign.recordLiveBoothArrest(this.activeBlueprint.rivalId);
         this.earnedTrophiesInMatch.add('trophy_s1_08');
-        toastMsg = `BOOTH FEED INTERCEPTED! +$${res.cleanBountyCash} CLEAN PURSE BANKED!`;
+        toastMsg = bust.lockoutBanner
+          ? `${bust.lockoutBanner} +$${res.cleanBountyCash} CLEAN PURSE BANKED!`
+          : `BOOTH FEED INTERCEPTED! +$${res.cleanBountyCash} CLEAN PURSE BANKED!`;
       }
       this.announcer.onBoothRiggingBusted({
         rivalId: this.activeBlueprint.rivalId,
       });
-      this.ui.setRivalEmotion('BREAKDOWN');
-      this.syncTopBroadcastBug('BREAKDOWN');
-      this.ui.showLiveToast(toastMsg, 'emerald', 2600);
+      void this.audio.voices.playPoolVoice('POOL_BOOTH_BUSTED');
+      this.pipMonitor.showReaction(bust.reactionPip);
+      this.ui.setRivalEmotion(bust.emotion);
+      this.syncTopBroadcastBug(bust.emotion);
+      this.ui.showLiveToast(toastMsg, 'emerald', 2800);
     } else {
       this.audio.playKnifeSwitch();
       this.ui.showLiveToast(
@@ -1913,24 +2235,30 @@ export class ShowtimeAppV7 {
       this.activeToyId === 'TOY_02_CONFIDENCE_PNEUMATIC' ||
       this.activeToyId === 'TOY_06_FUSE_WIRE_SNIPPER' ||
       this.activeToyId === 'TOY_14_FOUR_SHUTTER_REEL';
+    const couchCanFifty = this.activeCouchDirector
+      ? this.activeCouchDirector.canUseFiftyFifty()
+      : this.fiftyFiftyAvailableInMatch;
     if (
       this.phase !== 'QUESTION_OPEN' ||
       this.isAnswerLockingIn ||
-      this.remainingClueSec <= 0.25 ||
-      !this.fiftyFiftyAvailableInMatch ||
+      (!this.activeNoTimerInTurn && this.remainingClueSec <= 0.25) ||
+      !couchCanFifty ||
       !this.activeClue ||
       !supportsFourChoices ||
       this.activeCardStyleInTurn === 'BINARY_SPLIT'
     ) {
       return;
     }
-    this.fiftyFiftyAvailableInMatch = false;
+    if (this.activeCouchDirector) {
+      this.activeCouchDirector.consumeFiftyFifty();
+    } else {
+      this.fiftyFiftyAvailableInMatch = false;
+    }
     this.usedLifelineInMatch = true;
-    this.ui.syncLifelineButtons(
-      this.fiftyFiftyAvailableInMatch,
-      this.audiencePollAvailableInMatch,
-    );
-    this.playLifelineSfx('FIFTY_FIFTY');
+    this.activeTurnLifelineUsed = 'FIFTY_FIFTY';
+    this.syncCurrentQuestionLifelines();
+    this.audio.playLifelineCue('FIFTY_FIFTY');
+    void this.audio.voices.playPoolVoice('POOL_LIFELINE_5050');
 
     const pruned = this.activeContraption?.applyFiftyFiftyPrune?.() ?? [];
     if (pruned.length > 0) {
@@ -1955,26 +2283,32 @@ export class ShowtimeAppV7 {
         }
       }
     }
-    this.ui.showLiveToast('✂️ 50/50 STUDIO CUT — 2 DECOYS CLEARED!', 'emerald', 1900);
+    this.ui.showLiveToast('50/50 STUDIO CUT — 2 WRONG OPTIONS CLEARED!', 'emerald', 1900);
   }
 
   private handleUseAudiencePollLifeline(): void {
+    const couchCanPoll = this.activeCouchDirector
+      ? this.activeCouchDirector.canUseAudiencePoll()
+      : this.audiencePollAvailableInMatch;
     if (
       this.phase !== 'QUESTION_OPEN' ||
       this.isAnswerLockingIn ||
-      this.remainingClueSec <= 0.25 ||
-      !this.audiencePollAvailableInMatch ||
+      (!this.activeNoTimerInTurn && this.remainingClueSec <= 0.25) ||
+      !couchCanPoll ||
       !this.activeClue
     ) {
       return;
     }
-    this.audiencePollAvailableInMatch = false;
+    if (this.activeCouchDirector) {
+      this.activeCouchDirector.consumeAudiencePoll();
+    } else {
+      this.audiencePollAvailableInMatch = false;
+    }
     this.usedLifelineInMatch = true;
-    this.ui.syncLifelineButtons(
-      this.fiftyFiftyAvailableInMatch,
-      this.audiencePollAvailableInMatch,
-    );
-    this.playLifelineSfx('AUDIENCE_POLL');
+    this.activeTurnLifelineUsed = 'AUDIENCE_POLL';
+    this.syncCurrentQuestionLifelines();
+    this.audio.playLifelineCue('AUDIENCE_POLL');
+    void this.audio.voices.playPoolVoice('POOL_LIFELINE_POLL');
 
     const clue = this.activeClue;
     const pcts = this.computeStudioAudiencePollPercentages(clue);
@@ -1986,9 +2320,424 @@ export class ShowtimeAppV7 {
       this.activeToyId === 'TOY_06_FUSE_WIRE_SNIPPER' ||
       this.activeToyId === 'TOY_14_FOUR_SHUTTER_REEL';
     if (!hasOnPadPercentBars) {
-      const summary = `📊 STUDIO CONSENSUS (${pcts[clue.answerIdx]}%): Lean toward “${clue.choices[clue.answerIdx].slice(0, 24)}”`;
+      const summary = `STUDIO AUDIENCE (${pcts[clue.answerIdx]}%): Lean toward “${clue.choices[clue.answerIdx].slice(0, 24)}”`;
       this.ui.setQuestionPollSummary(summary);
     }
+  }
+
+  private syncCurrentQuestionLifelines(): void {
+    const supportsFourChoices =
+      this.activeToyId === 'TOY_01_KNIFE_SWITCH' ||
+      this.activeToyId === 'TOY_02_CONFIDENCE_PNEUMATIC' ||
+      this.activeToyId === 'TOY_06_FUSE_WIRE_SNIPPER' ||
+      this.activeToyId === 'TOY_14_FOUR_SHUTTER_REEL';
+    const allowFifty = supportsFourChoices && this.activeCardStyleInTurn !== 'BINARY_SPLIT';
+    const fiftyAvail =
+      allowFifty &&
+      (this.activeCouchDirector
+        ? this.activeCouchDirector.canUseFiftyFifty()
+        : this.fiftyFiftyAvailableInMatch);
+    const pollAvail =
+      supportsFourChoices &&
+      (this.activeCouchDirector
+        ? this.activeCouchDirector.canUseAudiencePoll()
+        : this.audiencePollAvailableInMatch);
+    const swapAvail = !this.isFinalWagerPhase && this.freeSwapAvailableInMatch;
+    this.ui.syncLifelineButtons(fiftyAvail, pollAvail, swapAvail);
+  }
+
+  private handleUseFreeSwapLifeline(): void {
+    if (
+      this.phase !== 'QUESTION_OPEN' ||
+      this.isFinalWagerPhase ||
+      this.isAnswerLockingIn ||
+      (!this.activeNoTimerInTurn && this.remainingClueSec <= 0.25) ||
+      !this.freeSwapAvailableInMatch ||
+      !this.activeClue ||
+      this.activeTileIndex === null
+    ) {
+      return;
+    }
+    const tile = this.board.getTile(this.activeTileIndex);
+    if (!tile) return;
+
+    this.freeSwapAvailableInMatch = false;
+    this.usedLifelineInMatch = true;
+    this.activeTurnLifelineUsed = 'FREE_SWAP';
+    this.audio.playLifelineCue('FREE_SWAP');
+    void this.audio.voices.playPoolVoice('POOL_LIFELINE_SWAP');
+
+    const save = this.campaign.getState();
+    const maxDifficulty = this.computeMaxDifficultyForTurn(this.turnNumber);
+    const swapDraw = this.corpus.drawClueForTurn({
+      category: tile.category,
+      maxDifficulty,
+      preferredToyId: this.activeToyId,
+      forceClassicFourChoice: this.activeToyId === 'TOY_01_KNIFE_SWITCH',
+      forceShowcaseBonus: this.activeToyId !== 'TOY_01_KNIFE_SWITCH',
+      isBlitz: this.isBlitzPhase,
+      recentEntities: [...save.recentEntityKeys, ...this.seenEntitiesInMatch],
+    });
+
+    this.activeClue = swapDraw.clue;
+    this.activeToyId = swapDraw.selectedToy;
+    this.activeCardStyleInTurn = swapDraw.selectedCardStyle ?? swapDraw.clue.cardStyle;
+    this.seenEntitiesInMatch.push(swapDraw.clue.canonicalEntityKey);
+    this.prunedChoiceIndicesInTurn = [];
+
+    // Reset clock generously on the freshly swapped question!
+    const isShowcaseSelected = swapDraw.selectedToy !== 'TOY_01_KNIFE_SWITCH';
+    const configuredSec = resolveQuestionTimerSecondsV8(save.settings.questionTimerMode, {
+      isBlitzPhase: this.isBlitzPhase,
+    });
+    if (configuredSec === null) {
+      this.activeNoTimerInTurn = true;
+      this.remainingClueSec = Number.POSITIVE_INFINITY;
+    } else {
+      this.activeNoTimerInTurn = false;
+      const bonusShowcase = isShowcaseSelected && configuredSec === 30 ? 36 : configuredSec;
+      this.remainingClueSec = bonusShowcase;
+    }
+    this.lastTickedWholeSec = 99;
+    this.clueOpenedAtMs = performance.now();
+
+    let displayClue: ClueRecordV7 = swapDraw.clue;
+    if (swapDraw.selectedToy === 'TOY_07_MAIL_SORTER' && swapDraw.clue.sorter) {
+      displayClue = {
+        ...swapDraw.clue,
+        stem: `Studio Mailroom Sort — Route each slip into “${swapDraw.clue.sorter.chuteALabel}” or “${swapDraw.clue.sorter.chuteBLabel}.”`,
+      };
+    } else if (swapDraw.selectedToy === 'TOY_08_CHRONOLOGY_RAIL' && swapDraw.clue.chronology) {
+      displayClue = {
+        ...swapDraw.clue,
+        stem: `Time-Line Showcase — Place these ${swapDraw.clue.chronology.events.length} milestones in order from earliest to latest.`,
+      };
+    }
+
+    this.disposeActiveContraption();
+    const supportsFourChoiceLifelines =
+      swapDraw.selectedToy === 'TOY_01_KNIFE_SWITCH' ||
+      swapDraw.selectedToy === 'TOY_02_CONFIDENCE_PNEUMATIC' ||
+      swapDraw.selectedToy === 'TOY_06_FUSE_WIRE_SNIPPER' ||
+      swapDraw.selectedToy === 'TOY_14_FOUR_SHUTTER_REEL';
+    const allowFiftyFiftyOnCard =
+      supportsFourChoiceLifelines && this.activeCardStyleInTurn !== 'BINARY_SPLIT';
+    const toyMountEl = this.ui.openQuestionChassis({
+      clue: displayClue,
+      baseChips: tile.baseChips,
+      liveMultPreview: 1.0,
+      countdownSeconds: Number.isFinite(this.remainingClueSec) ? this.remainingClueSec : 30,
+      totalCountdownSeconds: Number.isFinite(this.remainingClueSec) ? this.remainingClueSec : 30,
+      noTimerMode: this.activeNoTimerInTurn,
+      isWheelhouse: tile.isWheelhouse,
+      hasAmberTruce: tile.hasAmberTruce,
+      tvTwist: tile.tvTwist ?? 'NONE',
+      isShowcaseFormat: isShowcaseSelected,
+      showcaseFormatName: isShowcaseSelected
+        ? TOY_CONTRAPTION_META_V7[swapDraw.selectedToy]?.name
+        : undefined,
+      fiftyFiftyAvailable: this.fiftyFiftyAvailableInMatch && allowFiftyFiftyOnCard,
+      audiencePollAvailable: this.audiencePollAvailableInMatch && supportsFourChoiceLifelines,
+      freeSwapAvailable: false,
+      onUseFiftyFifty: allowFiftyFiftyOnCard ? () => this.handleUseFiftyFiftyLifeline() : undefined,
+      onUseAudiencePoll: supportsFourChoiceLifelines
+        ? () => this.handleUseAudiencePollLifeline()
+        : undefined,
+      onUseFreeSwap: () => this.handleUseFreeSwapLifeline(),
+      plainMicroTip: getQuestionPlainMicroTipV8(swapDraw.selectedToy, this.activeCardStyleInTurn),
+      onOpenQuestionCoach: () => {
+        void this.handleOpenQuestionCoachOnDemand();
+      },
+      isAct3Showdown: this.isAct3Showdown,
+      hostIntroLine: 'Fresh cue card dealt from Control Booth A—take your shot!',
+      hostMood: 'WINK',
+    });
+
+    const stageSpec = STAGE_WORLD_SPECS_V7[this.activeBlueprint.stageId];
+    const contraptionCtx = {
+      pruneActive: false,
+      canaryTickIdx: null,
+      uvLoupeActive: false,
+      hasPatentCyanotypeTube: false,
+      equippedRelicIds: this.isDailyBroadcast ? [] : save.equippedRelics.map((r) => r.relicId),
+      dayJob: this.isDailyBroadcast ? null : (save.waiver?.dayJob ?? null),
+      cardStyle: this.activeCardStyleInTurn,
+      isClutchMoment: false,
+      reducedMotion: save.settings.reducedMotion,
+      highContrastBadges: save.settings.highContrastBadges,
+      brassAccentHex: stageSpec.trimAccentHex,
+      onTactileSfx: (ev: TactileSfxEventV7) => this.playContraptionSfx(ev),
+      onLockInStart: (clutch: boolean) => {
+        this.isAnswerLockingIn = true;
+        this.ui.syncLifelineButtons(false, false, false);
+        this.playAnswerLockInAudio(clutch);
+      },
+      onRevealFlash: (isCorrect: boolean) => {
+        this.playedRevealOnPadThisTurn = true;
+        this.audio.playAnswerReveal(isCorrect, false);
+      },
+    };
+    this.activeContraption =
+      swapDraw.selectedToy === 'TOY_14_FOUR_SHUTTER_REEL'
+        ? mountFourShutterLadderDeluxeV8(
+            toyMountEl,
+            swapDraw.clue,
+            (resolution) => void this.resolvePlayerTurn(resolution),
+            contraptionCtx,
+          )
+        : mountTactileContraptionV7(
+            toyMountEl,
+            swapDraw.clue,
+            swapDraw.selectedToy,
+            contraptionCtx,
+            (resolution) => void this.resolvePlayerTurn(resolution),
+          );
+    this.ui.showLiveToast('FREE SWAP USED — FRESH STUDIO QUESTION DEALT!', 'emerald', 2000);
+  }
+
+  private async maybeShowFirstTimeQuestionCoach(
+    toyId: ToyIdV7,
+    cardStyle?: NonNullable<ClueRecordV7['cardStyle']>,
+  ): Promise<void> {
+    if (this.inQaQueryPreviewMode) return;
+    const save = this.campaign.getState();
+    const guideKey = resolveQuestionGuideKeyV8(toyId, cardStyle);
+    await maybeOpenFirstTimeCoachV8(this.uiRoot, guideKey, {
+      muteGlobalSetting: Boolean(save.settings.muteAutoQuestionTips),
+      reducedMotion: save.settings.reducedMotion,
+      onPauseClock: () => {
+        this.coachModalOpen = true;
+      },
+      onResumeClock: () => {
+        this.coachModalOpen = false;
+        this.clueOpenedAtMs = performance.now();
+      },
+      onTapSfx: () => this.audio.playUiTap(),
+      onMuteAutoTipsChange: (muted) => {
+        this.campaign.updateSettings({ muteAutoQuestionTips: muted });
+      },
+    });
+  }
+
+  private async handleOpenQuestionCoachOnDemand(): Promise<void> {
+    const save = this.campaign.getState();
+    const guideKey = resolveQuestionGuideKeyV8(this.activeToyId, this.activeCardStyleInTurn);
+    this.audio.playUiTap();
+    await openStudioCoachOnDemandV8(this.uiRoot, guideKey, {
+      reducedMotion: save.settings.reducedMotion,
+      onPauseClock: () => {
+        this.coachModalOpen = true;
+      },
+      onResumeClock: () => {
+        this.coachModalOpen = false;
+      },
+      onTapSfx: () => this.audio.playUiTap(),
+      onMuteAutoTipsChange: (muted) => {
+        this.campaign.updateSettings({ muteAutoQuestionTips: muted });
+      },
+    });
+  }
+
+  private openCareerStatsDashboard(): void {
+    const save = this.campaign.getState();
+    const dailySave = getDailyBroadcastSaveV7();
+    const ledger = loadCareerStatsLedgerV8(save, dailySave);
+    openCareerStatsDashboardModalV8(this.uiRoot, {
+      ledger,
+      dailyStreak: dailySave.currentStreak,
+      bestDailyStreak: dailySave.bestStreak,
+      onPracticeCategory: () => {
+        void this.handleQuickPlayLaunch();
+      },
+    });
+  }
+
+  private openDailyBroadcastTapeVault(): void {
+    const dailySave = getDailyBroadcastSaveV7();
+    const entries = buildDailyArchiveCatalogV8(14);
+    openBroadcastTapeVaultDrawerV8(this.uiRoot, {
+      entries,
+      currentStreak: dailySave.currentStreak,
+      bestStreak: dailySave.bestStreak,
+      onPlayDateIso: (dateIso) => {
+        void this.startDailyBroadcastMatch(dateIso);
+      },
+    });
+  }
+
+  private async shareOrDownloadWalnutTvCard(): Promise<void> {
+    const dailyBp = this.activeDailyBlueprint ?? getTodayBroadcastBlueprintV7();
+    const dailySave = getDailyBroadcastSaveV7(dailyBp.dateIso);
+    const todayRes = dailySave.todayResult;
+    const pCash = todayRes?.playerCash ?? this.playerMatchScore;
+    const rCash = todayRes?.rivalCash ?? this.rivalMatchScore;
+    const won = todayRes ? todayRes.won : pCash >= rCash;
+    const rivalName =
+      CAST_PROFILES_V7[dailyBp.rivalId]?.name ??
+      CAST_PROFILES_V7[this.activeBlueprint.rivalId]?.name ??
+      'Studio Champion';
+    const stageTitle = STAGE_WORLD_SPECS_V7[dailyBp.stageId].name;
+    const boardModeTitle = BOARD_MODE_RULE_BANNERS_V7[dailyBp.boardPlayMode].modeTitle;
+    const percentile = computeDailyPercentileRankV8({
+      dailyNumber: dailyBp.dailyNumber,
+      playerCash: pCash,
+      rivalCash: rCash,
+      won,
+    });
+    const tokens =
+      todayRes?.tileHistory && todayRes.tileHistory.length > 0
+        ? todayRes.tileHistory
+        : this.dailyTileHistory.length > 0
+          ? this.dailyTileHistory
+          : (['WIN', 'SECRET_WIN', 'VAULT_WIN', 'MYSTERY_WIN', 'SHOWCASE_WIN'] as const);
+    const canvas = renderWalnutConsoleTvShareCanvasV8({
+      episodeNumber: dailyBp.dailyNumber,
+      dateLabel: dailyBp.displayDateShort,
+      playerCash: pCash,
+      rivalCash: rCash,
+      rivalName,
+      stageTitle,
+      boardModeTitle,
+      won,
+      streakCount: dailySave.currentStreak,
+      isArchiveTape: this.isArchiveDailyReplay,
+      percentile,
+      tileEmojisOrTokens: tokens,
+    });
+    const shareText =
+      todayRes?.shareText ??
+      formatDailyBroadcastEmojiShareCardV7({
+        episodeNumber: dailyBp.dailyNumber,
+        dateIso: dailyBp.dateIso,
+        playerCash: pCash,
+        rivalCash: rCash,
+        won,
+        currentStreak: dailySave.currentStreak,
+        tileHistory: [...tokens],
+      });
+    const outcome = await shareWalnutTvCardImageV8(
+      canvas,
+      shareText,
+      `worlds-smartest-daily-${dailyBp.dailyNumber}.png`,
+    );
+    if (outcome === 'DOWNLOADED_PNG' || outcome === 'WEB_SHARED') {
+      this.ui.showLiveToast('1080×1080 WALNUT CONSOLE TV CARD SAVED!', 'emerald', 2400);
+    }
+  }
+
+  private async playBroadcastEndCreditsNow(): Promise<void> {
+    const save = this.campaign.getState();
+    const rivalProf =
+      CAST_PROFILES_V7[this.activeBlueprint.rivalId] ?? CAST_PROFILES_V7.CARMEN_DELGADO;
+    const answered = Math.max(1, this.cluesAnsweredInMatch);
+    const accPct = Math.round((this.correctCountInMatch / answered) * 100);
+    await play1966EndCreditsV8(this.uiRoot, {
+      didWin: this.playerMatchScore >= this.rivalMatchScore,
+      modeLabel: this.isDailyBroadcast
+        ? `DAILY 1966 BROADCAST #${this.activeDailyBlueprint?.dailyNumber ?? 1}`
+        : this.isQuickPlay
+          ? 'STUDIO 6A QUICK SHOW'
+          : `PRIME-TIME CAMPAIGN · ${this.activeBlueprint.code}`,
+      playerName: this.activeCouchDirector
+        ? this.activeCouchDirector.spec.podium1.name
+        : 'CONTESTANT',
+      playerCash: this.playerMatchScore,
+      rivalName: this.activeCouchDirector
+        ? this.activeCouchDirector.spec.podium2.name
+        : rivalProf.name,
+      rivalCash: this.rivalMatchScore,
+      rivalCastId: this.activeBlueprint.rivalId,
+      bestStreakInMatch: Math.max(1, this.maxStreakInMatch, this.currentStreak),
+      accuracyPct: accPct,
+      reducedMotion: save.settings.reducedMotion,
+      onPlayCreditsTheme: () => this.audio.playEndCreditsTheme(),
+      onPlaySignoffVoice: () => {
+        void this.audio.voices.playPoolVoice('POOL_CREDITS_SIGNOFF');
+      },
+    });
+  }
+
+  private async playGremlinCartoonShowpiece(opts: {
+    readonly isPlayerVictim: boolean;
+    readonly victimName: string;
+    readonly scoreBefore: number;
+    readonly cashLost: number;
+  }): Promise<void> {
+    const skitId: GremlinSkitIdV8 =
+      ALL_GREMLIN_SKIT_IDS_V8[this.gremlinSkitCursor % ALL_GREMLIN_SKIT_IDS_V8.length];
+    this.gremlinSkitCursor += 1;
+    const newCount = opts.isPlayerVictim
+      ? ++this.gremlinHitCountPlayerInMatch
+      : ++this.gremlinHitCountRivalInMatch;
+    const save = this.campaign.getState();
+    this.audio.showpieceFoley.playGremlinSkitChoreography(skitId, save.settings.reducedMotion);
+    await playGremlinCartoonSkitV8(this.uiRoot, {
+      skitId,
+      victimName: opts.victimName,
+      isPlayerVictim: opts.isPlayerVictim,
+      scoreBefore: opts.scoreBefore,
+      cashLost: Math.abs(opts.cashLost),
+      newGremlinCount: newCount,
+      reducedMotion: save.settings.reducedMotion,
+      onPlayFoghorn: () => this.audio.showpieceFoley.playGremlinBrassFoghornCut(),
+      onPlayBoing: () => this.audio.showpieceFoley.playPodiumGremlinBoing(newCount),
+      onPlayVoiceSting: (sId) => {
+        void this.audio.voices.playGremlinSkitVoice(sId);
+      },
+    });
+  }
+
+  private async openCouchPartyFlow(initialSpec?: CouchShowdownLaunchSpecV8): Promise<void> {
+    const save = this.campaign.getState();
+    this.titleHub.hideAll();
+    this.ui.hideTitleHub();
+    const chosenSpec =
+      initialSpec ??
+      (await openCouchPartySetupSheetV8(this.uiRoot, {
+        reducedMotion: save.settings.reducedMotion,
+        onTapSfx: () => this.audio.playUiTap(),
+        onDiceSfx: () => this.audio.playSplitFlapTick(),
+        onLaunchSfx: () => this.audio.playTitleShowtimeFanfare(),
+        onVoiceCue: (cueId) => {
+          void this.audio.voices.playCue(cueId);
+        },
+      }));
+    if (!chosenSpec) {
+      if (this.phase === 'HUB') this.refreshTitleHubView(false);
+      return;
+    }
+    if (chosenSpec.questionTimerMode !== undefined) {
+      const updated = this.campaign.updateSettings({
+        questionTimerMode: chosenSpec.questionTimerMode,
+      });
+      this.applyBroadcastSettings(updated);
+    }
+    this.activeCouchDirector = new CouchPartyMatchDirectorV8(chosenSpec);
+    this.isArchiveDailyReplay = false;
+    const seed = this.generateFreshMatchSeed(chosenSpec.totalTurns * 43);
+    const combo = drawCombinatorialBoardComboV7({
+      episodeNumber: 2,
+      fallbackBoardId: 'BOARD_02_JUBILEE_HEX_BRIDGE',
+      recentCombos: [],
+      preferredMode: chosenSpec.boardPlayMode,
+      seed,
+    });
+    const couchRivalId: RivalIdV7 = ALL_RIVAL_IDS_V7.includes(
+      chosenSpec.podium2.avatarId as RivalIdV7,
+    )
+      ? (chosenSpec.podium2.avatarId as RivalIdV7)
+      : 'CARMEN_DELGADO';
+    const baseBp = this.buildQuickPlayBlueprint(combo, seed);
+    const couchBp: EpisodeBlueprintV7 = {
+      ...baseBp,
+      code: '2P COUCH',
+      title: `${chosenSpec.podium1.name} vs. ${chosenSpec.podium2.name}`,
+      stageId: chosenSpec.stageId,
+      rivalId: couchRivalId,
+    };
+    await this.startMatch(couchBp, true, false, combo);
+    this.totalTurnsInCurrentMatch = chosenSpec.totalTurns;
+    this.syncTopBroadcastBug();
   }
 
   private computeStudioAudiencePollPercentages(
@@ -2081,14 +2830,25 @@ export class ShowtimeAppV7 {
           this.fiftyFiftyAvailableInMatch = true;
         } else if (!this.audiencePollAvailableInMatch) {
           this.audiencePollAvailableInMatch = true;
+        } else if (!this.freeSwapAvailableInMatch) {
+          this.freeSwapAvailableInMatch = true;
         } else {
           this.playerMatchScore += 200;
         }
         break;
       }
       case 'GREMLIN': {
+        const scoreBefore = this.playerMatchScore;
         const loss = Math.round((this.playerMatchScore * 0.25) / 25) * 25;
         this.playerMatchScore = Math.max(0, this.playerMatchScore - loss);
+        void this.playGremlinCartoonShowpiece({
+          isPlayerVictim: true,
+          victimName: this.activeCouchDirector
+            ? this.activeCouchDirector.getActivePlayer().name
+            : 'YOU',
+          scoreBefore,
+          cashLost: loss,
+        });
         break;
       }
     }
@@ -2116,6 +2876,7 @@ export class ShowtimeAppV7 {
 
     if (cpuRes.hitGremlin) {
       // -40% CPU Studio Gremlin blowup!
+      const rivalScoreBefore = this.rivalMatchScore;
       this.rivalMatchScore = Math.max(0, this.rivalMatchScore + cpuRes.netCashDelta);
       this.cpuTiltTurnsRemaining = 2;
       this.cpuStreak = 0;
@@ -2126,6 +2887,13 @@ export class ShowtimeAppV7 {
         victim: 'RIVAL',
       });
       this.syncTopBroadcastBug('BREAKDOWN');
+      await this.playGremlinCartoonShowpiece({
+        isPlayerVictim: false,
+        victimName: rivalProfile.name,
+        scoreBefore: rivalScoreBefore,
+        cashLost: Math.abs(cpuRes.netCashDelta),
+      });
+      if (this.disposed || gen !== this.matchGenerationId) return;
       this.ui.showLiveToast(
         `⚡ STUDIO GREMLIN ZAPPED ${rivalProfile.name.toUpperCase()} (${cpuRes.netCashDelta < 0 ? `-$${Math.abs(cpuRes.netCashDelta)}` : '-40%'})!`,
         'emerald',
@@ -2222,10 +2990,16 @@ export class ShowtimeAppV7 {
 
     this.phase = 'QUESTION_OPEN';
     this.isAnswerLockingIn = false;
+    this.activeTurnLifelineUsed = null;
+    this.pipMonitor.hide();
+    this.audio.voices.stopCurrentVoice(0.05);
     this.announcer.setPhase('QUESTION_OPEN');
     this.ui.setBoardModeBanner(null);
     this.activeTileIndex = tileIndex;
-    this.activeMysteryChipsMult = this.pendingNextTurnWheelMult;
+    const couchArmedMult = this.activeCouchDirector
+      ? this.activeCouchDirector.consumeNextTile2xMultiplier()
+      : 1;
+    this.activeMysteryChipsMult = Math.min(4.0, this.pendingNextTurnWheelMult * couchArmedMult);
     this.pendingNextTurnWheelMult = 1.0;
     this.activeSecretSquareBonusMult = 0;
     this.pendingDiscoveryBannerText = null;
@@ -2364,12 +3138,29 @@ export class ShowtimeAppV7 {
     this.activeToyId = draw.selectedToy;
     this.seenEntitiesInMatch.push(draw.clue.canonicalEntityKey);
 
-    // Generous 1966 Broadcast Clock: 32s standard, 36s on Special Showcase props, 20s in Blitz!
+    // Generous 1966 Broadcast Clock + Player-Selected 5-Speed Clock (`NO TIMER · 90s · 45s · 30s · 15s`)!
     const isShowcaseSelected = draw.selectedToy !== 'TOY_01_KNIFE_SWITCH';
-    const baseSec = this.isBlitzPhase ? 20 : isShowcaseSelected ? 36 : 32;
+    const configuredSec = resolveQuestionTimerSecondsV8(save.settings.questionTimerMode, {
+      isBlitzPhase: this.isBlitzPhase,
+    });
     const spiteFactor = this.audio.isBellamySpiteChopActive() ? 0.85 : 1.0;
-    const totalSec = Math.max(15, Math.round(baseSec * spiteFactor));
-    this.remainingClueSec = totalSec;
+    let totalSec = 32;
+    if (configuredSec === null && !this.inQaQueryPreviewMode) {
+      this.activeNoTimerInTurn = true;
+      this.remainingClueSec = Number.POSITIVE_INFINITY;
+    } else {
+      this.activeNoTimerInTurn = false;
+      const rawBase =
+        configuredSec === null
+          ? 32
+          : isShowcaseSelected && configuredSec === 30 && !this.isBlitzPhase
+            ? 36
+            : configuredSec === 30 && !this.isBlitzPhase
+              ? 32
+              : configuredSec;
+      totalSec = Math.max(12, Math.round(rawBase * spiteFactor));
+      this.remainingClueSec = totalSec;
+    }
     this.lastTickedWholeSec = 99;
     this.clueOpenedAtMs = performance.now();
 
@@ -2533,25 +3324,38 @@ export class ShowtimeAppV7 {
 
     this.disposeActiveContraption();
     this.vfx.clearTransientPopups();
+    const couchCanFiftyNow = this.activeCouchDirector
+      ? this.activeCouchDirector.canUseFiftyFifty()
+      : this.fiftyFiftyAvailableInMatch;
+    const couchCanPollNow = this.activeCouchDirector
+      ? this.activeCouchDirector.canUseAudiencePoll()
+      : this.audiencePollAvailableInMatch;
     const toyMountEl = this.ui.openQuestionChassis({
       clue: displayClue,
       baseChips: effectiveDisplayChips,
       liveMultPreview,
       countdownSeconds: totalSec,
       totalCountdownSeconds: totalSec,
+      noTimerMode: this.activeNoTimerInTurn,
       isWheelhouse: effectiveWheelhouse,
       hasAmberTruce: effectiveAmberTruce,
       tvTwist: activeTwistBadge,
       isShowcaseFormat: isShowcaseSelected,
       showcaseFormatName: isShowcaseSelected ? toyMeta?.name : undefined,
-      fiftyFiftyAvailable: this.fiftyFiftyAvailableInMatch && allowFiftyFiftyOnCard,
-      audiencePollAvailable: this.audiencePollAvailableInMatch,
+      fiftyFiftyAvailable: couchCanFiftyNow && allowFiftyFiftyOnCard,
+      audiencePollAvailable: couchCanPollNow && supportsFourChoiceLifelines,
+      freeSwapAvailable: this.freeSwapAvailableInMatch,
       onUseFiftyFifty: allowFiftyFiftyOnCard
         ? () => this.handleUseFiftyFiftyLifeline()
         : undefined,
       onUseAudiencePoll: supportsFourChoiceLifelines
         ? () => this.handleUseAudiencePollLifeline()
         : undefined,
+      onUseFreeSwap: () => this.handleUseFreeSwapLifeline(),
+      plainMicroTip: getQuestionPlainMicroTipV8(draw.selectedToy, effectiveCardStyle),
+      onOpenQuestionCoach: () => {
+        void this.handleOpenQuestionCoachOnDemand();
+      },
       isMatchPointTurn,
       isAct3Showdown: this.isAct3Showdown,
       hostIntroLine: hostIntro.hostLine,
@@ -2619,46 +3423,60 @@ export class ShowtimeAppV7 {
     }
 
     const stageSpec = STAGE_WORLD_SPECS_V7[this.activeBlueprint.stageId];
-    this.activeContraption = mountTactileContraptionV7(
-      toyMountEl,
-      draw.clue,
-      draw.selectedToy,
-      {
-        pruneActive,
-        canaryTickIdx,
-        uvLoupeActive: this.canaryPendingNextTurn && preTurnAssist.exposesPoisonedCanaryInk,
-        hasPatentCyanotypeTube: preTurnAssist.highlightCyanotypeChamfer,
-        equippedRelicIds: effectiveRelics.map((r) => r.relicId),
-        dayJob: effectiveWaiver?.dayJob ?? null,
-        cardStyle: effectiveCardStyle,
-        isClutchMoment,
-        reducedMotion: save.settings.reducedMotion,
-        highContrastBadges: save.settings.highContrastBadges,
-        brassAccentHex: stageSpec.trimAccentHex,
-        onTactileSfx: (ev) => this.playContraptionSfx(ev),
-        onLockInStart: (clutch) => {
-          this.isAnswerLockingIn = true;
-          this.ui.syncLifelineButtons(false, false);
-          this.ui.updateQuestionHostLine(
-            this.resolveHostLockInQuip(
-              pendingChoiceLabel,
-              clutch,
-              draw.clue.qid + this.turnNumber * 31,
-            ),
-            clutch ? 'INTENSE' : 'WINK',
-            true,
+    const contraptionCtx = {
+      pruneActive,
+      canaryTickIdx,
+      uvLoupeActive: this.canaryPendingNextTurn && preTurnAssist.exposesPoisonedCanaryInk,
+      hasPatentCyanotypeTube: preTurnAssist.highlightCyanotypeChamfer,
+      equippedRelicIds: effectiveRelics.map((r) => r.relicId),
+      dayJob: effectiveWaiver?.dayJob ?? null,
+      cardStyle: effectiveCardStyle,
+      isClutchMoment,
+      reducedMotion: save.settings.reducedMotion,
+      highContrastBadges: save.settings.highContrastBadges,
+      brassAccentHex: stageSpec.trimAccentHex,
+      onTactileSfx: (ev: TactileSfxEventV7) => this.playContraptionSfx(ev),
+      onLockInStart: (clutch: boolean) => {
+        this.isAnswerLockingIn = true;
+        this.ui.syncLifelineButtons(false, false, false);
+        this.ui.updateQuestionHostLine(
+          this.resolveHostLockInQuip(
+            pendingChoiceLabel,
+            clutch,
+            draw.clue.qid + this.turnNumber * 31,
+          ),
+          clutch ? 'INTENSE' : 'WINK',
+          true,
+        );
+        this.playAnswerLockInAudio(clutch);
+      },
+      onRevealFlash: (isCorrect: boolean) => {
+        this.playedRevealOnPadThisTurn = true;
+        this.audio.playAnswerReveal(isCorrect, false);
+      },
+    };
+    this.activeContraption =
+      draw.selectedToy === 'TOY_14_FOUR_SHUTTER_REEL'
+        ? mountFourShutterLadderDeluxeV8(
+            toyMountEl,
+            draw.clue,
+            (resolution) => {
+              void this.resolvePlayerTurn(resolution);
+            },
+            contraptionCtx,
+          )
+        : mountTactileContraptionV7(
+            toyMountEl,
+            draw.clue,
+            draw.selectedToy,
+            contraptionCtx,
+            (resolution) => {
+              void this.resolvePlayerTurn(resolution);
+            },
           );
-          this.playAnswerLockInAudio(clutch);
-        },
-        onRevealFlash: (isCorrect) => {
-          this.playedRevealOnPadThisTurn = true;
-          this.audio.playAnswerReveal(isCorrect, false);
-        },
-      },
-      (resolution) => {
-        void this.resolvePlayerTurn(resolution);
-      },
-    );
+
+    // Strict 1st-occurrence-ONLY Studio Coach Cue Card (pauses clock while reading; never nags twice!)
+    void this.maybeShowFirstTimeQuestionCoach(draw.selectedToy, effectiveCardStyle);
   }
 
   private playContraptionSfx(ev: TactileSfxEventV7): void {
@@ -2697,10 +3515,16 @@ export class ShowtimeAppV7 {
 
     this.phase = 'POST_ANSWER_THEATER';
     this.announcer.setPhase('POST_ANSWER_THEATER');
+    this.cluesAnsweredInMatch += 1;
     const answerTimeSec = Math.max(0.2, (performance.now() - this.clueOpenedAtMs) * 0.001);
     const activeCanaryTurn = this.canaryPendingNextTurn;
     this.canaryPendingNextTurn = false;
-    const prevPlayerScore = this.playerMatchScore;
+    const couchDirector = this.activeCouchDirector;
+    const couchPodiumIdx: 0 | 1 = couchDirector ? couchDirector.activePodium : 0;
+    const prevPlayerScore =
+      couchDirector && couchPodiumIdx === 1 ? this.rivalMatchScore : this.playerMatchScore;
+    const prevOpponentScore =
+      couchDirector && couchPodiumIdx === 1 ? this.playerMatchScore : this.rivalMatchScore;
 
     this.disposeActiveContraption();
     this.engine.setCardApertureOpen(false);
@@ -2786,9 +3610,9 @@ export class ShowtimeAppV7 {
       resolution,
       turnNumber: this.turnNumber,
       answerTimeSec,
-      currentStreak: this.currentStreak,
-      playerMatchScore: this.playerMatchScore,
-      rivalMatchScore: this.rivalMatchScore,
+      currentStreak: couchDirector ? couchDirector.getStreak(couchPodiumIdx) : this.currentStreak,
+      playerMatchScore: prevPlayerScore,
+      rivalMatchScore: prevOpponentScore,
       rivalExpectedMatchScore: this.rivalExpectedMatchScore,
       rivalRole: rivalProfile.role,
       waiver: effectiveWaiver,
@@ -2809,7 +3633,7 @@ export class ShowtimeAppV7 {
 
     const modeBonusCash = modeBonus.bonusCash;
     const actualModeSteal = economy.scored
-      ? Math.min(modeBonus.rivalStealCash, this.rivalMatchScore)
+      ? Math.min(modeBonus.rivalStealCash, prevOpponentScore)
       : 0;
     const tileScreenPt = this.getTileScreenCoordinates(tileIdx);
 
@@ -2828,16 +3652,59 @@ export class ShowtimeAppV7 {
     }
     this.syncBoardSpotlightBeams();
 
-    // Update live match counters & feat trophies with exact 1:1 net score delta!
-    const rawTurnGain = economy.netCashDelta + modeBonusCash + actualModeSteal;
-    const totalTurnGain = Math.max(-prevPlayerScore, rawTurnGain);
-    this.playerMatchScore = prevPlayerScore + totalTurnGain;
-    if (actualModeSteal > 0) {
-      this.rivalMatchScore = Math.max(0, this.rivalMatchScore - actualModeSteal);
-      this.cpuTiltTurnsRemaining = 2;
+    // Scoop or feed the gleaming Studio Rebound Pot!
+    let reboundScoopedCash = 0;
+    if (economy.scored && this.reboundPot.hasActivePot()) {
+      const winnerSide = couchDirector && couchPodiumIdx === 1 ? 'RIGHT' : 'LEFT';
+      const winnerLabel = couchDirector ? couchDirector.getActivePlayer().name : 'YOU';
+      reboundScoopedCash = this.reboundPot.scoopPot(winnerSide, winnerLabel);
+    } else if (!economy.scored) {
+      this.reboundPot.addMissToPot(100);
     }
-    this.currentStreak = economy.nextStreak;
+
+    // Update live match counters & feat trophies with exact 1:1 net score delta!
+    const rawTurnGain = economy.netCashDelta + modeBonusCash + actualModeSteal + reboundScoopedCash;
+    const totalTurnGain = Math.max(-prevPlayerScore, rawTurnGain);
+    if (couchDirector && couchPodiumIdx === 1) {
+      this.rivalMatchScore = prevPlayerScore + totalTurnGain;
+      if (actualModeSteal > 0) {
+        this.playerMatchScore = Math.max(0, this.playerMatchScore - actualModeSteal);
+      }
+    } else {
+      this.playerMatchScore = prevPlayerScore + totalTurnGain;
+      if (actualModeSteal > 0) {
+        this.rivalMatchScore = Math.max(0, this.rivalMatchScore - actualModeSteal);
+        this.cpuTiltTurnsRemaining = 2;
+      }
+    }
+    if (couchDirector) {
+      couchDirector.recordTurnOutcome({
+        podium: couchPodiumIdx,
+        correct: economy.scored,
+        cashDelta: 0,
+      });
+      couchDirector.setCash(0, this.playerMatchScore);
+      couchDirector.setCash(1, this.rivalMatchScore);
+      this.currentStreak = couchDirector.getStreak(couchPodiumIdx);
+    } else {
+      this.currentStreak = economy.nextStreak;
+    }
     this.maxStreakInMatch = Math.max(this.maxStreakInMatch, this.currentStreak);
+
+    // Persist Historical Career Stats per clue + lifeline conversion ROI!
+    recordClueAttemptStatV8({
+      category: preClaimTile.category,
+      toyId: this.activeToyId,
+      cardStyle: this.activeCardStyleInTurn,
+      isCorrect: economy.scored,
+      responseMs: Math.round(answerTimeSec * 1000),
+      cashEarned: Math.max(0, totalTurnGain),
+      usedFiftyFifty: this.activeTurnLifelineUsed === 'FIFTY_FIFTY',
+      usedAudiencePoll: this.activeTurnLifelineUsed === 'AUDIENCE_POLL',
+      usedFreeSwap: this.activeTurnLifelineUsed === 'FREE_SWAP',
+    });
+    this.activeTurnLifelineUsed = null;
+
     // Award SAFE_CRACKER strictly on WINNING a $500+ Locked Gold Vault or Brass-Key Safe!
     if (
       economy.scored &&
@@ -2846,6 +3713,7 @@ export class ShowtimeAppV7 {
         (preClaimTile.baseChips >= 500 && this.activeUnlockTopology === 'KEY_AND_SAFE'))
     ) {
       this.crackedVaultOrSafeInMatch = true;
+      recordVaultCrackedStatV8();
     }
     if (
       economy.scored &&
@@ -3028,6 +3896,41 @@ export class ShowtimeAppV7 {
             )
             .join(' · ')
         : clue.ahaFactoid;
+    const flavorEval = evaluatePostAnswerFlavorV8({
+      clue,
+      resolution,
+      responseTimeSec: answerTimeSec,
+      reboundScoopedCash,
+      playerStreak: this.currentStreak,
+      rivalName: couchDirector ? couchDirector.getOpponentPlayer().name : rivalProfile.name,
+      toyId: this.activeToyId,
+    });
+    const triggeredPopularMythKlaxon =
+      !economy.scored && Boolean(resolution.triggeredKlaxon || clue.isKlaxonMyth);
+
+    // Varied Non-Repeating Integrated Voice Acting on Post-Answer Reveal!
+    if (triggeredPopularMythKlaxon) {
+      this.audio.showpieceFoley.playPopularMythKlaxonSiren();
+      void this.audio.voices.playMythKlaxonCall();
+    } else if (reboundScoopedCash > 0 && economy.scored) {
+      void this.audio.voices.playPoolVoice('POOL_REBOUND_SCOOP');
+    } else if (economy.scored && answerTimeSec <= 3.6) {
+      void this.audio.voices.playPoolVoice('POOL_QUICK_DRAW');
+    } else if (
+      economy.scored &&
+      prevPlayerScore <= prevOpponentScore &&
+      prevPlayerScore + totalTurnGain > prevOpponentScore &&
+      this.turnNumber >= 3
+    ) {
+      void this.audio.voices.playPoolVoice('POOL_COMEBACK');
+    } else if (economy.scored && this.currentStreak >= 3) {
+      void this.audio.voices.playPoolVoice('POOL_STREAK_HOT');
+    } else if (economy.scored) {
+      void this.audio.voices.playHostRightQuip();
+    } else {
+      void this.audio.voices.playHostWrongQuip();
+    }
+
     const hostReveal = this.resolveHostAnswerReveal({
       correct: economy.scored,
       cashWon: Math.max(0, totalTurnGain),
@@ -3045,6 +3948,17 @@ export class ShowtimeAppV7 {
           : undefined;
 
     this.vfx.clearTransientPopups();
+    if (triggeredPopularMythKlaxon) {
+      await flashPopularMythKlaxonV8(this.uiRoot, {
+        chosenTrapText: resolution.chosenSummary || 'Popular Dinner-Table Myth',
+        trueAnswerText: clue.choices[clue.answerIdx],
+        ahaFactoid: postAhaFactoid,
+        wittyCallout: flavorEval.wittyHostLine,
+        reducedMotion: save.settings.reducedMotion,
+      });
+      if (this.disposed || gen !== this.matchGenerationId) return;
+    }
+
     await this.ui.playPostAnswerTheater({
       resolution,
       ahaFactoid: postAhaFactoid,
@@ -3053,7 +3967,7 @@ export class ShowtimeAppV7 {
       extraBonusLabel,
       dwellMs: theaterDwellMs,
       discoveryCallout: this.pendingDiscoveryBannerText ?? undefined,
-      hostQuip: hostReveal.hostQuip,
+      hostQuip: flavorEval.wittyHostLine || hostReveal.hostQuip,
       hostMood: hostReveal.mood,
     });
     if (this.disposed || gen !== this.matchGenerationId) return;
@@ -3067,34 +3981,58 @@ export class ShowtimeAppV7 {
           : 0;
 
     if (earnedGremlinSpins > 0) {
+      const activePurseBefore =
+        couchDirector && couchPodiumIdx === 1 ? this.rivalMatchScore : this.playerMatchScore;
       const gremlinRes = await this.twistTheater.playPressYourLuckGremlinBoard({
         spinsEarned: earnedGremlinSpins,
-        playerCash: this.playerMatchScore,
-        rivalName: rivalProfile.name,
+        playerCash: activePurseBefore,
+        rivalName: couchDirector ? couchDirector.getOpponentPlayer().name : rivalProfile.name,
         seed: (this.activeMatchSeedOffset + this.turnNumber * 37 + tileIdx) >>> 0,
         onBounceTick: () => this.audio.playSplitFlapTick(),
         onGremlinZonk: () => this.playGremlinZonkSfx(),
       });
       if (this.disposed || gen !== this.matchGenerationId) return;
 
-      this.playerMatchScore = Math.max(0, this.playerMatchScore + gremlinRes.netCashDelta);
-      if (gremlinRes.rivalCashDelta !== 0) {
-        this.rivalMatchScore = Math.max(0, this.rivalMatchScore + gremlinRes.rivalCashDelta);
-        if (gremlinRes.rivalCashDelta < 0) this.cpuTiltTurnsRemaining = 2;
+      if (couchDirector && couchPodiumIdx === 1) {
+        this.rivalMatchScore = Math.max(0, this.rivalMatchScore + gremlinRes.netCashDelta);
+        if (gremlinRes.rivalCashDelta !== 0) {
+          this.playerMatchScore = Math.max(0, this.playerMatchScore + gremlinRes.rivalCashDelta);
+        }
+        couchDirector.setCash(0, this.playerMatchScore);
+        couchDirector.setCash(1, this.rivalMatchScore);
+      } else {
+        this.playerMatchScore = Math.max(0, this.playerMatchScore + gremlinRes.netCashDelta);
+        if (gremlinRes.rivalCashDelta !== 0) {
+          this.rivalMatchScore = Math.max(0, this.rivalMatchScore + gremlinRes.rivalCashDelta);
+          if (gremlinRes.rivalCashDelta < 0) this.cpuTiltTurnsRemaining = 2;
+        }
+        if (couchDirector) {
+          couchDirector.setCash(0, this.playerMatchScore);
+          couchDirector.setCash(1, this.rivalMatchScore);
+        }
       }
       if (gremlinRes.hitGremlin) {
+        if (couchDirector) couchDirector.recordGremlinHit(couchPodiumIdx, 0);
         this.announcer.onGremlinZonk({
           rivalId: this.activeBlueprint.rivalId,
           rivalName: rivalProfile.name,
           victim: 'PLAYER',
         });
+        await this.playGremlinCartoonShowpiece({
+          isPlayerVictim: true,
+          victimName: couchDirector ? couchDirector.getActivePlayer().name : 'YOU',
+          scoreBefore: activePurseBefore,
+          cashLost: Math.abs(gremlinRes.netCashDelta),
+        });
+        if (this.disposed || gen !== this.matchGenerationId) return;
       } else if (gremlinRes.netCashDelta > 0 || gremlinRes.passedSpinsToRival > 0) {
         this.dodgedGremlinInMatch = true;
+        recordGremlinSurvivedStatV8();
       }
       this.syncTopBroadcastBug();
 
       // If Player passed spins to the Champion, play out the CPU's Gremlin sweat immediately!
-      if (gremlinRes.passedSpinsToRival > 0) {
+      if (gremlinRes.passedSpinsToRival > 0 && !couchDirector) {
         this.announcer.onGremlinPassSpins({
           rivalId: this.activeBlueprint.rivalId,
           rivalName: rivalProfile.name,
@@ -3113,6 +4051,80 @@ export class ShowtimeAppV7 {
       });
       if (this.disposed || gen !== this.matchGenerationId) return;
       this.applyPlayerBigWheelResult(bonusWheel, tileScreenPt, true);
+    }
+
+    // 2-Player Couch Pass-and-Play Turn Handoff OR Act III Blind Dual Final Showdown!
+    if (couchDirector) {
+      const activeCouchCash =
+        couchPodiumIdx === 1 ? this.rivalMatchScore : this.playerMatchScore;
+      const oppCouchCash =
+        couchPodiumIdx === 1 ? this.playerMatchScore : this.rivalMatchScore;
+      if (
+        !this.instantBargainOfferedInMatch &&
+        couchPodiumIdx === 1 &&
+        this.turnNumber === Math.max(2, Math.floor(this.totalTurnsInCurrentMatch / 2)) &&
+        activeCouchCash >= 300
+      ) {
+        this.instantBargainOfferedInMatch = true;
+        void this.audio.voices.playPoolVoice('POOL_BARGAIN_OPEN');
+        const bargainChoice = await runCurtainCallBargainShowpieceV8(this.uiRoot, {
+          playerCash: activeCouchCash,
+          rivalCash: oppCouchCash,
+          rivalName: couchDirector.getOpponentPlayer().name,
+          turnNumber: this.turnNumber,
+          isCampaign: false,
+          isCouch2P: true,
+          activePlayerName: couchDirector.getActivePlayer().name,
+          reducedMotion: save.settings.reducedMotion,
+          onBellSfx: () => this.audio.showpieceFoley.playCurtainCallBargainBell(),
+          onBuySfx: () => {
+            this.audio.playTrophyUnlockChime();
+            void this.audio.voices.playPoolVoice('POOL_BARGAIN_SOLD');
+          },
+          onNoSaleSfx: () => {
+            this.audio.playUiTap();
+            void this.audio.voices.playPoolVoice('POOL_BARGAIN_NOSALE');
+          },
+        });
+        if (this.disposed || gen !== this.matchGenerationId) return;
+        if (bargainChoice.accepted && bargainChoice.chosenItem) {
+          const cost = bargainChoice.chosenItem.costLiveCash;
+          this.rivalMatchScore = Math.max(0, this.rivalMatchScore - cost);
+          couchDirector.setCash(1, this.rivalMatchScore);
+          if (bargainChoice.chosenItem.kind === 'NEXT_TILE_2X') {
+            couchDirector.armNextTile2x(1);
+          } else if (bargainChoice.chosenItem.kind === 'FINAL_WAGER_SHIELD') {
+            couchDirector.grantFinalWagerShield(1);
+          } else {
+            couchDirector.addMysteryVaultBonus(1, 500);
+          }
+          recordBargainBoughtStatV8();
+          this.syncTopBroadcastBug();
+        }
+      }
+
+      const step = couchDirector.advanceTurnStep();
+      this.turnNumber = step.turnNumber;
+      if (step.isFinalShowdownReady) {
+        await this.runCouchPartyFinale(gen);
+        return;
+      }
+      void this.audio.voices.playPoolVoice('POOL_COUCH_PASS');
+      await couchDirector.playTurnHandoffBanner(
+        this.uiRoot,
+        step.turnNumber,
+        this.totalTurnsInCurrentMatch,
+        {
+          reducedMotion: save.settings.reducedMotion,
+          onTapSfx: () => this.audio.playUiTap(),
+          onSwooshSfx: () => this.audio.playTileSelect(),
+        },
+      );
+      if (this.disposed || gen !== this.matchGenerationId) return;
+      this.announcer.setPhase('BOARD_SELECT');
+      this.ui.setBoardModeBanner(this.board.getBoardModeRuleBanner());
+      this.beginBoardSelectTurn();
+      return;
     }
 
     // Brief sightline breath on the 3D Contraption Board before visible Rival choreography
@@ -3155,6 +4167,7 @@ export class ShowtimeAppV7 {
       this.setSongChartVariantSafe((this.activeBlueprint.episodeNumber + 1) % 5);
       this.triggerApplauseSign(2.4);
       this.audio.playTileSelect();
+      void this.audio.voices.playPoolVoice('POOL_ACT2_BUMPER');
 
       await this.ui.playActBreakBumper({
         actTitle: '★ ACT II · DOUBLE-DOLLARS & TWISTS! ★',
@@ -3189,67 +4202,85 @@ export class ShowtimeAppV7 {
       if (this.disposed || gen !== this.matchGenerationId) return;
     }
 
-    // 1969 Sale of the Century Mid-Show INSTANT BARGAIN Turntable (Turn 4 or 6 when holding >= $220!)
+    // 1966–1969 Sale of the Century Mid-Show CURTAIN CALL INSTANT BARGAIN Showpiece (Turn 4 or 6 when holding >= $300!)
     if (
       !this.isDailyBroadcast &&
-      !this.isQuickPlay &&
       !this.instantBargainOfferedInMatch &&
       (this.turnNumber === 4 || this.turnNumber === 6) &&
-      this.playerMatchScore >= 220
+      this.playerMatchScore >= 300
     ) {
       const curSave = this.campaign.getState();
-      if (curSave.equippedRelics.length < 5) {
-        const ownedSet = new Set(curSave.equippedRelics.map((r) => r.relicId));
-        const multCount = curSave.equippedRelics.filter(
-          (eq) => RELIC_CATALOG_V7.find((rc) => rc.relicId === eq.relicId)?.slotKind === 'MULT_DRIVER',
-        ).length;
-        const eligibleBargains = RELIC_CATALOG_V7.filter(
-          (r) =>
-            r.ledgerKind === 'CLEAN' &&
-            !ownedSet.has(r.relicId) &&
-            (r.slotKind !== 'MULT_DRIVER' || multCount < 2),
-        );
-        const bargainRelic =
-          eligibleBargains.length > 0
-            ? eligibleBargains[
-                ((this.activeMatchSeedOffset + this.turnNumber * 37) >>> 0) %
-                  eligibleBargains.length
-              ]
-            : undefined;
-        if (bargainRelic) {
-          this.instantBargainOfferedInMatch = true;
-          const bargainCost = 150;
-          this.announcer.onClassicTvTwist('INSTANT_BARGAIN', {
-            playerCash: this.playerMatchScore,
-            rivalCash: this.rivalMatchScore,
-          });
-          const decision = await this.twistTheater.offerInstantBargainTurntable({
-            playerCash: this.playerMatchScore,
-            costCash: bargainCost,
-            relicName: bargainRelic.name,
-            relicPerk: bargainRelic.description,
-            listPriceCash: bargainRelic.costCash,
-          });
-          if (this.disposed || gen !== this.matchGenerationId) return;
-          if (decision === 'BUY' && this.playerMatchScore >= bargainCost) {
-            const equippedOk = this.campaign.purchaseOrEquipRelic(
-              bargainRelic.relicId,
-              'GILDED',
-              undefined,
-              true,
-            );
-            if (equippedOk.ok) {
-              this.playerMatchScore = Math.max(0, this.playerMatchScore - bargainCost);
-              this.audio.playTrophyUnlockChime();
-              this.vfx.burstLivingColorConfetti('MEDIUM');
-              this.syncTopBroadcastBug();
-              this.ui.showLiveToast(
-                `🔔 INSTANT BARGAIN PACKED: ${bargainRelic.name.toUpperCase()}!`,
-                'emerald',
-                2400,
-              );
+      const ownedSet = new Set(curSave.equippedRelics.map((r) => r.relicId));
+      const multCount = curSave.equippedRelics.filter(
+        (eq) => RELIC_CATALOG_V7.find((rc) => rc.relicId === eq.relicId)?.slotKind === 'MULT_DRIVER',
+      ).length;
+      const eligibleBargains = RELIC_CATALOG_V7.filter(
+        (r) =>
+          r.ledgerKind === 'CLEAN' &&
+          !ownedSet.has(r.relicId) &&
+          (r.slotKind !== 'MULT_DRIVER' || multCount < 2),
+      );
+      const bargainRelic =
+        !this.isQuickPlay && curSave.equippedRelics.length < 5 && eligibleBargains.length > 0
+          ? eligibleBargains[
+              ((this.activeMatchSeedOffset + this.turnNumber * 37) >>> 0) %
+                eligibleBargains.length
+            ]
+          : undefined;
+
+      this.instantBargainOfferedInMatch = true;
+      this.announcer.onClassicTvTwist('INSTANT_BARGAIN', {
+        playerCash: this.playerMatchScore,
+        rivalCash: this.rivalMatchScore,
+      });
+      void this.audio.voices.playPoolVoice('POOL_BARGAIN_OPEN');
+      const bargainChoice = await runCurtainCallBargainShowpieceV8(this.uiRoot, {
+        playerCash: this.playerMatchScore,
+        rivalCash: this.rivalMatchScore,
+        rivalName: rivalProfile.name,
+        turnNumber: this.turnNumber,
+        isCampaign: !this.isQuickPlay,
+        candidateRelic: bargainRelic
+          ? {
+              relicId: bargainRelic.relicId,
+              name: bargainRelic.name,
+              summary: bargainRelic.description,
             }
+          : undefined,
+        reducedMotion: curSave.settings.reducedMotion,
+        onBellSfx: () => this.audio.showpieceFoley.playCurtainCallBargainBell(),
+        onBuySfx: () => {
+          this.audio.playTrophyUnlockChime();
+          void this.audio.voices.playPoolVoice('POOL_BARGAIN_SOLD');
+        },
+        onNoSaleSfx: () => {
+          this.audio.playUiTap();
+          void this.audio.voices.playPoolVoice('POOL_BARGAIN_NOSALE');
+        },
+      });
+      if (this.disposed || gen !== this.matchGenerationId) return;
+
+      if (bargainChoice.accepted && bargainChoice.chosenItem) {
+        const item = bargainChoice.chosenItem;
+        if (this.playerMatchScore >= item.costLiveCash) {
+          this.playerMatchScore = Math.max(0, this.playerMatchScore - item.costLiveCash);
+          if (item.kind === 'GOLD_PROP' && item.relicId && !this.isQuickPlay) {
+            this.campaign.purchaseOrEquipRelic(item.relicId, 'GILDED', undefined, true);
+          } else if (item.kind === 'GOLD_PROP') {
+            this.cleanBonusCashInMatch += 500;
+          } else if (item.kind === 'NEXT_TILE_2X') {
+            this.pendingNextTurnWheelMult = Math.min(4.0, this.pendingNextTurnWheelMult * 2.0);
+          } else if (item.kind === 'FINAL_WAGER_SHIELD') {
+            this.finalWagerShieldArmedInMatch = true;
           }
+          recordBargainBoughtStatV8();
+          this.vfx.burstLivingColorConfetti('MEDIUM');
+          this.syncTopBroadcastBug();
+          this.ui.showLiveToast(
+            `CURTAIN CALL BARGAIN CLAIMED: ${item.title.toUpperCase()}!`,
+            'emerald',
+            2400,
+          );
         }
       }
     }
@@ -3307,6 +4338,7 @@ export class ShowtimeAppV7 {
     this.syncTopBroadcastBug('POISED');
     this.playBandReactionSafe('CLUTCH_POINT');
     this.board.triggerMarqueeCelebration(4.0);
+    void this.audio.voices.playPoolVoice('POOL_ACT3_WAGER');
 
     // Step 1: Dramatic 1966 FINAL BROADCAST WAGER Stage Card ($500 House Grudge Floor!)
     const maxPlayerWager = Math.max(500, this.playerMatchScore);
@@ -3334,15 +4366,27 @@ export class ShowtimeAppV7 {
     });
     if (this.disposed || gen !== this.matchGenerationId) return;
 
-    // Step 2: Open the Final Showdown Clue with a 35s Spotlight Clock & Grant Bellamy Intro!
+    // Step 2: Open the Final Showdown Clue with Player-Selected 5-Speed Clock (or NO TIMER)!
     this.phase = 'QUESTION_OPEN';
     this.announcer.setPhase('QUESTION_OPEN');
+    this.pipMonitor.hide();
+    this.audio.voices.stopCurrentVoice(0.05);
     this.activeClue = finalClue;
     this.activeToyId = 'TOY_01_KNIFE_SWITCH';
     this.activeCardStyleInTurn = 'CLASSIC_CUE';
+    this.activeTurnLifelineUsed = null;
     this.isAnswerLockingIn = false;
     this.prunedChoiceIndicesInTurn = [];
-    this.remainingClueSec = 35;
+    const rawFinalSec = resolveQuestionTimerSecondsV8(save.settings.questionTimerMode);
+    const configuredFinalSec = rawFinalSec === 30 ? 35 : rawFinalSec;
+    if (configuredFinalSec === null) {
+      this.activeNoTimerInTurn = true;
+      this.remainingClueSec = Number.POSITIVE_INFINITY;
+    } else {
+      this.activeNoTimerInTurn = false;
+      this.remainingClueSec = configuredFinalSec;
+    }
+    const finalClockDisplay = configuredFinalSec ?? 35;
     this.lastTickedWholeSec = 99;
     this.clueOpenedAtMs = performance.now();
     this.playedRevealOnPadThisTurn = false;
@@ -3364,14 +4408,20 @@ export class ShowtimeAppV7 {
       clue: finalClue,
       baseChips: chosenPlayerWager,
       liveMultPreview: 1.0,
-      countdownSeconds: 35,
-      totalCountdownSeconds: 35,
+      countdownSeconds: finalClockDisplay,
+      totalCountdownSeconds: finalClockDisplay,
+      noTimerMode: this.activeNoTimerInTurn,
       isWheelhouse: notebook.revealedWeak.includes(finalClue.category),
       tvTwist: 'SECRET_SQUARE',
       fiftyFiftyAvailable: this.fiftyFiftyAvailableInMatch,
       audiencePollAvailable: this.audiencePollAvailableInMatch,
+      freeSwapAvailable: false,
       onUseFiftyFifty: () => this.handleUseFiftyFiftyLifeline(),
       onUseAudiencePoll: () => this.handleUseAudiencePollLifeline(),
+      plainMicroTip: getQuestionPlainMicroTipV8('TOY_01_KNIFE_SWITCH', 'CLASSIC_CUE'),
+      onOpenQuestionCoach: () => {
+        void this.handleOpenQuestionCoachOnDemand();
+      },
       isMatchPointTurn: true,
       isAct3Showdown: true,
       isFinalWager: true,
@@ -3521,10 +4571,29 @@ export class ShowtimeAppV7 {
       0,
       prevRivalCash + (cpuCorrect ? cpuWager : -cpuWager),
     );
+    const playerWagerLoss = this.finalWagerShieldArmedInMatch
+      ? Math.floor(Math.min(prevPlayerCash, chosenPlayerWager) * 0.5)
+      : chosenPlayerWager;
+    if (!playerCorrect && this.finalWagerShieldArmedInMatch) {
+      this.finalWagerShieldArmedInMatch = false;
+    }
     this.playerMatchScore = Math.max(
       0,
-      prevPlayerCash + (playerCorrect ? chosenPlayerWager : -chosenPlayerWager),
+      prevPlayerCash + (playerCorrect ? chosenPlayerWager : -playerWagerLoss),
     );
+    this.cluesAnsweredInMatch += 1;
+    recordFinalWagerStatV8(playerCorrect);
+    recordClueAttemptStatV8({
+      category: finalClue.category,
+      toyId: 'TOY_01_KNIFE_SWITCH',
+      cardStyle: 'CLASSIC_CUE',
+      isCorrect: playerCorrect,
+      responseMs: Math.round(finalAnswerTimeSec * 1000),
+      cashEarned: playerCorrect ? chosenPlayerWager : 0,
+      usedFiftyFifty: this.activeTurnLifelineUsed === 'FIFTY_FIFTY',
+      usedAudiencePoll: this.activeTurnLifelineUsed === 'AUDIENCE_POLL',
+    });
+    this.activeTurnLifelineUsed = null;
 
     if (playerCorrect) {
       this.correctCountInMatch += 1;
@@ -3677,7 +4746,7 @@ export class ShowtimeAppV7 {
     // Honest CPU Accuracy & Temperament Psychology — ZERO Fake Score Rubber-Banding!
     const curSave = this.campaign.getState();
     const cpuOutcome = evaluateCpuTurnOutcomeV7({
-      baseAccuracy: rivalProfile.baseAccuracy,
+      baseAccuracy: this.cpuHeelDirector.getEffectiveTurnBaseAccuracy(this.turnNumber),
       difficultyMode: curSave.settings.difficultyMode ?? 'PRIMETIME_NORMAL',
       playstyle,
       temperament,
@@ -3753,7 +4822,10 @@ export class ShowtimeAppV7 {
 
     if (rivalScored) {
       this.cpuStreak += 1;
-      const gain = rivalTileShownCash;
+      const rivalScoop = this.reboundPot.hasActivePot()
+        ? this.reboundPot.scoopPot('RIGHT', rivalProfile.name)
+        : 0;
+      const gain = rivalTileShownCash + rivalScoop;
       this.rivalMatchScore += gain;
       this.audio.playSplitFlapTick();
 
@@ -3819,17 +4891,26 @@ export class ShowtimeAppV7 {
       }
     } else {
       this.cpuStreak = 0;
+      this.reboundPot.addMissToPot(100);
       const foundWeak = isWeak && this.discoverRivalWeakCategory(rivalId, targetTile.category);
       this.announcer.onRivalMissRebound({
         rivalId,
         category: targetTile.category,
       });
+      void this.audio.voices.playPoolVoice('POOL_RIVAL_STUMBLED', { minCooldownMs: 4500 });
+      this.pipMonitor.showReaction({
+        castId: rivalId,
+        emotion: 'RATTLED',
+        badgeLabel: 'CHAMPION FUMBLED!',
+        quipText: `${rivalProfile.name} left ${rivalTileCatLabel} wide open—plus $100 in the Rebound Pot!`,
+        durationMs: 2200,
+      });
       this.ui.showRivalTurnChyron({
         rivalId,
-        headline: `${rivalProfile.name} FUMBLED ${rivalTileCatLabel}! (+$50 REBOUND OPEN!)`,
+        headline: `${rivalProfile.name} FUMBLED ${rivalTileCatLabel}! (+$100 REBOUND POT!)`,
         subline: foundWeak
           ? `💡 WEAK SPOT FOUND: ${rivalTileCatLabel}! (+0.5× SAVED TO NOTEBOOK)`
-          : 'Square stays OPEN with +$50 bonus cash!',
+          : 'Square stays OPEN and feeds +$100 into the Studio Rebound Pot!',
         tone: foundWeak ? 'scout' : 'miss',
         emotion: 'RATTLED',
         onSkip,
@@ -3847,6 +4928,8 @@ export class ShowtimeAppV7 {
   private async finishMatchCeremony(gen: number): Promise<void> {
     this.phase = 'CEREMONY';
     this.announcer.setPhase('CEREMONY');
+    this.reboundPot.setVisible(false);
+    this.pipMonitor.hide();
     this.vfx.clearTransientPopups();
     this.ui.hideRivalTurnChyron();
     this.ui.setBoardModeBanner(null);
@@ -3884,19 +4967,42 @@ export class ShowtimeAppV7 {
       }
     }
 
-    // Daily 1966 Broadcast Shareable Result Card!
+    // Daily 1966 Broadcast Shareable Result Card (Streak-Safe Archive Replay Support)!
     if (this.isDailyBroadcast && this.activeDailyBlueprint) {
-      const updatedDaily = recordDailyBroadcastCompletionV7({
-        dateIso: this.activeDailyBlueprint.dateIso,
-        episodeNumber: this.activeDailyBlueprint.dailyNumber,
+      const rivalName =
+        CAST_PROFILES_V7[this.activeBlueprint.rivalId]?.name ?? 'Studio Champion';
+      const updatedDaily = this.isArchiveDailyReplay
+        ? recordArchiveDailyResultV8({
+            dateIso: this.activeDailyBlueprint.dateIso,
+            episodeNumber: this.activeDailyBlueprint.dailyNumber,
+            playerCash: this.playerMatchScore,
+            rivalCash: this.rivalMatchScore,
+            won: didWin,
+            tileHistory: this.dailyTileHistory,
+          })
+        : recordDailyBroadcastCompletionV7({
+            dateIso: this.activeDailyBlueprint.dateIso,
+            episodeNumber: this.activeDailyBlueprint.dailyNumber,
+            playerCash: this.playerMatchScore,
+            rivalCash: this.rivalMatchScore,
+            won: didWin,
+            tileHistory: this.dailyTileHistory,
+          });
+      recordMatchCompletedStatV8({
+        tsIso: new Date().toISOString(),
+        matchType: 'DAILY',
+        label: `DAILY #${this.activeDailyBlueprint.dailyNumber}`,
+        boardPlayMode: this.activePlayMode,
+        rivalName,
         playerCash: this.playerMatchScore,
         rivalCash: this.rivalMatchScore,
         won: didWin,
-        tileHistory: this.dailyTileHistory,
+        cluesAnswered: Math.max(1, this.cluesAnsweredInMatch),
+        cluesCorrect: this.correctCountInMatch,
+        bestMatchStreak: Math.max(this.maxStreakInMatch, this.currentStreak),
       });
+      void this.audio.voices.playCue(didWin ? 'VO_CEREMONY_DAILY_WIN' : 'VO_CEREMONY_CLOSE_LOSS');
       this.ui.showTopBroadcastBug(false, false);
-      const rivalName =
-        CAST_PROFILES_V7[this.activeBlueprint.rivalId]?.name ?? 'Studio Champion';
       const stageName = STAGE_WORLD_SPECS_V7[this.activeBlueprint.stageId].name;
       const action = await this.titleHub.showDailyBroadcastResultModal({
         save: updatedDaily,
@@ -3906,7 +5012,9 @@ export class ShowtimeAppV7 {
       });
       if (this.disposed || gen !== this.matchGenerationId) return;
       if (action === 'PLAY_AGAIN') {
-        await this.startDailyBroadcastMatch();
+        await this.startDailyBroadcastMatch(
+          this.isArchiveDailyReplay ? this.activeDailyBlueprint.dateIso : undefined,
+        );
       } else {
         this.returnToTitleHub();
       }
@@ -3976,6 +5084,30 @@ export class ShowtimeAppV7 {
         saveBefore.masteredModeDifficulties.push(pairKey);
       }
     }
+
+    const bestMatchStreakRecorded = Math.max(this.maxStreakInMatch, this.currentStreak);
+    recordMatchCompletedStatV8({
+      tsIso: new Date().toISOString(),
+      matchType: this.isQuickPlay ? 'QUICK_PLAY' : 'CAMPAIGN',
+      label: this.isQuickPlay ? 'QUICK' : this.activeBlueprint.code,
+      boardPlayMode: this.activePlayMode,
+      rivalName: CAST_PROFILES_V7[this.activeBlueprint.rivalId]?.name ?? 'Studio Champion',
+      playerCash: this.playerMatchScore,
+      rivalCash: this.rivalMatchScore,
+      won: didWin,
+      cluesAnswered: Math.max(1, this.cluesAnsweredInMatch),
+      cluesCorrect: this.correctCountInMatch,
+      bestMatchStreak: bestMatchStreakRecorded,
+    });
+    void this.audio.voices.playCue(
+      isCoChampionTie
+        ? 'VO_CEREMONY_CO_CHAMPION'
+        : didWin
+          ? nextChampStreak >= 2
+            ? 'VO_CEREMONY_RETURNING_STREAK'
+            : 'VO_CEREMONY_NEW_CHAMPION'
+          : 'VO_CEREMONY_CLOSE_LOSS',
+    );
 
     this.maxStreakInMatch = 0;
     this.crackedVaultOrSafeInMatch = false;
@@ -4133,6 +5265,107 @@ export class ShowtimeAppV7 {
     await this.startMatch(nextBp, false, false, previewNextCombo);
   }
 
+  private async runCouchPartyFinale(gen: number): Promise<void> {
+    if (this.disposed || gen !== this.matchGenerationId || !this.activeCouchDirector) return;
+    const director = this.activeCouchDirector;
+    this.phase = 'CEREMONY';
+    this.reboundPot.setVisible(false);
+    this.pipMonitor.hide();
+    this.ui.hideRivalTurnChyron();
+    this.ui.setBoardModeBanner(null);
+
+    const save = this.campaign.getState();
+    const catSeed =
+      ((this.activeMatchSeedOffset + director.spec.totalTurns * 19 + 7) >>> 0) %
+      ALL_CATEGORIES_V7.length;
+    const finalCat = ALL_CATEGORIES_V7[catSeed] ?? 'HEADLINES';
+    const draw = this.corpus.drawClueForTurn({
+      category: finalCat,
+      maxDifficulty: 3,
+      preferredToyId: 'TOY_01_KNIFE_SWITCH',
+      forceClassicFourChoice: true,
+      isBlitz: false,
+      recentEntities: this.seenEntitiesInMatch,
+    });
+    const rawCouchSec = resolveQuestionTimerSecondsV8(save.settings.questionTimerMode);
+    const configuredSec = rawCouchSec === 30 ? 35 : rawCouchSec;
+
+    const showdown = await runCouchBlindFinalShowdownV8(this.uiRoot, {
+      spec: director.spec,
+      p1Cash: this.playerMatchScore,
+      p2Cash: this.rivalMatchScore,
+      p1FinalWagerShield: director.hasFinalWagerShield(0),
+      p2FinalWagerShield: director.hasFinalWagerShield(1),
+      clue: draw.clue,
+      clueTimerSec: configuredSec ?? 90,
+      reducedMotion: save.settings.reducedMotion,
+      onTapSfx: () => this.audio.playUiTap(),
+      onSealEnvelopeSfx: () => this.audio.playRubberStamp(),
+      onClockTickSfx: (rem) => this.audio.playCountdownTick(rem),
+      onRevealAnswerSfx: (ok) => this.audio.playAnswerReveal(ok, false),
+      onFlipPodiumSfx: (_idx, ok) => {
+        if (ok) this.audio.playRivalTileClaim();
+        else this.audio.playSplitFlapTick();
+      },
+      onCelebrateSfx: () => {
+        this.audio.playEpisodeCeremonyFanfare(true);
+        this.vfx.burstLivingColorConfetti('MEDIUM');
+      },
+      onVoiceCue: (cueId) => {
+        void this.audio.voices.playCue(cueId);
+      },
+    });
+    if (this.disposed || gen !== this.matchGenerationId) return;
+
+    const evaluation = director.applyFinalShowdownOutcome(showdown, draw.clue.answerIdx, {
+      p1TimedOut: showdown.p1TimedOut,
+      p2TimedOut: showdown.p2TimedOut,
+    });
+    this.playerMatchScore = evaluation.finalP1Cash;
+    this.rivalMatchScore = evaluation.finalP2Cash;
+    this.syncTopBroadcastBug();
+
+    recordMatchCompletedStatV8({
+      tsIso: new Date().toISOString(),
+      matchType: 'COUCH_2P',
+      label: '2P COUCH',
+      boardPlayMode: this.activePlayMode,
+      rivalName: director.spec.podium2.name,
+      playerCash: evaluation.finalP1Cash,
+      rivalCash: evaluation.finalP2Cash,
+      won: evaluation.winnerPodium === 0 || evaluation.winnerPodium === 'CO_CHAMPIONS',
+      cluesAnswered: Math.max(1, director.turnsTaken[0] + 1),
+      cluesCorrect: director.correctClues[0] + (evaluation.p1Correct ? 1 : 0),
+      bestMatchStreak: director.bestStreaks[0],
+    });
+
+    const ceremonyAction = await showCouchWinnerCheckCeremonyV8(this.uiRoot, {
+      spec: director.spec,
+      evaluation,
+      p1CorrectClues: director.correctClues[0] + (evaluation.p1Correct ? 1 : 0),
+      p2CorrectClues: director.correctClues[1] + (evaluation.p2Correct ? 1 : 0),
+      p1BestStreak: director.bestStreaks[0],
+      p2BestStreak: director.bestStreaks[1],
+      p1Gremlins: director.gremlins[0],
+      p2Gremlins: director.gremlins[1],
+      reducedMotion: save.settings.reducedMotion,
+      onTapSfx: () => this.audio.playUiTap(),
+      onCelebrateSfx: () => this.vfx.burstLivingColorConfetti('MEDIUM'),
+      onVoiceCue: (cueId) => {
+        void this.audio.voices.playCue(cueId);
+      },
+    });
+    if (this.disposed || gen !== this.matchGenerationId) return;
+
+    if (ceremonyAction === 'REMATCH_SWAP_FIRST_PICK') {
+      const swapped = director.buildSwappedRematchSpec();
+      await this.openCouchPartyFlow(swapped);
+      return;
+    }
+    this.activeCouchDirector = null;
+    this.returnToTitleHub();
+  }
+
   private syncTopBroadcastBug(emotionOverride?: PortraitEmotionV7): void {
     const emotion: PortraitEmotionV7 =
       emotionOverride ??
@@ -4198,9 +5431,9 @@ export class ShowtimeAppV7 {
       this.ui.updateCensorPaddleProgress(this.censorCharge01, false);
     }
 
-    const utilityModalPaused = this.ui.isUtilityModalOpen();
+    const utilityModalPaused = this.ui.isUtilityModalOpen() || this.coachModalOpen;
 
-    // Live 8.0s Booth Cheat Tell Window (Paused while a utility modal is open!)
+    // Live 8.0s Booth Cheat Tell Window (Paused while a utility or coach modal is open!)
     if (this.boothTellActive && !utilityModalPaused) {
       this.boothTellRemainingSec -= dtSec;
       if (this.boothTellChannel === 'SOLENOID_SPARK') {
@@ -4227,6 +5460,7 @@ export class ShowtimeAppV7 {
     if (
       this.phase === 'QUESTION_OPEN' &&
       this.activeClue &&
+      !this.activeNoTimerInTurn &&
       !this.isAnswerLockingIn &&
       !utilityModalPaused
     ) {
@@ -4683,6 +5917,10 @@ export class ShowtimeAppV7 {
         window.setTimeout(() => this.audio.playAnswerLockInSting(true), 920);
         window.setTimeout(() => this.audio.playAnswerReveal(true, false), 1850);
         window.setTimeout(() => this.audio.playBandReaction('LEAD_CHANGE'), 2250);
+        window.setTimeout(() => {
+          void this.audio.voices.playHostRightQuip();
+        }, 2650);
+        window.setTimeout(() => this.audio.showpieceFoley.playReboundPotScoop(), 4400);
         await sleepMs(durationMs);
         try {
           bus.disconnect(proc);
@@ -4711,6 +5949,8 @@ export class ShowtimeAppV7 {
 
     this.disposeActiveContraption();
     this.disposeActiveVaultRenderer();
+    this.pipMonitor.hide();
+    this.reboundPot.dispose();
     this.twistTheater.dispose();
     this.announcer.dispose();
     this.vfx.dispose();

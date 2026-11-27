@@ -16,11 +16,21 @@
 // ============================================================================
 
 import '../../styles/tv_twist_theater_v7.css';
-import type { CategoryIdV7 } from '../contracts_v7';
+import type {
+  CategoryIdV7,
+  GremlinSkitIdV8,
+  GremlinSkitPlayInputV8,
+} from '../contracts_v7';
 import type {
   MysteryCurtainKindV7,
   MysteryCurtainOutcomeV7,
 } from '../boards/BoardTwistsEngineV7';
+import {
+  playGremlinCartoonSkitV8,
+  renderPodiumGremlinMarkersHTMLV8,
+} from './GremlinCartoonTheaterV8';
+
+export { playGremlinCartoonSkitV8, renderPodiumGremlinMarkersHTMLV8 };
 
 // ----------------------------------------------------------------------------
 // 1. Public Contracts & Flexible Input Types
@@ -78,11 +88,17 @@ export interface BigWheelSpinResultV7 {
 export interface PressYourLuckGremlinOptionsV7 {
   readonly spinsEarned: number;
   readonly playerCash: number;
+  readonly rivalCash?: number;
   readonly rivalName: string;
   readonly autoCpuMode?: boolean;
   readonly seed?: number;
+  readonly skitSeed?: number;
+  readonly gremlinCount?: number;
+  readonly initialHotBoard?: boolean;
   readonly onBounceTick?: () => void;
   readonly onGremlinZonk?: () => void;
+  readonly onGremlinBoing?: () => void;
+  readonly onGremlinVoiceSting?: (skitId: GremlinSkitIdV8) => void;
 }
 
 export interface PressYourLuckGremlinResultV7 {
@@ -91,6 +107,8 @@ export interface PressYourLuckGremlinResultV7 {
   readonly passedSpinsToRival: number;
   readonly hitGremlin: boolean;
   readonly headline: string;
+  readonly skitPlayed?: GremlinSkitIdV8;
+  readonly gremlinCount?: number;
 }
 
 export interface TvTwistTheaterCallbacksV7 {
@@ -104,6 +122,8 @@ export interface TvTwistTheaterCallbacksV7 {
   readonly onWheelWinSfx?: (result: BigWheelSpinResultV7) => void;
   readonly onBounceTickSfx?: () => void;
   readonly onGremlinZonkSfx?: () => void;
+  readonly onGremlinBoingSfx?: () => void;
+  readonly onGremlinVoiceSting?: (skitId: GremlinSkitIdV8) => void;
 }
 
 interface NormalizedCurtainCardV7 {
@@ -709,23 +729,118 @@ interface GremlinBoardSquareSpecV7 {
   readonly subLabel: string;
   readonly cashValue: number;
   readonly extraSpin: boolean;
-  readonly tone: 'teal' | 'cobalt' | 'gold' | 'tangerine' | 'cerise' | 'gremlin';
+  readonly tone: 'teal' | 'cobalt' | 'gold' | 'tangerine' | 'cerise' | 'gremlin' | 'hot-gremlin';
 }
 
-const GREMLIN_BOARD_12_SQUARES_V7: readonly GremlinBoardSquareSpecV7[] = [
-  { index: 0, gridCol: 1, gridRow: 1, kind: 'CASH', mainLabel: '+$450', subLabel: 'CASH', cashValue: 450, extraSpin: false, tone: 'teal' },
-  { index: 1, gridCol: 2, gridRow: 1, kind: 'CASH_SPIN', mainLabel: '+$600', subLabel: '+1 SPIN', cashValue: 600, extraSpin: true, tone: 'cobalt' },
+export const GREMLIN_BOARD_12_SQUARES_V7: readonly GremlinBoardSquareSpecV7[] = [
+  { index: 0, gridCol: 1, gridRow: 1, kind: 'CASH', mainLabel: '+$250', subLabel: 'CASH', cashValue: 250, extraSpin: false, tone: 'teal' },
+  { index: 1, gridCol: 2, gridRow: 1, kind: 'CASH_SPIN', mainLabel: '+$300', subLabel: '+1 SPIN', cashValue: 300, extraSpin: true, tone: 'cobalt' },
   { index: 2, gridCol: 3, gridRow: 1, kind: 'GREMLIN', mainLabel: 'GREMLIN', subLabel: '-40% ZONK', cashValue: 0, extraSpin: false, tone: 'gremlin' },
-  { index: 3, gridCol: 4, gridRow: 1, kind: 'JACKPOT', mainLabel: '+$800', subLabel: 'JACKPOT', cashValue: 800, extraSpin: false, tone: 'gold' },
-  { index: 4, gridCol: 4, gridRow: 2, kind: 'CASH', mainLabel: '+$300', subLabel: 'CASH', cashValue: 300, extraSpin: false, tone: 'tangerine' },
+  { index: 3, gridCol: 4, gridRow: 1, kind: 'JACKPOT', mainLabel: '+$500', subLabel: 'JACKPOT', cashValue: 500, extraSpin: false, tone: 'gold' },
+  { index: 4, gridCol: 4, gridRow: 2, kind: 'CASH', mainLabel: '+$200', subLabel: 'CASH', cashValue: 200, extraSpin: false, tone: 'tangerine' },
   { index: 5, gridCol: 4, gridRow: 3, kind: 'STEAL', mainLabel: 'STEAL', subLabel: '$200', cashValue: 200, extraSpin: false, tone: 'cerise' },
   { index: 6, gridCol: 4, gridRow: 4, kind: 'GREMLIN', mainLabel: 'GREMLIN', subLabel: '-40% ZONK', cashValue: 0, extraSpin: false, tone: 'gremlin' },
-  { index: 7, gridCol: 3, gridRow: 4, kind: 'CASH', mainLabel: '+$450', subLabel: 'CASH', cashValue: 450, extraSpin: false, tone: 'teal' },
-  { index: 8, gridCol: 2, gridRow: 4, kind: 'CASH_SPIN', mainLabel: '+$600', subLabel: '+1 SPIN', cashValue: 600, extraSpin: true, tone: 'cobalt' },
-  { index: 9, gridCol: 1, gridRow: 4, kind: 'CASH', mainLabel: '+$300', subLabel: 'CASH', cashValue: 300, extraSpin: false, tone: 'tangerine' },
+  { index: 7, gridCol: 3, gridRow: 4, kind: 'CASH', mainLabel: '+$250', subLabel: 'CASH', cashValue: 250, extraSpin: false, tone: 'teal' },
+  { index: 8, gridCol: 2, gridRow: 4, kind: 'CASH_SPIN', mainLabel: '+$300', subLabel: '+1 SPIN', cashValue: 300, extraSpin: true, tone: 'cobalt' },
+  { index: 9, gridCol: 1, gridRow: 4, kind: 'CASH', mainLabel: '+$150', subLabel: 'CASH', cashValue: 150, extraSpin: false, tone: 'tangerine' },
   { index: 10, gridCol: 1, gridRow: 3, kind: 'GREMLIN', mainLabel: 'GREMLIN', subLabel: '-40% ZONK', cashValue: 0, extraSpin: false, tone: 'gremlin' },
-  { index: 11, gridCol: 1, gridRow: 2, kind: 'STEAL', mainLabel: 'STEAL', subLabel: '$200', cashValue: 200, extraSpin: false, tone: 'cerise' },
+  { index: 11, gridCol: 1, gridRow: 2, kind: 'CASH', mainLabel: '+$150', subLabel: 'CASH', cashValue: 150, extraSpin: false, tone: 'teal' },
 ];
+
+const HOT_GREMLIN_SQUARE_INDEX_V8 = 4;
+
+function getActiveGremlinBoardSquaresV8(isHotBoard: boolean): readonly GremlinBoardSquareSpecV7[] {
+  if (!isHotBoard) return GREMLIN_BOARD_12_SQUARES_V7;
+  return GREMLIN_BOARD_12_SQUARES_V7.map((sq) =>
+    sq.index === HOT_GREMLIN_SQUARE_INDEX_V8
+      ? {
+          ...sq,
+          kind: 'GREMLIN',
+          mainLabel: 'HOT GREMLIN!',
+          subLabel: '🔥 -40% ZONK',
+          cashValue: 0,
+          extraSpin: false,
+          tone: 'hot-gremlin',
+        }
+      : sq,
+  );
+}
+
+export interface PressYourLuckSpinEvAnalysisV8 {
+  readonly isHotBoard: boolean;
+  readonly gremlinCount: 3 | 4;
+  readonly sumNonGremlinValues: number;
+  readonly zapPenalty: number;
+  readonly evTake: number;
+  readonly evPass: number;
+  readonly shouldRecommendPass: boolean;
+}
+
+/**
+ * Exact 12-square Press-Your-Luck Expected Value calculator (`EV(take)` vs `EV(pass)`):
+ * - Spin 1 (`isHotBoard = false`): `3/12` Gremlins, `sumNonGremlin = $2,300` -> `EV(take) > 0` up to `$1,925`.
+ * - Spin 2+ (`isHotBoard = true`): `4/12` Gremlins (`HOT GREMLIN` active), `sumNonGremlin = $2,100` ->
+ *   `EV(take) = 175 - (4/12) * zapPenalty`, crossing `< 0` cleanly around `$1,325–$1,450`!
+ */
+export function evaluatePressYourLuckSpinEvV8(params: {
+  readonly selfCash: number;
+  readonly rivalCash?: number;
+  readonly spinsTaken: number;
+  readonly spinsRemaining?: number;
+  readonly forceHotBoard?: boolean;
+}): PressYourLuckSpinEvAnalysisV8 {
+  const isHotBoard = Boolean(params.forceHotBoard || params.spinsTaken >= 1);
+  const squares = getActiveGremlinBoardSquaresV8(isHotBoard);
+  const selfBank = Math.max(0, Math.round(params.selfCash || 0));
+  const hasExplicitRivalCash =
+    typeof params.rivalCash === 'number' && Number.isFinite(params.rivalCash);
+  const effectiveRivalBank = hasExplicitRivalCash
+    ? Math.max(0, Math.round(params.rivalCash!))
+    : selfBank;
+
+  let gremlinCount = 0;
+  let sumNonGremlinValues = 0;
+  for (const sq of squares) {
+    if (sq.kind === 'GREMLIN') {
+      gremlinCount += 1;
+    } else if (sq.kind === 'STEAL') {
+      const stealAmt = hasExplicitRivalCash
+        ? Math.min(sq.cashValue, effectiveRivalBank)
+        : sq.cashValue;
+      sumNonGremlinValues += stealAmt;
+    } else {
+      sumNonGremlinValues += sq.cashValue;
+    }
+  }
+
+  const zapPenalty = Math.round((selfBank * 0.4) / 25) * 25;
+  const evTake = sumNonGremlinValues / 12 - (gremlinCount / 12) * zapPenalty;
+
+  // Passing forces the opponent onto the hot 4/12 Gremlin board (risking 40% of rivalBankroll vs safe squares)
+  const hotSquares = getActiveGremlinBoardSquaresV8(true);
+  let sumRivalSafeValues = 0;
+  for (const sq of hotSquares) {
+    if (sq.kind === 'GREMLIN') continue;
+    if (sq.kind === 'STEAL') {
+      sumRivalSafeValues += Math.min(sq.cashValue, selfBank);
+    } else {
+      sumRivalSafeValues += sq.cashValue;
+    }
+  }
+  const rivalZapRisk = Math.round((effectiveRivalBank * 0.4) / 25) * 25;
+  const evPass = ((4 / 12) * rivalZapRisk - sumRivalSafeValues / 12) * 0.35;
+  const spinsRem = params.spinsRemaining ?? 1;
+
+  return {
+    isHotBoard,
+    gremlinCount: (gremlinCount === 4 ? 4 : 3) as 3 | 4,
+    sumNonGremlinValues,
+    zapPenalty,
+    evTake: Math.round(evTake * 100) / 100,
+    evPass: Math.round(evPass * 100) / 100,
+    shouldRecommendPass: spinsRem >= 1 && evPass > evTake,
+  };
+}
 
 function buildMiniGremlinBadgeSvg(): string {
   // Precision 1966 RCA Broadcast Monoscope Hazard Reticle & Amber Oscilloscope Spike (Zero Cartoon Clip-Art!)
@@ -2041,8 +2156,47 @@ export class TvTwistTheaterV7 {
   }
 
   // --------------------------------------------------------------------------
-  // 5. Press-Your-Luck Bouncing Light-Board + 1966 'Studio Gremlin' Zonk
+  // 5. Press-Your-Luck Bouncing Light-Board + 8 Hanna-Barbera Gremlin Skits
   // --------------------------------------------------------------------------
+
+  /**
+   * Plays one of the 8 animated Hanna-Barbera / UPA Studio Gremlin skits as a
+   * standalone theater overlay (e.g., when a Big Wheel spin lands on a GREMLIN wedge!).
+   */
+  public playStandaloneGremlinSkit(
+    input: GremlinSkitPlayInputV8,
+  ): Promise<GremlinSkitIdV8> {
+    this.cancelActive();
+    this.rootEl.innerHTML = '';
+    this.rootEl.classList.remove('wst7-hidden');
+
+    return new Promise<GremlinSkitIdV8>((resolve) => {
+      let settled = false;
+      this.activeCleanup = () => {
+        if (settled) return;
+        settled = true;
+        this.rootEl.innerHTML = '';
+        this.rootEl.classList.add('wst7-hidden');
+        resolve(input.skitId ?? 'REEL_MOWER');
+      };
+
+      void playGremlinCartoonSkitV8(this.rootEl, {
+        ...input,
+        reducedMotion: input.reducedMotion ?? this.reducedMotion,
+        onPlayFoghorn: input.onPlayFoghorn ?? (() => this.callbacks.onGremlinZonkSfx?.()),
+        onPlayBoing: input.onPlayBoing ?? (() => this.callbacks.onGremlinBoingSfx?.()),
+        onPlayVoiceSting:
+          input.onPlayVoiceSting ?? ((skitId) => this.callbacks.onGremlinVoiceSting?.(skitId)),
+      }).then((playedId) => {
+        if (settled) return;
+        settled = true;
+        this.activeCleanup = null;
+        this.rootEl.innerHTML = '';
+        this.rootEl.classList.add('wst7-hidden');
+        resolve(playedId);
+      });
+    });
+  }
 
   public playPressYourLuckGremlinBoard(
     opts: PressYourLuckGremlinOptionsV7,
@@ -2052,17 +2206,24 @@ export class TvTwistTheaterV7 {
     const isAutoCpu = Boolean(opts.autoCpuMode);
     const rivalFullName = opts.rivalName?.trim() || 'Champion';
     const rivalShortName = rivalFullName.split(/\s+/)[0]?.toUpperCase() || 'CHAMP';
+    const hasExplicitRivalCash =
+      typeof opts.rivalCash === 'number' && Number.isFinite(opts.rivalCash);
 
     return new Promise<PressYourLuckGremlinResultV7>((resolve) => {
       let spinsRemaining = Math.max(1, Math.min(6, Math.floor(opts.spinsEarned || 1)));
       let extraSpinsAwarded = 0;
       let spinsTaken = 0;
       let liveCash = Math.max(0, Math.round(opts.playerCash || 0));
+      let liveRivalCash = hasExplicitRivalCash ? Math.max(0, Math.round(opts.rivalCash!)) : Infinity;
       let netCashDelta = 0;
       let rivalCashDelta = 0;
       let passedSpinsToRival = 0;
       let hitGremlin = false;
+      let skitPlayed: GremlinSkitIdV8 | undefined;
+      let updatedGremlinCount: number | undefined = opts.gremlinCount;
       let finalHeadline = 'LIGHT-BOARD BONANZA COMPLETE!';
+
+      const isBoardHotNow = (): boolean => Boolean(opts.initialHotBoard || spinsTaken >= 1);
 
       let cursorIndex = Math.floor(rng() * 12);
       let state: 'BOUNCING' | 'RESULT_HOLD' | 'GREMLIN_ZONK' | 'DONE' = 'BOUNCING';
@@ -2085,6 +2246,7 @@ export class TvTwistTheaterV7 {
       const stage = document.createElement('div');
       stage.className = 'wst7-gremlin-stage';
       stage.dataset.state = 'bouncing';
+      stage.dataset.hotBoard = isBoardHotNow() ? 'true' : 'false';
 
       const header = document.createElement('header');
       header.className = 'wst7-gremlin-header';
@@ -2098,7 +2260,11 @@ export class TvTwistTheaterV7 {
         <h2 class="wst7-gremlin-headline">${
           isAutoCpu ? 'WATCH THE CHAMP SWEAT!' : 'BIG BUCKS — NO GREMLINS!'
         }</h2>
+        <div class="wst7-pyl-heat-pill" data-hot="${isBoardHotNow() ? 'true' : 'false'}">
+          ${isBoardHotNow() ? '🔥 GREMLIN HEAT: 4/12 ON BOARD!' : '⚡ GREMLIN WATCH: 3/12 ON BOARD'}
+        </div>
       `;
+      const heatPillEl = header.querySelector<HTMLElement>('.wst7-pyl-heat-pill')!;
 
       // 4x4 Perimeter Light-Board with Center 2x2 Studio Monitor Well
       const boardFrame = document.createElement('div');
@@ -2110,16 +2276,9 @@ export class TvTwistTheaterV7 {
         boardFrame.appendChild(rivet);
       }
 
-      const squareEls: HTMLDivElement[] = [];
-      for (const sq of GREMLIN_BOARD_12_SQUARES_V7) {
-        const cell = document.createElement('div');
-        cell.className = 'wst7-pyl-square';
-        cell.dataset.sqIndex = String(sq.index);
+      const renderSquareCellContent = (cell: HTMLDivElement, sq: GremlinBoardSquareSpecV7): void => {
         cell.dataset.tone = sq.tone;
-        cell.dataset.lit = sq.index === cursorIndex ? 'true' : 'false';
-        cell.style.gridColumn = String(sq.gridCol);
-        cell.style.gridRow = String(sq.gridRow);
-
+        cell.dataset.kind = sq.kind;
         if (sq.kind === 'GREMLIN') {
           cell.innerHTML = `
             ${buildMiniGremlinBadgeSvg()}
@@ -2132,9 +2291,35 @@ export class TvTwistTheaterV7 {
             <span class="wst7-pyl-sq-sub">${sq.subLabel}</span>
           `;
         }
+      };
+
+      const squareEls: HTMLDivElement[] = [];
+      for (const sq of getActiveGremlinBoardSquaresV8(isBoardHotNow())) {
+        const cell = document.createElement('div');
+        cell.className = 'wst7-pyl-square';
+        cell.dataset.sqIndex = String(sq.index);
+        cell.dataset.lit = sq.index === cursorIndex ? 'true' : 'false';
+        cell.style.gridColumn = String(sq.gridCol);
+        cell.style.gridRow = String(sq.gridRow);
+        renderSquareCellContent(cell, sq);
         squareEls.push(cell);
         boardFrame.appendChild(cell);
       }
+
+      const syncBoardHeatVisuals = (): void => {
+        const hot = isBoardHotNow();
+        stage.dataset.hotBoard = hot ? 'true' : 'false';
+        heatPillEl.dataset.hot = hot ? 'true' : 'false';
+        heatPillEl.textContent = hot
+          ? '🔥 GREMLIN HEAT: 4/12 ON BOARD!'
+          : '⚡ GREMLIN WATCH: 3/12 ON BOARD';
+        const activeSquares = getActiveGremlinBoardSquaresV8(hot);
+        const hotCell = squareEls[HOT_GREMLIN_SQUARE_INDEX_V8];
+        const hotSpec = activeSquares[HOT_GREMLIN_SQUARE_INDEX_V8];
+        if (hotCell && hotSpec && hotCell.dataset.tone !== hotSpec.tone) {
+          renderSquareCellContent(hotCell, hotSpec);
+        }
+      };
 
       // Center 2x2 Monitor Well: Live Bankroll + Spins Counter OR Cartoon Gremlin Stand-By Feed!
       const centerWell = document.createElement('div');
@@ -2223,19 +2408,32 @@ export class TvTwistTheaterV7 {
         }
       };
 
+      const computeCurrentEv = (): PressYourLuckSpinEvAnalysisV8 =>
+        evaluatePressYourLuckSpinEvV8({
+          selfCash: liveCash,
+          rivalCash: Number.isFinite(liveRivalCash) ? liveRivalCash : undefined,
+          spinsTaken,
+          spinsRemaining,
+          forceHotBoard: opts.initialHotBoard,
+        });
+
       const syncHud = (statusText?: string): void => {
+        syncBoardHeatVisuals();
         spinsNumEl.textContent = String(spinsRemaining);
         cashValEl.textContent = `$${liveCash.toLocaleString()}`;
         if (statusText) {
           statusLineEl.textContent = statusText;
         }
         if (!isAutoCpu) {
+          const ev = computeCurrentEv();
           passBtn.disabled = spinsRemaining < 1 || state === 'GREMLIN_ZONK' || state === 'DONE';
-          passBtn.dataset.recommended = spinsTaken >= 1 && spinsRemaining >= 1 ? 'true' : 'false';
-          passBtn.textContent =
-            spinsRemaining >= 1
-              ? `PASS ${spinsRemaining} SPIN${spinsRemaining === 1 ? '' : 'S'} TO ${rivalShortName} →`
-              : 'NO SPINS LEFT TO PASS';
+          passBtn.dataset.recommended = ev.shouldRecommendPass ? 'true' : 'false';
+          if (spinsRemaining >= 1) {
+            const recTag = ev.shouldRecommendPass ? '★ RECOMMENDED: ' : '';
+            passBtn.textContent = `${recTag}PASS ${spinsRemaining} SPIN${spinsRemaining === 1 ? '' : 'S'} TO ${rivalShortName} →`;
+          } else {
+            passBtn.textContent = 'NO SPINS LEFT TO PASS';
+          }
         }
       };
 
@@ -2258,12 +2456,9 @@ export class TvTwistTheaterV7 {
         const intervalMs = isAutoCpu ? 115 : this.reducedMotion ? 220 : Math.max(125, 168 - spinsTaken * 10);
         bounceTimerId = window.setTimeout(() => {
           if (finished || state !== 'BOUNCING') return;
-          // Classic unpredictable Press Your Luck jump (never same square twice in a row!)
-          let nextIdx = (cursorIndex + 2 + Math.floor(rng() * 9)) % 12;
-          if (nextIdx === cursorIndex) {
-            nextIdx = (cursorIndex + 3) % 12;
-          }
-          cursorIndex = nextIdx;
+          // Full uniform 1..11 perimeter step jump (100% of non-self offsets reachable!)
+          const stepOffset = 1 + Math.floor(rng() * 11);
+          cursorIndex = (cursorIndex + stepOffset) % 12;
           highlightSquare(cursorIndex, false);
           emitBounceTick();
           scheduleNextBounce();
@@ -2276,6 +2471,8 @@ export class TvTwistTheaterV7 {
         passedSpinsToRival,
         hitGremlin,
         headline: finalHeadline,
+        ...(skitPlayed ? { skitPlayed } : {}),
+        ...(updatedGremlinCount !== undefined ? { gremlinCount: updatedGremlinCount } : {}),
       });
 
       const cleanupAll = (): void => {
@@ -2317,20 +2514,25 @@ export class TvTwistTheaterV7 {
       const handleStop = (): void => {
         if (state !== 'BOUNCING' || finished) return;
         stopBouncing();
+        const activeSquaresForSpin = getActiveGremlinBoardSquaresV8(isBoardHotNow());
         spinsRemaining = Math.max(0, spinsRemaining - 1);
         spinsTaken += 1;
 
-        const sq = GREMLIN_BOARD_12_SQUARES_V7[cursorIndex] ?? GREMLIN_BOARD_12_SQUARES_V7[0];
+        const sq = activeSquaresForSpin[cursorIndex] ?? activeSquaresForSpin[0];
         highlightSquare(sq.index, true);
 
         if (sq.kind === 'GREMLIN') {
           state = 'GREMLIN_ZONK';
           stage.dataset.state = 'gremlin-zonk';
+          stopBtn.disabled = true;
+          passBtn.disabled = true;
           hitGremlin = true;
+          const scoreBeforeZap = liveCash;
           const zapLoss = Math.round((liveCash * 0.4) / 25) * 25;
           netCashDelta -= zapLoss;
           liveCash = Math.max(0, liveCash - zapLoss);
           spinsRemaining = 0;
+          updatedGremlinCount = Math.min(4, Math.max(1, Math.floor((opts.gremlinCount ?? 0) + 1)));
           finalHeadline =
             zapLoss > 0
               ? `● STUDIO GREMLIN ZONK! -40% (-$${zapLoss.toLocaleString()}) · PLEASE STAND BY!`
@@ -2341,8 +2543,29 @@ export class TvTwistTheaterV7 {
               : 'CABLE CHEWED! ($0 ZAPPED)';
           centerWell.dataset.mode = 'gremlin';
           syncHud(finalHeadline);
-          emitGremlinZonk();
-          queueExit(isAutoCpu ? (this.reducedMotion ? 600 : 880) : this.reducedMotion ? 900 : 1450);
+
+          // Launch full Hanna-Barbera / UPA Animated Studio Gremlin Skit!
+          void playGremlinCartoonSkitV8(overlay, {
+            seed:
+              opts.skitSeed ??
+              (((opts.seed ?? 1966) + spinsTaken * 131 + cursorIndex * 17) >>> 0),
+            victimName: isAutoCpu ? rivalFullName : 'YOU',
+            isPlayerVictim: !isAutoCpu,
+            scoreBefore: scoreBeforeZap,
+            cashLost: zapLoss,
+            newGremlinCount: updatedGremlinCount,
+            reducedMotion: this.reducedMotion,
+            onPlayFoghorn: () => emitGremlinZonk(),
+            onPlayBoing: () => (opts.onGremlinBoing ?? this.callbacks.onGremlinBoingSfx)?.(),
+            onPlayVoiceSting: (id) =>
+              (opts.onGremlinVoiceSting ?? this.callbacks.onGremlinVoiceSting)?.(id),
+          }).then((chosenId) => {
+            skitPlayed = chosenId;
+            if (!finished) {
+              overlay.dataset.exiting = 'true';
+              timers.push(window.setTimeout(finishBoard, 120));
+            }
+          });
           return;
         }
 
@@ -2352,10 +2575,21 @@ export class TvTwistTheaterV7 {
         this.callbacks.onUiTapSfx?.();
         let hitCopy = '';
         if (sq.kind === 'STEAL') {
-          netCashDelta += sq.cashValue;
-          liveCash += sq.cashValue;
-          rivalCashDelta -= sq.cashValue;
-          hitCopy = `★ STEAL $${sq.cashValue}!`;
+          const swiped = Number.isFinite(liveRivalCash)
+            ? Math.min(sq.cashValue, liveRivalCash)
+            : sq.cashValue;
+          netCashDelta += swiped;
+          liveCash += swiped;
+          rivalCashDelta -= swiped;
+          if (Number.isFinite(liveRivalCash)) {
+            liveRivalCash = Math.max(0, liveRivalCash - swiped);
+          }
+          hitCopy =
+            swiped <= 0
+              ? '★ RIVAL BROKE ($0 TO STEAL)!'
+              : swiped < sq.cashValue
+                ? `★ STEAL $${swiped} (RIVAL CAP)!`
+                : `★ STEAL $${swiped}!`;
         } else if (sq.kind === 'CASH_SPIN') {
           netCashDelta += sq.cashValue;
           liveCash += sq.cashValue;
@@ -2387,12 +2621,13 @@ export class TvTwistTheaterV7 {
           return;
         }
 
-        // If CPU auto-mode has 1+ spins left, either pass after banking a haul or take 1 quick brisk spin
+        // CPU Auto-Mode strictly obeys true EV math (`EV(pass) > EV(take)`) — never donates +EV spins!
         if (isAutoCpu) {
-          if (netCashDelta >= 600 && rng() < 0.55) {
+          const cpuEv = computeCurrentEv();
+          if (cpuEv.shouldRecommendPass) {
             passedSpinsToRival = spinsRemaining;
             spinsRemaining = 0;
-            finalHeadline = `⚡ ${rivalFullName.toUpperCase()} BANKED +$${netCashDelta.toLocaleString()} & PASSED ${passedSpinsToRival} SPIN!`;
+            finalHeadline = `⚡ ${rivalFullName.toUpperCase()} BANKED +$${netCashDelta.toLocaleString()} & PASSED ${passedSpinsToRival} HOT SPIN${passedSpinsToRival === 1 ? '' : 'S'}!`;
             syncHud(finalHeadline);
             queueExit(this.reducedMotion ? 380 : 560);
           } else {
@@ -2401,6 +2636,7 @@ export class TvTwistTheaterV7 {
                 if (finished) return;
                 state = 'BOUNCING';
                 stage.dataset.state = 'bouncing';
+                syncHud('🔥 HOT BOARD — CHAMP SPINS AGAIN!');
                 scheduleNextBounce();
                 timers.push(window.setTimeout(() => handleStop(), 440));
               }, 340),
@@ -2409,7 +2645,7 @@ export class TvTwistTheaterV7 {
           return;
         }
 
-        // Player has spins left — pause briefly to admire prize (and let them PASS!), then resume bouncing
+        // Player has spins left — Spin 2+ escalates to 4/12 HOT GREMLINS!
         stopBtn.disabled = true;
         timers.push(
           window.setTimeout(() => {
@@ -2417,7 +2653,12 @@ export class TvTwistTheaterV7 {
             state = 'BOUNCING';
             stage.dataset.state = 'bouncing';
             stopBtn.disabled = false;
-            syncHud('SPIN AGAIN OR PASS SPINS TO CHAMP!');
+            const nextEv = computeCurrentEv();
+            syncHud(
+              nextEv.shouldRecommendPass
+                ? '🔥 4/12 GREMLINS! SMART ODDS: PASS SPINS!'
+                : '🔥 4/12 GREMLINS! SPIN OR PASS TO CHAMP!',
+            );
             scheduleNextBounce();
           }, this.reducedMotion ? 360 : 720),
         );
@@ -2539,4 +2780,10 @@ export function playPressYourLuckGremlinBoard(
   opts: PressYourLuckGremlinOptionsV7,
 ): Promise<PressYourLuckGremlinResultV7> {
   return getSharedTwistTheater().playPressYourLuckGremlinBoard(opts);
+}
+
+export function playStandaloneGremlinSkit(
+  input: GremlinSkitPlayInputV8,
+): Promise<GremlinSkitIdV8> {
+  return getSharedTwistTheater().playStandaloneGremlinSkit(input);
 }

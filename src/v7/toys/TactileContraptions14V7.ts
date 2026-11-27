@@ -27,26 +27,36 @@
 //    truncation, and ZERO scrollbars across `390x660`..`1440x900`!
 // ============================================================================
 
-import type {
-  BalanceScalePayloadV7,
-  CategoryIdV7,
-  ChronologyPayloadV7,
-  ClueRecordV7,
-  ConspiracyLassoPayloadV7,
-  CyanotypePlatePayloadV7,
-  DayJobIdV7,
-  GeoTargetPayloadV7,
-  MailSorterPayloadV7,
-  MissingVowelsPayloadV7,
-  NumericDialPayloadV7,
-  PatchbayPayloadV7,
-  QuestionCardStyleV7,
-  ShutterReelPayloadV7,
-  ToyIdV7,
-  ToyResolutionV7,
+import {
+  SHUTTER_REEL_MULTIPLIER_LADDER_V8,
+  type BalanceScalePayloadV7,
+  type CategoryIdV7,
+  type ChronologyPayloadV7,
+  type ClueRecordV7,
+  type ConspiracyLassoPayloadV7,
+  type CyanotypePlatePayloadV7,
+  type DayJobIdV7,
+  type GeoTargetPayloadV7,
+  type MailSorterPayloadV7,
+  type MissingVowelsPayloadV7,
+  type NumericDialPayloadV7,
+  type PatchbayPayloadV7,
+  type QuestionCardStyleV7,
+  type ShutterReelPayloadV7,
+  type ToyIdV7,
+  type ToyResolutionV7,
 } from '../contracts_v7';
-import { renderCyanotypePlateSVG, type CyanotypeZoneIndexV7 } from './CyanotypePlates20V7';
+import {
+  getCategoryPlateImageUrlV8,
+  renderCyanotypePlateSVG,
+  type CyanotypeZoneIndexV7,
+} from './CyanotypePlates20V7';
 import { mountReliefGlobeContraptionV7 } from './ReliefGlobeContraptionV7';
+
+export interface ShutterToyResolutionV8 extends ToyResolutionV7 {
+  readonly shutterSolvedAtCount?: number;
+  readonly detail?: string;
+}
 
 export type TactileSfxEventV7 =
   | 'TICK'
@@ -284,572 +294,40 @@ export function resolveQuestionCardStyleV7(
 }
 
 /**
- * Renders a museum-grade 1966 Charley Harper / Saul Bass / Morton Goldsholl
- * editorial vector illustration (`viewBox="0 0 160 100"`) for ALL 20 categories
- * inside a curved RCA Color CRT aperture with halftone dot-screen & glass sheen.
- * Zero text spoilers inside the artwork!
+ * Renders the genuine hand-painted 1966 Mid-Century gouache & serigraph
+ * category specimen board (`viewBox="0 0 160 100"`) for ALL 20 categories
+ * inside the curved walnut RCA Color CRT aperture. Zero text spoilers!
  */
-function renderCategoryPictureEmblemSvgV7(category: CategoryIdV7): string {
-  const artworkByCat: Record<CategoryIdV7, string> = {
-    MEDICINE: `
-      <!-- Charley Harper Botanical-Anatomical Poster -->
-      <rect width="160" height="100" fill="#0B2742"/>
-      <polygon points="0,0 92,0 64,100 0,100" fill="#007E8C"/>
-      <circle cx="80" cy="50" r="44" fill="url(#ws7PicHalftone)" opacity="0.45"/>
-      <circle cx="80" cy="50" r="37" fill="#0E2238" stroke="#FFD166" stroke-width="2.2"/>
-      <!-- Stethoscope Brass Tubing Arc -->
-      <path d="M36,30 C32,68 54,84 80,84 C106,84 128,68 124,30" fill="none" stroke="#F4A91F" stroke-width="3.6" stroke-linecap="round"/>
-      <circle cx="36" cy="27" r="4.5" fill="#FFF6E3" stroke="#141B29" stroke-width="1.6"/>
-      <circle cx="124" cy="27" r="4.5" fill="#FFF6E3" stroke="#141B29" stroke-width="1.6"/>
-      <circle cx="80" cy="84" r="6.5" fill="#FFD166" stroke="#FFFDF7" stroke-width="1.8"/>
-      <!-- Faceted Mid-Century Geometric Heart -->
-      <path d="M80,73 C50,58 43,39 53,27 C61,18 73,21 80,32 C87,21 99,18 107,27 C117,39 110,58 80,73 Z" fill="#E6397A" stroke="#FFF6E3" stroke-width="2.2"/>
-      <path d="M80,32 C87,21 99,18 107,27 C117,39 110,58 80,73 Z" fill="#C41E5C" opacity="0.65"/>
-      <path d="M58,31 C63,25 71,26 75,33" fill="none" stroke="#FFD0E2" stroke-width="2.6" stroke-linecap="round"/>
-      <!-- Luminous Golden EKG Pulse Waveform -->
-      <polyline points="12,50 48,50 56,34 65,64 75,26 84,59 93,44 102,50 148,50" fill="none" stroke="#FFD166" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="75" cy="26" r="3.4" fill="#FFFDF7"/><circle cx="102" cy="50" r="3" fill="#00E5FF"/>
-    `,
-    CHEMISTRY: `
-      <!-- Morton Goldsholl Atomic Lab Poster -->
-      <rect width="160" height="100" fill="#102949"/>
-      <polygon points="84,0 160,0 160,100 58,100" fill="#15467A"/>
-      <rect x="0" y="76" width="160" height="24" fill="#091B30"/>
-      <circle cx="82" cy="48" r="46" fill="url(#ws7PicHalftone)" opacity="0.38"/>
-      <!-- Sweeping Atomic Orbitals -->
-      <ellipse cx="80" cy="48" rx="60" ry="18" fill="none" stroke="#00C2D6" stroke-width="2" transform="rotate(-22 80 48)"/>
-      <ellipse cx="80" cy="48" rx="60" ry="18" fill="none" stroke="#FFD166" stroke-width="2" transform="rotate(22 80 48)"/>
-      <circle cx="29" cy="67" r="4.2" fill="#FF6738" stroke="#FFF6E3" stroke-width="1.3"/>
-      <circle cx="131" cy="29" r="4.2" fill="#00E5FF" stroke="#FFF6E3" stroke-width="1.3"/>
-      <!-- Secondary Round Retort Flask (Left) -->
-      <circle cx="42" cy="62" r="16" fill="#0C243D" stroke="#FFF6E3" stroke-width="2"/>
-      <path d="M27,64 A15,15 0 0,0 57,64 Z" fill="#FF6738"/>
-      <path d="M42,46 L42,30 L56,22" fill="none" stroke="#FFF6E3" stroke-width="2.6" stroke-linecap="round"/>
-      <!-- Hero Faceted Erlenmeyer Flask (Center) -->
-      <path d="M70,14 L92,14 L92,34 L111,76 Q113,82 106,82 L56,82 Q49,82 51,76 L70,34 Z" fill="#0D2C4A" stroke="#FFF6E3" stroke-width="2.4"/>
-      <path d="M58,58 L104,58 L110,76 Q111,80 106,80 L56,80 Q51,80 52,76 Z" fill="#00C2D6"/>
-      <polygon points="81,58 104,58 110,80 81,80" fill="#0096A6" opacity="0.65"/>
-      <rect x="66" y="10" width="30" height="5" rx="2.5" fill="#F4A91F"/>
-      <!-- Graduation Ticks & Rising Bubbles -->
-      <line x1="65" y1="64" x2="73" y2="64" stroke="#FFFDF7" stroke-width="1.6"/>
-      <line x1="62" y1="71" x2="71" y2="71" stroke="#FFFDF7" stroke-width="1.6"/>
-      <circle cx="75" cy="70" r="3.6" fill="#FFFDF7"/><circle cx="88" cy="65" r="2.8" fill="#FFD166"/>
-      <circle cx="81" cy="46" r="3.2" fill="#00E5FF"/><circle cx="77" cy="30" r="2.4" fill="#FFD166"/>
-      <!-- Test Tube Accent (Right) -->
-      <rect x="118" y="34" width="12" height="44" rx="6" fill="#0C243D" stroke="#FFF6E3" stroke-width="2"/>
-      <rect x="120" y="54" width="8" height="22" rx="4" fill="#E6397A"/>
-    `,
-    PHYSICS: `
-      <!-- Saul Bass / 1964 World's Fair Atomic Prism Poster -->
-      <rect width="160" height="100" fill="#0A1D36"/>
-      <polygon points="0,0 64,0 92,100 0,100" fill="#123158"/>
-      <circle cx="76" cy="54" r="44" fill="url(#ws7PicHalftone)" opacity="0.35"/>
-      <!-- Refracted 5-Band Living Color Spectrum Fan -->
-      <polygon points="94,45 160,18 160,30 96,49" fill="#E6397A"/>
-      <polygon points="96,49 160,30 160,43 98,53" fill="#FF6738"/>
-      <polygon points="98,53 160,43 160,57 100,57" fill="#FFD166"/>
-      <polygon points="100,57 160,57 160,71 102,61" fill="#22C55E"/>
-      <polygon points="102,61 160,71 160,84 104,65" fill="#00C2D6"/>
-      <!-- Incoming White Light Beam -->
-      <line x1="0" y1="62" x2="62" y2="50" stroke="#FFFDF7" stroke-width="4.5" stroke-linecap="round"/>
-      <!-- Equilateral Faceted Glass Prism -->
-      <polygon points="78,16 112,82 44,82" fill="#184B78" fill-opacity="0.88" stroke="#FFF6E3" stroke-width="2.6" stroke-linejoin="round"/>
-      <polygon points="78,16 112,82 78,82" fill="#00C2D6" fill-opacity="0.32"/>
-      <line x1="62" y1="50" x2="96" y2="52" stroke="#FFFDF7" stroke-width="2.4" stroke-opacity="0.85"/>
-      <!-- Orbiting Atomic Nucleus Starburst Above -->
-      <ellipse cx="42" cy="28" rx="22" ry="8" fill="none" stroke="#FFD166" stroke-width="1.8" transform="rotate(-28 42 28)"/>
-      <ellipse cx="42" cy="28" rx="22" ry="8" fill="none" stroke="#00E5FF" stroke-width="1.8" transform="rotate(28 42 28)"/>
-      <circle cx="42" cy="28" r="4.6" fill="#FFD166" stroke="#FFFDF7" stroke-width="1.4"/>
-    `,
-    GADGETS: `
-      <!-- 1966 Industrial Design 35mm SLR Studio Poster -->
-      <rect width="160" height="100" fill="#133354"/>
-      <polygon points="0,0 160,0 160,42 0,68" fill="#F4A91F"/>
-      <polygon points="0,68 160,42 160,100 0,100" fill="#0D2238"/>
-      <rect x="0" y="0" width="160" height="100" fill="url(#ws7PicHalftone)" opacity="0.22"/>
-      <!-- 35mm Sprocket Film Strip Along Bottom -->
-      <rect x="0" y="84" width="160" height="16" fill="#141B29"/>
-      <g fill="#FFF6E3" opacity="0.82">
-        <rect x="8" y="88" width="9" height="7" rx="1.5"/><rect x="26" y="88" width="9" height="7" rx="1.5"/>
-        <rect x="44" y="88" width="9" height="7" rx="1.5"/><rect x="62" y="88" width="9" height="7" rx="1.5"/>
-        <rect x="80" y="88" width="9" height="7" rx="1.5"/><rect x="98" y="88" width="9" height="7" rx="1.5"/>
-        <rect x="116" y="88" width="9" height="7" rx="1.5"/><rect x="134" y="88" width="9" height="7" rx="1.5"/>
-      </g>
-      <!-- Streamlined 1966 Chrome & Leatherette Camera Body -->
-      <polygon points="56,28 66,14 96,14 106,28" fill="#E8EEF5" stroke="#141B29" stroke-width="2"/>
-      <rect x="34" y="26" width="92" height="52" rx="8" fill="#1E56C5" stroke="#FFF6E3" stroke-width="2.4"/>
-      <rect x="34" y="26" width="92" height="14" rx="5" fill="#DCE7F2"/>
-      <rect x="42" y="19" width="14" height="7" rx="2" fill="#FF6738" stroke="#141B29" stroke-width="1.4"/>
-      <rect x="106" y="20" width="12" height="6" rx="2" fill="#FFD166" stroke="#141B29" stroke-width="1.4"/>
-      <!-- Multi-Ring Coated Glass Camera Lens -->
-      <circle cx="80" cy="54" r="21" fill="#0D2238" stroke="#FFD166" stroke-width="3.2"/>
-      <circle cx="80" cy="54" r="15" fill="#13385A" stroke="#00C2D6" stroke-width="2"/>
-      <circle cx="80" cy="54" r="8.5" fill="#071628" stroke="#E6397A" stroke-width="1.8"/>
-      <path d="M72,46 A10,10 0 0,1 86,44" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/>
-      <circle cx="85" cy="59" r="2.2" fill="#00E5FF"/>
-      <!-- Flash Starburst Top Right -->
-      <polygon points="134,10 137,20 147,20 139,26 142,36 134,30 126,36 129,26 121,20 131,20" fill="#FFFDF7" stroke="#FF6738" stroke-width="1.4"/>
-    `,
-    ENGINES: `
-      <!-- Charley Harper / 1966 Jet-Age Airline Poster -->
-      <rect width="160" height="100" fill="#008594"/>
-      <rect x="0" y="0" width="160" height="44" fill="#1746A2"/>
-      <circle cx="122" cy="28" r="22" fill="#FFD166"/>
-      <path d="M0,74 Q42,60 84,74 T160,72 L160,100 L0,100 Z" fill="#0D2238"/>
-      <rect width="160" height="100" fill="url(#ws7PicHalftone)" opacity="0.22"/>
-      <!-- Supersonic Contrail Ribbons -->
-      <path d="M0,62 L62,48" stroke="#FFF6E3" stroke-width="4" stroke-linecap="round" opacity="0.9"/>
-      <path d="M0,72 L70,56" stroke="#FF6738" stroke-width="3.2" stroke-linecap="round"/>
-      <path d="M0,82 L54,68" stroke="#FFD166" stroke-width="2.6" stroke-linecap="round"/>
-      <!-- Banking Delta-Wing Jetliner Silhouette -->
-      <polygon points="56,42 104,16 112,35" fill="#FF6738" stroke="#FFF6E3" stroke-width="1.6" stroke-linejoin="round"/>
-      <path d="M28,58 L78,37 L142,24 Q152,23 146,32 L106,51 L38,63 Z" fill="#FFF6E3" stroke="#141B29" stroke-width="2"/>
-      <polygon points="36,56 46,34 62,47" fill="#E6397A" stroke="#FFF6E3" stroke-width="1.5"/>
-      <polygon points="74,47 116,58 100,66 64,53" fill="#00C2D6" stroke="#141B29" stroke-width="1.4"/>
-      <!-- Cockpit & Portholes -->
-      <polygon points="122,29 135,27 131,32 120,33" fill="#0D2238"/>
-      <circle cx="106" cy="36" r="2.6" fill="#1746A2"/><circle cx="94" cy="39" r="2.6" fill="#1746A2"/>
-      <circle cx="82" cy="42" r="2.6" fill="#1746A2"/><circle cx="70" cy="45" r="2.6" fill="#1746A2"/>
-    `,
-    LITERATURE: `
-      <!-- Saul Bass Mid-Century Book-Jacket Poster -->
-      <rect width="160" height="100" fill="#112A46"/>
-      <rect x="0" y="0" width="80" height="100" fill="#6E3B23"/>
-      <circle cx="80" cy="40" r="36" fill="#F4A91F" opacity="0.88"/>
-      <circle cx="80" cy="40" r="36" fill="url(#ws7PicHalftone)" opacity="0.32"/>
-      <!-- Open Hardcover Folio with Layered Pages -->
-      <path d="M16,38 Q48,26 80,40 L80,82 Q48,70 16,80 Z" fill="#FFF8E8" stroke="#141B29" stroke-width="2.2"/>
-      <path d="M144,38 Q112,26 80,40 L80,82 Q112,70 144,80 Z" fill="#F0DFBE" stroke="#141B29" stroke-width="2.2"/>
-      <path d="M22,42 Q50,32 78,44 M138,42 Q110,32 82,44" fill="none" stroke="#C4AC82" stroke-width="1.6"/>
-      <!-- Crisp Editorial Text Bars -->
-      <line x1="28" y1="50" x2="66" y2="52" stroke="#008B9A" stroke-width="3" stroke-linecap="round"/>
-      <line x1="28" y1="59" x2="64" y2="61" stroke="#141B29" stroke-width="2.2" stroke-linecap="round"/>
-      <line x1="28" y1="68" x2="58" y2="69" stroke="#141B29" stroke-width="2.2" stroke-linecap="round"/>
-      <line x1="94" y1="52" x2="132" y2="50" stroke="#E6397A" stroke-width="3" stroke-linecap="round"/>
-      <line x1="96" y1="61" x2="132" y2="59" stroke="#141B29" stroke-width="2.2" stroke-linecap="round"/>
-      <line x1="98" y1="69" x2="124" y2="68" stroke="#141B29" stroke-width="2.2" stroke-linecap="round"/>
-      <!-- Silk Ribbon Bookmark -->
-      <polygon points="75,78 85,78 85,96 80,90 75,96" fill="#E6397A"/>
-      <!-- Sculpted Brass Fountain Pen Nib Obelisk -->
-      <polygon points="80,8 92,32 86,44 74,44 68,32" fill="#FFD166" stroke="#141B29" stroke-width="2" stroke-linejoin="round"/>
-      <line x1="80" y1="8" x2="80" y2="27" stroke="#141B29" stroke-width="2"/>
-      <circle cx="80" cy="29" r="3" fill="#0D2238"/>
-    `,
-    LEXICON: `
-      <!-- Push Pin Studios / 1966 Typographic Wit Poster -->
-      <rect width="160" height="100" fill="#0E2642"/>
-      <polygon points="0,0 108,0 74,100 0,100" fill="#008B9A"/>
-      <polygon points="108,0 160,0 160,100 74,100" fill="#1A3D6E"/>
-      <rect width="160" height="100" fill="url(#ws7PicHalftone)" opacity="0.28"/>
-      <!-- Left Teal/Cream Speech Bubble with Giant Serif Quotation Sculptures -->
-      <rect x="14" y="14" width="68" height="44" rx="12" fill="#FFF6E3" stroke="#141B29" stroke-width="2.2"/>
-      <polygon points="30,58 22,74 46,58" fill="#FFF6E3" stroke="#141B29" stroke-width="2" stroke-linejoin="round"/>
-      <circle cx="34" cy="34" r="7.5" fill="#E6397A"/>
-      <path d="M41,34 Q42,46 31,48" fill="none" stroke="#E6397A" stroke-width="4.2" stroke-linecap="round"/>
-      <circle cx="57" cy="34" r="7.5" fill="#E6397A"/>
-      <path d="M64,34 Q65,46 54,48" fill="none" stroke="#E6397A" stroke-width="4.2" stroke-linecap="round"/>
-      <!-- Right Harvest Gold Speech Bubble -->
-      <rect x="74" y="34" width="72" height="44" rx="12" fill="#F4A91F" stroke="#FFFDF7" stroke-width="2.2"/>
-      <polygon points="122,78 134,93 108,78" fill="#F4A91F" stroke="#FFFDF7" stroke-width="2" stroke-linejoin="round"/>
-      <!-- Brass Letter-Tile Blocks (Non-spoiler geometric glyphs) -->
-      <rect x="85" y="45" width="16" height="20" rx="4" fill="#FFF6E3" stroke="#141B29" stroke-width="1.6"/>
-      <rect x="104" y="45" width="16" height="20" rx="4" fill="#0D2238" stroke="#FFF6E3" stroke-width="1.6"/>
-      <rect x="123" y="45" width="16" height="20" rx="4" fill="#FF6738" stroke="#141B29" stroke-width="1.6"/>
-      <circle cx="93" cy="55" r="3.5" fill="#141B29"/>
-      <rect x="109" y="51" width="6" height="8" rx="1" fill="#FFD166"/>
-      <polygon points="131,49 135,59 127,59" fill="#FFFDF7"/>
-    `,
-    'FINE ARTS': `
-      <!-- Matisse Cut-Out / Mondrian Studio Gallery Poster -->
-      <rect width="160" height="100" fill="#102540"/>
-      <rect x="0" y="0" width="46" height="58" fill="#E6397A"/>
-      <rect x="46" y="0" width="114" height="32" fill="#1E56C5"/>
-      <rect x="116" y="32" width="44" height="68" fill="#F4A91F"/>
-      <line x1="46" y1="0" x2="46" y2="100" stroke="#0D2238" stroke-width="3.5"/>
-      <line x1="0" y1="58" x2="116" y2="58" stroke="#0D2238" stroke-width="3.5"/>
-      <rect width="160" height="100" fill="url(#ws7PicHalftone)" opacity="0.22"/>
-      <!-- Sculpted Artist Palette -->
-      <path d="M84,16 C48,16 26,34 29,56 C32,76 53,86 76,82 C88,80 87,66 98,64 C116,62 132,55 132,40 C132,24 110,16 84,16 Z" fill="#FFF6E3" stroke="#141B29" stroke-width="2.6"/>
-      <circle cx="101" cy="51" r="8.5" fill="#102540" stroke="#C4AC82" stroke-width="2"/>
-      <!-- 6 Luminous Living Color Pigment Dabs -->
-      <circle cx="52" cy="40" r="7.5" fill="#E6397A"/><circle cx="72" cy="29" r="7.5" fill="#0096A6"/>
-      <circle cx="96" cy="29" r="7.5" fill="#F4A91F"/><circle cx="114" cy="39" r="6.8" fill="#1E56C5"/>
-      <circle cx="49" cy="60" r="7" fill="#FF6738"/><circle cx="69" cy="69" r="6.5" fill="#22C55E"/>
-      <!-- Angled Sable Brush with Brass Ferrule -->
-      <line x1="88" y1="86" x2="136" y2="18" stroke="#6E3B23" stroke-width="5.5" stroke-linecap="round"/>
-      <line x1="125" y1="33" x2="134" y2="21" stroke="#FFD166" stroke-width="6"/>
-      <polygon points="136,18 148,7 142,24" fill="#00E5FF" stroke="#141B29" stroke-width="1.4"/>
-    `,
-    SCREEN: `
-      <!-- Saul Bass Hollywood Premiere Marquee Poster -->
-      <rect width="160" height="100" fill="#0B192E"/>
-      <!-- Twin Premiere Searchlight Beams -->
-      <polygon points="18,100 72,0 98,0 38,100" fill="#FFD166" opacity="0.24"/>
-      <polygon points="142,100 62,0 88,0 122,100" fill="#00E5FF" opacity="0.2"/>
-      <!-- Spoked 35mm Cinema Film Reel Behind -->
-      <circle cx="122" cy="38" r="28" fill="#1E56C5" stroke="#FFD166" stroke-width="3"/>
-      <circle cx="122" cy="24" r="5.5" fill="#0B192E"/><circle cx="135" cy="34" r="5.5" fill="#0B192E"/>
-      <circle cx="130" cy="49" r="5.5" fill="#0B192E"/><circle cx="114" cy="49" r="5.5" fill="#0B192E"/>
-      <circle cx="109" cy="34" r="5.5" fill="#0B192E"/><circle cx="122" cy="38" r="5" fill="#FFFDF7"/>
-      <!-- Foreground Hollywood Director Clapboard -->
-      <rect x="20" y="38" width="84" height="48" rx="6" fill="#141B29" stroke="#FFF6E3" stroke-width="2.4"/>
-      <polygon points="20,38 104,38 98,22 14,28" fill="#FFF6E3" stroke="#141B29" stroke-width="2"/>
-      <polygon points="28,38 41,38 36,26 23,27" fill="#E6397A"/>
-      <polygon points="52,38 65,38 60,24 47,25" fill="#00C2D6"/>
-      <polygon points="76,38 89,38 84,22 71,23" fill="#FF6738"/>
-      <line x1="28" y1="54" x2="96" y2="54" stroke="#FFF6E3" stroke-width="2" stroke-opacity="0.45"/>
-      <polygon points="54,59 54,79 74,69" fill="#FFD166"/>
-      <polygon points="26,12 29,18 35,18 30,22 32,28 26,24 20,28 22,22 17,18 23,18" fill="#FFD166"/>
-    `,
-    JUKEBOX: `
-      <!-- 1966 Burbank Pop-Art Wurlitzer Jukebox Poster -->
-      <rect width="160" height="100" fill="#151D36"/>
-      <!-- Radiating Concentric Pop-Art Sound Rays -->
-      <polygon points="80,52 0,0 38,0" fill="#E6397A" opacity="0.4"/>
-      <polygon points="80,52 122,0 160,0" fill="#00C2D6" opacity="0.38"/>
-      <polygon points="80,52 160,44 160,82" fill="#F4A91F" opacity="0.35"/>
-      <polygon points="80,52 0,44 0,82" fill="#FF6738" opacity="0.35"/>
-      <!-- Iconic Chrome & Neon Arched Jukebox Cabinet -->
-      <path d="M36,92 L36,46 A44,36 0 0,1 124,46 L124,92 Z" fill="#E6397A" stroke="#FFD166" stroke-width="4"/>
-      <path d="M44,88 L44,47 A36,29 0 0,1 116,47 L116,88 Z" fill="#0D2238" stroke="#00E5FF" stroke-width="2.4"/>
-      <!-- Glossy 45rpm Vinyl Record Inside Showcase Arch -->
-      <circle cx="80" cy="48" r="22" fill="#141B29" stroke="#FFF6E3" stroke-width="2"/>
-      <circle cx="80" cy="48" r="16" fill="none" stroke="#364A66" stroke-width="1.3"/>
-      <circle cx="80" cy="48" r="9.5" fill="#FF6738"/>
-      <circle cx="80" cy="48" r="3.2" fill="#FFFDF7"/>
-      <path d="M64,39 A18,18 0 0,1 78,31" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-opacity="0.55" stroke-linecap="round"/>
-      <!-- Illuminated Selector Grille -->
-      <rect x="52" y="74" width="56" height="10" rx="4" fill="#FFD166" stroke="#141B29" stroke-width="1.6"/>
-      <line x1="62" y1="74" x2="62" y2="84" stroke="#141B29" stroke-width="1.8"/>
-      <line x1="74" y1="74" x2="74" y2="84" stroke="#141B29" stroke-width="1.8"/>
-      <line x1="86" y1="74" x2="86" y2="84" stroke="#141B29" stroke-width="1.8"/>
-      <line x1="98" y1="74" x2="98" y2="84" stroke="#141B29" stroke-width="1.8"/>
-      <!-- Dancing Beamed Eighth-Notes -->
-      <path d="M18,32 L18,16 L32,12 L32,27" fill="none" stroke="#FFD166" stroke-width="3" stroke-linecap="round"/>
-      <circle cx="14" cy="33" r="4.5" fill="#FFD166"/><circle cx="28" cy="28" r="4.5" fill="#FFD166"/>
-      <path d="M138,34 L138,16 L149,19" fill="none" stroke="#00E5FF" stroke-width="3" stroke-linecap="round"/>
-      <circle cx="134" cy="35" r="4.5" fill="#00E5FF"/>
-    `,
-    FINANCE: `
-      <!-- 1966 Fortune Magazine Wall Street Ticker & Bullion Vault Poster -->
-      <rect width="160" height="100" fill="#0A1E36"/>
-      <polygon points="0,0 78,0 44,100 0,100" fill="#103254"/>
-      <polygon points="94,100 160,42 160,100" fill="#0D4B59" opacity="0.72"/>
-      <rect width="160" height="100" fill="url(#ws7PicHalftone)" opacity="0.28"/>
-      <!-- Precision Architectural Grid & Baseline -->
-      <line x1="10" y1="22" x2="150" y2="22" stroke="#FFF6E3" stroke-opacity="0.16" stroke-width="1"/>
-      <line x1="10" y1="44" x2="150" y2="44" stroke="#FFF6E3" stroke-opacity="0.16" stroke-width="1"/>
-      <line x1="10" y1="66" x2="150" y2="66" stroke="#FFF6E3" stroke-opacity="0.16" stroke-width="1"/>
-      <line x1="10" y1="86" x2="150" y2="86" stroke="#FFD166" stroke-width="2"/>
-      <!-- 3 Faceted Mid-Century Skyscraper Bar Monoliths with Shadow Planes -->
-      <rect x="14" y="58" width="16" height="28" fill="#00B4C7"/>
-      <rect x="24" y="58" width="6" height="28" fill="#006D7A"/>
-      <polygon points="14,58 18,54 34,54 30,58" fill="#7EF2F8"/>
-      <rect x="38" y="42" width="16" height="44" fill="#2A6CE8"/>
-      <rect x="48" y="42" width="6" height="44" fill="#123682"/>
-      <polygon points="38,42 42,38 58,38 54,42" fill="#82B4FF"/>
-      <rect x="62" y="24" width="16" height="62" fill="#F4A91F"/>
-      <rect x="72" y="24" width="6" height="62" fill="#B87000"/>
-      <polygon points="62,24 66,20 82,20 78,24" fill="#FFE694"/>
-      <!-- Luminous Emerald Trendline with Diamond Data Nodes -->
-      <polyline points="14,48 46,32 70,15 104,17" fill="none" stroke="#34D378" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
-      <polygon points="110,17 98,10 100,24" fill="#7EF2AD"/>
-      <polygon points="46,27 51,32 46,37 41,32" fill="#FFFDF7" stroke="#141B29" stroke-width="1.4"/>
-      <polygon points="70,10 75,15 70,20 65,15" fill="#FFD166" stroke="#141B29" stroke-width="1.4"/>
-      <!-- Iconic 1966 Glass-Dome Brass Edison Stock Ticker & Curling Paper Tape -->
-      <path d="M98,66 L98,42 A22,22 0 0,1 142,42 L142,66 Z" fill="#00E5FF" fill-opacity="0.18" stroke="#FFF6E3" stroke-width="2"/>
-      <path d="M104,42 A16,16 0 0,1 120,26" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-opacity="0.65" stroke-linecap="round"/>
-      <rect x="108" y="42" width="24" height="20" rx="3" fill="#FFD166" stroke="#141B29" stroke-width="1.6"/>
-      <circle cx="120" cy="52" r="6" fill="#0A1E36" stroke="#F4A91F" stroke-width="2"/>
-      <rect x="93" y="64" width="54" height="9" rx="3" fill="#B87000" stroke="#FFD166" stroke-width="1.8"/>
-      <!-- Flowing Cream Ticker-Tape Ribbon -->
-      <path d="M102,73 Q88,82 104,88 T148,84" fill="none" stroke="#FFF6E3" stroke-width="5.5" stroke-linecap="round"/>
-      <path d="M102,73 Q88,82 104,88 T148,84" fill="none" stroke="#E6397A" stroke-width="1.5" stroke-dasharray="3 4" stroke-linecap="round"/>
-      <!-- Faceted 24K Gold Bullion Ingot Foreground -->
-      <polygon points="116,86 122,76 146,76 152,86" fill="#FFD166" stroke="#141B29" stroke-width="1.6"/>
-      <polygon points="122,76 146,76 142,80 126,80" fill="#FFF6E3"/>
-    `,
-    PRICING: `
-      <!-- 1966 Saul Bass Retail Showcase, Brass Cash-Register Flags & Price Tag -->
-      <rect width="160" height="100" fill="#0C233D"/>
-      <!-- Mid-Century Sunburst & Carnaby Diagonal Geometry -->
-      <polygon points="0,0 56,0 18,100 0,100" fill="#007E8C"/>
-      <polygon points="118,0 160,0 160,64" fill="#F4A91F" opacity="0.88"/>
-      <polygon points="94,100 160,52 160,100" fill="#E6397A" opacity="0.55"/>
-      <rect width="160" height="100" fill="url(#ws7PicHalftone)" opacity="0.26"/>
-      <!-- Vintage Mechanical Cash-Register Brass Pop-Up Key Flags (Behind) -->
-      <line x1="78" y1="36" x2="78" y2="16" stroke="#FFD166" stroke-width="3"/>
-      <rect x="66" y="10" width="24" height="16" rx="3" fill="#00C2D6" stroke="#FFFDF7" stroke-width="1.8"/>
-      <rect x="70" y="15" width="16" height="6" rx="1.5" fill="#0C233D"/>
-      <line x1="106" y1="36" x2="106" y2="12" stroke="#FFD166" stroke-width="3"/>
-      <rect x="94" y="6" width="24" height="18" rx="3" fill="#FFD166" stroke="#141B29" stroke-width="1.8"/>
-      <polygon points="106,9 109,14 114,14 110,17 111,22 106,19 101,22 102,17 98,14 103,14" fill="#E6397A"/>
-      <line x1="134" y1="36" x2="134" y2="18" stroke="#FFD166" stroke-width="3"/>
-      <rect x="122" y="12" width="24" height="16" rx="3" fill="#E6397A" stroke="#FFFDF7" stroke-width="1.8"/>
-      <circle cx="134" cy="20" r="4" fill="#FFD166"/>
-      <!-- Cast Drop Shadow Behind Hang-Tag -->
-      <polygon points="28,62 58,34 138,34 138,88 58,88" fill="#061222" opacity="0.55"/>
-      <!-- Braided Silk Tag Cord & Brass Grommet Loop -->
-      <path d="M8,46 Q18,36 28,50 Q35,58 46,56" fill="none" stroke="#FFD166" stroke-width="3.2" stroke-linecap="round"/>
-      <path d="M12,68 Q22,74 32,60" fill="none" stroke="#FFF6E3" stroke-width="2.2" stroke-linecap="round"/>
-      <!-- Sculpted Atomic Tangerine Retail Hang-Tag with Two-Tone Shadow Plane -->
-      <polygon points="24,57 54,29 134,29 134,83 54,83" fill="#FF6738" stroke="#FFF6E3" stroke-width="2.6" stroke-linejoin="round"/>
-      <polygon points="54,29 134,29 134,56 24,57" fill="#FF855E" opacity="0.42"/>
-      <polygon points="31,57 56,35 128,35 128,77 56,77" fill="none" stroke="#FFD166" stroke-width="1.5" stroke-dasharray="5 3"/>
-      <!-- Brass Reinforced Grommet Eyelet -->
-      <circle cx="48" cy="56" r="8" fill="#F4A91F" stroke="#141B29" stroke-width="1.8"/>
-      <circle cx="48" cy="56" r="4" fill="#0C233D"/>
-      <!-- Layered Morton Goldsholl 8-Point Price Starburst Medallion -->
-      <polygon points="94,37 99,49 112,45 103,56 112,67 99,63 94,75 89,63 76,67 85,56 76,45 89,49" fill="#FFD166" stroke="#141B29" stroke-width="1.6"/>
-      <circle cx="94" cy="56" r="9.5" fill="#0C233D" stroke="#FFFDF7" stroke-width="1.8"/>
-      <polygon points="94,49 97,56 94,63 91,56" fill="#00E5FF"/>
-      <!-- Brass Barcode/Keying Ribs -->
-      <line x1="118" y1="42" x2="118" y2="70" stroke="#FFF6E3" stroke-width="2.6" stroke-linecap="round"/>
-      <line x1="123" y1="46" x2="123" y2="66" stroke="#FFD166" stroke-width="2" stroke-linecap="round"/>
-    `,
-    ODDS: `
-      <!-- 1969 Monte Carlo Mid-Century Casino Graphic -->
-      <rect width="160" height="100" fill="#0B3B36"/>
-      <polygon points="0,0 80,0 44,100 0,100" fill="#0E2540"/>
-      <circle cx="132" cy="50" r="46" fill="none" stroke="#F4A91F" stroke-width="10" stroke-dasharray="10 10" opacity="0.45"/>
-      <circle cx="132" cy="50" r="34" fill="none" stroke="#E6397A" stroke-width="4" opacity="0.65"/>
-      <!-- Geometric Playing-Card Diamond Crest -->
-      <polygon points="80,10 92,26 80,42 68,26" fill="#E6397A" stroke="#FFF6E3" stroke-width="2"/>
-      <!-- Tumbling Mid-Century Ivory Die (Left) -->
-      <g transform="rotate(-12 52 56)">
-        <rect x="28" y="32" width="46" height="46" rx="10" fill="#FFF6E3" stroke="#141B29" stroke-width="2.4"/>
-        <circle cx="41" cy="45" r="4.2" fill="#141B29"/><circle cx="61" cy="65" r="4.2" fill="#141B29"/>
-        <circle cx="51" cy="55" r="4.6" fill="#E6397A"/>
-      </g>
-      <!-- Tumbling Peacock Die (Right) -->
-      <g transform="rotate(14 108 58)">
-        <rect x="85" y="34" width="46" height="46" rx="10" fill="#0096A6" stroke="#FFFDF7" stroke-width="2.4"/>
-        <circle cx="98" cy="47" r="4" fill="#FFD166"/><circle cx="118" cy="47" r="4" fill="#FFD166"/>
-        <circle cx="98" cy="67" r="4" fill="#FFD166"/><circle cx="118" cy="67" r="4" fill="#FFD166"/>
-        <circle cx="108" cy="57" r="4" fill="#FFFDF7"/>
-      </g>
-    `,
-    ATLAS: `
-      <!-- Charley Harper Cartographic Globe & Compass Poster -->
-      <rect width="160" height="100" fill="#0E2C4D"/>
-      <path d="M0,78 Q20,70 40,78 T80,78 T120,78 T160,78 L160,100 L0,100 Z" fill="#007E8C" opacity="0.72"/>
-      <circle cx="80" cy="50" r="44" fill="url(#ws7PicHalftone)" opacity="0.32"/>
-      <!-- Sculpted Peacock Ocean Globe -->
-      <circle cx="80" cy="50" r="38" fill="#0096A6" stroke="#FFD166" stroke-width="3"/>
-      <!-- Stylized Geometric Continents -->
-      <path d="M54,30 Q66,24 72,34 Q68,46 58,48 Q50,42 54,30 Z" fill="#F4A91F"/>
-      <path d="M88,26 Q104,28 108,42 Q96,50 86,44 Z" fill="#FF6738"/>
-      <path d="M86,54 Q100,56 102,72 Q90,76 84,66 Z" fill="#FFD166"/>
-      <!-- Graticule Arcs -->
-      <ellipse cx="80" cy="50" rx="19" ry="38" fill="none" stroke="#FFF6E3" stroke-width="1.5" stroke-opacity="0.78"/>
-      <line x1="42" y1="50" x2="118" y2="50" stroke="#FFF6E3" stroke-width="1.6" stroke-opacity="0.82"/>
-      <line x1="48" y1="32" x2="112" y2="32" stroke="#FFF6E3" stroke-width="1.2" stroke-opacity="0.55"/>
-      <line x1="48" y1="68" x2="112" y2="68" stroke="#FFF6E3" stroke-width="1.2" stroke-opacity="0.55"/>
-      <!-- Sharp 8-Point Brass & Crimson Compass Rose -->
-      <polygon points="80,14 87,43 116,50 87,57 80,86 73,57 44,50 73,43" fill="#FFFDF7" stroke="#141B29" stroke-width="1.6"/>
-      <polygon points="80,14 87,43 80,50" fill="#FF6738"/>
-      <polygon points="116,50 87,57 80,50" fill="#FFD166"/>
-      <circle cx="80" cy="50" r="5" fill="#0D2238" stroke="#FFD166" stroke-width="2"/>
-    `,
-    SPORTS: `
-      <!-- 1964 Tokyo / 1968 Mexico City Olympic Stadium Poster -->
-      <rect width="160" height="100" fill="#0D2442"/>
-      <!-- Sweeping Olympic Track Stripes -->
-      <path d="M0,78 L160,34" stroke="#E6397A" stroke-width="8"/>
-      <path d="M0,88 L160,44" stroke="#FF6738" stroke-width="8"/>
-      <path d="M0,98 L160,54" stroke="#00C2D6" stroke-width="8"/>
-      <rect width="160" height="100" fill="url(#ws7PicHalftone)" opacity="0.22"/>
-      <!-- Symmetrical Charley Harper Emerald Laurel Branches -->
-      <path d="M36,78 Q24,52 44,24" fill="none" stroke="#22C55E" stroke-width="3.2" stroke-linecap="round"/>
-      <path d="M124,78 Q136,52 116,24" fill="none" stroke="#22C55E" stroke-width="3.2" stroke-linecap="round"/>
-      <ellipse cx="30" cy="56" rx="7" ry="4" fill="#7EF2AD" transform="rotate(-30 30 56)"/>
-      <ellipse cx="32" cy="40" rx="7" ry="4" fill="#22C55E" transform="rotate(-20 32 40)"/>
-      <ellipse cx="130" cy="56" rx="7" ry="4" fill="#7EF2AD" transform="rotate(30 130 56)"/>
-      <ellipse cx="128" cy="40" rx="7" ry="4" fill="#22C55E" transform="rotate(20 128 40)"/>
-      <!-- 24K Gold Sculpted Olympic Trophy Chalice -->
-      <path d="M54,22 Q36,24 40,42 Q44,54 58,52" fill="none" stroke="#F4A91F" stroke-width="4.2"/>
-      <path d="M106,22 Q124,24 120,42 Q116,54 102,52" fill="none" stroke="#F4A91F" stroke-width="4.2"/>
-      <path d="M52,16 L108,16 L102,50 Q96,67 80,67 Q64,67 58,50 Z" fill="#FFD166" stroke="#FFFDF7" stroke-width="2.4"/>
-      <path d="M80,16 L108,16 L102,50 Q96,67 80,67 Z" fill="#F4A91F" opacity="0.55"/>
-      <rect x="74" y="66" width="12" height="14" fill="#F4A91F"/>
-      <rect x="56" y="78" width="48" height="11" rx="4" fill="#141B29" stroke="#FFD166" stroke-width="2"/>
-      <polygon points="80,26 84,36 95,36 86,42 89,52 80,46 71,52 74,42 65,36 76,36" fill="#008B9A"/>
-    `,
-    DYNASTIES: `
-      <!-- Mid-Century Museum Heraldry & Royal Crown Poster -->
-      <rect width="160" height="100" fill="#132554"/>
-      <polygon points="0,0 50,0 30,100 0,100" fill="#9E1649"/>
-      <polygon points="110,0 160,0 160,100 130,100" fill="#9E1649"/>
-      <rect width="160" height="100" fill="url(#ws7PicHalftone)" opacity="0.28"/>
-      <!-- Velvet Cap Dome Behind Crown -->
-      <path d="M40,66 Q80,14 120,66 Z" fill="#E6397A" stroke="#FFD166" stroke-width="2"/>
-      <!-- Grand 5-Point Sovereign Gold Crown -->
-      <polygon points="30,72 24,28 54,48 80,16 106,48 136,28 130,72" fill="#FFD166" stroke="#FFFDF7" stroke-width="2.6" stroke-linejoin="round"/>
-      <polygon points="80,16 106,48 136,28 130,72 80,72" fill="#F4A91F" opacity="0.55"/>
-      <circle cx="24" cy="25" r="4.5" fill="#FFFDF7"/><circle cx="80" cy="13" r="5.5" fill="#FFFDF7"/>
-      <circle cx="136" cy="25" r="4.5" fill="#FFFDF7"/>
-      <!-- Jeweled Band & Cabochons -->
-      <rect x="28" y="68" width="104" height="16" rx="6" fill="#0D2238" stroke="#FFD166" stroke-width="2.4"/>
-      <circle cx="80" cy="52" r="7" fill="#00C2D6" stroke="#FFFDF7" stroke-width="1.8"/>
-      <circle cx="52" cy="76" r="4.5" fill="#E6397A"/><circle cx="80" cy="76" r="5" fill="#FFD166"/><circle cx="108" cy="76" r="4.5" fill="#00E5FF"/>
-    `,
-    HEADLINES: `
-      <!-- 1966 Network Newsroom RCA 44-BX Ribbon Mic & Broadsheet -->
-      <rect width="160" height="100" fill="#123059"/>
-      <circle cx="116" cy="48" r="46" fill="none" stroke="#FFD166" stroke-width="2" stroke-opacity="0.35"/>
-      <circle cx="116" cy="48" r="32" fill="none" stroke="#00E5FF" stroke-width="2.2" stroke-opacity="0.5"/>
-      <rect width="160" height="100" fill="url(#ws7PicHalftone)" opacity="0.24"/>
-      <!-- Front-Page Broadsheet (Left) -->
-      <rect x="14" y="16" width="76" height="68" rx="5" fill="#FFF6E3" stroke="#141B29" stroke-width="2.2"/>
-      <rect x="20" y="22" width="64" height="12" rx="2" fill="#141B29"/>
-      <rect x="20" y="39" width="28" height="24" rx="2" fill="#0096A6"/>
-      <line x1="54" y1="42" x2="82" y2="42" stroke="#141B29" stroke-width="3" stroke-linecap="round"/>
-      <line x1="54" y1="50" x2="82" y2="50" stroke="#141B29" stroke-width="2.4" stroke-linecap="round"/>
-      <line x1="54" y1="58" x2="76" y2="58" stroke="#FF6738" stroke-width="3" stroke-linecap="round"/>
-      <line x1="20" y1="71" x2="82" y2="71" stroke="#141B29" stroke-width="2.4" stroke-linecap="round"/>
-      <line x1="20" y1="78" x2="66" y2="78" stroke="#141B29" stroke-width="2.4" stroke-linecap="round"/>
-      <!-- Iconic 1966 RCA 44-BX Broadcast Ribbon Microphone (Right) -->
-      <rect x="102" y="16" width="28" height="48" rx="14" fill="#DCE7F2" stroke="#141B29" stroke-width="2.2"/>
-      <line x1="104" y1="28" x2="128" y2="28" stroke="#141B29" stroke-width="2"/>
-      <line x1="103" y1="36" x2="129" y2="36" stroke="#141B29" stroke-width="2"/>
-      <line x1="103" y1="44" x2="129" y2="44" stroke="#141B29" stroke-width="2"/>
-      <line x1="104" y1="52" x2="128" y2="52" stroke="#141B29" stroke-width="2"/>
-      <rect x="107" y="64" width="18" height="7" rx="2" fill="#E6397A"/>
-      <line x1="116" y1="71" x2="116" y2="88" stroke="#FFD166" stroke-width="4"/>
-      <rect x="98" y="85" width="36" height="7" rx="3.5" fill="#F4A91F"/>
-    `,
-    FOLKLORE: `
-      <!-- Charley Harper Nocturnal Myth, Armillary Astrolabe & Lantern Print -->
-      <rect width="160" height="100" fill="#081632"/>
-      <!-- Concentric Nocturnal Sky Halos & Astrolabe Arcs -->
-      <circle cx="62" cy="46" r="46" fill="#0F2A54"/>
-      <circle cx="62" cy="46" r="34" fill="none" stroke="#FFD166" stroke-width="1.2" stroke-opacity="0.4" stroke-dasharray="4 4"/>
-      <ellipse cx="62" cy="46" rx="44" ry="18" transform="rotate(-18 62 46)" fill="none" stroke="#00E5FF" stroke-width="1.3" stroke-opacity="0.45"/>
-      <rect width="160" height="100" fill="url(#ws7PicHalftone)" opacity="0.22"/>
-      <!-- 3-Tier Charley Harper Mountain & Pine Silhouette Ridge -->
-      <polygon points="0,78 24,52 48,78" fill="#12385B"/>
-      <polygon points="96,80 126,46 156,80" fill="#12385B"/>
-      <path d="M0,74 Q42,54 88,76 T160,70 L160,100 L0,100 Z" fill="#0F4D66"/>
-      <path d="M0,86 Q56,68 112,86 T160,82 L160,100 L0,100 Z" fill="#007E8C"/>
-      <!-- Geometric Mid-Century Pine Trees Along Left Ridge -->
-      <polygon points="18,62 11,80 25,80" fill="#09293D"/>
-      <polygon points="31,68 25,84 37,84" fill="#09293D"/>
-      <polygon points="142,64 135,82 149,82" fill="#09293D"/>
-      <!-- Luminous Two-Tone Sculpted Crescent Moon -->
-      <path d="M58,12 A31,31 0 1,0 92,62 A23,23 0 1,1 58,12 Z" fill="#FFD166" stroke="#FFFDF7" stroke-width="2"/>
-      <path d="M58,12 A31,31 0 0,0 38,54 A25,25 0 0,1 58,12 Z" fill="#F4A91F" opacity="0.6"/>
-      <!-- Faceted Pagoda Storyteller's Brass Lantern + Radial Light Aura -->
-      <circle cx="76" cy="48" r="16" fill="#FF6738" fill-opacity="0.25"/>
-      <line x1="76" y1="22" x2="76" y2="33" stroke="#FFD166" stroke-width="2.2"/>
-      <polygon points="64,34 88,34 84,30 68,30" fill="#FFD166" stroke="#141B29" stroke-width="1.2"/>
-      <polygon points="67,34 85,34 89,56 63,56" fill="#FF6738" stroke="#FFFDF7" stroke-width="1.8"/>
-      <polygon points="76,34 85,34 89,56 76,56" fill="#D9381E" opacity="0.55"/>
-      <rect x="65" y="56" width="22" height="5" rx="2" fill="#FFD166" stroke="#141B29" stroke-width="1.2"/>
-      <polygon points="76,39 81,46 76,53 71,46" fill="#FFFDF7"/>
-      <!-- Constellation Starburst & Sightlines -->
-      <polyline points="106,20 126,38 144,18 134,54" fill="none" stroke="#00E5FF" stroke-width="1.5" stroke-dasharray="3 3"/>
-      <polygon points="106,10 109,18 117,20 109,22 106,30 103,22 95,20 103,18" fill="#00E5FF"/>
-      <polygon points="144,12 146,17 151,18 146,19 144,24 142,19 137,18 142,17" fill="#E6397A"/>
-      <circle cx="126" cy="38" r="4" fill="#FFD166" stroke="#FFFDF7" stroke-width="1.2"/>
-      <circle cx="20" cy="24" r="3" fill="#FFF6E3"/>
-      <circle cx="134" cy="54" r="3.4" fill="#FFD166"/>
-    `,
-    FALLACIES: `
-      <!-- M.C. Escher / Saul Bass Optical Paradox & Brass Loupe Plate -->
-      <rect width="160" height="100" fill="#0B1B34"/>
-      <polygon points="0,0 160,0 0,100" fill="#16325C"/>
-      <!-- Perspective Checkered Optical Floor & Concentric Target Arcs -->
-      <polygon points="0,78 160,78 160,100 0,100" fill="#0E2547"/>
-      <line x1="0" y1="78" x2="160" y2="78" stroke="#00E5FF" stroke-width="1.5" stroke-opacity="0.5"/>
-      <line x1="36" y1="78" x2="10" y2="100" stroke="#FFF6E3" stroke-opacity="0.2" stroke-width="1.2"/>
-      <line x1="68" y1="78" x2="58" y2="100" stroke="#FFF6E3" stroke-opacity="0.2" stroke-width="1.2"/>
-      <line x1="100" y1="78" x2="112" y2="100" stroke="#FFF6E3" stroke-opacity="0.2" stroke-width="1.2"/>
-      <line x1="132" y1="78" x2="156" y2="100" stroke="#FFF6E3" stroke-opacity="0.2" stroke-width="1.2"/>
-      <circle cx="72" cy="52" r="42" fill="none" stroke="#FFD166" stroke-width="1.2" stroke-opacity="0.28" stroke-dasharray="6 4"/>
-      <circle cx="72" cy="52" r="30" fill="none" stroke="#E6397A" stroke-width="1.2" stroke-opacity="0.32"/>
-      <rect width="160" height="100" fill="url(#ws7PicHalftone)" opacity="0.24"/>
-      <!-- Cast Shadow Beneath Penrose Paradox Tribar -->
-      <ellipse cx="76" cy="89" rx="48" ry="6" fill="#040B17" opacity="0.65"/>
-      <!-- 3-Plane Faceted Penrose Impossible Tribar with Specular Miter Edges -->
-      <polygon points="72,10 118,86 100,86 72,39 44,86 26,86" fill="#FFD166" stroke="#141B29" stroke-width="2" stroke-linejoin="round"/>
-      <polygon points="72,10 84,10 130,86 118,86" fill="#E6397A" stroke="#141B29" stroke-width="2" stroke-linejoin="round"/>
-      <polygon points="26,86 118,86 110,73 44,73" fill="#00C2D6" stroke="#141B29" stroke-width="2" stroke-linejoin="round"/>
-      <polygon points="72,39 87,64 57,64" fill="#0B1B34" stroke="#141B29" stroke-width="1.6"/>
-      <!-- Inner Bevel Highlights for Architectural Precision -->
-      <line x1="72" y1="15" x2="36" y2="75" stroke="#FFFDF7" stroke-width="1.6" stroke-opacity="0.7"/>
-      <line x1="81" y1="15" x2="122" y2="82" stroke="#FF8AB5" stroke-width="1.6" stroke-opacity="0.75"/>
-      <line x1="34" y1="81" x2="110" y2="81" stroke="#7EF2F8" stroke-width="1.6" stroke-opacity="0.75"/>
-      <!-- Sculpted Brass-Collared Detective Loupe with Chromatic Lens Glint -->
-      <line x1="125" y1="67" x2="148" y2="90" stroke="#9E6300" stroke-width="9" stroke-linecap="round"/>
-      <line x1="125" y1="67" x2="147" y2="89" stroke="#F4A91F" stroke-width="5.5" stroke-linecap="round"/>
-      <circle cx="111" cy="53" r="22" fill="#00E5FF" fill-opacity="0.22" stroke="#141B29" stroke-width="2"/>
-      <circle cx="111" cy="53" r="20" fill="none" stroke="#FFD166" stroke-width="4.2"/>
-      <circle cx="111" cy="53" r="16" fill="none" stroke="#E6397A" stroke-width="1.2" stroke-opacity="0.65"/>
-      <path d="M99,44 A14,14 0 0,1 119,40" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round"/>
-      <circle cx="111" cy="53" r="3" fill="#FFFDF7" opacity="0.85"/>
-    `,
-    CUISINE: `
-      <!-- 1966 Suppers-of-the-World Mid-Century Bistro & Silver Cloche Poster -->
-      <rect width="160" height="100" fill="#0C243D"/>
-      <!-- Architectural Bistro Arch & Warm Terracotta/Walnut Table -->
-      <path d="M22,72 L22,28 A58,28 0 0,1 138,28 L138,72 Z" fill="#133A59"/>
-      <rect x="0" y="72" width="160" height="28" fill="#6E3B23"/>
-      <rect x="0" y="78" width="160" height="22" fill="#522916"/>
-      <line x1="0" y1="72" x2="160" y2="72" stroke="#FFD166" stroke-width="2.6"/>
-      <!-- Subtle Bistro Tablecloth Runner & Cast Platter Shadow -->
-      <polygon points="34,72 126,72 138,100 22,100" fill="#8C1E44" opacity="0.58"/>
-      <ellipse cx="80" cy="82" rx="54" ry="5.5" fill="#1E0C04" opacity="0.6"/>
-      <rect width="160" height="72" fill="url(#ws7PicHalftone)" opacity="0.22"/>
-      <!-- Triple Rising Cyan & Gold Aromatic Steam Curves -->
-      <path d="M58,28 Q64,19 56,11" fill="none" stroke="#00E5FF" stroke-width="2.6" stroke-linecap="round"/>
-      <path d="M80,22 Q86,13 78,6" fill="none" stroke="#FFD166" stroke-width="2.8" stroke-linecap="round"/>
-      <path d="M102,28 Q108,19 100,11" fill="none" stroke="#00E5FF" stroke-width="2.6" stroke-linecap="round"/>
-      <!-- Fluted Brass Finial & Faceted Silver Gourmet Cloche Dome -->
-      <rect x="75" y="30" width="10" height="5" rx="2" fill="#B87000"/>
-      <circle cx="80" cy="28" r="5.8" fill="#FFD166" stroke="#141B29" stroke-width="1.6"/>
-      <circle cx="78" cy="26" r="1.8" fill="#FFFDF7"/>
-      <path d="M36,70 A44,35 0 0,1 124,70 Z" fill="#FFF6E3" stroke="#141B29" stroke-width="2.4"/>
-      <path d="M80,35 A44,35 0 0,1 124,70 L80,70 Z" fill="#DFCCA6" opacity="0.78"/>
-      <path d="M98,42 A44,35 0 0,1 124,70 L106,70 Z" fill="#B8A37D" opacity="0.48"/>
-      <path d="M48,59 A32,23 0 0,1 74,41" fill="none" stroke="#FFFFFF" stroke-width="3.8" stroke-linecap="round"/>
-      <line x1="37" y1="65" x2="123" y2="65" stroke="#D4B886" stroke-width="1.8"/>
-      <!-- Scalloped Atomic Tangerine Charger Platter -->
-      <rect x="24" y="68" width="112" height="11" rx="5.5" fill="#FF6738" stroke="#FFFDF7" stroke-width="2"/>
-      <line x1="36" y1="72" x2="124" y2="72" stroke="#FFD166" stroke-width="1.6" stroke-linecap="round"/>
-      <!-- Left: Precision 3-Prong Mid-Century Brass Fork -->
-      <line x1="16" y1="42" x2="16" y2="67" stroke="#FFD166" stroke-width="3.2" stroke-linecap="round"/>
-      <path d="M11,28 L11,39 Q11,43 16,43 Q21,43 21,39 L21,28 M16,28 L16,42" fill="none" stroke="#FFD166" stroke-width="2.2" stroke-linecap="round"/>
-      <circle cx="16" cy="67" r="2.6" fill="#F4A91F"/>
-      <!-- Right: Sculpted Supper-Club Champagne Coupe with Ruby Meniscus -->
-      <path d="M134,30 L154,30 Q154,46 144,48 Q134,46 134,30 Z" fill="#FFFDF7" fill-opacity="0.22" stroke="#FFFDF7" stroke-width="1.8"/>
-      <path d="M136,37 L152,37 Q151,45 144,46.5 Q137,45 136,37 Z" fill="#E6397A"/>
-      <line x1="144" y1="48" x2="144" y2="66" stroke="#FFD166" stroke-width="2.6"/>
-      <line x1="137" y1="66" x2="151" y2="66" stroke="#FFD166" stroke-width="2.8" stroke-linecap="round"/>
-    `,
-  };
-
+export function renderCategoryMonitorSvg(category: CategoryIdV7): string {
+  const plateImgUrl = getCategoryPlateImageUrlV8(category);
   return `
     <svg class="ws7-pic-emblem-svg" viewBox="0 0 160 100" width="100%" height="100%" aria-hidden="true">
       <defs>
-        <pattern id="ws7PicHalftone" width="8" height="8" patternUnits="userSpaceOnUse">
-          <circle cx="3" cy="3" r="1.25" fill="#FFF6E3" fill-opacity="0.42"/>
-        </pattern>
         <pattern id="ws7CrtScan" width="4" height="4" patternUnits="userSpaceOnUse">
-          <line x1="0" y1="2" x2="4" y2="2" stroke="#040C18" stroke-opacity="0.16" stroke-width="1"/>
+          <line x1="0" y1="2" x2="4" y2="2" stroke="#1A0E06" stroke-opacity="0.06" stroke-width="1"/>
         </pattern>
+        <radialGradient id="ws7CrtColorBloom" cx="50%" cy="46%" r="58%">
+          <stop offset="0%" stop-color="#FFFDF5" stop-opacity="0.14"/>
+          <stop offset="100%" stop-color="#FFFDF5" stop-opacity="0"/>
+        </radialGradient>
         <clipPath id="ws7CrtPillowMask">
-          <path d="M14,2 Q80,0 146,2 Q158,2 158,14 Q160,50 158,86 Q158,98 146,98 Q80,100 14,98 Q2,98 2,86 Q0,50 2,14 Q2,2 14,2 Z"/>
+          <path d="M12,2 Q80,0 148,2 Q158,2 158,12 Q160,50 158,88 Q158,98 148,98 Q80,100 12,98 Q2,98 2,88 Q0,50 2,12 Q2,2 12,2 Z"/>
         </clipPath>
       </defs>
       <g clip-path="url(#ws7CrtPillowMask)">
-        ${artworkByCat[category] ?? artworkByCat.ATLAS}
-        <!-- Subtle 1966 RCA Color CRT Scanline & Curved Glass Reflection -->
+        <rect width="160" height="100" fill="#FAF2DF"/>
+        <image href="${plateImgUrl}" x="0" y="0" width="160" height="100" preserveAspectRatio="xMidYMid slice"/>
+        <rect width="160" height="100" fill="url(#ws7CrtColorBloom)"/>
         <rect width="160" height="100" fill="url(#ws7CrtScan)"/>
-        <path d="M16,9 Q80,3 144,9" fill="none" stroke="#FFFFFF" stroke-opacity="0.28" stroke-width="3.2" stroke-linecap="round"/>
+        <path d="M16,8 Q80,3 144,8" fill="none" stroke="#FFFFFF" stroke-opacity="0.36" stroke-width="2.6" stroke-linecap="round"/>
       </g>
-      <path d="M14,2 Q80,0 146,2 Q158,2 158,14 Q160,50 158,86 Q158,98 146,98 Q80,100 14,98 Q2,98 2,86 Q0,50 2,14 Q2,2 14,2 Z" fill="none" stroke="#081524" stroke-width="2.5"/>
+      <path d="M12,2 Q80,0 148,2 Q158,2 158,12 Q160,50 158,88 Q158,98 148,98 Q80,100 12,98 Q2,98 2,88 Q0,50 2,12 Q2,2 12,2 Z" fill="none" stroke="#D9A441" stroke-opacity="0.9" stroke-width="2"/>
     </svg>
   `;
+}
+
+function renderCategoryPictureEmblemSvgV7(category: CategoryIdV7): string {
+  return renderCategoryMonitorSvg(category);
 }
 
 /**
@@ -888,10 +366,10 @@ function ensureTactileContraptionsStylesV7(): void {
     style.id = STYLES_ID_V7;
     document.head.appendChild(style);
   }
-  if (style.dataset.version === '1966-living-color-wave7-gallery-w5c') {
+  if (style.dataset.version === '1966-living-color-v8-shutter-ladder') {
     return;
   }
-  style.dataset.version = '1966-living-color-wave7-gallery-w5c';
+  style.dataset.version = '1966-living-color-v8-shutter-ladder';
   style.textContent = `
     @keyframes ws7PadSlideIn {
       from {
@@ -1839,16 +1317,29 @@ function ensureTactileContraptionsStylesV7(): void {
       flex: 0 0 auto;
     }
     .ws7-picture-screen {
-      flex: 0 0 98px;
-      width: 98px;
-      height: 61px;
+      flex: 0 0 116px;
+      width: 116px;
+      height: 67px;
       border-radius: 11px;
-      padding: 3px;
-      background: linear-gradient(155deg, #EEF4FA 0%, #9EB2C7 52%, #5D7085 100%);
+      padding: 2.5px;
+      background: linear-gradient(155deg, #FFF3B0 0%, #F2A922 48%, #8F5A12 100%);
       box-shadow:
-        inset 0 2px 6px rgba(4, 12, 24, 0.72),
-        0 1px 0 rgba(255, 240, 214, 0.45);
+        inset 0 2px 5px rgba(4, 12, 24, 0.65),
+        0 0 10px rgba(242, 169, 34, 0.32),
+        0 1px 0 rgba(255, 246, 227, 0.55);
       overflow: hidden;
+    }
+    .ws7-picture-color-dots {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      flex: 0 0 auto;
+    }
+    .ws7-picture-color-dots > i {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      display: inline-block;
     }
     .ws7-picture-meta {
       flex: 1 1 auto;
@@ -3217,10 +2708,44 @@ function ensureTactileContraptionsStylesV7(): void {
       line-height: 1.15;
     }
     .ws7-crack-lever:disabled {
-      opacity: 0.58;
-      background: linear-gradient(180deg, #15455B 0%, #0D263D 100%);
-      box-shadow: none;
+      opacity: 0.72;
+      background: linear-gradient(180deg, #1746A2 0%, #0E295E 100%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
       cursor: default;
+    }
+    .ws7-shutter-ladder-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-family: var(--ws7-toy-caps);
+      font-size: 14.5px;
+      font-weight: 900;
+      letter-spacing: 0.03em;
+      line-height: 1.15;
+      white-space: nowrap;
+      transition: background 0.16s ease, box-shadow 0.16s ease, color 0.16s ease;
+    }
+    .ws7-shutter-ladder-badge[data-tier="2.0"] {
+      background: linear-gradient(90deg, #FF6B35 0%, #F2A922 100%);
+      color: #141B29;
+      box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.7), 0 0 14px rgba(255, 184, 48, 0.75);
+    }
+    .ws7-shutter-ladder-badge[data-tier="1.6"] {
+      background: linear-gradient(90deg, #00A8B8 0%, #008B94 100%);
+      color: #FFFDF7;
+      box-shadow: inset 0 0 0 1.5px #FFD166, 0 0 10px rgba(0, 196, 212, 0.5);
+    }
+    .ws7-shutter-ladder-badge[data-tier="1.3"] {
+      background: linear-gradient(90deg, #2563EB 0%, #1746A2 100%);
+      color: #FFFDF7;
+      box-shadow: inset 0 0 0 1.5px #FFD166;
+    }
+    .ws7-shutter-ladder-badge[data-tier="1.0"] {
+      background: rgba(13, 34, 56, 0.92);
+      color: #FFF6E3;
+      box-shadow: inset 0 0 0 1.5px rgba(255, 209, 102, 0.55);
     }
     .ws7-shutter-keys {
       display: grid;
@@ -3600,6 +3125,7 @@ function enhanceMountedQuestionChassisV7(container: HTMLElement): void {
   // 2. Replace raw OS emojis (`✂️`, `📊`) on Lifeline buttons with crisp 1966 vector SVG icons!
   const lifelineBtns = chassis.querySelectorAll<HTMLButtonElement>('.ws7-lifeline-btn');
   lifelineBtns.forEach((btn) => {
+    if (btn.querySelector('.ws7-lifeline-copy-stack')) return;
     const txt = (btn.textContent ?? '').trim();
     if (!txt) return;
     if (btn.dataset.lifeline === 'fifty-fifty' || /✂/.test(txt)) {
@@ -4308,9 +3834,9 @@ export function mountTactileContraptionV7(
           crt.className = 'ws7-picture-crt';
           const chLabel = PICTURE_MONITOR_CHANNEL_LABELS_V7[clue.category] ?? clue.category;
           crt.innerHTML = `
-            <div class="ws7-picture-screen">${renderCategoryPictureEmblemSvgV7(clue.category)}</div>
+            <div class="ws7-picture-screen">${renderCategoryMonitorSvg(clue.category)}</div>
             <div class="ws7-picture-meta">
-              <span class="ws7-picture-ch-tag"><span class="ws7-picture-onair-led" aria-hidden="true"></span>CH 6 · PICTURE MONITOR</span>
+              <span class="ws7-picture-ch-tag"><span class="ws7-picture-onair-led" aria-hidden="true"></span>CH 6 · IN LIVING COLOR<span class="ws7-picture-color-dots" aria-hidden="true"><i style="background:#00C4D4;"></i><i style="background:#FFD166;"></i><i style="background:#FF6B35;"></i><i style="background:#E6397A;"></i></span></span>
               <span class="ws7-picture-sub">${escHtml(chLabel)}</span>
             </div>
             <div class="ws7-picture-dials" aria-hidden="true">
@@ -6998,8 +6524,8 @@ export function mountTactileContraptionV7(
             if (zIdx === flashIdx) {
               const x0 = Number(g.dataset.x0 ?? 24);
               const y0 = Number(g.dataset.y0 ?? 30);
-              const cx = x0 + 50;
-              const cy = y0 + 44;
+              const cx = Number(g.dataset.cx ?? x0 + 55);
+              const cy = Number(g.dataset.cy ?? y0 + 56);
               const reticle = document.createElementNS('http://www.w3.org/2000/svg', 'g');
               reticle.setAttribute('class', context.reducedMotion ? '' : 'ws7-loupe-reticle');
               const ringColor = zIdx === cyano.targetZoneIdx ? '#22C55E' : '#FFD166';
@@ -7116,22 +6642,24 @@ export function mountTactileContraptionV7(
     }
 
     // ------------------------------------------------------------------------
-    // 14. TOY_14_FOUR_SHUTTER_REEL: 1966 *Laugh-In* Pop-Color 4-Shutter Wall
+    // 14. TOY_14_FOUR_SHUTTER_REEL: 1966 *Only Connect / Laugh-In* 4-Shutter Wall
     // ------------------------------------------------------------------------
     case 'TOY_14_FOUR_SHUTTER_REEL': {
-      appendShowcasePromptBanner(
-        root,
-        'Tap A–D now for 2.0× — or tap OPEN SHUTTER for more clues!',
-      );
+      const shutterBanner = appendShowcasePromptBanner(root, '');
 
       const reel = resolveShuttersPayload(clue);
-      const multSchedule: readonly [number, number, number, number] = [2.0, 1.5, 1.2, 1.0];
+      const multSchedule = SHUTTER_REEL_MULTIPLIER_LADDER_V8;
       const freeSecondShutter = context.dayJob === 'MONOLOGUE_WRITER';
       let openCount = freeSecondShutter ? 2 : 1;
       let lastOpenedIdx = -1;
-      let paidCracks = 0;
 
-      const getCurrentMult = (): number => multSchedule[Math.min(3, paidCracks)];
+      const resolveLadderIndexForCount = (count: number): 0 | 1 | 2 | 3 => {
+        if (count >= 4) return 3;
+        if (freeSecondShutter && count <= 2) return 0;
+        return Math.max(0, Math.min(3, count - 1)) as 0 | 1 | 2 | 3;
+      };
+
+      const getCurrentMult = (): number => multSchedule[resolveLadderIndexForCount(openCount)];
 
       const layout = document.createElement('div');
       layout.className = 'ws7-shutter-layout';
@@ -7148,6 +6676,19 @@ export function mountTactileContraptionV7(
 
       const renderShutters = (): void => {
         const curMult = getCurrentMult();
+        const tierKey = curMult.toFixed(1);
+        const headerBadgeCopy =
+          curMult >= 2.0
+            ? '🔥 EARLY-SOLVE BONUS: 2.0× PAYOUT!'
+            : curMult >= 1.6
+              ? '⚡ EARLY-SOLVE: 1.6× PAYOUT'
+              : curMult >= 1.3
+                ? '★ EARLY-SOLVE: 1.3× PAYOUT'
+                : '1.0× STANDARD';
+        const writerTag =
+          freeSecondShutter && openCount === 2 ? ' · WRITER PERK' : '';
+        shutterBanner.innerHTML = `<span class="ws7-shutter-ladder-badge" data-tier="${tierKey}">${headerBadgeCopy}${writerTag}</span>`;
+
         shuttersGrid.innerHTML = reel.shutters
           .map((clueLine, sIdx) => {
             const isOpen = sIdx < openCount;
@@ -7162,12 +6703,14 @@ export function mountTactileContraptionV7(
 
         if (openCount >= 4) {
           crackBtn.disabled = true;
-          crackBtn.innerHTML = `<span>ALL OPEN</span><span style="font-size:16px;">${curMult.toFixed(1)}×</span>`;
+          crackBtn.innerHTML = `<span>ALL OPEN</span><span style="font-size:14.5px;color:#FFD166;">1.0× STANDARD</span>`;
         } else {
-          const nextMult = multSchedule[Math.min(3, paidCracks + 1)];
+          const nextMult = multSchedule[resolveLadderIndexForCount(openCount + 1)];
+          const btnTopBadge =
+            curMult >= 2.0 ? '🔥 2.0× PAYOUT!' : `${curMult.toFixed(1)}× PAYOUT`;
           crackBtn.disabled = false;
           crackBtn.innerHTML = `
-            <span style="font-size:15px;color:#FFE89E;">${curMult.toFixed(1)}× NOW</span>
+            <span style="font-size:14.5px;color:#FFE89E;">${btnTopBadge}</span>
             <span>OPEN #${openCount + 1}</span>
             <span style="font-size:14.5px;opacity:0.92;">(${nextMult.toFixed(1)}×)</span>
           `;
@@ -7179,7 +6722,6 @@ export function mountTactileContraptionV7(
         if (resolved || locking || disposed || openCount >= 4 || !isInputArmed()) return;
         lastOpenedIdx = openCount;
         openCount += 1;
-        paidCracks += 1;
         context.onTactileSfx?.('SHUTTER_CLACK');
         renderShutters();
       });
@@ -7215,8 +6757,30 @@ export function mountTactileContraptionV7(
 
         keyBtn.addEventListener('click', () => {
           if (resolved || locking || disposed || cutKeys.has(idx) || !isInputArmed()) return;
-          const mult = getCurrentMult();
-          const res = buildChoiceResolution(clue, idx, mult, `[${mult.toFixed(1)}x]`);
+          const activeLadderMult = getCurrentMult();
+          const baseRes = buildChoiceResolution(
+            clue,
+            idx,
+            activeLadderMult,
+            `[${activeLadderMult.toFixed(1)}×]`,
+          );
+          const solveDetail = baseRes.isCorrect
+            ? activeLadderMult >= 2.0
+              ? openCount === 1
+                ? '2.0× SHUTTER-1 GENIUS SOLVE!'
+                : '2.0× WRITER PERK GENIUS SOLVE!'
+              : activeLadderMult >= 1.6
+                ? '1.6× SHUTTER-2 EARLY SOLVE!'
+                : activeLadderMult >= 1.3
+                  ? '1.3× SHUTTER-3 EARLY SOLVE!'
+                  : '1.0× STANDARD 4-SHUTTER SOLVE'
+            : `${activeLadderMult.toFixed(1)}× SHUTTER-${openCount} MISS`;
+          const res: ShutterToyResolutionV8 = {
+            ...baseRes,
+            chipMultiplier: activeLadderMult,
+            shutterSolvedAtCount: openCount,
+            detail: solveDetail,
+          };
           runTwoBeatChoiceReveal({
             containerEl: keysGrid,
             chosenEl: keyBtn,

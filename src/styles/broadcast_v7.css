@@ -16,12 +16,12 @@ body,
 }
 
 :root {
-  /* 1966 "In Living Color" Broadcast Palette */
-  --ws7-studio-navy: #0b1d30;
-  --ws7-studio-navy-deep: #071321;
-  --ws7-studio-navy-mid: #102841;
-  --ws7-studio-navy-raised: #163654;
-  --ws7-peacock-deep: #0f3a4d;
+  /* 1966 "In Living Color" Sunlit Studio Walnut, Brass & Cream Palette (Zero Dark-Blue SaaS Boxes!) */
+  --ws7-studio-navy: #4e2815;
+  --ws7-studio-navy-deep: #341a0d;
+  --ws7-studio-navy-mid: #63341c;
+  --ws7-studio-navy-raised: #784124;
+  --ws7-peacock-deep: #006b75;
   --ws7-peacock-teal: #0096a6;
   --ws7-peacock-bright: #22c7d8;
   --ws7-harvest-gold: #f4a91f;
@@ -31,19 +31,19 @@ body,
   --ws7-cobalt: #1e56c5;
   --ws7-cerise: #e63b7a;
   --ws7-walnut: #6e3b23;
-  --ws7-aluminum: #d6e2ec;
-  --ws7-aluminum-muted: rgba(214, 226, 236, 0.22);
-  --ws7-hairline-dark: rgba(18, 26, 43, 0.13);
-  --ws7-hairline-light: rgba(214, 226, 236, 0.16);
+  --ws7-aluminum: #efe3cc;
+  --ws7-aluminum-muted: rgba(255, 236, 196, 0.24);
+  --ws7-hairline-dark: rgba(92, 48, 27, 0.16);
+  --ws7-hairline-light: rgba(255, 236, 196, 0.2);
 
-  /* High-Contrast Warm Broadcast Cream & Kodalith Navy Ink (13.4:1) */
+  /* High-Contrast Warm Broadcast Cream & Kodalith Ink (13.4:1) */
   --ws7-tv-cream: #f7eedb;
   --ws7-tv-cream-bright: #fff7e6;
   --ws7-tv-cream-soft: #eee2ca;
   --ws7-kodalith-ink: #121a2b;
   --ws7-ink-slate: #384660;
-  --ws7-ivory-text: #f7eedb;
-  --ws7-ivory-dim: #bfd0e0;
+  --ws7-ivory-text: #fff7e6;
+  --ws7-ivory-dim: #f2dfc0;
 
   /* Studio Tally Lamps */
   --ws7-emerald-lamp: #18a957;
@@ -130,12 +130,15 @@ body,
   --ws7-peacock-bright: #4ce6f5;
 }
 
-/* Hide StudioAnnouncerV7 lower-third whenever ANY modal, question monitor, rival chyron, or live toast is active! */
+/* Hide StudioAnnouncerV7 lower-third & Rival PiP whenever ANY modal or Question Monitor is active so the Question is 100% the Star! */
 body:has(.ws7-eye-stage:not(.ws7-hidden)) .ws7-announcer-stage,
 body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-announcer-stage,
 body:has(.ws7-question-stage:not(.ws7-hidden)) .ws7-announcer-stage,
 body:has(.ws7-live-toast-pill:not(.ws7-hidden)) .ws7-announcer-stage,
-body:has(.ws7-rival-chyron:not(.ws7-hidden)) .ws7-announcer-stage {
+body:has(.ws7-rival-chyron:not(.ws7-hidden)) .ws7-announcer-stage,
+body:has(.ws7-question-stage:not(.ws7-hidden)) .ws8-pip-monitor,
+body:has(.ws7-question-stage:not(.ws7-hidden)) .ws7-rival-chyron,
+body:has(.ws7-question-stage:not(.ws7-hidden)) .ws7-board-mode-ribbon {
   display: none !important;
 }
 
@@ -154,8 +157,8 @@ body:has(.ws7-rival-chyron:not(.ws7-hidden)) .ws7-announcer-stage {
   left: 0;
   right: 0;
   padding-top: var(--ws7-safe-top);
-  background: linear-gradient(180deg, #0b1d30 0%, #081524 100%);
-  box-shadow: 0 6px 22px rgba(4, 10, 19, 0.56);
+  background: linear-gradient(180deg, #522B17 0%, #3A1D0F 100%);
+  box-shadow: 0 6px 22px rgba(42, 20, 9, 0.52);
   pointer-events: auto;
   z-index: 54;
 }
@@ -914,13 +917,13 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
   }
 
   .ws7-thumb-btn {
-    min-height: 48px;
-    min-width: 48px;
-    padding: 2px 4px;
+    min-height: 44px;
+    min-width: 40px;
+    padding: 2px 3px;
     flex-direction: column;
-    gap: 0;
-    line-height: 1.04;
-    font-size: 14px;
+    gap: 1px;
+    line-height: 1.02;
+    font-size: 11px;
     letter-spacing: 0;
   }
 
@@ -1222,22 +1225,30 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
   display: flex;
   justify-content: center;
   align-items: center;
-  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 45%,
+    rgba(46, 24, 10, 0.44) 0%,
+    rgba(22, 11, 5, 0.8) 100%
+  );
+  backdrop-filter: blur(5px);
+  pointer-events: auto;
   overflow-x: hidden;
   z-index: 49;
 }
 
 .ws7-question-chassis {
   pointer-events: auto;
-  width: min(840px, 96vw);
+  width: min(860px, 96vw);
   max-height: calc(100dvh - var(--ws7-safe-top) - var(--ws7-safe-bottom) - 72px);
-  border-radius: 16px;
+  border-radius: 18px;
   overflow: hidden;
-  background: var(--ws7-studio-navy);
+  background: #6e3b23;
+  border: 2.5px solid #d9a441;
   box-shadow:
-    0 24px 60px rgba(3, 9, 18, 0.78),
-    0 0 0 2px rgba(244, 169, 31, 0.72),
-    0 0 38px rgba(0, 150, 166, 0.22);
+    0 26px 64px rgba(24, 11, 4, 0.72),
+    0 0 0 4px #6e3b23,
+    0 0 0 5.5px rgba(217, 164, 65, 0.7),
+    0 0 42px rgba(242, 169, 34, 0.24);
   display: flex;
   flex-direction: column;
   animation: ws7MonitorReveal 0.22s cubic-bezier(0.2, 0.85, 0.3, 1) both;
@@ -1377,28 +1388,67 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
   color: #ffffff;
 }
 
-/* 2 Classic Studio Lifelines Bar Inside Question Monitor (>= 48px Touch Targets!) */
+/* Unmissable 3-Paddle Illuminated 1966 "STUDIO CHEATS" Console (>= 50px Touch Targets, ZERO Blending In!) */
 .ws7-lifeline-bar {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  padding: 6px 16px 8px 16px;
-  background: #ece0c7;
-  border-top: 1px solid rgba(18, 26, 43, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 6px 16px 9px 16px;
+  background: linear-gradient(180deg, #f3e4c2 0%, #e6cfa1 100%);
+  border-top: 2px solid #d9a441;
+  border-bottom: 1px solid rgba(110, 59, 35, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 253, 247, 0.75);
 }
 
-.ws7-lifeline-bar[data-single='true'] {
+.ws7-lifeline-console-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ws7-lifeline-console-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--ws7-font-broadcast);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #5c3018;
+}
+
+.ws7-lifeline-console-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff6b35;
+  box-shadow: 0 0 7px rgba(255, 107, 53, 0.85);
+}
+
+.ws7-lifeline-paddles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ws7-lifeline-bar[data-cols='2'] .ws7-lifeline-paddles-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ws7-lifeline-bar[data-cols='1'] .ws7-lifeline-paddles-grid {
   grid-template-columns: minmax(0, 1fr);
 }
 
 .ws7-lifeline-btn {
-  min-height: 48px;
+  position: relative;
+  min-height: 50px;
   padding: 6px 10px;
-  border: 0;
-  border-radius: 9px;
-  background: linear-gradient(180deg, #143a59 0%, #0b2238 100%);
-  border-bottom: 2.5px solid var(--ws7-harvest-gold);
-  color: var(--ws7-tv-cream-bright);
+  border: 1.5px solid rgba(255, 253, 247, 0.65);
+  border-radius: 11px;
+  background: linear-gradient(180deg, #ffe078 0%, #f2a922 100%);
+  color: #141b29;
   font-family: var(--ws7-font-broadcast);
   font-size: 14px;
   font-weight: 900;
@@ -1408,25 +1458,142 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 7px;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.72),
+    0 3.5px 0 #9e6304,
+    0 5px 12px rgba(92, 48, 24, 0.22);
   transition: transform 0.1s ease, filter 0.14s ease, opacity 0.16s ease;
+}
+
+.ws7-lifeline-btn[data-lifeline='fifty-fifty'] {
+  background: linear-gradient(180deg, #ffe17d 0%, #f2a922 100%);
+  color: #141b29;
+  border-color: #fff5c8;
+  box-shadow:
+    inset 0 2px 0 #fffdf7,
+    0 3.5px 0 #9c6004,
+    0 5px 12px rgba(156, 96, 4, 0.26);
+}
+
+.ws7-lifeline-btn[data-lifeline='audience-poll'] {
+  background: linear-gradient(180deg, #1ec3d2 0%, #008b94 100%);
+  color: #fffdf7;
+  border-color: rgba(196, 248, 252, 0.75);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.44),
+    0 3.5px 0 #00555c,
+    0 5px 12px rgba(0, 85, 92, 0.26);
+}
+
+.ws7-lifeline-btn[data-lifeline='free-swap'] {
+  background: linear-gradient(180deg, #ff8657 0%, #e64e1b 100%);
+  color: #fffdf7;
+  border-color: rgba(255, 224, 204, 0.78);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 246, 224, 0.48),
+    0 3.5px 0 #942906,
+    0 5px 12px rgba(148, 41, 6, 0.26);
+}
+
+.ws7-lifeline-lamp {
+  width: 9px;
+  height: 9px;
+  min-width: 9px;
+  border-radius: 50%;
+  background: #fffdf7;
+  box-shadow: 0 0 8px #ffffff, 0 0 0 1.5px rgba(20, 27, 41, 0.28);
+  flex-shrink: 0;
+}
+
+.ws7-lifeline-btn[data-lifeline='fifty-fifty'] .ws7-lifeline-lamp {
+  background: #16a34a;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.9), 0 0 0 1.5px #fffdf7;
+}
+
+.ws7-lifeline-copy-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.08;
+  text-align: left;
+  min-width: 0;
+}
+
+.ws7-lifeline-main-lbl {
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.ws7-lifeline-sub-lbl {
+  font-family: var(--ws7-font-sans);
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  opacity: 0.94;
+  white-space: nowrap;
 }
 
 .ws7-lifeline-btn:hover:not(:disabled),
 .ws7-lifeline-btn:focus-visible:not(:disabled) {
-  filter: brightness(1.14);
-  color: var(--ws7-marquee-bulb);
+  filter: brightness(1.08);
+  transform: translateY(-1px);
   outline: none;
 }
 
 .ws7-lifeline-btn:active:not(:disabled) {
-  transform: scale(0.97);
+  transform: translateY(2px);
 }
 
 .ws7-lifeline-btn:disabled {
-  opacity: 0.48;
+  background: linear-gradient(180deg, #dfd2b7 0%, #cbb996 100%) !important;
+  color: #5c4a36 !important;
+  border-color: rgba(110, 59, 35, 0.22) !important;
+  box-shadow: inset 0 1px 2px rgba(56, 36, 16, 0.18) !important;
+  opacity: 0.72;
   cursor: default;
-  border-bottom-color: rgba(214, 226, 236, 0.25);
+}
+
+.ws7-lifeline-btn:disabled .ws7-lifeline-lamp {
+  background: #9a8872 !important;
+  box-shadow: none !important;
+}
+
+@media (max-width: 560px) {
+  .ws7-lifeline-bar {
+    padding: 4px 10px 6px 10px;
+    gap: 4px;
+  }
+  .ws7-lifeline-console-kicker {
+    font-size: 11.5px;
+    letter-spacing: 0.05em;
+  }
+  .ws7-lifeline-paddles-grid {
+    gap: 6px;
+  }
+  .ws7-lifeline-btn {
+    padding: 5px 4px;
+    gap: 4px;
+    min-height: 48px;
+  }
+  .ws7-lifeline-lamp,
+  .ws7-lifeline-btn > svg {
+    display: none;
+  }
+  .ws7-lifeline-copy-stack {
+    align-items: center;
+    text-align: center;
+  }
+  .ws7-lifeline-main-lbl {
+    font-size: 12px;
+    letter-spacing: 0.02em;
+  }
+  .ws7-lifeline-sub-lbl {
+    font-size: 11px;
+  }
 }
 
 /* Full-Bleed Colored Broadcast Category Ribbon (with Specular Twist Flare!) */
@@ -1527,13 +1694,15 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
 
 .ws7-clue-timer-pill {
   font-family: var(--ws7-font-mono);
-  font-size: clamp(17px, 2.2vw, 21px);
-  font-weight: 700;
+  font-size: clamp(16px, 2.1vw, 20px);
+  font-weight: 800;
   letter-spacing: 0.03em;
-  color: var(--ws7-marquee-bulb);
-  background: rgba(8, 21, 36, 0.92);
+  color: #141b29;
+  background: linear-gradient(180deg, #fff6d6 0%, #ffd56b 100%);
+  border: 1.5px solid #b8780a;
+  box-shadow: inset 0 1px 0 #ffffff, 0 2px 6px rgba(20, 12, 4, 0.25);
   padding: 4px 11px;
-  border-radius: 6px;
+  border-radius: 7px;
   min-width: 58px;
   text-align: center;
   font-variant-numeric: tabular-nums;
@@ -1542,18 +1711,83 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
   flex-shrink: 0;
 }
 
+.ws7-clue-timer-pill[data-notimer='true'] {
+  font-family: var(--ws7-font-broadcast);
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  background: linear-gradient(180deg, #fffdf7 0%, #f4e6c6 100%);
+  color: #006c75;
+  border-color: #d9a441;
+}
+
+.ws7-clue-tip-btn {
+  min-height: 36px;
+  min-width: 62px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1.5px solid #ffe49c;
+  background: linear-gradient(180deg, #fffdf7 0%, #f5e5c0 100%);
+  color: #5c3018;
+  font-family: var(--ws7-font-broadcast);
+  font-size: 13.5px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-shadow: 0 2px 0 #9e6304;
+  flex-shrink: 0;
+  transition: transform 0.1s ease, filter 0.12s ease;
+}
+
+.ws7-clue-tip-btn:hover,
+.ws7-clue-tip-btn:focus-visible {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.ws7-plain-micro-tip {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(0, 139, 148, 0.11) 0%, rgba(242, 169, 34, 0.14) 100%);
+  border-left: 3.5px solid #008b94;
+  font-family: var(--ws7-font-sans);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #2b1d12;
+  line-height: 1.25;
+}
+
+.ws7-plain-micro-badge {
+  font-family: var(--ws7-font-broadcast);
+  font-size: 12.5px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #00737b;
+}
+
 .ws7-clue-timer-pill[data-urgent='true'] {
   background: var(--ws7-vermilion-lamp);
   color: #ffffff;
+  border-color: #fff2b8;
   box-shadow: 0 0 14px rgba(224, 62, 54, 0.85);
   animation: ws7UrgentPulse 0.45s ease-in-out infinite alternate;
 }
 
-/* Luminous Full-Width 30-Second Studio Countdown Bar (Peacock -> Gold -> Vermilion) */
+/* Luminous Full-Width Studio Countdown Bar (Peacock -> Gold -> Vermilion) */
 .ws7-timer-bar-track {
   width: 100%;
   height: 7px;
-  background: rgba(18, 26, 43, 0.16);
+  background: rgba(110, 59, 35, 0.16);
   overflow: hidden;
   flex: 0 0 auto;
 }
@@ -1574,13 +1808,13 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
   background: linear-gradient(90deg, #c92018 0%, #ff5a4d 100%);
 }
 
-/* Compact 34px Live Host Grant Bellamy Studio Desk Strip (Zero-Scroll on 390x660!) */
+/* Compact Sunlit 34px Live Host Grant Bellamy Studio Cue Strip (ZERO Cold Navy!) */
 .ws7-host-desk-strip {
   min-height: 36px;
   padding: 4px 16px;
-  background: linear-gradient(90deg, #0d233a 0%, #143654 100%);
-  border-bottom: 1.5px solid rgba(244, 169, 31, 0.52);
-  color: var(--ws7-tv-cream-bright);
+  background: linear-gradient(90deg, #f3e2bc 0%, #fff7e5 100%);
+  border-bottom: 1.5px solid rgba(217, 164, 65, 0.65);
+  color: #24180e;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1588,8 +1822,8 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
 }
 
 .ws7-host-desk-strip[data-locked='true'] {
-  background: linear-gradient(90deg, #7c4800 0%, #b86c00 52%, #0e2a45 100%);
-  border-bottom-color: #ffd56b;
+  background: linear-gradient(90deg, #ffe28c 0%, #f5b83d 60%, #ffe8a3 100%);
+  border-bottom-color: #b87308;
 }
 
 .ws7-host-desk-avatar {
@@ -1598,11 +1832,11 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
   min-width: 28px;
   min-height: 28px;
   border-radius: 50%;
-  border: 1.5px solid var(--ws7-marquee-bulb);
-  background-color: #0b1d30;
+  border: 1.8px solid #b87308;
+  background-color: #6e3b23;
   background-repeat: no-repeat;
   flex: 0 0 auto;
-  box-shadow: 0 2px 6px rgba(3, 9, 18, 0.55);
+  box-shadow: 0 2px 5px rgba(56, 28, 12, 0.28);
 }
 
 .ws7-host-desk-avatar[data-size='md'] {
@@ -1615,10 +1849,10 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
 
 .ws7-host-desk-tag {
   font-family: var(--ws7-font-broadcast);
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 900;
   letter-spacing: 0.05em;
-  color: var(--ws7-marquee-bulb);
+  color: #965206;
   flex: 0 0 auto;
 }
 
@@ -1627,7 +1861,7 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
   font-size: 14px;
   font-weight: 700;
   line-height: 1.2;
-  color: #fff7e6;
+  color: #24180e;
   min-width: 0;
   flex: 1 1 auto;
 }
@@ -1671,7 +1905,7 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
   width: 100%;
   padding: 7px 12px;
   border-radius: 10px;
-  background: linear-gradient(95deg, #0d243c 0%, #153959 100%);
+  background: linear-gradient(95deg, #5C301B 0%, #784124 100%);
   border-left: 4px solid var(--ws7-harvest-gold);
   color: #fff7e6;
   display: flex;
@@ -1705,7 +1939,7 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
   margin: auto;
   border-radius: 16px;
   overflow: hidden;
-  background: linear-gradient(160deg, #102d4a 0%, #09192b 100%);
+  background: linear-gradient(160deg, #6E3B23 0%, #4A2614 100%);
   box-shadow:
     0 26px 68px rgba(3, 9, 18, 0.88),
     0 0 0 2.5px var(--ws7-harvest-gold),
@@ -1837,8 +2071,8 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
 .ws7-final-wager-category-plaque {
   padding: 12px 16px;
   background:
-    radial-gradient(circle at 50% 20%, rgba(34, 199, 216, 0.24), transparent 72%),
-    linear-gradient(180deg, #0e2a47 0%, #081829 100%);
+    radial-gradient(circle at 50% 20%, rgba(255, 213, 107, 0.24), transparent 72%),
+    linear-gradient(180deg, #6E3B23 0%, #4A2614 100%);
   border-bottom: 2.5px solid var(--ws7-harvest-gold);
   text-align: center;
   display: flex;
@@ -2287,12 +2521,20 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
   display: none;
 }
 
-/* Seamless Lower Answer Console Bay (Flush Broadcast Navy — ZERO inner box border!) */
+/* Sunlit 1966 American Walnut & Brushed-Brass Answer Console Bay (ZERO Cold Dark-Blue Box!) */
 .ws7-toy-bay {
   min-height: 196px;
   flex: 1 1 auto;
-  background: linear-gradient(180deg, #102b44 0%, #09192b 100%);
-  border-top: 3px solid var(--ws7-harvest-gold);
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 226, 172, 0.045) 0px,
+      rgba(255, 226, 172, 0.045) 3px,
+      rgba(38, 16, 6, 0.06) 3px,
+      rgba(38, 16, 6, 0.06) 8px
+    ),
+    linear-gradient(180deg, #744026 0%, #582e1a 100%);
+  border-top: 3px solid #d9a441;
   padding: clamp(12px, 2vw, 18px) clamp(14px, 2.6vw, 24px);
   display: flex;
   flex-direction: column;
@@ -2306,52 +2548,63 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
 @media (max-width: 640px) and (orientation: portrait) {
   .ws7-question-stage {
     padding:
-      calc(var(--ws7-safe-top) + 58px)
-      8px
-      calc(var(--ws7-safe-bottom) + 10px)
-      8px;
+      calc(var(--ws7-safe-top) + 54px)
+      6px
+      calc(var(--ws7-safe-bottom) + 6px)
+      6px;
   }
 
   .ws7-question-chassis {
     width: 100%;
-    max-height: calc(100dvh - var(--ws7-safe-top) - var(--ws7-safe-bottom) - 66px);
+    max-height: calc(100dvh - var(--ws7-safe-top) - var(--ws7-safe-bottom) - 60px);
     border-radius: 14px;
   }
 
   .ws7-clue-header-row {
-    padding: 9px 13px;
-    min-height: 44px;
+    padding: 7px 11px;
+    min-height: 40px;
   }
 
-  .ws7-domain-pill {
-    font-size: 14.5px;
-    letter-spacing: 0.04em;
-  }
-
-  .ws7-clue-timer-pill {
-    font-size: 17px;
-    padding: 3px 9px;
-    min-width: 54px;
-  }
-
-  .ws7-clue-body {
-    padding: 13px 15px 12px 15px;
+  .ws7-host-desk-strip {
+    min-height: 30px;
+    padding: 3px 11px;
     gap: 6px;
   }
 
+  .ws7-plain-micro-tip {
+    padding: 3px 8px;
+    font-size: 12.5px;
+  }
+
+  .ws7-domain-pill {
+    font-size: 14px;
+    letter-spacing: 0.03em;
+  }
+
+  .ws7-clue-timer-pill {
+    font-size: 16px;
+    padding: 3px 8px;
+    min-width: 50px;
+  }
+
+  .ws7-clue-body {
+    padding: 9px 13px 8px 13px;
+    gap: 5px;
+  }
+
   .ws7-balanced-copy {
-    font-size: clamp(19px, 4.9vw, 21.5px);
-    line-height: 1.3;
+    font-size: clamp(18px, 4.6vw, 20.5px);
+    line-height: 1.26;
   }
 
   .ws7-balanced-copy[data-long='true'] {
-    font-size: 18px;
-    line-height: 1.28;
+    font-size: 17.5px;
+    line-height: 1.24;
   }
 
   .ws7-toy-bay {
-    min-height: 184px;
-    padding: 10px 12px 12px 12px;
+    min-height: 164px;
+    padding: 8px 10px 10px 10px;
   }
 }
 
@@ -2523,18 +2776,18 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
   z-index: 96;
 }
 
-/* Primary Monolithic 1966 Studio Sheet — Pinned Header & Footer + Silky Internal Scroll */
+/* Primary Monolithic 1966 Sunlit Walnut & Brass Studio Sheet — Pinned Header & Footer + Silky Internal Scroll */
 .ws7-mahogany-panel {
   width: min(800px, 96vw);
   max-height: calc(100dvh - var(--ws7-safe-top) - var(--ws7-safe-bottom) - 28px);
   margin: auto;
   flex: 0 0 auto;
-  background: linear-gradient(180deg, #102a43 0%, #0b1d30 100%);
+  background: linear-gradient(180deg, #6E3B23 0%, #4E2815 100%);
   border-radius: 16px;
   overflow: hidden;
   box-shadow:
-    0 26px 64px rgba(3, 9, 18, 0.82),
-    0 0 0 2px rgba(244, 169, 31, 0.65);
+    0 26px 64px rgba(42, 20, 9, 0.72),
+    0 0 0 2.5px #D9A441;
   display: flex;
   flex-direction: column;
   padding: 0;
@@ -2559,8 +2812,8 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
 .ws7-sheet-header {
   flex: 0 0 auto;
   padding: 15px 22px 14px 22px;
-  background: linear-gradient(135deg, #133956 0%, #0c2338 100%);
-  border-bottom: 1px solid var(--ws7-hairline-light);
+  background: linear-gradient(135deg, #007E8A 0%, #00626C 58%, #6E3B23 100%);
+  border-bottom: 2px solid #D9A441;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -2645,7 +2898,7 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
 }
 
 .ws7-sheet-band {
-  padding: 15px 22px;
+  padding: 8px 20px;
   border-bottom: 1px solid var(--ws7-hairline-light);
 }
 
@@ -2660,14 +2913,14 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
 }
 
 .ws7-sheet-band[data-surface='deep'] {
-  background: rgba(7, 19, 33, 0.56);
+  background: rgba(72, 36, 18, 0.48);
 }
 
 .ws7-sheet-footer {
   flex: 0 0 auto;
   padding: 10px 20px 12px 20px;
-  background: linear-gradient(180deg, #0b1e32 0%, #071321 100%);
-  border-top: 1px solid var(--ws7-hairline-light);
+  background: linear-gradient(180deg, #5B2F1A 0%, #3E1F10 100%);
+  border-top: 1.5px solid #D9A441;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -2874,14 +3127,14 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
   box-shadow: 0 4px 0 #7a1410;
 }
 
-/* First-Class 1966 Brushed-Brass & Deep-Peacock "💾 SAVE & EXIT" Studio Button */
+/* First-Class 1966 Brushed-Brass & Sunlit Walnut "💾 SAVE & EXIT" Studio Button */
 .ws7-ceremony-save-exit-btn {
   min-height: 48px;
   min-width: 48px;
   padding: 10px 16px;
   border-radius: 10px;
   border: 1.5px solid #ffd56b;
-  background: linear-gradient(180deg, #163b5c 0%, #0b2136 100%);
+  background: linear-gradient(180deg, #7A4326 0%, #522B17 100%);
   color: #ffd966;
   font-family: var(--ws7-font-broadcast);
   font-size: 14.5px;
@@ -2895,14 +3148,14 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
   justify-content: center;
   gap: 6px;
   box-shadow:
-    0 4px 0 #06111e,
-    0 6px 16px rgba(4, 10, 19, 0.45);
+    0 4px 0 #361B0D,
+    0 6px 16px rgba(42, 20, 9, 0.45);
   transition: transform 0.12s ease, filter 0.14s ease, background 0.14s ease;
 }
 
 .ws7-ceremony-save-exit-btn:hover,
 .ws7-ceremony-save-exit-btn:focus-visible {
-  background: linear-gradient(180deg, #1d4d77 0%, #0f2c48 100%);
+  background: linear-gradient(180deg, #8F502E 0%, #63341C 100%);
   color: #fff7e6;
   filter: brightness(1.08);
   outline: none;
@@ -2963,8 +3216,8 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: minmax(0, 1fr);
-  background: #09192b;
-  border-bottom: 1px solid var(--ws7-hairline-light);
+  background: #472412;
+  border-bottom: 1.5px solid #D9A441;
   overflow: hidden;
   flex: 0 0 auto;
 }
@@ -3289,7 +3542,7 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
 
 .ws7-odometer-row {
   padding: 14px 18px;
-  background: linear-gradient(180deg, #0e2740 0%, #081829 100%);
+  background: linear-gradient(180deg, #5E321B 0%, #422111 100%);
   border-top: 3px solid var(--ws7-harvest-gold);
   display: flex;
   flex-wrap: wrap;
@@ -3339,7 +3592,7 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
 
 .ws7-theater-skip-hint {
   padding: 5px 14px 7px 14px;
-  background: #071321;
+  background: #361B0D;
   color: var(--ws7-ivory-dim);
   font-family: var(--ws7-font-broadcast);
   font-size: 14px;
@@ -3357,9 +3610,9 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
   margin: auto;
   border-radius: 16px;
   overflow: hidden;
-  background: linear-gradient(180deg, #102a43 0%, #081829 100%);
+  background: linear-gradient(180deg, #6E3B23 0%, #4A2614 100%);
   box-shadow:
-    0 26px 66px rgba(3, 9, 18, 0.86),
+    0 26px 66px rgba(42, 20, 9, 0.78),
     0 0 0 2.5px var(--ws7-harvest-gold);
   cursor: pointer;
   display: flex;
@@ -3429,7 +3682,7 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
 
 .ws7-curtain-tape-band {
   padding: 13px 20px;
-  background: linear-gradient(135deg, #133956 0%, #0b1f33 100%);
+  background: linear-gradient(135deg, #007E8A 0%, #582E18 100%);
   border-bottom: 2px solid var(--ws7-harvest-gold);
   display: flex;
   align-items: center;
@@ -3528,7 +3781,7 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
 /* Wave-4 1966 Career Achievement Medals, Mode Mastery Stickers & Zeigarnik Unlock Progress */
 .ws7-medal-rack {
   padding: 9px 18px;
-  background: linear-gradient(135deg, #102a43 0%, #09192b 100%);
+  background: linear-gradient(135deg, #63341C 0%, #462312 100%);
   border-top: 2px solid rgba(244, 169, 31, 0.55);
   border-bottom: 2px solid rgba(244, 169, 31, 0.55);
   display: flex;
@@ -3612,8 +3865,8 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
   flex-wrap: wrap;
   gap: 6px;
   padding: 10px 16px;
-  background: #0c2136;
-  border-bottom: 1px solid rgba(214, 226, 236, 0.16);
+  background: #4A2614;
+  border-bottom: 1px solid rgba(255, 236, 196, 0.22);
 }
 
 .ws7-mastery-sticker {
@@ -3643,7 +3896,7 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
 .ws7-curtain-skip-footer {
   min-height: 48px;
   padding: 10px 20px;
-  background: #071321;
+  background: #381C0E;
   color: var(--ws7-marquee-bulb);
   font-family: var(--ws7-font-broadcast);
   font-size: 14.5px;
@@ -3655,7 +3908,7 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
   justify-content: center;
 }
 
-/* Sleek ~1.5s Non-Blocking Live Rival Turn Broadcast Chyron */
+/* Sleek ~1.5s Non-Blocking Sunlit Live Rival Turn Broadcast Chyron */
 .ws7-rival-chyron {
   position: fixed;
   left: calc(var(--ws7-safe-left) + 10px);
@@ -3665,12 +3918,13 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
   width: min(680px, calc(100vw - 20px));
   min-height: 58px;
   padding: 8px 12px 8px 14px;
-  border-radius: 12px;
-  background: linear-gradient(95deg, rgba(11, 29, 48, 0.97) 0%, rgba(18, 44, 70, 0.97) 100%);
-  border-left: 5px solid var(--ws7-tangerine);
+  border-radius: 14px;
+  background: linear-gradient(180deg, #FFFDF7 0%, #F4E7CC 100%);
+  border: 2px solid #D9A441;
+  border-left: 6px solid var(--ws7-tangerine);
   box-shadow:
-    0 14px 36px rgba(3, 9, 18, 0.72),
-    0 0 0 1.5px rgba(244, 169, 31, 0.45);
+    0 0 0 3px #6E3B23,
+    0 14px 32px rgba(48, 22, 10, 0.42);
   pointer-events: auto;
   cursor: pointer;
   z-index: 56;
@@ -3714,14 +3968,14 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
   font-size: 15px;
   font-weight: 900;
   letter-spacing: 0.03em;
-  color: #ffffff;
+  color: #141B29;
 }
 
 .ws7-rival-chyron-sub {
   font-family: var(--ws7-font-sans);
   font-size: 14px;
   font-weight: 700;
-  color: var(--ws7-marquee-bulb);
+  color: #6E3B23;
 }
 
 .ws7-rival-skip-btn {
@@ -3729,10 +3983,10 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
   min-height: 48px;
   min-width: 64px;
   padding: 6px 12px;
-  border: 0;
-  border-radius: 8px;
-  background: rgba(214, 226, 236, 0.14);
-  color: var(--ws7-tv-cream-bright);
+  border: 1.5px solid #C89636;
+  border-radius: 9px;
+  background: linear-gradient(180deg, #FFF5D4 0%, #E7BC5A 100%);
+  color: #141B29;
   font-family: var(--ws7-font-broadcast);
   font-size: 14px;
   font-weight: 900;
@@ -3742,8 +3996,8 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
 }
 
 .ws7-rival-skip-btn:hover {
-  background: rgba(0, 150, 166, 0.32);
-  color: var(--ws7-marquee-bulb);
+  background: linear-gradient(180deg, #FFE484 0%, #F2A922 100%);
+  color: #141B29;
 }
 
 /* Certified 1966 Network Winner's Check & Returning-Champion Crown */
@@ -4096,7 +4350,7 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
 
 .ws7-range-input {
   width: 100%;
-  min-height: 36px;
+  min-height: 28px;
   accent-color: var(--ws7-harvest-gold);
   cursor: pointer;
 }
@@ -4231,7 +4485,7 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
   gap: 16px;
   align-items: center;
   padding: 14px 22px;
-  background: radial-gradient(circle at 18% 50%, #154361 0%, #081829 74%);
+  background: radial-gradient(circle at 18% 50%, #7D4628 0%, #4A2614 74%);
   border-bottom: 2px solid var(--ws7-harvest-gold);
 }
 
@@ -4247,7 +4501,7 @@ body:has(.ws7-utility-stage:not(.ws7-hidden)) .ws7-score-delta-pop {
   min-width: 140px;
   min-height: 136px;
   border-radius: 12px;
-  background: radial-gradient(circle, #143957 0%, #071321 100%);
+  background: radial-gradient(circle, #6E3B23 0%, #3E1F10 100%);
   overflow: hidden;
 }
 

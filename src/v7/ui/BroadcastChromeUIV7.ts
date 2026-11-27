@@ -71,6 +71,17 @@ import {
   EMCEE_SPRITE_POSITIONS_V7,
   type EmceeMoodV7,
 } from '../campaign/StudioAnnouncerV7';
+import {
+  isAutoTipsMutedV8,
+  mountQuestionTimerSelectorV8,
+  normalizeQuestionTimerModeV8,
+  resetSeenStudioGuidesV8,
+  setAutoTipsMutedV8,
+} from './SmartStudioCoachV8';
+import {
+  isAutoPlayShowIntroEnabledV8,
+  setAutoPlayShowIntroEnabledV8,
+} from './ShowBroadcastIntroAndCreditsV8';
 
 // ----------------------------------------------------------------------------
 // 1. Orphan-Proof Copy & Friendly 1966 TV Category + Twist Flare Specs
@@ -309,6 +320,9 @@ const SVG_SCISSORS_1966 =
 const SVG_POLL_BARS_1966 =
   '<svg class="ws7-vec-ico" viewBox="0 0 18 18" width="15" height="15" fill="currentColor" aria-hidden="true"><rect x="2" y="9" width="3.2" height="6.5" rx="0.8"/><rect x="7.4" y="3.5" width="3.2" height="12" rx="0.8"/><rect x="12.8" y="6.5" width="3.2" height="9" rx="0.8"/></svg>';
 
+const SVG_FREE_SWAP_1966 =
+  '<svg class="ws7-vec-ico" viewBox="0 0 18 18" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.2 6.5h10.2l-2.6-2.6M14.8 11.5H4.6l2.6 2.6"/></svg>';
+
 const SVG_REEL_VAULT_1966 =
   '<svg class="ws7-vec-ico" viewBox="0 0 16 16" width="15" height="15" fill="none" aria-hidden="true"><rect x="1.2" y="2.2" width="13.6" height="11.6" rx="2.2" stroke="currentColor" stroke-width="1.5"/><circle cx="5.2" cy="7.3" r="2.2" stroke="currentColor" stroke-width="1.4"/><circle cx="10.8" cy="7.3" r="2.2" stroke="currentColor" stroke-width="1.4"/><circle cx="5.2" cy="7.3" r="0.7" fill="currentColor"/><circle cx="10.8" cy="7.3" r="0.7" fill="currentColor"/><path d="M4.2 11.4H11.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
 
@@ -340,6 +354,11 @@ export interface BroadcastChromeCallbacksV7 {
   readonly onAdjustBoardZoom?: (deltaOrReset: number | 'RESET') => void;
   readonly onToggleFullscreen?: () => void;
   readonly onUtilityModalStateChange?: (open: boolean) => void;
+  readonly onStartCouchParty?: () => void;
+  readonly onOpenCareerStats?: () => void;
+  readonly onOpenDailyTapeVault?: () => void;
+  readonly onPlayEndCredits?: () => void;
+  readonly onOpenWalnutShareCard?: () => void;
 }
 
 export interface TopBugSnapshotV7 {
@@ -375,8 +394,13 @@ export interface QuestionChassisOpenSpecV7 {
   readonly showcaseFormatName?: string;
   readonly fiftyFiftyAvailable?: boolean;
   readonly audiencePollAvailable?: boolean;
+  readonly freeSwapAvailable?: boolean;
   readonly onUseFiftyFifty?: () => void;
   readonly onUseAudiencePoll?: () => void;
+  readonly onUseFreeSwap?: () => void;
+  readonly plainMicroTip?: { readonly badge: string; readonly plainInstruction: string };
+  readonly onOpenQuestionCoach?: () => void;
+  readonly noTimerMode?: boolean;
   readonly isMatchPointTurn?: boolean;
   readonly isAct3Showdown?: boolean;
   readonly isFinalWager?: boolean;
@@ -603,16 +627,19 @@ export class BroadcastChromeUIV7 {
   private readonly clueHeaderRowEl: HTMLDivElement;
   private readonly domainPillEl: HTMLSpanElement;
   private readonly clueStakesChipEl: HTMLSpanElement;
+  private readonly clueTipBtnEl: HTMLButtonElement;
   private readonly clueTimerPillEl: HTMLSpanElement;
   private readonly clueTimerBarFillEl: HTMLDivElement;
   private readonly hostDeskStripEl: HTMLDivElement;
   private readonly hostDeskAvatarEl: HTMLDivElement;
   private readonly hostDeskQuipEl: HTMLSpanElement;
+  private readonly plainMicroTipEl: HTMLDivElement;
   private readonly clueStemEl: HTMLParagraphElement;
   private readonly clueStakesMetaEl: HTMLDivElement;
   private readonly lifelineBarEl: HTMLDivElement;
   private readonly fiftyFiftyBtnEl: HTMLButtonElement;
   private readonly audiencePollBtnEl: HTMLButtonElement;
+  private readonly freeSwapBtnEl: HTMLButtonElement;
   private readonly toyBayEl: HTMLDivElement;
 
   private readonly modalStageEl: HTMLDivElement;
@@ -625,6 +652,9 @@ export class BroadcastChromeUIV7 {
 
   private activeUseFiftyFiftyHandler: (() => void) | null = null;
   private activeUseAudiencePollHandler: (() => void) | null = null;
+  private activeUseFreeSwapHandler: (() => void) | null = null;
+  private activeOpenQuestionCoachHandler: (() => void) | null = null;
+  private activeNoTimerMode = false;
   private activeRivalSkipHandler: (() => void) | null = null;
   private cheatAndMicUnlocked = true;
   private propsUnlockedInMatch = true;
@@ -881,7 +911,7 @@ export class BroadcastChromeUIV7 {
       'PROPS',
       'props',
       'Studio Prop Trunk — Equip Passive Score Boosters',
-      true,
+      false,
     );
     this.propsBtnEl = propsBtn;
     propsBtn.addEventListener('click', () => {
@@ -904,7 +934,7 @@ export class BroadcastChromeUIV7 {
       'HUB',
       'hub',
       'Return to 1966 Title Hub',
-      true,
+      false,
     );
     hubBtn.addEventListener('click', () => {
       if (this.callbacks.onReturnToTitleHub) {
@@ -1043,11 +1073,20 @@ export class BroadcastChromeUIV7 {
     this.clueStakesChipEl = document.createElement('span');
     this.clueStakesChipEl.className = 'ws7-clue-stakes-chip';
 
+    this.clueTipBtnEl = document.createElement('button');
+    this.clueTipBtnEl.type = 'button';
+    this.clueTipBtnEl.className = 'ws7-clue-tip-btn ws7-hidden';
+    this.clueTipBtnEl.title = 'Pause clock & see how this question type works';
+    this.clueTipBtnEl.textContent = '? TIP';
+    this.clueTipBtnEl.addEventListener('click', () => {
+      this.activeOpenQuestionCoachHandler?.();
+    });
+
     this.clueTimerPillEl = document.createElement('span');
     this.clueTimerPillEl.className = 'ws7-clue-timer-pill';
     this.clueTimerPillEl.textContent = '30s';
 
-    headerRight.append(this.clueStakesChipEl, this.clueTimerPillEl);
+    headerRight.append(this.clueStakesChipEl, this.clueTipBtnEl, this.clueTimerPillEl);
     this.clueHeaderRowEl.append(this.domainPillEl, headerRight);
 
     const timerTrack = document.createElement('div');
@@ -1081,23 +1120,34 @@ export class BroadcastChromeUIV7 {
     const clueBody = document.createElement('div');
     clueBody.className = 'ws7-clue-body';
 
+    this.plainMicroTipEl = document.createElement('div');
+    this.plainMicroTipEl.className = 'ws7-plain-micro-tip ws7-hidden';
+
     this.clueStemEl = document.createElement('p');
     this.clueStemEl.className = 'ws7-balanced-copy';
 
     this.clueStakesMetaEl = document.createElement('div');
     this.clueStakesMetaEl.className = 'ws7-clue-meta-line';
 
-    clueBody.append(this.clueStemEl, this.clueStakesMetaEl);
+    clueBody.append(this.plainMicroTipEl, this.clueStemEl, this.clueStakesMetaEl);
 
-    // 2 Classic Studio Lifelines Per Match (✂️ 50/50 Studio Cut & 📊 Studio Audience Poll)
+    // Unmissable 3-Paddle Illuminated "STUDIO CHEATS" Console (✂️ 50/50 Cut · 📊 Ask Audience · 🔄 Free Swap)
     this.lifelineBarEl = document.createElement('div');
     this.lifelineBarEl.className = 'ws7-lifeline-bar';
+    this.lifelineBarEl.dataset.cols = '3';
+
+    const cheatsHead = document.createElement('div');
+    cheatsHead.className = 'ws7-lifeline-console-head';
+    cheatsHead.innerHTML =
+      '<span class="ws7-lifeline-console-kicker"><span class="ws7-lifeline-console-dot" aria-hidden="true"></span><span>STUDIO CHEATS · 1 USE EACH PER SHOW</span></span>';
+
+    const paddlesGrid = document.createElement('div');
+    paddlesGrid.className = 'ws7-lifeline-paddles-grid';
 
     this.fiftyFiftyBtnEl = document.createElement('button');
     this.fiftyFiftyBtnEl.type = 'button';
     this.fiftyFiftyBtnEl.className = 'ws7-lifeline-btn';
     this.fiftyFiftyBtnEl.dataset.lifeline = 'fifty-fifty';
-    this.fiftyFiftyBtnEl.innerHTML = `${SVG_SCISSORS_1966}<span>50/50 STUDIO CUT</span>`;
     this.fiftyFiftyBtnEl.addEventListener('click', () => {
       if (this.fiftyFiftyBtnEl.disabled) return;
       this.activeUseFiftyFiftyHandler?.();
@@ -1107,13 +1157,22 @@ export class BroadcastChromeUIV7 {
     this.audiencePollBtnEl.type = 'button';
     this.audiencePollBtnEl.className = 'ws7-lifeline-btn';
     this.audiencePollBtnEl.dataset.lifeline = 'audience-poll';
-    this.audiencePollBtnEl.innerHTML = `${SVG_POLL_BARS_1966}<span>STUDIO AUDIENCE POLL</span>`;
     this.audiencePollBtnEl.addEventListener('click', () => {
       if (this.audiencePollBtnEl.disabled) return;
       this.activeUseAudiencePollHandler?.();
     });
 
-    this.lifelineBarEl.append(this.fiftyFiftyBtnEl, this.audiencePollBtnEl);
+    this.freeSwapBtnEl = document.createElement('button');
+    this.freeSwapBtnEl.type = 'button';
+    this.freeSwapBtnEl.className = 'ws7-lifeline-btn';
+    this.freeSwapBtnEl.dataset.lifeline = 'free-swap';
+    this.freeSwapBtnEl.addEventListener('click', () => {
+      if (this.freeSwapBtnEl.disabled) return;
+      this.activeUseFreeSwapHandler?.();
+    });
+
+    paddlesGrid.append(this.fiftyFiftyBtnEl, this.audiencePollBtnEl, this.freeSwapBtnEl);
+    this.lifelineBarEl.append(cheatsHead, paddlesGrid);
     vellumPane.append(
       this.twistFlareStripEl,
       this.clueHeaderRowEl,
@@ -1830,7 +1889,7 @@ export class BroadcastChromeUIV7 {
   }
 
   public setRivalEmotion(emotion: PortraitEmotionV7): void {
-    const spec = PORTRAIT_SPRITE_POSITIONS_V7[emotion];
+    const spec = PORTRAIT_SPRITE_POSITIONS_V7[emotion] ?? PORTRAIT_SPRITE_POSITIONS_V7.POISED;
     this.rivalMedallionEl.dataset.emotion = emotion;
     this.rivalMedallionEl.style.backgroundPosition = spec.bgPosition;
     this.rivalEmotionTextEl.dataset.tell = emotion === 'TELL' ? 'true' : 'false';
@@ -2187,6 +2246,37 @@ export class BroadcastChromeUIV7 {
     );
 
     utilityFooter.append(trunkBtn, vaultBtn, jumpBtn, audioBtn);
+    if (this.callbacks.onStartCouchParty) {
+      const couchBtn = document.createElement('button');
+      couchBtn.type = 'button';
+      couchBtn.className = 'ws7-teal-btn';
+      couchBtn.textContent = '2P COUCH PARTY';
+      couchBtn.addEventListener('click', () => {
+        this.hideModalStage();
+        this.callbacks.onStartCouchParty?.();
+      });
+      utilityFooter.appendChild(couchBtn);
+    }
+    if (this.callbacks.onOpenCareerStats) {
+      const statsBtn = document.createElement('button');
+      statsBtn.type = 'button';
+      statsBtn.className = 'ws7-secondary-btn';
+      statsBtn.textContent = 'STATS & CHARTS';
+      statsBtn.addEventListener('click', () => {
+        this.callbacks.onOpenCareerStats?.();
+      });
+      utilityFooter.appendChild(statsBtn);
+    }
+    if (this.callbacks.onOpenDailyTapeVault) {
+      const tapeBtn = document.createElement('button');
+      tapeBtn.type = 'button';
+      tapeBtn.className = 'ws7-secondary-btn';
+      tapeBtn.textContent = 'TAPE VAULT';
+      tapeBtn.addEventListener('click', () => {
+        this.callbacks.onOpenDailyTapeVault?.();
+      });
+      utilityFooter.appendChild(tapeBtn);
+    }
     body.append(statsGrid, actionBand, utilityFooter);
     panel.append(header, body);
     this.mountModalContent(panel);
@@ -2603,16 +2693,29 @@ export class BroadcastChromeUIV7 {
   public syncLifelineButtons(
     fiftyFiftyAvailable: boolean,
     audiencePollAvailable: boolean,
+    freeSwapAvailable: boolean = Boolean(this.activeUseFreeSwapHandler),
   ): void {
+    const renderPaddle = (
+      iconSvg: string,
+      title: string,
+      sub: string,
+    ): string =>
+      `<span class="ws7-lifeline-lamp" aria-hidden="true"></span>${iconSvg}<span class="ws7-lifeline-copy-stack"><span class="ws7-lifeline-main-lbl">${title}</span><span class="ws7-lifeline-sub-lbl">${sub}</span></span>`;
+
     this.fiftyFiftyBtnEl.disabled = !fiftyFiftyAvailable;
     this.fiftyFiftyBtnEl.innerHTML = fiftyFiftyAvailable
-      ? `${SVG_SCISSORS_1966}<span>50/50 STUDIO CUT</span>`
-      : `${SVG_SCISSORS_1966}<span>50/50 USED</span>`;
+      ? renderPaddle(SVG_SCISSORS_1966, '50/50 CUT', 'Cuts 2 Wrong')
+      : renderPaddle(SVG_SCISSORS_1966, '50/50 CUT', 'Used This Show');
 
     this.audiencePollBtnEl.disabled = !audiencePollAvailable;
     this.audiencePollBtnEl.innerHTML = audiencePollAvailable
-      ? `${SVG_POLL_BARS_1966}<span>STUDIO AUDIENCE POLL</span>`
-      : `${SVG_POLL_BARS_1966}<span>POLL USED</span>`;
+      ? renderPaddle(SVG_POLL_BARS_1966, 'ASK AUDIENCE', '50M TV Poll')
+      : renderPaddle(SVG_POLL_BARS_1966, 'ASK AUDIENCE', 'Used This Show');
+
+    this.freeSwapBtnEl.disabled = !freeSwapAvailable;
+    this.freeSwapBtnEl.innerHTML = freeSwapAvailable
+      ? renderPaddle(SVG_FREE_SWAP_1966, 'FREE SWAP', 'New Question')
+      : renderPaddle(SVG_FREE_SWAP_1966, 'FREE SWAP', 'Used This Show');
   }
 
   public setQuestionPollSummary(summaryText: string): void {
@@ -2743,6 +2846,23 @@ export class BroadcastChromeUIV7 {
       false,
     );
 
+    // Plain-English Zero-Assumption Micro-Instruction + Optional `? TIP` Button
+    this.activeOpenQuestionCoachHandler = spec.onOpenQuestionCoach ?? null;
+    this.clueTipBtnEl.classList.toggle('ws7-hidden', !spec.onOpenQuestionCoach);
+    if (spec.plainMicroTip) {
+      this.plainMicroTipEl.innerHTML = '';
+      const bEl = document.createElement('span');
+      bEl.className = 'ws7-plain-micro-badge';
+      bEl.textContent = `${spec.plainMicroTip.badge}:`;
+      const copyEl = document.createElement('span');
+      copyEl.textContent = spec.plainMicroTip.plainInstruction;
+      this.plainMicroTipEl.append(bEl, copyEl);
+      this.plainMicroTipEl.classList.remove('ws7-hidden');
+    } else {
+      this.plainMicroTipEl.textContent = '';
+      this.plainMicroTipEl.classList.add('ws7-hidden');
+    }
+
     // Big, Arm's-Length Readable Clue Stem
     const formattedStem = formatOrphanProofCopyV7(spec.clue.stem);
     this.clueStemEl.textContent = formattedStem;
@@ -2757,20 +2877,26 @@ export class BroadcastChromeUIV7 {
 
     this.activeUseFiftyFiftyHandler = spec.onUseFiftyFifty ?? null;
     this.activeUseAudiencePollHandler = spec.onUseAudiencePoll ?? null;
+    this.activeUseFreeSwapHandler = spec.onUseFreeSwap ?? null;
     const hasFifty = Boolean(spec.onUseFiftyFifty);
     const hasPoll = Boolean(spec.onUseAudiencePoll);
-    const showLifelines = hasFifty || hasPoll;
+    const hasSwap = Boolean(spec.onUseFreeSwap);
+    const visibleCols = (hasFifty ? 1 : 0) + (hasPoll ? 1 : 0) + (hasSwap ? 1 : 0);
+    const showLifelines = visibleCols > 0;
     this.lifelineBarEl.classList.toggle('ws7-hidden', !showLifelines);
-    this.lifelineBarEl.dataset.single = hasFifty !== hasPoll ? 'true' : 'false';
+    this.lifelineBarEl.dataset.cols = String(Math.max(1, visibleCols));
     this.fiftyFiftyBtnEl.classList.toggle('ws7-hidden', !hasFifty);
     this.audiencePollBtnEl.classList.toggle('ws7-hidden', !hasPoll);
+    this.freeSwapBtnEl.classList.toggle('ws7-hidden', !hasSwap);
     if (showLifelines) {
       this.syncLifelineButtons(
         Boolean(spec.fiftyFiftyAvailable),
         Boolean(spec.audiencePollAvailable),
+        Boolean(spec.freeSwapAvailable),
       );
     }
 
+    this.activeNoTimerMode = Boolean(spec.noTimerMode);
     this.questionMaxCountdownSec = Math.max(
       1,
       spec.totalCountdownSeconds ?? spec.countdownSeconds,
@@ -2786,6 +2912,16 @@ export class BroadcastChromeUIV7 {
   }
 
   public updateQuestionCountdown(secondsRemaining: number): void {
+    if (this.activeNoTimerMode || !Number.isFinite(secondsRemaining)) {
+      this.clueTimerPillEl.textContent = '∞ NO TIMER';
+      this.clueTimerPillEl.dataset.notimer = 'true';
+      this.clueTimerPillEl.dataset.urgent = 'false';
+      this.clueTimerBarFillEl.style.width = '100%';
+      this.clueTimerBarFillEl.dataset.phase = 'calm';
+      return;
+    }
+
+    this.clueTimerPillEl.dataset.notimer = 'false';
     const clampedSec = Math.max(0, secondsRemaining);
     const ceilSec = Math.ceil(clampedSec);
     const ratio = Math.max(0, Math.min(1, clampedSec / this.questionMaxCountdownSec));
@@ -2803,6 +2939,9 @@ export class BroadcastChromeUIV7 {
     this.questionChassisEl.dataset.twist = 'NONE';
     this.activeUseFiftyFiftyHandler = null;
     this.activeUseAudiencePollHandler = null;
+    this.activeUseFreeSwapHandler = null;
+    this.activeOpenQuestionCoachHandler = null;
+    this.activeNoTimerMode = false;
     this.toyBayEl.innerHTML = '';
     this.syncBoardModeRibbonVisibility();
   }
@@ -3987,6 +4126,28 @@ export class BroadcastChromeUIV7 {
         });
         footer.appendChild(saveExitBtn);
 
+        if (this.callbacks.onOpenCareerStats) {
+          const statsBtn = document.createElement('button');
+          statsBtn.type = 'button';
+          statsBtn.className = 'ws7-secondary-btn';
+          statsBtn.textContent = 'STATS & CHARTS';
+          statsBtn.addEventListener('click', () => {
+            this.callbacks.onOpenCareerStats?.();
+          });
+          footer.appendChild(statsBtn);
+        }
+
+        if (this.callbacks.onPlayEndCredits) {
+          const creditsBtn = document.createElement('button');
+          creditsBtn.type = 'button';
+          creditsBtn.className = 'ws7-secondary-btn';
+          creditsBtn.textContent = '1966 CREDITS ▶';
+          creditsBtn.addEventListener('click', () => {
+            this.callbacks.onPlayEndCredits?.();
+          });
+          footer.appendChild(creditsBtn);
+        }
+
         if (isCampaignMode) {
           footer.dataset.hasBackstageRow = 'true';
           const perksBtn = document.createElement('button');
@@ -4904,10 +5065,18 @@ export class BroadcastChromeUIV7 {
       body.className = 'ws7-sheet-body';
 
       const sliders: ReadonlyArray<{
-        key: 'masterVolume' | 'musicVolume' | 'sfxVolume' | 'crowdVolume' | 'ambienceVolume';
+        key:
+          | 'masterVolume'
+          | 'voiceVolume'
+          | 'musicVolume'
+          | 'sfxVolume'
+          | 'crowdVolume'
+          | 'ambienceVolume';
         label: string;
+        fallback?: number;
       }> = [
         { key: 'masterVolume', label: 'Master Level' },
+        { key: 'voiceVolume', label: 'Studio Voices', fallback: 88 },
         { key: 'musicVolume', label: 'Showband' },
         { key: 'sfxVolume', label: 'Bells & SFX' },
         { key: 'crowdVolume', label: 'Live Audience' },
@@ -4917,6 +5086,7 @@ export class BroadcastChromeUIV7 {
       const faderBlock = document.createElement('div');
       faderBlock.className = 'ws7-fader-grid';
       for (const s of sliders) {
+        const curVal = settings[s.key] ?? s.fallback ?? 80;
         const row = document.createElement('label');
         row.className = 'ws7-slider-row';
         const nameSpan = document.createElement('span');
@@ -4926,7 +5096,7 @@ export class BroadcastChromeUIV7 {
         input.type = 'range';
         input.min = '0';
         input.max = '100';
-        input.value = String(settings[s.key]);
+        input.value = String(curVal);
         input.className = 'ws7-range-input';
 
         const valSpan = document.createElement('span');
@@ -4934,7 +5104,7 @@ export class BroadcastChromeUIV7 {
         valSpan.style.fontSize = '15px';
         valSpan.style.color = '#ffd56b';
         valSpan.style.textAlign = 'right';
-        valSpan.textContent = `${settings[s.key]}%`;
+        valSpan.textContent = `${curVal}%`;
 
         input.addEventListener('input', () => {
           const v = Number(input.value);
@@ -4948,6 +5118,22 @@ export class BroadcastChromeUIV7 {
         faderBlock.appendChild(row);
       }
       body.appendChild(faderBlock);
+
+      // 5-Speed Studio Question Clock Selector (NO TIMER · 90s · 45s · 30s · 15s)
+      const clockBand = document.createElement('div');
+      clockBand.className = 'ws7-sheet-band';
+      clockBand.dataset.surface = 'cream';
+      mountQuestionTimerSelectorV8(clockBand, {
+        value: normalizeQuestionTimerModeV8(settings.questionTimerMode ?? 30),
+        showHeader: true,
+        showSummary: true,
+        onChange: (nextMode) => {
+          const updated = this.campaign.updateSettings({ questionTimerMode: nextMode });
+          this.applySettingsAttributes(updated);
+          this.callbacks.onSettingsChanged?.(updated);
+        },
+      });
+      body.appendChild(clockBand);
 
       const toggleBand = document.createElement('div');
       toggleBand.className = 'ws7-sheet-band';
@@ -5003,6 +5189,52 @@ export class BroadcastChromeUIV7 {
           highContrastBadges: !settings.highContrastBadges,
         }),
       );
+
+      const introEnabled =
+        settings.autoPlayShowIntro !== undefined
+          ? settings.autoPlayShowIntro
+          : isAutoPlayShowIntroEnabledV8();
+      const introToggleBtn = document.createElement('button');
+      introToggleBtn.type = 'button';
+      introToggleBtn.className = introEnabled ? 'ws7-teal-btn' : 'ws7-secondary-btn';
+      introToggleBtn.textContent = `10S TV INTRO: ${introEnabled ? 'ON' : 'OFF'}`;
+      introToggleBtn.addEventListener('click', () => {
+        const next = !introEnabled;
+        setAutoPlayShowIntroEnabledV8(next);
+        const updated = this.campaign.updateSettings({ autoPlayShowIntro: next });
+        this.applySettingsAttributes(updated);
+        this.callbacks.onSettingsChanged?.(updated);
+        render();
+      });
+
+      const tipsMuted = Boolean(settings.muteAutoQuestionTips) || isAutoTipsMutedV8();
+      const tipsToggleBtn = document.createElement('button');
+      tipsToggleBtn.type = 'button';
+      tipsToggleBtn.className = !tipsMuted ? 'ws7-teal-btn' : 'ws7-secondary-btn';
+      tipsToggleBtn.textContent = `1ST-TIME TIPS: ${!tipsMuted ? 'ON' : 'MUTED'}`;
+      tipsToggleBtn.addEventListener('click', () => {
+        const nextMuted = !tipsMuted;
+        setAutoTipsMutedV8(nextMuted);
+        const updated = this.campaign.updateSettings({ muteAutoQuestionTips: nextMuted });
+        this.applySettingsAttributes(updated);
+        this.callbacks.onSettingsChanged?.(updated);
+        render();
+      });
+
+      const resetTipsBtn = document.createElement('button');
+      resetTipsBtn.type = 'button';
+      resetTipsBtn.className = 'ws7-secondary-btn';
+      resetTipsBtn.textContent = '↻ RESET QUESTION TIPS';
+      resetTipsBtn.addEventListener('click', () => {
+        resetSeenStudioGuidesV8();
+        const updated = this.campaign.updateSettings({ muteAutoQuestionTips: false });
+        this.applySettingsAttributes(updated);
+        this.callbacks.onSettingsChanged?.(updated);
+        this.showLiveToast('FIRST-TIME STUDIO CUE CARDS RESET!', 'emerald', 2200);
+        render();
+      });
+
+      toggleRow.append(introToggleBtn, tipsToggleBtn, resetTipsBtn);
       toggleBand.appendChild(toggleRow);
       body.appendChild(toggleBand);
 

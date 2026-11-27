@@ -1633,27 +1633,31 @@ function renderTilePlaqueCanvas(
 
   // -------------------------------------------------------------------------
   // B0. TOPOLOGY-LOCKED SHUTTER (`PYRAMID_CLIMB` | `KEY_AND_SAFE` | `CENTER_STARBURST` | `ROVING_SPOTLIGHT`)
+  //     Sunlit 1966 American Walnut & Brushed Champagne-Brass Solari Louvers (Zero Dark-Blue Boxes!)
   // -------------------------------------------------------------------------
   if (isTopologyLocked && !isLockedVault) {
     const shutGrad = ctx.createLinearGradient(0, 0, 0, h);
-    shutGrad.addColorStop(0.0, '#1B2F4B');
-    shutGrad.addColorStop(0.5, '#122238');
-    shutGrad.addColorStop(1.0, '#0C1829');
+    shutGrad.addColorStop(0.0, '#7E4728');
+    shutGrad.addColorStop(0.5, '#5E321B');
+    shutGrad.addColorStop(1.0, '#452312');
     ctx.fillStyle = shutGrad;
     ctx.fillRect(0, 0, w, h);
 
-    // 7 Motorized horizontal metallic Solari shutter louver slats
+    // 7 Motorized horizontal sunlit walnut & brass Solari shutter louver slats
     for (let sy = 140; sy < h - 32; sy += 46) {
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.065)';
-      ctx.fillRect(28, sy, w - 56, 14);
-      ctx.fillStyle = 'rgba(4, 10, 20, 0.42)';
+      ctx.fillStyle = 'rgba(255, 232, 184, 0.14)';
+      ctx.fillRect(28, sy, w - 56, 13);
+      ctx.fillStyle = 'rgba(38, 17, 7, 0.38)';
       ctx.fillRect(28, sy + 28, w - 56, 10);
     }
 
-    // Header bar
-    ctx.fillStyle = '#243C5E';
+    // Brushed Champagne-Brass Header Bar
+    const hdrGrad = ctx.createLinearGradient(0, 20, 0, 130);
+    hdrGrad.addColorStop(0.0, '#FFE38E');
+    hdrGrad.addColorStop(1.0, '#D99B2B');
+    ctx.fillStyle = hdrGrad;
     ctx.fillRect(20, 20, w - 40, 110);
-    ctx.fillStyle = '#F4A91F';
+    ctx.fillStyle = '#FFF9E6';
     ctx.fillRect(20, 128, w - 40, 6);
 
     const lockHeader = extras.isRovingSpotlightBoard
@@ -1662,20 +1666,20 @@ function renderTilePlaqueCanvas(
         ? '★ SAFE SHUTTERED · NEED KEY'
         : '▲ SHUTTERED · WIN ADJACENT';
     ctx.textAlign = 'center';
-    ctx.fillStyle = '#FFD56B';
+    ctx.fillStyle = '#241309';
     drawFittedBoldText(ctx, lockHeader, w * 0.5, 76, w - 110, 52, 34, displayFont);
 
     const catText =
       isBlindCategory && tile.blindCategoryHidden !== false ? '★ ? · ? · ? ★' : displayCategory;
-    ctx.fillStyle = '#CFDEF0';
+    ctx.fillStyle = '#FFF6E3';
     drawFittedBoldText(ctx, catText, w * 0.5, 224, w - 108, 86, 52, displayFont);
 
     const stakeText =
       isMysteryCash && tile.mysteryCashHidden !== false ? '$???' : `$${shownChips}`;
-    ctx.fillStyle = '#F8D477';
+    ctx.fillStyle = '#FFE082';
     drawFittedBoldText(ctx, stakeText, w * 0.5, 368, w - 120, 138, 84, numericFont);
 
-    drawAnodizedOuterBezelAndRivets(ctx, w, h, '#4A668C', false);
+    drawAnodizedOuterBezelAndRivets(ctx, w, h, '#D9A441', false);
     return;
   }
 
@@ -1684,14 +1688,14 @@ function renderTilePlaqueCanvas(
   // -------------------------------------------------------------------------
   if (isLockedVault) {
     const vaultGrad = ctx.createLinearGradient(0, 0, 0, h);
-    vaultGrad.addColorStop(0, '#142B4F');
-    vaultGrad.addColorStop(0.5, '#0C1C36');
-    vaultGrad.addColorStop(1, '#193054');
+    vaultGrad.addColorStop(0, '#6A3B1F');
+    vaultGrad.addColorStop(0.5, '#4A2714');
+    vaultGrad.addColorStop(1, '#5D331B');
     ctx.fillStyle = vaultGrad;
     ctx.fillRect(0, 0, w, h);
 
-    // Horizontal steel vault cross-beam behind vertical gold bars
-    ctx.fillStyle = '#334E73';
+    // Horizontal burnished bronze vault cross-beam behind vertical gold bars
+    ctx.fillStyle = '#8C5A2B';
     ctx.fillRect(28, 238, w - 56, 26);
 
     // 7 Sculpted Cylindrical 24K Gold Bank Vault Bars spanning behind the $500 badge!
@@ -1710,13 +1714,13 @@ function renderTilePlaqueCanvas(
     ctx.fillRect(20, 20, w - 40, 114);
 
     ctx.textAlign = 'left';
-    ctx.fillStyle = '#0B1D30';
+    ctx.fillStyle = '#241309';
     drawFittedBoldText(ctx, '★ LOCKED GOLD VAULT', 48, 78, w - 264, 60, 40, displayFont);
     ctx.textAlign = 'center';
 
-    // High-contrast dark navy backing plate behind $500 so gold vault bars frame it cleanly
+    // High-contrast sunlit espresso-walnut backing plate behind $500 so gold vault bars frame it cleanly
     drawRoundedRectPath(ctx, 250, 166, w - 500, 164, 24);
-    ctx.fillStyle = 'rgba(11, 26, 46, 0.92)';
+    ctx.fillStyle = 'rgba(56, 28, 13, 0.95)';
     ctx.fill();
     ctx.strokeStyle = '#FFD56B';
     ctx.lineWidth = 6;
@@ -1728,7 +1732,7 @@ function renderTilePlaqueCanvas(
 
     // Clear unlock rule ribbon
     drawRoundedRectPath(ctx, 56, 360, w - 112, 104, 18);
-    ctx.fillStyle = 'rgba(11, 29, 48, 0.95)';
+    ctx.fillStyle = 'rgba(56, 28, 13, 0.96)';
     ctx.fill();
     ctx.strokeStyle = '#FFD56B';
     ctx.lineWidth = 6;

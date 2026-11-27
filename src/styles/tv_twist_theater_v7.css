@@ -3139,3 +3139,907 @@
     filter: brightness(1) contrast(1);
   }
 }
+
+
+/* ============================================================================
+   9. v8.0 SWEEPS WEEK DELUXE — ESCALATING GREMLIN HEAT, 8 HANNA-BARBERA
+      CARTOON GREMLIN SKITS, PODIUM POP-UP MARKERS & 3-ITEM BARGAIN DESK
+   ============================================================================ */
+
+/* 9A. Escalating Gremlin Heat Pill & Pulsing 4/12 HOT GREMLIN Square */
+.wst7-pyl-heat-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: rgba(11, 29, 48, 0.92);
+  border: 1.5px solid rgba(255, 217, 102, 0.48);
+  font-family: var(--wst7-font-broadcast);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: var(--wst7-cream);
+  text-transform: uppercase;
+}
+
+.wst7-pyl-heat-pill[data-hot='true'] {
+  background: linear-gradient(90deg, #b81442 0%, #ff5722 100%);
+  border-color: #ffd966;
+  color: #fff7e6;
+  box-shadow: 0 0 18px rgba(255, 87, 34, 0.68);
+  animation: wsv8-heat-pulse 0.65s ease-in-out infinite alternate;
+}
+
+.wst7-pyl-square[data-tone='hot-gremlin'] {
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      #4a0b23 0px,
+      #4a0b23 8px,
+      #8b152a 8px,
+      #8b152a 16px
+    );
+  color: #ffd966;
+  box-shadow:
+    inset 0 0 0 2.5px #ff6738,
+    0 0 16px rgba(255, 103, 56, 0.62),
+    0 4px 0 rgba(6, 14, 26, 0.75);
+  animation: wsv8-hot-sq-throb 0.55s ease-in-out infinite alternate;
+}
+
+@media (max-height: 700px) and (orientation: portrait) {
+  .wst7-pyl-heat-pill {
+    padding: 2px 10px;
+    font-size: 12.5px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .wst7-pyl-heat-pill {
+    padding: 2px 10px;
+    font-size: 12.5px;
+  }
+}
+
+/* 9B. Spring-Loaded Podium Gremlin Pop-Up Markers (`1..4` *BOING!*) */
+.wsg8-podium-markers {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 3px;
+  vertical-align: middle;
+}
+
+.wsg8-podium-standee {
+  display: inline-flex;
+  width: 26px;
+  height: 32px;
+  transform-origin: 50% 100%;
+}
+
+.wsg8-podium-standee-pop {
+  animation: wsv8-podium-boing 0.64s cubic-bezier(0.22, 1.48, 0.36, 1) both;
+}
+
+.wsg8-podium-standee-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(4, 10, 18, 0.72));
+}
+
+/* 9C. 8 Hanna-Barbera / UPA Animated Studio Gremlin Skit Theater */
+.wsg8-skit-overlay,
+.wsg8-skit-overlay * {
+  box-sizing: border-box;
+}
+
+.wsg8-skit-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  z-index: 120;
+  pointer-events: auto;
+  background:
+    radial-gradient(
+      ellipse 86% 68% at 50% 45%,
+      rgba(20, 62, 88, 0.92) 0%,
+      rgba(10, 26, 44, 0.97) 64%,
+      rgba(5, 13, 24, 0.99) 100%
+    );
+  padding:
+    calc(var(--wst7-safe-top) + 10px)
+    calc(var(--wst7-safe-right) + 12px)
+    calc(var(--wst7-safe-bottom) + 10px)
+    calc(var(--wst7-safe-left) + 12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  animation: wst7-backdrop-in 0.16s ease-out both;
+}
+
+.wsg8-skit-proscenium {
+  width: min(820px, 100%);
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: clamp(6px, 1.4dvh, 12px);
+}
+
+.wsg8-skit-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 3px;
+}
+
+.wsg8-skit-kicker-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #e63b7a 0%, #ff6738 100%);
+  box-shadow: 0 3px 0 #071321;
+}
+
+.wsg8-onair-lamp {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ffd966;
+  box-shadow: 0 0 8px #ffd966;
+  animation: wst7-jam-blink 0.35s steps(2, end) infinite;
+}
+
+.wsg8-skit-kicker {
+  font-family: var(--wst7-font-broadcast);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: #fff7e6;
+  text-transform: uppercase;
+}
+
+.wsg8-skit-headline {
+  margin: 0;
+  font-family: var(--wst7-font-show);
+  font-size: clamp(22px, 5.4vw, 38px);
+  font-weight: 400;
+  line-height: 1.02;
+  color: #ffd966;
+  text-shadow:
+    0 2px 0 #ff6738,
+    0 5px 0 #071321,
+    0 10px 22px rgba(3, 9, 18, 0.9);
+}
+
+.wsg8-skit-monitor-frame {
+  position: relative;
+  width: 100%;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #071321;
+  border: 3.5px solid #f4a91f;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 247, 230, 0.28),
+    0 8px 0 #6e3b23,
+    0 18px 34px rgba(3, 9, 18, 0.88);
+}
+
+.wsg8-stage-svg {
+  width: 100%;
+  height: auto;
+  max-height: min(50dvh, 360px);
+  display: block;
+}
+
+.wsg8-mower-blades {
+  animation: wst7-slow-spin 0.24s linear infinite;
+}
+
+.wsg8-antenna-spark {
+  animation: wst7-jam-blink 0.22s steps(2, end) infinite;
+}
+
+.wsg8-skit-apron {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    'top skip'
+    'cap skip';
+  align-items: center;
+  gap: 6px 12px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #13314d 0%, #0b1d30 100%);
+  box-shadow:
+    inset 0 2.5px 0 #ffd966,
+    0 6px 0 #071321;
+}
+
+.wsg8-apron-left {
+  grid-area: top;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.wsg8-score-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #071321;
+  border: 1.5px solid rgba(255, 217, 102, 0.58);
+}
+
+.wsg8-score-lbl {
+  font-family: var(--wst7-font-broadcast);
+  font-size: 13px;
+  font-weight: 900;
+  color: #19bfd0;
+}
+
+.wsg8-score-transition {
+  font-family: var(--wst7-font-solari);
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff7e6;
+}
+
+.wsg8-loss-chip {
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #e03e36;
+  color: #fff7e6;
+  font-family: var(--wst7-font-broadcast);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.wsg8-podium-stamp-slot {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.36;
+  transform: scale(0.92);
+  transition: opacity 0.2s ease, transform 0.34s cubic-bezier(0.2, 1.45, 0.34, 1);
+}
+
+.wsg8-podium-stamp-slot[data-stamped='true'] {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.wsg8-podium-stamp-lbl {
+  font-family: var(--wst7-font-broadcast);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #ffd966;
+}
+
+.wsg8-caption-line {
+  grid-area: cap;
+  margin: 0;
+  font-family: var(--wst7-font-body);
+  font-size: clamp(13.5px, 3.3vw, 15.5px);
+  font-weight: 700;
+  line-height: 1.25;
+  color: #f7eedb;
+}
+
+.wsg8-skip-btn {
+  grid-area: skip;
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  min-width: 96px;
+  min-height: 48px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #ffd966 0%, #f4a91f 100%);
+  color: #121a2b;
+  font-family: var(--wst7-font-broadcast);
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  box-shadow:
+    inset 0 2px 0 #fffbe6,
+    0 4px 0 #8a5104;
+}
+
+.wsg8-skip-btn:active {
+  transform: translateY(2px);
+}
+
+/* Mobile Portrait Compact (`390x660`) for Gremlin Skit — Guaranteed 0px Overflow */
+@media (max-width: 520px) {
+  .wsg8-skit-apron {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'top top'
+      'cap skip';
+    padding: 8px 10px;
+    gap: 6px 8px;
+  }
+
+  .wsg8-podium-stamp-lbl {
+    display: none;
+  }
+
+  .wsg8-stage-svg {
+    max-height: 42dvh;
+  }
+}
+
+/* Ultra-Compact Mobile Landscape (`844x390`) for Gremlin Skit — Guaranteed 0px Overflow */
+@media (max-height: 500px) and (orientation: landscape) {
+  .wsg8-skit-overlay {
+    padding: 6px 12px;
+  }
+
+  .wsg8-skit-proscenium {
+    width: min(820px, 100%);
+    display: grid;
+    grid-template-columns: 1.32fr 0.88fr;
+    grid-template-areas:
+      'mon head'
+      'mon apron';
+    gap: 8px 14px;
+    align-items: center;
+  }
+
+  .wsg8-skit-monitor-frame {
+    grid-area: mon;
+  }
+
+  .wsg8-stage-svg {
+    max-height: calc(100dvh - 28px);
+  }
+
+  .wsg8-skit-header {
+    grid-area: head;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .wsg8-skit-headline {
+    font-size: 21px;
+  }
+
+  .wsg8-skit-apron {
+    grid-area: apron;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'top'
+      'cap'
+      'skip';
+    padding: 8px 10px;
+    gap: 6px;
+  }
+
+  .wsg8-skip-btn {
+    width: 100%;
+    min-height: 48px;
+  }
+}
+
+/* 9D. Mid-Show "Sale of the Century" 3-Item Curtain Call Instant Bargain Desk */
+.wsv8-bd-overlay,
+.wsv8-bd-overlay * {
+  box-sizing: border-box;
+}
+
+.wsv8-bd-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  z-index: 118;
+  pointer-events: auto;
+  background:
+    radial-gradient(
+      ellipse 88% 70% at 50% 44%,
+      rgba(15, 58, 77, 0.92) 0%,
+      rgba(11, 29, 48, 0.97) 66%,
+      rgba(6, 16, 29, 0.99) 100%
+    );
+  padding:
+    calc(var(--wst7-safe-top) + 8px)
+    calc(var(--wst7-safe-right) + 10px)
+    calc(var(--wst7-safe-bottom) + 8px)
+    calc(var(--wst7-safe-left) + 10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  animation: wst7-backdrop-in 0.2s ease-out both;
+}
+
+.wsv8-bd-desk {
+  width: min(960px, 100%);
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: clamp(6px, 1.3dvh, 14px);
+}
+
+.wsv8-bd-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 12px;
+  padding: 8px 14px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #163954 0%, #0b1d30 100%);
+  box-shadow:
+    inset 0 2.5px 0 #ffd966,
+    0 5px 0 #071321;
+}
+
+.wsv8-bd-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.wsv8-bd-bell-svg {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  transform-origin: 50% 12%;
+  animation: wst7-bell-ring 0.65s ease-in-out 2;
+}
+
+.wsv8-bd-kicker {
+  font-family: var(--wst7-font-broadcast);
+  font-size: 12.5px;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+  color: #19bfd0;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+.wsv8-bd-headline {
+  margin: 1px 0 0;
+  font-family: var(--wst7-font-show);
+  font-size: clamp(21px, 4.8vw, 32px);
+  font-weight: 400;
+  line-height: 1;
+  color: #ffd966;
+  text-shadow:
+    0 2px 0 #ff6738,
+    0 4px 0 #071321;
+}
+
+.wsv8-bd-score-strip {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 7px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: #071321;
+  border: 1.5px solid rgba(255, 217, 102, 0.5);
+  font-family: var(--wst7-font-broadcast);
+  font-size: 13px;
+  font-weight: 800;
+  color: #f7eedb;
+  white-space: nowrap;
+}
+
+.wsv8-bd-score-strip strong {
+  font-family: var(--wst7-font-solari);
+  font-size: 14px;
+  color: #ffd966;
+}
+
+.wsv8-bd-vs {
+  color: #19bfd0;
+  font-weight: 900;
+}
+
+.wsv8-bd-lead-chip {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #18a957;
+  color: #fff7e6;
+  font-size: 12.5px;
+  font-weight: 900;
+}
+
+.wsv8-bd-lead-chip[data-positive='false'] {
+  background: #ff6738;
+}
+
+.wsv8-bd-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(6px, 1.4vw, 14px);
+  align-items: stretch;
+}
+
+.wsv8-bd-card {
+  position: relative;
+  border-radius: 15px;
+  padding: 10px 12px;
+  background: linear-gradient(180deg, #fffaf0 0%, #f5e7cb 100%);
+  color: #121a2b;
+  box-shadow:
+    inset 0 0 0 2px rgba(244, 169, 31, 0.65),
+    0 6px 0 #6e3b23,
+    0 12px 24px rgba(3, 9, 18, 0.72);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.wsv8-bd-card[data-affordable='false'] {
+  opacity: 0.78;
+}
+
+.wsv8-bd-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.wsv8-bd-tag {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #0d2238;
+  color: #ffd966;
+  font-family: var(--wst7-font-broadcast);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.wsv8-bd-price-pill {
+  padding: 3px 9px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #ff6738 0%, #e63b7a 100%);
+  color: #fff7e6;
+  font-family: var(--wst7-font-solari);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.wsv8-bd-card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+}
+
+.wsv8-bd-emblem-svg {
+  width: 52px;
+  height: 52px;
+  display: block;
+  flex-shrink: 0;
+  filter: drop-shadow(0 4px 8px rgba(7, 19, 33, 0.35));
+}
+
+.wsv8-bd-card-title {
+  margin: 0;
+  font-family: var(--wst7-font-display);
+  font-size: clamp(15px, 2vw, 19px);
+  font-weight: 900;
+  line-height: 1.12;
+  color: #121a2b;
+}
+
+.wsv8-bd-card-sub {
+  margin: 3px 0 0;
+  font-family: var(--wst7-font-body);
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.24;
+  color: #2c3a52;
+}
+
+.wsv8-bd-buy-btn {
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  width: 100%;
+  min-height: 48px;
+  padding: 7px 12px;
+  border-radius: 11px;
+  background: linear-gradient(180deg, #ff7b47 0%, #e04416 100%);
+  color: #fff7e6;
+  font-family: var(--wst7-font-broadcast);
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 244, 204, 0.72),
+    0 4px 0 #8d2206;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.08;
+}
+
+.wsv8-bd-buy-btn small {
+  font-size: 12px;
+  font-weight: 800;
+  color: #ffe9b5;
+}
+
+.wsv8-bd-buy-btn:disabled {
+  cursor: not-allowed;
+  background: #64748b;
+  box-shadow: 0 3px 0 #334155;
+  color: #f1f5f9;
+}
+
+.wsv8-bd-sold-seal {
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-10deg) scale(0.4);
+  padding: 6px 18px;
+  border-radius: 10px;
+  background: #18a957;
+  color: #fff7e6;
+  font-family: var(--wst7-font-show);
+  font-size: 26px;
+  box-shadow:
+    0 0 0 3px #ffd966,
+    0 10px 22px rgba(4, 12, 22, 0.8);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.wsv8-bd-card[data-sold='true'] .wsv8-bd-sold-seal {
+  animation: wst7-stamp-slam 0.28s cubic-bezier(0.18, 1.35, 0.32, 1) forwards;
+}
+
+.wsv8-bd-footer {
+  display: flex;
+  justify-content: center;
+}
+
+.wsv8-bd-nosale-btn {
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  width: min(520px, 100%);
+  min-height: 50px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #1b4969 0%, #0f2a40 100%);
+  color: #fff7e6;
+  font-family: var(--wst7-font-broadcast);
+  font-size: clamp(15px, 3.8vw, 18px);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  box-shadow:
+    inset 0 2px 0 rgba(190, 236, 248, 0.42),
+    0 5px 0 #071321;
+}
+
+/* Portrait Mobile (`390x660` & `390x844`): Stack 3 Sleek Horizontal Cards -> 0px Vertical Overflow! */
+@media (max-width: 720px) and (orientation: portrait) {
+  .wsv8-bd-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 6px 10px;
+    gap: 4px;
+  }
+
+  .wsv8-bd-bell-svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  .wsv8-bd-kicker {
+    display: none;
+  }
+
+  .wsv8-bd-score-strip {
+    font-size: 12.5px;
+    padding: 4px 9px;
+    gap: 5px;
+  }
+
+  .wsv8-bd-grid {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .wsv8-bd-card {
+    padding: 7px 10px;
+    gap: 5px;
+    box-shadow:
+      inset 0 0 0 2px rgba(244, 169, 31, 0.65),
+      0 4px 0 #6e3b23;
+  }
+
+  .wsv8-bd-card-body {
+    flex-direction: row;
+    text-align: left;
+    align-items: center;
+    gap: 9px;
+  }
+
+  .wsv8-bd-emblem-svg {
+    width: 40px;
+    height: 40px;
+  }
+
+  .wsv8-bd-card-title {
+    font-size: 15px;
+  }
+
+  .wsv8-bd-card-sub {
+    font-size: 12.8px;
+    line-height: 1.18;
+    margin-top: 2px;
+  }
+
+  .wsv8-bd-buy-btn {
+    min-height: 48px;
+    flex-direction: row;
+    gap: 8px;
+    padding: 6px 10px;
+    font-size: 14.5px;
+  }
+
+  .wsv8-bd-nosale-btn {
+    min-height: 48px;
+    padding: 8px 14px;
+    font-size: 15px;
+  }
+}
+
+/* Ultra-Compact Mobile Landscape (`844x390`) for Bargain Desk — 0px Vertical/Horizontal Overflow! */
+@media (max-height: 500px) and (orientation: landscape) {
+  .wsv8-bd-overlay {
+    padding: 5px 10px;
+  }
+
+  .wsv8-bd-desk {
+    gap: 5px;
+  }
+
+  .wsv8-bd-header {
+    padding: 5px 12px;
+  }
+
+  .wsv8-bd-bell-svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .wsv8-bd-kicker {
+    display: none;
+  }
+
+  .wsv8-bd-headline {
+    font-size: 20px;
+  }
+
+  .wsv8-bd-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .wsv8-bd-card {
+    padding: 6px 8px;
+    gap: 4px;
+    box-shadow:
+      inset 0 0 0 2px rgba(244, 169, 31, 0.65),
+      0 4px 0 #6e3b23;
+  }
+
+  .wsv8-bd-card-body {
+    flex-direction: row;
+    text-align: left;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .wsv8-bd-emblem-svg {
+    width: 34px;
+    height: 34px;
+  }
+
+  .wsv8-bd-card-title {
+    font-size: 13.5px;
+    line-height: 1.08;
+  }
+
+  .wsv8-bd-card-sub {
+    font-size: 12px;
+    line-height: 1.14;
+    margin-top: 2px;
+  }
+
+  .wsv8-bd-buy-btn {
+    min-height: 48px;
+    padding: 5px 8px;
+    font-size: 13.5px;
+  }
+
+  .wsv8-bd-nosale-btn {
+    min-height: 48px;
+    padding: 6px 14px;
+    font-size: 14.5px;
+  }
+
+  .wst7-pyl-square.wst7-pyl-hot-gremlin .wst7-pyl-sq-top {
+    font-size: 13px;
+    line-height: 1.04;
+  }
+
+  .wst7-pyl-square.wst7-pyl-hot-gremlin .wst7-pyl-sq-sub {
+    font-size: 11px;
+    line-height: 1.04;
+    margin-top: 1px;
+  }
+}
+
+@keyframes wsv8-heat-pulse {
+  from {
+    transform: scale(0.98);
+  }
+  to {
+    transform: scale(1.04);
+  }
+}
+
+@keyframes wsv8-hot-sq-throb {
+  from {
+    filter: brightness(1);
+  }
+  to {
+    filter: brightness(1.22);
+  }
+}
+
+@keyframes wsv8-podium-boing {
+  0% {
+    opacity: 0;
+    transform: scaleY(0.2) translateY(14px);
+  }
+  52% {
+    opacity: 1;
+    transform: scaleY(1.24) scaleX(0.88) translateY(-4px);
+  }
+  76% {
+    transform: scaleY(0.9) scaleX(1.06) translateY(1px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

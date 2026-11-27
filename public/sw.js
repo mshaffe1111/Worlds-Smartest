@@ -1,12 +1,12 @@
 /* ============================================================================
- * WORLD'S SMARTEST: FIFTY MILLION WATCHING (v7.6.0 Gold Master)
+ * WORLD'S SMARTEST: FIFTY MILLION WATCHING (v8.1.0 "Sweeps Week Deluxe")
  * Subpath-Safe Offline Service Worker (`public/sw.js`)
- * Automatically purges legacy pre-v7.6 caches and guarantees network-first
+ * Automatically purges legacy pre-v8.1 caches and guarantees network-first
  * `cache: 'no-store'` freshness on `localhost` / `127.0.0.1`!
  * ============================================================================ */
 
-const SHELL_CACHE = 'ws-fifty-million-shell-v7.6.0-goldmaster-r4';
-const DATA_CACHE = 'ws-fifty-million-data-v7.6.0-goldmaster-r4';
+const SHELL_CACHE = 'ws-fifty-million-shell-v8.1.0-sweeps-deluxe';
+const DATA_CACHE = 'ws-fifty-million-data-v8.1.0-sweeps-deluxe';
 const VALID_CACHES = new Set([SHELL_CACHE, DATA_CACHE]);
 const IS_LOCALHOST =
   self.location.hostname === '127.0.0.1' || self.location.hostname === 'localhost';

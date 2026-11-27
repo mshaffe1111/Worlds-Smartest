@@ -18,7 +18,12 @@ import {
   type DailyBroadcastSaveV7,
   type DifficultyModeV7,
   type EpisodeBlueprintV7,
+  type QuestionTimerModeV8,
 } from '../contracts_v7';
+import {
+  mountQuestionTimerSelectorV8,
+  normalizeQuestionTimerModeV8,
+} from './SmartStudioCoachV8';
 import {
   CAST_PROFILES_V7,
   MAX_TRUNK_SLOTS_V7,
@@ -53,6 +58,7 @@ export interface QuickPlaySelectionV7 {
   /** Undefined when "Surprise No-Repeat Mix" is active; otherwise one of the 8 1966 Board Formats. */
   readonly preferredMode?: QuickPlayBoardModeV7;
   readonly difficultyMode?: DifficultyModeV7;
+  readonly questionTimerMode?: QuestionTimerModeV8;
 }
 
 export type DailyTileOutcomeV7 =
@@ -75,6 +81,11 @@ export interface TitleAndOnboardingCallbacksV7 {
   readonly onOpenPropShop?: () => void;
   readonly onOpenEpisodeJump?: () => void;
   readonly onToggleFullscreen?: () => void;
+  readonly onStartCouchParty?: () => void;
+  readonly onOpenCareerStats?: () => void;
+  readonly onOpenDailyTapeVault?: () => void;
+  readonly onOpenWalnutShareCard?: () => void;
+  readonly onPlayEndCredits?: () => void;
   readonly isAudioUnlocked?: () => boolean;
   readonly onRequestAudioUnlock?: () => void | Promise<void>;
   readonly onUiTapSfx?: () => void;
@@ -205,8 +216,8 @@ function buildPeacockEmblemSvg(className = 'ws66-peacock-svg'): string {
       <path d="M44 45 L44 10 C45 3 53 3 55 7 Z" fill="#7B3FE4"/>
       <path d="M44 45 L58 14 C64 8 72 11 71 17 Z" fill="#1E56C5"/>
       <path d="M44 45 L68 25 C76 22 81 29 78 34 Z" fill="#00A5B5"/>
-      <polygon points="44,24 55,36 44,48 33,36" fill="#0B1D30" stroke="#FFD966" stroke-width="2.2"/>
-      <text x="44" y="39.5" text-anchor="middle" font-family="Jost, sans-serif" font-weight="900" font-size="9.2" letter-spacing="0.06em" fill="#FFF7E6">IBC</text>
+      <polygon points="44,21 59,36 44,51 29,36" fill="#5C301B" stroke="#FFD966" stroke-width="2.2"/>
+      <text x="44" y="39" text-anchor="middle" font-family="Jost, sans-serif" font-weight="900" font-size="7.8" letter-spacing="0.04em" fill="#FFF7E6">IBC</text>
     </svg>
   `;
 }
@@ -1177,7 +1188,9 @@ export class TitleAndOnboardingControllerV7 {
   private detachAudioUnlockListeners: (() => void) | null = null;
   private selectedQuickMode: QuickPlayBoardModeV7 | 'SURPRISE_MIX' = 'SURPRISE_MIX';
   private selectedQuickDifficulty: DifficultyModeV7 = 'PRIMETIME_NORMAL';
+  private selectedQuickTimerMode: QuestionTimerModeV8 = 30;
   private hasUserChosenDifficulty = false;
+  private hasUserChosenTimer = false;
   private activeTuneInEl: HTMLDivElement | null = null;
   private activeTuneInTimerId: number | null = null;
   private activeTuneInCleanup: (() => void) | null = null;
@@ -1578,6 +1591,11 @@ export class TitleAndOnboardingControllerV7 {
       if (!this.hasUserChosenDifficulty && save.settings.difficultyMode) {
         this.selectedQuickDifficulty = save.settings.difficultyMode;
       }
+      if (!this.hasUserChosenTimer && save.settings.questionTimerMode !== undefined) {
+        this.selectedQuickTimerMode = normalizeQuestionTimerModeV8(
+          save.settings.questionTimerMode,
+        );
+      }
     }
 
     if (this.lastHubData.isAudioUnlocked === true || this.callbacks.isAudioUnlocked?.() === true) {
@@ -1829,7 +1847,47 @@ export class TitleAndOnboardingControllerV7 {
       }
     });
 
-    rail.append(quickBtn, trophiesBtn, howToBtn);
+    const couchBtn = document.createElement('button');
+    couchBtn.type = 'button';
+    couchBtn.className = 'ws66-rail-btn';
+    couchBtn.dataset.action = 'couch-party';
+    couchBtn.innerHTML = `
+      <span class="ws66-rail-title">2P COUCH</span>
+      <span class="ws66-rail-sub">PASS &amp; PLAY</span>
+    `;
+    couchBtn.addEventListener('click', () => {
+      this.callbacks.onUiTapSfx?.();
+      this.hideAll();
+      this.callbacks.onStartCouchParty?.();
+    });
+
+    const statsBtn = document.createElement('button');
+    statsBtn.type = 'button';
+    statsBtn.className = 'ws66-rail-btn';
+    statsBtn.dataset.action = 'career-stats';
+    statsBtn.innerHTML = `
+      <span class="ws66-rail-title">STATS</span>
+      <span class="ws66-rail-sub">CHARTS &amp; %</span>
+    `;
+    statsBtn.addEventListener('click', () => {
+      this.callbacks.onUiTapSfx?.();
+      this.callbacks.onOpenCareerStats?.();
+    });
+
+    const vaultArchiveBtn = document.createElement('button');
+    vaultArchiveBtn.type = 'button';
+    vaultArchiveBtn.className = 'ws66-rail-btn';
+    vaultArchiveBtn.dataset.action = 'tape-vault';
+    vaultArchiveBtn.innerHTML = `
+      <span class="ws66-rail-title">TAPE VAULT</span>
+      <span class="ws66-rail-sub">DAILY REELS</span>
+    `;
+    vaultArchiveBtn.addEventListener('click', () => {
+      this.callbacks.onUiTapSfx?.();
+      this.callbacks.onOpenDailyTapeVault?.();
+    });
+
+    rail.append(quickBtn, couchBtn, howToBtn, statsBtn, vaultArchiveBtn, trophiesBtn);
 
     // Charming Pulsing Live 1966 Orchestra Audio-Unlock Pill (vanishes immediately once unlocked!)
     let orchestraPill: HTMLButtonElement | null = null;
@@ -2082,6 +2140,20 @@ export class TitleAndOnboardingControllerV7 {
 
     diffSection.append(diffLabelRow, diffRail, diffProfileBox);
 
+    // 1b. 5-Speed Studio Question Clock Selector (NO TIMER · 90s · 45s · 30s · 15s)
+    const timerSection = document.createElement('div');
+    timerSection.className = 'ws66-qp-section';
+    mountQuestionTimerSelectorV8(timerSection, {
+      value: this.selectedQuickTimerMode,
+      showHeader: true,
+      showSummary: true,
+      onTapSfx: () => this.callbacks.onUiTapSfx?.(),
+      onChange: (nextMode) => {
+        this.selectedQuickTimerMode = nextMode;
+        this.hasUserChosenTimer = true;
+      },
+    });
+
     // 2. 1966 Board Format Picker (Surprise No-Repeat Mix Default + 8 Visual Diagram Cards)
     const fmtSection = document.createElement('div');
     fmtSection.className = 'ws66-qp-section';
@@ -2153,6 +2225,7 @@ export class TitleAndOnboardingControllerV7 {
         preferredMode:
           this.selectedQuickMode === 'SURPRISE_MIX' ? undefined : this.selectedQuickMode,
         difficultyMode: this.selectedQuickDifficulty,
+        questionTimerMode: this.selectedQuickTimerMode,
       };
       this.hideAll();
       if (this.callbacks.onQuickPlaySelected) {
@@ -2181,7 +2254,7 @@ export class TitleAndOnboardingControllerV7 {
     launchBtn.addEventListener('click', launchQuickShow);
     launchDock.appendChild(launchBtn);
 
-    scrollBody.append(diffSection, fmtSection);
+    scrollBody.append(diffSection, timerSection, fmtSection);
     sheet.append(head, scrollBody, launchDock);
     stage.appendChild(sheet);
 
@@ -3263,6 +3336,37 @@ export class TitleAndOnboardingControllerV7 {
       secondaryRow.appendChild(studioBtn);
 
       actions.append(shareBtn, secondaryRow);
+      if (this.callbacks.onOpenWalnutShareCard || this.callbacks.onPlayEndCredits) {
+        const deluxeRow = document.createElement('div');
+        deluxeRow.className = 'ws66-daily-secondary-row';
+        deluxeRow.dataset.single =
+          this.callbacks.onOpenWalnutShareCard && this.callbacks.onPlayEndCredits
+            ? 'false'
+            : 'true';
+        if (this.callbacks.onOpenWalnutShareCard) {
+          const tvPngBtn = document.createElement('button');
+          tvPngBtn.type = 'button';
+          tvPngBtn.className = 'ws66-back-btn ws66-save-exit-btn';
+          tvPngBtn.innerHTML = '<span>★ WALNUT TV CARD (PNG)</span>';
+          tvPngBtn.addEventListener('click', () => {
+            this.callbacks.onUiTapSfx?.();
+            this.callbacks.onOpenWalnutShareCard?.();
+          });
+          deluxeRow.appendChild(tvPngBtn);
+        }
+        if (this.callbacks.onPlayEndCredits) {
+          const creditsBtn = document.createElement('button');
+          creditsBtn.type = 'button';
+          creditsBtn.className = 'ws66-back-btn ws66-save-exit-btn';
+          creditsBtn.innerHTML = '<span>1966 CREDITS ▶</span>';
+          creditsBtn.addEventListener('click', () => {
+            this.callbacks.onUiTapSfx?.();
+            this.callbacks.onPlayEndCredits?.();
+          });
+          deluxeRow.appendChild(creditsBtn);
+        }
+        actions.appendChild(deluxeRow);
+      }
 
       const officialNote = document.createElement('div');
       officialNote.className = 'ws66-daily-official-note';

@@ -30,6 +30,8 @@ import {
   type AcousticInstrumentIdV7,
   type SamplePackStatsV7,
 } from './SamplePackLoaderV7';
+import { StudioVoiceBankV8 } from './StudioVoiceBankV8';
+import { CartoonFoleyAndShowpieceSfxV8 } from './CartoonFoleyAndShowpieceSfxV8';
 
 export type ShowbandSceneIdV7 = StageWorldIdV7 | 'GREEN_ROOM' | 'TRAPDOOR_BLITZ';
 
@@ -46,7 +48,7 @@ export type BandReactionKindV7 =
   | 'RIVAL_FUMBLE'
   | 'LINE_JACKPOT';
 
-export type LifelineCueKindV7 = 'FIFTY_FIFTY' | 'AUDIENCE_POLL';
+export type LifelineCueKindV7 = 'FIFTY_FIFTY' | 'AUDIENCE_POLL' | 'FREE_SWAP';
 
 export type TrophyTierAudioIdV7 = 'BRONZE' | 'SILVER' | 'GOLD' | 'PLATINUM';
 
@@ -83,9 +85,13 @@ export const DEFAULT_BROADCAST_SETTINGS_V7: Readonly<BroadcastSettingsV7> = {
   sfxVolume: 90,
   crowdVolume: 78,
   ambienceVolume: 72,
+  voiceVolume: 88,
   hapticsEnabled: true,
   reducedMotion: false,
   highContrastBadges: false,
+  questionTimerMode: 30,
+  autoPlayShowIntro: true,
+  muteAutoQuestionTips: false,
 };
 
 export const SHOWBAND_SCENE_SPECS_V7: Readonly<
@@ -380,6 +386,8 @@ function sleepMs(ms: number): Promise<void> {
 
 export class ShowbandAudioEngineV7 {
   public readonly haptics: IHapticsEngine;
+  public readonly voices: StudioVoiceBankV8;
+  public readonly showpieceFoley: CartoonFoleyAndShowpieceSfxV8;
 
   public masterBus: GainNode | null = null;
   public musicBus: GainNode | null = null;
@@ -481,6 +489,20 @@ export class ShowbandAudioEngineV7 {
     };
     this.haptics = haptics ?? new HapticsEngine();
     this.haptics.setEnabled(this.settings.hapticsEnabled);
+    this.voices = new StudioVoiceBankV8({
+      initialVolume: this.settings.voiceVolume ?? 88,
+      duckDb: -5.0,
+      onDuckMusic: (durSec, db) => {
+        const duckFactor = Math.max(0.28, Math.min(0.85, Math.pow(10, db / 20)));
+        this.duckMusicForStinger(duckFactor, durSec, 0.72);
+      },
+    });
+    this.showpieceFoley = new CartoonFoleyAndShowpieceSfxV8(
+      () => this.ctx,
+      () => this.sfxBus,
+      () => this.crowdBus,
+      this.samplePack,
+    );
 
     this.ensureAudioGraph();
     this.installAutoUnlockListeners();
@@ -704,6 +726,7 @@ export class ShowbandAudioEngineV7 {
 
     // Immediately begin streaming & decoding all 79 real studio MP3 samples in background
     void this.samplePack.loadCoreAndBackgroundAll(ctx);
+    this.voices.attachAudioGraph(ctx, preMasterSum);
 
     return ctx;
   }
@@ -1041,6 +1064,7 @@ export class ShowbandAudioEngineV7 {
           await this.waitForSamplesReady();
           this.samplesReadyCompleted = true;
         }
+        void this.voices.warmPreloadCoreCues(ctx);
 
         if (!this.isMusicRunning && !this.disposed) {
           this.startMusic();
@@ -1233,6 +1257,9 @@ export class ShowbandAudioEngineV7 {
     if (typeof next.hapticsEnabled === 'boolean') {
       this.haptics.setEnabled(next.hapticsEnabled);
     }
+    if (typeof next.voiceVolume === 'number') {
+      this.voices.setVoiceVolume(clamp(next.voiceVolume, 0, 100));
+    }
 
     const ctx = this.ensureAudioGraph();
     if (!ctx) return;
@@ -1287,6 +1314,10 @@ export class ShowbandAudioEngineV7 {
 
   public setAmbienceVolume(volume0to100: number): void {
     this.applySettings({ ambienceVolume: clamp(volume0to100, 0, 100) });
+  }
+
+  public setVoiceVolume(volume0to100: number): void {
+    this.applySettings({ voiceVolume: clamp(volume0to100, 0, 100) });
   }
 
   public getSettings(): BroadcastSettingsV7 {
@@ -5060,6 +5091,48 @@ export class ShowbandAudioEngineV7 {
       return;
     }
 
+    if (kind === 'FREE_SWAP') {
+      this.haptics.sightlineSnap();
+      this.duckMusicForStinger(0.38, 0.56, 0.34);
+
+      // Crisp cue-card slide whoosh + Solari flip + 4-note rising marimba/trumpet fresh-card chime!
+      this.playFoley('brush_sweep', now, 0.22, {
+        dest: sfx,
+        playbackRate: 1.45,
+        durationSec: 0.11,
+        pan: -0.22,
+        priority: 3,
+      });
+      this.playFoley('mechanical_clack', now + 0.06, 0.24, {
+        dest: sfx,
+        playbackRate: 1.12,
+        durationSec: 0.055,
+        pan: 0.16,
+        priority: 3,
+      });
+      const swapSemis = [0, 5, 9, 12];
+      for (let i = 0; i < swapSemis.length; i++) {
+        const at = now + 0.05 + i * 0.052;
+        const m = Math.min(MIDI_C6, root + swapSemis[i]);
+        this.playInstrument('marimba', m, at, 0.20, 0.21, {
+          dest: sfx,
+          pan: -0.20 + i * 0.14,
+          priority: 3,
+        });
+        this.playInstrument('vibraphone', m, at + 0.008, 0.26, 0.16, {
+          dest: sfx,
+          pan: 0.20 - i * 0.12,
+          priority: 2,
+        });
+      }
+      this.playFoley('typewriter_bell', now + 0.26, 0.22, {
+        dest: sfx,
+        playbackRate: 1.14,
+        priority: 3,
+      });
+      return;
+    }
+
     // AUDIENCE_POLL: Warm studio crowd voting murmur swell + rising Solari tote ticks + bell lock!
     this.haptics.peel(2);
     this.duckMusicForStinger(0.42, 1.12, 0.45);
@@ -6116,6 +6189,105 @@ export class ShowbandAudioEngineV7 {
     this.playEpisodeCeremonyFanfare(didWin);
   }
 
+  /**
+   * 1966 Network Television Opening Title Sequence Fanfare (`playBroadcastShowIntroV8`):
+   * Iconic 3-note Living Color vibraphone/glockenspiel NBC-style chime (`G4-E5-C5`)
+   * blossoming into a joyful Herb Alpert / Milton DeLugg dual-trumpet & big-band
+   * Studio 6A showtime fanfare + live 300-seat audience applause!
+   */
+  public playBroadcastShowIntroFanfare(): void {
+    this.haptics.goldResonance();
+    const ctx = this.wakeContextSync();
+    if (!ctx || !this.sfxBus) return;
+
+    this.duckMusicForStinger(0.28, 2.25, 0.85);
+    const now = ctx.currentTime;
+    const sfx = this.sfxBus;
+    const root = SHOWBAND_SCENE_SPECS_V7[this.currentScene].rootMidi + 12;
+
+    // 1. Classic 3-note "In Living Color" vibraphone + tubular bell chime (G - E - C)
+    const peacockNotes = [
+      { dt: 0.02, semi: 2, pan: -0.24 },
+      { dt: 0.28, semi: 11, pan: 0.0 },
+      { dt: 0.54, semi: 7, pan: 0.24 },
+    ];
+    for (const n of peacockNotes) {
+      const m = Math.min(MIDI_C6, root + n.semi);
+      this.playInstrument('vibraphone', m, now + n.dt, 0.65, 0.22, {
+        dest: sfx,
+        pan: n.pan,
+        priority: 3,
+      });
+      this.playInstrument('glockenspiel', m, now + n.dt + 0.008, 0.55, 0.14, {
+        dest: sfx,
+        pan: -n.pan * 0.5,
+        priority: 2,
+      });
+    }
+    this.playFoley('sleigh_sparkle', now + 0.56, 0.22, { dest: sfx, priority: 2 });
+
+    // 2. Studio 6A Crane Reveal Big-Band Brass & Trumpet Swell + Warm Applause!
+    const brassHits = [
+      { dt: 0.86, lead: 7, harm: 4, dur: 0.22 },
+      { dt: 1.06, lead: 9, harm: 5, dur: 0.22 },
+      { dt: 1.26, lead: 12, harm: 7, dur: 0.78 },
+    ];
+    for (const h of brassHits) {
+      const at = now + h.dt;
+      this.playInstrument('trumpet', Math.min(MIDI_C6, root + h.lead), at, h.dur, 0.21, {
+        dest: sfx,
+        pan: 0.20,
+        priority: 3,
+      });
+      this.playInstrument('brass', root + h.harm, at, h.dur, 0.20, {
+        dest: sfx,
+        pan: -0.20,
+        priority: 3,
+      });
+      this.playInstrument('trombone', root + h.harm - 12, at, h.dur, 0.18, {
+        dest: sfx,
+        pan: -0.26,
+        priority: 2,
+      });
+    }
+    this.playDrum('crash', now + 1.26, 0.19, { dest: sfx, pan: -0.24, durationSec: 1.2, priority: 2 });
+    this.playHammondChord([root, root + 4, root + 7, root + 9], now + 1.26, 0.95, 0.07, {
+      soulful: true,
+      fastLeslie: true,
+      keyClick: true,
+    });
+    this.playCrowd('applause_big', now + 0.92, 0.28, { durationSec: 2.6, attackSec: 0.14 });
+  }
+
+  /**
+   * Warm 1966 Prime-Time Closing Credits Sign-Off Cadence (`play1966EndCreditsV8`).
+   */
+  public playEndCreditsTheme(): void {
+    const ctx = this.wakeContextSync();
+    if (!ctx || !this.sfxBus) return;
+
+    this.duckMusicForStinger(0.42, 1.9, 0.78);
+    const now = ctx.currentTime;
+    const sfx = this.sfxBus;
+    const root = SHOWBAND_SCENE_SPECS_V7[this.currentScene].rootMidi + 12;
+
+    const signoff = [
+      { dt: 0.00, semi: 4, dur: 0.28 },
+      { dt: 0.24, semi: 7, dur: 0.28 },
+      { dt: 0.48, semi: 9, dur: 0.30 },
+      { dt: 0.74, semi: 12, dur: 1.05 },
+    ];
+    for (const s of signoff) {
+      const at = now + s.dt;
+      const m = Math.min(MIDI_C6, root + s.semi);
+      this.playInstrument('trumpet', m, at, s.dur, 0.18, { dest: sfx, pan: 0.18, priority: 3 });
+      this.playInstrument('tenor_sax', m - 5, at + 0.006, s.dur, 0.17, { dest: sfx, pan: -0.18, priority: 2 });
+      this.playInstrument('grand_piano', m, at, s.dur * 1.15, 0.15, { dest: sfx, pan: -0.08, priority: 2 });
+      this.playInstrument('strings', m, at, s.dur * 1.2, 0.13, { dest: sfx, pan: 0.26, highpassHz: 240, priority: 2 });
+    }
+    this.playCrowd('applause_warm', now + 0.18, 0.25, { durationSec: 2.8, attackSec: 0.16 });
+  }
+
   /** Episode Win / Loss Ceremony Fanfare proclaiming the 1966 Broadcast Winner! */
   public playEpisodeCeremonyFanfare(didWin: boolean): void {
     if (didWin) {
@@ -6229,6 +6401,7 @@ export class ShowbandAudioEngineV7 {
   public dispose(): void {
     if (this.disposed) return;
     this.disposed = true;
+    this.voices.stopCurrentVoice(0.015);
     this.setCensorMicHold(false, 0);
     this.stopMusic();
     this.leslieBus?.dispose();

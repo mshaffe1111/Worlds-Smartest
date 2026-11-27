@@ -123,7 +123,7 @@
   align-items: center;
   justify-content: center;
   gap: 14px;
-  background: radial-gradient(circle at 50% 50%, #10324a 0%, #081524 72%, #050d17 100%);
+  background: radial-gradient(circle at 50% 46%, #8F5231 0%, #582E18 68%, #361A0C 100%);
   animation: ws66-tunein-curtain-exit 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   overflow: hidden;
 }
@@ -221,21 +221,26 @@
     calc(var(--ws66-safe-right) + 16px)
     calc(var(--ws66-safe-bottom) + 18px)
     calc(var(--ws66-safe-left) + 16px);
-  /* Sculptural radial aperture: lets upper 3D 1966 Peacock Pavilion shine while keeping lower board tiles cleanly subdued behind UI */
+  /* Sculptural sunlit 1966 studio aperture: lets upper 3D Living Color Pavilion shine with warm amber footlight glow below */
   background:
     radial-gradient(
-      ellipse 80% 42% at 50% 20%,
-      rgba(13, 34, 56, 0.1) 0%,
-      rgba(11, 29, 48, 0.6) 56%,
-      rgba(7, 19, 34, 0.9) 100%
+      ellipse 86% 48% at 50% 18%,
+      rgba(255, 224, 148, 0.14) 0%,
+      rgba(110, 59, 35, 0.42) 60%,
+      rgba(68, 34, 16, 0.78) 100%
+    ),
+    radial-gradient(
+      ellipse 90% 34% at 50% 96%,
+      rgba(244, 169, 31, 0.24) 0%,
+      rgba(110, 59, 35, 0.52) 68%,
+      rgba(62, 30, 14, 0.82) 100%
     ),
     linear-gradient(
       180deg,
-      rgba(8, 21, 36, 0.66) 0%,
-      rgba(8, 21, 36, 0.16) 20%,
-      rgba(8, 21, 36, 0.66) 44%,
-      rgba(7, 18, 32, 0.9) 62%,
-      rgba(6, 15, 28, 0.95) 100%
+      rgba(74, 38, 19, 0.48) 0%,
+      rgba(74, 38, 19, 0.14) 22%,
+      rgba(74, 38, 19, 0.48) 50%,
+      rgba(68, 34, 17, 0.78) 100%
     );
   overflow-x: hidden;
   overflow-y: auto;
@@ -1083,21 +1088,29 @@
   transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), background 0.16s ease;
 }
 
-/* Unified Sleek Sculpted Mid-Century Brushed-Brass & Walnut Utility Console Bar */
+/* Unified Sleek Sculpted Mid-Century Brushed-Brass & Sunlit American Walnut Utility Console Bar */
 .ws66-utility-rail {
   margin-top: 4px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   border-radius: 14px;
   overflow: hidden;
-  border: 2px solid rgba(255, 217, 102, 0.72);
-  background: linear-gradient(180deg, #255275 0%, #173a57 62%, #112d45 100%);
+  border: 2px solid rgba(255, 217, 102, 0.82);
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 232, 184, 0.04) 0px,
+      rgba(255, 232, 184, 0.04) 2px,
+      rgba(44, 20, 8, 0.06) 2px,
+      rgba(44, 20, 8, 0.06) 6px
+    ),
+    linear-gradient(180deg, #864a2b 0%, #68371e 60%, #512814 100%);
   box-shadow:
     inset 0 2px 0 rgba(255, 244, 198, 0.56),
-    inset 0 -2px 0 rgba(110, 59, 35, 0.65),
-    0 5px 0 #5b2d18,
-    0 0 22px rgba(244, 169, 31, 0.26),
-    0 14px 28px rgba(4, 12, 22, 0.72);
+    inset 0 -2px 0 rgba(70, 34, 16, 0.65),
+    0 5px 0 #3f1d0d,
+    0 0 22px rgba(244, 169, 31, 0.28),
+    0 14px 28px rgba(28, 12, 4, 0.68);
 }
 
 .ws66-rail-btn {
@@ -1105,11 +1118,11 @@
   overflow: hidden;
   appearance: none;
   border: none;
-  border-right: 2px solid rgba(255, 217, 102, 0.44);
+  border-right: 1.5px solid rgba(255, 217, 102, 0.44);
   background: transparent;
   color: var(--ws66-cream-bright);
-  min-height: 58px;
-  padding: 8px 6px 10px;
+  min-height: 50px;
+  padding: 6px 5px 7px;
   cursor: pointer;
   touch-action: manipulation;
   font-family: var(--ws66-font-display);
@@ -1148,6 +1161,9 @@
 
 /* Balanced 3-Key 1966 Backlit Studio Console Deck — All 3 Keys Uniform at Rest, Glowing on Hover/Focus! */
 .ws66-rail-btn[data-action='quick-show'] .ws66-rail-sub,
+.ws66-rail-btn[data-action='couch-party'] .ws66-rail-sub,
+.ws66-rail-btn[data-action='career-stats'] .ws66-rail-sub,
+.ws66-rail-btn[data-action='tape-vault'] .ws66-rail-sub,
 .ws66-rail-btn[data-action='trophies-sound'] .ws66-rail-sub,
 .ws66-rail-btn[data-action='how-to-play'] .ws66-rail-sub {
   color: var(--ws66-gold-bright);
@@ -1171,6 +1187,18 @@
   background: var(--ws66-gold-bright);
 }
 
+.ws66-rail-btn[data-action='couch-party']::after {
+  background: #ff6b35;
+}
+
+.ws66-rail-btn[data-action='career-stats']::after {
+  background: var(--ws66-peacock-bright);
+}
+
+.ws66-rail-btn[data-action='tape-vault']::after {
+  background: #ffd166;
+}
+
 .ws66-rail-btn[data-action='how-to-play']::after {
   background: var(--ws66-peacock-bright);
 }
@@ -1179,8 +1207,13 @@
   background: var(--ws66-cerise);
 }
 
+.ws66-rail-btn:nth-child(3n),
 .ws66-rail-btn:last-child {
   border-right: none;
+}
+
+.ws66-rail-btn:nth-child(-n + 3) {
+  border-bottom: 1.5px solid rgba(255, 217, 102, 0.42);
 }
 
 .ws66-rail-btn:hover,
@@ -3260,8 +3293,8 @@
 
 /* Quick-Play Format & CPU Difficulty Broadcast Setup Sheet */
 .ws66-quickplay-sheet {
-  width: min(780px, 100%);
-  max-height: calc(100dvh - 24px);
+  width: min(860px, 100%);
+  max-height: calc(100dvh - 18px);
   margin: auto;
   border-radius: 20px;
   overflow: hidden;
@@ -3271,14 +3304,14 @@
   flex-direction: column;
   box-shadow:
     0 9px 0 var(--ws66-walnut-dark),
-    0 26px 60px rgba(3, 10, 20, 0.88);
+    0 26px 60px rgba(38, 18, 8, 0.65);
   animation: ws66-card-flip-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
   flex-shrink: 0;
 }
 
 .ws66-quickplay-head {
-  padding: 13px 20px;
-  background: linear-gradient(115deg, var(--ws66-cobalt-deep) 0%, var(--ws66-peacock) 72%, #19a399 100%);
+  padding: 10px 18px;
+  background: linear-gradient(115deg, #007785 0%, var(--ws66-peacock) 62%, #19a399 100%);
   color: var(--ws66-cream-bright);
   display: flex;
   align-items: center;
@@ -3296,18 +3329,18 @@
 .ws66-quickplay-title {
   margin: 0;
   font-family: var(--ws66-font-show);
-  font-size: clamp(23px, 5vw, 31px);
+  font-size: clamp(22px, 4.4vw, 28px);
   font-weight: 400;
   line-height: 1.04;
   color: var(--ws66-cream-bright);
-  text-shadow: 0 2px 0 rgba(10, 22, 38, 0.45);
+  text-shadow: 0 2px 0 rgba(58, 28, 12, 0.45);
 }
 
 .ws66-quickplay-body {
-  padding: 14px 18px 14px;
+  padding: 9px 16px 9px;
   display: flex;
   flex-direction: column;
-  gap: 13px;
+  gap: 8px;
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
@@ -3317,7 +3350,7 @@
 .ws66-qp-section {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 5px;
 }
 
 .ws66-qp-section-head {
@@ -3334,7 +3367,7 @@
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--ws66-navy-studio);
+  color: #5C301B;
 }
 
 .ws66-qp-subdesc {
@@ -3345,35 +3378,38 @@
 }
 
 .ws66-qp-acc-pill {
-  padding: 2px 10px;
+  padding: 3px 11px;
   border-radius: 999px;
-  background: var(--ws66-navy-studio);
-  color: var(--ws66-gold-bright);
+  background: linear-gradient(180deg, #7B4227 0%, #582C17 100%);
+  border: 1.5px solid #D9A441;
+  color: #FFE48F;
   font-family: var(--ws66-font-display);
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 900;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
-/* 4-Segment Illuminated Studio Difficulty Switchbar */
+/* 4-Segment Sunlit Walnut & Ivory Studio Difficulty Switchbar */
 .ws66-qp-diff-rail {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--ws66-navy-studio);
+  gap: 7px;
+  padding: 6px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #EFE3C9 0%, #E3D2B1 100%);
+  border: 2px solid #D5AE5C;
   box-shadow:
-    inset 0 2px 0 rgba(255, 224, 130, 0.28),
-    0 4px 0 #071320;
+    inset 0 1px 0 #FFFDF7,
+    0 3px 8px rgba(110, 59, 35, 0.12);
 }
 
 .ws66-qp-diff-btn {
   appearance: none;
-  border: none;
-  border-right: 2px solid rgba(255, 247, 230, 0.14);
-  background: transparent;
-  color: var(--ws66-cream);
+  border: 1.5px solid #C9A45C;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #FFFDF7 0%, #F4E8CD 100%);
+  color: #3A2416;
   cursor: pointer;
   touch-action: manipulation;
   min-height: 48px;
@@ -3383,31 +3419,37 @@
   font-weight: 900;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  transition: background 0.14s ease, color 0.14s ease;
+  box-shadow: 0 2px 0 rgba(110, 59, 35, 0.2);
+  transition: background 0.14s ease, color 0.14s ease, transform 0.1s ease;
 }
 
 .ws66-qp-diff-btn:last-child {
-  border-right: none;
+  border-right: 1.5px solid #C9A45C;
 }
 
 .ws66-qp-diff-btn:hover,
 .ws66-qp-diff-btn:focus-visible {
-  background: rgba(25, 191, 208, 0.22);
-  color: var(--ws66-gold-bright);
+  background: #FFF9E6;
+  border-color: #008B94;
+  color: #006E76;
   outline: none;
 }
 
 .ws66-qp-diff-btn[data-active='true'] {
-  background: linear-gradient(180deg, var(--ws66-gold-bright) 0%, var(--ws66-gold) 100%);
-  color: var(--ws66-ink);
-  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.72);
+  background: linear-gradient(180deg, #FFE27D 0%, #F2A922 100%);
+  border-color: #A86A08;
+  color: #141B29;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.8),
+    0 3px 0 #8E5805;
 }
 
 /* Honest CPU Mind-Game Profile Callout Strip */
 .ws66-qp-diff-profile {
   padding: 8px 12px;
   border-radius: 10px;
-  background: #fff9ec;
+  background: #FFFDF7;
+  border: 1.5px solid #E3CFA4;
   border-left: 5px solid var(--ws66-peacock);
   color: var(--ws66-ink);
   font-family: var(--ws66-font-body);
@@ -3419,23 +3461,23 @@
 /* Featured Surprise No-Repeat Mix Button with Mini Kaleidoscope Emblem */
 .ws66-qp-surprise-btn {
   appearance: none;
-  border: none;
+  border: 2px solid #C9A45C;
   cursor: pointer;
   touch-action: manipulation;
   width: 100%;
-  min-height: 58px;
-  padding: 9px 14px;
-  border-radius: 13px;
-  background: linear-gradient(180deg, #163d5a 0%, #0d253a 100%);
+  min-height: 48px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #7C4328 0%, #562B16 100%);
   color: var(--ws66-cream-bright);
   display: flex;
   align-items: center;
   justify-content: flex-start;
   text-align: left;
-  gap: 12px;
+  gap: 10px;
   box-shadow:
-    inset 0 2px 0 rgba(196, 248, 255, 0.34),
-    0 4px 0 #071320;
+    inset 0 1px 0 rgba(255, 236, 189, 0.35),
+    0 3px 0 #3A1B0C;
   transition: transform 0.12s ease, background 0.14s ease, box-shadow 0.14s ease;
 }
 
@@ -3493,7 +3535,7 @@
 .ws66-qp-format-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 9px;
+  gap: 6px;
 }
 
 .ws66-qp-format-btn {
@@ -3501,17 +3543,17 @@
   border: none;
   cursor: pointer;
   touch-action: manipulation;
-  min-height: 68px;
-  padding: 9px 11px;
-  border-radius: 12px;
+  min-height: 50px;
+  padding: 6px 10px;
+  border-radius: 11px;
   background: #ede2cc;
   color: var(--ws66-ink);
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 10px;
+  gap: 9px;
   text-align: left;
-  box-shadow: 0 3px 0 rgba(18, 26, 43, 0.22);
+  box-shadow: 0 2px 0 rgba(110, 59, 35, 0.2);
   transition: transform 0.1s ease, background 0.14s ease, color 0.14s ease, box-shadow 0.14s ease;
 }
 
@@ -3603,9 +3645,9 @@
 
 /* Sticky Bottom Launch Dock */
 .ws66-qp-launch-dock {
-  padding: 12px 18px 14px;
+  padding: 8px 16px 10px;
   background: linear-gradient(180deg, #ede1c9 0%, #e2d3b4 100%);
-  border-top: 2px solid rgba(18, 26, 43, 0.14);
+  border-top: 2px solid rgba(110, 59, 35, 0.18);
   flex-shrink: 0;
 }
 
@@ -3916,11 +3958,11 @@
   box-shadow: 0 0 12px rgba(255, 217, 102, 0.85);
 }
 
-/* Segmented 3-Tab Studio Console Strip */
+/* Segmented 3-Tab Sunlit Walnut Studio Console Strip */
 .ws66-vault-tabs {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  background: #0d2238;
+  background: linear-gradient(180deg, #6E3B23 0%, #4E2714 100%);
   border-bottom: 3px solid var(--ws66-gold);
   flex-shrink: 0;
 }
@@ -4002,22 +4044,22 @@
 }
 
 .ws66-vault-filter-btn[data-active='true'] {
-  background: #0d2238;
+  background: linear-gradient(180deg, #7C4328 0%, #562B16 100%);
   border-color: var(--ws66-gold);
   color: var(--ws66-gold-bright);
-  box-shadow: 0 3px 0 rgba(11, 24, 40, 0.35);
+  box-shadow: 0 3px 0 rgba(74, 36, 18, 0.35);
 }
 
 .ws66-vault-3d-banner {
   appearance: none;
-  border: none;
+  border: 2px solid #D9A441;
   cursor: pointer;
   touch-action: manipulation;
   width: 100%;
   min-height: 56px;
   padding: 11px 16px;
   border-radius: 13px;
-  background: linear-gradient(90deg, #0d2a48 0%, #007d8c 65%, #0d2a48 100%);
+  background: linear-gradient(90deg, #6E3B23 0%, #008B94 55%, #6E3B23 100%);
   color: var(--ws66-cream-bright);
   display: flex;
   align-items: center;
@@ -4026,7 +4068,7 @@
   text-align: left;
   box-shadow:
     inset 0 2px 0 rgba(255, 244, 198, 0.45),
-    0 4px 0 #07192b;
+    0 4px 0 #3E1E0F;
   transition: transform 0.12s ease, filter 0.14s ease;
 }
 
@@ -4423,14 +4465,14 @@
 
 .ws66-mode-play-btn {
   appearance: none;
-  border: none;
+  border: 1.5px solid #D9A441;
   cursor: pointer;
   touch-action: manipulation;
   min-height: 48px;
   width: 100%;
   padding: 6px 10px;
   border-radius: 10px;
-  background: #0d2238;
+  background: linear-gradient(180deg, #7C4328 0%, #562B16 100%);
   color: var(--ws66-gold-bright);
   font-family: var(--ws66-font-display);
   font-size: 14px;

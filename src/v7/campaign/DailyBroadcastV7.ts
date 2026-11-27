@@ -21,7 +21,9 @@ import {
   type BoardUnlockTopologyV7,
   type CategoryIdV7,
   type ClassicTvTileTwistV7,
+  type DailyArchiveEntryV8,
   type DailyBroadcastSaveV7,
+  type DailyPercentileRankV8,
   type DomainIdV7,
   type EpisodeBlueprintV7,
   type RivalIdV7,
@@ -52,6 +54,7 @@ export interface DailyBroadcastBlueprintV7 extends EpisodeBlueprintV7 {
   readonly boardPlayMode: BoardPlayModeV7; // Deterministic 8-mode rotation
   readonly unlockTopology: BoardUnlockTopologyV7; // Deterministic 5-topology rotation
   readonly comboKey: string; // `${boardPlayMode}::${unlockTopology}` (40 unique combos!)
+  readonly stageBanner: string; // e.g. "Studio 6A Living Color Matinee"
 }
 
 export interface FormatDailyShareCardInputV7 {
@@ -436,7 +439,21 @@ export function getTodayBroadcastBlueprintV7(
     boardPlayMode,
     unlockTopology,
     comboKey,
+    stageBanner: showcase.bannerTitle,
   };
+}
+
+/** Deterministic blueprint builder accepting either a `Date` or `YYYY-MM-DD` string for any Today or Archive Tape date. */
+export function buildDailyBroadcastBlueprintV7(
+  dateOrIso: Date | string = new Date(),
+): DailyBroadcastBlueprintV7 {
+  const dateIso =
+    typeof dateOrIso === 'string'
+      ? parseStrictIsoParts(dateOrIso)
+        ? dateOrIso.trim()
+        : getLocalDateIsoV7()
+      : getLocalDateIsoV7(dateOrIso);
+  return getTodayBroadcastBlueprintV7(dateIso);
 }
 
 /** Audits deterministic Daily Broadcast coverage across all 12 boards, 24 Champions & 40 (8×5) mode×topology combos. */
@@ -608,10 +625,75 @@ function sanitizeTodayResult(
   };
 }
 
-function readRawSaveFromStorage(): PersistedDailyBroadcastSaveV7 | null {
+function getStorageBackend(): Storage | null {
   try {
     if (typeof window !== 'undefined' && window.localStorage) {
-      const raw = window.localStorage.getItem(DAILY_BROADCAST_STORAGE_KEY_V7);
+      return window.localStorage;
+    }
+    const g = globalThis as { localStorage?: Storage };
+    if (g && g.localStorage) {
+      return g.localStorage;
+    }
+  } catch {
+    // Ignore storage access errors in sandboxed/private contexts
+  }
+  return null;
+}
+
+function sanitizeArchiveResults(
+  rawArchive: unknown,
+): DailyBroadcastSaveV7['archiveResults'] | undefined {
+  if (!rawArchive || typeof rawArchive !== 'object' || Array.isArray(rawArchive)) {
+    return undefined;
+  }
+  const src = rawArchive as Record<string, unknown>;
+  const cleaned: Record<
+    string,
+    {
+      readonly dailyNumber: number;
+      readonly playerCash: number;
+      readonly rivalCash: number;
+      readonly won: boolean;
+      readonly playedAtIso: string;
+    }
+  > = {};
+  let count = 0;
+  for (const [dateKey, val] of Object.entries(src)) {
+    const trimmedKey = dateKey.trim();
+    if (!parseStrictIsoParts(trimmedKey)) continue;
+    if (!val || typeof val !== 'object' || Array.isArray(val)) continue;
+    const item = val as Record<string, unknown>;
+    if (
+      typeof item.dailyNumber !== 'number' ||
+      !Number.isFinite(item.dailyNumber) ||
+      typeof item.playerCash !== 'number' ||
+      !Number.isFinite(item.playerCash) ||
+      typeof item.rivalCash !== 'number' ||
+      !Number.isFinite(item.rivalCash) ||
+      typeof item.won !== 'boolean'
+    ) {
+      continue;
+    }
+    cleaned[trimmedKey] = {
+      dailyNumber: Math.max(1, Math.floor(item.dailyNumber)),
+      playerCash: Math.max(0, Math.round(item.playerCash)),
+      rivalCash: Math.max(0, Math.round(item.rivalCash)),
+      won: item.won,
+      playedAtIso:
+        typeof item.playedAtIso === 'string' && item.playedAtIso.trim().length > 0
+          ? item.playedAtIso.trim()
+          : `${trimmedKey}T12:00:00.000Z`,
+    };
+    count += 1;
+  }
+  return count > 0 ? cleaned : undefined;
+}
+
+function readRawSaveFromStorage(): PersistedDailyBroadcastSaveV7 | null {
+  try {
+    const storage = getStorageBackend();
+    if (storage) {
+      const raw = storage.getItem(DAILY_BROADCAST_STORAGE_KEY_V7);
       if (!raw) return memoryFallbackSave;
       const parsed = JSON.parse(raw) as Partial<PersistedDailyBroadcastSaveV7> | null;
       if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
@@ -626,6 +708,7 @@ function readRawSaveFromStorage(): PersistedDailyBroadcastSaveV7 | null {
       const gamesPlayed = sanitizeDailyNonNegInt(parsed.gamesPlayed, 0);
       const gamesWon = Math.min(gamesPlayed, sanitizeDailyNonNegInt(parsed.gamesWon, 0));
       const todayResult = sanitizeTodayResult(parsed.todayResult, currentStreak);
+      const archiveResults = sanitizeArchiveResults(parsed.archiveResults);
       const hasPreTodayStreakBase =
         typeof parsed.preTodayStreakBase === 'number' && Number.isFinite(parsed.preTodayStreakBase);
       const hasPreTodayBestBase =
@@ -638,6 +721,7 @@ function readRawSaveFromStorage(): PersistedDailyBroadcastSaveV7 | null {
         gamesPlayed,
         gamesWon,
         ...(todayResult ? { todayResult } : {}),
+        ...(archiveResults ? { archiveResults } : {}),
         ...(hasPreTodayStreakBase
           ? { preTodayStreakBase: Math.max(0, Math.floor(parsed.preTodayStreakBase!)) }
           : {}),
@@ -655,8 +739,9 @@ function readRawSaveFromStorage(): PersistedDailyBroadcastSaveV7 | null {
 function writeSaveToStorage(save: PersistedDailyBroadcastSaveV7): void {
   memoryFallbackSave = save;
   try {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      window.localStorage.setItem(DAILY_BROADCAST_STORAGE_KEY_V7, JSON.stringify(save));
+    const storage = getStorageBackend();
+    if (storage) {
+      storage.setItem(DAILY_BROADCAST_STORAGE_KEY_V7, JSON.stringify(save));
     }
   } catch {
     // Ignore quota / private-mode errors; memoryFallbackSave stays current
@@ -693,6 +778,7 @@ export function getDailyBroadcastSaveV7(
     gamesPlayed: raw.gamesPlayed,
     gamesWon: raw.gamesWon,
     ...(todayResult ? { todayResult } : {}),
+    ...(raw.archiveResults ? { archiveResults: raw.archiveResults } : {}),
   };
 }
 
@@ -818,6 +904,7 @@ export function recordDailyBroadcastCompletionV7(
       tileHistory: cleanHistory,
       shareText,
     },
+    ...(rawStored?.archiveResults ? { archiveResults: rawStored.archiveResults } : {}),
   };
 
   writeSaveToStorage(persisted);
@@ -828,7 +915,262 @@ export function recordDailyBroadcastCompletionV7(
     gamesPlayed: persisted.gamesPlayed,
     gamesWon: persisted.gamesWon,
     todayResult: persisted.todayResult,
+    ...(persisted.archiveResults ? { archiveResults: persisted.archiveResults } : {}),
   };
+}
+
+// ============================================================================
+// v8.0 "SWEEPS WEEK DELUXE" — BROADCAST TAPE ARCHIVE & PERCENTILE BELL-CURVE
+// ============================================================================
+
+export interface RecordArchiveDailyInputV8 {
+  readonly dateIso: string;
+  readonly episodeNumber: number;
+  readonly playerCash: number;
+  readonly rivalCash: number;
+  readonly won: boolean;
+  readonly tileHistory: readonly DailyTileHistoryTokenV7[];
+}
+
+export interface ComputeDailyPercentileInputV8 {
+  readonly dailyNumber: number;
+  readonly playerCash: number;
+  readonly rivalCash: number;
+  readonly won: boolean;
+}
+
+/**
+ * Builds Today + past Daily Broadcast Tape Vault entries (`#1..#Today`, newest first),
+ * deterministically reproducing every past date's exact Stage, Board Mode, and Champion.
+ */
+export function buildDailyArchiveCatalogV8(
+  maxRecentDays: number = 30,
+  refDate: Date = new Date(),
+): readonly DailyArchiveEntryV8[] {
+  const safeRef =
+    refDate instanceof Date && !Number.isNaN(refDate.getTime()) ? refDate : new Date();
+  const todayIso = getLocalDateIsoV7(safeRef);
+  const todayNumber = computeDailyEpisodeNumberV7(todayIso);
+  const clampedDays = Number.isFinite(maxRecentDays)
+    ? Math.max(1, Math.min(todayNumber, Math.floor(maxRecentDays)))
+    : Math.min(todayNumber, 30);
+
+  const save = getDailyBroadcastSaveV7(todayIso);
+  const entries: DailyArchiveEntryV8[] = [];
+
+  for (let offset = 0; offset < clampedDays; offset += 1) {
+    const dayDate = new Date(
+      safeRef.getFullYear(),
+      safeRef.getMonth(),
+      safeRef.getDate() - offset,
+      12,
+      0,
+      0,
+    );
+    const bp = buildDailyBroadcastBlueprintV7(dayDate);
+    const isToday = offset === 0;
+    const officialMatch =
+      isToday && save.todayResult && save.todayResult.dateIso === bp.dateIso
+        ? save.todayResult
+        : undefined;
+    const archiveMatch = save.archiveResults?.[bp.dateIso];
+
+    entries.push({
+      dailyNumber: bp.dailyNumber,
+      dateIso: bp.dateIso,
+      displayDateShort: bp.displayDateShort,
+      rivalId: bp.rivalId,
+      stageId: bp.stageId,
+      boardPlayMode: bp.boardPlayMode,
+      isToday,
+      ...(officialMatch
+        ? {
+            officialTodayCash: officialMatch.playerCash,
+            officialTodayWon: officialMatch.won,
+          }
+        : {}),
+      ...(archiveMatch
+        ? {
+            archiveReplayCash: archiveMatch.playerCash,
+            archiveReplayWon: archiveMatch.won,
+          }
+        : {}),
+    });
+  }
+
+  return entries;
+}
+
+/**
+ * Records a Past-Show Archive Tape completion (or streak-safe same-day replay) ONLY into
+ * `save.archiveResults[dateIso]`.
+ *
+ * STRICT INVARIANT: NEVER mutates `currentStreak`, `bestStreak`, `lastPlayedDateIso`,
+ * `gamesPlayed`, `gamesWon`, or official `todayResult`!
+ */
+export function recordArchiveDailyResultV8(
+  input: RecordArchiveDailyInputV8,
+): DailyBroadcastSaveV7 {
+  const safeDateIso = parseStrictIsoParts(input.dateIso)
+    ? input.dateIso.trim()
+    : getLocalDateIsoV7();
+  const dailyNumber =
+    typeof input.episodeNumber === 'number' &&
+    Number.isFinite(input.episodeNumber) &&
+    input.episodeNumber >= 1
+      ? Math.floor(input.episodeNumber)
+      : computeDailyEpisodeNumberV7(safeDateIso);
+  const cleanPlayerCash = Number.isFinite(input.playerCash)
+    ? Math.max(0, Math.round(input.playerCash))
+    : 0;
+  const cleanRivalCash = Number.isFinite(input.rivalCash)
+    ? Math.max(0, Math.round(input.rivalCash))
+    : 0;
+  const cleanWon = Boolean(input.won);
+
+  const rawStored = readRawSaveFromStorage();
+  const prevArchive = rawStored?.archiveResults ?? {};
+  const nextArchiveResults: NonNullable<DailyBroadcastSaveV7['archiveResults']> = {
+    ...prevArchive,
+    [safeDateIso]: {
+      dailyNumber,
+      playerCash: cleanPlayerCash,
+      rivalCash: cleanRivalCash,
+      won: cleanWon,
+      playedAtIso: new Date().toISOString(),
+    },
+  };
+
+  const persisted: PersistedDailyBroadcastSaveV7 = {
+    lastPlayedDateIso: rawStored?.lastPlayedDateIso ?? '',
+    currentStreak: rawStored?.currentStreak ?? 0,
+    bestStreak: rawStored?.bestStreak ?? 0,
+    gamesPlayed: rawStored?.gamesPlayed ?? 0,
+    gamesWon: rawStored?.gamesWon ?? 0,
+    ...(rawStored?.todayResult ? { todayResult: rawStored.todayResult } : {}),
+    ...(typeof rawStored?.preTodayStreakBase === 'number'
+      ? { preTodayStreakBase: rawStored.preTodayStreakBase }
+      : {}),
+    ...(typeof rawStored?.preTodayBestStreakBase === 'number'
+      ? { preTodayBestStreakBase: rawStored.preTodayBestStreakBase }
+      : {}),
+    archiveResults: nextArchiveResults,
+  };
+
+  writeSaveToStorage(persisted);
+
+  return {
+    lastPlayedDateIso: persisted.lastPlayedDateIso,
+    currentStreak: persisted.currentStreak,
+    bestStreak: persisted.bestStreak,
+    gamesPlayed: persisted.gamesPlayed,
+    gamesWon: persisted.gamesWon,
+    ...(persisted.todayResult ? { todayResult: persisted.todayResult } : {}),
+    archiveResults: nextArchiveResults,
+  };
+}
+
+/** Smooth Abramowitz-Stegun normal CDF (`0..1`) strictly monotonic in `z`. */
+function standardNormalCdfV8(z: number): number {
+  if (!Number.isFinite(z)) return 0.5;
+  if (z <= -8) return 0;
+  if (z >= 8) return 1;
+  const sign = z < 0 ? -1 : 1;
+  const x = Math.abs(z) / Math.SQRT2;
+  const t = 1 / (1 + 0.3275911 * x);
+  const poly =
+    ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t +
+      0.254829592) *
+    t;
+  const erf = 1 - poly * Math.exp(-x * x);
+  return 0.5 * (1 + sign * erf);
+}
+
+/**
+ * Computes a smooth, deterministic Studio 6A Audience Percentile & Rank Seal
+ * anchored around `rivalCash` and typical 6-turn scores (`$1,200..$4,800+`).
+ * Strictly monotonic non-decreasing with `playerCash`.
+ */
+export function computeDailyPercentileRankV8(
+  opts: ComputeDailyPercentileInputV8,
+): DailyPercentileRankV8 {
+  const dailyNum =
+    typeof opts.dailyNumber === 'number' && Number.isFinite(opts.dailyNumber)
+      ? Math.max(1, Math.floor(opts.dailyNumber))
+      : 1;
+  const playerCash =
+    typeof opts.playerCash === 'number' && Number.isFinite(opts.playerCash)
+      ? Math.max(0, opts.playerCash)
+      : 0;
+  const rivalCash =
+    typeof opts.rivalCash === 'number' && Number.isFinite(opts.rivalCash)
+      ? Math.max(600, Math.min(3600, opts.rivalCash))
+      : 1650;
+
+  // Deterministic +/- $60 daily audience difficulty micro-anchor so each broadcast feels alive
+  const dailyMicroAnchor = (((dailyNum * 37 + 3) % 11) - 5) * 12;
+  const audienceMedianCash = 0.62 * rivalCash + 520 + dailyMicroAnchor;
+  const audienceSigmaCash = 900;
+  const victoryLift = opts.won ? 110 : 0;
+
+  const z = (playerCash + victoryLift - audienceMedianCash) / audienceSigmaCash;
+  const rawPct = Math.round(standardNormalCdfV8(z) * 100);
+  const percentile = Math.max(5, Math.min(99, rawPct));
+
+  if (percentile >= 98) {
+    return {
+      percentile,
+      topPercentLabel: 'TOP 2%',
+      rankTitle: 'NETWORK SOVEREIGN',
+      badgeColorHex: '#FFD166',
+      studioNote: `Outscored ${percentile}% of Studio 6A viewers on Broadcast #${dailyNum}!`,
+    };
+  }
+  if (percentile >= 90) {
+    return {
+      percentile,
+      topPercentLabel: 'TOP 10%',
+      rankTitle: 'EXECUTIVE PRODUCER',
+      badgeColorHex: '#00B4C6',
+      studioNote: `Top-decile coast-to-coast tote finish (${percentile}th percentile)!`,
+    };
+  }
+  if (percentile >= 75) {
+    return {
+      percentile,
+      topPercentLabel: 'TOP 25%',
+      rankTitle: 'RETURNING CHAMPION',
+      badgeColorHex: '#FF6B35',
+      studioNote: `Beat ${percentile}% of today’s national television audience!`,
+    };
+  }
+  if (percentile >= 50) {
+    return {
+      percentile,
+      topPercentLabel: 'TOP 50%',
+      rankTitle: 'PRIME-TIME CONTENDER',
+      badgeColorHex: '#1E56C5',
+      studioNote: `Upper-half Studio 6A finish (${percentile}th percentile) on #${dailyNum}!`,
+    };
+  }
+  return {
+    percentile,
+    topPercentLabel: 'TOP 75%',
+    rankTitle: 'STUDIO CHALLENGER',
+    badgeColorHex: '#E6397A',
+    studioNote: `Certified Studio 6A challenger card on Broadcast #${dailyNum}!`,
+  };
+}
+
+/** Resets in-memory Daily Broadcast fallback (plus storage if present) for isolated unit testing. */
+export function resetDailyBroadcastSaveForTestV8(): void {
+  memoryFallbackSave = null;
+  try {
+    const storage = getStorageBackend();
+    storage?.removeItem(DAILY_BROADCAST_STORAGE_KEY_V7);
+  } catch {
+    // Ignore
+  }
 }
 
 /** Shares the spoiler-free retro TV card via native Web Share sheet on mobile/tablet or copies cleanly to clipboard. */

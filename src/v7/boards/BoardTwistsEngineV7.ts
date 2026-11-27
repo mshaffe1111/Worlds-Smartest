@@ -433,6 +433,16 @@ export type ConcentrationPrizeKindV7 =
   | 'HAWAII_TRIP'
   | 'TAKE_STEAL';
 
+export const CONCENTRATION_PRIZE_NAMES_V7: Record<
+  Exclude<ConcentrationPrizeKindV7, 'NONE'>,
+  string
+> = {
+  COLOR_TV: '📺 1966 COLOR TV',
+  CONVERTIBLE: '🚗 CONVERTIBLE',
+  HAWAII_TRIP: '🌴 HAWAII TRIP',
+  TAKE_STEAL: '⚡ TAKE! STEAL',
+};
+
 export interface BoardModePostClaimResultV7 {
   readonly mode: BoardPlayModeV7;
   readonly bonusCash: number;
@@ -442,6 +452,7 @@ export interface BoardModePostClaimResultV7 {
   readonly highlightedTileIndices?: readonly number[];
   readonly earnedGremlinSpins?: number;
   readonly triggerBigWheel?: boolean;
+  readonly matchedPrize?: string;
 }
 
 export interface BoardModeRuleBannerV7 {
@@ -796,7 +807,11 @@ export function evaluateCpuTurnOutcomeV7(input: CpuTurnRollInputV7): CpuTurnRoll
       break;
     }
     case 'ICE_VEINED': {
-      if (input.turnNumber >= 8) {
+      if (input.cpuTiltTurnsRemaining > 0) {
+        threshold -= 0.03;
+        lockInDwellMs = 540;
+        demeanorTag = 'FROSTY COMPOSURE';
+      } else if (input.turnNumber >= 8) {
         threshold += 0.08;
         lockInDwellMs = 640;
         demeanorTag = 'ICE-VEINED CLUTCH';
@@ -821,7 +836,7 @@ export function evaluateCpuTurnOutcomeV7(input: CpuTurnRollInputV7): CpuTurnRoll
         lockInDwellMs = 520;
         demeanorTag = 'SPOTLIGHT SHOWBOAT!';
       } else {
-        threshold -= 0.05;
+        threshold -= 0.02;
         lockInDwellMs = 380;
         demeanorTag = 'FLASHY SNAP';
       }
@@ -846,12 +861,12 @@ export function evaluateCpuTurnOutcomeV7(input: CpuTurnRollInputV7): CpuTurnRoll
   const minFloor = diffMode === 'MATINEE_EASY' ? 0.22 : 0.28;
   const maxCeil =
     diffMode === 'MATINEE_EASY'
-      ? 0.72
+      ? 0.74
       : diffMode === 'PRIMETIME_NORMAL'
-        ? 0.85
+        ? 0.9
         : diffMode === 'ALLSTAR_HARD'
-          ? 0.9
-          : 0.96;
+          ? 0.94
+          : 0.97;
   const clampedThreshold = clamp(threshold, minFloor, maxCeil);
   const scored = input.deterministicRoll01 < clampedThreshold;
 
@@ -862,6 +877,9 @@ export function evaluateCpuTurnOutcomeV7(input: CpuTurnRollInputV7): CpuTurnRoll
     demeanorTag,
   };
 }
+
+export const computeRivalAccuracy = evaluateCpuTurnOutcomeV7;
+export const computeRivalAccuracyV7 = evaluateCpuTurnOutcomeV7;
 
 export class BoardTwistsEngineV7 {
   private static pendingMatchOverrides: StagedMatchBoardOverridesV7 | null = null;
@@ -885,6 +903,7 @@ export class BoardTwistsEngineV7 {
   private eyeGuessBadges = new Map<number, EyeGuessHiddenBadgeV7>();
   private concentrationPrizes = new Map<number, ConcentrationPrizeKindV7>();
   private revealedConcentrationTiles = new Set<number>();
+  private concentrationTileClaimer = new Map<number, 'PLAYER' | 'RIVAL'>();
   private awardedPrizePackages = new Set<ConcentrationPrizeKindV7>();
   private awardedTicTacLines = new Set<string>();
   private coastToCoastAwarded = false;
@@ -974,6 +993,7 @@ export class BoardTwistsEngineV7 {
       this.eyeGuessBadges.clear();
       this.concentrationPrizes.clear();
       this.revealedConcentrationTiles.clear();
+      this.concentrationTileClaimer.clear();
       this.awardedPrizePackages.clear();
       this.awardedTicTacLines.clear();
       this.coastToCoastAwarded = false;
@@ -1173,7 +1193,9 @@ export class BoardTwistsEngineV7 {
     this.mysteryCurtainNumbers.clear();
     this.mysteryCashAmounts.clear();
 
-    // Reset all tiles to clean classic 4-option defaults first
+    // Reset all tiles to clean classic 4-option defaults first (preserving uncovered Concentration prizes across Act II re-rack!)
+    const preserveConcentration =
+      waveNumber > 1 && this.getActivePlayMode() === 'CONCENTRATION_PRIZE_MATCH';
     for (const tile of tiles) {
       tile.tvTwist = 'NONE';
       tile.isVaultLocked = false;
@@ -1181,6 +1203,9 @@ export class BoardTwistsEngineV7 {
       tile.keyholderProtectedTurns = 0;
       tile.blindCategoryHidden = false;
       tile.mysteryCashHidden = false;
+      if (!preserveConcentration) {
+        tile.revealedConcentrationPrize = undefined;
+      }
     }
 
     const playable = tiles.filter((t) => t.state === 'OPEN' || t.state === 'BLITZ_SURVIVOR');
@@ -1711,11 +1736,10 @@ export class BoardTwistsEngineV7 {
 
   private seedBoardPlayModeState(tiles: BoardTileNodeV7[], waveNumber: number): void {
     this.eyeGuessBadges.clear();
-    this.concentrationPrizes.clear();
-    this.revealedConcentrationTiles.clear();
-    this.awardedPrizePackages.clear();
     this.awardedTicTacLines.clear();
-    this.coastToCoastAwarded = false;
+    if (waveNumber <= 1) {
+      this.coastToCoastAwarded = false;
+    }
 
     const playMode = this.getActivePlayMode();
     const playable = tiles.filter((t) => t.state === 'OPEN' || t.state === 'BLITZ_SURVIVOR');
@@ -1743,6 +1767,32 @@ export class BoardTwistsEngineV7 {
         this.eyeGuessBadges.set(eyeOrder[i].index, pattern[i]);
       }
     } else if (playMode === 'CONCENTRATION_PRIZE_MATCH') {
+      // Preserve uncovered pairs & `revealedConcentrationPrize` stamps across Act II replenishment (`waveNumber > 1`)!
+      if (waveNumber > 1 && this.concentrationPrizes.size > 0) {
+        const byIdx = new Map(tiles.map((t) => [t.index, t]));
+        for (const [idx, prize] of Array.from(this.concentrationPrizes.entries())) {
+          const t = byIdx.get(idx);
+          if (!t || t.state === 'RETRACTED') continue;
+          if (this.awardedPrizePackages.has(prize)) {
+            this.concentrationPrizes.delete(idx);
+            this.revealedConcentrationTiles.delete(idx);
+            this.concentrationTileClaimer.delete(idx);
+            t.revealedConcentrationPrize = undefined;
+          } else if (this.revealedConcentrationTiles.has(idx) && prize !== 'NONE') {
+            t.revealedConcentrationPrize = CONCENTRATION_PRIZE_NAMES_V7[prize];
+          }
+        }
+        return;
+      }
+
+      this.concentrationPrizes.clear();
+      this.revealedConcentrationTiles.clear();
+      this.concentrationTileClaimer.clear();
+      this.awardedPrizePackages.clear();
+      for (const t of tiles) {
+        t.revealedConcentrationPrize = undefined;
+      }
+
       const prizes: readonly ConcentrationPrizeKindV7[] = [
         'COLOR_TV',
         'COLOR_TV',
@@ -1756,6 +1806,11 @@ export class BoardTwistsEngineV7 {
       for (let i = 0; i < Math.min(prizes.length, order.length); i++) {
         this.concentrationPrizes.set(order[i].index, prizes[i]);
       }
+    } else if (waveNumber <= 1) {
+      this.concentrationPrizes.clear();
+      this.revealedConcentrationTiles.clear();
+      this.concentrationTileClaimer.clear();
+      this.awardedPrizePackages.clear();
     }
   }
 
@@ -1806,12 +1861,23 @@ export class BoardTwistsEngineV7 {
   }
 
   /**
-   * BFS pathfinder for `COAST_HEX_BRIDGE`: checks whether Player-claimed tiles form a
-   * continuous adjacent bridge from the Leftmost Edge (NYC) to the Rightmost Edge (Hollywood)!
+   * BFS pathfinder for `COAST_HEX_BRIDGE`: checks whether Player-claimed tiles (plus any
+   * hypothetical `extraAssumedPlayerIndices` tested by CPU lookahead!) form a continuous
+   * adjacent bridge from the Leftmost Edge (NYC) to the Rightmost Edge (Hollywood)!
+   * Returns the ordered tile indices along the bridge path, or `[]` when not yet connected.
    */
-  private findCoastToCoastBridgePath(tiles: BoardTileNodeV7[]): readonly number[] | null {
-    const owned = tiles.filter((t) => t.state === 'CLAIMED_PLAYER');
-    if (owned.length < 3) return null;
+  public findCoastToCoastBridgePath(
+    tiles: BoardTileNodeV7[],
+    ...extraAssumedPlayerIndices: number[]
+  ): readonly number[] {
+    const assumedSet =
+      extraAssumedPlayerIndices.length > 0 ? new Set<number>(extraAssumedPlayerIndices) : null;
+    const owned = tiles.filter(
+      (t) =>
+        t.state !== 'RETRACTED' &&
+        (t.state === 'CLAIMED_PLAYER' || (assumedSet !== null && assumedSet.has(t.index))),
+    );
+    if (owned.length < 2) return [];
 
     let minBoardX = Infinity;
     let maxBoardX = -Infinity;
@@ -1825,7 +1891,7 @@ export class BoardTwistsEngineV7 {
 
     const starts = owned.filter((t) => t.x <= leftThresh);
     const goalSet = new Set(owned.filter((t) => t.x >= rightThresh).map((t) => t.index));
-    if (starts.length === 0 || goalSet.size === 0) return null;
+    if (starts.length === 0 || goalSet.size === 0) return [];
 
     const queue: number[][] = starts.map((s) => [s.index]);
     const visited = new Set<number>(starts.map((s) => s.index));
@@ -1846,7 +1912,118 @@ export class BoardTwistsEngineV7 {
         }
       }
     }
-    return null;
+    return [];
+  }
+
+  /**
+   * 0-1 Shortest-Path & Cut-Vertex analyzer for `COAST_HEX_BRIDGE` CPU lookahead:
+   * Computes exact minimum unowned steps needed for the Player to bridge Left-to-Right,
+   * identifies 1-step winning tiles, 2-step bridge pairs, and shortest-path chokepoints!
+   */
+  private analyzeCoastBridgeChokepoints(tiles: BoardTileNodeV7[]): {
+    readonly minStepsNow: number;
+    readonly oneStepSet: ReadonlySet<number>;
+    readonly twoStepPairCounts: ReadonlyMap<number, number>;
+    readonly cutVertexDelta: ReadonlyMap<number, number>;
+  } {
+    const active = tiles.filter((t) => t.state !== 'RETRACTED');
+    if (active.length === 0) {
+      return {
+        minStepsNow: Infinity,
+        oneStepSet: new Set(),
+        twoStepPairCounts: new Map(),
+        cutVertexDelta: new Map(),
+      };
+    }
+
+    let minBoardX = Infinity;
+    let maxBoardX = -Infinity;
+    for (const t of active) {
+      if (t.x < minBoardX) minBoardX = t.x;
+      if (t.x > maxBoardX) maxBoardX = t.x;
+    }
+    const leftThresh = minBoardX + 0.38;
+    const rightThresh = maxBoardX - 0.38;
+
+    const computeMinMissingSteps = (blockedTileIdx?: number): number => {
+      const passable = active.filter(
+        (t) => t.state !== 'CLAIMED_RIVAL' && t.index !== blockedTileIdx,
+      );
+      if (passable.length === 0) return Infinity;
+      const distMap = new Map<number, number>();
+      const deque: BoardTileNodeV7[] = [];
+
+      for (const s of passable) {
+        if (s.x <= leftThresh) {
+          const startCost = s.state === 'CLAIMED_PLAYER' ? 0 : 1;
+          distMap.set(s.index, startCost);
+          if (startCost === 0) deque.unshift(s);
+          else deque.push(s);
+        }
+      }
+      if (deque.length === 0) return Infinity;
+
+      while (deque.length > 0) {
+        const curr = deque.shift()!;
+        const currD = distMap.get(curr.index) ?? Infinity;
+        if (curr.x >= rightThresh) {
+          return currD;
+        }
+        for (const nxt of passable) {
+          if (nxt.index === curr.index) continue;
+          if (Math.hypot(nxt.x - curr.x, nxt.z - curr.z) > 1.24) continue;
+          const stepCost = nxt.state === 'CLAIMED_PLAYER' ? 0 : 1;
+          const nextD = currD + stepCost;
+          if (nextD < (distMap.get(nxt.index) ?? Infinity)) {
+            distMap.set(nxt.index, nextD);
+            if (stepCost === 0) deque.unshift(nxt);
+            else deque.push(nxt);
+          }
+        }
+      }
+      return Infinity;
+    };
+
+    const minStepsNow = computeMinMissingSteps();
+    const openCandidates = active.filter(
+      (t) => t.state === 'OPEN' || t.state === 'BLITZ_SURVIVOR',
+    );
+    const oneStepSet = new Set<number>();
+    const twoStepPairCounts = new Map<number, number>();
+    const cutVertexDelta = new Map<number, number>();
+
+    for (const c of openCandidates) {
+      if (this.findCoastToCoastBridgePath(tiles, c.index).length > 0) {
+        oneStepSet.add(c.index);
+      }
+      if (Number.isFinite(minStepsNow)) {
+        const withoutC = computeMinMissingSteps(c.index);
+        const delta = !Number.isFinite(withoutC) ? 99 : Math.max(0, withoutC - minStepsNow);
+        if (delta > 0) {
+          cutVertexDelta.set(c.index, delta);
+        }
+      }
+    }
+
+    if (oneStepSet.size === 0 && minStepsNow <= 2) {
+      for (let i = 0; i < openCandidates.length; i++) {
+        for (let j = i + 1; j < openCandidates.length; j++) {
+          const a = openCandidates[i].index;
+          const b = openCandidates[j].index;
+          if (this.findCoastToCoastBridgePath(tiles, a, b).length > 0) {
+            twoStepPairCounts.set(a, (twoStepPairCounts.get(a) ?? 0) + 1);
+            twoStepPairCounts.set(b, (twoStepPairCounts.get(b) ?? 0) + 1);
+          }
+        }
+      }
+    }
+
+    return {
+      minStepsNow,
+      oneStepSet,
+      twoStepPairCounts,
+      cutVertexDelta,
+    };
   }
 
   /**
@@ -1894,7 +2071,7 @@ export class BoardTwistsEngineV7 {
         const linkMult = roundTo2(Math.min(0.75, adjLinks * 0.25));
         if (!this.coastToCoastAwarded) {
           const bridgePath = this.findCoastToCoastBridgePath(tiles);
-          if (bridgePath) {
+          if (bridgePath.length > 0) {
             this.coastToCoastAwarded = true;
             return {
               mode,
@@ -1965,8 +2142,39 @@ export class BoardTwistsEngineV7 {
         if (prize === 'NONE') {
           return { mode, bonusCash: 0, rivalStealCash: 0, multAdd: 0, bannerHeadline: null };
         }
+        const prizeName = CONCENTRATION_PRIZE_NAMES_V7[prize];
+        tile.revealedConcentrationPrize = prizeName;
         this.revealedConcentrationTiles.add(claimedIdx);
+        this.concentrationTileClaimer.set(claimedIdx, 'PLAYER');
+
+        const siblingIndices = Array.from(this.concentrationPrizes.entries())
+          .filter(([idx, p]) => idx !== claimedIdx && p === prize)
+          .map(([idx]) => idx);
+        const rivalSiblingIdx = siblingIndices.find((sibIdx) => {
+          const sibTile = tiles.find((t) => t.index === sibIdx);
+          return (
+            sibTile?.state === 'CLAIMED_RIVAL' ||
+            this.concentrationTileClaimer.get(sibIdx) === 'RIVAL'
+          );
+        });
+
         if (prize === 'TAKE_STEAL') {
+          if (rivalSiblingIdx !== undefined && !this.awardedPrizePackages.has(prize)) {
+            this.awardedPrizePackages.add(prize);
+            const sibTile = tiles.find((t) => t.index === rivalSiblingIdx);
+            if (sibTile && !sibTile.revealedConcentrationPrize) {
+              sibTile.revealedConcentrationPrize = prizeName;
+            }
+            return {
+              mode,
+              bonusCash: 250,
+              rivalStealCash: 200,
+              multAdd: 0.25,
+              matchedPrize: `PRIZE MATCH STEAL: ${prizeName}`,
+              bannerHeadline: `⚡ PRIZE MATCH STEAL: ${prizeName}! +$250 BONUS + TAKE $200!`,
+              highlightedTileIndices: [rivalSiblingIdx, claimedIdx],
+            };
+          }
           return {
             mode,
             bonusCash: 0,
@@ -1976,11 +2184,25 @@ export class BoardTwistsEngineV7 {
             highlightedTileIndices: [claimedIdx],
           };
         }
-        const prizeLabels: Record<Exclude<ConcentrationPrizeKindV7, 'NONE' | 'TAKE_STEAL'>, string> = {
-          COLOR_TV: '📺 1966 COLOR TV',
-          CONVERTIBLE: '🚗 CONVERTIBLE',
-          HAWAII_TRIP: '🌴 HAWAII TRIP',
-        };
+
+        // Prize Match Steal: sibling half was already claimed by the CPU Champion!
+        if (rivalSiblingIdx !== undefined && !this.awardedPrizePackages.has(prize)) {
+          this.awardedPrizePackages.add(prize);
+          const sibTile = tiles.find((t) => t.index === rivalSiblingIdx);
+          if (sibTile && !sibTile.revealedConcentrationPrize) {
+            sibTile.revealedConcentrationPrize = prizeName;
+          }
+          return {
+            mode,
+            bonusCash: 250,
+            rivalStealCash: 0,
+            multAdd: 0.25,
+            matchedPrize: `PRIZE MATCH STEAL: ${prizeName}`,
+            bannerHeadline: `⚡ PRIZE MATCH STEAL: ${prizeName}! +$250 BONUS!`,
+            highlightedTileIndices: [rivalSiblingIdx, claimedIdx],
+          };
+        }
+
         const matchingRevealed = Array.from(this.revealedConcentrationTiles).filter(
           (idx) => this.concentrationPrizes.get(idx) === prize,
         );
@@ -1991,7 +2213,8 @@ export class BoardTwistsEngineV7 {
             bonusCash: 500,
             rivalStealCash: 0,
             multAdd: 0.25,
-            bannerHeadline: `🏆 PRIZE MATCH: ${prizeLabels[prize]} PACKAGE! +$500!`,
+            matchedPrize: prizeName,
+            bannerHeadline: `🏆 PRIZE MATCH: ${prizeName} PACKAGE! +$500!`,
             highlightedTileIndices: matchingRevealed,
           };
         }
@@ -2000,7 +2223,7 @@ export class BoardTwistsEngineV7 {
           bonusCash: 75,
           rivalStealCash: 0,
           multAdd: 0,
-          bannerHeadline: `🎁 PRIZE HALF FOUND: ${prizeLabels[prize]} (1/2) — Match twin for +$500!`,
+          bannerHeadline: `🎁 PRIZE HALF FOUND: ${prizeName} (1/2) — Match twin for +$500!`,
           highlightedTileIndices: [claimedIdx],
         };
       }
@@ -2964,13 +3187,80 @@ export class BoardTwistsEngineV7 {
     target.isRivalTarget = false;
     target.isRiggedSolenoid = false;
 
+    if (this.getActivePlayMode() === 'CONCENTRATION_PRIZE_MATCH') {
+      const prize = this.concentrationPrizes.get(target.index) ?? 'NONE';
+      if (prize !== 'NONE') {
+        target.revealedConcentrationPrize = CONCENTRATION_PRIZE_NAMES_V7[prize];
+        this.revealedConcentrationTiles.add(target.index);
+        this.concentrationTileClaimer.set(
+          target.index,
+          playerAnsweredCorrectly ? 'PLAYER' : 'RIVAL',
+        );
+      }
+    }
+
     this.advanceTurnState(tiles, target);
     return breakdown;
   }
 
+  private computeChampionTileJitter(
+    rivalId: RivalIdV7,
+    turnNumber: number,
+    tile: BoardTileNodeV7,
+    visibleTwist: ClassicTvTileTwistV7,
+    isKnownStrong: boolean,
+  ): number {
+    // 1. Deterministic per-(rivalId, turnNumber, category, tile.index) affinity micro-bias in [-42, +42]
+    const turnKey = `${rivalId}|${turnNumber}|${tile.category}|${tile.index}|${this.context.seedOffset ?? 0}`;
+    let h1 = 2166136261;
+    for (let i = 0; i < turnKey.length; i++) {
+      h1 ^= turnKey.charCodeAt(i);
+      h1 = Math.imul(h1, 16777619);
+    }
+    const turnMicroBias = (((h1 >>> 0) % 8401) / 4200 - 1) * 42;
+
+    // 2. Champion-specific Stage Zone & Twist Signature (prevents 65%+ same-playstyle tile cloning!)
+    let champHash = 2166136261;
+    for (let i = 0; i < rivalId.length; i++) {
+      champHash ^= rivalId.charCodeAt(i);
+      champHash = Math.imul(champHash, 16777619);
+    }
+    const ch = champHash >>> 0;
+    const prefDirX = ((ch % 5) - 2) * 0.5; // -1.0, -0.5, 0.0, +0.5, +1.0
+    const prefDirZ = (((ch >>> 3) % 5) - 2) * 0.5;
+    const zoneBias = tile.x * prefDirX * 58 + tile.z * prefDirZ * 64;
+
+    // Champion-specific twist taste among visible TV twists
+    let twistTaste = 0;
+    if (visibleTwist !== 'NONE') {
+      const twKey = `${rivalId}::TWIST::${visibleTwist}`;
+      let ht = 2166136261;
+      for (let i = 0; i < twKey.length; i++) {
+        ht ^= twKey.charCodeAt(i);
+        ht = Math.imul(ht, 16777619);
+      }
+      twistTaste = (((ht >>> 0) % 3001) / 1500 - 1) * 135;
+    }
+
+    // Some Champions fiercely prize their personal wheelhouse turf even inside GAMBLER/HIGH_ROLLER
+    const turfPride = isKnownStrong ? ((ch >>> 7) % 110) : 0;
+
+    // Category taste tiebreaker per Champion
+    const catKey = `${rivalId}::CAT::${tile.category}`;
+    let hc = 2166136261;
+    for (let i = 0; i < catKey.length; i++) {
+      hc ^= catKey.charCodeAt(i);
+      hc = Math.imul(hc, 16777619);
+    }
+    const catTaste = (((hc >>> 0) % 2001) / 1000 - 1) * 48;
+
+    return turnMicroBias + zoneBias + twistTaste + turfPride + catTaste;
+  }
+
   /**
    * Selects a smart target tile for the Rival's turn driven by their `CpuPlaystyleIdV7`
-   * archetype (`GAMBLER`, `BLOCKER`, `PROFESSOR`, `HIGH_ROLLER`, `CLUTCH_SHARK`),
+   * archetype (`GAMBLER`, `BLOCKER`, `PROFESSOR`, `HIGH_ROLLER`, `CLUTCH_SHARK`) and
+   * `CpuTemperamentIdV7` (`HOTHEAD`, `ICE_VEINED`, `STEADY`, `SHOWBOAT`),
    * while strictly honoring `isVaultLocked`, `isTopologyLocked`, and 1-Turn Keyholder Priority!
    */
   public chooseRivalTargetTile(tiles: BoardTileNodeV7[]): number | null {
@@ -2995,6 +3285,8 @@ export class BoardTwistsEngineV7 {
     const rivalId = this.context.rivalId ?? 'CARMEN_DELGADO';
     const playstyle: CpuPlaystyleIdV7 =
       this.context.cpuPlaystyle ?? DEFAULT_RIVAL_PLAYSTYLE_V7[rivalId] ?? 'PROFESSOR';
+    const temperament: CpuTemperamentIdV7 =
+      this.context.cpuTemperament ?? DEFAULT_RIVAL_TEMPERAMENT_V7[rivalId] ?? 'STEADY';
     const turnNumber = this.context.turnNumber ?? this.gimmick.turnCounter + 1;
     const strongSet = new Set<CategoryIdV7>(this.getEffectiveStrongCategories());
     const weakSet = new Set<CategoryIdV7>(this.getEffectiveWeakCategories());
@@ -3004,8 +3296,21 @@ export class BoardTwistsEngineV7 {
 
     const playMode = this.getActivePlayMode();
     const playerClaimed = tiles.filter((t) => t.state === 'CLAIMED_PLAYER');
+    const rivalClaimed = tiles.filter((t) => t.state === 'CLAIMED_RIVAL');
+    const playerBoardChipSum = playerClaimed.reduce((acc, t) => acc + t.baseChips, 0);
+    const rivalBoardChipSum = rivalClaimed.reduce((acc, t) => acc + t.baseChips, 0);
+    const isRivalTrailing = rivalBoardChipSum < playerBoardChipSum;
     const maxPlayerX =
       playerClaimed.length > 0 ? Math.max(...playerClaimed.map((t) => t.x)) : -Infinity;
+
+    const bridgeAnalysis =
+      playMode === 'COAST_HEX_BRIDGE' && !this.coastToCoastAwarded
+        ? this.analyzeCoastBridgeChokepoints(tiles)
+        : null;
+    const hasUrgentBridgeThreat = Boolean(
+      bridgeAnalysis &&
+        (bridgeAnalysis.oneStepSet.size > 0 || bridgeAnalysis.twoStepPairCounts.size > 0),
+    );
 
     for (const tile of fallbackOpen) {
       // Honest On-Stage Visibility: mask `$600 · ???` blind categories & unrevealed Secret Squares!
@@ -3025,19 +3330,48 @@ export class BoardTwistsEngineV7 {
       if (tile.isRiggedSolenoid) score -= 75;
       if (visibleTwist === 'OPPONENT_CHOICE') score -= 60;
 
+      // Concentration Match/Steal Awareness: hunt open partner of an already-revealed prize!
+      if (playMode === 'CONCENTRATION_PRIZE_MATCH') {
+        const myPrize = this.concentrationPrizes.get(tile.index) ?? 'NONE';
+        if (myPrize !== 'NONE' && !this.awardedPrizePackages.has(myPrize)) {
+          const partnerRevealed = Array.from(this.revealedConcentrationTiles).some(
+            (rIdx) => rIdx !== tile.index && this.concentrationPrizes.get(rIdx) === myPrize,
+          );
+          if (partnerRevealed) {
+            score += 265;
+          }
+        }
+      }
+
       // Baseline mode awareness: block imminent 3-in-a-row jackpots & Coast-to-Coast bridges
-      const threatLines = this.findPlayerThreeInARowLines(tiles, tile.index);
-      const blocksLineThreat = threatLines.some((ln) => !this.awardedTicTacLines.has(ln.join('-')));
-      if (playMode === 'TIC_TAC_LINE' && blocksLineThreat) {
+      const threatLines =
+        playMode === 'TIC_TAC_LINE' ? this.findPlayerThreeInARowLines(tiles, tile.index) : [];
+      const blocksLineThreat =
+        playMode === 'TIC_TAC_LINE' &&
+        threatLines.some((ln) => !this.awardedTicTacLines.has(ln.join('-')));
+      if (blocksLineThreat) {
         score += 360;
       }
+
       const adjPlayerCount = this.countAdjacentClaimedPlayer(tile, tiles);
+      const completesBridge1Step = Boolean(bridgeAnalysis?.oneStepSet.has(tile.index));
+      const twoStepBridgeCount = bridgeAnalysis?.twoStepPairCounts.get(tile.index) ?? 0;
+      const cutDelta = bridgeAnalysis?.cutVertexDelta.get(tile.index) ?? 0;
       const blocksBridgeFrontier =
         !this.coastToCoastAwarded &&
         adjPlayerCount >= 1 &&
         (tile.x >= maxPlayerX - 0.15 || Math.abs(tile.x) <= 0.65);
-      if (playMode === 'COAST_HEX_BRIDGE' && blocksBridgeFrontier) {
-        score += 240;
+
+      if (playMode === 'COAST_HEX_BRIDGE' && !this.coastToCoastAwarded) {
+        if (completesBridge1Step) {
+          score += 520 + (cutDelta > 0 ? 120 : 0);
+        } else if (twoStepBridgeCount > 0) {
+          score += 240 + Math.min(120, twoStepBridgeCount * 35) + (cutDelta > 0 ? 140 : 0);
+        } else if (cutDelta > 0) {
+          score += 175 + (cutDelta >= 99 ? 90 : 0);
+        } else if (blocksBridgeFrontier) {
+          score += 140;
+        }
       }
 
       // 5 Distinct `CpuPlaystyleIdV7` Archetype Personalities:
@@ -3050,26 +3384,45 @@ export class BoardTwistsEngineV7 {
             visibleTwist === 'MYSTERY_CASH' ||
             visibleTwist === 'SECRET_SQUARE'
           ) {
-            score += 290;
+            score += 155;
+          } else if (visibleTwist === 'SHOWCASE_BONUS' || visibleTwist === 'OPPONENT_CHOICE') {
+            score += 110;
           }
           break;
         }
         case 'BLOCKER': {
-          if (blocksLineThreat) score += 420;
-          if (blocksBridgeFrontier) score += 275;
-          if (adjPlayerCount >= 1) score += adjPlayerCount * 145;
+          if (playMode === 'TIC_TAC_LINE' && blocksLineThreat) {
+            score += 620;
+          }
+          if (playMode === 'COAST_HEX_BRIDGE' && !this.coastToCoastAwarded) {
+            if (completesBridge1Step) {
+              score += 920 + (cutDelta > 0 ? 280 : 0);
+            } else if (twoStepBridgeCount > 0) {
+              score +=
+                580 +
+                Math.min(180, twoStepBridgeCount * 45) +
+                (cutDelta >= 99 ? 320 : cutDelta > 0 ? 220 : 0);
+            } else if (cutDelta > 0) {
+              score += 420 + (cutDelta >= 99 ? 200 : 0);
+            } else if (blocksBridgeFrontier) {
+              score += 190;
+            }
+          }
+          if (adjPlayerCount >= 1) {
+            score += adjPlayerCount * (hasUrgentBridgeThreat ? 40 : 120);
+          }
           const nearLockedVault = tiles.some(
             (v) =>
               v.tvTwist === 'LOCKED_VAULT' &&
               v.isVaultLocked &&
               Math.hypot(v.x - tile.x, v.z - tile.z) <= 1.22,
           );
-          if (nearLockedVault) score += 170;
-          if (visibleTwist === 'BRASS_KEY') score += 210;
+          if (nearLockedVault && !hasUrgentBridgeThreat) score += 135;
+          if (visibleTwist === 'BRASS_KEY' && !completesBridge1Step) score += 175;
           break;
         }
         case 'PROFESSOR': {
-          if (isKnownStrong) score += 260;
+          if (isKnownStrong) score += 230;
           if (isKnownWeak) score -= 240;
           if (visibleTwist === 'BLIND_CATEGORY' || visibleTwist === 'PRESS_LUCK_SPIN') {
             score -= 95;
@@ -3077,30 +3430,78 @@ export class BoardTwistsEngineV7 {
           break;
         }
         case 'HIGH_ROLLER': {
-          score += visibleChips * 0.65;
+          score += visibleChips * 0.52;
           if (
             visibleChips >= 450 ||
             visibleTwist === 'BLIND_CATEGORY' ||
             (visibleTwist === 'LOCKED_VAULT' && !tile.isVaultLocked) ||
             visibleTwist === 'BRASS_KEY'
           ) {
-            score += 275;
+            score += 195;
           }
           break;
         }
         case 'CLUTCH_SHARK': {
           if (turnNumber >= 8) {
-            score += visibleChips * 0.8 + tile.boardMultBonus * 260 + 210;
+            score += visibleChips * 0.72 + tile.boardMultBonus * 240 + 185;
             if (visibleTwist === 'BIG_WHEEL_SPIN' || tile.state === 'BLITZ_SURVIVOR') {
-              score += 240;
+              score += 195;
             }
           } else {
             if (isKnownStrong) score += 110;
-            if (blocksLineThreat) score += 210;
+            if (playMode === 'TIC_TAC_LINE' && blocksLineThreat) score += 210;
+            if (playMode === 'COAST_HEX_BRIDGE' && completesBridge1Step) score += 240;
           }
           break;
         }
       }
+
+      // 4 Distinct `CpuTemperamentIdV7` Nuances + Per-Champion Signature Affinity Micro-Bias:
+      switch (temperament) {
+        case 'HOTHEAD': {
+          if (isRivalTrailing || turnNumber >= 6) {
+            score += visibleChips * 0.28 + (visibleChips >= 350 ? 85 : 0);
+          }
+          if (visibleTwist === 'OPPONENT_CHOICE') score += 95;
+          if (tile.isRiggedSolenoid) score += 65;
+          break;
+        }
+        case 'SHOWBOAT': {
+          const centerProximity = Math.max(0, 1.35 - Math.hypot(tile.x * 0.65, tile.z));
+          score += centerProximity * 38;
+          if (this.activeSpotlightIndices.includes(tile.index)) score += 85;
+          if (
+            visibleTwist === 'BIG_WHEEL_SPIN' ||
+            visibleTwist === 'PRESS_LUCK_SPIN' ||
+            visibleTwist === 'MYSTERY_CURTAIN' ||
+            visibleTwist === 'SHOWCASE_BONUS'
+          ) {
+            score += 42;
+          }
+          break;
+        }
+        case 'ICE_VEINED': {
+          const expectedHitWeight = isKnownStrong ? 90 : isKnownWeak ? -105 : 24;
+          score += expectedHitWeight + tile.boardMultBonus * 85;
+          if (tile.isRiggedSolenoid) score -= 50;
+          if (visibleTwist === 'BLIND_CATEGORY' && playstyle !== 'HIGH_ROLLER') score -= 45;
+          break;
+        }
+        case 'STEADY':
+        default: {
+          if (isKnownStrong) score += 45;
+          if (!tile.isRiggedSolenoid && visibleTwist === 'NONE') score += 28;
+          break;
+        }
+      }
+
+      score += this.computeChampionTileJitter(
+        rivalId,
+        turnNumber,
+        tile,
+        visibleTwist,
+        isKnownStrong,
+      );
 
       if (this.context.boardId === 'BOARD_11_WHEW_GAUNTLET' && Math.abs(tile.z) < 0.35) {
         score += 85;
@@ -3117,13 +3518,48 @@ export class BoardTwistsEngineV7 {
     return bestTile.index;
   }
 
-  public commitRivalTileClaim(tileIndex: number, tiles: BoardTileNodeV7[]): void {
+  public commitRivalTileClaim(
+    tileIndex: number,
+    tiles: BoardTileNodeV7[],
+  ): {
+    readonly revealedConcentrationPrize?: string;
+    readonly matchedPrize?: string;
+  } {
     const target = tiles.find((t) => t.index === tileIndex);
-    if (!target) return;
+    if (!target) return {};
     target.state = 'CLAIMED_RIVAL';
     target.isRivalTarget = false;
     target.isRiggedSolenoid = false;
+
+    let revealedConcentrationPrize: string | undefined;
+    let matchedPrize: string | undefined;
+
+    if (this.getActivePlayMode() === 'CONCENTRATION_PRIZE_MATCH') {
+      const prize = this.concentrationPrizes.get(target.index) ?? 'NONE';
+      if (prize !== 'NONE') {
+        const prizeName = CONCENTRATION_PRIZE_NAMES_V7[prize];
+        target.revealedConcentrationPrize = prizeName;
+        revealedConcentrationPrize = prizeName;
+        this.revealedConcentrationTiles.add(target.index);
+        this.concentrationTileClaimer.set(target.index, 'RIVAL');
+
+        if (prize !== 'TAKE_STEAL' && !this.awardedPrizePackages.has(prize)) {
+          const playerSibling = Array.from(this.concentrationPrizes.entries()).find(
+            ([idx, p]) =>
+              idx !== target.index &&
+              p === prize &&
+              (tiles.find((t) => t.index === idx)?.state === 'CLAIMED_PLAYER' ||
+                this.concentrationTileClaimer.get(idx) === 'PLAYER'),
+          );
+          if (playerSibling) {
+            matchedPrize = `PRIZE MATCH STEAL: ${prizeName}`;
+          }
+        }
+      }
+    }
+
     this.advanceTurnState(tiles, target);
+    return { revealedConcentrationPrize, matchedPrize };
   }
 
   // --------------------------------------------------------------------------

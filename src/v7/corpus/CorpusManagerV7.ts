@@ -480,9 +480,29 @@ export class CorpusManagerV7 {
     return task;
   }
 
-  public ingestClues(clues: readonly ClueRecordV7[]): void {
-    for (const clue of clues) {
-      if (this.cluesByQid.has(clue.qid)) continue;
+  public ingestClues(
+    clues: readonly (ClueRecordV7 & { readonly extraToys?: readonly ToyIdV7[] })[],
+  ): void {
+    const baseToys: readonly ToyIdV7[] = [
+      'TOY_01_KNIFE_SWITCH',
+      'TOY_02_CONFIDENCE_PNEUMATIC',
+      'TOY_06_FUSE_WIRE_SNIPPER',
+    ];
+    for (const raw of clues) {
+      if (this.cluesByQid.has(raw.qid)) continue;
+      const hydratedToys: readonly ToyIdV7[] = Array.isArray(raw.supportedToys)
+        ? raw.supportedToys
+        : Array.isArray(raw.extraToys) && raw.extraToys.length > 0
+          ? [...baseToys, ...raw.extraToys]
+          : baseToys;
+      const clue: ClueRecordV7 = {
+        ...raw,
+        domain: raw.domain ?? CATEGORY_TO_DOMAIN_V7[raw.category],
+        isBlitzLegal: Boolean(raw.isBlitzLegal),
+        isKlaxonMyth: Boolean(raw.isKlaxonMyth),
+        cardStyle: raw.cardStyle ?? 'CLASSIC_CUE',
+        supportedToys: hydratedToys,
+      };
       this.cluesByQid.set(clue.qid, clue);
       const bucket = this.byCategory.get(clue.category);
       if (bucket) {

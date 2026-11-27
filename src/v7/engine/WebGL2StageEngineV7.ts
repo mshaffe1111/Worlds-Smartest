@@ -422,7 +422,7 @@ export class WebGL2StageEngineV7 {
     const isPhonePortrait = aspect < 0.72;
     const isTabletPortrait = aspect >= 0.72 && aspect < 1.0;
     const isTabletLandscape = aspect >= 1.0 && aspect < 1.45;
-    const isWidePhoneLandscape = aspect > 1.95;
+    const isWidePhoneLandscape = aspect > 1.85 && h <= 500;
 
     const hull = this.collectBoardHullPoints(isPortrait);
     const points = hull.points;
@@ -471,15 +471,15 @@ export class WebGL2StageEngineV7 {
       bottomSafePct = Math.max(0.055, bottomReservedPx / h);
       targetCenterYPct = 0.575;
     } else if (isWidePhoneLandscape) {
-      // Mobile Phone Landscape (`844x390`, `932x430`): ~5% extra bottom & side breathing room so front brass bezel stays 100% framed!
-      pitchDeg = 28.0;
-      fovDeg = 43.0;
-      maxAllowedNdcX = 0.872;
+      // Mobile Phone Landscape (`844x390`, `932x430`): Zoom close while clearing top 48px bar & bottom 36px announcer strip!
+      pitchDeg = 31.6;
+      fovDeg = 39.5;
+      maxAllowedNdcX = 0.935;
       topReservedPx = 46;
-      bottomReservedPx = 46;
-      topSafePct = Math.max(0.185, (topReservedPx + 26) / h);
-      bottomSafePct = Math.max(0.118, bottomReservedPx / h);
-      targetCenterYPct = 0.532;
+      bottomReservedPx = 42;
+      topSafePct = Math.max(0.138, (topReservedPx + 6) / h);
+      bottomSafePct = Math.max(0.112, bottomReservedPx / h);
+      targetCenterYPct = 0.514;
     } else {
       // Desktop Widescreen (`1440x900`, `1920x1080`):
       pitchDeg = 27.2;
