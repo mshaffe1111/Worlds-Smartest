@@ -63,6 +63,11 @@ const VALID_CARD_STYLES = new Set([
   'PICTURE_MONITOR',
   'SPOT_THE_MYTH',
   'BINARY_SPLIT',
+  'HIGHER_OR_LOWER',
+  'ODD_ONE_OUT',
+  'FINISH_THE_LINE',
+  'WHO_WHAT_AM_I',
+  'BEFORE_OR_AFTER',
 ]);
 
 const VALID_TOYS = new Set([
@@ -290,8 +295,22 @@ function normalizeCandidateClue(raw, idx) {
   if (raw.cyanotype) supportedSet.add('TOY_13_CYANOTYPE_LOUPE');
   if (raw.shutters) supportedSet.add('TOY_14_FOUR_SHUTTER_REEL');
 
+  let vowels = raw.vowels;
+  const isKlaxonMyth = Boolean(raw.isKlaxonMyth || raw.cardStyle === 'SPOT_THE_MYTH');
+  const cardStyle =
+    raw.cardStyle !== undefined ? String(raw.cardStyle).trim() : inferDefaultCardStyle({ isKlaxonMyth, stem });
+  const isBinaryPaddleStyle =
+    cardStyle === 'BINARY_SPLIT' ||
+    cardStyle === 'HIGHER_OR_LOWER' ||
+    cardStyle === 'BEFORE_OR_AFTER';
+
   if (isBespokeContraptionOnly) {
     supportedSet.delete('TOY_01_KNIFE_SWITCH');
+    supportedSet.delete('TOY_02_CONFIDENCE_PNEUMATIC');
+    supportedSet.delete('TOY_06_FUSE_WIRE_SNIPPER');
+  } else if (isBinaryPaddleStyle) {
+    // 2-paddle clues stay strictly off 4-choice TOY_02/TOY_06!
+    supportedSet.add('TOY_01_KNIFE_SWITCH');
     supportedSet.delete('TOY_02_CONFIDENCE_PNEUMATIC');
     supportedSet.delete('TOY_06_FUSE_WIRE_SNIPPER');
   } else {
@@ -299,11 +318,6 @@ function normalizeCandidateClue(raw, idx) {
     supportedSet.add('TOY_02_CONFIDENCE_PNEUMATIC');
     supportedSet.add('TOY_06_FUSE_WIRE_SNIPPER');
   }
-
-  let vowels = raw.vowels;
-  const isKlaxonMyth = Boolean(raw.isKlaxonMyth || raw.cardStyle === 'SPOT_THE_MYTH');
-  const cardStyle =
-    raw.cardStyle !== undefined ? String(raw.cardStyle).trim() : inferDefaultCardStyle({ isKlaxonMyth, stem });
 
   // Auto-generate Missing Vowels payload when clean and appropriate (skip SPOT_THE_MYTH full-clause statements)
   if (!vowels && !isBespokeContraptionOnly && cardStyle !== 'SPOT_THE_MYTH' && choices.length === 4 && [0, 1, 2, 3].includes(answerIdx)) {
@@ -376,30 +390,46 @@ function validateClue12Gates(clue, state, opts = {}) {
     return reasons;
   }
 
-  // Gate 2: Stem length (24..185 chars), ZERO ellipsis & 2-paddle BINARY_SPLIT wording guard
+  // Gate 2: Stem length (24..185 chars), ZERO ellipsis & 2-paddle binary-style wording guard
   const BINARY_FOUR_CONTRADICTION_RE =
     /\b(these four|all four of these|among these four|of these four|scan four|flex four|inspect four|line up four|compare four|check four|heat four|dip pH (?:paper|strips) into four|wire four|splash four|clock four|tap a chime through four|fire a rocket straight upward from four|strap a blood-pressure cuff onto four|scratch-test four|trace four|put four|peer through a telescope at four|place (?:a single speck of )?four|leave four|shine white light through four|pull apart four|hook a tiny stethoscope up to four|comparing construction dates of four|lining up four)\b/i;
+  const isBinaryPaddleStyle =
+    clue.cardStyle === 'BINARY_SPLIT' ||
+    clue.cardStyle === 'HIGHER_OR_LOWER' ||
+    clue.cardStyle === 'BEFORE_OR_AFTER';
   if (
     typeof clue.stem !== 'string' ||
     clue.stem.length < 24 ||
     clue.stem.length > 185 ||
     hasEllipsis(clue.stem) ||
-    (clue.cardStyle === 'BINARY_SPLIT' && BINARY_FOUR_CONTRADICTION_RE.test(clue.stem))
+    (isBinaryPaddleStyle && BINARY_FOUR_CONTRADICTION_RE.test(clue.stem))
   ) {
     reasons.push(
-      `gate2_stemLen: len=${clue.stem?.length ?? 0}, ellipsis=${hasEllipsis(clue.stem)}, binaryFour=${clue.cardStyle === 'BINARY_SPLIT' && BINARY_FOUR_CONTRADICTION_RE.test(clue.stem)}`,
+      `gate2_stemLen: len=${clue.stem?.length ?? 0}, ellipsis=${hasEllipsis(clue.stem)}, binaryFour=${isBinaryPaddleStyle && BINARY_FOUR_CONTRADICTION_RE.test(clue.stem)}`,
     );
     state.gateDrops.gate2_stemLen++;
     return reasons;
   }
 
-  // Gate 2b: Zero HEADLINE_BLANK root-word self-spoilers (5+ letter unique root from answer appearing verbatim in stem)
-  if (clue.cardStyle === 'HEADLINE_BLANK' && Array.isArray(clue.choices) && typeof clue.answerIdx === 'number') {
+  // Gate 2b: Zero HEADLINE_BLANK / FINISH_THE_LINE root-word self-spoilers
+  // (>=3-char non-stopword roots on FINISH_THE_LINE framing & [___] HEADLINE_BLANK; >=5-char on legacy non-blank HEADLINE_BLANK)
+  if ((clue.cardStyle === 'HEADLINE_BLANK' || clue.cardStyle === 'FINISH_THE_LINE') && Array.isArray(clue.choices) && typeof clue.answerIdx === 'number') {
     const ansText = String(clue.choices[clue.answerIdx] || '').toLowerCase();
     const otherChoicesLow = clue.choices.filter((_, idx) => idx !== clue.answerIdx).map((s) => String(s || '').toLowerCase());
     const stemLow = clue.stem.toLowerCase();
+    const hasBlankToken = /\[[\s_]{2,}\]/.test(clue.stem);
     const HEADLINE_GENERIC_ALLOW = new Set([
-      'about','after','again','among','award','black','board','brand','brown','build','chief','china','color','court','crown',
+      'the','and','for','not','are','was','but','you','all','can','had','her','one','our','out',
+      'day','get','has','him','his','how','man','new','now','old','see','two','way','who','boy',
+      'did','its','let','put','say','she','too','use','off','via','per','non','pre','sub',
+      'this','that','with','from','they','have','been','were','will','what','when','make','like',
+      'time','just','know','take','into','year','your','good','some','them','than','then','look',
+      'only','come','over','also','back','work','well','even','want','give','most','more','very',
+      'much','down','side','both','each','made','many','such','long','find','here','name','real',
+      'high','next','last','best','true','four','five','nine','zero','left','hand','head','home',
+      'line','part','turn','keep','play','move','live','kind','form','word','city','area','band',
+      'show','book','film','song','star','team','game','gold','blue','dark','hard','fast','full',
+      'open','half','near','about','after','again','among','award','black','board','brand','brown','build','chief','china','color','court','crown',
       'earth','eight','every','field','first','force','found','front','giant','glass','globe','golden','grand','great','green',
       'group','heavy','house','human','india','inner','japan','large','latin','light','local','major','metal','meter','miles',
       'model','money','month','music','never','night','north','ocean','order','other','paper','paris','parts','peace','place',
@@ -412,14 +442,24 @@ function validateClue12Gates(clue, state, opts = {}) {
       'modern','nation','national','official','olympic','people','percent','planet','popular','pounds','public','russian','school',
       'science','second','series','silver','single','spanish','square','standard','states','street','system','united','winter',
     ]);
-    const ansWords = ansText.split(/[^a-z]+/).filter((w) => w.length >= 5 && !HEADLINE_GENERIC_ALLOW.has(w));
+    const useShortThreshold =
+      clue.cardStyle === 'FINISH_THE_LINE' || (clue.cardStyle === 'HEADLINE_BLANK' && hasBlankToken);
+    const minRootLen = useShortThreshold ? 3 : 5;
+    // For FINISH_THE_LINE, allow verbatim quote interior setup (e.g. "hang together... [ _____ ]") while strictly policing all framing text!
+    const targetStemLow =
+      clue.cardStyle === 'FINISH_THE_LINE' && /["“][^"”]*\[[\s_]{2,}\][^"”]*["”]/.test(stemLow)
+        ? stemLow.replace(/["“][^"”]*\[[\s_]{2,}\][^"”]*["”]/g, ' ')
+        : stemLow;
+
+    const ansWords = ansText.split(/[^a-z]+/).filter((w) => w.length >= minRootLen && !HEADLINE_GENERIC_ALLOW.has(w));
     for (const w of ansWords) {
-      if (otherChoicesLow.some((o) => o.includes(w.slice(0, 5)))) continue;
-      const root = w.endsWith('s') && w.length >= 6 ? w.slice(0, -1) : w;
-      if (root.length < 5) continue;
+      if (otherChoicesLow.some((o) => o.split(/[^a-z]+/).some((ow) => ow.startsWith(w.slice(0, minRootLen)) || ow === w))) continue;
+      const root = w.endsWith('s') && w.length >= minRootLen + 1 && !w.endsWith('ss') ? w.slice(0, -1) : w;
+      if (root.length < minRootLen || HEADLINE_GENERIC_ALLOW.has(root)) continue;
+      const checkHaystack = clue.cardStyle === 'FINISH_THE_LINE' ? targetStemLow : stemLow;
       const leakRe = new RegExp(`(^|[^a-z])${root}(s|es|ed|ing|er|ers)?([^a-z]|$)`, 'i');
-      if (leakRe.test(stemLow)) {
-        reasons.push(`gate2_stemLen: HEADLINE_BLANK self-spoiler root "${root}" in stem`);
+      if (leakRe.test(checkHaystack)) {
+        reasons.push(`gate2_stemLen: ${clue.cardStyle} self-spoiler root "${root}" in stem`);
         state.gateDrops.gate2_stemLen++;
         return reasons;
       }

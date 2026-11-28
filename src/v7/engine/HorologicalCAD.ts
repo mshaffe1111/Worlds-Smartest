@@ -926,9 +926,9 @@ function buildAntiMoireFloorTextures(kind: AntiMoireFloorKindV7): CachedFloorTex
           const goldVein = Math.pow(1.0 - veinWave, 10.5);
           const cloud = tileFbm(u, v, 8, 3, 199);
 
-          const mR = lerp(22 + cloud * 32, 242, goldVein * 0.84);
-          const mG = lerp(42 + cloud * 44, 198, goldVein * 0.84);
-          const mB = lerp(78 + cloud * 62, 98, goldVein * 0.84);
+          const mR = lerp(18 + cloud * 24, 242, goldVein * 0.84);
+          const mG = lerp(94 + cloud * 36, 198, goldVein * 0.84);
+          const mB = lerp(122 + cloud * 42, 98, goldVein * 0.84);
           r = lerp(mR, 250, brassAstrolabe);
           g = lerp(mG, 206, brassAstrolabe);
           b = lerp(mB, 96, brassAstrolabe);
@@ -1203,7 +1203,7 @@ export function createAnodizedAluminumMaterial(envMap?: THREE.Texture | null): T
 
 export function createObsidianMaterial(envMap?: THREE.Texture | null): THREE.MeshPhysicalMaterial {
   return new THREE.MeshPhysicalMaterial({
-    color: 0x162438, // Rich 1966 Broadcast Midnight Slate (never dead brown-black mud!)
+    color: 0x3d2418, // Warm Roasted 1966 Espresso-Walnut (zero dark-navy mud!)
     metalness: 0.24,
     roughness: 0.14,
     clearcoat: 0.92,
@@ -1446,10 +1446,10 @@ export function getContactShadowTexture(): THREE.CanvasTexture {
   if (ctx) {
     ctx.clearRect(0, 0, 128, 128);
     const grad = ctx.createRadialGradient(64, 64, 4, 64, 64, 62);
-    grad.addColorStop(0.0, 'rgba(6, 13, 26, 0.96)');
-    grad.addColorStop(0.38, 'rgba(6, 13, 26, 0.66)');
-    grad.addColorStop(0.7, 'rgba(6, 13, 26, 0.22)');
-    grad.addColorStop(1.0, 'rgba(6, 13, 26, 0.0)');
+    grad.addColorStop(0.0, 'rgba(28, 16, 10, 0.94)');
+    grad.addColorStop(0.38, 'rgba(28, 16, 10, 0.64)');
+    grad.addColorStop(0.7, 'rgba(28, 16, 10, 0.22)');
+    grad.addColorStop(1.0, 'rgba(28, 16, 10, 0.0)');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, 128, 128);
   }
@@ -1579,7 +1579,7 @@ export function getAmericanWalnutVeneerTexture(): THREE.CanvasTexture {
   return tex;
 }
 
-/** Procedural 512x512 recessed 1966 Broadcast Navy micro-louvered Tote Board bed texture. */
+/** Procedural 512x512 sunlit 1966 Peacock-Walnut micro-louvered Tote Board bed texture. */
 export function getDarkLouverToteBedTexture(): THREE.CanvasTexture {
   if (cachedDarkLouverBedTex) return cachedDarkLouverBedTex;
   const c = document.createElement('canvas');
@@ -1588,20 +1588,20 @@ export function getDarkLouverToteBedTexture(): THREE.CanvasTexture {
   const ctx = c.getContext('2d');
   if (ctx) {
     const rad = ctx.createRadialGradient(256, 256, 40, 256, 256, 360);
-    rad.addColorStop(0.0, '#183654');
-    rad.addColorStop(0.7, '#0F253D');
-    rad.addColorStop(1.0, '#091829');
+    rad.addColorStop(0.0, '#007B85');
+    rad.addColorStop(0.7, '#005B64');
+    rad.addColorStop(1.0, '#3E2012');
     ctx.fillStyle = rad;
     ctx.fillRect(0, 0, 512, 512);
 
-    // Crisp horizontal studio acoustic shadowbox louvers + subtle anodized vertical ribs
+    // Crisp horizontal studio acoustic shadowbox louvers + warm brass vertical ribs
     for (let y = 0; y < 512; y += 8) {
-      ctx.fillStyle = 'rgba(4, 10, 20, 0.42)';
+      ctx.fillStyle = 'rgba(42, 20, 9, 0.36)';
       ctx.fillRect(0, y, 512, 3);
-      ctx.fillStyle = 'rgba(92, 168, 214, 0.14)';
+      ctx.fillStyle = 'rgba(242, 169, 34, 0.18)';
       ctx.fillRect(0, y + 3, 512, 1.5);
     }
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.045)';
+    ctx.fillStyle = 'rgba(250, 242, 223, 0.06)';
     for (let x = 0; x < 512; x += 32) {
       ctx.fillRect(x, 0, 2, 512);
     }
@@ -1984,7 +1984,7 @@ export function createLivingColorBroadcastIbl(renderer: THREE.WebGLRenderer): TH
   pmrem.compileEquirectangularShader();
 
   const studioScene = new THREE.Scene();
-  studioScene.background = new THREE.Color(0x132b42); // Rich 1966 30-Rock Studio Navy!
+  studioScene.background = new THREE.Color(0x1e6b73); // Sunlit 1966 Studio 6A Peacock Teal!
 
   const addSoftbox = (
     w: number,
@@ -2014,8 +2014,8 @@ export function createLivingColorBroadcastIbl(renderer: THREE.WebGLRenderer): TH
   // Living Color Peacock Teal & Harvest Gold upstage cove rim bounce
   addSoftbox(12, 5.5, 0x00c8dc, 2.35, [-5.6, 3.6, -6.6]);
   addSoftbox(12, 5.5, 0xffb347, 2.55, [5.6, 3.6, -6.6]);
-  // Glossy sunlit teak/navy studio floor bounce
-  addSoftbox(18, 18, 0x264b68, 1.5, [0, -4.6, 0]);
+  // Glossy sunlit American Walnut studio floor bounce
+  addSoftbox(18, 18, 0x7a4e30, 1.5, [0, -4.6, 0]);
 
   const rt = pmrem.fromScene(studioScene, 0.03);
   disposeObject3DTree(studioScene);

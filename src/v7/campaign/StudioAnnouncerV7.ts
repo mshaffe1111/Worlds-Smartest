@@ -12,7 +12,7 @@
 //    auto-fades cleanly without covering 3D Tote Board tiles or A/B/C/D pads.
 //  - 180+ Non-Repeating Human-Authored 1966 Studio Lines across all mandatory
 //    triggers + 6 distinct 1960s Board Modes (Fisher-Yates no-repeat bags).
-//  - Unified 1964–1969 NBC/CBS Living Color palette (#0B1D30, #F7EEDB, #0096A6,
+//  - Unified 1964–1969 NBC/CBS Living Color palette (#5C301B, #FAF2DF, #008B94,
 //    #F4A91F, #FF6738, #1E56C5, #E63B7A) & Jost / Michroma / Plus Jakarta Sans.
 // ============================================================================
 
@@ -22,6 +22,7 @@ import type {
   CategoryIdV7,
   ClassicTvTileTwistV7,
   EpisodeBlueprintV7,
+  PortraitEmotionV7,
   PostAnswerFlavorKindV8,
   RivalIdV7,
   StageWorldIdV7,
@@ -30,8 +31,10 @@ import {
   CAST_PROFILES_V7,
   CAST_TV_GUIDE_BIOS_V7,
   CHAMPION_VOICE_KITS_V7,
+  PORTRAIT_SPRITE_POSITIONS_V7,
   type ChampionVoiceKitV7,
 } from './CastAndRelicsCatalogV7';
+import { getFriendlyCategoryLabelV7 } from '../corpus/CorpusManagerV7';
 import { computeDailyEpisodeNumberV7 } from './DailyBroadcastV7';
 
 // ----------------------------------------------------------------------------
@@ -117,7 +120,7 @@ export type ChyronToneV7 =
   | 'PEACOCK' // Peacock Teal #0096A6 — Kickoff, 2x Streak, General Studio
   | 'GOLD' // Harvest Marquee Gold #F4A91F — Secret Square, Vault Crack, Victory
   | 'TANGERINE' // Atomic Tangerine #FF6738 — 3x/5x Heater, Nailbiter, Bargain
-  | 'EMERALD' // Emerald Tote Lamp #18A957 — +$50 Rebound, Comeback Lead, Bust
+  | 'EMERALD' // Emerald Tote Lamp #18A957 — +$100 Rebound, Comeback Lead, Bust
   | 'CERISE' // Mod Pop Cerise #E63B7A — Mystery Curtain, Opponent's Choice
   | 'COBALT'; // CBS Royal Cobalt #1E56C5 — Prime-Time Authority
 
@@ -149,7 +152,7 @@ export interface AnnouncerContextV7 {
   readonly playerCash?: number;
   readonly rivalCash?: number;
   readonly cashDelta?: number;
-  readonly reboundBonus?: number; // defaults to 50 for RIVAL_MISS_REBOUND
+  readonly reboundBonus?: number; // defaults to 100 for RIVAL_MISS_REBOUND
   readonly streak?: number;
   readonly turnNumber?: number;
   readonly totalTurns?: number;
@@ -183,6 +186,8 @@ export interface AnnouncerCueEmittedV7 {
   readonly event: AnnouncerEventIdV7;
   readonly persona: AnnouncerPersonaIdV7;
   readonly speakerLabel: string;
+  readonly speakerCastId?: CastIdV7;
+  readonly speakerEmotion?: PortraitEmotionV7;
   readonly kickerTag: string;
   readonly renderedText: string;
   readonly tone: ChyronToneV7;
@@ -338,27 +343,33 @@ export const CHAMPION_ANNOUNCER_QUIPS_V7: Record<RivalIdV7, readonly [string, st
   ],
 };
 
+function formatSpokenCategoryNameV7(category: CategoryIdV7): string {
+  return getFriendlyCategoryLabelV7(category)
+    .toLowerCase()
+    .replace(/\b([a-z])/g, (m) => m.toUpperCase());
+}
+
 const SPOKEN_CATEGORY_NAMES_V7: Record<CategoryIdV7, string> = {
-  MEDICINE: 'Body & Medicine',
-  CHEMISTRY: 'Chemistry',
-  PHYSICS: 'Science & Space',
-  GADGETS: 'Inventions',
-  ENGINES: 'Planes & Autos',
-  LITERATURE: 'Books & Authors',
-  LEXICON: 'Words & Wit',
-  'FINE ARTS': 'Art & Stage',
-  SCREEN: 'Silver Screen',
-  JUKEBOX: 'Hit Parade',
-  FINANCE: 'Money & Markets',
-  PRICING: 'Price Tag',
-  ODDS: 'Luck & Numbers',
-  ATLAS: 'World Atlas',
-  SPORTS: 'Wide World of Sports',
-  DYNASTIES: 'Empires & Kings',
-  HEADLINES: 'Front Page',
-  FOLKLORE: 'Myths & Legends',
-  FALLACIES: 'Brain Twisters',
-  CUISINE: 'Food & Flavor',
+  MEDICINE: formatSpokenCategoryNameV7('MEDICINE'),
+  CHEMISTRY: formatSpokenCategoryNameV7('CHEMISTRY'),
+  PHYSICS: formatSpokenCategoryNameV7('PHYSICS'),
+  GADGETS: formatSpokenCategoryNameV7('GADGETS'),
+  ENGINES: formatSpokenCategoryNameV7('ENGINES'),
+  LITERATURE: formatSpokenCategoryNameV7('LITERATURE'),
+  LEXICON: formatSpokenCategoryNameV7('LEXICON'),
+  'FINE ARTS': formatSpokenCategoryNameV7('FINE ARTS'),
+  SCREEN: formatSpokenCategoryNameV7('SCREEN'),
+  JUKEBOX: formatSpokenCategoryNameV7('JUKEBOX'),
+  FINANCE: formatSpokenCategoryNameV7('FINANCE'),
+  PRICING: formatSpokenCategoryNameV7('PRICING'),
+  ODDS: formatSpokenCategoryNameV7('ODDS'),
+  ATLAS: formatSpokenCategoryNameV7('ATLAS'),
+  SPORTS: formatSpokenCategoryNameV7('SPORTS'),
+  DYNASTIES: formatSpokenCategoryNameV7('DYNASTIES'),
+  HEADLINES: formatSpokenCategoryNameV7('HEADLINES'),
+  FOLKLORE: formatSpokenCategoryNameV7('FOLKLORE'),
+  FALLACIES: formatSpokenCategoryNameV7('FALLACIES'),
+  CUISINE: formatSpokenCategoryNameV7('CUISINE'),
 };
 
 const SPOKEN_STAGE_NAMES_V7: Record<StageWorldIdV7, string> = {
@@ -575,11 +586,11 @@ export const STUDIO_ANNOUNCER_LINES_V7: readonly StudioAnnouncerLineSpecV7[] = [
       ['PETER_MARSHALL_WIT', 'PEACE THROUGH TRIVIA!', 'Grab a Belgian waffle later—right now {rival} is trying to block your +$750 Coast-to-Coast bridge!', 'TANGERINE', 'STAGE_08_WORLDS_FAIR_GEODESIC'],
       ['GRANT_BELLAMY_MC', 'FLUSHING MEADOWS SPOTLIGHT', 'Geodesic ribs gleaming against the evening sky—span the full honeycomb and claim +$750!', 'GOLD', 'STAGE_08_WORLDS_FAIR_GEODESIC'],
 
-      // Stage 10 — 36th-Floor Sovereign Penthouse Finale (4 bespoke openers)
-      ['GRANT_BELLAMY_MC', 'PENTHOUSE 36 · FINALE!', 'Thirty-six floors above Sixth Avenue—climb the Sovereign Ziggurat and line up three for the crown!', 'GOLD', 'STAGE_10_SOVEREIGN_SANCTUM'],
+      // Stage 10 — 38th-Floor Sovereign Penthouse Finale (4 bespoke openers)
+      ['GRANT_BELLAMY_MC', 'PENTHOUSE 38 · FINALE!', 'Thirty-eight floors above Sixth Avenue—climb the Sovereign Ziggurat and line up three for the crown!', 'GOLD', 'STAGE_10_SOVEREIGN_SANCTUM'],
       ['DON_PARDO_BOOTH', 'EXECUTIVE PENTHOUSE LIVE!', 'High above Midtown Manhattan in Living Color—connect three Ziggurat plaques for +$600 and the title!', 'GOLD', 'STAGE_10_SOVEREIGN_SANCTUM'],
       ['ART_FLEMING_HOST', 'SOVEREIGN ZIGGURAT ARMED!', 'Every former champion is watching from the velvet balcony—stay ice-cool against {rival} at the summit!', 'COBALT', 'STAGE_10_SOVEREIGN_SANCTUM'],
-      ['PETER_MARSHALL_WIT', 'TOP OF 30 ROCK · LIVE!', 'Careful leaning over that brass rail—thirty-six floors down is a long way to drop a winning streak!', 'GOLD', 'STAGE_10_SOVEREIGN_SANCTUM'],
+      ['PETER_MARSHALL_WIT', 'TOP OF 30 ROCK · LIVE!', 'Careful leaning over that brass rail—thirty-eight floors down is a long way to drop a winning streak!', 'GOLD', 'STAGE_10_SOVEREIGN_SANCTUM'],
     ],
     'stage',
   ),
@@ -686,24 +697,24 @@ export const STUDIO_ANNOUNCER_LINES_V7: readonly StudioAnnouncerLineSpecV7[] = [
 
   // ======================== 7. RIVAL MISS REBOUND (18) ======================
   ...buildLineBank('RIVAL_MISS_REBOUND', 'EMERALD', [
-    ['DON_PARDO_BOOTH', '+$50 REBOUND LIVE!', 'BRZZZT at {rival}’s lectern! {category} bounces back open with a crisp +$50 Rebound—steal it!'],
-    ['ART_FLEMING_HOST', '+$50 REBOUND OPEN!', '{rival} couldn’t solve {category}! That plaque stays lit with a +$50 Rebound bonus—pounce!'],
-    ['PETER_MARSHALL_WIT', 'BUZZER WHIFF · +$50!', 'Ouch! {rival} left {category} cooling on the windowsill with +$50 taped to it—go pick their pocket!'],
-    ['DON_PARDO_BOOTH', 'CHAMPION BLINKS · +$50!', 'A rare studio buzzer on {rival}! {category} rebounds wide open at +$50—snatch it right now!'],
-    ['GRANT_BELLAMY_MC', '+$50 SWEETENED POT', '{rival} stumbled on {category}, sweetening the Trilon by +$50. Care to sweep up the crystal?'],
-    ['ART_FLEMING_HOST', 'LOOSE CHANGE ON THE TOTE', 'No joy at the Champion’s desk! {category} is worth +$50 extra and sitting wide open for you!'],
-    ['PETER_MARSHALL_WIT', 'FREE +$50 GIFT WRAP!', 'How neighborly of {rival}—whiffed {category} and stapled a crisp Grant fifty right onto the plaque!'],
-    ['DON_PARDO_BOOTH', '+$50 REBOUND ON {category}!', 'Buzzer rasps at the Champion’s desk! +{rebound} Rebound added to {category}—steal that square!'],
-    ['ART_FLEMING_HOST', 'OPPORTUNITY KNOCKS · +$50', 'Every Rival miss adds +$50 straight onto the plaque—{category} is ripe for a clean steal!'],
-    ['GRANT_BELLAMY_MC', 'RIVAL SLIPS · +$50 BOUNTY', 'Even {rival} is mortal under quartz lights! {category} stays live with a +$50 sweetener!'],
-    ['PETER_MARSHALL_WIT', '+$50 ON THE REBOUND!', 'Clang off the rim by {rival}! Snag that +$50 Rebound on {category} before the paint dries!'],
-    ['DON_PARDO_BOOTH', 'WIDE OPEN REBOUND · +$50!', 'Zero dollars for {rival}, and +$50 tacked straight onto {category}—cash in on that rebound!'],
-    ['ART_FLEMING_HOST', '+$50 TOTE SWEETENER', 'Look at {category} rimmed in Emerald—{rival}’s miss just juiced its value by +$50!'],
-    ['PETER_MARSHALL_WIT', 'THANK THE CHAMPION · +$50', '{rival} did the heavy lifting of adding +$50 to {category}; all you have to do is pocket it!'],
-    ['GRANT_BELLAMY_MC', '+$50 UNCLAIMED PLAQUE', 'A swing and a raspy magnetic buzzer from {rival}! +{rebound} Rebound waits on {category}.'],
-    ['DON_PARDO_BOOTH', 'STEAL THE +$50 REBOUND!', '{rival} came up dry! That leaves +{rebound} extra riding on {category}—take it to the bank!'],
-    ['ART_FLEMING_HOST', 'CHAMPION’S MISS, YOUR GAIN', 'Nothing doing at Podium Two—{category} stays lit with a juicy +$50 Rebound bonus!'],
-    ['PETER_MARSHALL_WIT', '+$50 HOUSE EXTRA!', 'Oof, that buzzer echoes all the way to Hoboken! {category} jumped +$50—swoop in!'],
+    ['DON_PARDO_BOOTH', '+$100 REBOUND LIVE!', 'BRZZZT at {rival}’s lectern! {category} bounces back open with a crisp +$100 Rebound—steal it!'],
+    ['ART_FLEMING_HOST', '+$100 REBOUND OPEN!', '{rival} couldn’t solve {category}! That plaque stays lit with a +$100 Rebound bonus—pounce!'],
+    ['PETER_MARSHALL_WIT', 'BUZZER WHIFF · +$100!', 'Ouch! {rival} left {category} cooling on the windowsill with +$100 taped to it—go pick their pocket!'],
+    ['DON_PARDO_BOOTH', 'CHAMPION BLINKS · +$100!', 'A rare studio buzzer on {rival}! {category} rebounds wide open at +$100—snatch it right now!'],
+    ['GRANT_BELLAMY_MC', '+$100 SWEETENED POT', '{rival} stumbled on {category}, sweetening the Trilon by +$100. Care to sweep up the crystal?'],
+    ['ART_FLEMING_HOST', 'LOOSE CHANGE ON THE TOTE', 'No joy at the Champion’s desk! {category} is worth +$100 extra and sitting wide open for you!'],
+    ['PETER_MARSHALL_WIT', 'FREE +$100 GIFT WRAP!', 'How neighborly of {rival}—whiffed {category} and stapled a crisp Benjamin right onto the plaque!'],
+    ['DON_PARDO_BOOTH', '+$100 REBOUND ON {category}!', 'Buzzer rasps at the Champion’s desk! +{rebound} Rebound added to {category}—steal that square!'],
+    ['ART_FLEMING_HOST', 'OPPORTUNITY KNOCKS · +$100', 'Every Rival miss adds +$100 straight onto the plaque—{category} is ripe for a clean steal!'],
+    ['GRANT_BELLAMY_MC', 'RIVAL SLIPS · +$100 BOUNTY', 'Even {rival} is mortal under quartz lights! {category} stays live with a +$100 sweetener!'],
+    ['PETER_MARSHALL_WIT', '+$100 ON THE REBOUND!', 'Clang off the rim by {rival}! Snag that +$100 Rebound on {category} before the paint dries!'],
+    ['DON_PARDO_BOOTH', 'WIDE OPEN REBOUND · +$100!', 'Zero dollars for {rival}, and +$100 tacked straight onto {category}—cash in on that rebound!'],
+    ['ART_FLEMING_HOST', '+$100 TOTE SWEETENER', 'Look at {category} rimmed in Emerald—{rival}’s miss just juiced its value by +$100!'],
+    ['PETER_MARSHALL_WIT', 'THANK THE CHAMPION · +$100', '{rival} did the heavy lifting of adding +$100 to {category}; all you have to do is pocket it!'],
+    ['GRANT_BELLAMY_MC', '+$100 UNCLAIMED PLAQUE', 'A swing and a raspy magnetic buzzer from {rival}! +{rebound} Rebound waits on {category}.'],
+    ['DON_PARDO_BOOTH', 'STEAL THE +$100 REBOUND!', '{rival} came up dry! That leaves +{rebound} extra riding on {category}—take it to the bank!'],
+    ['ART_FLEMING_HOST', 'CHAMPION’S MISS, YOUR GAIN', 'Nothing doing at Podium Two—{category} stays lit with a juicy +$100 Rebound bonus!'],
+    ['PETER_MARSHALL_WIT', '+$100 HOUSE EXTRA!', 'Oof, that buzzer echoes all the way to Hoboken! {category} jumped +$100—swoop in!'],
   ]),
 
   // ======================== 8. COMEBACK LEAD CHANGE (16) ====================
@@ -737,7 +748,7 @@ export const STUDIO_ANNOUNCER_LINES_V7: readonly StudioAnnouncerLineSpecV7[] = [
     ['PETER_MARSHALL_WIT', 'SWEATY PALMS AT THE PODIUM!', 'Two turns to go and it’s tighter than a brand-new pair of patent-leather wingtips!'],
     ['DON_PARDO_BOOTH', 'HOMESTRETCH SHOWDOWN!', 'The brushed snare is ticking faster—just {gap} apart with the checkered flag in sight!'],
     ['GRANT_BELLAMY_MC', 'CHAMPIONSHIP NERVE TEST', 'This is why sponsors buy eight o’clock: final turns, {gap} on the board, zero room to blink.'],
-    ['ART_FLEMING_HOST', 'EVERY DOLLAR CRITICAL!', 'We have a classic network nailbiter! Hunt a fat plaque or a +$50 Rebound right here!'],
+    ['ART_FLEMING_HOST', 'EVERY DOLLAR CRITICAL!', 'We have a classic network nailbiter! Hunt a fat plaque or a +$100 Rebound right here!'],
     ['PETER_MARSHALL_WIT', 'DON’T TOUCH THAT DIAL!', 'If our director throws to a soap commercial right now there’ll be a riot—only {gap} apart!'],
     ['DON_PARDO_BOOTH', 'RAZOR’S EDGE · TURN {turn}!', 'Neck and neck at {playerCash} to {rivalCash}—this broadcast goes down to the final chime!'],
     ['ART_FLEMING_HOST', 'TWO PICKS FROM THE BELL!', 'Stay calm on the thirty-second clock—one crisp answer here can lock {rival} out for good!'],
@@ -1129,14 +1140,14 @@ body:has(.ws7-announcer-stage[data-hidden='false']) .ws7-board-mode-banner {
 .ws7-announcer-ribbon {
   --ws7-chyron-accent: #0096a6;
   --ws7-chyron-accent-bright: #0096a6;
-  --ws7-chyron-kicker-ink: #0b1d30;
+  --ws7-chyron-kicker-ink: #1e140e;
   position: relative;
   max-width: min(690px, 95vw);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0;
-  filter: drop-shadow(0 10px 24px rgba(11, 29, 48, 0.68));
+  filter: drop-shadow(0 10px 24px rgba(30, 20, 14, 0.68));
   transform-origin: left bottom;
   opacity: 0;
   transform: translate3d(-22px, 6px, 0);
@@ -1159,7 +1170,7 @@ body:has(.ws7-announcer-stage[data-hidden='false']) .ws7-board-mode-banner {
     transform 0.28s ease-out;
 }
 
-/* Tone Palettes — Unified 1966 Living Color (#0B1D30, #F7EEDB, #0096A6, #F4A91F, #FF6738, #1E56C5, #E63B7A) */
+/* Tone Palettes — Unified 1966 Living Color (#5C301B, #FAF2DF, #008B94, #F4A91F, #FF6738, #1E56C5, #E63B7A) */
 .ws7-announcer-ribbon[data-tone='PEACOCK'] {
   --ws7-chyron-accent: #0096a6;
   --ws7-chyron-accent-bright: #0096a6;
@@ -1169,7 +1180,7 @@ body:has(.ws7-announcer-stage[data-hidden='false']) .ws7-board-mode-banner {
 .ws7-announcer-ribbon[data-tone='GOLD'] {
   --ws7-chyron-accent: #f4a91f;
   --ws7-chyron-accent-bright: #f4a91f;
-  --ws7-chyron-kicker-ink: #0b1d30;
+  --ws7-chyron-kicker-ink: #1e140e;
 }
 
 .ws7-announcer-ribbon[data-tone='TANGERINE'] {
@@ -1553,15 +1564,15 @@ export function buildEmceeMonogramSvgDataUriV7(mood: EmceeMoodV7 = 'POISED'): st
           ? { bg: '#231A09', ring: '#F4A91F', star: '#FFD166', tilt: 'rotate(5 48 48)' }
           : { bg: '#0C233A', ring: '#0096A6', star: '#F4A91F', tilt: '' };
   const micGroup =
-    '<rect x="38" y="18" width="20" height="32" rx="10" fill="#F4A91F" stroke="#0B1D30" stroke-width="2.5"/>' +
-    '<line x1="40" y1="28" x2="56" y2="28" stroke="#0B1D30" stroke-width="2"/>' +
-    '<line x1="39" y1="35" x2="57" y2="35" stroke="#0B1D30" stroke-width="2"/>' +
-    '<line x1="40" y1="42" x2="56" y2="42" stroke="#0B1D30" stroke-width="2"/>' +
+    '<rect x="38" y="18" width="20" height="32" rx="10" fill="#F4A91F" stroke="#1E140E" stroke-width="2.5"/>' +
+    '<line x1="40" y1="28" x2="56" y2="28" stroke="#1E140E" stroke-width="2"/>' +
+    '<line x1="39" y1="35" x2="57" y2="35" stroke="#1E140E" stroke-width="2"/>' +
+    '<line x1="40" y1="42" x2="56" y2="42" stroke="#1E140E" stroke-width="2"/>' +
     '<path d="M31 36 C31 55 65 55 65 36" fill="none" stroke="#F7EEDB" stroke-width="3" stroke-linecap="round"/>' +
     '<line x1="48" y1="52" x2="48" y2="66" stroke="#F7EEDB" stroke-width="3.5"/>' +
-    '<polygon points="31,62 48,70 31,78" fill="#0B1D30" stroke="#F4A91F" stroke-width="2"/>' +
-    '<polygon points="65,62 48,70 65,78" fill="#0B1D30" stroke="#F4A91F" stroke-width="2"/>' +
-    '<circle cx="48" cy="70" r="4.5" fill="#F4A91F" stroke="#0B1D30" stroke-width="1.5"/>';
+    '<polygon points="31,62 48,70 31,78" fill="#1E140E" stroke="#F4A91F" stroke-width="2"/>' +
+    '<polygon points="65,62 48,70 65,78" fill="#1E140E" stroke="#F4A91F" stroke-width="2"/>' +
+    '<circle cx="48" cy="70" r="4.5" fill="#F4A91F" stroke="#1E140E" stroke-width="1.5"/>';
   const wrapped = palette.tilt ? `<g transform="${palette.tilt}">${micGroup}</g>` : micGroup;
   const svg =
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96">` +
@@ -1674,7 +1685,7 @@ export function interpolateAnnouncerTemplateV7(
   const reboundBonus =
     typeof ctx.reboundBonus === 'number' && Number.isFinite(ctx.reboundBonus) && ctx.reboundBonus > 0
       ? Math.round(ctx.reboundBonus)
-      : 50;
+      : 100;
 
   const resolvedDailyNum = (() => {
     if (
@@ -2032,6 +2043,24 @@ export class StudioAnnouncerControllerV7 {
     }
   }
 
+  private applySpeakerPortrait(
+    castId: CastIdV7,
+    emotion: PortraitEmotionV7,
+    mood: EmceeMoodV7,
+  ): void {
+    if (!this.emceeMedallionEl) return;
+    const profile = CAST_PROFILES_V7[castId];
+    if (!profile?.portraitAsset) {
+      this.applyEmceeMedallionMood(mood);
+      return;
+    }
+    this.emceeMedallionEl.dataset.mood = mood;
+    this.emceeMedallionEl.style.backgroundImage = `url("${profile.portraitAsset}")`;
+    this.emceeMedallionEl.style.backgroundSize = '200% 200%';
+    this.emceeMedallionEl.style.backgroundPosition =
+      PORTRAIT_SPRITE_POSITIONS_V7[emotion]?.bgPosition ?? '0% 0%';
+  }
+
   private applyEmceeMedallionMood(mood: EmceeMoodV7): void {
     if (!this.emceeMedallionEl) return;
     this.emceeMedallionEl.dataset.mood = mood;
@@ -2162,6 +2191,20 @@ export class StudioAnnouncerControllerV7 {
     const validRivalId = isRivalIdInVoiceKitsV8(rivalIdForQuip) ? rivalIdForQuip : undefined;
 
     let renderedText: string;
+    let speakerCastId: CastIdV7 | undefined;
+    let speakerEmotion: PortraitEmotionV7 | undefined;
+    let speakerLabel = personaMeta.speaker;
+    const setRivalSpeaker = (rivalId: RivalIdV7, kind: ChampionReactionKindV7): void => {
+      speakerCastId = rivalId;
+      speakerLabel = `${SPOKEN_CAST_NAMES_V7[rivalId].toUpperCase()} · PODIUM 2`;
+      speakerEmotion =
+        kind === 'FUMBLE' || kind === 'ZONK'
+          ? 'RATTLED'
+          : kind === 'CLUTCH'
+            ? 'TELL'
+            : 'POISED';
+    };
+
     if (
       event === 'EPISODE_KICKOFF' &&
       validRivalId &&
@@ -2179,18 +2222,21 @@ export class StudioAnnouncerControllerV7 {
       this.nextRandom01() < 0.8
     ) {
       renderedText = this.getChampionReactionQuip(validRivalId, 'SMIRK', effectiveCtx);
+      setRivalSpeaker(validRivalId, 'SMIRK');
     } else if (
       event === 'RIVAL_MISS_REBOUND' &&
       validRivalId &&
       this.nextRandom01() < 0.72
     ) {
       renderedText = this.getChampionReactionQuip(validRivalId, 'FUMBLE', effectiveCtx);
+      setRivalSpeaker(validRivalId, 'FUMBLE');
     } else if (
       event === 'BIG_WHEEL_SPIN_START' &&
       validRivalId &&
       this.nextRandom01() < 0.6
     ) {
       renderedText = this.getChampionReactionQuip(validRivalId, 'WHEEL', effectiveCtx);
+      setRivalSpeaker(validRivalId, 'WHEEL');
     } else if (
       event === 'GREMLIN_ZONK_BLOWUP' &&
       validRivalId &&
@@ -2198,23 +2244,27 @@ export class StudioAnnouncerControllerV7 {
       this.nextRandom01() < 0.8
     ) {
       renderedText = this.getChampionReactionQuip(validRivalId, 'ZONK', effectiveCtx);
+      setRivalSpeaker(validRivalId, 'ZONK');
     } else if (
       event === 'SCOUTING_DISCOVERY' &&
       validRivalId &&
       !effectiveCtx.outcomeLabel &&
       this.nextRandom01() < 0.82
     ) {
+      const scoutKind = effectiveCtx.scoutKind === 'STRONG' ? 'SCOUT_STRONG' : 'SCOUT_WEAK';
       renderedText = this.getChampionReactionQuip(
         validRivalId,
-        effectiveCtx.scoutKind === 'STRONG' ? 'SCOUT_STRONG' : 'SCOUT_WEAK',
+        scoutKind,
         effectiveCtx,
       );
+      setRivalSpeaker(validRivalId, scoutKind);
     } else if (
       event === 'FINAL_2_TURN_NAILBITER' &&
       validRivalId &&
       this.nextRandom01() < 0.5
     ) {
       renderedText = this.getChampionReactionQuip(validRivalId, 'CLUTCH', effectiveCtx);
+      setRivalSpeaker(validRivalId, 'CLUTCH');
     } else {
       renderedText = interpolateAnnouncerTemplateV7(lineSpec.template, effectiveCtx);
     }
@@ -2235,7 +2285,8 @@ export class StudioAnnouncerControllerV7 {
       lineId: lineSpec.id,
       event,
       persona: lineSpec.persona,
-      speakerLabel: personaMeta.speaker,
+      speakerLabel,
+      ...(speakerCastId ? { speakerCastId, speakerEmotion } : {}),
       kickerTag,
       renderedText,
       tone: lineSpec.tone,
@@ -2273,7 +2324,11 @@ export class StudioAnnouncerControllerV7 {
     this.ribbonEl.dataset.tone = cue.tone;
     this.kickerBladeEl.textContent = cue.kickerTag;
     this.speakerBladeEl.textContent = cue.speakerLabel;
-    this.applyEmceeMedallionMood(cue.mood);
+    if (cue.speakerCastId && cue.speakerCastId !== 'GRANT_BELLAMY') {
+      this.applySpeakerPortrait(cue.speakerCastId, cue.speakerEmotion ?? 'POISED', cue.mood);
+    } else {
+      this.applyEmceeMedallionMood(cue.mood);
+    }
     this.micEmblemEl.innerHTML = renderPersonaGlyphSvg(glyphKind);
     this.copyEl.textContent = cue.renderedText;
 
@@ -2401,7 +2456,7 @@ export class StudioAnnouncerControllerV7 {
     this.lastChampionQuipByKey.set(bagKey, rawTemplate);
     return interpolateAnnouncerTemplateV7(rawTemplate, {
       rivalId,
-      reboundBonus: ctx.reboundBonus ?? 50,
+      reboundBonus: ctx.reboundBonus ?? 100,
       ...ctx,
     });
   }
@@ -2479,7 +2534,7 @@ export class StudioAnnouncerControllerV7 {
 
   public onRivalMissRebound(ctx: AnnouncerContextV7 = {}): AnnouncerCueEmittedV7 | null {
     return this.announce('RIVAL_MISS_REBOUND', {
-      reboundBonus: 50,
+      reboundBonus: 100,
       forceImmediate: true,
       ...ctx,
     });
@@ -2935,7 +2990,7 @@ export function getHostQuestionIntroLineV7(
   const category = SPOKEN_CATEGORY_NAMES_V7[ctx.category] ?? ctx.category;
   const cash = formatDollarsV7(ctx.cashValue);
   const rival = compactRivalFirstNameV7(ctx.rivalName);
-  const twist = ctx.twistLabel ? ctx.twistLabel.trim().slice(0, 22) : '';
+  const twist = ctx.twistLabel ? ctx.twistLabel.trim() : '';
 
   let template: string;
   let mood: EmceeMoodV7 = 'POISED';
@@ -2974,7 +3029,7 @@ export function getHostQuestionIntroLineV7(
     .replace(/\{twist\}/g, twist);
 
   return {
-    hostLine: clampHostCopyV7(raw, 88),
+    hostLine: clampHostCopyV7(raw, twist ? 120 : 88),
     mood,
   };
 }
@@ -3091,7 +3146,7 @@ const HOST_REVEAL_MISS_V7: readonly { readonly headline: string; readonly quip: 
   { headline: 'TRICKY PLAQUE!', quip: 'Half the mezzanine groaned on that one too—reset your rhythm and swing again!' },
   { headline: 'CLOSE CALL!', quip: 'Good instinct, wrong envelope—bounce right back on your favorite category!' },
   { headline: 'STUMPED BY THE VAULT!', quip: 'That’s why they pay our trivia writers! Watch {rival}’s move for a rebound.' },
-  { headline: 'MISSED THE CHIME!', quip: 'Happens to five-week champs too—keep your eyes on that +$50 Rebound!' },
+  { headline: 'MISSED THE CHIME!', quip: 'Happens to five-week champs too—keep your eyes on that +$100 Rebound!' },
   { headline: 'ROUGH BOUNCE!', quip: 'Don’t sweat the buzzer—one unlocked Vault or Secret Square erases that fast!' },
   { headline: 'UNLUCKY DRAW!', quip: 'A classic 1966 stumper—take a breath and steal the momentum right back!' },
 ];

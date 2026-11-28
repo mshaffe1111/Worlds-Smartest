@@ -104,7 +104,7 @@ function lerp(a: number, b: number, t: number): number {
 
 /**
  * Generates a 512x512 sRGB curved soundstage cyclorama texture in authentic
- * 1966 NBC/CBS "In Living Color" Peacock Navy (`#0B1D30`), CBS Royal Cobalt
+ * 1966 NBC/CBS "In Living Color" Sunlit Walnut (`#5C301B`), CBS Royal Cobalt
  * (`#1E56C5`), and Peacock Teal (`#0096A6`) with theater-curtain pleats and
  * warm overhead spotlight pool.
  */
@@ -129,14 +129,14 @@ function getLivingColorCycloramaTexture(): THREE.DataTexture {
       const pleatWave = 0.5 + 0.5 * Math.sin(u * Math.PI * 42.0);
       const pleatMod = 0.93 + 0.12 * pleatWave * (0.35 + 0.65 * centerGlow);
 
-      let r = lerp(10, 32, centerGlow) + tealHalo * 8 + warmSpot * 110;
-      let g = lerp(26, 92, centerGlow) + tealHalo * 144 + warmSpot * 82;
-      let b = lerp(46, 206, centerGlow) + tealHalo * 158 + warmSpot * 32;
+      let r = lerp(74, 28, centerGlow) + tealHalo * 12 + warmSpot * 118;
+      let g = lerp(40, 108, centerGlow) + tealHalo * 138 + warmSpot * 84;
+      let b = lerp(22, 168, centerGlow) + tealHalo * 148 + warmSpot * 34;
 
       const horizonLift = Math.pow(clamp01(1.0 - Math.abs(v - 0.22) * 3.0), 2.0) * 0.2;
-      r = (r + horizonLift * 20) * pleatMod;
-      g = (g + horizonLift * 58) * pleatMod;
-      b = (b + horizonLift * 116) * pleatMod;
+      r = (r + horizonLift * 88) * pleatMod;
+      g = (g + horizonLift * 56) * pleatMod;
+      b = (b + horizonLift * 28) * pleatMod;
 
       const i4 = (py * size + px) * 4;
       bytes[i4] = Math.min(255, Math.max(0, Math.round(r)));
@@ -197,7 +197,7 @@ function getBacklitAcryliteStageTexture(): THREE.DataTexture {
   return tex;
 }
 
-/** 100% DOM-free soft radial contact AO shadow texture (deep peacock-navy shadow). */
+/** 100% DOM-free soft radial contact AO shadow texture (warm sunlit espresso shadow). */
 function getVaultContactShadowTexture(): THREE.DataTexture {
   if (cachedContactShadowDataTex) return cachedContactShadowDataTex;
 
@@ -211,9 +211,9 @@ function getVaultContactShadowTexture(): THREE.DataTexture {
       const falloff = clamp01(1.0 - dist);
       const alpha = Math.pow(falloff, 2.05) * 0.92;
       const i4 = (py * size + px) * 4;
-      bytes[i4] = 5;
-      bytes[i4 + 1] = 12;
-      bytes[i4 + 2] = 26;
+      bytes[i4] = 28;
+      bytes[i4 + 1] = 16;
+      bytes[i4 + 2] = 10;
       bytes[i4 + 3] = Math.round(alpha * 255);
     }
   }
@@ -352,9 +352,9 @@ function createEngravedPlaqueTexture(
   // Tier-tailored brushed metal sheen gradient (high-contrast museum engraving!)
   const grad = ctx.createLinearGradient(0, 0, 512, 192);
   if (!unlocked) {
-    grad.addColorStop(0.0, '#13243a');
-    grad.addColorStop(0.5, '#1e3a5c');
-    grad.addColorStop(1.0, '#0f1d30');
+    grad.addColorStop(0.0, '#6E3B23');
+    grad.addColorStop(0.5, '#8A5232');
+    grad.addColorStop(1.0, '#4E2815');
   } else if (meta.tierBadge === 'PLATINUM CROWN') {
     grad.addColorStop(0.0, '#aebfd4');
     grad.addColorStop(0.48, '#e3eef9');
@@ -386,7 +386,7 @@ function createEngravedPlaqueTexture(
   }
 
   // Deep etched museum border
-  const ink = unlocked ? '#120a02' : '#8fd2f8';
+  const ink = unlocked ? '#120a02' : '#FAF2DF';
   ctx.strokeStyle = ink;
   ctx.lineWidth = 7;
   ctx.strokeRect(10, 10, 492, 172);
@@ -403,18 +403,18 @@ function createEngravedPlaqueTexture(
   for (const [rx, ry] of rivets) {
     ctx.beginPath();
     ctx.arc(rx, ry, 7.5, 0, Math.PI * 2);
-    ctx.fillStyle = unlocked ? '#2b1804' : '#0b1829';
+    ctx.fillStyle = unlocked ? '#2b1804' : '#3E2012';
     ctx.fill();
     ctx.beginPath();
     ctx.arc(rx - 1.5, ry - 1.5, 4, 0, Math.PI * 2);
-    ctx.fillStyle = unlocked ? '#ffe7a0' : '#63b8e8';
+    ctx.fillStyle = unlocked ? '#ffe7a0' : '#D9A441';
     ctx.fill();
   }
 
   // Tier Header Band
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillStyle = unlocked ? '#241202' : '#7ac7f0';
+  ctx.fillStyle = unlocked ? '#241202' : '#FAF2DF';
   ctx.font = '900 24px "Trebuchet MS", "Arial Black", sans-serif';
   const topLabel = unlocked
     ? `★ ${meta.tierBadge} · S0${spec.season} ★`
@@ -617,7 +617,7 @@ export function bakeWarmTungstenIblV7(renderer: THREE.WebGLRenderer): THREE.WebG
   pmrem.compileEquirectangularShader();
 
   const studioScene = new THREE.Scene();
-  studioScene.background = new THREE.Color(0x0b1d30);
+  studioScene.background = new THREE.Color(0x2c1810);
 
   const addStudioSoftboxDisc = (
     radius: number,
@@ -651,8 +651,8 @@ export function bakeWarmTungstenIblV7(renderer: THREE.WebGLRenderer): THREE.WebG
   addStudioSoftboxDisc(5.4, 0x1b4fb8, 2.15, [-5.6, 3.8, -6.5]);
   // Atomic Carnaby Tangerine / Gold kicker strip (back-right)
   addStudioSoftboxDisc(4.8, 0xf27636, 1.95, [5.6, 3.6, -6.2]);
-  // Deep Peacock Midnight stage floor bounce (rich dark reflections, ZERO pastel pink!)
-  addStudioSoftboxDisc(9.5, 0x0c2448, 1.15, [0, -4.5, 0]);
+  // Sunlit Walnut studio floor bounce
+  addStudioSoftboxDisc(9.5, 0x7a4e30, 1.15, [0, -4.5, 0]);
 
   const rt = pmrem.fromScene(studioScene, 0.028);
   disposeObject3DTree(studioScene);
@@ -986,9 +986,9 @@ export const TROPHY_CATALOG_V7: readonly TrophySpecV7[] = [
   {
     trophyId: 'trophy_s4_32',
     season: 4,
-    name: 'Clean $250K Safe-Cracker Vault',
+    name: 'Clean $222K Safe-Cracker Vault',
     subtitle: 'Unblemished Network Buyout Crown',
-    engraving: '$250,000 — ZERO SHADY CASH',
+    engraving: '$222,000 — ZERO SHADY CASH',
     unlockRuleText: 'Retire all 12 Network Buyout seals with $0 Backstage Contraband cash.',
     materialTier: 'PLATINUM_ONYX',
     sculptKind: 'RIBBON_MIC',
@@ -1027,7 +1027,7 @@ export const TROPHY_CATALOG_V7: readonly TrophySpecV7[] = [
     trophyId: 'trophy_s4_36',
     season: 4,
     name: 'World’s Smartest Grand Masterpiece',
-    subtitle: '90-Episode $250,000 Grand Slam',
+    subtitle: '90-Episode $222,000 Grand Slam',
     engraving: 'LIVE IN LIVING COLOR',
     unlockRuleText: 'Win Episode 90 and complete the entire 90-Episode Grand Broadcast.',
     materialTier: 'PLATINUM_ONYX',
@@ -1403,7 +1403,7 @@ const TROPHY_DISPLAY_META_LIST_V7: readonly TrophyDisplayMetaV7[] = [
     'PLATINUM CROWN',
     'CHAMPIONSHIP DYNASTY',
     '#FDE047',
-    '$250K Celestial Peacock Armillary',
+    '$222K Celestial Peacock Armillary',
     'DYNASTY',
     'Conquer Episode 90 to claim the Grand 90-Episode Masterpiece!',
   ),
@@ -1534,7 +1534,7 @@ function getTierVelvetHex(tier: TrophyTierBadgeV7): { base: number; sheen: numbe
     case 'BRONZE MEDAL':
       return { base: 0x4d0b1e, sheen: 0xa82848 }; // Deep Studio Burgundy Velvet
     case 'SILVER MEDAL':
-      return { base: 0x0b1d47, sheen: 0x3b76d6 }; // Deep CBS Midnight Cobalt Velvet
+      return { base: 0x1746a2, sheen: 0x5c94f5 }; // Sunlit CBS Broadcast Cobalt Velvet
     case 'GOLD TROPHY':
       return { base: 0x063532, sheen: 0x1aa89c }; // Deep Peacock Emerald Velvet
     case 'PLATINUM CROWN':
@@ -1553,10 +1553,10 @@ function createTrophyPalette(
 
   if (!unlocked) {
     // Dramatic *Smash Bros. Melee* / *Astro Bot* Silhouetted Mystery Casting:
-    // Satin midnight-cobalt gunmetal with a crisp peacock rim sheen so every unique
+    // Warm brushed bronze-pewter with champagne-brass rim sheen so every unique
     // silhouette reads unmistakably while screaming "LOCKED — UNLOCK ME TO SEE MY GOLD!"
     const lockedPrimary = new THREE.MeshPhysicalMaterial({
-      color: 0x1a3150,
+      color: 0x6e5a4f,
       metalness: 0.76,
       roughness: 0.3,
       clearcoat: 0.45,
@@ -1567,7 +1567,7 @@ function createTrophyPalette(
       envMapIntensity: 1.45,
     });
     const lockedSecondary = new THREE.MeshPhysicalMaterial({
-      color: 0x2b4a70,
+      color: 0x8c7462,
       metalness: 0.82,
       roughness: 0.25,
       clearcoat: 0.48,
@@ -1576,38 +1576,38 @@ function createTrophyPalette(
       envMapIntensity: 1.55,
     });
     const lockedJewel = new THREE.MeshPhysicalMaterial({
-      color: 0x13385c,
+      color: 0x5c4232,
       metalness: 0.45,
       roughness: 0.22,
       clearcoat: 0.72,
-      emissive: 0x104168,
-      emissiveIntensity: 0.32,
+      emissive: 0xd9a441,
+      emissiveIntensity: 0.28,
       envMap,
       envMapIntensity: 1.35,
     });
     const lockedDark = new THREE.MeshPhysicalMaterial({
-      color: 0x0e1d32,
+      color: 0x4a2614,
       metalness: 0.65,
       roughness: 0.36,
       clearcoat: 0.3,
       envMap,
       envMapIntensity: 1.15,
     });
-    const lockedGlass = createBorosilicateGlassMaterial(0x64a8d0, 0.22, envMap);
+    const lockedGlass = createBorosilicateGlassMaterial(0xfaf2df, 0.26, envMap);
     const lockedVelvet = new THREE.MeshPhysicalMaterial({
-      color: 0x0d192b,
+      color: 0x4e2815,
       metalness: 0.04,
       roughness: 0.88,
       sheen: 0.65,
       sheenRoughness: 0.55,
-      sheenColor: new THREE.Color(0x2e5d86),
+      sheenColor: new THREE.Color(0xd9a441),
       envMap,
       envMapIntensity: 0.55,
     });
     const lockedGlow = new THREE.MeshStandardMaterial({
-      color: 0x7ac7f0,
-      emissive: 0x2f88c2,
-      emissiveIntensity: 0.72,
+      color: 0xf2a922,
+      emissive: 0xd9a441,
+      emissiveIntensity: 0.68,
       roughness: 0.2,
       metalness: 0.2,
     });
@@ -1680,7 +1680,7 @@ function createTrophyPalette(
   const glass = createBorosilicateGlassMaterial(0xdcf4ff, 0.22, envMap);
 
   const obsidian = new THREE.MeshPhysicalMaterial({
-    color: 0x0b0f18,
+    color: 0x1c1410,
     metalness: 0.08,
     roughness: 0.26,
     clearcoat: 0.45,
@@ -1689,7 +1689,7 @@ function createTrophyPalette(
     envMapIntensity: 0.75,
   });
   const studioBlack = new THREE.MeshPhysicalMaterial({
-    color: 0x202630,
+    color: 0x2b2420,
     metalness: 0.45,
     roughness: 0.34,
     clearcoat: 0.28,
@@ -1704,7 +1704,7 @@ function createTrophyPalette(
     envMapIntensity: 0.65,
   });
   const sapphireDeep = new THREE.MeshPhysicalMaterial({
-    color: 0x0b2d5e,
+    color: 0x1746a2,
     metalness: 0.24,
     roughness: 0.11,
     clearcoat: 0.95,
@@ -5383,7 +5383,7 @@ export function buildTrophySculptureV7(
   root.add(turntableGroup);
 
   const clearcoatedPlinthMat = new THREE.MeshPhysicalMaterial({
-    color: unlocked ? 0x0d2654 : 0x11223a,
+    color: unlocked ? 0x008b94 : 0x6e3b23,
     metalness: 0.24,
     roughness: 0.16,
     clearcoat: 0.9,
@@ -5428,9 +5428,9 @@ export function buildTrophySculptureV7(
   const acryliteDiffTex = getBacklitAcryliteStageTexture();
   const accentHexNum = Number.parseInt(meta.accentHex.replace('#', ''), 16) || seasonHex;
   const backlitAcryliteTopMat = new THREE.MeshPhysicalMaterial({
-    color: unlocked ? 0x1b3a66 : 0x182f4c,
+    color: unlocked ? 0x008b94 : 0x6e3b23,
     map: acryliteDiffTex,
-    emissive: unlocked ? accentHexNum : 0x1c466e,
+    emissive: unlocked ? accentHexNum : 0xd9a441,
     emissiveMap: acryliteDiffTex,
     emissiveIntensity: unlocked ? 0.32 : 0.18,
     metalness: 0.08,
@@ -5706,10 +5706,10 @@ function buildLivingColorShowcaseBackdrop(
   cycWall.name = 'PeacockCobaltStudioCyclorama';
   group.add(cycWall);
 
-  // 2. Deep Glossy Peacock Midnight Studio Stage Floor (rich navy — zero salmon glare!)
+  // 2. Glossy Sunlit American Walnut Stage Floor
   const stageDeckMat = new THREE.MeshPhysicalMaterial({
-    color: 0x091c3a,
-    metalness: 0.22,
+    color: 0x4e2815,
+    metalness: 0.16,
     roughness: 0.22,
     clearcoat: 0.78,
     clearcoatRoughness: 0.12,
@@ -5829,9 +5829,9 @@ function buildLivingColorShowcaseBackdrop(
     archBulbMats.push(bMat);
   }
 
-  // 5. Flat Architectural Peacock-Cobalt Upstage Starburst Relief (NO distracting center orb!)
+  // 5. Flat Architectural Brass & Peacock Teal Upstage Starburst Relief
   const calmCobaltRosetteMat = new THREE.MeshPhysicalMaterial({
-    color: 0x103568,
+    color: 0xd9a441,
     metalness: 0.28,
     roughness: 0.42,
     clearcoat: 0.25,
@@ -5839,7 +5839,7 @@ function buildLivingColorShowcaseBackdrop(
     envMapIntensity: 0.6,
   });
   const calmTealRosetteMat = new THREE.MeshPhysicalMaterial({
-    color: 0x0c4b66,
+    color: 0x008b94,
     metalness: 0.24,
     roughness: 0.42,
     clearcoat: 0.25,
@@ -5967,7 +5967,7 @@ export class LitTrophyVaultRendererV7 {
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.04;
-    this.renderer.setClearColor(0x0b1d30, 1.0);
+    this.renderer.setClearColor(0x2c1810, 1.0);
     this.renderer.setPixelRatio(
       Math.min(typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1, 2.0),
     );
@@ -5984,7 +5984,7 @@ export class LitTrophyVaultRendererV7 {
     this.envMap = this.ownedEnvRT.texture;
 
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x0b1d30);
+    this.scene.background = new THREE.Color(0x2c1810);
     this.scene.environment = this.envMap;
     this.scene.environmentIntensity = 1.32;
 
@@ -6007,8 +6007,8 @@ export class LitTrophyVaultRendererV7 {
     const crownSpecLight = new THREE.DirectionalLight(0xffffff, 0.92);
     crownSpecLight.position.set(0.65, 4.6, 1.65);
 
-    // Clean TV Warm Cream sky + deep Peacock Cobalt stage bounce
-    const studioHemi = new THREE.HemisphereLight(0xfff2dc, 0x0c2452, 0.64);
+    // Clean TV Warm Cream sky + sunlit American Walnut stage bounce
+    const studioHemi = new THREE.HemisphereLight(0xfff2dc, 0x6e3b23, 0.64);
 
     // Dynamic front-plinth tungsten / sapphire bounce light (updates with unlocked state!)
     this.marqueeFrontGlow = new THREE.PointLight(0xffcf6e, 0.56, 3.2, 1.6);
@@ -6164,13 +6164,21 @@ export class LitTrophyVaultRendererV7 {
 
   /** Sets turntable yaw rotation explicitly (useful for hero inspections & studio renders). */
   public setYawAngle(radians: number): void {
+    if (this.isDisposed || !this.renderer.domElement.isConnected) return;
+    const glCtx = this.renderer.getContext();
+    if (!glCtx || glCtx.isContextLost()) return;
     if (this.activeBuilt) {
       this.activeBuilt.turntableGroup.rotation.y = radians;
-      this.renderer.render(this.scene, this.camera);
+      try {
+        this.renderer.render(this.scene, this.camera);
+      } catch {
+        this.stop();
+      }
     }
   }
 
   public resize(width: number, height: number): void {
+    if (this.isDisposed || this.renderer.getContext()?.isContextLost?.()) return;
     const w = Math.max(1, Math.floor(width));
     const h = Math.max(1, Math.floor(height));
     const aspect = w / h;
@@ -6182,7 +6190,12 @@ export class LitTrophyVaultRendererV7 {
   }
 
   public renderFrameNow(dtSec = 1 / 60): void {
-    if (this.isDisposed) return;
+    if (this.isDisposed || !this.renderer.domElement.isConnected) return;
+    const glCtx = this.renderer.getContext();
+    if (!glCtx || glCtx.isContextLost()) {
+      this.stop();
+      return;
+    }
     const clampedDt = Math.min(0.05, Math.max(0, dtSec));
     this.studioElapsedSec += clampedDt;
 
@@ -6216,7 +6229,11 @@ export class LitTrophyVaultRendererV7 {
     }
     this.studioBackdrop.starburstRosette.rotation.z = -this.studioElapsedSec * 0.085;
 
-    this.renderer.render(this.scene, this.camera);
+    try {
+      this.renderer.render(this.scene, this.camera);
+    } catch {
+      this.stop();
+    }
   }
 
   public start(): void {

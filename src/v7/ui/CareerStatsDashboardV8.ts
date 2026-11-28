@@ -13,7 +13,7 @@
 //       3. QUESTION TYPES & CHEATS (Classic 4-Option vs Showcase Contraptions
 //          + 3 Illuminated Lifeline ROI Cards)
 //       4. STREAKS & BOARD MODES (Visual Streak Milestone Thermometer
-//          + 8 TV Board Formats Mastery Grid)
+//          + 16 TV Board Formats Mastery Grid)
 //   - Responsive across 1440x900 Desktop, 768x1024 Tablet & 390x844 Mobile.
 // ============================================================================
 
@@ -29,6 +29,7 @@ import {
   type CategorySortModeV8,
 } from '../campaign/CareerStatsLedgerV8';
 import type {
+  BoardPlayModeV9,
   CareerStatsLedgerV8,
   CategoryIdV7,
   MatchHistoryPointV8,
@@ -47,6 +48,7 @@ export interface CareerStatsDashboardModalOptionsV8 {
   readonly initialTab?: CareerStatsDashboardTabIdV8;
   readonly onClose?: () => void;
   readonly onPracticeCategory?: (cat: CategoryIdV7) => void;
+  readonly onLaunchBoardMode?: (mode: BoardPlayModeV9) => void;
 }
 
 const CAREER_STATS_STYLE_ID_V8 = 'ws8-career-stats-dashboard-css';
@@ -125,6 +127,8 @@ export function ensureCareerStatsDashboardStylesV8(): void {
     /* Warm Broadcast Cream (#FAF2DF -> #F3E6C8) Interior Ledger Sheet */
     .ws8-cs-folio-sheet {
       width: 100%;
+      flex: 1 1 auto;
+      min-height: 0;
       max-height: 100%;
       display: flex;
       flex-direction: column;
@@ -231,6 +235,8 @@ export function ensureCareerStatsDashboardStylesV8(): void {
 
     /* 4-Tab Sunlit Brass & Cream Index Bar */
     .ws8-cs-tab-bar {
+      position: relative;
+      z-index: 2;
       flex-shrink: 0;
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -238,6 +244,7 @@ export function ensureCareerStatsDashboardStylesV8(): void {
       padding: 8px 14px;
       background: linear-gradient(180deg, #F6E9CE 0%, #EFE0BE 100%);
       border-bottom: 2px solid #D9A441;
+      box-shadow: 0 3px 10px rgba(92, 48, 27, 0.14);
     }
 
     .ws8-cs-tab-btn {
@@ -281,7 +288,8 @@ export function ensureCareerStatsDashboardStylesV8(): void {
       min-height: 0;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 10px 14px 12px;
+      scroll-padding-top: 12px;
+      padding: 12px 14px 14px;
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -813,10 +821,10 @@ export function ensureCareerStatsDashboardStylesV8(): void {
       background: #FFFDF7;
       border: 1.5px solid #D9A441;
       border-radius: 13px;
-      padding: 12px;
+      padding: 10px 11px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
 
     .ws8-cs-thermo-tube {
@@ -852,6 +860,50 @@ export function ensureCareerStatsDashboardStylesV8(): void {
       flex-direction: column;
       justify-content: space-between;
       gap: 7px;
+    }
+
+    .ws8-cs-board-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .ws8-cs-board-trophy-hint {
+      font-size: 11px;
+      font-weight: 800;
+      color: #6E3B23;
+      line-height: 1.2;
+    }
+
+    .ws8-cs-board-trophy-hint[data-mastered='true'] {
+      color: #15803D;
+    }
+
+    .ws8-cs-play-mode-btn {
+      appearance: none;
+      min-height: 36px;
+      padding: 5px 10px;
+      border-radius: 8px;
+      border: 1.5px solid #D9A441;
+      background: linear-gradient(180deg, #009CA6 0%, #007982 100%);
+      color: #FFFDF7;
+      font-family: 'Jost', sans-serif;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      cursor: pointer;
+      flex-shrink: 0;
+      box-shadow: 0 2px 0 #5C301B;
+    }
+
+    .ws8-cs-play-mode-btn:hover,
+    .ws8-cs-play-mode-btn:focus-visible {
+      filter: brightness(1.06);
+      outline: 2px solid #F2A922;
+      outline-offset: 1px;
     }
 
     /* Responsive Tablet (<= 960px) & Mobile Portrait (<= 640px) */
@@ -1554,7 +1606,7 @@ export function openCareerStatsDashboardModalV8(
 
       <section class="ws8-cs-plaque">
         <div class="ws8-cs-section-head">
-          <h3 class="ws8-cs-section-title">CLASSIC 4-OPTION MONITOR STYLES (5)</h3>
+          <h3 class="ws8-cs-section-title">CLASSIC MONITOR &amp; DUEL STYLES (${breakdown.classicCardStyles.length})</h3>
         </div>
         <div class="ws8-cs-format-grid">
           ${classicRowsHtml}
@@ -1592,6 +1644,8 @@ export function openCareerStatsDashboardModalV8(
       Math.round((bestDailyStreak / dailyTarget) * 100),
     );
 
+    const masteredBoardsCount = boardModes.filter((bm) => bm.won > 0).length;
+
     const boardsHtml = boardModes
       .map(
         (bm) => `
@@ -1605,6 +1659,10 @@ export function openCareerStatsDashboardModalV8(
           <div class="ws8-cs-cat-meta">
             <span>Won: <strong>${bm.won}/${bm.played}</strong></span>
             <span>Best: <strong>${formatDollarsV8(bm.bestCash)}</strong></span>
+          </div>
+          <div class="ws8-cs-board-foot">
+            <span class="ws8-cs-board-trophy-hint" data-mastered="${bm.won > 0}">${bm.won > 0 ? 'TROPHY MASTERED' : 'WIN 1 FOR TROPHY'}</span>
+            <button type="button" class="ws8-cs-play-mode-btn" data-launch-board-mode="${bm.mode}">▶ PLAY</button>
           </div>
         </div>
       `,
@@ -1641,8 +1699,8 @@ export function openCareerStatsDashboardModalV8(
 
       <section class="ws8-cs-plaque">
         <div class="ws8-cs-section-head">
-          <h3 class="ws8-cs-section-title">8 TV BOARD FORMATS MASTERY GRID</h3>
-          <span class="ws8-cs-section-sub">Win Share &amp; Personal High Score per Studio Rack</span>
+          <h3 class="ws8-cs-section-title">${boardModes.length} TV BOARD FORMATS MASTERY GRID</h3>
+          <span class="ws8-cs-section-sub">${masteredBoardsCount} / ${boardModes.length} Won · Win each format to unlock Board Master Trophy milestones</span>
         </div>
         <div class="ws8-cs-board-grid">
           ${boardsHtml}
@@ -1746,6 +1804,19 @@ export function openCareerStatsDashboardModalV8(
           if (cat && opts?.onPracticeCategory) {
             close();
             opts.onPracticeCategory(cat);
+          }
+        });
+      });
+
+    // Quick-Launch specific TV Board Format CTA button
+    scope
+      .querySelectorAll<HTMLButtonElement>('[data-launch-board-mode]')
+      .forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const mode = btn.getAttribute('data-launch-board-mode') as BoardPlayModeV9 | null;
+          if (mode && opts?.onLaunchBoardMode) {
+            close();
+            opts.onLaunchBoardMode(mode);
           }
         });
       });

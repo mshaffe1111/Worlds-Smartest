@@ -12,7 +12,7 @@
 //     `CYANOTYPE_PLATES_20_V7`, `CYANOTYPE_PLATE_SPECS_V7`, `CyanotypePlateSpecV7`,
 //     `CyanotypeRenderOptionsV7`, `CYANOTYPE_PALETTE_V7`,
 //     `CATEGORY_PLATE_IMAGE_PATHS_V8`, `getCategoryPlateImageUrlV8`).
-//   - ZERO dark-blue `#0B1D30` / `#081830` boxes and ZERO programmer stick-art:
+//   - ZERO dark-blue SaaS boxes and ZERO programmer stick-art:
 //     all 8 interactive `[data-zone-idx="0..7"]` chambers use transparent
 //     Acrylite hit-frames directly over the genuine painted 1966 gouache art!
 //   - Strictly disjoint 4x2 geometry (`w = 116 >= 86`, `h = 126 >= 80`).
@@ -246,7 +246,7 @@ export const CYANOTYPE_PLATES_20_V7: Record<CategoryIdV7, CyanotypePlateSpecV7> 
  * crystal-clear interactive touch compartments (`data-zone-idx="0..7"`).
  *
  * STRICT INVARIANT: Contains ZERO `<text>` elements, ZERO HTML comments,
- * ZERO `#0B1D30` dark-blue boxes, and ZERO spoiler English words!
+ * ZERO dark-blue SaaS boxes, and ZERO spoiler English words!
  */
 export function renderCyanotypePlateSVG(
   category: CategoryIdV7,

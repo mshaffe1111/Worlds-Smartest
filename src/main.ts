@@ -9,6 +9,7 @@
 // ============================================================================
 
 import './styles/broadcast_v7.css';
+import './styles/showroom_modes_v9.css';
 import { bootShowtimeV7 } from './v7/ShowtimeAppV7';
 
 interface OfflineSwClientModule {

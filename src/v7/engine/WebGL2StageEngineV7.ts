@@ -15,6 +15,10 @@ import * as THREE from 'three';
 import type {
   BroadcastSettingsV7,
   CoupRegimeIdV7,
+  CrowdMoodV9,
+  ReactiveSignIdV9,
+  SeasonIdV7,
+  StageEngineContract,
   StageWorldIdV7,
   StageWorldSpecV7,
 } from '../contracts_v7';
@@ -26,6 +30,7 @@ import {
 import {
   type BuiltStageWorldV7,
   buildStageWorldV7,
+  SEASON_STAGE_OVERRIDES_V9,
   STAGE_WORLD_SPECS_V7,
 } from './StageWorldsV7';
 
@@ -63,6 +68,7 @@ export interface StageEngineTelemetryV7 {
   readonly effectiveDpr: number;
   readonly isWebGL2: boolean;
   readonly activeStageId: StageWorldIdV7;
+  readonly activeSeason: SeasonIdV7;
   readonly activeCoupRegime: CoupRegimeIdV7;
   readonly cameraPitchDeg: number;
   readonly cameraY: number;
@@ -115,7 +121,7 @@ const PORTRAIT_TILE_PLAYFIELD_HULL_POINTS = buildRakedFallbackHull(
 // 2. `WebGL2StageEngineV7` Implementation
 // ----------------------------------------------------------------------------
 
-export class WebGL2StageEngineV7 {
+export class WebGL2StageEngineV7 implements StageEngineContract {
   public readonly container: HTMLElement;
   public readonly renderer: THREE.WebGLRenderer;
   public readonly scene: THREE.Scene;
@@ -151,6 +157,7 @@ export class WebGL2StageEngineV7 {
   private targetApertureDim = 1.0;
 
   private activeStageId: StageWorldIdV7;
+  private activeSeason: SeasonIdV7 = 1;
   private activeStageWorld: BuiltStageWorldV7 | null = null;
   private lastFitResult: FrustumFitResultV7 | null = null;
   private baseCameraPos = new THREE.Vector3(0, 3.6, 4.4);
@@ -180,6 +187,7 @@ export class WebGL2StageEngineV7 {
   private readonly frameListeners = new Set<StageFrameListenerV7>();
   private readonly resizeObserver: ResizeObserver | null = null;
   private readonly onWindowResizeBound: () => void;
+  private readonly onContextLostBound: (ev: Event) => void;
 
   private rafId: number | null = null;
   private lastNowMs = 0;
@@ -218,6 +226,12 @@ export class WebGL2StageEngineV7 {
     this.renderer.domElement.style.touchAction = 'none';
     this.renderer.domElement.style.filter = 'none';
     this.container.appendChild(this.renderer.domElement);
+
+    this.onContextLostBound = (ev: Event) => {
+      ev.preventDefault();
+      this.stop();
+    };
+    this.renderer.domElement.addEventListener('webglcontextlost', this.onContextLostBound);
 
     // 2. Scene, PerspectiveCamera & Raycaster
     this.scene = new THREE.Scene();
@@ -268,11 +282,11 @@ export class WebGL2StageEngineV7 {
     this.fillLight.position.set(-4.2, 4.4, 4.6);
     this.scene.add(this.fillLight);
 
-    // Warm studio overhead over clean Peacock-Slate bounce (ZERO muddy #2c221b brown!)
-    this.hemiLight = new THREE.HemisphereLight(0xfff6e5, 0x1b3c54, this.baseHemiIntensity);
+    // Warm studio overhead over warm American Walnut bounce (ZERO dark-navy mud!)
+    this.hemiLight = new THREE.HemisphereLight(0xfff6e5, 0x6b442a, this.baseHemiIntensity);
     this.scene.add(this.hemiLight);
 
-    this.ambientLight = new THREE.AmbientLight(0x28435a, this.baseAmbientIntensity);
+    this.ambientLight = new THREE.AmbientLight(0x66503c, this.baseAmbientIntensity);
     this.scene.add(this.ambientLight);
 
     // 5. Canonical Subsystem Mounts + Exempt HDR Solenoid Spark Emitter
@@ -457,7 +471,7 @@ export class WebGL2StageEngineV7 {
       maxAllowedNdcX = 0.948;
       topReservedPx = 62;
       bottomReservedPx = 98;
-      topSafePct = Math.max(0.145, (topReservedPx + 84) / h);
+      topSafePct = Math.max(0.155, (topReservedPx + 104) / h);
       bottomSafePct = Math.max(0.096, bottomReservedPx / h);
       targetCenterYPct = 0.532;
     } else if (isTabletLandscape) {
@@ -581,11 +595,11 @@ export class WebGL2StageEngineV7 {
     this.applyZoomAndPanToCamera();
 
     // Auto-position Layer 1 Lateral Wing Trusses & "ON THE AIR · IN LIVING COLOR" Crown Sign!
-    const wingZ = -4.8;
+    const wingZ = -5.2;
     const wingEyeZ = Math.max(2.0, (finalCamZ - wingZ) * cosT + (finalCamY - 1.8) * sinT);
-    const wingHalfSpanX = wingEyeZ * tanHalfFov * aspect * 0.945;
+    const wingHalfSpanX = wingEyeZ * tanHalfFov * aspect * 0.985;
     this.activeStageWorld?.setWingSpanX(wingHalfSpanX, wingZ);
-    this.activeStageWorld?.setPortraitFraming?.(isPortrait, aspect);
+    this.activeStageWorld?.setPortraitFraming?.(isPortrait, aspect, h);
 
     // Solve exact world Y at z = -4.46 so the glowing "ON THE AIR · IN LIVING COLOR" sign sits
     // cleanly right beneath the top score strip and just above the Tote Board top edge!
@@ -747,7 +761,7 @@ export class WebGL2StageEngineV7 {
   // Stage Switching, Coup Regimes & Split-Uniform Card Dimming
   // --------------------------------------------------------------------------
 
-  public setStageWorld(stageId: StageWorldIdV7): StageWorldSpecV7 {
+  public setStageWorld(stageId: StageWorldIdV7, season: SeasonIdV7 = 1): StageWorldSpecV7 {
     const prevRegime = this.activeStageWorld?.getActiveCoupRegime() ?? 'NONE';
     if (this.activeStageWorld) {
       this.scene.remove(this.activeStageWorld.root);
@@ -756,8 +770,10 @@ export class WebGL2StageEngineV7 {
     }
 
     this.activeStageId = stageId;
-    const spec = STAGE_WORLD_SPECS_V7[stageId];
-    const built = buildStageWorldV7(stageId, this.sharedEnvMap);
+    this.activeSeason = season === 2 || season === 3 || season === 4 ? season : 1;
+    const built = buildStageWorldV7(stageId, this.sharedEnvMap, this.activeSeason);
+    const spec = built.spec;
+    built.setReducedMotion?.(this.reducedMotion);
     this.activeStageWorld = built;
     this.scene.add(built.root);
 
@@ -767,7 +783,7 @@ export class WebGL2StageEngineV7 {
     this.rimLight.color.setHex(spec.coveLightHex);
     this.warmRimLight.color.set(spec.trimAccentHex);
     this.hemiLight.groundColor.setHex(spec.floorBaseHex).lerp(new THREE.Color(spec.cycBaseHex), 0.35);
-    this.ambientLight.color.setHex(spec.cycBaseHex).lerp(new THREE.Color(0x6688a8), 0.35);
+    this.ambientLight.color.setHex(spec.cycBaseHex).lerp(new THREE.Color(0xfff0d4), 0.35);
 
     built.setApertureDimFactor(this.currentApertureDim);
     if (prevRegime !== 'NONE') {
@@ -782,6 +798,10 @@ export class WebGL2StageEngineV7 {
     return spec;
   }
 
+  public getSeasonId(): SeasonIdV7 {
+    return this.activeSeason;
+  }
+
   public getActiveStageWorld(): BuiltStageWorldV7 | null {
     return this.activeStageWorld;
   }
@@ -789,13 +809,17 @@ export class WebGL2StageEngineV7 {
   public setCoupRegime(regime: CoupRegimeIdV7): void {
     this.activeStageWorld?.setCoupRegime(regime);
     if (regime === 'REGIME_B_BELLAMY_UHF') {
-      this.scene.background = new THREE.Color(0x241b44);
+      this.scene.background = new THREE.Color(0x4a2440);
     } else if (regime === 'REGIME_C_VERA_FORENSIC') {
-      this.scene.background = new THREE.Color(0x293342);
+      this.scene.background = new THREE.Color(0x544434);
     } else if (regime === 'REGIME_A_ROZ_PHARMA') {
-      this.scene.background = new THREE.Color(0x0f3244);
+      this.scene.background = new THREE.Color(0x006c78);
     } else {
-      this.scene.background = new THREE.Color(STAGE_WORLD_SPECS_V7[this.activeStageId].cycBaseHex);
+      const cycHex =
+        this.activeSeason === 1
+          ? STAGE_WORLD_SPECS_V7[this.activeStageId].cycBaseHex
+          : SEASON_STAGE_OVERRIDES_V9[this.activeSeason].cycBaseHex;
+      this.scene.background = new THREE.Color(cycHex);
     }
   }
 
@@ -855,7 +879,34 @@ export class WebGL2StageEngineV7 {
    * neon amber & crimson on streaks, cheers, Secret Squares, and jackpots!
    */
   public triggerStudioApplauseSign(durationSec = 2.4): void {
-    this.activeStageWorld?.triggerApplauseSign?.(durationSec);
+    this.setReactiveSignState('APPLAUSE', true, Math.max(0.6, durationSec) * 1000);
+  }
+
+  public setReactiveSignState(
+    signId: ReactiveSignIdV9,
+    active: boolean,
+    durationMs?: number,
+  ): void {
+    this.activeStageWorld?.setReactiveSignState(signId, active, durationMs);
+  }
+
+  public getStudioSignStates(): Partial<Record<ReactiveSignIdV9, boolean>> {
+    return (
+      this.activeStageWorld?.getStudioSignStates() ?? {
+        ON_THE_AIR: true,
+        APPLAUSE: false,
+        LAUGH: false,
+        JACKPOT: false,
+      }
+    );
+  }
+
+  public setCrowdMood(mood: CrowdMoodV9, durationMs?: number): void {
+    this.activeStageWorld?.setCrowdMood(mood, durationMs);
+  }
+
+  public getCrowdMood(): CrowdMoodV9 {
+    return this.activeStageWorld?.getCrowdMood() ?? 'IDLE';
   }
 
   // --------------------------------------------------------------------------
@@ -904,6 +955,7 @@ export class WebGL2StageEngineV7 {
   public applySettings(settings: Partial<BroadcastSettingsV7>): void {
     if (typeof settings.reducedMotion === 'boolean') {
       this.reducedMotion = settings.reducedMotion;
+      this.activeStageWorld?.setReducedMotion?.(this.reducedMotion);
       if (this.reducedMotion) {
         this.clearBoardFocus();
         this.currentFocusX = 0;
@@ -915,7 +967,7 @@ export class WebGL2StageEngineV7 {
   }
 
   public resize(width: number, height: number): void {
-    if (this.isDisposed) return;
+    if (this.isDisposed || this.renderer.getContext()?.isContextLost?.()) return;
     const w = Math.max(1, Math.floor(width));
     const h = Math.max(1, Math.floor(height));
     const dpr = this.computeSafeDpr();
@@ -961,7 +1013,7 @@ export class WebGL2StageEngineV7 {
   }
 
   public renderFrameNow(dtSec = 1 / 60): void {
-    if (this.isDisposed) return;
+    if (this.isDisposed || this.renderer.getContext()?.isContextLost?.()) return;
 
     // Synchronous pre-render DPR & viewport guard prevents any `3x3` tiled frame across DPR / resize switches!
     const curW = Math.max(
@@ -1053,6 +1105,8 @@ export class WebGL2StageEngineV7 {
       listener(dt, this.elapsedSec);
     }
 
+    if (this.isDisposed || this.renderer.getContext()?.isContextLost?.()) return;
+
     // Direct hardware WebGL2 4x MSAA render -> zero EffectComposer FBO [0,0,0] drops or bloom strobes!
     this.renderer.render(this.scene, this.camera);
   }
@@ -1063,6 +1117,7 @@ export class WebGL2StageEngineV7 {
       effectiveDpr: this.renderer.getPixelRatio(),
       isWebGL2: this.renderer.capabilities.isWebGL2,
       activeStageId: this.activeStageId,
+      activeSeason: this.activeSeason,
       activeCoupRegime: this.activeStageWorld?.getActiveCoupRegime() ?? 'NONE',
       cameraPitchDeg: this.currentPitchDeg,
       cameraY: Number(this.camera.position.y.toFixed(3)),
@@ -1094,6 +1149,7 @@ export class WebGL2StageEngineV7 {
     }
     this.resizeObserver?.disconnect();
     this.frameListeners.clear();
+    this.renderer.domElement.removeEventListener('webglcontextlost', this.onContextLostBound);
 
     if (this.activeStageWorld) {
       this.scene.remove(this.activeStageWorld.root);

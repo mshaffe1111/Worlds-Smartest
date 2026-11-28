@@ -239,7 +239,20 @@ export type QuestionCardStyleV7 =
   | 'HEADLINE_BLANK'
   | 'PICTURE_MONITOR'
   | 'SPOT_THE_MYTH'
-  | 'BINARY_SPLIT';
+  | 'BINARY_SPLIT'
+  | 'HIGHER_OR_LOWER'
+  | 'ODD_ONE_OUT'
+  | 'FINISH_THE_LINE'
+  | 'WHO_WHAT_AM_I'
+  | 'BEFORE_OR_AFTER';
+
+export function isTwoPaddleCardStyleV7(style?: QuestionCardStyleV7): boolean {
+  return (
+    style === 'BINARY_SPLIT' ||
+    style === 'HIGHER_OR_LOWER' ||
+    style === 'BEFORE_OR_AFTER'
+  );
+}
 
 export type CpuPlaystyleIdV7 =
   | 'GAMBLER'
@@ -314,6 +327,7 @@ export interface BoardTileNodeV7 {
   category: CategoryIdV7;
   domain: DomainIdV7;
   baseChips: number; // 150 | 200 | 250 | 300 | 400 | 500
+  nominalBaseChips?: number; // Pre-Act-II-boost nominal dollar tier for live difficulty pacing
   boardMultBonus: number; // +0.0 .. +1.0 (capped at 2.0x cold / 3.0x streaking)
   state: 'OPEN' | 'CLAIMED_PLAYER' | 'CLAIMED_RIVAL' | 'BLITZ_SURVIVOR' | 'RETRACTED';
   tvTwist?: ClassicTvTileTwistV7; // 1966 Network TV Board Twist on this tile
@@ -328,6 +342,12 @@ export interface BoardTileNodeV7 {
   isRivalTarget: boolean; // Visible Rival intent crosshair
   isWheelhouse: boolean; // Rival weak-spot (+0.5x bonus!) or strong-spot
   revealedConcentrationPrize?: string; // Stamped Concentration prize icon for Match-Steal!
+  // Additive v9 fields (R4 VIP Bluff & R7 Anti-Repetition Boards)
+  tvTwistV9?: ClassicTvTileTwistV9;
+  vipId?: VipCelebIdV9;
+  isLiveWireLocked?: boolean;
+  isSpotlightTile?: boolean;
+  dominoGroupId?: number;
 }
 
 // ----------------------------------------------------------------------------
@@ -810,8 +830,12 @@ export interface CampaignSaveStateV7 {
   recentBoardCombos?: string[];
   careerMedalCounts?: Partial<Record<CareerMedalIdV7, number>>;
   masteredBoardModes?: BoardPlayModeV7[];
+  masteredBoardModesV9?: BoardPlayModeV9[];
   masteredDifficulties?: DifficultyModeV7[];
   masteredModeDifficulties?: string[];
+  /** R6 Return Champion-vs-Champion rematch state (backwards-compatible with WS_V7_GOLD_1) */
+  pendingRematchEpisode?: number | null;
+  consecutiveLossesByEpisode?: Record<number, number>;
   settings: BroadcastSettingsV7;
 }
 
@@ -1156,9 +1180,15 @@ export interface BoardModeStatCounterV8 {
 
 export interface MatchHistoryPointV8 {
   readonly tsIso: string;
-  readonly matchType: 'CAMPAIGN' | 'DAILY' | 'QUICK_PLAY' | 'COUCH_2P';
-  readonly label: string; // e.g. 'S01E03', 'DAILY #144', 'QUICK'
-  readonly boardPlayMode: BoardPlayModeV7;
+  readonly matchType:
+    | 'CAMPAIGN'
+    | 'DAILY'
+    | 'QUICK_PLAY'
+    | 'COUCH_2P'
+    | 'BLITZ_60'
+    | 'SWEEPS_WEEK';
+  readonly label: string; // e.g. 'S01E03', 'DAILY #144', 'QUICK', 'BLITZ', 'SWEEPS N3'
+  readonly boardPlayMode: BoardPlayModeV9;
   readonly rivalName: string;
   readonly playerCash: number;
   readonly rivalCash: number;
@@ -1199,7 +1229,7 @@ export interface CareerStatsLedgerV8 {
   byCategory: Partial<Record<CategoryIdV7, CategoryStatCounterV8>>;
   byToy: Partial<Record<ToyIdV7, ToyFormatStatCounterV8>>;
   byCardStyle: Partial<Record<QuestionCardStyleV7, ToyFormatStatCounterV8>>;
-  byBoardMode: Partial<Record<BoardPlayModeV7, BoardModeStatCounterV8>>;
+  byBoardMode: Partial<Record<BoardPlayModeV9, BoardModeStatCounterV8>>;
   lifelines: LifelineStatCounterV8;
   recentMatches: MatchHistoryPointV8[]; // Rolling last 40 episodes for interactive trend graphs!
 }
@@ -1235,4 +1265,411 @@ export interface ShowEndCreditsOptsV8 {
   readonly reducedMotion?: boolean;
   readonly onPlayCreditsTheme?: () => void;
   readonly onPlaySignoffVoice?: () => void;
+}
+
+
+// ============================================================================
+// 9. v9.0 PRODUCTION RELEASE CANONICAL CONTRACTS (R1-R10 & 96-Item Expansion)
+// ============================================================================
+
+export type SeasonIdV7 = 1 | 2 | 3 | 4;
+
+/** R7 Anti-Repetition Board Types (4 Required + 4 Original = 8 New Modes) */
+export type BoardPlayModeR7V9 =
+  | 'LOUVER_SHUTTER' // R7: Can't see category (dollars visible)
+  | 'BLIND_PURSE' // R7: Can't see money (categories visible)
+  | 'BLACKOUT_VAULT' // R7: Can't see either (flip #1..#12 safe trilon)
+  | 'LIVE_WIRE_FUSE' // R7: All locked but one (orthogonal unlock + emergency circuit breaker)
+  | 'SHIFTING_SPOTLIGHT' // R7 Original #1: Gliding 1.5x / 2x spotlight
+  | 'GOLDEN_DOMINO_CASCADE' // R7 Original #2: 3 contiguous player claims -> +$350 cascade
+  | 'PRESSURE_COOKER' // R7 Original #3: Shared gauge x1.0..x2.0, miss blasts steam -> x1.0
+  | 'HOLLYWOOD_MARQUEE_LINE'; // R7 Original #4: O/X bulbs, 3-in-a-row -> +$300 line bonus
+
+export type BoardPlayModeV9 = BoardPlayModeV7 | BoardPlayModeR7V9;
+
+export const ALL_BOARD_PLAY_MODES_R7_V9: readonly BoardPlayModeR7V9[] = [
+  'LOUVER_SHUTTER',
+  'BLIND_PURSE',
+  'BLACKOUT_VAULT',
+  'LIVE_WIRE_FUSE',
+  'SHIFTING_SPOTLIGHT',
+  'GOLDEN_DOMINO_CASCADE',
+  'PRESSURE_COOKER',
+  'HOLLYWOOD_MARQUEE_LINE',
+] as const;
+
+export const ALL_BOARD_PLAY_MODES_V9: readonly BoardPlayModeV9[] = [
+  ...ALL_BOARD_PLAY_MODES_V7,
+  ...ALL_BOARD_PLAY_MODES_R7_V9,
+] as const;
+
+export const BOARD_PLAY_MODE_TITLES_V9: Record<BoardPlayModeV9, string> = {
+  ...BOARD_PLAY_MODE_TITLES_V7,
+  LOUVER_SHUTTER: 'LOUVER SHUTTER · MYSTERY TOPICS',
+  BLIND_PURSE: 'BLIND PURSE · MYSTERY DOLLARS',
+  BLACKOUT_VAULT: 'BLACKOUT VAULT · TOTAL MYSTERY',
+  LIVE_WIRE_FUSE: 'LIVE-WIRE FUSE · CHAIN UNLOCK',
+  SHIFTING_SPOTLIGHT: 'SHIFTING SPOTLIGHT · 1.5×/2× RAIL',
+  GOLDEN_DOMINO_CASCADE: 'GOLDEN DOMINO · 3-LINK CASCADE',
+  PRESSURE_COOKER: 'THE PRESSURE COOKER · RISING GAUGE',
+  HOLLYWOOD_MARQUEE_LINE: 'HOLLYWOOD MARQUEE · 3-IN-A-ROW',
+};
+
+export type ClassicTvTileTwistV9 = ClassicTvTileTwistV7 | 'VIP_BLUFF';
+
+/** R8 Bigger Reactive Studio Signs & Live 1960s Studio Audience */
+export type ReactiveSignIdV9 = 'ON_THE_AIR' | 'APPLAUSE' | 'LAUGH' | 'JACKPOT';
+
+export type CrowdMoodV9 =
+  | 'IDLE'
+  | 'APPLAUSE'
+  | 'LAUGH'
+  | 'GASP'
+  | 'OVATION'
+  | 'SYMPATHY';
+
+/** R4 Recurring 1966 VIP Celebrities */
+export type VipCelebIdV9 =
+  | 'vip_kitty_fontaine'
+  | 'vip_barnaby_quail'
+  | 'vip_frankie_lombardo'
+  | 'vip_astrid_lindqvist'
+  | 'vip_action_jackson'
+  | 'vip_bea_delacroix'
+  | 'vip_zoltan';
+
+export interface VipCelebritySpecV9 {
+  readonly targetId: VipCelebIdV9;
+  readonly name: string;
+  readonly title: string;
+  readonly strengthBadge: string; // e.g. "PRO: SCREEN · TELL: YACHTS & EX-HUSBANDS"
+  readonly strongCategories: readonly CategoryIdV7[];
+  readonly weakCategories: readonly CategoryIdV7[];
+  readonly baseBluffRate: number; // 0.25 .. 0.60
+  readonly tellHint: string;
+  readonly honestQuips: readonly string[]; // <= 14 words, <= 115 chars
+  readonly bluffQuips: readonly string[]; // <= 14 words, <= 115 chars
+}
+
+export type VipCelebSpecV9 = VipCelebritySpecV9;
+
+export interface VipBluffScenarioV9 {
+  readonly vip: VipCelebritySpecV9;
+  readonly category: CategoryIdV7;
+  readonly clueStem?: string;
+  readonly suggestedChoiceIdx: 0 | 1 | 2 | 3;
+  readonly suggestedChoiceLabel: string;
+  readonly isBluffing: boolean;
+  readonly bluffProbabilityUsed: number;
+  readonly quip: string;
+  readonly tileValue: number;
+  readonly trustHonestDelta: number; // +1.0x
+  readonly trustBluffDelta: number; // -0.5x
+  readonly callHonestDelta: number; // -0.5x
+  readonly callBluffDelta: number; // +1.5x
+}
+
+/** R1 Prize Catalog, Zonks, Winner's Den & Fair Cosmetics (96-Item Expandable) */
+export type GrandPrizeIdV9 = string;
+export type ZonkIdV9 = string;
+export type DenRoomSlotV9 =
+  | 'CREDENZA'
+  | 'ALCOVE'
+  | 'GARAGE_TERRACE'
+  | 'TRAVEL_WALL';
+
+export interface PrizeItemV9 {
+  readonly targetId: GrandPrizeIdV9;
+  readonly name: string;
+  readonly tier: 1 | 2 | 3 | 4;
+  readonly priceSC: number;
+  readonly copy: string;
+  readonly chapterUnlock: number; // 1..10 (maps Episodes 1..90 in 9-episode waves)
+  readonly seasonAffinity: SeasonIdV7;
+  readonly roomSlot: DenRoomSlotV9;
+}
+
+export type GrandPrizeSpecV9 = PrizeItemV9;
+
+export interface ZonkItemV9 {
+  readonly targetId: ZonkIdV9;
+  readonly name: string;
+  readonly copy: string;
+  readonly chapterUnlock?: number;
+  readonly seasonAffinity?: SeasonIdV7;
+  readonly roomSlot?: DenRoomSlotV9;
+}
+
+export type ZonkSpecV9 = ZonkItemV9;
+
+export type CosmeticSlotV9 = 'PODIUM_TRIM' | 'BUZZER_CHIME' | 'TRILON_STYLE';
+
+export interface CosmeticItemV9 {
+  readonly cosmeticId: string;
+  readonly slot: CosmeticSlotV9;
+  readonly name: string;
+  readonly priceSC: number;
+  readonly subtitle: string;
+  readonly accentHex: string;
+  readonly trimStyleKey: string;
+}
+
+export type CosmeticItemSpecV9 = CosmeticItemV9;
+
+export interface StudioCosmeticsEquippedV9 {
+  readonly PODIUM_TRIM: string;
+  readonly BUZZER_CHIME: string;
+  readonly TRILON_STYLE: string;
+}
+
+export type EquippedCosmeticsV9 = StudioCosmeticsEquippedV9;
+
+export type DenTierIdV9 =
+  | 'WAITING_ROOM'
+  | 'MOD_STARTER_PAD'
+  | 'SPLIT_LEVEL_SHOWCASE'
+  | 'NETWORK_PENTHOUSE';
+
+export interface DenTierSpecV9 {
+  readonly tierId: DenTierIdV9;
+  readonly title: string;
+  readonly subtitle: string;
+  readonly minOwnedPrizes: number;
+  readonly badgeHex: string;
+}
+
+export interface ShowroomStateV9 {
+  readonly version: 'WS_V9_SHOWROOM_1';
+  showroomCash: number;
+  plinkoTokens: number;
+  freeCurtainTickets: number;
+  consecutiveZonks: number;
+  ownedPrizeIds: string[];
+  ownedZonkIds: string[];
+  ownedCosmeticIds: string[];
+  equipped: StudioCosmeticsEquippedV9;
+  recentOfferedIds: string[]; // Last 12 offered IDs in Featured Shelf / Curtain Gamble
+  pinnedDenIds: string[]; // Curated Winner's Den showcase display pins
+  totalCurtainPulls: number;
+  totalPlinkoDrops: number;
+  lastUpdatedIso: string;
+}
+
+export type ShowroomLedgerV9 = ShowroomStateV9;
+
+export type CurtainDoorKindV9 = 'ZONK' | 'MID_SHOWCASE' | 'GRAND_SHOWCASE';
+
+export interface CurtainDoorOutcomeV9 {
+  readonly bayNumber: 1 | 2 | 3;
+  readonly kind: CurtainDoorKindV9;
+  readonly targetId: string | null; // Prize or Zonk targetId (null if maxed-tier cash envelope)
+  readonly title: string;
+  readonly subtitle: string;
+  readonly cashAwardedSC: number;
+  readonly plinkoTokenAwarded: boolean;
+  readonly isDuplicateCashEnvelope: boolean;
+}
+
+export interface CurtainGambleResultV9 {
+  readonly ok: boolean;
+  readonly reason?: string;
+  readonly usedFreeTicket: boolean;
+  readonly pityShieldTriggered: boolean;
+  readonly chosenBay: 1 | 2 | 3;
+  readonly chosenOutcome: CurtainDoorOutcomeV9 | null;
+  readonly allBays: readonly CurtainDoorOutcomeV9[];
+  readonly ledger: ShowroomStateV9;
+}
+
+/** R3 Custom Broadcast Booth & 2P Couch Upgrades */
+export type VibePackIdV9 =
+  | 'PRIMETIME_LIVING_COLOR'
+  | 'AFTER_HOURS_LOUNGE'
+  | 'SPACE_RACE_TOMORROWLAND'
+  | 'SATURDAY_BAR_BET_CHAMPS'
+  | 'BURBANK_COMEDY_WALL'
+  | 'SWEEPS_SHARK_TANK';
+
+export interface VibePackSpecV9 {
+  readonly packId: VibePackIdV9;
+  readonly title: string;
+  readonly tagline: string;
+  readonly accentHex: string;
+  readonly categories: readonly CategoryIdV7[];
+  readonly preferredDifficulties?: readonly DifficultyTierV7[];
+}
+
+export type CouchSkillDialV9 = 'EASY' | 'MIXED' | 'SHARK';
+export type SkillDialV9 = CouchSkillDialV9;
+
+export interface BroadcastBoothConfigV9 {
+  readonly vibePackId: VibePackIdV9;
+  readonly vetoedCategories: readonly CategoryIdV7[];
+}
+
+export interface CouchPodiumV9Config extends CouchPlayerConfigV8 {
+  readonly skillDial: CouchSkillDialV9;
+  readonly hotMicAvailable: boolean;
+}
+
+/** R5 Sweeps Week 5-Night Gauntlet & Starburst Plinko */
+export type SponsorIdV9 =
+  | 'orbit_tang'
+  | 'hold_fast_hairspray'
+  | 'toast_o_matic_5000'
+  | 'shag_a_delia_rugs'
+  | 'sonic_7_transistor'
+  | 'jello_castle_kit'
+  | 'jet_wax_glaze'
+  | 'velvet_tone_needle';
+
+export interface SponsorPlaqueSpecV9 {
+  readonly sponsorId: SponsorIdV9;
+  readonly name: string;
+  readonly tagline: string;
+  readonly effectSummary: string;
+  readonly badgeHex: string;
+  readonly accentHex: string;
+}
+
+export type SweepsNightNumberV9 = 1 | 2 | 3 | 4 | 5;
+
+export interface SweepsWeekStateV9 {
+  readonly version: 'WS_V9_SWEEPS_1';
+  activeRun: boolean;
+  currentNight: SweepsNightNumberV9; // 1..5
+  safeDepositCash: number; // Locked 50% bank
+  atRiskVaultCash: number; // At-risk 50% escalators
+  revengeJackpotPool: number; // Seeded $1,000, cap $10,000
+  draftedSponsors: SponsorIdV9[]; // Up to 3 Sponsor Plaque slots
+  nextNightBonusMult: number; // e.g. +0.50x from Plinko center slot
+  freeFiftyFiftyArmed: boolean; // From Plinko bucket #2
+  pendingLossRematchNight: SweepsNightNumberV9 | null;
+  pendingPlinkoFreeDrop: boolean;
+  pendingSponsorDraft: boolean;
+  lastNightPurse: number;
+  nightsWonTotal: number;
+  sweepsCrownsWon: number;
+  lastUpdatedIso: string;
+}
+
+export type PlinkoModeV9 = 'SWEEPS_FREE_DROP' | 'SHOWROOM_TOKEN_OR_CASH';
+export type PlinkoLaneIndexV9 = 0 | 1 | 2 | 3 | 4;
+
+export interface PlinkoOutcomeV9 {
+  readonly mode: PlinkoModeV9;
+  readonly launchLane: PlinkoLaneIndexV9;
+  readonly bucketIndex: PlinkoLaneIndexV9;
+  readonly bucketLabel: string;
+  readonly cashWonSC: number;
+  readonly sweepsBonusKind?: 'VAULT_CASH' | 'FREE_5050' | 'NEXT_NIGHT_MULT';
+  readonly sweepsVaultDelta: number;
+  readonly trajectory: readonly { readonly x: number; readonly y: number; readonly t: number }[];
+  readonly pegHits: readonly {
+    readonly x: number;
+    readonly y: number;
+    readonly t: number;
+    readonly noteIdx: number;
+  }[];
+  readonly stallKicksCount: number;
+}
+
+/** R8 Per-Season 3D Set & Main Board Visual Specs */
+export interface SeasonVisualSpecV9 {
+  readonly season: SeasonIdV7;
+  readonly title: string;
+  readonly subtitle: string;
+  readonly flagshipStageId: StageWorldIdV7;
+  readonly cabinetHex: string;
+  readonly cabinetHexNum: number;
+  readonly bezelTrimHex: string;
+  readonly bezelTrimHexNum: number;
+  readonly tileFaceHex: string;
+  readonly tileAccentHex: string;
+  readonly spotlightHex: string;
+  readonly marqueeStyleLabel: string;
+}
+
+/** R10 Gouache Sprite Atlas Contracts */
+export interface AtlasSpriteEntryV9 {
+  readonly targetId: string;
+  readonly file: string; // e.g. 'atlas_vip.webp'
+  readonly x: number;
+  readonly y: number;
+  readonly w: number;
+  readonly h: number;
+  readonly sheetW: number;
+  readonly sheetH: number;
+}
+
+export interface AtlasManifestV9 {
+  readonly version: string;
+  readonly sprites: Readonly<Record<string, AtlasSpriteEntryV9>>;
+}
+
+/** R6 Return Champion Anti-Wall Mercy Profile */
+export interface AntiWallMercyProfileV9 {
+  readonly active: boolean;
+  readonly consecutiveLosses: number;
+  readonly rivalAccuracyPenalty: number; // 0.04 at 2 losses, 0.08 at 3, 0.12 cap at 4+
+  readonly underdogBonusRatio: number; // 0.10 when active
+}
+
+/** Shared Cross-Milestone Engine, Board & QA Diagnostic Contracts */
+export type DiagnosticOpenViewNameV9 =
+  | 'hub'
+  | 'showroom'
+  | 'plinko'
+  | 'sweeps'
+  | 'blitz'
+  | 'couch'
+  | 'campaign'
+  | 'quick';
+
+export interface StageEngineContract {
+  setStageWorld(stageId: StageWorldIdV7, season?: SeasonIdV7): StageWorldSpecV7;
+  setReactiveSignState(
+    signId: ReactiveSignIdV9,
+    active: boolean,
+    durationMs?: number,
+  ): void;
+  setCrowdMood(mood: CrowdMoodV9, durationMs?: number): void;
+}
+
+export interface BoardLoadSpec {
+  readonly boardId: BoardIdV7;
+  readonly twistId?: BoardTwistIdV7;
+  readonly rivalId?: RivalIdV7;
+  readonly rivalWeakCategories?: readonly CategoryIdV7[];
+  readonly rivalStrongCategories?: readonly CategoryIdV7[];
+  readonly categoriesOverride?: readonly CategoryIdV7[];
+  readonly tableBedHex?: number;
+  readonly trimVeneerHex?: string;
+  readonly trimAccentHex?: string;
+  readonly seedOffset?: number;
+  readonly season?: SeasonIdV7;
+  readonly trilonStyleId?: string;
+  readonly vetoedCategories?: readonly CategoryIdV7[];
+  readonly boardPlayMode?: BoardPlayModeV9;
+}
+
+export interface WindowWsDiagnosticsV7 {
+  getTelemetry: () => Record<string, unknown>;
+  previewStageAndBoard: (
+    stageId: StageWorldIdV7,
+    boardId: BoardIdV7,
+    twistId?: BoardTwistIdV7,
+  ) => void;
+  openContraptionPreview: (tileIndex: number, toyId: ToyIdV7) => void;
+  recordMasterAudioSamples: (
+    durationMs?: number,
+  ) => Promise<{ sampleRate: number; samples: number[] }>;
+  // v9 QA & Perceptual Inspection Hooks
+  getShowroomState?: () => ShowroomStateV9;
+  getSweepsState?: () => SweepsWeekStateV9;
+  getActiveBoardMode?: () => BoardPlayModeV9;
+  getSeasonId?: () => SeasonIdV7;
+  getStudioSignStates?: () => Partial<Record<ReactiveSignIdV9, boolean>>;
+  getCrowdMood?: () => CrowdMoodV9;
+  openView?: (viewName: DiagnosticOpenViewNameV9) => void;
 }

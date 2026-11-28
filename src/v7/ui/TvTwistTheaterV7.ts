@@ -5,9 +5,7 @@
 // Interactive 1966–1969 Network TV Board Twist Theater (Zero AI Boxes!):
 //   1. `playMysteryCurtainDoorPick(outcomesPreview): Promise<1 | 2 | 3>`
 //      Let's Make a Deal Curtain #1, #2, #3 velvet proscenium + floor footlights!
-//   2. `offerInstantBargainTurntable(spec): Promise<'BUY' | 'PASS'>`
-//      1969 Sale of the Century revolving prize spotlight temptation!
-//   3. `flashSecretSquareBanner(headline): Promise<void>`
+//   2. `flashSecretSquareBanner(headline): Promise<void>`
 //      1.1s Morton Goldsholl / Saul Bass kinetic Daily Double starburst!
 //   4. `playBigWheelSpin(opts?): Promise<BigWheelSpinResultV7>`
 //      Flick-to-Spin 20-Wedge 1966 Living Color Studio Wheel + spring flapper!
@@ -299,7 +297,7 @@ function buildMarqueeCrownBulbsSvg(): string {
     const y = 24 - Math.sin(t * Math.PI) * 16;
     const circuit = i % 3;
     bulbs.push(
-      `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="6" fill="#0B1D30"/>`,
+      `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="6" fill="#4A2614"/>`,
       `<circle class="wst7-bulb-dot wst7-c${circuit}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4.3" fill="#FFD966"/>`,
     );
   }
@@ -340,7 +338,7 @@ function buildCurtainPrizePropSvg(kind: MysteryCurtainKindV7): string {
       // 1966 Concentration "TAKE!" Magnet & Lightning Heist Emblem
       return `
         <svg class="wst7-alcove-prop-svg" viewBox="0 0 96 96" fill="none" aria-hidden="true">
-          <circle cx="48" cy="48" r="40" fill="#0D2238" fill-opacity="0.5"/>
+          <circle cx="48" cy="48" r="40" fill="#3E2012" fill-opacity="0.5"/>
           <path d="M26 30 V50 C26 63 36 72 48 72 C60 72 70 63 70 50 V30 H58 V49 C58 55 54 60 48 60 C42 60 38 55 38 49 V30 Z" fill="#FF6738" stroke="#FFF7E6" stroke-width="3"/>
           <rect x="24" y="22" width="16" height="11" rx="3" fill="#FFF7E6"/>
           <rect x="56" y="22" width="16" height="11" rx="3" fill="#FFF7E6"/>
@@ -352,7 +350,7 @@ function buildCurtainPrizePropSvg(kind: MysteryCurtainKindV7): string {
       return `
         <svg class="wst7-alcove-prop-svg" viewBox="0 0 96 96" fill="none" aria-hidden="true">
           <path d="M48 6 L57 28 L80 20 L68 41 L90 48 L68 55 L80 76 L57 68 L48 90 L39 68 L16 76 L28 55 L6 48 L28 41 L16 20 L39 28 Z" fill="#FFD966" stroke="#9E6206" stroke-width="2.5"/>
-          <circle cx="48" cy="48" r="24" fill="#0D2238"/>
+          <circle cx="48" cy="48" r="24" fill="#3E2012"/>
           <text x="48" y="56" text-anchor="middle" font-family="Jost, sans-serif" font-weight="900" font-size="24" fill="#FFD966">2×</text>
         </svg>
       `;
@@ -360,7 +358,7 @@ function buildCurtainPrizePropSvg(kind: MysteryCurtainKindV7): string {
       // Motorized 3-Sided Trilon Prism Flip
       return `
         <svg class="wst7-alcove-prop-svg" viewBox="0 0 96 96" fill="none" aria-hidden="true">
-          <circle cx="48" cy="48" r="39" fill="#0D2238" fill-opacity="0.45"/>
+          <circle cx="48" cy="48" r="39" fill="#3E2012" fill-opacity="0.45"/>
           <polygon points="48,14 80,68 16,68" fill="#19BFD0" stroke="#FFF7E6" stroke-width="3" stroke-linejoin="round"/>
           <polygon points="48,14 80,68 48,56" fill="#E63B7A" fill-opacity="0.88"/>
           <path d="M22 76 Q48 88 74 76" stroke="#FFD966" stroke-width="4" stroke-linecap="round"/>
@@ -380,31 +378,6 @@ function buildCurtainPrizePropSvg(kind: MysteryCurtainKindV7): string {
         </svg>
       `;
   }
-}
-
-function buildBargainBellSvg(): string {
-  return `
-    <svg class="wst7-bargain-bell-svg" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-      <circle cx="32" cy="10" r="5" fill="#FFF7E6"/>
-      <path d="M14 44 C14 26 20 16 32 16 C44 16 50 26 50 44 L56 50 H8 L14 44 Z" fill="#FFD966" stroke="#9E6206" stroke-width="2.5" stroke-linejoin="round"/>
-      <circle cx="32" cy="54" r="6" fill="#FF6738"/>
-      <path d="M8 22 Q4 30 8 38" stroke="#19BFD0" stroke-width="3" stroke-linecap="round"/>
-      <path d="M56 22 Q60 30 56 38" stroke="#19BFD0" stroke-width="3" stroke-linecap="round"/>
-    </svg>
-  `;
-}
-
-function buildRelicShowcaseCrestSvg(): string {
-  return `
-    <svg class="wst7-relic-crest-svg" viewBox="0 0 96 96" fill="none" aria-hidden="true">
-      <path d="M48 6 L58 24 L79 19 L71 39 L89 51 L70 61 L75 81 L55 74 L48 92 L41 74 L21 81 L26 61 L7 51 L25 39 L17 19 L38 24 Z" fill="#F4A91F"/>
-      <circle cx="48" cy="49" r="28" fill="#0D2238" stroke="#FFF7E6" stroke-width="3"/>
-      <rect x="40" y="29" width="16" height="24" rx="8" fill="#19BFD0" stroke="#FFF7E6" stroke-width="2.5"/>
-      <path d="M34 43 C34 52 40 58 48 58 C56 58 62 52 62 43" stroke="#FFD966" stroke-width="3" stroke-linecap="round"/>
-      <line x1="48" y1="58" x2="48" y2="68" stroke="#FFD966" stroke-width="3" stroke-linecap="round"/>
-      <line x1="39" y1="68" x2="57" y2="68" stroke="#FFF7E6" stroke-width="3" stroke-linecap="round"/>
-    </svg>
-  `;
 }
 
 function buildCurtainFootlightBarHtml(count = 9): string {
@@ -447,26 +420,26 @@ interface BigWheelWedgeSpecV7 {
 }
 
 const BIG_WHEEL_20_WEDGES_V7: readonly BigWheelWedgeSpecV7[] = [
-  { index: 0, wheelText: '$1,000 ★', wedgeLabel: '$1,000 JACKPOT', kind: 'CASH', cashValue: 1000, multBonus: 0, fillHex: '#FFD966', accentHex: '#FFF5C2', textHex: '#0B1D30' },
-  { index: 1, wheelText: 'GREMLIN!', wedgeLabel: 'GREMLIN (-25% STING)', kind: 'GREMLIN', cashValue: 0, multBonus: 0, fillHex: '#181E2C', accentHex: '#E63B7A', textHex: '#FFD966' },
+  { index: 0, wheelText: '$1,000 ★', wedgeLabel: '$1,000 JACKPOT', kind: 'CASH', cashValue: 1000, multBonus: 0, fillHex: '#FFD966', accentHex: '#FFF5C2', textHex: '#1E140E' },
+  { index: 1, wheelText: 'GREMLIN!', wedgeLabel: 'GREMLIN (-25% STING)', kind: 'GREMLIN', cashValue: 0, multBonus: 0, fillHex: '#4F2917', accentHex: '#E63B7A', textHex: '#FFD966' },
   { index: 2, wheelText: '$350', wedgeLabel: '$350', kind: 'CASH', cashValue: 350, multBonus: 0, fillHex: '#0096A6', accentHex: '#19BFD0', textHex: '#FFF7E6' },
   { index: 3, wheelText: '$500', wedgeLabel: '$500', kind: 'CASH', cashValue: 500, multBonus: 0, fillHex: '#1E56C5', accentHex: '#4379EA', textHex: '#FFF7E6' },
   { index: 4, wheelText: 'LIFELINE', wedgeLabel: 'FREE LIFELINE', kind: 'LIFELINE', cashValue: 0, multBonus: 0, fillHex: '#169D53', accentHex: '#2ECC71', textHex: '#FFF7E6' },
   { index: 5, wheelText: '$350', wedgeLabel: '$350', kind: 'CASH', cashValue: 350, multBonus: 0, fillHex: '#FF6738', accentHex: '#FF8A65', textHex: '#FFF7E6' },
-  { index: 6, wheelText: '2× DOUBLE', wedgeLabel: '2× DOUBLE', kind: 'DOUBLE', cashValue: 0, multBonus: 1.0, fillHex: '#F4A91F', accentHex: '#FFD966', textHex: '#0B1D30' },
+  { index: 6, wheelText: '2× DOUBLE', wedgeLabel: '2× DOUBLE', kind: 'DOUBLE', cashValue: 0, multBonus: 1.0, fillHex: '#F4A91F', accentHex: '#FFD966', textHex: '#1E140E' },
   { index: 7, wheelText: '$500', wedgeLabel: '$500', kind: 'CASH', cashValue: 500, multBonus: 0, fillHex: '#E63B7A', accentHex: '#FF6B9E', textHex: '#FFF7E6' },
   { index: 8, wheelText: '$750', wedgeLabel: '$750', kind: 'CASH', cashValue: 750, multBonus: 0, fillHex: '#0C7E8F', accentHex: '#19BFD0', textHex: '#FFF7E6' },
   { index: 9, wheelText: 'STEAL $250', wedgeLabel: 'STEAL $250', kind: 'STEAL', cashValue: 250, multBonus: 0, fillHex: '#C92C58', accentHex: '#FF6738', textHex: '#FFF7E6' },
-  { index: 10, wheelText: '$500', wedgeLabel: '$500', kind: 'CASH', cashValue: 500, multBonus: 0, fillHex: '#FFF4DC', accentHex: '#FFFFFF', textHex: '#0B1D30' },
-  { index: 11, wheelText: 'GREMLIN!', wedgeLabel: 'GREMLIN (-25% STING)', kind: 'GREMLIN', cashValue: 0, multBonus: 0, fillHex: '#181E2C', accentHex: '#E63B7A', textHex: '#FFD966' },
+  { index: 10, wheelText: '$500', wedgeLabel: '$500', kind: 'CASH', cashValue: 500, multBonus: 0, fillHex: '#FFF4DC', accentHex: '#FFFFFF', textHex: '#1E140E' },
+  { index: 11, wheelText: 'GREMLIN!', wedgeLabel: 'GREMLIN (-25% STING)', kind: 'GREMLIN', cashValue: 0, multBonus: 0, fillHex: '#4F2917', accentHex: '#E63B7A', textHex: '#FFD966' },
   { index: 12, wheelText: '$750', wedgeLabel: '$750', kind: 'CASH', cashValue: 750, multBonus: 0, fillHex: '#1E56C5', accentHex: '#4A82F2', textHex: '#FFF7E6' },
-  { index: 13, wheelText: '$350', wedgeLabel: '$350', kind: 'CASH', cashValue: 350, multBonus: 0, fillHex: '#E89B16', accentHex: '#FFD966', textHex: '#0B1D30' },
+  { index: 13, wheelText: '$350', wedgeLabel: '$350', kind: 'CASH', cashValue: 350, multBonus: 0, fillHex: '#E89B16', accentHex: '#FFD966', textHex: '#1E140E' },
   { index: 14, wheelText: '2× DOUBLE', wedgeLabel: '2× DOUBLE', kind: 'DOUBLE', cashValue: 0, multBonus: 1.0, fillHex: '#0096A6', accentHex: '#40DBE8', textHex: '#FFF7E6' },
   { index: 15, wheelText: '$500', wedgeLabel: '$500', kind: 'CASH', cashValue: 500, multBonus: 0, fillHex: '#FF6738', accentHex: '#FF906B', textHex: '#FFF7E6' },
   { index: 16, wheelText: 'LIFELINE', wedgeLabel: 'FREE LIFELINE', kind: 'LIFELINE', cashValue: 0, multBonus: 0, fillHex: '#169D53', accentHex: '#2ECC71', textHex: '#FFF7E6' },
   { index: 17, wheelText: '$350', wedgeLabel: '$350', kind: 'CASH', cashValue: 350, multBonus: 0, fillHex: '#E63B7A', accentHex: '#FF6B9E', textHex: '#FFF7E6' },
   { index: 18, wheelText: 'STEAL $250', wedgeLabel: 'STEAL $250', kind: 'STEAL', cashValue: 250, multBonus: 0, fillHex: '#1544A4', accentHex: '#FF6738', textHex: '#FFF7E6' },
-  { index: 19, wheelText: '$750', wedgeLabel: '$750', kind: 'CASH', cashValue: 750, multBonus: 0, fillHex: '#FFF4DC', accentHex: '#FFFFFF', textHex: '#0B1D30' },
+  { index: 19, wheelText: '$750', wedgeLabel: '$750', kind: 'CASH', cashValue: 750, multBonus: 0, fillHex: '#FFF4DC', accentHex: '#FFFFFF', textHex: '#1E140E' },
 ];
 
 function getWedgeAtWheelAngle(angleDeg: number): BigWheelWedgeSpecV7 {
@@ -498,8 +471,8 @@ function buildBigWheelOuterBezelSvg(): string {
     <svg class="wst7-wheel-bezel-svg" viewBox="0 0 460 460" fill="none" aria-hidden="true">
       <defs>
         <radialGradient id="wst7BezelGrad" cx="50%" cy="46%" r="54%">
-          <stop offset="78%" stop-color="#091829"/>
-          <stop offset="86%" stop-color="#132D47"/>
+          <stop offset="78%" stop-color="#4F2917"/>
+          <stop offset="86%" stop-color="#6E3B23"/>
           <stop offset="92%" stop-color="#6B371E"/>
           <stop offset="96%" stop-color="#3F1D0E"/>
           <stop offset="98.5%" stop-color="#F4A91F"/>
@@ -519,13 +492,13 @@ function buildBigWheelOuterBezelSvg(): string {
       <!-- Outer American Walnut & Turned Brass Marquee Cabinet -->
       <circle cx="230" cy="230" r="228" fill="url(#wst7BezelGrad)"/>
       <circle cx="230" cy="230" r="224" stroke="#FFD966" stroke-opacity="0.52" stroke-width="1.6"/>
-      <circle cx="230" cy="230" r="201" fill="#061220" stroke="#FFD966" stroke-width="3.2"/>
-      <circle cx="230" cy="230" r="197.5" stroke="#081625" stroke-width="2"/>
+      <circle cx="230" cy="230" r="201" fill="#3E2012" stroke="#FFD966" stroke-width="3.2"/>
+      <circle cx="230" cy="230" r="197.5" stroke="#5C301B" stroke-width="2"/>
       ${bulbs.join('')}
       <!-- Bolted 12 O'Clock Brass Flapper Mounting Saddle -->
-      <rect x="206" y="1" width="48" height="20" rx="6" fill="url(#wst7BracketBrass)" stroke="#071321" stroke-width="2.2"/>
-      <circle cx="215" cy="11" r="3" fill="#0B1D30" stroke="#FFF7E6" stroke-width="1"/>
-      <circle cx="245" cy="11" r="3" fill="#0B1D30" stroke="#FFF7E6" stroke-width="1"/>
+      <rect x="206" y="1" width="48" height="20" rx="6" fill="url(#wst7BracketBrass)" stroke="#241309" stroke-width="2.2"/>
+      <circle cx="215" cy="11" r="3" fill="#1E140E" stroke="#FFF7E6" stroke-width="1"/>
+      <circle cx="245" cy="11" r="3" fill="#1E140E" stroke="#FFF7E6" stroke-width="1"/>
     </svg>
   `;
 }
@@ -576,9 +549,9 @@ function buildBigWheelDiscSvg(): string {
     const textLenAttr =
       wedge.wheelText.length >= 9 ? ' textLength="90" lengthAdjust="spacingAndGlyphs"' : '';
     const textStroke =
-      wedge.textHex === '#0B1D30'
+      wedge.textHex === '#1E140E'
         ? ' stroke="rgba(255,247,230,0.45)" stroke-width="1.2" paint-order="stroke"'
-        : ' stroke="rgba(7,19,33,0.58)" stroke-width="2" paint-order="stroke"';
+        : ' stroke="rgba(36,19,9,0.62)" stroke-width="2" paint-order="stroke"';
 
     wedgesMarkup.push(`
       <g class="wst7-wheel-wedge" data-wedge-idx="${wedge.index}" data-kind="${wedge.kind}">
@@ -598,7 +571,7 @@ function buildBigWheelDiscSvg(): string {
     const px = cx + Math.cos(startRad) * pegR;
     const py = cy + Math.sin(startRad) * pegR;
     pegsMarkup.push(`
-      <circle cx="${(px + 2.2).toFixed(2)}" cy="${(py + 2.8).toFixed(2)}" r="5.6" fill="#040B14" fill-opacity="0.7"/>
+      <circle cx="${(px + 2.2).toFixed(2)}" cy="${(py + 2.8).toFixed(2)}" r="5.6" fill="#1E140E" fill-opacity="0.7"/>
       <circle cx="${px.toFixed(2)}" cy="${py.toFixed(2)}" r="5.3" fill="url(#wst7BrassPegBase)" stroke="#4C2B02" stroke-width="0.9"/>
       <circle cx="${(px - 0.5).toFixed(2)}" cy="${(py - 0.5).toFixed(2)}" r="3.8" fill="url(#wst7BrassPegCap)"/>
       <circle cx="${(px - 1.5).toFixed(2)}" cy="${(py - 1.6).toFixed(2)}" r="1.35" fill="#FFFDF4"/>
@@ -627,13 +600,13 @@ function buildBigWheelDiscSvg(): string {
           <stop offset="100%" stop-color="#E6950A"/>
         </radialGradient>
         <pattern id="wst7GremlinHazard" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-          <rect width="12" height="12" fill="#171C2B"/>
+          <rect width="12" height="12" fill="#4F2917"/>
           <rect width="6" height="12" fill="#4B122E"/>
         </pattern>
         <radialGradient id="wst7WheelBacklightVignette" cx="50%" cy="50%" r="50%">
-          <stop offset="22%" stop-color="#040B14" stop-opacity="0.34"/>
+          <stop offset="22%" stop-color="#1E140E" stop-opacity="0.34"/>
           <stop offset="68%" stop-color="#FFFFFF" stop-opacity="0.06"/>
-          <stop offset="100%" stop-color="#040B14" stop-opacity="0.22"/>
+          <stop offset="100%" stop-color="#1E140E" stop-opacity="0.22"/>
         </radialGradient>
         <radialGradient id="wst7BrassPegBase" cx="40%" cy="35%" r="65%">
           <stop offset="0%" stop-color="#F6B83A"/>
@@ -654,11 +627,11 @@ function buildBigWheelDiscSvg(): string {
           <stop offset="100%" stop-color="#6A7A8F"/>
         </linearGradient>
         <radialGradient id="wst7HubInnerShadow" cx="50%" cy="50%" r="50%">
-          <stop offset="70%" stop-color="#0D2238"/>
-          <stop offset="100%" stop-color="#050F1A"/>
+          <stop offset="70%" stop-color="#3E2012"/>
+          <stop offset="100%" stop-color="#1E140E"/>
         </radialGradient>
       </defs>
-      <circle cx="230" cy="230" r="196" fill="#0B1D30"/>
+      <circle cx="230" cy="230" r="196" fill="#3E2012"/>
       ${wedgesMarkup.join('')}
       <!-- Subtle Studio Backlight & Edge Depth Overlay -->
       <circle cx="230" cy="230" r="195" fill="url(#wst7WheelBacklightVignette)" pointer-events="none"/>
@@ -666,16 +639,16 @@ function buildBigWheelDiscSvg(): string {
       <circle cx="230" cy="230" r="176" stroke="#FFF7E6" stroke-opacity="0.22" stroke-width="1"/>
       ${pegsMarkup.join('')}
       <!-- Lathe-Turned Spun-Aluminum Central Studio Hubcap -->
-      <circle cx="233" cy="234" r="52" fill="#040B14" fill-opacity="0.56"/>
+      <circle cx="233" cy="234" r="52" fill="#1E140E" fill-opacity="0.56"/>
       <circle cx="230" cy="230" r="51" fill="url(#wst7SpunAluminum)" stroke="#FFFDF6" stroke-width="2.2"/>
       <!-- Anisotropic Brushed-Aluminum Specular Sheen Wedges -->
       <path d="M230 230 L194 194 A51 51 0 0 1 245 181 Z" fill="#FFFFFF" fill-opacity="0.42"/>
       <path d="M230 230 L266 266 A51 51 0 0 1 215 279 Z" fill="#FFFFFF" fill-opacity="0.34"/>
-      <path d="M230 230 L181 244 A51 51 0 0 1 192 195 Z" fill="#1C2C3E" fill-opacity="0.2"/>
-      <path d="M230 230 L279 216 A51 51 0 0 1 268 265 Z" fill="#1C2C3E" fill-opacity="0.2"/>
+      <path d="M230 230 L181 244 A51 51 0 0 1 192 195 Z" fill="#4F2917" fill-opacity="0.2"/>
+      <path d="M230 230 L279 216 A51 51 0 0 1 268 265 Z" fill="#4F2917" fill-opacity="0.2"/>
       <!-- Fine Concentric Lathe Grooves -->
       <circle cx="230" cy="230" r="46" stroke="#FFFFFF" stroke-opacity="0.42" stroke-width="0.9"/>
-      <circle cx="230" cy="230" r="37" stroke="#36485D" stroke-opacity="0.45" stroke-width="1.1"/>
+      <circle cx="230" cy="230" r="37" stroke="#6E3B23" stroke-opacity="0.45" stroke-width="1.1"/>
       ${hubBolts.join('')}
       <!-- Recessed Peacock-Navy & Gold Atomic Starburst Center Medallion -->
       <circle cx="230" cy="230" r="31" fill="url(#wst7HubInnerShadow)" stroke="#F4A91F" stroke-width="2.8"/>
@@ -706,15 +679,15 @@ function buildBrassFlapperSvg(): string {
       <!-- Coiled Brass Return-Spring Shoulders -->
       <path d="M13 13 C6 15 6 24 14 25 M47 13 C54 15 54 24 46 25" stroke="#FFD966" stroke-width="3.2" stroke-linecap="round"/>
       <!-- Tapered Stitched Leather Paddle Tongue -->
-      <path d="M15 20 L45 20 L35 66 C33.5 72 26.5 72 25 66 Z" fill="url(#wst7FlapLeather)" stroke="#071321" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M15 20 L45 20 L35 66 C33.5 72 26.5 72 25 66 Z" fill="url(#wst7FlapLeather)" stroke="#241309" stroke-width="3" stroke-linejoin="round"/>
       <!-- Cream Saddle-Stitch Seam Along Leather Edge -->
       <path d="M20 25 L27 60 M40 25 L33 60" stroke="#FFF3D1" stroke-opacity="0.82" stroke-width="1.4" stroke-dasharray="3 3" stroke-linecap="round"/>
       <!-- Gleaming Brass Strike-Tip Cap -->
       <path d="M25.5 57 L34.5 57 L33.2 65.5 C32.2 69 27.8 69 26.8 65.5 Z" fill="url(#wst7FlapBrass)"/>
       <!-- Heavy Brushed-Brass Pivot Collar & Rivet -->
-      <rect x="11" y="5" width="38" height="19" rx="9.5" fill="url(#wst7FlapBrass)" stroke="#071321" stroke-width="2.8"/>
+      <rect x="11" y="5" width="38" height="19" rx="9.5" fill="url(#wst7FlapBrass)" stroke="#241309" stroke-width="2.8"/>
       <circle cx="30" cy="14.5" r="6.4" fill="#FFF7E6" stroke="#8A5104" stroke-width="2.2"/>
-      <circle cx="30" cy="14.5" r="2.6" fill="#0B1D30"/>
+      <circle cx="30" cy="14.5" r="2.6" fill="#1E140E"/>
       <line x1="27.8" y1="12.5" x2="32.2" y2="16.5" stroke="#FFD966" stroke-width="1.2"/>
     </svg>
   `;
@@ -792,10 +765,11 @@ export function evaluatePressYourLuckSpinEvV8(params: {
   const isHotBoard = Boolean(params.forceHotBoard || params.spinsTaken >= 1);
   const squares = getActiveGremlinBoardSquaresV8(isHotBoard);
   const selfBank = Math.max(0, Math.round(params.selfCash || 0));
-  const hasExplicitRivalCash =
-    typeof params.rivalCash === 'number' && Number.isFinite(params.rivalCash);
-  const effectiveRivalBank = hasExplicitRivalCash
-    ? Math.max(0, Math.round(params.rivalCash!))
+  const hasExplicitRivalNum = typeof params.rivalCash === 'number';
+  const effectiveRivalBank = hasExplicitRivalNum
+    ? Number.isFinite(params.rivalCash)
+      ? Math.max(0, Math.round(params.rivalCash!))
+      : 0
     : selfBank;
 
   let gremlinCount = 0;
@@ -804,7 +778,7 @@ export function evaluatePressYourLuckSpinEvV8(params: {
     if (sq.kind === 'GREMLIN') {
       gremlinCount += 1;
     } else if (sq.kind === 'STEAL') {
-      const stealAmt = hasExplicitRivalCash
+      const stealAmt = hasExplicitRivalNum
         ? Math.min(sq.cashValue, effectiveRivalBank)
         : sq.cashValue;
       sumNonGremlinValues += stealAmt;
@@ -846,8 +820,8 @@ function buildMiniGremlinBadgeSvg(): string {
   // Precision 1966 RCA Broadcast Monoscope Hazard Reticle & Amber Oscilloscope Spike (Zero Cartoon Clip-Art!)
   return `
     <svg class="wst7-mini-gremlin-svg" viewBox="0 0 60 36" fill="none" aria-hidden="true">
-      <rect x="2" y="2" width="56" height="32" rx="6" fill="#091826" stroke="#E63B7A" stroke-width="2"/>
-      <rect x="5" y="5" width="50" height="26" rx="4" fill="#06111D" stroke="#FFD966" stroke-opacity="0.4" stroke-width="1"/>
+      <rect x="2" y="2" width="56" height="32" rx="6" fill="#4F2917" stroke="#E63B7A" stroke-width="2"/>
+      <rect x="5" y="5" width="50" height="26" rx="4" fill="#3E2012" stroke="#FFD966" stroke-opacity="0.4" stroke-width="1"/>
       <!-- Precision Monoscope Crosshair & Concentric Target Rings -->
       <line x1="30" y1="6" x2="30" y2="30" stroke="#FFF7E6" stroke-opacity="0.34" stroke-width="1"/>
       <line x1="8" y1="18" x2="52" y2="18" stroke="#FFF7E6" stroke-opacity="0.34" stroke-width="1"/>
@@ -922,7 +896,7 @@ function buildBroadcastMonoscopeZonkSvg(): string {
     <svg class="wst7-gremlin-cartoon-svg" viewBox="0 0 280 176" fill="none" aria-hidden="true">
       <defs>
         <pattern id="wst7CrtScanlines" width="4" height="4" patternUnits="userSpaceOnUse">
-          <rect width="4" height="2" fill="#030912" fill-opacity="0.28"/>
+          <rect width="4" height="2" fill="#1E140E" fill-opacity="0.28"/>
         </pattern>
         <linearGradient id="wst7RollBarGrad" x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0"/>
@@ -933,11 +907,11 @@ function buildBroadcastMonoscopeZonkSvg(): string {
         <radialGradient id="wst7ScopeCoreGlow" cx="50%" cy="50%" r="50%">
           <stop offset="0%" stop-color="#FFE27A" stop-opacity="0.42"/>
           <stop offset="48%" stop-color="#E63B7A" stop-opacity="0.22"/>
-          <stop offset="100%" stop-color="#061220" stop-opacity="0"/>
+          <stop offset="100%" stop-color="#3E2012" stop-opacity="0"/>
         </radialGradient>
         <radialGradient id="wst7CrtVignette" cx="50%" cy="50%" r="64%">
-          <stop offset="56%" stop-color="#040B14" stop-opacity="0"/>
-          <stop offset="100%" stop-color="#02070E" stop-opacity="0.72"/>
+          <stop offset="56%" stop-color="#1E140E" stop-opacity="0"/>
+          <stop offset="100%" stop-color="#1E140E" stop-opacity="0.72"/>
         </radialGradient>
       </defs>
 
@@ -951,15 +925,15 @@ function buildBroadcastMonoscopeZonkSvg(): string {
         <rect x="200" y="0" width="40" height="142" fill="#D6322B"/>
         <rect x="240" y="0" width="40" height="142" fill="#1B4BB8"/>
         <rect x="0" y="142" width="40" height="12" fill="#1B4BB8"/>
-        <rect x="40" y="142" width="40" height="12" fill="#09131F"/>
+        <rect x="40" y="142" width="40" height="12" fill="#241309"/>
         <rect x="80" y="142" width="40" height="12" fill="#D93678"/>
-        <rect x="120" y="142" width="40" height="12" fill="#09131F"/>
+        <rect x="120" y="142" width="40" height="12" fill="#241309"/>
         <rect x="160" y="142" width="40" height="12" fill="#18B8CA"/>
-        <rect x="200" y="142" width="40" height="12" fill="#09131F"/>
+        <rect x="200" y="142" width="40" height="12" fill="#241309"/>
         <rect x="240" y="142" width="40" height="12" fill="#F2E8D5"/>
       </g>
       <!-- Deep Cathode-Ray Monitor Well Base + Center Phosphor Bloom -->
-      <rect x="0" y="0" width="280" height="176" fill="#071525" fill-opacity="0.62"/>
+      <rect x="0" y="0" width="280" height="176" fill="#3E2012" fill-opacity="0.62"/>
       <circle cx="140" cy="88" r="88" fill="url(#wst7ScopeCoreGlow)"/>
 
       <!-- 2. Precision 1966 RCA Monoscope Reticle, Calibration Wedges & Corner Targets -->
@@ -974,10 +948,10 @@ function buildBroadcastMonoscopeZonkSvg(): string {
       <circle cx="140" cy="88" r="70" stroke="#FFF7E6" stroke-opacity="0.72" stroke-width="2.2"/>
       <circle cx="140" cy="88" r="56" stroke="#FFD966" stroke-opacity="0.52" stroke-width="1.4" stroke-dasharray="6 5"/>
       <circle cx="140" cy="88" r="38" stroke="#FFF7E6" stroke-opacity="0.65" stroke-width="1.8"/>
-      <circle cx="140" cy="88" r="18" fill="#091829" fill-opacity="0.88" stroke="#E63B7A" stroke-width="2.4"/>
+      <circle cx="140" cy="88" r="18" fill="#4F2917" fill-opacity="0.88" stroke="#E63B7A" stroke-width="2.4"/>
 
       <!-- Engraved 1966 Network Call-Sign Micro-Plaque Clearly Inside CRT Bezel -->
-      <rect x="74" y="17" width="132" height="17" rx="3.5" fill="#091829" stroke="#FFD966" stroke-width="1.4"/>
+      <rect x="74" y="17" width="132" height="17" rx="3.5" fill="#4F2917" stroke="#FFD966" stroke-width="1.4"/>
       <text x="140" y="28.5" text-anchor="middle" font-family="Michroma, Jost, sans-serif" font-weight="700" font-size="8.2" letter-spacing="0.09em" fill="#FFD966">IBC · CH-6A · MONOSCOPE</text>
 
       <!-- 3. Live Dual-Trace Amber & Cyan Phosphor Oscilloscope Static Surge + Lissajous Orbit -->
@@ -1005,7 +979,7 @@ function buildBroadcastMonoscopeZonkSvg(): string {
       <!-- 4. Crisp Morton Goldsholl 1966 Geometric Starburst Sparks (Pure Mid-Century Motion Craft!) -->
       <g class="wst7-gremlin-sparks-a">
         <!-- Center Bullseye 8-Point Atomic Starburst Core -->
-        <path d="M140 62 L144 82 L166 88 L144 94 L140 114 L136 94 L114 88 L136 82 Z" fill="#FFD966" stroke="#071321" stroke-width="1.6"/>
+        <path d="M140 62 L144 82 L166 88 L144 94 L140 114 L136 94 L114 88 L136 82 Z" fill="#FFD966" stroke="#241309" stroke-width="1.6"/>
         <path d="M140 72 L142.5 85 L155 88 L142.5 91 L140 104 L137.5 91 L125 88 L137.5 85 Z" fill="#FFFDF4"/>
         <!-- Corner Atomic Diamonds -->
         <path d="M74 44 L77 52 L85 55 L77 58 L74 66 L71 58 L63 55 L71 52 Z" fill="#36F1FF"/>
@@ -1046,13 +1020,13 @@ function buildButtonGlyphSvg(kind: 'WHEEL' | 'STOP' | 'BELL'): string {
   }
   return `
     <svg class="wst7-btn-glyph-svg" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-      <circle cx="14" cy="14" r="11.5" fill="#0D2238" stroke="#FFD966" stroke-width="2.4"/>
+      <circle cx="14" cy="14" r="11.5" fill="#3E2012" stroke="#FFD966" stroke-width="2.4"/>
       <path d="M14 14 L14 2.5 A11.5 11.5 0 0 1 24 8.2 Z" fill="#FFD966"/>
       <path d="M14 14 L24 8.2 A11.5 11.5 0 0 1 24 19.8 Z" fill="#E63B7A"/>
       <path d="M14 14 L24 19.8 A11.5 11.5 0 0 1 14 25.5 Z" fill="#19BFD0"/>
       <path d="M14 14 L14 25.5 A11.5 11.5 0 0 1 4 19.8 Z" fill="#2ECC71"/>
       <path d="M14 14 L4 19.8 A11.5 11.5 0 0 1 4 8.2 Z" fill="#1E56C5"/>
-      <circle cx="14" cy="14" r="3.6" fill="#FFF7E6" stroke="#0D2238" stroke-width="1.2"/>
+      <circle cx="14" cy="14" r="3.6" fill="#FFF7E6" stroke="#3E2012" stroke-width="1.2"/>
     </svg>
   `;
 }
@@ -1072,8 +1046,8 @@ function buildSecretSquareDoubleCrestSvg(): string {
       <ellipse cx="60" cy="60" rx="54" ry="20" transform="rotate(28 60 60)" stroke="#FFD966" stroke-width="2.5" stroke-opacity="0.88"/>
       <circle cx="16" cy="36" r="4" fill="#FFD966"/>
       <circle cx="104" cy="84" r="4" fill="#19BFD0"/>
-      <path d="M60 12 L68 34 L91 27 L80 48 L104 60 L80 72 L91 93 L68 86 L60 108 L52 86 L29 93 L40 72 L16 60 L40 48 L29 27 L52 34 Z" fill="url(#wst7SecBrass)" stroke="#071321" stroke-width="2.4" stroke-linejoin="round"/>
-      <circle cx="60" cy="60" r="27" fill="#0B1D30" stroke="#FFF7E6" stroke-width="3"/>
+      <path d="M60 12 L68 34 L91 27 L80 48 L104 60 L80 72 L91 93 L68 86 L60 108 L52 86 L29 93 L40 72 L16 60 L40 48 L29 27 L52 34 Z" fill="url(#wst7SecBrass)" stroke="#241309" stroke-width="2.4" stroke-linejoin="round"/>
+      <circle cx="60" cy="60" r="27" fill="#3E2012" stroke="#FFF7E6" stroke-width="3"/>
       <circle cx="60" cy="60" r="21" stroke="#F4A91F" stroke-width="1.5" stroke-dasharray="4 4"/>
       <text x="60" y="68" text-anchor="middle" font-family="Jost, sans-serif" font-weight="900" font-size="25" fill="#FFD966">2×</text>
     </svg>
@@ -1347,228 +1321,7 @@ export class TvTwistTheaterV7 {
   }
 
   // --------------------------------------------------------------------------
-  // 2. 1969 Sale of the Century — Instant Bargain Revolving Prize Turntable
-  // --------------------------------------------------------------------------
-
-  public offerInstantBargainTurntable(
-    spec: InstantBargainSpecV7,
-  ): Promise<InstantBargainDecisionV7> {
-    this.cancelActive();
-    this.callbacks.onBargainBellSfx?.();
-
-    const playerCash = Math.max(0, Math.round(spec.playerCash));
-    const costCash = Math.max(0, Math.round(spec.costCash));
-    const canAfford = playerCash >= costCash;
-    const afterCash = Math.max(0, playerCash - costCash);
-    const retailValue = spec.listPriceCash ?? Math.max(450, Math.round((costCash * 2.6) / 25) * 25);
-
-    return new Promise<InstantBargainDecisionV7>((resolve) => {
-      let decided: InstantBargainDecisionV7 | null = null;
-      let finished = false;
-      const timers: number[] = [];
-
-      const overlay = document.createElement('section');
-      overlay.className = 'wst7-stage-overlay wst7-bargain-backdrop';
-      overlay.setAttribute('role', 'dialog');
-      overlay.setAttribute('aria-modal', 'true');
-      overlay.setAttribute('aria-label', `Instant Bargain Turntable: ${spec.relicName} for $${costCash}`);
-
-      const ensemble = document.createElement('div');
-      ensemble.className = 'wst7-bargain-ensemble';
-
-      const header = document.createElement('header');
-      header.className = 'wst7-bargain-header';
-      header.innerHTML = `
-        ${buildMarqueeCrownBulbsSvg()}
-        <div class="wst7-kicker-ribbon">LIVE PRIZE SPOTLIGHT</div>
-        <div class="wst7-bell-row">
-          ${buildBargainBellSvg()}
-          <h2 class="wst7-bargain-headline">INSTANT BARGAIN!</h2>
-        </div>
-      `;
-
-      const showcase = document.createElement('div');
-      showcase.className = 'wst7-turntable-showcase';
-
-      const raysWrap = document.createElement('div');
-      raysWrap.className = 'wst7-turntable-rays';
-      raysWrap.innerHTML = buildLivingColorStarburstSvg(20);
-
-      const crestRow = document.createElement('div');
-      crestRow.className = 'wst7-turntable-crest-row';
-      crestRow.innerHTML = `
-        ${buildRelicShowcaseCrestSvg()}
-        <div class="wst7-price-hangtag">
-          <span class="wst7-hangtag-grommet" aria-hidden="true"></span>
-          <span class="wst7-retail-strike">RETAIL $${retailValue.toLocaleString()}</span>
-          <span class="wst7-bargain-price">NOW $${costCash.toLocaleString()}!</span>
-        </div>
-      `;
-
-      const cuePlaque = document.createElement('article');
-      cuePlaque.className = 'wst7-relic-cue-plaque';
-
-      const cornice = document.createElement('div');
-      cornice.className = 'wst7-plaque-brass-cornice';
-      cornice.setAttribute('aria-hidden', 'true');
-
-      const nameEl = document.createElement('h3');
-      nameEl.className = 'wst7-relic-name';
-      nameEl.textContent = formatOrphanProof(spec.relicName);
-
-      const plainTradeRule = document.createElement('div');
-      plainTradeRule.className = 'wst7-bargain-plain-rule';
-      plainTradeRule.textContent = `SPEND $${costCash.toLocaleString()} SCORE · KEEP ALL SHOW`;
-
-      const plainPerkCopy = spec.relicPerk
-        .replace(
-          /whenever\s+Backstage\s+Cash\s+is\s+\$0\s*\(\+?0\.50×\s+in\s+Clean-Air\s+Season\)/gi,
-          'while playing a spotless clean broadcast (+0.50× on full clean-play streaks)',
-        )
-        .replace(/when\s+Backstage\s+Cash\s+is\s+\$0\s*\(\+?0\.50×\s+in\s+Clean-Air\s+Season\)/gi, 'while playing a spotless clean broadcast (+0.50× on full clean-play streaks)')
-        .replace(/in\s+Clean-Air\s+Season/gi, 'during clean-play broadcasts')
-        .replace(/Backstage\s+Cash/gi, 'secret bribe cash')
-        .replace(/—\s*certified\s+clean-air\s+bonus!?/gi, '!');
-
-      const perkEl = document.createElement('p');
-      perkEl.className = 'wst7-relic-perk';
-      perkEl.textContent = formatOrphanProof(plainPerkCopy);
-
-      cuePlaque.append(cornice, nameEl, plainTradeRule, perkEl);
-
-      const platter = document.createElement('div');
-      platter.className = 'wst7-turntable-platter';
-      platter.setAttribute('aria-hidden', 'true');
-      for (let i = 0; i < 11; i += 1) {
-        const bulb = document.createElement('span');
-        bulb.className = `wst7-platter-bulb wst7-bulb-dot wst7-c${i % 3}`;
-        platter.appendChild(bulb);
-      }
-
-      const pedestal = document.createElement('div');
-      pedestal.className = 'wst7-turntable-pedestal';
-      pedestal.setAttribute('aria-hidden', 'true');
-
-      const floorReflect = document.createElement('div');
-      floorReflect.className = 'wst7-platter-floor-reflection';
-      floorReflect.setAttribute('aria-hidden', 'true');
-
-      const soldStamp = document.createElement('div');
-      soldStamp.className = 'wst7-sold-stamp';
-      soldStamp.textContent = 'SOLD!';
-
-      showcase.append(raysWrap, crestRow, cuePlaque, platter, pedestal, floorReflect, soldStamp);
-
-      const sideCol = document.createElement('div');
-      sideCol.className = 'wst7-bargain-side-col';
-
-      const mathStrip = document.createElement('div');
-      mathStrip.className = 'wst7-score-math-strip';
-      mathStrip.innerHTML = canAfford
-        ? `
-            <span class="wst7-math-item"><span class="wst7-math-lbl-long">YOUR </span>SCORE <strong>$${playerCash.toLocaleString()}</strong></span>
-            <span class="wst7-math-arrow" aria-hidden="true">▸</span>
-            <span class="wst7-math-item">AFTER<span class="wst7-math-lbl-long"> BUY</span> <strong>$${afterCash.toLocaleString()}</strong></span>
-          `
-        : `
-            <span class="wst7-math-item"><span class="wst7-math-lbl-long">YOUR </span>SCORE <strong>$${playerCash.toLocaleString()}</strong></span>
-            <span class="wst7-math-arrow" aria-hidden="true">▸</span>
-            <span class="wst7-math-item">NEED <strong>$${costCash.toLocaleString()}</strong></span>
-          `;
-
-      const actions = document.createElement('div');
-      actions.className = 'wst7-bargain-actions';
-
-      const buyBtn = document.createElement('button');
-      buyBtn.type = 'button';
-      buyBtn.className = 'wst7-action-btn wst7-btn-buy';
-      buyBtn.dataset.action = 'bargain-buy';
-      buyBtn.disabled = !canAfford;
-      buyBtn.innerHTML = canAfford
-        ? `${buildButtonGlyphSvg('BELL')}<span>BUY FOR $${costCash.toLocaleString()}</span>`
-        : `<span>NEED $${costCash.toLocaleString()} TO BUY</span>`;
-
-      const passBtn = document.createElement('button');
-      passBtn.type = 'button';
-      passBtn.className = 'wst7-action-btn wst7-btn-pass';
-      passBtn.dataset.action = 'bargain-pass';
-      passBtn.textContent = `PASS · KEEP $${playerCash.toLocaleString()}`;
-
-      const finishDecision = (choice: InstantBargainDecisionV7): void => {
-        if (finished) return;
-        finished = true;
-        for (const t of timers) window.clearTimeout(t);
-        timers.length = 0;
-        window.removeEventListener('keydown', onKeyDown);
-        this.activeCleanup = null;
-        this.rootEl.innerHTML = '';
-        this.rootEl.classList.add('wst7-hidden');
-        resolve(choice);
-      };
-
-      const commitDecision = (choice: InstantBargainDecisionV7): void => {
-        if (decided !== null || finished) return;
-        if (choice === 'BUY' && !canAfford) return;
-        decided = choice;
-        buyBtn.disabled = true;
-        passBtn.disabled = true;
-        ensemble.dataset.decision = choice;
-
-        if (choice === 'BUY') {
-          this.callbacks.onBargainBuySfx?.();
-          const holdMs = this.reducedMotion ? 180 : 380;
-          timers.push(
-            window.setTimeout(() => {
-              overlay.dataset.exiting = 'true';
-              timers.push(window.setTimeout(() => finishDecision('BUY'), 150));
-            }, holdMs),
-          );
-        } else {
-          this.callbacks.onUiTapSfx?.();
-          this.callbacks.onBargainPassSfx?.();
-          overlay.dataset.exiting = 'true';
-          timers.push(window.setTimeout(() => finishDecision('PASS'), 150));
-        }
-      };
-
-      buyBtn.addEventListener('click', () => commitDecision('BUY'));
-      passBtn.addEventListener('click', () => commitDecision('PASS'));
-
-      const onKeyDown = (ev: KeyboardEvent): void => {
-        if (decided !== null) return;
-        if (ev.key === 'Escape' || ev.key.toLowerCase() === 'p') {
-          ev.preventDefault();
-          commitDecision('PASS');
-        } else if ((ev.key === 'b' || ev.key === 'B') && canAfford) {
-          ev.preventDefault();
-          commitDecision('BUY');
-        }
-      };
-
-      actions.append(buyBtn, passBtn);
-      sideCol.append(mathStrip, actions);
-      ensemble.append(header, showcase, sideCol);
-      overlay.appendChild(ensemble);
-      window.addEventListener('keydown', onKeyDown);
-
-      this.activeCleanup = () => {
-        finished = true;
-        for (const t of timers) window.clearTimeout(t);
-        timers.length = 0;
-        window.removeEventListener('keydown', onKeyDown);
-        resolve(decided ?? 'PASS');
-      };
-
-      this.rootEl.innerHTML = '';
-      this.rootEl.appendChild(overlay);
-      this.rootEl.classList.remove('wst7-hidden');
-      overlay.tabIndex = -1;
-      overlay.focus({ preventScroll: true });
-    });
-  }
-
-  // --------------------------------------------------------------------------
-  // 3. 1.1s Kinetic 1966 Starburst Secret Square / Daily Double Splash
+  // 2. 1.1s Kinetic 1966 Starburst Secret Square / Daily Double Splash
   // --------------------------------------------------------------------------
 
   public flashSecretSquareBanner(
@@ -2214,7 +1967,7 @@ export class TvTwistTheaterV7 {
       let extraSpinsAwarded = 0;
       let spinsTaken = 0;
       let liveCash = Math.max(0, Math.round(opts.playerCash || 0));
-      let liveRivalCash = hasExplicitRivalCash ? Math.max(0, Math.round(opts.rivalCash!)) : Infinity;
+      let liveRivalCash = hasExplicitRivalCash ? Math.max(0, Math.round(opts.rivalCash!)) : 0;
       let netCashDelta = 0;
       let rivalCashDelta = 0;
       let passedSpinsToRival = 0;
@@ -2411,7 +2164,7 @@ export class TvTwistTheaterV7 {
       const computeCurrentEv = (): PressYourLuckSpinEvAnalysisV8 =>
         evaluatePressYourLuckSpinEvV8({
           selfCash: liveCash,
-          rivalCash: Number.isFinite(liveRivalCash) ? liveRivalCash : undefined,
+          rivalCash: liveRivalCash,
           spinsTaken,
           spinsRemaining,
           forceHotBoard: opts.initialHotBoard,
@@ -2543,29 +2296,9 @@ export class TvTwistTheaterV7 {
               : 'CABLE CHEWED! ($0 ZAPPED)';
           centerWell.dataset.mode = 'gremlin';
           syncHud(finalHeadline);
-
-          // Launch full Hanna-Barbera / UPA Animated Studio Gremlin Skit!
-          void playGremlinCartoonSkitV8(overlay, {
-            seed:
-              opts.skitSeed ??
-              (((opts.seed ?? 1966) + spinsTaken * 131 + cursorIndex * 17) >>> 0),
-            victimName: isAutoCpu ? rivalFullName : 'YOU',
-            isPlayerVictim: !isAutoCpu,
-            scoreBefore: scoreBeforeZap,
-            cashLost: zapLoss,
-            newGremlinCount: updatedGremlinCount,
-            reducedMotion: this.reducedMotion,
-            onPlayFoghorn: () => emitGremlinZonk(),
-            onPlayBoing: () => (opts.onGremlinBoing ?? this.callbacks.onGremlinBoingSfx)?.(),
-            onPlayVoiceSting: (id) =>
-              (opts.onGremlinVoiceSting ?? this.callbacks.onGremlinVoiceSting)?.(id),
-          }).then((chosenId) => {
-            skitPlayed = chosenId;
-            if (!finished) {
-              overlay.dataset.exiting = 'true';
-              timers.push(window.setTimeout(finishBoard, 120));
-            }
-          });
+          emitGremlinZonk();
+          // Resolve cleanly so the caller (`ShowtimeAppV7`) launches the single full Gremlin skit!
+          queueExit(this.reducedMotion ? 320 : 680);
           return;
         }
 
@@ -2760,12 +2493,6 @@ export function playMysteryCurtainDoorPick(
   outcomesPreview?: MysteryCurtainOutcomesPreviewV7,
 ): Promise<1 | 2 | 3> {
   return getSharedTwistTheater().playMysteryCurtainDoorPick(outcomesPreview);
-}
-
-export function offerInstantBargainTurntable(
-  spec: InstantBargainSpecV7,
-): Promise<InstantBargainDecisionV7> {
-  return getSharedTwistTheater().offerInstantBargainTurntable(spec);
 }
 
 export function flashSecretSquareBanner(headline?: string): Promise<void> {

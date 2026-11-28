@@ -25,6 +25,10 @@ import {
   EMCEE_PORTRAIT_ASSET_V7,
   RELIC_CATALOG_V7,
 } from '../campaign/CastAndRelicsCatalogV7';
+import {
+  getAtlasSpriteEntryV9,
+  loadAtlasManifestV9,
+} from '../../v9/ShowroomAndCatalogsV9';
 
 export interface CurtainCallBargainShowpieceOptsV8 {
   playerCash: number;
@@ -186,23 +190,34 @@ html body .wsv8-ccb-proscenium {
   overflow: hidden;
 }
 
-/* Parted Crimson & Gold Velvet Theater Curtains at Top Proscenium Corners */
+/* Parted Crimson & Gold Velvet Theater Curtains (1966 Gouache Stage Backdrop Crop) */
 html body .wsv8-ccb-curtain-drape {
   position: absolute;
   top: 0;
-  width: clamp(84px, 12vw, 138px);
-  height: clamp(68px, 10dvh, 108px);
+  width: clamp(90px, 13vw, 152px);
+  height: clamp(64px, 9.5dvh, 102px);
   pointer-events: none;
   z-index: 3;
+  background-color: #B8253E;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: left top;
+  border-bottom: 3px solid #D9A441;
+  box-shadow:
+    inset 0 0 18px rgba(74, 16, 28, 0.36),
+    0 5px 12px rgba(74, 36, 18, 0.28);
+  clip-path: polygon(0 0, 100% 0, 74% 48%, 38% 78%, 12% 100%, 0 100%);
   filter: drop-shadow(0 4px 8px rgba(74, 36, 18, 0.26));
 }
 
 html body .wsv8-ccb-curtain-drape--left {
   left: 0;
+  border-bottom-right-radius: 90%;
 }
 
 html body .wsv8-ccb-curtain-drape--right {
   right: 0;
+  border-bottom-right-radius: 90%;
   transform: scaleX(-1);
 }
 
@@ -665,13 +680,21 @@ html body .wsv8-ccb-turntable-stage {
   overflow: hidden;
 }
 
-html body .wsv8-ccb-showcase-svg {
+html body .wsv8-ccb-showcase-sprite {
   position: relative;
   z-index: 3;
-  width: 74px;
-  height: 74px;
+  width: 78px;
+  height: 78px;
+  border-radius: 16px;
+  border: 2.5px solid var(--ccb-brass);
+  background-color: #FAF2DF;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
   display: block;
-  filter: drop-shadow(0 5px 8px rgba(110, 59, 35, 0.28));
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 253, 247, 0.9),
+    0 6px 12px rgba(110, 59, 35, 0.26);
   animation: wsv8-ccb-prop-hover 2.8s ease-in-out infinite;
 }
 
@@ -1089,9 +1112,11 @@ html body .wsv8-ccb-nosale-btn:active:not(:disabled) {
     padding-bottom: 5px;
   }
 
-  html body .wsv8-ccb-showcase-svg {
-    width: 36px;
-    height: 36px;
+  html body .wsv8-ccb-showcase-sprite {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border-width: 1.8px;
   }
 
   html body .wsv8-ccb-velvet-plinth {
@@ -1274,9 +1299,11 @@ html body .wsv8-ccb-nosale-btn:active:not(:disabled) {
     padding-bottom: 4px;
   }
 
-  html body .wsv8-ccb-showcase-svg {
-    width: 32px;
-    height: 32px;
+  html body .wsv8-ccb-showcase-sprite {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    border-width: 1.5px;
   }
 
   html body .wsv8-ccb-velvet-plinth {
@@ -1668,33 +1695,50 @@ function renderSweatIconSvg(kind: StrategicLeadPreviewV8['iconKind']): string {
   `;
 }
 
-function renderVelvetCurtainCornerSvg(side: 'left' | 'right'): string {
-  const gradId = `wsv8CurtainVelvet_${side}`;
-  const goldId = `wsv8CurtainGold_${side}`;
-  return `
-    <svg class="wsv8-ccb-curtain-drape wsv8-ccb-curtain-drape--${side}" viewBox="0 0 140 108" fill="none" aria-hidden="true">
-      <defs>
-        <linearGradient id="${gradId}" x1="0" y1="0" x2="132" y2="96" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#D12D49"/>
-          <stop offset="52%" stop-color="#B8253E"/>
-          <stop offset="100%" stop-color="#8C182C"/>
-        </linearGradient>
-        <linearGradient id="${goldId}" x1="0" y1="0" x2="120" y2="60" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#FFE082"/>
-          <stop offset="100%" stop-color="#C98A1E"/>
-        </linearGradient>
-      </defs>
-      <!-- Pleated Crimson Velvet Valance & Side Swag -->
-      <path d="M0 0 H136 C122 24 98 44 66 56 C42 65 24 82 14 106 H0 Z" fill="url(#${gradId})"/>
-      <!-- Deep Velvet Pleat Folds -->
-      <path d="M22 0 C20 26 14 54 4 86" stroke="#6E0F20" stroke-width="2.4" stroke-linecap="round" opacity="0.72"/>
-      <path d="M52 0 C46 22 34 42 18 66" stroke="#6E0F20" stroke-width="2.2" stroke-linecap="round" opacity="0.68"/>
-      <path d="M86 0 C76 18 60 34 40 48" stroke="#DA445E" stroke-width="2" stroke-linecap="round" opacity="0.65"/>
-      <!-- Braided 24K Gold Bullion Trim & Tie-Back Cord -->
-      <path d="M136 2 C121 26 97 46 65 58 C41 67 24 83 14 106" stroke="url(#${goldId})" stroke-width="4" stroke-linecap="round"/>
-      <circle cx="48" cy="64" r="5" fill="#FFD166" stroke="#8F5605" stroke-width="1.5"/>
-    </svg>
-  `;
+function buildAtlasSpriteInlineStyleV8(targetId: string): string {
+  const entry = getAtlasSpriteEntryV9(targetId);
+  if (!entry) return '';
+  const { sprite, assetUrl } = entry;
+  const sizeX = ((sprite.sheetW / Math.max(1, sprite.w)) * 100).toFixed(4);
+  const sizeY = ((sprite.sheetH / Math.max(1, sprite.h)) * 100).toFixed(4);
+  const posX =
+    sprite.sheetW <= sprite.w
+      ? '0.0000'
+      : ((sprite.x / (sprite.sheetW - sprite.w)) * 100).toFixed(4);
+  const posY =
+    sprite.sheetH <= sprite.h
+      ? '0.0000'
+      : ((sprite.y / (sprite.sheetH - sprite.h)) * 100).toFixed(4);
+  const safeUrl = assetUrl.replace(/'/g, '%27');
+  return `background-image: url('${safeUrl}'); background-size: ${sizeX}% ${sizeY}%; background-position: ${posX}% ${posY}%;`;
+}
+
+function hydrateAtlasSpritesInRootV8(root: HTMLElement): void {
+  root.querySelectorAll<HTMLElement>('[data-atlas-target]').forEach((el) => {
+    const targetId = el.dataset.atlasTarget;
+    if (!targetId) return;
+    const entry = getAtlasSpriteEntryV9(targetId);
+    if (!entry) return;
+    const { sprite, assetUrl } = entry;
+    const sizeX = ((sprite.sheetW / Math.max(1, sprite.w)) * 100).toFixed(4);
+    const sizeY = ((sprite.sheetH / Math.max(1, sprite.h)) * 100).toFixed(4);
+    const posX =
+      sprite.sheetW <= sprite.w
+        ? '0.0000'
+        : ((sprite.x / (sprite.sheetW - sprite.w)) * 100).toFixed(4);
+    const posY =
+      sprite.sheetH <= sprite.h
+        ? '0.0000'
+        : ((sprite.y / (sprite.sheetH - sprite.h)) * 100).toFixed(4);
+    el.style.backgroundImage = `url("${assetUrl}")`;
+    el.style.backgroundSize = `${sizeX}% ${sizeY}%`;
+    el.style.backgroundPosition = `${posX}% ${posY}%`;
+  });
+}
+
+function renderVelvetCurtainCornerSprite(side: 'left' | 'right'): string {
+  const inlineStyle = buildAtlasSpriteInlineStyleV8('curtain_backdrop_stage');
+  return `<div class="wsv8-ccb-curtain-drape wsv8-ccb-curtain-drape--${side}" data-atlas-target="curtain_backdrop_stage" style="${inlineStyle}" aria-hidden="true"></div>`;
 }
 
 function renderMarqueeBulbsArchSvg(): string {
@@ -1733,93 +1777,27 @@ function renderSolenoidBellSvg(): string {
 }
 
 /**
- * Custom 1966 Mid-Century Brass, Chrome & Enamel Prop Illustrations.
- * Strictly ZERO <text> elements inside any SVG so labels NEVER collide with graphics!
+ * 1966 Gouache Atlas Sprites for Instant Bargain Pedestals
+ * (`prize_bar_cart`, `prize_transistor_pocket`, `prize_diamond_watch`).
  */
-function renderPedestalShowcaseSvg(
+function resolvePedestalAtlasTargetId(
   kind: InstantBargainKindV8,
-  isMysteryEnvelope: boolean,
 ): string {
-  if (kind === 'GOLD_PROP' && isMysteryEnvelope) {
-    // Sunlit Cream-Vellum Treasury Vault Envelope w/ Fanning Emerald Banknotes & Crimson Wax Seal
-    return `
-      <svg class="wsv8-ccb-showcase-svg" viewBox="0 0 96 96" fill="none" aria-hidden="true">
-        <path d="M48 6 L54 18 L68 12 L63 26 L78 30 L67 40 L76 52 L61 54 L62 68 L48 60 L34 68 L35 54 L20 52 L29 40 L18 30 L33 26 L28 12 L42 18 Z"
-              fill="#FFD166" opacity="0.45"/>
-        <!-- Fanning Emerald Treasury Notes -->
-        <rect x="20" y="16" width="48" height="28" rx="4" transform="rotate(-9 44 30)"
-              fill="#189853" stroke="#FFFDF7" stroke-width="2"/>
-        <rect x="28" y="18" width="48" height="28" rx="4" transform="rotate(7 52 32)"
-              fill="#23B266" stroke="#FFFDF7" stroke-width="2"/>
-        <circle cx="52" cy="30" r="6" fill="#B9F5D0" opacity="0.85"/>
-        <!-- Cream Vellum Envelope & Gold Foil Flap -->
-        <rect x="14" y="33" width="68" height="45" rx="7" fill="#FFFDF7" stroke="#B87D19" stroke-width="2.6"/>
-        <path d="M16 76 L39 55 M80 76 L57 55" stroke="#DFB464" stroke-width="2" stroke-linecap="round"/>
-        <path d="M15 35 L48 59 L81 35 Z" fill="#F6C85F" stroke="#B87D19" stroke-width="2.4" stroke-linejoin="round"/>
-        <!-- Carnaby Cerise Wax Rosette & Gold Star Polygon -->
-        <circle cx="48" cy="57" r="11" fill="#E6397A" stroke="#FFFDF7" stroke-width="2.2"/>
-        <polygon points="48,49.5 50.2,54.3 55.4,54.9 51.5,58.4 52.6,63.5 48,60.9 43.4,63.5 44.5,58.4 40.6,54.9 45.8,54.3"
-                 fill="#FFD166"/>
-      </svg>
-    `;
-  }
-
   if (kind === 'GOLD_PROP') {
-    // 24K Spun-Brass & Turquoise-Enamel 1966 RCA Ribbon Microphone Trophy on Walnut Base
-    return `
-      <svg class="wsv8-ccb-showcase-svg" viewBox="0 0 96 96" fill="none" aria-hidden="true">
-        <path d="M48 6 L54 19 L69 13 L63 28 L79 34 L66 44 L73 59 L57 55 L48 69 L39 55 L23 59 L30 44 L17 34 L33 28 L27 13 L42 19 Z"
-              fill="#FFD166" stroke="#C98A1E" stroke-width="1.8"/>
-        <circle cx="48" cy="42" r="23" fill="#FAF2DF" stroke="#D9A441" stroke-width="2.6"/>
-        <!-- Pill-Shaped RCA 44-BX Ribbon Mic Capsule -->
-        <rect x="38" y="18" width="20" height="29" rx="10" fill="#008B94" stroke="#6E3B23" stroke-width="2.2"/>
-        <rect x="41" y="21" width="14" height="23" rx="7" fill="#23B9C4"/>
-        <line x1="40" y1="27" x2="56" y2="27" stroke="#FAF2DF" stroke-width="2.2"/>
-        <line x1="40" y1="32.5" x2="56" y2="32.5" stroke="#FAF2DF" stroke-width="2.2"/>
-        <line x1="40" y1="38" x2="56" y2="38" stroke="#FAF2DF" stroke-width="2.2"/>
-        <!-- Brass Yoke & Sunlit Walnut Pedestal -->
-        <path d="M32 35 C32 46 39 53 48 53 C57 53 64 46 64 35" stroke="#E59A18" stroke-width="3.4" stroke-linecap="round"/>
-        <line x1="48" y1="53" x2="48" y2="64" stroke="#E59A18" stroke-width="3.6"/>
-        <rect x="31" y="63" width="34" height="8" rx="4" fill="#6E3B23" stroke="#D9A441" stroke-width="2"/>
-      </svg>
-    `;
+    return 'prize_bar_cart';
   }
-
   if (kind === 'NEXT_TILE_2X') {
-    // Twin Glowing Amber RCA Vacuum Tubes + Pure Sculptural High-Voltage Lightning Arc (ZERO Text!)
-    return `
-      <svg class="wsv8-ccb-showcase-svg" viewBox="0 0 96 96" fill="none" aria-hidden="true">
-        <circle cx="48" cy="46" r="34" fill="#E6F6F7" stroke="#008B94" stroke-width="2.6"/>
-        <circle cx="48" cy="46" r="27" fill="#FFFDF7" stroke="#D9A441" stroke-width="1.8" stroke-dasharray="5 4"/>
-        <!-- Left & Right Warm Glass Vacuum Tubes -->
-        <rect x="24" y="30" width="14" height="26" rx="7" fill="#FFE6A3" stroke="#B87814" stroke-width="2"/>
-        <circle cx="31" cy="42" r="3.5" fill="#FF6B35"/>
-        <rect x="58" y="30" width="14" height="26" rx="7" fill="#FFE6A3" stroke="#B87814" stroke-width="2"/>
-        <circle cx="65" cy="42" r="3.5" fill="#FF6B35"/>
-        <!-- Brushed Brass & Peacock Transformer Deck -->
-        <rect x="20" y="56" width="56" height="15" rx="5" fill="#008B94" stroke="#6E3B23" stroke-width="2.2"/>
-        <rect x="26" y="60" width="44" height="7" rx="3" fill="#FFD166"/>
-        <!-- Clean Center High-Voltage Lightning Bolt -->
-        <path d="M54 11 L35 42 H48 L41 67 L64 35 H50 Z"
-              fill="#FF6B35" stroke="#FFFDF7" stroke-width="2.4" stroke-linejoin="round"/>
-      </svg>
-    `;
+    return 'prize_transistor_pocket';
   }
+  return 'prize_diamond_watch';
+}
 
-  // FINAL_WAGER_SHIELD — Solid-Brass & Peacock Cloisonne Broadcast Crest Shield w/ Check Chevron (ZERO Text!)
-  return `
-    <svg class="wsv8-ccb-showcase-svg" viewBox="0 0 96 96" fill="none" aria-hidden="true">
-      <path d="M48 9 L79 21 V44 C79 64 65 78 48 86 C31 78 17 64 17 44 V21 Z"
-            fill="#FFD166" stroke="#8F5605" stroke-width="2.8" stroke-linejoin="round"/>
-      <path d="M48 16 L72 25.5 V44 C72 59 61 70 48 77 C35 70 24 59 24 44 V25.5 Z"
-            fill="#008B94" stroke="#FFFDF7" stroke-width="2.2" stroke-linejoin="round"/>
-      <path d="M48 16 V77 C35 70 24 59 24 44 V25.5 Z" fill="#1746A2" opacity="0.32"/>
-      <!-- Inner Gold Medallion & Crisp Enamel Checkmark -->
-      <circle cx="48" cy="45" r="15.5" fill="#FAF2DF" stroke="#E59A18" stroke-width="2.6"/>
-      <path d="M40.5 45.5 L45.8 50.8 L56.5 39.5"
-            stroke="#138A4B" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  `;
+function renderPedestalShowcaseSprite(
+  kind: InstantBargainKindV8,
+): string {
+  const targetId = resolvePedestalAtlasTargetId(kind);
+  const inlineStyle = buildAtlasSpriteInlineStyleV8(targetId);
+  return `<div class="wsv8-ccb-showcase-sprite" data-atlas-target="${targetId}" data-kind="${kind}" style="${inlineStyle}" aria-hidden="true"></div>`;
 }
 
 function renderButtonPadlockSvg(): string {
@@ -1891,8 +1869,6 @@ export function runCurtainCallBargainShowpieceV8(
   const reduced = Boolean(opts.reducedMotion);
 
   const items = opts.overrideItems ?? buildCurtainCallShowpieceItemsV8(opts);
-  const isMysteryEnvelope =
-    !items[0].relicId && /ENVELOPE|VAULT/i.test(items[0].title);
   const baseline = computeBaselineLeadState(playerCash, rivalCash, rivalShort);
   const previews = items.map((item) =>
     evaluateStrategicPurchaseSweat(
@@ -1909,10 +1885,11 @@ export function runCurtainCallBargainShowpieceV8(
     opts.activePlayerName,
     opts.isCouch2P,
   );
+  const leadDelta = playerCash - rivalCash;
   const noSaleLabel =
-    playerCash >= rivalCash
-      ? `NO SALE — PROTECT MY $${playerCash.toLocaleString()} LEAD!`
-      : `NO SALE — PROTECT MY $${playerCash.toLocaleString()} & CHASE THE LEAD!`;
+    leadDelta > 0
+      ? `NO SALE — PROTECT MY +$${leadDelta.toLocaleString()} LEAD!`
+      : `NO SALE — KEEP MY $${playerCash.toLocaleString()} PURSE!`;
 
   opts.onBellSfx?.();
 
@@ -1935,7 +1912,6 @@ export function runCurtainCallBargainShowpieceV8(
         const canAfford = playerCash >= item.costLiveCash;
         const afterCash = Math.max(0, playerCash - item.costLiveCash);
         const sweat = previews[idx];
-        const showEnvelopeArt = idx === 0 && isMysteryEnvelope;
 
         return `
           <article class="wsv8-ccb-pedestal"
@@ -1949,7 +1925,7 @@ export function runCurtainCallBargainShowpieceV8(
 
             <div class="wsv8-ccb-ped-body">
               <div class="wsv8-ccb-turntable-stage">
-                ${renderPedestalShowcaseSvg(item.kind, showEnvelopeArt)}
+                ${renderPedestalShowcaseSprite(item.kind)}
                 <div class="wsv8-ccb-velvet-plinth" aria-hidden="true"></div>
               </div>
 
@@ -1987,8 +1963,8 @@ export function runCurtainCallBargainShowpieceV8(
 
     overlay.innerHTML = `
       <div class="wsv8-ccb-proscenium">
-        ${renderVelvetCurtainCornerSvg('left')}
-        ${renderVelvetCurtainCornerSvg('right')}
+        ${renderVelvetCurtainCornerSprite('left')}
+        ${renderVelvetCurtainCornerSprite('right')}
         ${renderMarqueeBulbsArchSvg()}
 
         <header class="wsv8-ccb-header-deck">
@@ -2057,7 +2033,6 @@ export function runCurtainCallBargainShowpieceV8(
     const showLeadPreview = (idx: number | null): void => {
       if (settled) return;
       if (idx === null || !items[idx] || !previews[idx]) {
-        if (youCashEl) youCashEl.textContent = `$${playerCash.toLocaleString()}`;
         if (tugFillEl) {
           tugFillEl.style.width = `${baseline.youRatioPct}%`;
           tugFillEl.dataset.danger = playerCash < rivalCash ? 'true' : 'false';
@@ -2070,18 +2045,7 @@ export function runCurtainCallBargainShowpieceV8(
         return;
       }
 
-      const item = items[idx];
       const preview = previews[idx];
-      const canAfford = playerCash >= item.costLiveCash;
-      const previewCash = canAfford
-        ? Math.max(0, playerCash - item.costLiveCash)
-        : playerCash;
-
-      if (youCashEl) {
-        youCashEl.textContent = canAfford
-          ? `$${previewCash.toLocaleString()}`
-          : `$${playerCash.toLocaleString()}`;
-      }
       if (tugFillEl) {
         tugFillEl.style.width = `${preview.youRatioPct}%`;
         tugFillEl.dataset.danger = preview.isDangerBar ? 'true' : 'false';
@@ -2130,8 +2094,11 @@ export function runCurtainCallBargainShowpieceV8(
       if (pedEl) {
         pedEl.dataset.sold = 'true';
       }
+      const afterCash = Math.max(0, playerCash - chosen.costLiveCash);
+      if (youCashEl) {
+        youCashEl.textContent = `$${afterCash.toLocaleString()}`;
+      }
       if (leadPillEl) {
-        const afterCash = Math.max(0, playerCash - chosen.costLiveCash);
         leadPillEl.textContent = `SOLD! NEW SCORE: $${afterCash.toLocaleString()}`;
       }
 
@@ -2222,6 +2189,12 @@ export function runCurtainCallBargainShowpieceV8(
     if (container && typeof container.appendChild === 'function') {
       container.appendChild(overlay);
     }
+    hydrateAtlasSpritesInRootV8(overlay);
+    void loadAtlasManifestV9().then((manifest) => {
+      if (manifest && !settled && overlay.isConnected) {
+        hydrateAtlasSpritesInRootV8(overlay);
+      }
+    });
     noSaleBtn?.focus?.({ preventScroll: true });
   });
 }

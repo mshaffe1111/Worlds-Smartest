@@ -1841,8 +1841,9 @@ export function mountFourShutterLadderDeluxeV8(
     context.onLockInStart?.(isClutch);
     context.onTactileSfx?.('THROW_SNAP');
 
-    const beat1Ms = isClutch ? 600 : 170;
-    const beat2Ms = isClutch ? 300 : 290;
+    const dramaticClutch = isClutch && !context.turboMode && !reducedMotion;
+    const beat1Ms = dramaticClutch ? 950 : isClutch ? 160 : 170;
+    const beat2Ms = dramaticClutch ? 280 : isClutch ? 240 : 290;
 
     scheduleReveal(
       () => {

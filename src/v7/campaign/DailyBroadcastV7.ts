@@ -10,6 +10,7 @@
 
 import {
   ALL_BOARD_PLAY_MODES_V7,
+  ALL_BOARD_PLAY_MODES_V9,
   ALL_BOARD_UNLOCK_TOPOLOGIES_V7,
   ALL_CATEGORIES_V7,
   ALL_RIVAL_IDS_V7,
@@ -17,10 +18,13 @@ import {
   DOMAIN_SPECS_V7,
   type BoardIdV7,
   type BoardPlayModeV7,
+  type BoardPlayModeV9,
   type BoardTwistIdV7,
   type BoardUnlockTopologyV7,
+  type BroadcastBoothConfigV9,
   type CategoryIdV7,
   type ClassicTvTileTwistV7,
+  type ClassicTvTileTwistV9,
   type DailyArchiveEntryV8,
   type DailyBroadcastSaveV7,
   type DailyPercentileRankV8,
@@ -29,8 +33,10 @@ import {
   type RivalIdV7,
   type StageWorldIdV7,
   type ToyIdV7,
+  type VipCelebIdV9,
 } from '../contracts_v7';
 import { CAST_PROFILES_V7 } from './CastAndRelicsCatalogV7';
+import { VIP_CELEB_CATALOG_V9 } from '../../v9/ShowroomAndCatalogsV9';
 
 export const DAILY_BROADCAST_STORAGE_KEY_V7 = 'ws_v7_daily_broadcast_save_1';
 
@@ -43,6 +49,12 @@ export type DailyTileHistoryTokenV7 = NonNullable<
   DailyBroadcastSaveV7['todayResult']
 >['tileHistory'][number];
 
+export interface DailyVipBluffPlacementV9 {
+  readonly slotOffset: number;
+  readonly vipId: VipCelebIdV9;
+  readonly bluffSeed: number;
+}
+
 export interface DailyBroadcastBlueprintV7 extends EpisodeBlueprintV7 {
   readonly dateIso: string; // YYYY-MM-DD
   readonly displayDateShort: string; // e.g. "Nov 24"
@@ -52,9 +64,14 @@ export interface DailyBroadcastBlueprintV7 extends EpisodeBlueprintV7 {
   readonly turnSeeds: readonly number[]; // Deterministic seeds for turns 1..12
   readonly featuredCategories: readonly CategoryIdV7[];
   readonly boardPlayMode: BoardPlayModeV7; // Deterministic 8-mode rotation
+  readonly boardPlayModeV9: BoardPlayModeV9; // Deterministic 16-mode v9 rotation (includes R7 modes)
   readonly unlockTopology: BoardUnlockTopologyV7; // Deterministic 5-topology rotation
   readonly comboKey: string; // `${boardPlayMode}::${unlockTopology}` (40 unique combos!)
   readonly stageBanner: string; // e.g. "Studio 6A Living Color Matinee"
+  readonly vibePackId: 'PRIMETIME_LIVING_COLOR'; // Locked worldwide — immune to Custom Broadcast Booth
+  readonly vetoedCategories: readonly CategoryIdV7[]; // Always empty [] worldwide
+  readonly isBoothImmune: true;
+  readonly vipBluffPlacements: readonly DailyVipBluffPlacementV9[];
 }
 
 export interface FormatDailyShareCardInputV7 {
@@ -405,6 +422,25 @@ export function getTodayBroadcastBlueprintV7(
     turnSeeds.push(getDeterministicDailyTurnSeedV7(dateIso, t));
   }
 
+  // Coprime step mod 16 (`gcd(11, 16) === 1`): visits all 16 v7+R7 modes across Daily Broadcasts!
+  const boardPlayModeV9: BoardPlayModeV9 =
+    ALL_BOARD_PLAY_MODES_V9[(dayZeroIdx * 11 + 5) % ALL_BOARD_PLAY_MODES_V9.length] ?? boardPlayMode;
+
+  const vipCount = (dailySeed & 1) === 0 ? 2 : 1;
+  const vipPlacements: DailyVipBluffPlacementV9[] = [];
+  const vipCountCatalog = VIP_CELEB_CATALOG_V9.length;
+  for (let v = 0; v < vipCount && vipCountCatalog > 0; v++) {
+    const vipIdx = (Math.floor(rng() * vipCountCatalog) + v * 3) % vipCountCatalog;
+    const vipSpec = VIP_CELEB_CATALOG_V9[vipIdx];
+    if (vipSpec) {
+      vipPlacements.push({
+        slotOffset: (Math.floor(rng() * 12) + v * 5) % 12,
+        vipId: vipSpec.targetId,
+        bluffSeed: ((dailySeed ^ ((v + 1) * 0x9e3779b1)) >>> 0),
+      });
+    }
+  }
+
   return {
     episodeNumber: dailyNumber,
     season: rivalProfile.seasonTier ?? 1,
@@ -437,9 +473,14 @@ export function getTodayBroadcastBlueprintV7(
     turnSeeds,
     featuredCategories: featured,
     boardPlayMode,
+    boardPlayModeV9,
     unlockTopology,
     comboKey,
     stageBanner: showcase.bannerTitle,
+    vibePackId: 'PRIMETIME_LIVING_COLOR',
+    vetoedCategories: [],
+    isBoothImmune: true,
+    vipBluffPlacements: vipPlacements,
   };
 }
 
@@ -454,6 +495,53 @@ export function buildDailyBroadcastBlueprintV7(
         : getLocalDateIsoV7()
       : getLocalDateIsoV7(dateOrIso);
   return getTodayBroadcastBlueprintV7(dateIso);
+}
+
+export interface DailyBroadcastBoardConfigV9 {
+  readonly dateIso: string;
+  readonly dailyNumber: number;
+  readonly dailySeed: number;
+  readonly boardId: BoardIdV7;
+  readonly stageId: StageWorldIdV7;
+  readonly twistId: BoardTwistIdV7;
+  readonly rivalId: RivalIdV7;
+  readonly boardPlayMode: BoardPlayModeV7;
+  readonly boardPlayModeV9: BoardPlayModeV9;
+  readonly unlockTopology: BoardUnlockTopologyV7;
+  readonly featuredCategories: readonly CategoryIdV7[];
+  readonly vibePackId: 'PRIMETIME_LIVING_COLOR';
+  readonly vetoedCategories: readonly CategoryIdV7[];
+  readonly isBoothImmune: true;
+  readonly vipBluffPlacements: readonly DailyVipBluffPlacementV9[];
+}
+
+/**
+ * Resolves the canonical Daily Broadcast board config while strictly ignoring any user
+ * Custom Broadcast Booth Vibe Pack or Red Veto Stamps (`isBoothImmune: true`).
+ */
+export function resolveDailyBroadcastBoardConfigV9(
+  dateOrIso: Date | string = new Date(),
+  _ignoredBoothConfig?: Partial<BroadcastBoothConfigV9>,
+): DailyBroadcastBoardConfigV9 {
+  void _ignoredBoothConfig;
+  const bp = buildDailyBroadcastBlueprintV7(dateOrIso);
+  return {
+    dateIso: bp.dateIso,
+    dailyNumber: bp.dailyNumber,
+    dailySeed: bp.dailySeed,
+    boardId: bp.boardId,
+    stageId: bp.stageId,
+    twistId: bp.twistId,
+    rivalId: bp.rivalId,
+    boardPlayMode: bp.boardPlayMode,
+    boardPlayModeV9: bp.boardPlayModeV9,
+    unlockTopology: bp.unlockTopology,
+    featuredCategories: bp.featuredCategories,
+    vibePackId: 'PRIMETIME_LIVING_COLOR',
+    vetoedCategories: [],
+    isBoothImmune: true,
+    vipBluffPlacements: bp.vipBluffPlacements,
+  };
 }
 
 /** Audits deterministic Daily Broadcast coverage across all 12 boards, 24 Champions & 40 (8×5) mode×topology combos. */
@@ -493,31 +581,37 @@ export function verifyDailyBroadcastRotationV7(): {
   };
 }
 
-/** Classifies a resolved turn into its celebratory spoiler-free 1966 TV emoji token across all 12 Classic TV Twists. */
+/** Classifies a resolved turn into its celebratory spoiler-free 1966 TV emoji token across all Classic TV Twists & v9 VIP_BLUFF. */
 export function classifyDailyTileOutcomeV7(params: {
   readonly scored: boolean;
-  readonly tvTwist?: ClassicTvTileTwistV7;
+  readonly tvTwist?: ClassicTvTileTwistV7 | ClassicTvTileTwistV9;
+  readonly tvTwistV9?: ClassicTvTileTwistV9;
   readonly selectedToy?: ToyIdV7;
 }): DailyTileHistoryTokenV7 {
   if (!params.scored) return 'MISS';
-  if (params.tvTwist === 'SECRET_SQUARE' || params.tvTwist === 'OPPONENT_CHOICE') {
+  const effectiveTwist = params.tvTwistV9 ?? params.tvTwist;
+  if (
+    effectiveTwist === 'SECRET_SQUARE' ||
+    effectiveTwist === 'OPPONENT_CHOICE' ||
+    effectiveTwist === 'VIP_BLUFF'
+  ) {
     return 'SECRET_WIN';
   }
-  if (params.tvTwist === 'LOCKED_VAULT' || params.tvTwist === 'BRASS_KEY') {
+  if (effectiveTwist === 'LOCKED_VAULT' || effectiveTwist === 'BRASS_KEY') {
     return 'VAULT_WIN';
   }
   if (
-    params.tvTwist === 'MYSTERY_CURTAIN' ||
-    params.tvTwist === 'BLIND_CATEGORY' ||
-    params.tvTwist === 'MYSTERY_CASH' ||
-    params.tvTwist === 'INSTANT_BARGAIN'
+    effectiveTwist === 'MYSTERY_CURTAIN' ||
+    effectiveTwist === 'BLIND_CATEGORY' ||
+    effectiveTwist === 'MYSTERY_CASH' ||
+    effectiveTwist === 'INSTANT_BARGAIN'
   ) {
     return 'MYSTERY_WIN';
   }
   if (
-    params.tvTwist === 'BIG_WHEEL_SPIN' ||
-    params.tvTwist === 'PRESS_LUCK_SPIN' ||
-    params.tvTwist === 'SHOWCASE_BONUS' ||
+    effectiveTwist === 'BIG_WHEEL_SPIN' ||
+    effectiveTwist === 'PRESS_LUCK_SPIN' ||
+    effectiveTwist === 'SHOWCASE_BONUS' ||
     (params.selectedToy && params.selectedToy !== 'TOY_01_KNIFE_SWITCH')
   ) {
     return 'SHOWCASE_WIN';

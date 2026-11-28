@@ -5,8 +5,8 @@
  * `cache: 'no-store'` freshness on `localhost` / `127.0.0.1`!
  * ============================================================================ */
 
-const SHELL_CACHE = 'ws-fifty-million-shell-v8.1.0-sweeps-deluxe';
-const DATA_CACHE = 'ws-fifty-million-data-v8.1.0-sweeps-deluxe';
+const SHELL_CACHE = 'ws-fifty-million-shell-v9.0.0-living-color';
+const DATA_CACHE = 'ws-fifty-million-data-v9.0.0-living-color';
 const VALID_CACHES = new Set([SHELL_CACHE, DATA_CACHE]);
 const IS_LOCALHOST =
   self.location.hostname === '127.0.0.1' || self.location.hostname === 'localhost';
@@ -35,7 +35,14 @@ const CORE_SHELL_ASSETS = [
   './assets/v7/portraits/grant_bellamy.jpg',
   './assets/v7/portraits/roz_korman.jpg',
   './assets/v7/portraits/vera_karp.jpg',
-  './data/v7/boot_pack.json',
+  './assets/v9/atlas_manifest_v9.json',
+  './assets/v9/atlas_vip.webp',
+  './assets/v9/atlas_prizes.webp',
+  './assets/v9/atlas_zonks.webp',
+  './assets/v9/atlas_crowd.webp',
+  './assets/v9/den_backdrop_lounge.jpg',
+  './assets/v9/curtain_backdrop_stage.jpg',
+  './data/v7/boot_pack.json.gz',
 ];
 
 self.addEventListener('install', (event) => {

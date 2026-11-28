@@ -22,7 +22,8 @@
 //   - 100% deterministic procedural 2D canvas drawing (zero external images -> zero CORS taint!)
 // ============================================================================
 
-import type { DailyPercentileRankV8 } from '../contracts_v7';
+import type { DailyPercentileRankV8, SeasonIdV7 } from '../contracts_v7';
+import { getAtlasSpriteEntryV9, loadAtlasManifestV9 } from '../../v9/ShowroomAndCatalogsV9';
 
 export interface WalnutConsoleTvShareSpecV8 {
   readonly episodeNumber: number;
@@ -35,6 +36,7 @@ export interface WalnutConsoleTvShareSpecV8 {
   readonly won: boolean;
   readonly streakCount: number;
   readonly isArchiveTape?: boolean;
+  readonly season?: SeasonIdV7;
   readonly percentile: DailyPercentileRankV8;
   readonly tileEmojisOrTokens: readonly string[];
 }
@@ -930,12 +932,20 @@ export function renderWalnutConsoleTvShareCanvasV8(
   const tiles = normalizeWalnutShareTilesV8(spec.tileEmojisOrTokens);
 
   // ==========================================================================
-  // LAYER 1: Sunlit Studio 6A Peacock Teal Cyclorama + Warm Walnut Parquet Glow
+  // LAYER 1: Sunlit Per-Season 1966 Cyclorama + Warm Walnut Parquet Glow
   // ==========================================================================
+  const seasonId: SeasonIdV7 = spec.season ?? 1;
+  const seasonCycStops: Record<SeasonIdV7, readonly [string, string, string]> = {
+    1: ['#00A3AE', '#007C87', '#1746A2'],
+    2: ['#FF8C42', '#D95326', '#A81E52'],
+    3: ['#1FA364', '#156E44', '#6E3B23'],
+    4: ['#3B82E6', '#1E56C5', '#008B94'],
+  };
+  const [c0, c1, c2] = seasonCycStops[seasonId] ?? seasonCycStops[1];
   const cycGrad = ctx.createRadialGradient(540, 440, 90, 540, 540, 790);
-  cycGrad.addColorStop(0, '#00A3AE');
-  cycGrad.addColorStop(0.54, '#007C87');
-  cycGrad.addColorStop(1, '#1746A2');
+  cycGrad.addColorStop(0, c0);
+  cycGrad.addColorStop(0.54, c1);
+  cycGrad.addColorStop(1, c2);
   ctx.fillStyle = cycGrad;
   ctx.fillRect(0, 0, CANVAS_SIZE_PX, CANVAS_SIZE_PX);
 
@@ -2143,6 +2153,78 @@ export function renderWalnutConsoleTvShareCanvasV8(
 
   ctx.restore(); // End CRT clip
 
+  return canvas;
+}
+
+function loadSameOriginAtlasImageV9(url: string): Promise<HTMLImageElement | null> {
+  if (typeof Image === 'undefined') return Promise.resolve(null);
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
+}
+
+/**
+ * Renders the 1080x1080 Walnut Console TV Share Card and, when a packed 1966
+ * gouache Prize or VIP sprite ID is provided and available in `atlas_manifest_v9.json`,
+ * composites it inside a brass-rimmed collector cameo on the right speaker grille.
+ */
+export async function renderWalnutConsoleTvShareCardWithAtlasV9(
+  spec: WalnutConsoleTvShareSpecV8,
+  opts?: { readonly prizeId?: string; readonly vipId?: string },
+): Promise<HTMLCanvasElement> {
+  const canvas = renderWalnutConsoleTvShareCanvasV8(spec);
+  const targetId = opts?.prizeId || opts?.vipId;
+  if (!targetId) return canvas;
+
+  try {
+    const manifest = await loadAtlasManifestV9();
+    const resolved = getAtlasSpriteEntryV9(targetId, manifest);
+    if (!resolved) return canvas;
+
+    const img = await loadSameOriginAtlasImageV9(resolved.assetUrl);
+    if (!img) return canvas;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return canvas;
+
+    const spkCx = 852 + 156 / 2; // 930
+    const spkCy = 644 + 322 / 2; // 805
+    const r = 48;
+    const { sprite } = resolved;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(spkCx, spkCy, r + 6, 0, Math.PI * 2);
+    ctx.fillStyle = '#4A2812';
+    ctx.fill();
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = '#F2A922';
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(spkCx, spkCy, r, 0, Math.PI * 2);
+    ctx.clip();
+    ctx.fillStyle = '#FAF2DF';
+    ctx.fillRect(spkCx - r, spkCy - r, r * 2, r * 2);
+    ctx.drawImage(
+      img,
+      sprite.x,
+      sprite.y,
+      sprite.w,
+      sprite.h,
+      spkCx - r,
+      spkCy - r,
+      r * 2,
+      r * 2,
+    );
+    ctx.restore();
+  } catch {
+    // Graceful fallback: synchronous card remains untainted and complete
+  }
   return canvas;
 }
 

@@ -430,7 +430,7 @@ export class AtlasReliefGlobe3DV6 {
     loader.load(
       this.resolveTextureUrl('earth_relief_albedo_4k.webp'),
       (tex) => {
-        if (this.disposed) {
+        if (this.disposed || this.renderer.getContext()?.isContextLost?.()) {
           tex.dispose();
           return;
         }
@@ -452,7 +452,7 @@ export class AtlasReliefGlobe3DV6 {
     loader.load(
       this.resolveTextureUrl('earth_elevation_bump_2k.webp'),
       (tex) => {
-        if (this.disposed) {
+        if (this.disposed || this.renderer.getContext()?.isContextLost?.()) {
           tex.dispose();
           return;
         }
@@ -471,7 +471,7 @@ export class AtlasReliefGlobe3DV6 {
     loader.load(
       this.resolveTextureUrl('earth_ocean_specular_2k.webp'),
       (tex) => {
-        if (this.disposed) {
+        if (this.disposed || this.renderer.getContext()?.isContextLost?.()) {
           tex.dispose();
           return;
         }
@@ -1387,7 +1387,9 @@ export class AtlasReliefGlobe3DV6 {
   }
 
   private handleResize(): void {
-    if (this.disposed) return;
+    if (this.disposed || !this.container.isConnected) return;
+    const glCtx = this.renderer.getContext();
+    if (!glCtx || glCtx.isContextLost()) return;
     const w = Math.max(100, this.container.clientWidth);
     const h = Math.max(100, this.container.clientHeight);
     this.camera.aspect = w / h;
@@ -1399,7 +1401,16 @@ export class AtlasReliefGlobe3DV6 {
   // 60FPS ANIMATION LOOP
   // --------------------------------------------------------------------------
   private readonly tick = (nowMs: number): void => {
-    if (this.disposed) return;
+    if (this.disposed || !this.container.isConnected) return;
+    const glCtx = this.renderer.getContext();
+    if (!glCtx || glCtx.isContextLost()) {
+      this.dispose();
+      return;
+    }
+    if (this.elapsedTotal > 0.1 && !this.renderer.domElement.isConnected) {
+      this.dispose();
+      return;
+    }
     const dt = Math.min(0.05, Math.max(0.001, (nowMs - this.lastFrameMs) / 1000));
     this.lastFrameMs = nowMs;
     this.elapsedTotal += dt;
@@ -1495,8 +1506,21 @@ export class AtlasReliefGlobe3DV6 {
       (m.material as THREE.MeshBasicMaterial).opacity = (1 - p) * 0.82;
     }
 
-    this.renderer.render(this.scene, this.camera);
-    this.rafId = requestAnimationFrame(this.tick);
+    if (this.disposed || !this.container.isConnected) return;
+    const postGlCtx = this.renderer.getContext();
+    if (!postGlCtx || postGlCtx.isContextLost()) {
+      this.dispose();
+      return;
+    }
+    try {
+      this.renderer.render(this.scene, this.camera);
+    } catch {
+      this.dispose();
+      return;
+    }
+    if (!this.disposed) {
+      this.rafId = requestAnimationFrame(this.tick);
+    }
   };
 
   private animatePinDrop(pin: AnimatedPinState | null, dt: number): void {
@@ -1539,6 +1563,11 @@ export class AtlasReliefGlobe3DV6 {
     for (const geo of this.disposableGeometries) geo.dispose();
     for (const mat of this.disposableMaterials) mat.dispose();
     this.renderer.dispose();
+    try {
+      this.renderer.forceContextLoss();
+    } catch {
+      // Context may already be lost in headless/unmounted teardown
+    }
     if (dom.parentElement === this.container) {
       this.container.removeChild(dom);
     }

@@ -11,4 +11,7 @@ ios/
 godot/.godot/
 assets/renders/*.log
 assets/blender/*.blend1
+.agents/v9_qa_tmp/
+.agents/v9_qa_screenshots/
+.agents/v9_raw_art/
 

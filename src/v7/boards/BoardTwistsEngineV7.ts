@@ -8,22 +8,33 @@
 // ============================================================================
 
 import {
+  ALL_BOARD_PLAY_MODES_R7_V9,
+  ALL_BOARD_PLAY_MODES_V9,
   ALL_CATEGORIES_V7,
   ALL_RIVAL_IDS_V7,
+  BOARD_PLAY_MODE_TITLES_V9,
   CATEGORY_TO_DOMAIN_V7,
   type BoardIdV7,
+  type BoardPlayModeR7V9,
+  type BoardPlayModeV9,
   type BoardTileNodeV7,
   type BoardTwistIdV7,
   type BoardUnlockTopologyV7,
   type CategoryIdV7,
   type ClassicTvTileTwistV7,
+  type ClassicTvTileTwistV9,
   type CpuPlaystyleIdV7,
   type CpuTemperamentIdV7,
   type DifficultyModeV7,
   type DomainIdV7,
   type RivalIdV7,
+  type SeasonIdV7,
+  type SweepsNightNumberV9,
+  type VibePackIdV9,
+  type VipCelebIdV9,
 } from '../contracts_v7';
 import { CAST_PROFILES_V7 } from '../campaign/CastAndRelicsCatalogV7';
+import { VIBE_PACK_CATEGORIES_V9, VIP_CELEB_CATALOG_V9 } from '../../v9/ShowroomAndCatalogsV9';
 
 // ----------------------------------------------------------------------------
 // 1. Canonical 16-Twist Specification Catalog (`BOARD_TWIST_SPECS_V7`)
@@ -259,8 +270,12 @@ export const DEFAULT_RIVAL_TEMPERAMENT_V7: Record<RivalIdV7, CpuTemperamentIdV7>
 export interface BoardGimmickStateV7 {
   /** -1.0 (Left Deck), 0.0 (Center Split), +1.0 (Right Deck) for `BOARD_01_FUNK_CROSSFADER`. */
   crossfaderPosition: -1 | 0 | 1;
+  /** 0..2 bridge polarity bus (`0` Center Spine, `1` Left Bank, `2` Right Bank) for `BOARD_02_JUBILEE_HEX_BRIDGE`. */
+  bridgePolarityPhase?: 0 | 1 | 2;
   /** 0..2 gear escapement phase for `BOARD_03_VAUDEVILLE_GEAR_TRAIN`. */
   gearPhase: number;
+  /** 0..3 stepped supervisory domain index for `BOARD_04_MAHOGANY_SWITCHBOARD`. */
+  switchboardDomainIndex?: number;
   /** Active perimeter hot-spot tile index for `BOARD_05_LARSON_SPIN_RING`. */
   larsonHotTileIndex: number;
   /** Number of times player tapped the Pass-Spin Brass Paddle this match. */
@@ -273,14 +288,22 @@ export interface BoardGimmickStateV7 {
   sundialAngleRad: number;
   /** Tuned UHF carrier domain for `BOARD_09_PIRATE_UHF_DECK`. */
   tunedUhfDomain: DomainIdV7;
+  /** 0..2 focused Ziggurat terrace (`0` Apex, `1` Mid, `2` Base) for `BOARD_10_SOVEREIGN_ZIGGURAT`. */
+  zigguratFocusTier?: 0 | 1 | 2;
+  /** 0..4 scanned column lane for `BOARD_11_WHEW_GAUNTLET`. */
+  gauntletReconColumn?: number;
   /** Live balance beam tilt in degrees (`-4.5 .. +4.5`, negative = left heavy, positive = right heavy). */
   pendulumTiltDeg: number;
+  /** Tare counterweight offset (`0`, `+2.4`, `-2.4` deg) for `BOARD_12_PENDULUM_BALANCE`. */
+  pendulumTareOffsetDeg?: number;
   /** Whether Toby's Mercy Switch has been pulled on the table flank this match. */
   mercySwitchPulled: boolean;
   /** Whether an Amber Chalk Truce was broken earlier this match. */
   amberTruceBroken: boolean;
   /** Turn counter incremented after each board action. */
   turnCounter: number;
+  /** Human-readable readout of the latest gimmick action. */
+  lastGimmickSummary?: string;
 }
 
 export {
@@ -547,6 +570,13 @@ export interface BoardTwistContextV7 {
   readonly rivalStrongCategories?: readonly CategoryIdV7[];
   readonly scoutedWeakCategories?: readonly CategoryIdV7[];
   readonly playModeOverride?: BoardPlayModeV7;
+  readonly boardModeV9?: BoardPlayModeV9;
+  readonly season?: SeasonIdV7;
+  readonly vetoedCategories?: readonly CategoryIdV7[];
+  readonly vibePackId?: VibePackIdV9;
+  readonly allowedCategories?: readonly CategoryIdV7[];
+  readonly isDailyBroadcast?: boolean;
+  readonly sweepsNight?: SweepsNightNumberV9;
   readonly unlockTopology?: BoardUnlockTopologyV7;
   readonly cpuPlaystyle?: CpuPlaystyleIdV7;
   readonly cpuTemperament?: CpuTemperamentIdV7;
@@ -685,6 +715,953 @@ export const CLASSIC_TV_TWIST_SPECS_V7: Record<ClassicTvTileTwistV7, ClassicTvTw
   },
 };
 
+// ----------------------------------------------------------------------------
+// 3b. v9.0 R7 Anti-Repetition Board Modes, Zero-Deadlock Live-Wire Fuse & VIP Bluff
+// ----------------------------------------------------------------------------
+
+export interface BoardModeRuleBannerV9 {
+  readonly mode: BoardPlayModeV9;
+  readonly modeTitle: string;
+  readonly ruleSummary: string;
+  readonly compactTitle?: string;
+  readonly compactRuleSummary?: string;
+  readonly unlockTopology?: BoardUnlockTopologyV7;
+  readonly topologyBadge?: string;
+}
+
+export const BOARD_MODE_RULE_BANNERS_V9: Record<BoardPlayModeV9, BoardModeRuleBannerV9> = {
+  ...BOARD_MODE_RULE_BANNERS_V7,
+  LOUVER_SHUTTER: {
+    mode: 'LOUVER_SHUTTER',
+    modeTitle: BOARD_PLAY_MODE_TITLES_V9.LOUVER_SHUTTER,
+    ruleSummary: '🕶️ TOPICS SHUTTERED · DOLLARS VISIBLE — $200–$500 glows bright; louvers snap open on tap!',
+    compactTitle: 'LOUVER SHUTTER',
+    compactRuleSummary: '🕶️ TOPICS SHUTTERED · DOLLARS VISIBLE',
+  },
+  BLIND_PURSE: {
+    mode: 'BLIND_PURSE',
+    modeTitle: BOARD_PLAY_MODE_TITLES_V9.BLIND_PURSE,
+    ruleSummary: '💸 BLIND PURSE · CATEGORIES VISIBLE — Wax-sealed $150–$750 envelopes pop open on tap!',
+    compactTitle: 'BLIND PURSE',
+    compactRuleSummary: '💸 BLIND PURSE · CATEGORIES VISIBLE',
+  },
+  BLACKOUT_VAULT: {
+    mode: 'BLACKOUT_VAULT',
+    modeTitle: BOARD_PLAY_MODE_TITLES_V9.BLACKOUT_VAULT,
+    ruleSummary: '🎩 BLACKOUT VAULT · FLIP TO REVEAL — Safe Trilons #1–#12 hide topic & cash (3 ⚡ High-Volt)!',
+    compactTitle: 'BLACKOUT VAULT',
+    compactRuleSummary: '🎩 BLACKOUT VAULT · FLIP TO REVEAL',
+  },
+  LIVE_WIRE_FUSE: {
+    mode: 'LIVE_WIRE_FUSE',
+    modeTitle: BOARD_PLAY_MODE_TITLES_V9.LIVE_WIRE_FUSE,
+    ruleSummary: '🔗 LIVE-WIRE FUSE · WIN TO UNLOCK — 1 starter tile open; wins spark adjacent conduits open!',
+    compactTitle: 'LIVE-WIRE FUSE',
+    compactRuleSummary: '🔗 LIVE-WIRE FUSE · WIN TO UNLOCK',
+  },
+  SHIFTING_SPOTLIGHT: {
+    mode: 'SHIFTING_SPOTLIGHT',
+    modeTitle: BOARD_PLAY_MODE_TITLES_V9.SHIFTING_SPOTLIGHT,
+    ruleSummary: '🔦 SHIFTING SPOTLIGHT · 1.5×/2× RAIL — Harvest Gold follow-spot glides to a new tile every turn!',
+    compactTitle: 'SHIFTING SPOTLIGHT',
+    compactRuleSummary: '🔦 1.5×/2× SPOTLIGHT GLIDES EACH TURN',
+  },
+  GOLDEN_DOMINO_CASCADE: {
+    mode: 'GOLDEN_DOMINO_CASCADE',
+    modeTitle: BOARD_PLAY_MODE_TITLES_V9.GOLDEN_DOMINO_CASCADE,
+    ruleSummary: '🟨 GOLDEN DOMINO · 3-LINK CASCADE — Connect 3 contiguous wins for a +$350 Domino Cascade!',
+    compactTitle: 'GOLDEN DOMINO',
+    compactRuleSummary: '🟨 LINK 3 CONTIGUOUS WINS -> +$350!',
+  },
+  PRESSURE_COOKER: {
+    mode: 'PRESSURE_COOKER',
+    modeTitle: BOARD_PLAY_MODE_TITLES_V9.PRESSURE_COOKER,
+    ruleSummary: '♨️ PRESSURE COOKER · RISING GAUGE — Hits climb ×1.0→×1.25→×1.5→×2.0; any miss blasts reset!',
+    compactTitle: 'PRESSURE COOKER',
+    compactRuleSummary: '♨️ SHARED ×1.0..×2.0 · MISS RESETS!',
+  },
+  HOLLYWOOD_MARQUEE_LINE: {
+    mode: 'HOLLYWOOD_MARQUEE_LINE',
+    modeTitle: BOARD_PLAY_MODE_TITLES_V9.HOLLYWOOD_MARQUEE_LINE,
+    ruleSummary: '💡 HOLLYWOOD MARQUEE · 3-IN-A-ROW — Light O/X chasing bulbs in any 3-tile line for +$300!',
+    compactTitle: 'MARQUEE LINE',
+    compactRuleSummary: '💡 O/X 3-IN-A-ROW -> +$300 BONUS!',
+  },
+};
+
+export interface ClassicTvTwistSpecV9 {
+  readonly id: ClassicTvTileTwistV9;
+  readonly badgeLabel: string;
+  readonly headline: string;
+  readonly shortRule: string;
+  readonly accentHex: string;
+}
+
+export const CLASSIC_TV_TWIST_SPECS_V9: Record<ClassicTvTileTwistV9, ClassicTvTwistSpecV9> = {
+  ...CLASSIC_TV_TWIST_SPECS_V7,
+  VIP_BLUFF: {
+    id: 'VIP_BLUFF',
+    badgeLabel: '★ VIP BLUFF',
+    headline: '1966 VIP Celebrity Bluff!',
+    shortRule: "Read the VIP's verbal tell: [TRUST 'EM] (+1.0x / -0.5x) or [CALL BLUFF!] (+1.5x / -0.5x).",
+    accentHex: '#E6397A',
+  },
+};
+
+export interface BoardModePostClaimResultV9 {
+  readonly mode: BoardPlayModeV9;
+  readonly modeV7Fallback: BoardPlayModeV7;
+  readonly bonusCash: number;
+  readonly rivalStealCash: number;
+  readonly multAdd: number;
+  readonly bannerHeadline: string | null;
+  readonly highlightedTileIndices?: readonly number[];
+  readonly unlockedTileIndices?: readonly number[];
+  readonly emergencyCircuitBreakerFired?: boolean;
+  readonly dominoCascadeTriggered?: boolean;
+  readonly dominoGroupId?: number;
+  readonly marqueeLineTriggered?: boolean;
+  readonly pressureCookerMult?: number;
+  readonly nextSpotlightIdx?: number | null;
+  readonly earnedGremlinSpins?: number;
+  readonly triggerBigWheel?: boolean;
+  readonly matchedPrize?: string;
+}
+
+const R7_BOARD_MODES_SET_V9 = new Set<BoardPlayModeV9>(ALL_BOARD_PLAY_MODES_R7_V9);
+
+export function isR7BoardPlayModeV9(mode: BoardPlayModeV9): mode is BoardPlayModeR7V9 {
+  return R7_BOARD_MODES_SET_V9.has(mode);
+}
+
+export function toV7BoardPlayModeFallback(mode: BoardPlayModeV9): BoardPlayModeV7 {
+  return isR7BoardPlayModeV9(mode) ? 'CLASSIC_TOTE' : mode;
+}
+
+export function getPressureCookerMultiplierV9(consecutiveHits: number): 1 | 1.25 | 1.5 | 2 {
+  if (consecutiveHits >= 3) return 2;
+  if (consecutiveHits === 2) return 1.5;
+  if (consecutiveHits === 1) return 1.25;
+  return 1;
+}
+
+interface CanonicalSlotCoordV9 {
+  readonly x: number;
+  readonly z: number;
+}
+
+function makeCanonicalGridCoordsV9(
+  cols: readonly number[],
+  rows: readonly number[],
+): readonly CanonicalSlotCoordV9[] {
+  const out: CanonicalSlotCoordV9[] = [];
+  for (let r = 0; r < rows.length; r++) {
+    for (let c = 0; c < cols.length; c++) {
+      out.push({ x: cols[c], z: rows[r] });
+    }
+  }
+  return out;
+}
+
+const CANONICAL_BOARD_SLOTS_V9: Record<BoardIdV7, readonly CanonicalSlotCoordV9[]> = {
+  BOARD_01_FUNK_CROSSFADER: makeCanonicalGridCoordsV9([-1.24, -0.44, 0.44, 1.24], [-0.64, 0.0, 0.64]),
+  BOARD_02_JUBILEE_HEX_BRIDGE: [
+    { x: -1.44, z: -0.68 }, { x: -0.72, z: -0.68 }, { x: 0.0, z: -0.68 }, { x: 0.72, z: -0.68 }, { x: 1.44, z: -0.68 },
+    { x: -1.08, z: 0.0 }, { x: -0.36, z: 0.0 }, { x: 0.36, z: 0.0 }, { x: 1.08, z: 0.0 },
+    { x: -1.44, z: 0.68 }, { x: -0.72, z: 0.68 }, { x: 0.0, z: 0.68 }, { x: 0.72, z: 0.68 }, { x: 1.44, z: 0.68 },
+  ],
+  BOARD_03_VAUDEVILLE_GEAR_TRAIN: makeCanonicalGridCoordsV9([-1.29, -0.43, 0.43, 1.29], [-0.68, 0.0, 0.68]),
+  BOARD_04_MAHOGANY_SWITCHBOARD: makeCanonicalGridCoordsV9([-1.29, -0.43, 0.43, 1.29], [-0.68, 0.0, 0.68]),
+  BOARD_05_LARSON_SPIN_RING: [
+    { x: -1.42, z: -0.72 }, { x: -0.71, z: -0.72 }, { x: 0.0, z: -0.72 }, { x: 0.71, z: -0.72 }, { x: 1.42, z: -0.72 },
+    { x: 1.42, z: 0.0 }, { x: 1.42, z: 0.72 }, { x: 0.71, z: 0.72 }, { x: 0.0, z: 0.72 }, { x: -0.71, z: 0.72 },
+    { x: -1.42, z: 0.72 }, { x: -1.42, z: 0.0 }, { x: -0.48, z: 0.0 }, { x: 0.48, z: 0.0 },
+  ],
+  BOARD_06_BOARDWALK_PINBALL: [
+    { x: -1.42, z: -0.74 }, { x: -0.48, z: -0.74 }, { x: 0.48, z: -0.74 }, { x: 1.42, z: -0.74 },
+    { x: -1.46, z: 0.0 }, { x: 0.0, z: -0.22 }, { x: 1.46, z: 0.0 },
+    { x: -0.76, z: 0.22 }, { x: 0.76, z: 0.22 },
+    { x: -1.42, z: 0.76 }, { x: -0.52, z: 0.78 }, { x: 0.52, z: 0.78 }, { x: 1.42, z: 0.76 },
+  ],
+  BOARD_07_MONTE_CARLO_SHOE: [
+    { x: -1.36, z: -0.66 }, { x: -0.46, z: -0.74 }, { x: 0.46, z: -0.74 }, { x: 1.36, z: -0.66 },
+    { x: -1.32, z: 0.02 }, { x: -0.44, z: -0.04 }, { x: 0.44, z: -0.04 }, { x: 1.32, z: 0.02 },
+    { x: -1.26, z: 0.68 }, { x: -0.42, z: 0.64 }, { x: 0.42, z: 0.64 }, { x: 1.26, z: 0.68 },
+  ],
+  BOARD_08_GEODESIC_SUNDIAL: [
+    { x: 0.0, z: -0.76 }, { x: 0.72, z: -0.68 }, { x: 1.36, z: -0.38 }, { x: 1.44, z: 0.24 },
+    { x: 1.02, z: 0.74 }, { x: 0.36, z: 0.78 }, { x: -0.36, z: 0.78 }, { x: -1.02, z: 0.74 },
+    { x: -1.44, z: 0.24 }, { x: -1.36, z: -0.38 }, { x: -0.72, z: -0.68 },
+    { x: -0.65, z: 0.04 }, { x: 0.65, z: 0.04 },
+  ],
+  BOARD_09_PIRATE_UHF_DECK: makeCanonicalGridCoordsV9([-1.29, -0.43, 0.43, 1.29], [-0.68, 0.0, 0.68]),
+  BOARD_10_SOVEREIGN_ZIGGURAT: [
+    { x: -0.92, z: -0.72 }, { x: 0.0, z: -0.72 }, { x: 0.92, z: -0.72 },
+    { x: -1.44, z: -0.02 }, { x: -0.72, z: -0.02 }, { x: 0.0, z: -0.02 }, { x: 0.72, z: -0.02 }, { x: 1.44, z: -0.02 },
+    { x: -1.44, z: 0.68 }, { x: -0.72, z: 0.68 }, { x: 0.0, z: 0.68 }, { x: 0.72, z: 0.68 }, { x: 1.44, z: 0.68 },
+  ],
+  BOARD_11_WHEW_GAUNTLET: makeCanonicalGridCoordsV9([-1.44, -0.72, 0.0, 0.72, 1.44], [-0.7, 0.0, 0.7]),
+  BOARD_12_PENDULUM_BALANCE: [
+    { x: -1.36, z: -0.66 }, { x: -0.64, z: -0.66 }, { x: 0.64, z: -0.66 }, { x: 1.36, z: -0.66 },
+    { x: -1.36, z: 0.0 }, { x: -0.64, z: 0.0 }, { x: 0.64, z: 0.0 }, { x: 1.36, z: 0.0 },
+    { x: -1.36, z: 0.66 }, { x: -0.64, z: 0.66 }, { x: 0.64, z: 0.66 }, { x: 1.36, z: 0.66 },
+  ],
+};
+
+function getCanonicalSlotCoordV9(tile: BoardTileNodeV7, boardId?: BoardIdV7): CanonicalSlotCoordV9 {
+  const slot = boardId ? CANONICAL_BOARD_SLOTS_V9[boardId]?.[tile.index] : undefined;
+  return slot ?? { x: tile.x, z: tile.z };
+}
+
+function areCanonicalOrthogonalV9(a: CanonicalSlotCoordV9, b: CanonicalSlotCoordV9): boolean {
+  const dx = Math.abs(a.x - b.x);
+  const dz = Math.abs(a.z - b.z);
+  const dist = Math.hypot(dx, dz);
+  if (dist < 0.15) return false;
+  if (dist <= 0.92) return true;
+  return (dx < 0.16 && dz <= 1.05) || (dz < 0.16 && dx <= 1.05);
+}
+
+export function areGoldenDominoAdjacentV9(
+  a: CanonicalSlotCoordV9,
+  b: CanonicalSlotCoordV9,
+  boardId?: BoardIdV7,
+): boolean {
+  const dist = Math.hypot(b.x - a.x, b.z - a.z);
+  if (dist < 0.15) return false;
+  return (
+    areCanonicalOrthogonalV9(a, b) ||
+    (boardId === 'BOARD_12_PENDULUM_BALANCE' && dist <= 1.38) ||
+    ((boardId === 'BOARD_06_BOARDWALK_PINBALL' || boardId === 'BOARD_08_GEODESIC_SUNDIAL') &&
+      dist <= 1.24)
+  );
+}
+
+function mixSeedV9(seed: number): number {
+  let s = (seed >>> 0) || 0x19660601;
+  s ^= s >>> 16;
+  s = Math.imul(s, 0x85ebca6b);
+  s ^= s >>> 13;
+  s = Math.imul(s, 0xc2b2ae35);
+  s ^= s >>> 16;
+  return s >>> 0;
+}
+
+export const BLIND_PURSE_ENVELOPES_V9: readonly number[] = [
+  150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 750,
+];
+
+/**
+ * Deterministic anti-repeat Board Mode selector supporting Campaign Ep 1, Sweeps Week
+ * Nights 1–5, and recent-mode exclusion across all 16 `BoardPlayModeV9` modes.
+ */
+export function pickAntiRepeatBoardModeV9(opts: {
+  readonly recentModes?: readonly BoardPlayModeV9[];
+  readonly season?: SeasonIdV7;
+  readonly sweepsNight?: SweepsNightNumberV9;
+  readonly excludeModes?: readonly BoardPlayModeV9[];
+  readonly isCampaignEp1?: boolean;
+  readonly preferR7?: boolean;
+  readonly seed?: number;
+}): BoardPlayModeV9 {
+  if (opts.isCampaignEp1) {
+    return 'CLASSIC_TOTE';
+  }
+
+  const s = mixSeedV9(opts.seed ?? 1966 + (opts.season ?? 1) * 97);
+  if (opts.sweepsNight !== undefined) {
+    switch (opts.sweepsNight) {
+      case 1:
+        return 'CLASSIC_TOTE';
+      case 2:
+        return (s & 1) === 0 ? 'LOUVER_SHUTTER' : 'BLIND_PURSE';
+      case 3: {
+        const n3Pool: readonly BoardPlayModeR7V9[] = [
+          'SHIFTING_SPOTLIGHT',
+          'GOLDEN_DOMINO_CASCADE',
+          'PRESSURE_COOKER',
+          'HOLLYWOOD_MARQUEE_LINE',
+        ];
+        const exclude = new Set(opts.excludeModes ?? []);
+        const recent = new Set((opts.recentModes ?? []).slice(-3));
+        const filtered = n3Pool.filter((m) => !exclude.has(m) && !recent.has(m));
+        const pool = filtered.length > 0 ? filtered : n3Pool;
+        return pool[s % pool.length];
+      }
+      case 4:
+        return 'LIVE_WIRE_FUSE';
+      case 5:
+        return 'BLACKOUT_VAULT';
+    }
+  }
+
+  const basePool: readonly BoardPlayModeV9[] = opts.preferR7
+    ? ALL_BOARD_PLAY_MODES_R7_V9
+    : ALL_BOARD_PLAY_MODES_V9;
+  const excludeSet = new Set(opts.excludeModes ?? []);
+  const recentWindow = (opts.recentModes ?? []).slice(-6);
+  const recentSet = new Set(recentWindow);
+  const lastMode = recentWindow[recentWindow.length - 1];
+
+  const strict = basePool.filter((m) => !excludeSet.has(m) && !recentSet.has(m));
+  const soft = basePool.filter((m) => !excludeSet.has(m) && m !== lastMode);
+  const noExclude = basePool.filter((m) => !excludeSet.has(m));
+  const pool = strict.length > 0 ? strict : soft.length > 0 ? soft : noExclude.length > 0 ? noExclude : basePool;
+  return pool[s % pool.length] ?? 'CLASSIC_TOTE';
+}
+
+/**
+ * Configures any of the 8 R7 Board Play Modes onto `tiles` cleanly and deterministically.
+ */
+export function applyBoardPlayModeV9(
+  tiles: BoardTileNodeV7[],
+  mode: BoardPlayModeV9,
+  opts?: {
+    readonly boardId?: BoardIdV7;
+    readonly seed?: number;
+    readonly turnNumber?: number;
+    readonly reset?: boolean;
+  },
+): {
+  readonly mode: BoardPlayModeV9;
+  readonly starterTileIdx: number | null;
+  readonly spotlightTileIdx: number | null;
+  readonly shuffledEnvelopes?: readonly number[];
+  readonly highVoltIndices?: readonly number[];
+} {
+  const shouldReset = opts?.reset !== false;
+  if (shouldReset) {
+    for (const tile of tiles) {
+      tile.isLiveWireLocked = false;
+      tile.isSpotlightTile = false;
+      tile.dominoGroupId = undefined;
+    }
+  }
+
+  const playable = tiles.filter((t) => t.state === 'OPEN' || t.state === 'BLITZ_SURVIVOR');
+  if (playable.length === 0) {
+    return { mode, starterTileIdx: null, spotlightTileIdx: null };
+  }
+
+  const baseSeed = mixSeedV9((opts?.seed ?? 1966) + playable.length * 37);
+
+  switch (mode) {
+    case 'LOUVER_SHUTTER': {
+      for (const tile of playable) {
+        tile.blindCategoryHidden = true;
+        tile.mysteryCashHidden = false;
+        tile.isLiveWireLocked = false;
+        tile.isTopologyLocked = false;
+        tile.isVaultLocked = false;
+      }
+      return { mode, starterTileIdx: null, spotlightTileIdx: null };
+    }
+
+    case 'BLIND_PURSE': {
+      const envelopes = [...BLIND_PURSE_ENVELOPES_V9];
+      while (envelopes.length < playable.length) {
+        envelopes.push(BLIND_PURSE_ENVELOPES_V9[envelopes.length % BLIND_PURSE_ENVELOPES_V9.length]);
+      }
+      let rngState = baseSeed || 0x1966_cafe;
+      for (let i = envelopes.length - 1; i > 0; i--) {
+        rngState = mixSeedV9(rngState + i * 73);
+        const j = rngState % (i + 1);
+        const tmp = envelopes[i];
+        envelopes[i] = envelopes[j];
+        envelopes[j] = tmp;
+      }
+      playable.forEach((tile, idx) => {
+        const envCash = envelopes[idx] ?? 300;
+        tile.nominalBaseChips = envCash;
+        tile.baseChips = envCash;
+        tile.blindCategoryHidden = false;
+        tile.mysteryCashHidden = true;
+        tile.isLiveWireLocked = false;
+        tile.isTopologyLocked = false;
+        tile.isVaultLocked = false;
+      });
+      return {
+        mode,
+        starterTileIdx: null,
+        spotlightTileIdx: null,
+        shuffledEnvelopes: envelopes.slice(0, playable.length),
+      };
+    }
+
+    case 'BLACKOUT_VAULT': {
+      // 3 deterministic high-volt doors (>= $350), all categories + dollars concealed behind #1..#12 safe trilons
+      const ranked = [...playable].sort((a, b) => {
+        const ha = mixSeedV9(baseSeed + a.index * 53);
+        const hb = mixSeedV9(baseSeed + b.index * 53);
+        return b.baseChips - a.baseChips || ha - hb;
+      });
+      const highVoltIndices = ranked.slice(0, Math.min(3, ranked.length)).map((t) => t.index);
+      const highVoltSet = new Set(highVoltIndices);
+      for (const tile of playable) {
+        tile.blindCategoryHidden = true;
+        tile.mysteryCashHidden = true;
+        tile.isLiveWireLocked = false;
+        tile.isTopologyLocked = false;
+        tile.isVaultLocked = false;
+        if (highVoltSet.has(tile.index)) {
+          tile.baseChips = Math.max(tile.baseChips, 400);
+          tile.nominalBaseChips = tile.baseChips;
+        }
+      }
+      return { mode, starterTileIdx: null, spotlightTileIdx: null, highVoltIndices };
+    }
+
+    case 'LIVE_WIRE_FUSE': {
+      // Strictly 1 starter tile open (`isLiveWireLocked = false`, `isTopologyLocked = false`, `isVaultLocked = false`);
+      // every other playable tile locked until sparked by orthogonal wins or Emergency Circuit Breaker!
+      const sorted = [...playable].sort((a, b) => {
+        const ca = getCanonicalSlotCoordV9(a, opts?.boardId);
+        const cb = getCanonicalSlotCoordV9(b, opts?.boardId);
+        const scoreA = (a.tvTwist === 'LOCKED_VAULT' ? -500 : 0) + ca.z * 25 - Math.hypot(ca.x, ca.z) * 18;
+        const scoreB = (b.tvTwist === 'LOCKED_VAULT' ? -500 : 0) + cb.z * 25 - Math.hypot(cb.x, cb.z) * 18;
+        return scoreB - scoreA || a.index - b.index;
+      });
+      const candidatePool = sorted.slice(0, Math.min(4, sorted.length));
+      const starter = candidatePool[baseSeed % candidatePool.length] ?? playable[0];
+
+      for (const tile of playable) {
+        if (tile.index === starter.index) {
+          tile.isLiveWireLocked = false;
+          tile.isTopologyLocked = false;
+          tile.isVaultLocked = false;
+          if (tile.tvTwist === 'LOCKED_VAULT') {
+            tile.tvTwist = 'NONE';
+          }
+        } else {
+          tile.isLiveWireLocked = true;
+          tile.isTopologyLocked = true;
+        }
+      }
+      return { mode, starterTileIdx: starter.index, spotlightTileIdx: null };
+    }
+
+    case 'SHIFTING_SPOTLIGHT': {
+      const unlocked = playable.filter((t) => !t.isVaultLocked && !t.isTopologyLocked && !t.isLiveWireLocked);
+      const pool = unlocked.length > 0 ? unlocked : playable;
+      const spotTile = pool[baseSeed % pool.length] ?? pool[0];
+      for (const tile of tiles) {
+        tile.isSpotlightTile = tile.index === spotTile.index;
+      }
+      return { mode, starterTileIdx: null, spotlightTileIdx: spotTile.index };
+    }
+
+    case 'GOLDEN_DOMINO_CASCADE':
+    case 'PRESSURE_COOKER':
+    case 'HOLLYWOOD_MARQUEE_LINE':
+    default: {
+      return { mode, starterTileIdx: null, spotlightTileIdx: null };
+    }
+  }
+}
+
+/**
+ * Evaluates connected components of `CLAIMED_PLAYER` tiles in `GOLDEN_DOMINO_CASCADE`.
+ * Linking 3+ contiguous player-claimed tiles triggers `+$350` (`+0.25x`).
+ */
+export function evaluateGoldenDominoCascadeV9(
+  tiles: BoardTileNodeV7[],
+  opts: {
+    readonly claimedIdx: number;
+    readonly boardId?: BoardIdV7;
+    readonly awardedGroups?: Set<string>;
+  },
+): {
+  readonly triggered: boolean;
+  readonly bonusCash: number;
+  readonly multAdd: number;
+  readonly groupId: number;
+  readonly componentIndices: readonly number[];
+  readonly bannerHeadline: string | null;
+} {
+  const claimedPlayer = tiles.filter((t) => t.state === 'CLAIMED_PLAYER');
+  const start = claimedPlayer.find((t) => t.index === opts.claimedIdx);
+  if (!start) {
+    return {
+      triggered: false,
+      bonusCash: 0,
+      multAdd: 0,
+      groupId: 0,
+      componentIndices: [],
+      bannerHeadline: null,
+    };
+  }
+
+  const visited = new Set<number>([start.index]);
+  const queue: BoardTileNodeV7[] = [start];
+  const component: BoardTileNodeV7[] = [];
+
+  while (queue.length > 0) {
+    const curr = queue.shift()!;
+    component.push(curr);
+    const currCoord = getCanonicalSlotCoordV9(curr, opts.boardId);
+
+    for (const other of claimedPlayer) {
+      if (visited.has(other.index)) continue;
+      const otherCoord = getCanonicalSlotCoordV9(other, opts.boardId);
+      if (areGoldenDominoAdjacentV9(currCoord, otherCoord, opts.boardId)) {
+        visited.add(other.index);
+        queue.push(other);
+      }
+    }
+  }
+
+  const componentIndices = component.map((t) => t.index).sort((a, b) => a - b);
+  const groupId = (componentIndices[0] ?? 0) + 1;
+  for (const t of component) {
+    t.dominoGroupId = groupId;
+  }
+
+  const tier = Math.floor(componentIndices.length / 3);
+  const alreadyAwardedForTier =
+    tier >= 1 &&
+    opts.awardedGroups !== undefined &&
+    componentIndices.some((idx) => opts.awardedGroups!.has(`TILE_${idx}_TIER_${tier}`));
+  if (componentIndices.length >= 3 && !alreadyAwardedForTier) {
+    if (opts.awardedGroups) {
+      for (const idx of componentIndices) {
+        opts.awardedGroups.add(`TILE_${idx}_TIER_${tier}`);
+      }
+    }
+    return {
+      triggered: true,
+      bonusCash: 350,
+      multAdd: 0.25,
+      groupId,
+      componentIndices,
+      bannerHeadline: '🟨 GOLDEN DOMINO CASCADE! 3-LINK +$350!',
+    };
+  }
+  if (alreadyAwardedForTier && opts.awardedGroups) {
+    for (const idx of componentIndices) {
+      opts.awardedGroups.add(`TILE_${idx}_TIER_${tier}`);
+    }
+  }
+
+  return {
+    triggered: false,
+    bonusCash: 0,
+    multAdd: 0,
+    groupId,
+    componentIndices,
+    bannerHeadline: null,
+  };
+}
+
+/**
+ * Checks canonical 3-in-a-row collinear triples (`O` for Player, `X` for Rival) in `HOLLYWOOD_MARQUEE_LINE`.
+ * Uses canonical `BOARD_SPECS_V7` coordinates so Portrait & Desktop yield identical lines!
+ */
+export function evaluateHollywoodMarqueeLineV9(
+  tiles: BoardTileNodeV7[],
+  opts: {
+    readonly actor: 'PLAYER' | 'RIVAL';
+    readonly boardId?: BoardIdV7;
+    readonly awardedLineKeys?: Set<string>;
+  },
+): {
+  readonly triggered: boolean;
+  readonly bonusCash: number;
+  readonly lineIndices: readonly number[];
+  readonly lineKey: string | null;
+  readonly bannerHeadline: string | null;
+} {
+  const targetState = opts.actor === 'PLAYER' ? 'CLAIMED_PLAYER' : 'CLAIMED_RIVAL';
+  const owned = tiles.filter((t) => t.state === targetState);
+  if (owned.length < 3) {
+    return { triggered: false, bonusCash: 0, lineIndices: [], lineKey: null, bannerHeadline: null };
+  }
+
+  for (let i = 0; i < owned.length; i++) {
+    for (let j = i + 1; j < owned.length; j++) {
+      for (let k = j + 1; k < owned.length; k++) {
+        const pts = [owned[i], owned[j], owned[k]]
+          .map((t) => ({ tile: t, coord: getCanonicalSlotCoordV9(t, opts.boardId) }))
+          .sort((a, b) => a.coord.x - b.coord.x || a.coord.z - b.coord.z);
+        const [a, b, c] = pts;
+        const d1 = Math.hypot(b.coord.x - a.coord.x, b.coord.z - a.coord.z);
+        const d2 = Math.hypot(c.coord.x - b.coord.x, c.coord.z - b.coord.z);
+        if (d1 < 0.35 || d1 > 1.38 || d2 < 0.35 || d2 > 1.38) continue;
+        if (Math.abs(d1 - d2) > 0.36) continue;
+
+        const ux = (b.coord.x - a.coord.x) / d1;
+        const uz = (b.coord.z - a.coord.z) / d1;
+        const vx = (c.coord.x - b.coord.x) / d2;
+        const vz = (c.coord.z - b.coord.z) / d2;
+        const dot = ux * vx + uz * vz;
+        const cross = Math.abs(ux * vz - uz * vx);
+        if (dot > 0.94 && cross < 0.18) {
+          const lineIndices = [a.tile.index, b.tile.index, c.tile.index].sort((m, n) => m - n);
+          const lineKey = `${opts.actor}:${lineIndices.join('-')}`;
+          if (!opts.awardedLineKeys || !opts.awardedLineKeys.has(lineKey)) {
+            opts.awardedLineKeys?.add(lineKey);
+            return {
+              triggered: true,
+              bonusCash: 300,
+              lineIndices,
+              lineKey,
+              bannerHeadline:
+                opts.actor === 'PLAYER'
+                  ? '💡 HOLLYWOOD MARQUEE 3-IN-A-ROW (O)! +$300 LINE BONUS!'
+                  : '💡 CHAMPION MARQUEE 3-IN-A-ROW (X)! +$300!',
+            };
+          }
+        }
+      }
+    }
+  }
+
+  return { triggered: false, bonusCash: 0, lineIndices: [], lineKey: null, bannerHeadline: null };
+}
+
+/**
+ * Mathematically zero-deadlock progression + Emergency Circuit Breaker for `LIVE_WIRE_FUSE`.
+ * Guarantees `unlockedCountAfter >= 1` after EVERY turn whenever any playable tile remains!
+ */
+export function enforceLiveWireFuseProgressV9(
+  tiles: BoardTileNodeV7[],
+  opts: {
+    readonly claimedIdx: number;
+    readonly scored: boolean;
+    readonly boardId?: BoardIdV7;
+  },
+): {
+  readonly unlockedIndices: readonly number[];
+  readonly emergencyCircuitBreakerFired: boolean;
+  readonly unlockedCountAfter: number;
+} {
+  const unlockedIndices: number[] = [];
+  const playable = tiles.filter((t) => t.state === 'OPEN' || t.state === 'BLITZ_SURVIVOR');
+  if (playable.length === 0) {
+    return { unlockedIndices, emergencyCircuitBreakerFired: false, unlockedCountAfter: 0 };
+  }
+
+  const claimedTile = tiles.find((t) => t.index === opts.claimedIdx);
+  if (opts.scored && claimedTile) {
+    const claimedCoord = getCanonicalSlotCoordV9(claimedTile, opts.boardId);
+    const lockedPlayable = playable.filter((t) => t.isLiveWireLocked || t.isTopologyLocked);
+    const orthogonalLocked = lockedPlayable.filter((t) =>
+      areCanonicalOrthogonalV9(claimedCoord, getCanonicalSlotCoordV9(t, opts.boardId)),
+    );
+    const toSpark =
+      orthogonalLocked.length > 0
+        ? orthogonalLocked
+        : lockedPlayable.filter((t) => {
+            const c = getCanonicalSlotCoordV9(t, opts.boardId);
+            return Math.hypot(c.x - claimedCoord.x, c.z - claimedCoord.z) <= 1.38;
+          });
+
+    for (const t of toSpark) {
+      t.isLiveWireLocked = false;
+      t.isTopologyLocked = false;
+      unlockedIndices.push(t.index);
+    }
+  }
+
+  let unlockedNow = playable.filter(
+    (t) => !t.isLiveWireLocked && !t.isTopologyLocked && !t.isVaultLocked,
+  );
+  let emergencyCircuitBreakerFired = false;
+
+  if (unlockedNow.length === 0 && playable.length > 0) {
+    emergencyCircuitBreakerFired = true;
+    const refCoord = claimedTile
+      ? getCanonicalSlotCoordV9(claimedTile, opts.boardId)
+      : { x: 0, z: 0 };
+    const candidates = [...playable].sort((a, b) => {
+      const ca = getCanonicalSlotCoordV9(a, opts.boardId);
+      const cb = getCanonicalSlotCoordV9(b, opts.boardId);
+      const da = Math.hypot(ca.x - refCoord.x, ca.z - refCoord.z);
+      const db = Math.hypot(cb.x - refCoord.x, cb.z - refCoord.z);
+      const va = a.isVaultLocked ? 1 : 0;
+      const vb = b.isVaultLocked ? 1 : 0;
+      return va - vb || da - db || a.index - b.index;
+    });
+    for (let i = 0; i < Math.min(2, candidates.length); i++) {
+      const c = candidates[i];
+      c.isLiveWireLocked = false;
+      c.isTopologyLocked = false;
+      c.isVaultLocked = false;
+      if (!unlockedIndices.includes(c.index)) {
+        unlockedIndices.push(c.index);
+      }
+    }
+    unlockedNow = playable.filter(
+      (t) => !t.isLiveWireLocked && !t.isTopologyLocked && !t.isVaultLocked,
+    );
+  }
+
+  return {
+    unlockedIndices,
+    emergencyCircuitBreakerFired,
+    unlockedCountAfter: unlockedNow.length,
+  };
+}
+
+export interface ResolvePostTurnEngineStateV9 {
+  pressureCookerStreak: number;
+  awardedDominoGroups?: Set<string>;
+  awardedMarqueeLines?: Set<string>;
+}
+
+/**
+ * Unified post-turn state machine for both Player & Rival turns across all 16 `BoardPlayModeV9` modes.
+ */
+export function resolvePostTurnBoardModeV9(params: {
+  readonly tiles: BoardTileNodeV7[];
+  readonly mode: BoardPlayModeV9;
+  readonly claimedIdx: number;
+  readonly actor: 'PLAYER' | 'RIVAL';
+  readonly scored: boolean;
+  readonly boardId?: BoardIdV7;
+  readonly turnNumber?: number;
+  readonly seed?: number;
+  readonly engineState?: ResolvePostTurnEngineStateV9;
+}): BoardModePostClaimResultV9 {
+  const { tiles, mode, claimedIdx, actor, scored, boardId } = params;
+  const fallbackMode = toV7BoardPlayModeFallback(mode);
+  const claimedTile = tiles.find((t) => t.index === claimedIdx);
+
+  if (mode === 'LOUVER_SHUTTER' || mode === 'BLIND_PURSE' || mode === 'BLACKOUT_VAULT') {
+    if (claimedTile) {
+      claimedTile.blindCategoryHidden = false;
+      claimedTile.mysteryCashHidden = false;
+    }
+    return {
+      mode,
+      modeV7Fallback: fallbackMode,
+      bonusCash: 0,
+      rivalStealCash: 0,
+      multAdd: 0,
+      bannerHeadline: null,
+      highlightedTileIndices: claimedTile ? [claimedIdx] : undefined,
+    };
+  }
+
+  if (mode === 'LIVE_WIRE_FUSE') {
+    const res = enforceLiveWireFuseProgressV9(tiles, { claimedIdx, scored, boardId });
+    return {
+      mode,
+      modeV7Fallback: fallbackMode,
+      bonusCash: 0,
+      rivalStealCash: 0,
+      multAdd: 0,
+      bannerHeadline: res.emergencyCircuitBreakerFired
+        ? '⚡ EMERGENCY CIRCUIT BREAKER! 2 TILES SPARKED OPEN!'
+        : res.unlockedIndices.length > 0
+          ? `🔗 LIVE-WIRE SPARK! +${res.unlockedIndices.length} TILE${res.unlockedIndices.length > 1 ? 'S' : ''} UNLOCKED!`
+          : null,
+      highlightedTileIndices: res.unlockedIndices.length > 0 ? res.unlockedIndices : undefined,
+      unlockedTileIndices: res.unlockedIndices,
+      emergencyCircuitBreakerFired: res.emergencyCircuitBreakerFired,
+    };
+  }
+
+  if (mode === 'SHIFTING_SPOTLIGHT') {
+    const playable = tiles.filter(
+      (t) =>
+        (t.state === 'OPEN' || t.state === 'BLITZ_SURVIVOR') &&
+        !t.isVaultLocked &&
+        !t.isTopologyLocked &&
+        !t.isLiveWireLocked,
+    );
+    const prevSpotIdx = tiles.findIndex((t) => t.isSpotlightTile);
+    const wasSpotlightHit = Boolean(claimedTile?.isSpotlightTile) && scored;
+    const spotMultAdd = (params.turnNumber ?? 1) >= 7 ? 1.0 : 0.5;
+    for (const t of tiles) t.isSpotlightTile = false;
+
+    let nextSpotlightIdx: number | null = null;
+    if (playable.length > 0) {
+      const candidates = playable.filter((t) => t.index !== claimedIdx && t.index !== prevSpotIdx);
+      const pool = candidates.length > 0 ? candidates : playable;
+      const pickSeed = mixSeedV9((params.seed ?? 1966) + (params.turnNumber ?? 1) * 89 + claimedIdx * 13);
+      const nextTile = pool[pickSeed % pool.length] ?? pool[0];
+      nextTile.isSpotlightTile = true;
+      nextSpotlightIdx = nextTile.index;
+    }
+
+    return {
+      mode,
+      modeV7Fallback: fallbackMode,
+      bonusCash: 0,
+      rivalStealCash: 0,
+      multAdd: wasSpotlightHit && actor === 'PLAYER' ? spotMultAdd : 0,
+      bannerHeadline: wasSpotlightHit
+        ? `🔦 SPOTLIGHT HIT! ${(1 + spotMultAdd).toFixed(1)}× BOOST!`
+        : null,
+      highlightedTileIndices: nextSpotlightIdx !== null ? [nextSpotlightIdx] : undefined,
+      nextSpotlightIdx,
+    };
+  }
+
+  if (mode === 'GOLDEN_DOMINO_CASCADE') {
+    if (actor === 'PLAYER' && scored) {
+      const res = evaluateGoldenDominoCascadeV9(tiles, {
+        claimedIdx,
+        boardId,
+        awardedGroups: params.engineState?.awardedDominoGroups,
+      });
+      return {
+        mode,
+        modeV7Fallback: fallbackMode,
+        bonusCash: res.bonusCash,
+        rivalStealCash: 0,
+        multAdd: res.multAdd,
+        bannerHeadline: res.bannerHeadline,
+        highlightedTileIndices: res.triggered ? res.componentIndices : undefined,
+        dominoCascadeTriggered: res.triggered,
+        dominoGroupId: res.groupId,
+      };
+    }
+    return {
+      mode,
+      modeV7Fallback: fallbackMode,
+      bonusCash: 0,
+      rivalStealCash: 0,
+      multAdd: 0,
+      bannerHeadline: null,
+    };
+  }
+
+  if (mode === 'HOLLYWOOD_MARQUEE_LINE') {
+    if (scored) {
+      const res = evaluateHollywoodMarqueeLineV9(tiles, {
+        actor,
+        boardId,
+        awardedLineKeys: params.engineState?.awardedMarqueeLines,
+      });
+      return {
+        mode,
+        modeV7Fallback: fallbackMode,
+        bonusCash: actor === 'PLAYER' ? res.bonusCash : 0,
+        rivalStealCash: 0,
+        multAdd: actor === 'PLAYER' && res.triggered ? 0.25 : 0,
+        bannerHeadline: res.bannerHeadline,
+        highlightedTileIndices: res.triggered ? res.lineIndices : undefined,
+        marqueeLineTriggered: res.triggered,
+      };
+    }
+    return {
+      mode,
+      modeV7Fallback: fallbackMode,
+      bonusCash: 0,
+      rivalStealCash: 0,
+      multAdd: 0,
+      bannerHeadline: null,
+    };
+  }
+
+  if (mode === 'PRESSURE_COOKER') {
+    const state = params.engineState;
+    if (scored) {
+      const nextStreak = (state?.pressureCookerStreak ?? 0) + 1;
+      if (state) state.pressureCookerStreak = nextStreak;
+      const nextMult = getPressureCookerMultiplierV9(nextStreak);
+      return {
+        mode,
+        modeV7Fallback: fallbackMode,
+        bonusCash: 0,
+        rivalStealCash: 0,
+        multAdd: 0,
+        bannerHeadline:
+          nextMult >= 2.0
+            ? '♨️ PRESSURE COOKER MAXED AT ×2.0!'
+            : `♨️ PRESSURE GAUGE CLIMBING -> ×${nextMult.toFixed(2)}!`,
+        pressureCookerMult: nextMult,
+      };
+    }
+    const hadPressure = (state?.pressureCookerStreak ?? 0) > 0;
+    if (state) state.pressureCookerStreak = 0;
+    return {
+      mode,
+      modeV7Fallback: fallbackMode,
+      bonusCash: 0,
+      rivalStealCash: 0,
+      multAdd: 0,
+      bannerHeadline: hadPressure ? '💨 PRESSURE BLAST! GAUGE RESET TO ×1.0!' : null,
+      pressureCookerMult: 1,
+    };
+  }
+
+  return {
+    mode,
+    modeV7Fallback: fallbackMode,
+    bonusCash: 0,
+    rivalStealCash: 0,
+    multAdd: 0,
+    bannerHeadline: null,
+  };
+}
+
+/**
+ * Deterministically seeds `1–2` `'VIP_BLUFF'` tiles (`tile.tvTwistV9 = 'VIP_BLUFF'`, `tile.vipId`),
+ * keeping `tile.tvTwist = 'NONE'` so v7 `ClassicTvTileTwistV7` consumers stay 100% compatible.
+ */
+export function seedVipBluffTilesOnTiles(
+  tiles: BoardTileNodeV7[],
+  opts?: {
+    readonly count?: 1 | 2;
+    readonly seed?: number;
+    readonly season?: SeasonIdV7;
+    readonly preferredCategories?: readonly CategoryIdV7[];
+    readonly excludeBlitz?: boolean;
+  },
+): readonly { readonly tileIndex: number; readonly vipId: VipCelebIdV9 }[] {
+  if (opts?.excludeBlitz) return [];
+  const playable = tiles.filter((t) => t.state === 'OPEN' || t.state === 'BLITZ_SURVIVOR');
+  if (playable.length === 0) return [];
+
+  const desiredCount: 1 | 2 = opts?.count ?? (playable.length >= 12 ? 2 : 1);
+  const seedBase = mixSeedV9((opts?.seed ?? 1966) + (opts?.season ?? 1) * 193);
+  const prefCats = new Set(opts?.preferredCategories ?? []);
+
+  // Never overwrite major visible twists or locked vaults; prefer unlocked tiles so VIP Bluff is playable early
+  const eligible = playable.filter(
+    (t) =>
+      t.tvTwist === 'NONE' &&
+      !t.isVaultLocked &&
+      t.tvTwistV9 !== 'VIP_BLUFF',
+  );
+  const unlockedPreferred = eligible.filter(
+    (t) => !t.isLiveWireLocked && !t.isTopologyLocked && (prefCats.size === 0 || prefCats.has(t.category)),
+  );
+  const unlockedAny = eligible.filter((t) => !t.isLiveWireLocked && !t.isTopologyLocked);
+  const fallbackPool = eligible.length > 0 ? eligible : playable.filter((t) => t.tvTwist !== 'LOCKED_VAULT' && t.tvTwist !== 'SECRET_SQUARE');
+
+  const poolOrder: BoardTileNodeV7[] = [
+    ...unlockedPreferred,
+    ...unlockedAny.filter((t) => !unlockedPreferred.includes(t)),
+    ...eligible.filter((t) => !unlockedAny.includes(t)),
+    ...fallbackPool.filter((t) => !eligible.includes(t)),
+  ];
+
+  const placed: Array<{ readonly tileIndex: number; readonly vipId: VipCelebIdV9 }> = [];
+  const usedVips = new Set<VipCelebIdV9>();
+
+  for (let i = 0; i < desiredCount && poolOrder.length > 0; i++) {
+    const windowSize = Math.min(poolOrder.length, Math.max(2, Math.ceil(poolOrder.length * 0.6)));
+    const pickIdx = mixSeedV9(seedBase + i * 71) % windowSize;
+    const chosenTile = poolOrder.splice(pickIdx, 1)[0];
+    if (!chosenTile) break;
+
+    const vipPool = VIP_CELEB_CATALOG_V9.filter((v) => !usedVips.has(v.targetId));
+    const vipList = vipPool.length > 0 ? vipPool : VIP_CELEB_CATALOG_V9;
+    const vip = vipList[mixSeedV9(seedBase + chosenTile.index * 41 + i * 17) % vipList.length];
+    if (!vip) break;
+
+    chosenTile.tvTwistV9 = 'VIP_BLUFF';
+    chosenTile.vipId = vip.targetId;
+    usedVips.add(vip.targetId);
+    placed.push({ tileIndex: chosenTile.index, vipId: vip.targetId });
+  }
+
+  return placed;
+}
+
 export interface TileTwistBreakdownV7 {
   readonly tileIndex: number;
   readonly baseChips: number;
@@ -704,6 +1681,8 @@ export interface TileTwistBreakdownV7 {
   readonly hitRivalWheelhouse: boolean;
   readonly triggeredRiggedSolenoid: boolean;
   readonly tvTwist: ClassicTvTileTwistV7;
+  readonly tvTwistV9?: ClassicTvTileTwistV9;
+  readonly pressureCookerMult?: number;
   readonly isVaultLocked: boolean;
   readonly activeReasons: readonly string[];
 }
@@ -740,6 +1719,13 @@ function normalizeAngleDelta(a: number, b: number): number {
 
 export interface StagedMatchBoardOverridesV7 {
   readonly playModeOverride?: BoardPlayModeV7;
+  readonly boardModeV9?: BoardPlayModeV9;
+  readonly season?: SeasonIdV7;
+  readonly vetoedCategories?: readonly CategoryIdV7[];
+  readonly vibePackId?: VibePackIdV9;
+  readonly allowedCategories?: readonly CategoryIdV7[];
+  readonly isDailyBroadcast?: boolean;
+  readonly sweepsNight?: SweepsNightNumberV9;
   readonly unlockTopology?: BoardUnlockTopologyV7;
   readonly scoutedWeakCategories?: readonly CategoryIdV7[];
   readonly cpuPlaystyle?: CpuPlaystyleIdV7;
@@ -907,8 +1893,16 @@ export class BoardTwistsEngineV7 {
   private awardedPrizePackages = new Set<ConcentrationPrizeKindV7>();
   private awardedTicTacLines = new Set<string>();
   private coastToCoastAwarded = false;
+  private cpuConcentrationBonusCash = 0;
+  private cpuConcentrationStealCash = 0;
   private activeWaveNumber = 1;
   private act2BoostedTiles = new WeakSet<BoardTileNodeV7>();
+  private activeBoardModeV9: BoardPlayModeV9 = 'CLASSIC_TOTE';
+  private pressureCookerStreak = 0;
+  private awardedDominoGroups = new Set<string>();
+  private awardedMarqueeLines = new Set<string>();
+  private blackoutHighVoltIndices = new Set<number>();
+  private blindPurseEnvelopes: number[] = [];
 
   constructor(initialContext?: Partial<BoardTwistContextV7>) {
     this.context = {
@@ -919,6 +1913,13 @@ export class BoardTwistsEngineV7 {
       rivalStrongCategories: initialContext?.rivalStrongCategories,
       scoutedWeakCategories: initialContext?.scoutedWeakCategories ?? [],
       playModeOverride: initialContext?.playModeOverride,
+      boardModeV9: initialContext?.boardModeV9,
+      season: initialContext?.season,
+      vetoedCategories: initialContext?.vetoedCategories,
+      vibePackId: initialContext?.vibePackId,
+      allowedCategories: initialContext?.allowedCategories,
+      isDailyBroadcast: initialContext?.isDailyBroadcast,
+      sweepsNight: initialContext?.sweepsNight,
       unlockTopology: initialContext?.unlockTopology ?? 'CLASSIC_OPEN',
       cpuPlaystyle: initialContext?.cpuPlaystyle,
       cpuTemperament: initialContext?.cpuTemperament,
@@ -929,6 +1930,11 @@ export class BoardTwistsEngineV7 {
       turnNumber: initialContext?.turnNumber ?? 1,
       seedOffset: initialContext?.seedOffset ?? 0,
     };
+    this.activeBoardModeV9 =
+      this.context.boardModeV9 ??
+      this.context.playModeOverride ??
+      BOARD_PLAY_MODE_BY_BOARD_V7[this.context.boardId] ??
+      'CLASSIC_TOTE';
     this.gimmick = this.createInitialGimmickState();
     BoardTwistsEngineV7.lastActiveInstance = this;
   }
@@ -936,14 +1942,19 @@ export class BoardTwistsEngineV7 {
   private createInitialGimmickState(): BoardGimmickStateV7 {
     return {
       crossfaderPosition: -1,
+      bridgePolarityPhase: 0,
       gearPhase: 0,
+      switchboardDomainIndex: 0,
       larsonHotTileIndex: 0,
       spinPassesUsed: 0,
       chargedBumperIndex: 0,
       baccaratShoeTotal: 9,
       sundialAngleRad: -Math.PI * 0.25,
       tunedUhfDomain: 'SCI_TECH',
+      zigguratFocusTier: 0,
+      gauntletReconColumn: 0,
       pendulumTiltDeg: 0,
+      pendulumTareOffsetDeg: 0,
       mercySwitchPulled: false,
       amberTruceBroken: false,
       turnCounter: 0,
@@ -965,12 +1976,34 @@ export class BoardTwistsEngineV7 {
       BoardTwistsEngineV7.pendingMatchOverrides = null;
     }
 
+    const resolvedModeV9: BoardPlayModeV9 =
+      nextContext.boardModeV9 ??
+      staged?.boardModeV9 ??
+      nextContext.playModeOverride ??
+      staged?.playModeOverride ??
+      (resetGimmicks
+        ? BOARD_PLAY_MODE_BY_BOARD_V7[nextContext.boardId ?? this.context.boardId] ?? 'CLASSIC_TOTE'
+        : this.activeBoardModeV9);
+
+    const resolvedPlayModeV7: BoardPlayModeV7 = isR7BoardPlayModeV9(resolvedModeV9)
+      ? 'CLASSIC_TOTE'
+      : resolvedModeV9;
+
+    this.activeBoardModeV9 = resolvedModeV9;
+
     this.context = {
       ...this.context,
       ...nextContext,
       ...(resetGimmicks
         ? {
-            playModeOverride: nextContext.playModeOverride ?? staged?.playModeOverride,
+            playModeOverride: resolvedPlayModeV7,
+            boardModeV9: resolvedModeV9,
+            season: nextContext.season ?? staged?.season ?? this.context.season,
+            vetoedCategories: nextContext.vetoedCategories ?? staged?.vetoedCategories ?? [],
+            vibePackId: nextContext.vibePackId ?? staged?.vibePackId,
+            allowedCategories: nextContext.allowedCategories ?? staged?.allowedCategories,
+            isDailyBroadcast: nextContext.isDailyBroadcast ?? staged?.isDailyBroadcast ?? false,
+            sweepsNight: nextContext.sweepsNight ?? staged?.sweepsNight,
             unlockTopology: nextContext.unlockTopology ?? staged?.unlockTopology ?? 'CLASSIC_OPEN',
             scoutedWeakCategories:
               nextContext.scoutedWeakCategories ?? staged?.scoutedWeakCategories ?? [],
@@ -997,8 +2030,15 @@ export class BoardTwistsEngineV7 {
       this.awardedPrizePackages.clear();
       this.awardedTicTacLines.clear();
       this.coastToCoastAwarded = false;
+      this.cpuConcentrationBonusCash = 0;
+      this.cpuConcentrationStealCash = 0;
       this.activeWaveNumber = 1;
       this.act2BoostedTiles = new WeakSet<BoardTileNodeV7>();
+      this.pressureCookerStreak = 0;
+      this.awardedDominoGroups.clear();
+      this.awardedMarqueeLines.clear();
+      this.blackoutHighVoltIndices.clear();
+      this.blindPurseEnvelopes = [];
     }
     if (tiles && tiles.length > 0) {
       this.seedSocketMarkersOnTiles(tiles);
@@ -1072,6 +2112,30 @@ export class BoardTwistsEngineV7 {
     return DEFAULT_RIVAL_STRONG_CATEGORIES_V7[rivalId] ?? DEFAULT_RIVAL_STRONG_CATEGORIES_V7.CARMEN_DELGADO;
   }
 
+  private getAllowedCategoryPoolV9(): readonly CategoryIdV7[] {
+    const vetoSet = new Set<CategoryIdV7>(this.context.vetoedCategories ?? []);
+    const nonVetoedAll = ALL_CATEGORIES_V7.filter((c) => !vetoSet.has(c));
+    if (this.context.allowedCategories && this.context.allowedCategories.length > 0) {
+      const filteredAllowed = this.context.allowedCategories.filter((c) => !vetoSet.has(c));
+      if (filteredAllowed.length > 0) return filteredAllowed;
+    }
+    if (this.context.vibePackId) {
+      const packCats = VIBE_PACK_CATEGORIES_V9[this.context.vibePackId] ?? ALL_CATEGORIES_V7;
+      const filteredPack = packCats.filter((c) => !vetoSet.has(c));
+      if (filteredPack.length >= 3) return filteredPack;
+      if (filteredPack.length > 0 && nonVetoedAll.length === 0) return filteredPack;
+    }
+    return nonVetoedAll.length > 0 ? nonVetoedAll : ALL_CATEGORIES_V7;
+  }
+
+  private getEligibleWeakCategoriesV9(): readonly CategoryIdV7[] {
+    const vetoSet = new Set<CategoryIdV7>(this.context.vetoedCategories ?? []);
+    const allowedSet = new Set<CategoryIdV7>(this.getAllowedCategoryPoolV9());
+    return this.getEffectiveWeakCategories().filter(
+      (c) => !vetoSet.has(c) && allowedSet.has(c),
+    );
+  }
+
   /**
    * Seeds deterministic Amber Chalk Truce rings, Rival Wheelhouse weak-spot flags,
    * Pirate UHF halos, and Rigged Solenoid gambit tiles onto a freshly built board.
@@ -1079,7 +2143,6 @@ export class BoardTwistsEngineV7 {
   public seedSocketMarkersOnTiles(tiles: BoardTileNodeV7[]): void {
     if (tiles.length === 0) return;
 
-    const weakList = this.getEffectiveWeakCategories();
     const scoutedSet = new Set<CategoryIdV7>(this.context.scoutedWeakCategories ?? []);
     const rivalId = this.context.rivalId ?? 'CARMEN_DELGADO';
     const isSympathetic = RIVAL_SYMPATHETIC_SET_V7.has(rivalId);
@@ -1094,15 +2157,17 @@ export class BoardTwistsEngineV7 {
       tile.isRiggedSolenoid = false;
     }
 
-    // Ensure at least 2 tiles carry Rival weak categories so scouting discoveries are always actionable!
-    const trueWeakSet = new Set<CategoryIdV7>(weakList);
-    let weakPresentCount = tiles.filter((t) => trueWeakSet.has(t.category)).length;
-    if (weakPresentCount < 2 && weakList.length > 0) {
+    // Ensure at least 2 tiles carry non-vetoed, allowed Rival weak categories when available!
+    const eligibleWeakList = this.getEligibleWeakCategoriesV9();
+    const eligibleWeakSet = new Set<CategoryIdV7>(eligibleWeakList);
+    let weakPresentCount = tiles.filter((t) => eligibleWeakSet.has(t.category)).length;
+    if (weakPresentCount < 2 && eligibleWeakList.length > 0) {
       for (let i = 0; i < tiles.length && weakPresentCount < 2; i++) {
         const candidateIdx = (i * 5 + 2) % tiles.length;
         const candidate = tiles[candidateIdx];
-        if (!trueWeakSet.has(candidate.category)) {
-          const forcedCat = weakList[weakPresentCount % weakList.length] ?? ALL_CATEGORIES_V7[0];
+        if (!eligibleWeakSet.has(candidate.category)) {
+          const forcedCat = eligibleWeakList[weakPresentCount % eligibleWeakList.length];
+          if (!forcedCat) break;
           candidate.category = forcedCat;
           candidate.domain = CATEGORY_TO_DOMAIN_V7[forcedCat];
           candidate.isWheelhouse = scoutedSet.has(forcedCat);
@@ -1198,6 +2263,11 @@ export class BoardTwistsEngineV7 {
       waveNumber > 1 && this.getActivePlayMode() === 'CONCENTRATION_PRIZE_MATCH';
     for (const tile of tiles) {
       tile.tvTwist = 'NONE';
+      tile.tvTwistV9 = undefined;
+      tile.vipId = undefined;
+      tile.isLiveWireLocked = false;
+      tile.isSpotlightTile = false;
+      tile.dominoGroupId = undefined;
       tile.isVaultLocked = false;
       tile.isTopologyLocked = false;
       tile.keyholderProtectedTurns = 0;
@@ -1228,6 +2298,7 @@ export class BoardTwistsEngineV7 {
       vaultTile.tvTwist = 'LOCKED_VAULT';
       vaultTile.isVaultLocked = true;
       vaultTile.baseChips = 500;
+      vaultTile.nominalBaseChips = 500;
       vaultTile.hasAmberTruce = false;
       assigned.add(vaultTile.index);
     }
@@ -1285,6 +2356,7 @@ export class BoardTwistsEngineV7 {
     const placeBlindCategoryOn = (t: BoardTileNodeV7): void => {
       t.tvTwist = 'BLIND_CATEGORY';
       t.baseChips = 600;
+      t.nominalBaseChips = 600;
       t.blindCategoryHidden = true;
     };
     const placeCurtainOn = (t: BoardTileNodeV7, slotIdx: number): void => {
@@ -1405,6 +2477,34 @@ export class BoardTwistsEngineV7 {
     this.seedBoardPlayModeState(tiles, waveNumber);
     this.seedUnlockTopologyState(tiles);
 
+    // 6b. Apply R7 Anti-Repetition Board Mode (`LOUVER_SHUTTER`, `BLIND_PURSE`, `BLACKOUT_VAULT`, `LIVE_WIRE_FUSE`, etc.)
+    if (!this.context.isBlitzPhase && isR7BoardPlayModeV9(this.activeBoardModeV9)) {
+      const r7Init = applyBoardPlayModeV9(tiles, this.activeBoardModeV9, {
+        boardId: this.context.boardId,
+        seed: hashBase,
+        turnNumber: this.context.turnNumber ?? 1,
+        reset: true,
+      });
+      if (r7Init.highVoltIndices) {
+        this.blackoutHighVoltIndices = new Set(r7Init.highVoltIndices);
+      }
+      if (r7Init.shuffledEnvelopes) {
+        this.blindPurseEnvelopes = [...r7Init.shuffledEnvelopes];
+      }
+    }
+
+    // 6c. Seed 1–2 VIP Celebrity Bluff Squares (`tile.tvTwistV9 = 'VIP_BLUFF'`, keeping `tile.tvTwist = 'NONE'`)
+    if (!this.context.isBlitzPhase && playable.length >= 6) {
+      const vipBudgetLeft = Math.max(1, Math.min(2, maxVisibleTwists - visibleTwistsPlaced + 1));
+      const desiredVipCount: 1 | 2 = vipBudgetLeft >= 2 && playable.length >= 12 ? 2 : 1;
+      seedVipBluffTilesOnTiles(tiles, {
+        count: desiredVipCount,
+        seed: hashBase + 911,
+        season: this.context.season,
+        excludeBlitz: this.context.isBlitzPhase,
+      });
+    }
+
     // 7. Turn-1 Mode-Signature Openness Guarantee (`BIG_WHEEL_SHOWCASE` & `PRESS_YOUR_LUCK_GREMLIN`):
     // Even under `PYRAMID_CLIMB`, `KEY_AND_SAFE`, or `CENTER_STARBURST`, guarantee >= 2 signature
     // Wheel / Gremlin squares are immediately clickable on Turn 1!
@@ -1451,6 +2551,49 @@ export class BoardTwistsEngineV7 {
     );
   }
 
+  public getActiveBoardModeV9(): BoardPlayModeV9 {
+    return this.activeBoardModeV9;
+  }
+
+  public getPressureCookerMult(): number {
+    return getPressureCookerMultiplierV9(this.pressureCookerStreak);
+  }
+
+  public getBlackoutHighVoltIndices(): ReadonlySet<number> {
+    return this.blackoutHighVoltIndices;
+  }
+
+  public getBlindPurseRemainingEnvelopes(tiles: readonly BoardTileNodeV7[]): readonly number[] {
+    return tiles
+      .filter((t) => (t.state === 'OPEN' || t.state === 'BLITZ_SURVIVOR') && t.mysteryCashHidden)
+      .map((t) => t.baseChips)
+      .sort((a, b) => b - a);
+  }
+
+  public getBoardModeRuleBannerV9(): BoardModeRuleBannerV9 {
+    const mode = this.getActiveBoardModeV9();
+    const base = BOARD_MODE_RULE_BANNERS_V9[mode] ?? BOARD_MODE_RULE_BANNERS_V9.CLASSIC_TOTE;
+    const topo = this.getActiveUnlockTopology();
+    if (topo === 'CLASSIC_OPEN' || isR7BoardPlayModeV9(mode)) {
+      return {
+        ...base,
+        compactTitle: base.compactTitle ?? base.modeTitle,
+        compactRuleSummary: base.compactRuleSummary ?? base.ruleSummary,
+        unlockTopology: topo,
+      };
+    }
+    const topoSpec = BOARD_UNLOCK_TOPOLOGY_SPECS_V7[topo];
+    return {
+      ...base,
+      modeTitle: `${base.modeTitle} · ${topoSpec.badge}`,
+      ruleSummary: `${topoSpec.shortRule} ${base.ruleSummary}`,
+      compactTitle: `${base.compactTitle ?? base.modeTitle} · ${topoSpec.badge}`,
+      compactRuleSummary: `${topoSpec.compactRule} · ${base.compactRuleSummary ?? base.ruleSummary}`,
+      unlockTopology: topo,
+      topologyBadge: topoSpec.badge,
+    };
+  }
+
   public getActiveUnlockTopology(): BoardUnlockTopologyV7 {
     if (this.context.isBlitzPhase) return 'CLASSIC_OPEN';
     return this.context.unlockTopology ?? 'CLASSIC_OPEN';
@@ -1486,18 +2629,23 @@ export class BoardTwistsEngineV7 {
   }
 
   private ensureMinimumOpenTopologyTiles(tiles: BoardTileNodeV7[], minOpen = 3): void {
+    // LIVE_WIRE_FUSE starts with strictly 1 starter tile open (`minOpen = 1` enforced by Emergency Circuit Breaker)!
+    const effectiveMinOpen = this.activeBoardModeV9 === 'LIVE_WIRE_FUSE' ? 1 : minOpen;
     const playable = tiles.filter((t) => t.state === 'OPEN' || t.state === 'BLITZ_SURVIVOR');
-    const currentlyAvailable = playable.filter((t) => !t.isVaultLocked && !t.isTopologyLocked);
-    if (currentlyAvailable.length >= Math.min(minOpen, playable.length)) return;
+    const currentlyAvailable = playable.filter(
+      (t) => !t.isVaultLocked && !t.isTopologyLocked && !t.isLiveWireLocked,
+    );
+    if (currentlyAvailable.length >= Math.min(effectiveMinOpen, playable.length)) return;
 
     const lockedCandidates = playable
-      .filter((t) => t.isTopologyLocked && !t.isVaultLocked)
+      .filter((t) => (t.isTopologyLocked || t.isLiveWireLocked) && !t.isVaultLocked)
       .sort((a, b) => b.z - a.z || Math.hypot(a.x, a.z) - Math.hypot(b.x, b.z) || a.index - b.index);
 
-    let need = Math.min(minOpen, playable.length) - currentlyAvailable.length;
+    let need = Math.min(effectiveMinOpen, playable.length) - currentlyAvailable.length;
     for (const cand of lockedCandidates) {
       if (need <= 0) break;
       cand.isTopologyLocked = false;
+      cand.isLiveWireLocked = false;
       need--;
     }
   }
@@ -1696,12 +2844,28 @@ export class BoardTwistsEngineV7 {
     if (tile.tvTwist === 'MYSTERY_CASH' && tile.mysteryCashHidden) {
       tile.mysteryCashHidden = false;
       const cash = this.mysteryCashAmounts.get(tileIndex) ?? 400;
-      tile.baseChips = cash;
+      tile.nominalBaseChips = cash;
+      tile.baseChips = this.context.isAct3Showdown
+        ? Math.min(900, Math.round((cash * 1.5) / 50) * 50)
+        : cash;
       this.recomputeBoardModifiers(tiles);
       return {
         wasBlindCategory: false,
         wasMysteryCash: true,
         revealedCash: cash,
+      };
+    }
+    if (tile.blindCategoryHidden || tile.mysteryCashHidden) {
+      const wasBlindCategory = Boolean(tile.blindCategoryHidden);
+      const wasMysteryCash = Boolean(tile.mysteryCashHidden);
+      tile.blindCategoryHidden = false;
+      tile.mysteryCashHidden = false;
+      this.recomputeBoardModifiers(tiles);
+      return {
+        wasBlindCategory,
+        wasMysteryCash,
+        revealedCategory: wasBlindCategory ? tile.category : undefined,
+        revealedCash: wasMysteryCash ? tile.baseChips : undefined,
       };
     }
     return { wasBlindCategory: false, wasMysteryCash: false };
@@ -1716,6 +2880,7 @@ export class BoardTwistsEngineV7 {
     for (const t of tiles) {
       if ((t.state === 'OPEN' || t.state === 'BLITZ_SURVIVOR') && !this.act2BoostedTiles.has(t)) {
         this.act2BoostedTiles.add(t);
+        t.nominalBaseChips = t.nominalBaseChips ?? t.baseChips;
         t.baseChips = Math.min(900, Math.round((t.baseChips * 1.5) / 50) * 50);
       }
     }
@@ -1737,6 +2902,8 @@ export class BoardTwistsEngineV7 {
   private seedBoardPlayModeState(tiles: BoardTileNodeV7[], waveNumber: number): void {
     this.eyeGuessBadges.clear();
     this.awardedTicTacLines.clear();
+    this.awardedDominoGroups.clear();
+    this.awardedMarqueeLines.clear();
     if (waveNumber <= 1) {
       this.coastToCoastAwarded = false;
     }
@@ -2027,13 +3194,81 @@ export class BoardTwistsEngineV7 {
   }
 
   /**
-   * Evaluates all 6 distinct 1960s Board Gameplay Modes immediately after a Player claim!
+   * Evaluates v9 R7 board modes (`LOUVER_SHUTTER`, `BLIND_PURSE`, `BLACKOUT_VAULT`,
+   * `LIVE_WIRE_FUSE`, `SHIFTING_SPOTLIGHT`, `GOLDEN_DOMINO_CASCADE`, `PRESSURE_COOKER`,
+   * `HOLLYWOOD_MARQUEE_LINE`) or delegates to v7 for both Player and Rival turns.
+   */
+  public resolvePostTurnBoardModeV9(
+    claimedIdx: number,
+    tiles: BoardTileNodeV7[],
+    actor: 'PLAYER' | 'RIVAL',
+    scored: boolean,
+  ): BoardModePostClaimResultV9 {
+    const mode = this.getActiveBoardModeV9();
+    if (isR7BoardPlayModeV9(mode)) {
+      const stateRef: ResolvePostTurnEngineStateV9 = {
+        pressureCookerStreak: this.pressureCookerStreak,
+        awardedDominoGroups: this.awardedDominoGroups,
+        awardedMarqueeLines: this.awardedMarqueeLines,
+      };
+      const res = resolvePostTurnBoardModeV9({
+        tiles,
+        mode,
+        claimedIdx,
+        actor,
+        scored,
+        boardId: this.context.boardId,
+        turnNumber: this.context.turnNumber ?? this.gimmick.turnCounter + 1,
+        seed: this.computeDeterministicBoardHash(this.gimmick.turnCounter * 43 + claimedIdx * 17),
+        engineState: stateRef,
+      });
+      this.pressureCookerStreak = stateRef.pressureCookerStreak;
+      this.recomputeBoardModifiers(tiles);
+      return res;
+    }
+
+    if (actor === 'PLAYER') {
+      const v7Res = this.evaluateBoardModePostClaim(claimedIdx, tiles, scored);
+      return {
+        ...v7Res,
+        modeV7Fallback: v7Res.mode,
+      };
+    }
+
+    return {
+      mode,
+      modeV7Fallback: toV7BoardPlayModeFallback(mode),
+      bonusCash: 0,
+      rivalStealCash: 0,
+      multAdd: 0,
+      bannerHeadline: null,
+    };
+  }
+
+  /**
+   * Evaluates all 8 v7 Board Gameplay Modes (and R7 modes via safe `CLASSIC_TOTE` fallback)
+   * immediately after a Player claim!
    */
   public evaluateBoardModePostClaim(
     claimedIdx: number,
     tiles: BoardTileNodeV7[],
     scored: boolean,
   ): BoardModePostClaimResultV7 {
+    if (isR7BoardPlayModeV9(this.activeBoardModeV9)) {
+      const r9 = this.resolvePostTurnBoardModeV9(claimedIdx, tiles, 'PLAYER', scored);
+      return {
+        mode: r9.modeV7Fallback,
+        bonusCash: r9.bonusCash,
+        rivalStealCash: r9.rivalStealCash,
+        multAdd: r9.multAdd,
+        bannerHeadline: r9.bannerHeadline,
+        highlightedTileIndices: r9.highlightedTileIndices,
+        earnedGremlinSpins: r9.earnedGremlinSpins,
+        triggerBigWheel: r9.triggerBigWheel,
+        matchedPrize: r9.matchedPrize,
+      };
+    }
+
     const mode = this.getActivePlayMode();
     const tile = tiles.find((t) => t.index === claimedIdx);
     if (!tile) {
@@ -2479,12 +3714,17 @@ export class BoardTwistsEngineV7 {
       }
       case 'WILD_CATEGORY_SWAP':
       default: {
-        const weakCats = this.getEffectiveWeakCategories();
-        const fallbackPool = weakCats.length > 0 ? weakCats : ALL_CATEGORIES_V7;
+        const allowedPool = this.getAllowedCategoryPoolV9();
+        const eligibleWeak = this.getEligibleWeakCategoriesV9();
         const scoutedSet = new Set<CategoryIdV7>(this.context.scoutedWeakCategories ?? []);
+        const deterministicPick =
+          allowedPool[(tileIndex + curtainNumber * 3 + 5) % allowedPool.length] ??
+          tile?.category ??
+          ALL_CATEGORIES_V7[0];
         const candidateCat =
-          fallbackPool.find((c) => c !== tile?.category) ??
-          ALL_CATEGORIES_V7[(tileIndex + curtainNumber * 3 + 5) % ALL_CATEGORIES_V7.length];
+          eligibleWeak.find((c) => c !== tile?.category) ??
+          allowedPool.find((c) => c !== tile?.category) ??
+          deterministicPick;
         if (applyMutations && tile) {
           tile.category = candidateCat;
           tile.domain = CATEGORY_TO_DOMAIN_V7[candidateCat];
@@ -2582,9 +3822,9 @@ export class BoardTwistsEngineV7 {
   ): CategoryIdV7 | null {
     const tile = tiles.find((t) => t.index === tileIndex);
     if (!tile || tile.tvTwist !== 'OPPONENT_CHOICE') return null;
-    const weakCats = this.getEffectiveWeakCategories();
-    if (weakCats.length === 0) return null;
-    const chosenWeak = weakCats[(tileIndex + this.gimmick.turnCounter) % weakCats.length];
+    const eligibleWeak = this.getEligibleWeakCategoriesV9();
+    if (eligibleWeak.length === 0) return null;
+    const chosenWeak = eligibleWeak[(tileIndex + this.gimmick.turnCounter) % eligibleWeak.length];
     tile.category = chosenWeak;
     tile.domain = CATEGORY_TO_DOMAIN_V7[chosenWeak];
     tile.isWheelhouse = true;
@@ -2635,11 +3875,39 @@ export class BoardTwistsEngineV7 {
                 ? 0
                 : -1;
         }
+        this.gimmick.lastGimmickSummary =
+          this.gimmick.crossfaderPosition === -1
+            ? 'Crossfader -> Left Deck (+0.35x)'
+            : this.gimmick.crossfaderPosition === 1
+              ? 'Crossfader -> Right Deck (+0.35x)'
+              : 'Crossfader -> Center Mix (+0.20x)';
+        break;
+      }
+
+      case 'BOARD_02_JUBILEE_HEX_BRIDGE': {
+        const nextPolarity = (((this.gimmick.bridgePolarityPhase ?? 0) + 1) % 3) as 0 | 1 | 2;
+        this.gimmick.bridgePolarityPhase = nextPolarity;
+        this.gimmick.lastGimmickSummary =
+          nextPolarity === 1
+            ? 'Bridge Polarity -> Left Bank (+0.25x)'
+            : nextPolarity === 2
+              ? 'Bridge Polarity -> Right Bank (+0.25x)'
+              : 'Bridge Polarity -> Center Spine (+0.25x)';
         break;
       }
 
       case 'BOARD_03_VAUDEVILLE_GEAR_TRAIN': {
         this.gimmick.gearPhase = (this.gimmick.gearPhase + 1) % 3;
+        this.gimmick.lastGimmickSummary = `Pop-Art Wheel Phase ${this.gimmick.gearPhase + 1}/3 (+0.40x)`;
+        break;
+      }
+
+      case 'BOARD_04_MAHOGANY_SWITCHBOARD': {
+        const nextDomainIdx =
+          ((this.gimmick.switchboardDomainIndex ?? 0) + 1) % DOMAIN_CYCLE_V7.length;
+        this.gimmick.switchboardDomainIndex = nextDomainIdx;
+        const patchedDomain = DOMAIN_CYCLE_V7[nextDomainIdx];
+        this.gimmick.lastGimmickSummary = `Crossbar Patch -> ${patchedDomain} (+0.30x & +$50)`;
         break;
       }
 
@@ -2647,11 +3915,13 @@ export class BoardTwistsEngineV7 {
         // Pass-Spin Brass Paddle advances hot-spot to next open tile and increments pass counter
         this.gimmick.spinPassesUsed += 1;
         this.advanceLarsonHotSpot(tiles, 3);
+        this.gimmick.lastGimmickSummary = `Hot-Spot Shifted -> Tile #${this.gimmick.larsonHotTileIndex + 1} (+0.50x)`;
         break;
       }
 
       case 'BOARD_06_BOARDWALK_PINBALL': {
         this.gimmick.chargedBumperIndex = (this.gimmick.chargedBumperIndex + 1) % 3;
+        this.gimmick.lastGimmickSummary = `Charged Bumper #${this.gimmick.chargedBumperIndex + 1} (+0.35x)`;
         break;
       }
 
@@ -2659,6 +3929,7 @@ export class BoardTwistsEngineV7 {
         // Sabotage Shoe burns a low card (+3 pips, wrapping cleanly past 21 to 6)
         const nextSum = this.gimmick.baccaratShoeTotal + 3;
         this.gimmick.baccaratShoeTotal = nextSum > 21 ? 6 + (nextSum - 22) : nextSum;
+        this.gimmick.lastGimmickSummary = `Baccarat Shoe -> ${this.gimmick.baccaratShoeTotal} Pips`;
         break;
       }
 
@@ -2667,6 +3938,7 @@ export class BoardTwistsEngineV7 {
         if (this.gimmick.sundialAngleRad > Math.PI) {
           this.gimmick.sundialAngleRad -= Math.PI * 2;
         }
+        this.gimmick.lastGimmickSummary = 'Meridian Sundial Swept (+0.40x Arc)';
         break;
       }
 
@@ -2675,14 +3947,60 @@ export class BoardTwistsEngineV7 {
         const nextDomain = DOMAIN_CYCLE_V7[(idx + 1) % DOMAIN_CYCLE_V7.length];
         this.gimmick.tunedUhfDomain = nextDomain;
         for (const t of tiles) {
-          t.hasUhfHalo = t.domain === nextDomain && (t.state === 'OPEN' || t.state === 'BLITZ_SURVIVOR');
+          t.hasUhfHalo =
+            t.domain === nextDomain && (t.state === 'OPEN' || t.state === 'BLITZ_SURVIVOR');
         }
+        this.gimmick.lastGimmickSummary = `UHF Carrier -> ${nextDomain} (+0.40x)`;
+        break;
+      }
+
+      case 'BOARD_10_SOVEREIGN_ZIGGURAT': {
+        const nextTier = (((this.gimmick.zigguratFocusTier ?? 0) + 1) % 3) as 0 | 1 | 2;
+        this.gimmick.zigguratFocusTier = nextTier;
+        this.gimmick.lastGimmickSummary =
+          nextTier === 0
+            ? 'Astrolabe -> Apex Crown Tier (+0.25x & +$50)'
+            : nextTier === 1
+              ? 'Astrolabe -> Mid Terrace (+0.25x & +$50)'
+              : 'Astrolabe -> Base Steps (+0.25x & +$50)';
+        break;
+      }
+
+      case 'BOARD_11_WHEW_GAUNTLET': {
+        const nextCol = ((this.gimmick.gauntletReconColumn ?? 0) + 1) % 5;
+        this.gimmick.gauntletReconColumn = nextCol;
+        let clearedHotSpots = 0;
+        for (const t of tiles) {
+          const tileCol = clamp(Math.round((t.x + 1.44) / 0.72), 0, 4);
+          if (tileCol === nextCol && t.isRiggedSolenoid) {
+            t.isRiggedSolenoid = false;
+            clearedHotSpots++;
+          }
+        }
+        this.gimmick.lastGimmickSummary =
+          clearedHotSpots > 0
+            ? `Recon Lane ${nextCol + 1}/5 Swept & Boosted (+0.35x)`
+            : `Recon Lane ${nextCol + 1}/5 Boosted (+0.35x & +$50)`;
+        break;
+      }
+
+      case 'BOARD_12_PENDULUM_BALANCE': {
+        const currTare = this.gimmick.pendulumTareOffsetDeg ?? 0;
+        const nextTare = currTare === 0 ? 2.4 : currTare > 0 ? -2.4 : 0;
+        this.gimmick.pendulumTareOffsetDeg = nextTare;
+        this.syncPendulumTilt(tiles);
+        this.gimmick.lastGimmickSummary =
+          nextTare > 0
+            ? 'Fulcrum Tare -> Left Arm Lighter (+0.50x)'
+            : nextTare < 0
+              ? 'Fulcrum Tare -> Right Arm Lighter (+0.50x)'
+              : 'Fulcrum Tare -> Zeroed Equilibrium';
         break;
       }
 
       default: {
-        // Other boards pulse their kinetic mechanism and advance turn phase shift
         this.gimmick.gearPhase = (this.gimmick.gearPhase + 1) % 3;
+        this.gimmick.lastGimmickSummary = `Mechanism Phase ${this.gimmick.gearPhase + 1}/3`;
         break;
       }
     }
@@ -2735,7 +4053,11 @@ export class BoardTwistsEngineV7 {
       }
     }
     const diff = rightMass - leftMass;
-    this.gimmick.pendulumTiltDeg = clamp(diff * 1.65, -4.5, 4.5);
+    this.gimmick.pendulumTiltDeg = clamp(
+      diff * 1.65 + (this.gimmick.pendulumTareOffsetDeg ?? 0),
+      -4.5,
+      4.5,
+    );
     return this.gimmick.pendulumTiltDeg;
   }
 
@@ -2905,6 +4227,24 @@ export class BoardTwistsEngineV7 {
       reasons.push('🔦 Roving Spotlight (+0.20x +$50)');
     }
 
+    // 5c. v9 R7 Shifting Spotlight & Pressure Cooker Multipliers
+    if (this.activeBoardModeV9 === 'SHIFTING_SPOTLIGHT' && tile.isSpotlightTile) {
+      const turnNum = this.context.turnNumber ?? this.gimmick.turnCounter + 1;
+      const spotBonus = turnNum >= 7 ? 1.0 : 0.5;
+      rawMultBonus += spotBonus;
+      reasons.push(`🔦 Shifting Spotlight (+${spotBonus.toFixed(2)}x)`);
+    }
+
+    let pressureCookerMult: number | undefined;
+    if (this.activeBoardModeV9 === 'PRESSURE_COOKER') {
+      pressureCookerMult = this.getPressureCookerMult();
+      if (pressureCookerMult > 1) {
+        const pressureAdd = pressureCookerMult - 1;
+        rawMultBonus += pressureAdd;
+        reasons.push(`♨️ Pressure Cooker ×${pressureCookerMult.toFixed(2)}`);
+      }
+    }
+
     // 6. Primary Episode Twist & Spatial Board Mechanics (All 16 Twists Wired!)
     switch (twistId) {
       case 'TWIST_01_CROSSFADER_BOOST': {
@@ -2938,6 +4278,22 @@ export class BoardTwistsEngineV7 {
           rawMultBonus += 0.15;
           reasons.push('Bridge Bank Anchor +0.15x');
         }
+        const pol = this.gimmick.bridgePolarityPhase ?? 0;
+        const polarityMatch =
+          (pol === 1 && tile.x < -0.45) ||
+          (pol === 2 && tile.x > 0.45) ||
+          (pol === 0 && Math.abs(tile.x) <= 0.45);
+        if (polarityMatch) {
+          rawMultBonus += 0.25;
+          bonusChips += 35;
+          reasons.push(
+            pol === 1
+              ? 'Polarity Left Bank +0.25x'
+              : pol === 2
+                ? 'Polarity Right Bank +0.25x'
+                : 'Polarity Center Spine +0.25x',
+          );
+        }
         break;
       }
 
@@ -2963,6 +4319,13 @@ export class BoardTwistsEngineV7 {
           reasons.push('Supervisory Relay Pair +0.45x');
         } else {
           bonusChips += 25;
+        }
+        const activePatchDomain =
+          DOMAIN_CYCLE_V7[(this.gimmick.switchboardDomainIndex ?? 0) % DOMAIN_CYCLE_V7.length];
+        if (tile.domain === activePatchDomain) {
+          rawMultBonus += 0.3;
+          bonusChips += 50;
+          reasons.push(`Crossbar ${activePatchDomain} Patch +0.30x`);
         }
         break;
       }
@@ -3055,6 +4418,16 @@ export class BoardTwistsEngineV7 {
           rawMultBonus += 0.15;
           reasons.push('Ziggurat Base Step +0.15x');
         }
+        const focusTier = this.gimmick.zigguratFocusTier ?? 0;
+        const tierMatchesFocus =
+          (focusTier === 0 && tile.tierY >= 0.31) ||
+          (focusTier === 1 && tile.tierY >= 0.21 && tile.tierY < 0.31) ||
+          (focusTier === 2 && tile.tierY < 0.21);
+        if (tierMatchesFocus) {
+          rawMultBonus += 0.25;
+          bonusChips += 50;
+          reasons.push('Astrolabe Tier Lock +0.25x');
+        }
         break;
       }
 
@@ -3071,6 +4444,13 @@ export class BoardTwistsEngineV7 {
           rawMultBonus += 0.45;
           bonusChips += 65;
           reasons.push('Blockade Flank Breach +0.45x');
+        }
+        const reconCol = (this.gimmick.gauntletReconColumn ?? 0) % 5;
+        const tileCol = clamp(Math.round((tile.x + 1.44) / 0.72), 0, 4);
+        if (tileCol === reconCol) {
+          rawMultBonus += 0.35;
+          bonusChips += 50;
+          reasons.push(`Recon Lane ${reconCol + 1} +0.35x`);
         }
         break;
       }
@@ -3105,13 +4485,43 @@ export class BoardTwistsEngineV7 {
       case 'TWIST_14_RIVAL_WHEELHOUSE_BOUNTY':
       case 'TWIST_15_SOLENOID_RIGGED_GAMBIT':
       default: {
-        // Secondary subtle board synergy when a cast-driven twist (13/14/15) runs on a kinetic board:
+        // Secondary live board gimmick synergy when a cast-driven twist (13/14/15) runs on any kinetic board:
         if (boardId === 'BOARD_01_FUNK_CROSSFADER' && Math.sign(tile.x) === this.gimmick.crossfaderPosition) {
           bonusChips += 25;
+        } else if (boardId === 'BOARD_02_JUBILEE_HEX_BRIDGE') {
+          const pol = this.gimmick.bridgePolarityPhase ?? 0;
+          if ((pol === 1 && tile.x < -0.45) || (pol === 2 && tile.x > 0.45) || (pol === 0 && Math.abs(tile.x) <= 0.45)) {
+            rawMultBonus += 0.2;
+            bonusChips += 30;
+          }
+        } else if (boardId === 'BOARD_04_MAHOGANY_SWITCHBOARD') {
+          const activePatchDomain =
+            DOMAIN_CYCLE_V7[(this.gimmick.switchboardDomainIndex ?? 0) % DOMAIN_CYCLE_V7.length];
+          if (tile.domain === activePatchDomain) {
+            rawMultBonus += 0.2;
+            bonusChips += 35;
+          }
+        } else if (boardId === 'BOARD_10_SOVEREIGN_ZIGGURAT') {
+          const focusTier = this.gimmick.zigguratFocusTier ?? 0;
+          if (
+            (focusTier === 0 && tile.tierY >= 0.31) ||
+            (focusTier === 1 && tile.tierY >= 0.21 && tile.tierY < 0.31) ||
+            (focusTier === 2 && tile.tierY < 0.21)
+          ) {
+            rawMultBonus += 0.2;
+            bonusChips += 35;
+          }
+        } else if (boardId === 'BOARD_11_WHEW_GAUNTLET') {
+          const reconCol = (this.gimmick.gauntletReconColumn ?? 0) % 5;
+          if (clamp(Math.round((tile.x + 1.44) / 0.72), 0, 4) === reconCol) {
+            rawMultBonus += 0.25;
+            bonusChips += 35;
+          }
         } else if (boardId === 'BOARD_12_PENDULUM_BALANCE') {
           const tilt = this.gimmick.pendulumTiltDeg;
           if ((tilt < -0.5 && tile.x > 0.12) || (tilt > 0.5 && tile.x < -0.12)) {
-            bonusChips += 30;
+            rawMultBonus += 0.25;
+            bonusChips += 35;
           }
         }
         break;
@@ -3146,6 +4556,8 @@ export class BoardTwistsEngineV7 {
       hitRivalWheelhouse,
       triggeredRiggedSolenoid,
       tvTwist,
+      tvTwistV9: tile.tvTwistV9 ?? tvTwist,
+      ...(pressureCookerMult !== undefined ? { pressureCookerMult } : {}),
       isVaultLocked,
       activeReasons: reasons,
     };
@@ -3269,6 +4681,7 @@ export class BoardTwistsEngineV7 {
         (t.state === 'OPEN' || t.state === 'BLITZ_SURVIVOR') &&
         !t.isVaultLocked &&
         !t.isTopologyLocked &&
+        !t.isLiveWireLocked &&
         !(t.keyholderProtectedTurns && t.keyholderProtectedTurns > 0),
     );
     const fallbackOpen =
@@ -3278,7 +4691,8 @@ export class BoardTwistsEngineV7 {
             (t) =>
               (t.state === 'OPEN' || t.state === 'BLITZ_SURVIVOR') &&
               !t.isVaultLocked &&
-              !t.isTopologyLocked,
+              !t.isTopologyLocked &&
+              !t.isLiveWireLocked,
           );
     if (fallbackOpen.length === 0) return null;
 
@@ -3518,12 +4932,27 @@ export class BoardTwistsEngineV7 {
     return bestTile.index;
   }
 
+  public getCpuConcentrationBonusSummary(): {
+    readonly bonusCash: number;
+    readonly stealCash: number;
+    readonly awardedPackagesCount: number;
+  } {
+    return {
+      bonusCash: this.cpuConcentrationBonusCash,
+      stealCash: this.cpuConcentrationStealCash,
+      awardedPackagesCount: this.awardedPrizePackages.size,
+    };
+  }
+
   public commitRivalTileClaim(
     tileIndex: number,
     tiles: BoardTileNodeV7[],
   ): {
     readonly revealedConcentrationPrize?: string;
     readonly matchedPrize?: string;
+    readonly cpuBonusCash?: number;
+    readonly cpuStealCash?: number;
+    readonly highlightedTileIndices?: readonly number[];
   } {
     const target = tiles.find((t) => t.index === tileIndex);
     if (!target) return {};
@@ -3533,6 +4962,9 @@ export class BoardTwistsEngineV7 {
 
     let revealedConcentrationPrize: string | undefined;
     let matchedPrize: string | undefined;
+    let cpuBonusCash = 0;
+    let cpuStealCash = 0;
+    let highlightedTileIndices: number[] | undefined;
 
     if (this.getActivePlayMode() === 'CONCENTRATION_PRIZE_MATCH') {
       const prize = this.concentrationPrizes.get(target.index) ?? 'NONE';
@@ -3543,23 +4975,83 @@ export class BoardTwistsEngineV7 {
         this.revealedConcentrationTiles.add(target.index);
         this.concentrationTileClaimer.set(target.index, 'RIVAL');
 
-        if (prize !== 'TAKE_STEAL' && !this.awardedPrizePackages.has(prize)) {
-          const playerSibling = Array.from(this.concentrationPrizes.entries()).find(
-            ([idx, p]) =>
-              idx !== target.index &&
-              p === prize &&
-              (tiles.find((t) => t.index === idx)?.state === 'CLAIMED_PLAYER' ||
-                this.concentrationTileClaimer.get(idx) === 'PLAYER'),
+        const siblingEntries = Array.from(this.concentrationPrizes.entries()).filter(
+          ([idx, p]) => idx !== target.index && p === prize,
+        );
+        const playerSibling = siblingEntries.find(([idx]) => {
+          const sibTile = tiles.find((t) => t.index === idx);
+          return (
+            sibTile?.state === 'CLAIMED_PLAYER' ||
+            this.concentrationTileClaimer.get(idx) === 'PLAYER'
           );
-          if (playerSibling) {
+        });
+        const matchingRevealed = Array.from(this.revealedConcentrationTiles).filter(
+          (idx) => this.concentrationPrizes.get(idx) === prize,
+        );
+
+        if (prize === 'TAKE_STEAL') {
+          if (playerSibling && !this.awardedPrizePackages.has(prize)) {
+            this.awardedPrizePackages.add(prize);
+            const sibTile = tiles.find((t) => t.index === playerSibling[0]);
+            if (sibTile && !sibTile.revealedConcentrationPrize) {
+              sibTile.revealedConcentrationPrize = prizeName;
+            }
             matchedPrize = `PRIZE MATCH STEAL: ${prizeName}`;
+            cpuBonusCash = 250;
+            cpuStealCash = 200;
+            highlightedTileIndices = [playerSibling[0], target.index];
+          } else {
+            if (matchingRevealed.length >= 2 && !this.awardedPrizePackages.has(prize)) {
+              this.awardedPrizePackages.add(prize);
+              matchedPrize = prizeName;
+              cpuBonusCash = 250;
+              highlightedTileIndices = matchingRevealed;
+            } else {
+              highlightedTileIndices = [target.index];
+            }
+            cpuStealCash = 200;
           }
+        } else if (!this.awardedPrizePackages.has(prize)) {
+          if (playerSibling) {
+            this.awardedPrizePackages.add(prize);
+            const sibTile = tiles.find((t) => t.index === playerSibling[0]);
+            if (sibTile && !sibTile.revealedConcentrationPrize) {
+              sibTile.revealedConcentrationPrize = prizeName;
+            }
+            matchedPrize = `PRIZE MATCH STEAL: ${prizeName}`;
+            cpuBonusCash = 250;
+            highlightedTileIndices = [playerSibling[0], target.index];
+          } else if (matchingRevealed.length >= 2) {
+            this.awardedPrizePackages.add(prize);
+            matchedPrize = prizeName;
+            cpuBonusCash = 500;
+            highlightedTileIndices = matchingRevealed;
+          } else {
+            cpuBonusCash = 75;
+            highlightedTileIndices = [target.index];
+          }
+        }
+
+        if (cpuBonusCash > 0) {
+          this.cpuConcentrationBonusCash += cpuBonusCash;
+        }
+        if (cpuStealCash > 0) {
+          this.cpuConcentrationStealCash += cpuStealCash;
         }
       }
     }
 
     this.advanceTurnState(tiles, target);
-    return { revealedConcentrationPrize, matchedPrize };
+    if (isR7BoardPlayModeV9(this.activeBoardModeV9)) {
+      this.resolvePostTurnBoardModeV9(tileIndex, tiles, 'RIVAL', true);
+    }
+    return {
+      revealedConcentrationPrize,
+      matchedPrize,
+      ...(cpuBonusCash > 0 ? { cpuBonusCash } : {}),
+      ...(cpuStealCash > 0 ? { cpuStealCash } : {}),
+      ...(highlightedTileIndices ? { highlightedTileIndices } : {}),
+    };
   }
 
   // --------------------------------------------------------------------------
@@ -3626,6 +5118,10 @@ export class BoardTwistsEngineV7 {
       tile.isRivalTarget = false;
       tile.hasAmberTruce = false;
       tile.isVaultLocked = false;
+      tile.isLiveWireLocked = false;
+      tile.isTopologyLocked = false;
+      tile.isSpotlightTile = false;
+      tile.dominoGroupId = undefined;
       if (survivorSet.has(tile.index)) {
         tile.state = 'BLITZ_SURVIVOR';
         tile.baseChips = Math.max(tile.baseChips, 300);
@@ -3634,6 +5130,8 @@ export class BoardTwistsEngineV7 {
         tile.state = 'RETRACTED';
         tile.isRiggedSolenoid = false;
         tile.tvTwist = 'NONE';
+        tile.tvTwistV9 = undefined;
+        tile.vipId = undefined;
         retractedIndices.push(tile.index);
       }
     }

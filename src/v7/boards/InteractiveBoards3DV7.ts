@@ -14,23 +14,36 @@ import {
   CATEGORY_TO_DOMAIN_V7,
   DOMAIN_SPECS_V7,
   type BoardIdV7,
+  type BoardLoadSpec,
+  type BoardPlayModeV9,
   type BoardTileNodeV7,
   type BoardTwistIdV7,
   type CategoryIdV7,
   type ClassicTvTileTwistV7,
+  type ClassicTvTileTwistV9,
   type DomainIdV7,
   type RivalIdV7,
+  type SeasonIdV7,
+  type SeasonVisualSpecV9,
   type StageWorldIdV7,
+  type VibePackIdV9,
 } from '../contracts_v7';
 import {
   BOARD_MODE_RULE_BANNERS_V7,
+  BOARD_MODE_RULE_BANNERS_V9,
   BOARD_PLAY_MODE_BY_BOARD_V7,
   BoardTwistsEngineV7,
   CLASSIC_TV_TWIST_SPECS_V7,
+  CLASSIC_TV_TWIST_SPECS_V9,
+  applyBoardPlayModeV9,
+  areGoldenDominoAdjacentV9,
+  isR7BoardPlayModeV9,
   type BlitzReRackResultV7,
   type BoardGimmickStateV7,
   type BoardModePostClaimResultV7,
+  type BoardModePostClaimResultV9,
   type BoardModeRuleBannerV7,
+  type BoardModeRuleBannerV9,
   type BoardPlayModeV7,
   type ConcentrationPrizeKindV7,
   type EyeGuessHiddenBadgeV7,
@@ -40,21 +53,30 @@ import {
   type VaultUnlockResultV7,
 } from './BoardTwistsEngineV7';
 import {
+  SEASON_VISUAL_SPECS_V9,
+  VIBE_PACK_CATEGORIES_V9,
+  VIP_CELEB_CATALOG_V9,
+} from '../../v9/ShowroomAndCatalogsV9';
+import {
   createTungstenBulbHaloSprite,
   getAmericanWalnutVeneerTexture,
   getBrushedAnodizedTexture,
   getContactShadowTexture,
-  getDarkLouverToteBedTexture,
   getTungstenBulbHaloTexture,
 } from '../engine/HorologicalCAD';
 
 export {
   BOARD_MODE_RULE_BANNERS_V7,
+  BOARD_MODE_RULE_BANNERS_V9,
   BOARD_PLAY_MODE_BY_BOARD_V7,
   CLASSIC_TV_TWIST_SPECS_V7,
+  CLASSIC_TV_TWIST_SPECS_V9,
   type BoardModePostClaimResultV7,
+  type BoardModePostClaimResultV9,
   type BoardModeRuleBannerV7,
+  type BoardModeRuleBannerV9,
   type BoardPlayModeV7,
+  type BoardPlayModeV9,
   type ConcentrationPrizeKindV7,
   type EyeGuessHiddenBadgeV7,
   type MysteryCurtainOutcomeV7,
@@ -91,7 +113,7 @@ export const LIVING_COLOR_DOMAIN_PALETTE_V7: Record<DomainIdV7, LivingColorDomai
     primaryHexNum: 0xf4a91f,
     deepHex: '#B87404',
     highlightHex: '#FFD25A',
-    headerInkHex: '#0B1D30',
+    headerInkHex: '#1E140E',
     dollarInkHex: '#8C4E00',
     label: 'CULTURE',
   },
@@ -213,10 +235,10 @@ export const BOARD_SPECS_V7: Record<BoardIdV7, BoardSpecV7> = {
     homeStageId: 'STAGE_01_IBC_DAYTIME_FUNK',
     defaultTwistId: 'TWIST_01_CROSSFADER_BOOST',
     gimmickLabel: 'Crossfader Slider',
-    bedHex: 0x0b1d30,
+    bedHex: 0x006b74,
     woodVeneerHex: 0x7b4224,
     brassAccentHex: 0xf4a91f,
-    bakeliteHex: 0x12394a,
+    bakeliteHex: 0x4f2917,
     // Sleek 1966 NBC Studio 6A / CBS TV City 4x3 Tote Console Matrix
     slots: [
       { x: -1.24, z: -0.64, tierY: 0.15, shape: 'CHAMFER_RECT', baseChips: 300 },
@@ -242,10 +264,10 @@ export const BOARD_SPECS_V7: Record<BoardIdV7, BoardSpecV7> = {
     homeStageId: 'STAGE_02_IBC_PRIMETIME_JUBILEE',
     defaultTwistId: 'TWIST_02_HEX_BRIDGE_CHAIN',
     gimmickLabel: 'Bridge Polarity Bus',
-    bedHex: 0x0d3547,
+    bedHex: 0x007b85,
     woodVeneerHex: 0x723a20,
     brassAccentHex: 0xf4a91f,
-    bakeliteHex: 0x0b1d30,
+    bakeliteHex: 0x4f2917,
     // 5 - 4 - 5 staggered honeycomb (14 tiles)
     slots: [
       { x: -1.44, z: -0.68, tierY: 0.15, shape: 'HEX', baseChips: 300 },
@@ -267,16 +289,16 @@ export const BOARD_SPECS_V7: Record<BoardIdV7, BoardSpecV7> = {
 
   BOARD_03_VAUDEVILLE_GEAR_TRAIN: {
     id: 'BOARD_03_VAUDEVILLE_GEAR_TRAIN',
-    playMode: 'CONCENTRATION_PRIZE_MATCH',
+    playMode: 'BIG_WHEEL_SHOWCASE',
     name: '1966 Burbank Pop-Art Prize Deck',
-    subtitle: 'Concentration prize-half trilons + spinning Mondrian Living Color prize wheels',
+    subtitle: 'Big Wheel showcase spins + three spinning Mondrian Living Color prize wheels',
     homeStageId: 'STAGE_03_1926_VAUDEVILLE_PIT',
     defaultTwistId: 'TWIST_03_ESCAPEMENT_TICK_SHIFT',
     gimmickLabel: 'Pop-Art Wheel Release',
-    bedHex: 0x0b1d30,
+    bedHex: 0x6e3b23,
     woodVeneerHex: 0x844424,
     brassAccentHex: 0xf4a91f,
-    bakeliteHex: 0x162d4e,
+    bakeliteHex: 0x006b74,
     slots: makeGridSlots(
       [-1.29, -0.43, 0.43, 1.29],
       [-0.68, 0.0, 0.68],
@@ -294,10 +316,10 @@ export const BOARD_SPECS_V7: Record<BoardIdV7, BoardSpecV7> = {
     homeStageId: 'STAGE_04_1958_ISOLATION_VAULT',
     defaultTwistId: 'TWIST_04_SUPERVISORY_RELAY_PAIR',
     gimmickLabel: 'Supervisory Crossbar Stepper',
-    bedHex: 0x0e3a3d,
+    bedHex: 0x006b74,
     woodVeneerHex: 0x7c3d22,
     brassAccentHex: 0xf4a91f,
-    bakeliteHex: 0x0b1d30,
+    bakeliteHex: 0x4f2917,
     slots: makeGridSlots(
       [-1.29, -0.43, 0.43, 1.29],
       [-0.68, 0.0, 0.68],
@@ -309,16 +331,16 @@ export const BOARD_SPECS_V7: Record<BoardIdV7, BoardSpecV7> = {
 
   BOARD_05_LARSON_SPIN_RING: {
     id: 'BOARD_05_LARSON_SPIN_RING',
-    playMode: 'EYE_GUESS_MEMORY',
-    name: '1967 Apollo Color-Control Memory Ring',
-    subtitle: "Eye Guess '66 2.4s hidden bonus flash + spinning Living Color prize rim",
+    playMode: 'PRESS_YOUR_LUCK_GREMLIN',
+    name: '1967 Apollo Color-Control Spin Ring',
+    subtitle: 'Press Your Luck Gremlin light-board spins + Pass-Spin Brass Paddle',
     homeStageId: 'STAGE_05_1984_LARSON_CRT_LAB',
     defaultTwistId: 'TWIST_05_LARSON_HOT_SPOT',
     gimmickLabel: 'Pass-Spin Brass Paddle',
-    bedHex: 0x0b1d30,
+    bedHex: 0x6e3b23,
     woodVeneerHex: 0x6e3b23,
     brassAccentHex: 0xf4a91f,
-    bakeliteHex: 0x162d4e,
+    bakeliteHex: 0x006b74,
     // 14 perimeter & inner-hub spin tiles (5 top, 2 mid-flank + 2 center hubs, 5 bottom)
     slots: [
       { x: -1.42, z: -0.72, tierY: 0.15, shape: 'CHAMFER_RECT', baseChips: 300 },
@@ -346,10 +368,10 @@ export const BOARD_SPECS_V7: Record<BoardIdV7, BoardSpecV7> = {
     homeStageId: 'STAGE_06_ATLANTIC_CITY_PIER',
     defaultTwistId: 'TWIST_06_PINBALL_BUMPER_RICOCHET',
     gimmickLabel: 'Plunger Bumper Charge',
-    bedHex: 0x0e344b,
+    bedHex: 0x007b85,
     woodVeneerHex: 0x854626,
     brassAccentHex: 0xf4a91f,
-    bakeliteHex: 0x0b1d30,
+    bakeliteHex: 0x4f2917,
     // 13 tiles arranged cleanly around the 3 sprung pop-bumpers at (-0.86,-0.32), (+0.86,-0.32), (0,+0.34)
     slots: [
       { x: -1.42, z: -0.74, tierY: 0.15, shape: 'OCTAGON', baseChips: 300 },
@@ -376,10 +398,10 @@ export const BOARD_SPECS_V7: Record<BoardIdV7, BoardSpecV7> = {
     homeStageId: 'STAGE_07_1969_MONTE_CARLO_CASINO',
     defaultTwistId: 'TWIST_07_BACCARAT_NATURAL_21',
     gimmickLabel: 'Baccarat Sabotage Shoe',
-    bedHex: 0x0c3f37,
+    bedHex: 0x155d3b,
     woodVeneerHex: 0x783920,
     brassAccentHex: 0xf4a91f,
-    bakeliteHex: 0x0b1d30,
+    bakeliteHex: 0x4f2917,
     // Semi-circular casino arc of 12 wedge/chamfer plaques
     slots: [
       { x: -1.36, z: -0.66, tierY: 0.15, shape: 'WEDGE_PLINTH', baseChips: 300 },
@@ -405,10 +427,10 @@ export const BOARD_SPECS_V7: Record<BoardIdV7, BoardSpecV7> = {
     homeStageId: 'STAGE_08_WORLDS_FAIR_GEODESIC',
     defaultTwistId: 'TWIST_08_SOLAR_MERIDIAN_SWEEP',
     gimmickLabel: 'Meridian Sundial Ring',
-    bedHex: 0x0b1d30,
+    bedHex: 0x5c301b,
     woodVeneerHex: 0x744225,
     brassAccentHex: 0xf4a91f,
-    bakeliteHex: 0x163e5e,
+    bakeliteHex: 0x006b74,
     // 12 outer clock-hour dial plinths + 1 elevated central meridian keystone = 13 tiles
     slots: [
       { x: 0.0, z: -0.76, tierY: 0.16, shape: 'WEDGE_PLINTH', baseChips: 300 },
@@ -435,10 +457,10 @@ export const BOARD_SPECS_V7: Record<BoardIdV7, BoardSpecV7> = {
     homeStageId: 'STAGE_09_CHANNEL_83_UHF_BARGE',
     defaultTwistId: 'TWIST_09_PIRATE_CARRIER_LOCK',
     gimmickLabel: 'UHF Carrier Tuning Knob',
-    bedHex: 0x0f3344,
+    bedHex: 0x006b74,
     woodVeneerHex: 0x6a3a24,
     brassAccentHex: 0xf4a91f,
-    bakeliteHex: 0x0b1d30,
+    bakeliteHex: 0x4f2917,
     slots: makeGridSlots(
       [-1.29, -0.43, 0.43, 1.29],
       [-0.68, 0.0, 0.68],
@@ -456,10 +478,10 @@ export const BOARD_SPECS_V7: Record<BoardIdV7, BoardSpecV7> = {
     homeStageId: 'STAGE_10_SOVEREIGN_SANCTUM',
     defaultTwistId: 'TWIST_10_ZIGGURAT_APEX_CROWN',
     gimmickLabel: 'Armillary Crown Astrolabe',
-    bedHex: 0x0b1d30,
+    bedHex: 0x5c301b,
     woodVeneerHex: 0x6e3820,
     brassAccentHex: 0xf4a91f,
-    bakeliteHex: 0x162d4e,
+    bakeliteHex: 0x4f2917,
     // Strictly slopes UPSTAGE (-Z is 0.34m Apex, 0.0 is 0.24m Mid, +Z is 0.14m Front) -> ZERO occlusion!
     slots: [
       // Upstage Apex Crown Row (tierY = 0.34m, 3 Sovereign tiles)
@@ -489,10 +511,10 @@ export const BOARD_SPECS_V7: Record<BoardIdV7, BoardSpecV7> = {
     homeStageId: 'STAGE_05_1984_LARSON_CRT_LAB',
     defaultTwistId: 'TWIST_11_GAUNTLET_BLOCKADE_BREACH',
     gimmickLabel: 'Gauntlet Recon Pulse',
-    bedHex: 0x0b1d30,
+    bedHex: 0x6e3b23,
     woodVeneerHex: 0x7a3d22,
     brassAccentHex: 0xf4a91f,
-    bakeliteHex: 0x162d4e,
+    bakeliteHex: 0x006b74,
     // 3x5 = 15 tiles
     slots: makeGridSlots(
       [-1.44, -0.72, 0.0, 0.72, 1.44],
@@ -511,10 +533,10 @@ export const BOARD_SPECS_V7: Record<BoardIdV7, BoardSpecV7> = {
     homeStageId: 'STAGE_10_SOVEREIGN_SANCTUM',
     defaultTwistId: 'TWIST_12_FULCRUM_EQUILIBRIUM',
     gimmickLabel: 'Fulcrum Tare Detent',
-    bedHex: 0x0e3247,
+    bedHex: 0x007b85,
     woodVeneerHex: 0x753d21,
     brassAccentHex: 0xf4a91f,
-    bakeliteHex: 0x0b1d30,
+    bakeliteHex: 0x4f2917,
     // Symmetric 6 Left + 6 Right tiles mounted directly onto the tilting balance beam!
     slots: [
       { x: -1.36, z: -0.66, tierY: 0.17, shape: 'OCTAGON', baseChips: 300 },
@@ -1201,9 +1223,153 @@ function drawFittedBoldText(
     px -= 2;
   }
   ctx.font = `900 ${px}px ${fontStack}`;
-  ctx.fillText(text, cx, cy);
+  ctx.fillText(text, cx, cy, maxW);
   return px;
 }
+
+let cachedNeutralLouverBedTex: THREE.CanvasTexture | null = null;
+
+/**
+ * Neutral grayscale/ivory 1966 louvered Tote Board shadowbox texture so seasonal
+ * bed and console colors (Cerise-Ruby, Emerald, Royal Cobalt, Peacock Teal) multiply cleanly
+ * without teal channel crushing!
+ */
+function getNeutralLouverToteBedTexture(): THREE.CanvasTexture {
+  if (cachedNeutralLouverBedTex) return cachedNeutralLouverBedTex;
+  const c = document.createElement('canvas');
+  c.width = 512;
+  c.height = 512;
+  const ctx = c.getContext('2d');
+  if (ctx) {
+    const rad = ctx.createRadialGradient(256, 256, 40, 256, 256, 360);
+    rad.addColorStop(0.0, '#FFFFFF');
+    rad.addColorStop(0.7, '#EAE5DC');
+    rad.addColorStop(1.0, '#CFC8BC');
+    ctx.fillStyle = rad;
+    ctx.fillRect(0, 0, 512, 512);
+
+    for (let y = 0; y < 512; y += 8) {
+      ctx.fillStyle = 'rgba(20, 20, 20, 0.28)';
+      ctx.fillRect(0, y, 512, 3);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.14)';
+      ctx.fillRect(0, y + 3, 512, 1.5);
+    }
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+    for (let x = 0; x < 512; x += 32) {
+      ctx.fillRect(x, 0, 2, 512);
+    }
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.anisotropy = 16;
+  cachedNeutralLouverBedTex = tex;
+  return tex;
+}
+
+function drawFourPointStarburst(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  outerR: number,
+  innerR: number,
+  fillHex: string,
+): void {
+  ctx.fillStyle = fillHex;
+  ctx.beginPath();
+  for (let i = 0; i < 8; i++) {
+    const a = (i * Math.PI) / 4;
+    const r = i % 2 === 0 ? outerR : innerR;
+    const px = cx + Math.cos(a) * r;
+    const py = cy + Math.sin(a) * r;
+    if (i === 0) ctx.moveTo(px, py);
+    else ctx.lineTo(px, py);
+  }
+  ctx.closePath();
+  ctx.fill();
+}
+
+export type CanonicalTrilonStyleIdV9 =
+  | 'trilon_acrylite_cream'
+  | 'trilon_cobalt_glass'
+  | 'trilon_atomic_gold'
+  | 'trilon_cerise_checker';
+
+export interface TrilonStyleConfigV9 {
+  readonly id: CanonicalTrilonStyleIdV9;
+  readonly rimHexNum: number | null;
+  readonly coreHexNum: number;
+  readonly faceCenterHex: string;
+  readonly faceMidHex: string;
+  readonly faceEdgeHex: string;
+  readonly headerBgOverride: string | null;
+  readonly frameStrokeOverride: string | null;
+  readonly isCheckerBorder: boolean;
+}
+
+export function normalizeTrilonStyleIdV9(styleId?: string): CanonicalTrilonStyleIdV9 {
+  switch (styleId) {
+    case 'trilon_cobalt_glass':
+    case 'trilon_cbs_cobalt':
+      return 'trilon_cobalt_glass';
+    case 'trilon_atomic_gold':
+      return 'trilon_atomic_gold';
+    case 'trilon_cerise_checker':
+      return 'trilon_cerise_checker';
+    case 'trilon_acrylite_cream':
+    case 'trilon_cream_acrylite':
+    default:
+      return 'trilon_acrylite_cream';
+  }
+}
+
+export const TRILON_STYLE_CONFIGS_V9: Record<CanonicalTrilonStyleIdV9, TrilonStyleConfigV9> = {
+  trilon_acrylite_cream: {
+    id: 'trilon_acrylite_cream',
+    rimHexNum: null,
+    coreHexNum: 0xfff6e3,
+    faceCenterHex: '#FFF9EC',
+    faceMidHex: '#F8EED8',
+    faceEdgeHex: '#F2E2C4',
+    headerBgOverride: null,
+    frameStrokeOverride: null,
+    isCheckerBorder: false,
+  },
+  trilon_cobalt_glass: {
+    id: 'trilon_cobalt_glass',
+    rimHexNum: 0x1746a2,
+    coreHexNum: 0xe8f0ff,
+    faceCenterHex: '#FFFDF7',
+    faceMidHex: '#EEF4FF',
+    faceEdgeHex: '#D8E5FF',
+    headerBgOverride: '#1746A2',
+    frameStrokeOverride: '#1746A2',
+    isCheckerBorder: false,
+  },
+  trilon_atomic_gold: {
+    id: 'trilon_atomic_gold',
+    rimHexNum: 0xf2a922,
+    coreHexNum: 0xffe89e,
+    faceCenterHex: '#FFFBE6',
+    faceMidHex: '#FDF0B8',
+    faceEdgeHex: '#F5D678',
+    headerBgOverride: '#D9820B',
+    frameStrokeOverride: '#F2A922',
+    isCheckerBorder: false,
+  },
+  trilon_cerise_checker: {
+    id: 'trilon_cerise_checker',
+    rimHexNum: 0xe6397a,
+    coreHexNum: 0xffe4ef,
+    faceCenterHex: '#FFFDF7',
+    faceMidHex: '#FDF0F5',
+    faceEdgeHex: '#FAD6E4',
+    headerBgOverride: '#E6397A',
+    frameStrokeOverride: '#E6397A',
+    isCheckerBorder: true,
+  },
+};
 
 interface PlaqueRenderExtrasV7 {
   readonly secretRevealed: boolean;
@@ -1216,6 +1382,12 @@ interface PlaqueRenderExtrasV7 {
   readonly isSpotlit?: boolean;
   readonly isRovingSpotlightBoard?: boolean;
   readonly hasBrassKeyOnBoard?: boolean;
+  readonly boardModeV9?: BoardPlayModeV9;
+  readonly trilonStyle?: TrilonStyleConfigV9;
+  readonly seasonSpec?: SeasonVisualSpecV9;
+  readonly pressureCookerMult?: number;
+  readonly isHighVoltDoor?: boolean;
+  readonly dominoAdjacentHint?: boolean;
 }
 
 /**
@@ -1305,7 +1477,7 @@ function drawBigWheel20WedgeEmblem(
     ctx.stroke();
   }
   // Outer brass rim + nickel pegs
-  ctx.strokeStyle = '#0D2238';
+  ctx.strokeStyle = '#3E2012';
   ctx.lineWidth = 8;
   ctx.beginPath();
   ctx.arc(0, 0, radius + 3, 0, Math.PI * 2);
@@ -1315,7 +1487,7 @@ function drawBigWheel20WedgeEmblem(
   ctx.stroke();
 
   // Center gold sunburst hub
-  ctx.fillStyle = '#0D2238';
+  ctx.fillStyle = '#3E2012';
   ctx.beginPath();
   ctx.arc(0, 0, radius * 0.28, 0, Math.PI * 2);
   ctx.fill();
@@ -1326,7 +1498,7 @@ function drawBigWheel20WedgeEmblem(
 
   // Top brass flapper pointer
   ctx.fillStyle = '#FF6738';
-  ctx.strokeStyle = '#0D2238';
+  ctx.strokeStyle = '#1E140E';
   ctx.lineWidth = 3;
   ctx.beginPath();
   ctx.moveTo(-14, -radius - 12);
@@ -1441,9 +1613,13 @@ function renderTilePlaqueCanvas(
   const pal = LIVING_COLOR_DOMAIN_PALETTE_V7[tile.domain];
   const displayCategory = FRIENDLY_TV_BOARD_LABELS_V7[tile.category] ?? tile.category;
   const tvTwist: ClassicTvTileTwistV7 = tile.tvTwist ?? 'NONE';
+  const tvTwistV9: ClassicTvTileTwistV9 = tile.tvTwistV9 ?? tvTwist;
+  const boardModeV9: BoardPlayModeV9 = extras.boardModeV9 ?? 'CLASSIC_TOTE';
+  const trilonStyle = extras.trilonStyle ?? TRILON_STYLE_CONFIGS_V9.trilon_acrylite_cream;
   const isLockedVault = tvTwist === 'LOCKED_VAULT' && Boolean(tile.isVaultLocked);
   const isUnlockedVault = tvTwist === 'LOCKED_VAULT' && !tile.isVaultLocked;
-  const isTopologyLocked = Boolean(tile.isTopologyLocked);
+  const isLiveWireLocked = Boolean(tile.isLiveWireLocked);
+  const isTopologyLocked = Boolean(tile.isTopologyLocked) && !isLiveWireLocked;
   const isKeyholderShielded = (tile.keyholderProtectedTurns ?? 0) > 0;
   const isSecretRevealed = tvTwist === 'SECRET_SQUARE' && extras.secretRevealed;
   const isOpponentPick = tvTwist === 'OPPONENT_CHOICE';
@@ -1455,6 +1631,14 @@ function renderTilePlaqueCanvas(
   const isMysteryCash = tvTwist === 'MYSTERY_CASH';
   const isBrassKey = tvTwist === 'BRASS_KEY';
   const isPressLuckSpin = tvTwist === 'PRESS_LUCK_SPIN';
+  const isVipBluff = tvTwistV9 === 'VIP_BLUFF';
+  const isBlackoutShutter =
+    Boolean(tile.blindCategoryHidden) && Boolean(tile.mysteryCashHidden);
+  const isR7LouverShutter =
+    !isBlackoutShutter && !isBlindCategory && Boolean(tile.blindCategoryHidden);
+  const isR7BlindPurse =
+    !isBlackoutShutter && !isMysteryCash && Boolean(tile.mysteryCashHidden);
+  const isSpotlightTile = Boolean(tile.isSpotlightTile) || Boolean(extras.isSpotlit);
   const isClaimedPlayer = tile.state === 'CLAIMED_PLAYER';
   const isClaimedRival = tile.state === 'CLAIMED_RIVAL';
   const shownChips = Math.max(150, Math.round(breakdown.effectiveChips / 50) * 50);
@@ -1493,13 +1677,13 @@ function renderTilePlaqueCanvas(
     ctx.fillStyle = flashGrad;
     ctx.fillRect(0, 0, w, h);
 
-    ctx.fillStyle = '#0B1D30';
+    ctx.fillStyle = '#5C301B';
     ctx.fillRect(20, 20, w - 40, 114);
     ctx.textAlign = 'center';
     ctx.fillStyle = '#FFF9EC';
     drawFittedBoldText(ctx, "👁 EYE GUESS '66 FLASH!", w * 0.5, 78, w - 84, 60, 38, displayFont);
 
-    ctx.fillStyle = isTrap ? '#FFFDF5' : '#0B1D30';
+    ctx.fillStyle = isTrap ? '#FFFDF5' : '#1E140E';
     const flashHeadline = isTrap
       ? '🎭 TRAP (-$100)'
       : isDouble
@@ -1507,7 +1691,7 @@ function renderTilePlaqueCanvas(
         : '💰 +$300 CASH!';
     drawFittedBoldText(ctx, flashHeadline, w * 0.5, 272, w - 80, 118, 66, displayFont);
 
-    ctx.fillStyle = isTrap ? '#FFE0C8' : '#0B1D30';
+    ctx.fillStyle = isTrap ? '#FFE0C8' : '#1E140E';
     drawFittedBoldText(
       ctx,
       isTrap ? 'DODGE THIS SPOT!' : 'MEMORIZE THIS SPOT!',
@@ -1518,7 +1702,7 @@ function renderTilePlaqueCanvas(
       36,
       displayFont,
     );
-    drawAnodizedOuterBezelAndRivets(ctx, w, h, '#0B1D30', false);
+    drawAnodizedOuterBezelAndRivets(ctx, w, h, '#3E2012', false);
     return;
   }
 
@@ -1572,23 +1756,38 @@ function renderTilePlaqueCanvas(
     drawFittedBoldText(ctx, displayCategory, w * 0.5, 192, w - 108, 72, 44, displayFont);
 
     const showPrizeTag =
-      isClaimedPlayer &&
-      extras.concentrationRevealed &&
-      extras.concentrationPrize &&
+      Boolean(extras.concentrationRevealed) &&
+      Boolean(extras.concentrationPrize) &&
       extras.concentrationPrize !== 'NONE';
 
     if (showPrizeTag && extras.concentrationPrize) {
-      drawFittedBoldText(ctx, '★ YOU WON!', w * 0.5, 294, w - 120, 96, 58, displayFont);
-      const prizeMap: Record<Exclude<ConcentrationPrizeKindV7, 'NONE'>, string> = {
-        COLOR_TV: '★ COLOR TV PRIZE HALF',
-        CONVERTIBLE: '★ CONVERTIBLE PRIZE HALF',
-        HAWAII_TRIP: '★ HAWAII JET TRIP HALF',
-        TAKE_STEAL: '★ TAKE! +$200 BONUS',
-      };
-      drawRoundedRectPath(ctx, 84, 368, w - 168, 98, 18);
-      ctx.fillStyle = '#0B1D30';
+      drawFittedBoldText(
+        ctx,
+        isClaimedPlayer ? '★ YOU WON!' : '◆ RIVAL',
+        w * 0.5,
+        290,
+        w - 120,
+        92,
+        56,
+        displayFont,
+      );
+      const prizeMap: Record<Exclude<ConcentrationPrizeKindV7, 'NONE'>, string> = isClaimedPlayer
+        ? {
+            COLOR_TV: '★ COLOR TV PRIZE HALF',
+            CONVERTIBLE: '★ CONVERTIBLE PRIZE HALF',
+            HAWAII_TRIP: '★ HAWAII JET TRIP HALF',
+            TAKE_STEAL: '★ TAKE! +$200 BONUS',
+          }
+        : {
+            COLOR_TV: '◆ COLOR TV HALF · STEAL!',
+            CONVERTIBLE: '◆ CONVERTIBLE HALF · STEAL!',
+            HAWAII_TRIP: '◆ HAWAII TRIP HALF · STEAL!',
+            TAKE_STEAL: '◆ RIVAL TAKE! -$200',
+          };
+      drawRoundedRectPath(ctx, 72, 360, w - 144, 108, 18);
+      ctx.fillStyle = isClaimedPlayer ? '#5C301B' : '#570B0B';
       ctx.fill();
-      ctx.strokeStyle = '#FFD56B';
+      ctx.strokeStyle = isClaimedPlayer ? '#FFD56B' : '#FECACA';
       ctx.lineWidth = 6;
       ctx.stroke();
       ctx.fillStyle = '#FFD56B';
@@ -1596,16 +1795,16 @@ function renderTilePlaqueCanvas(
         ctx,
         prizeMap[extras.concentrationPrize as Exclude<ConcentrationPrizeKindV7, 'NONE'>],
         w * 0.5,
-        418,
-        w - 208,
-        52,
-        34,
+        414,
+        w - 184,
+        56,
+        36,
         displayFont,
       );
     } else {
       // Iconic 1966 Gold-Rimmed Contestant Medallion Pill (`★ YOU WON` / `◆ RIVAL`)
       drawRoundedRectPath(ctx, 132, 256, w - 264, 178, 32);
-      ctx.fillStyle = isClaimedPlayer ? 'rgba(6, 44, 20, 0.52)' : 'rgba(64, 8, 8, 0.52)';
+      ctx.fillStyle = isClaimedPlayer ? 'rgba(10, 68, 32, 0.52)' : 'rgba(64, 8, 8, 0.52)';
       ctx.fill();
       ctx.strokeStyle = isClaimedPlayer ? '#FFD56B' : '#FECACA';
       ctx.lineWidth = 7;
@@ -1615,7 +1814,14 @@ function renderTilePlaqueCanvas(
         drawStarburstFoilSeal(ctx, 224, 345, 52, 12);
       }
       ctx.fillStyle = '#FFFDF5';
-      const stampLabel = isClaimedPlayer ? 'YOU WON!' : '◆ RIVAL';
+      const stampLabel =
+        boardModeV9 === 'HOLLYWOOD_MARQUEE_LINE'
+          ? isClaimedPlayer
+            ? '⭕  O  WIN!'
+            : '❌  X  RIVAL'
+          : isClaimedPlayer
+            ? 'YOU WON!'
+            : '◆ RIVAL';
       drawFittedBoldText(
         ctx,
         stampLabel,
@@ -1627,7 +1833,211 @@ function renderTilePlaqueCanvas(
         displayFont,
       );
     }
+
+    // GOLDEN_DOMINO_CASCADE 1..3 Domino Pip badge in top-left on claimed Player tiles
+    if (isClaimedPlayer && tile.dominoGroupId && tile.dominoGroupId > 0) {
+      const pipColors = ['#008B94', '#E6397A', '#1746A2'];
+      const pipFill = pipColors[(tile.dominoGroupId - 1) % pipColors.length];
+      const pipCount = Math.min(3, ((tile.dominoGroupId - 1) % 3) + 1);
+      drawRoundedRectPath(ctx, 36, 36, 112, 54, 14);
+      ctx.fillStyle = '#FAF2DF';
+      ctx.fill();
+      ctx.strokeStyle = pipFill;
+      ctx.lineWidth = 4;
+      ctx.stroke();
+      ctx.fillStyle = pipFill;
+      for (let p = 0; p < pipCount; p++) {
+        const px = 64 + p * 28;
+        ctx.beginPath();
+        ctx.arc(px, 63, 9, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
     drawAnodizedOuterBezelAndRivets(ctx, w, h, isClaimedPlayer ? '#FFD56B' : '#FCA5A5', false);
+    return;
+  }
+
+  // -------------------------------------------------------------------------
+  // A2. LIVE-WIRE FUSE LOCKED TILE (`tile.isLiveWireLocked === true`)
+  //     Smoked-Acrylite Padlock Clamp + Atomic Tangerine Fuse Bar (Category Dimly Readable!)
+  // -------------------------------------------------------------------------
+  if (isLiveWireLocked && !isLockedVault) {
+    const lwGrad = ctx.createLinearGradient(0, 0, 0, h);
+    lwGrad.addColorStop(0.0, '#6E3B23');
+    lwGrad.addColorStop(0.55, '#522B19');
+    lwGrad.addColorStop(1.0, '#3E2012');
+    ctx.fillStyle = lwGrad;
+    ctx.fillRect(0, 0, w, h);
+
+    // Copper conduit lines across left/right edges
+    ctx.fillStyle = 'rgba(255, 107, 53, 0.24)';
+    ctx.fillRect(24, h * 0.5 - 10, w - 48, 20);
+    ctx.fillRect(w * 0.5 - 10, 140, 20, h - 164);
+
+    // Segmented Atomic Tangerine & Harvest Gold Fuse Top Bar
+    ctx.fillStyle = '#3E2012';
+    ctx.fillRect(20, 20, w - 40, 114);
+    for (let sx = 34; sx < w - 70; sx += 64) {
+      ctx.fillStyle = (sx / 64) % 2 === 0 ? '#FF6B35' : '#F2A922';
+      ctx.fillRect(sx, 26, 48, 16);
+    }
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#FFD56B';
+    drawFittedBoldText(ctx, '🔒 LIVE-WIRE · LOCKED', w * 0.5, 88, w - 108, 52, 34, displayFont);
+
+    // Dimly readable cream category for route planning
+    ctx.fillStyle = 'rgba(250, 242, 223, 0.72)';
+    drawFittedBoldText(ctx, displayCategory, w * 0.5, 214, w - 110, 78, 46, displayFont);
+
+    ctx.fillStyle = '#FFD166';
+    drawFittedBoldText(ctx, `$${shownChips}`, w * 0.5, 326, w - 140, 108, 72, numericFont);
+
+    drawRoundedRectPath(ctx, 64, h - 102, w - 128, 76, 16);
+    ctx.fillStyle = '#4F2917';
+    ctx.fill();
+    ctx.strokeStyle = '#FF6B35';
+    ctx.lineWidth = 5;
+    ctx.stroke();
+    ctx.fillStyle = '#FFF6E3';
+    drawFittedBoldText(ctx, 'WIN ADJACENT TO SPARK OPEN', w * 0.5, h - 63, w - 168, 46, 34, displayFont);
+
+    drawAnodizedOuterBezelAndRivets(ctx, w, h, '#FF6B35', false);
+    return;
+  }
+
+  // -------------------------------------------------------------------------
+  // A3. BLACKOUT VAULT (`Can't see either` — #1..#12 Safe Trilon + ⚡ HIGH-VOLT)
+  // -------------------------------------------------------------------------
+  if (isBlackoutShutter && !isLockedVault && !isTopologyLocked) {
+    const bvGrad = ctx.createLinearGradient(0, 0, 0, h);
+    bvGrad.addColorStop(0.0, '#6E3B23');
+    bvGrad.addColorStop(0.5, '#582F1B');
+    bvGrad.addColorStop(1.0, '#432213');
+    ctx.fillStyle = bvGrad;
+    ctx.fillRect(0, 0, w, h);
+
+    // Brass cabinet corner struts & safe dial ring
+    ctx.strokeStyle = 'rgba(217, 164, 65, 0.32)';
+    ctx.lineWidth = 10;
+    ctx.beginPath();
+    ctx.arc(w * 0.5, 310, 134, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.fillStyle = extras.isHighVoltDoor ? '#D9480F' : '#D9A441';
+    ctx.fillRect(20, 20, w - 40, 116);
+    ctx.textAlign = 'center';
+    ctx.fillStyle = extras.isHighVoltDoor ? '#FFFDF7' : '#241309';
+    drawFittedBoldText(
+      ctx,
+      extras.isHighVoltDoor ? '⚡ HIGH-VOLT BLACKOUT!' : '🎩 BLACKOUT SAFE',
+      w * 0.5,
+      78,
+      w - 108,
+      56,
+      36,
+      displayFont,
+    );
+
+    ctx.fillStyle = '#FAF2DF';
+    drawFittedBoldText(
+      ctx,
+      `SAFE #${tile.index + 1}`,
+      w * 0.5,
+      276,
+      w - 140,
+      148,
+      88,
+      numericFont,
+    );
+
+    drawRoundedRectPath(ctx, 180, 382, w - 360, 74, 18);
+    ctx.fillStyle = '#3E2012';
+    ctx.fill();
+    ctx.strokeStyle = '#FFD166';
+    ctx.lineWidth = 5;
+    ctx.stroke();
+    ctx.fillStyle = '#FFD166';
+    drawFittedBoldText(ctx, 'FLIP TO REVEAL · ? & $???', w * 0.5, 419, w - 400, 38, 28, displayFont);
+
+    drawAnodizedOuterBezelAndRivets(ctx, w, h, extras.isHighVoltDoor ? '#FF6B35' : '#D9A441', false);
+    return;
+  }
+
+  // -------------------------------------------------------------------------
+  // A4. LOUVER SHUTTER (`Can't see category` — Venetian Slats Top, Bright $ Bottom)
+  // -------------------------------------------------------------------------
+  if (isR7LouverShutter && !isLockedVault && !isTopologyLocked) {
+    const lsGrad = ctx.createRadialGradient(w * 0.5, h * 0.65, 36, w * 0.5, h * 0.65, w * 0.64);
+    lsGrad.addColorStop(0.0, '#FFFDF7');
+    lsGrad.addColorStop(1.0, '#EFE0BE');
+    ctx.fillStyle = lsGrad;
+    ctx.fillRect(0, 0, w, h);
+
+    // Venetian shutter louver blind covering upper half (concealing category cleanly!)
+    ctx.fillStyle = '#006B74';
+    ctx.fillRect(20, 20, w - 40, 232);
+    for (let ly = 36; ly < 244; ly += 26) {
+      ctx.fillStyle = 'rgba(250, 242, 223, 0.22)';
+      ctx.fillRect(32, ly, w - 64, 9);
+      ctx.fillStyle = 'rgba(30, 20, 14, 0.22)';
+      ctx.fillRect(32, ly + 13, w - 64, 5);
+    }
+
+    drawRoundedRectPath(ctx, 168, 72, w - 336, 128, 22);
+    ctx.fillStyle = '#4F2917';
+    ctx.fill();
+    ctx.strokeStyle = '#FFD166';
+    ctx.lineWidth = 6;
+    ctx.stroke();
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#FFD166';
+    drawFittedBoldText(ctx, '🕶️ TOPIC SHUTTERED', w * 0.5, 136, w - 380, 56, 36, displayFont);
+
+    ctx.fillStyle = '#1E140E';
+    drawFittedBoldText(ctx, `$${shownChips}`, w * 0.5, 382, w - 120, 184, 114, numericFont);
+
+    drawAnodizedOuterBezelAndRivets(ctx, w, h, '#008B94', isKeyholderShielded);
+    return;
+  }
+
+  // -------------------------------------------------------------------------
+  // A5. BLIND PURSE (`Can't see money` — Category Open, Cerise/Brass $??? Flap)
+  // -------------------------------------------------------------------------
+  if (isR7BlindPurse && !isLockedVault && !isTopologyLocked) {
+    const bpGrad = ctx.createRadialGradient(w * 0.5, h * 0.5, 36, w * 0.5, h * 0.5, w * 0.65);
+    bpGrad.addColorStop(0.0, '#FFFDF7');
+    bpGrad.addColorStop(1.0, '#F5E4CA');
+    ctx.fillStyle = bpGrad;
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.fillStyle = '#E6397A';
+    ctx.fillRect(20, 20, w - 40, 112);
+    ctx.fillStyle = '#F2A922';
+    ctx.fillRect(20, 128, w - 40, 8);
+
+    drawCategoryBrassGlyph(ctx, tile.category, 78, 76, 34, '#FFFDF7');
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#FFFDF7';
+    drawFittedBoldText(ctx, '💸 BLIND PURSE', 132, 76, w - 180, 56, 36, displayFont);
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#1E140E';
+    drawFittedBoldText(ctx, displayCategory, w * 0.5, 222, w - 104, 104, 58, displayFont);
+
+    drawRoundedRectPath(ctx, 180, 304, w - 360, 146, 26);
+    ctx.fillStyle = '#E6397A';
+    ctx.fill();
+    ctx.strokeStyle = '#FFD166';
+    ctx.lineWidth = 7;
+    ctx.stroke();
+
+    ctx.fillStyle = '#FFFDF7';
+    drawFittedBoldText(ctx, '$ ???', w * 0.5, 378, w - 400, 126, 84, numericFont);
+
+    drawAnodizedOuterBezelAndRivets(ctx, w, h, '#E6397A', isKeyholderShielded);
     return;
   }
 
@@ -1719,7 +2129,7 @@ function renderTilePlaqueCanvas(
     ctx.textAlign = 'center';
 
     // High-contrast sunlit espresso-walnut backing plate behind $500 so gold vault bars frame it cleanly
-    drawRoundedRectPath(ctx, 250, 166, w - 500, 164, 24);
+    drawRoundedRectPath(ctx, 244, 150, w - 488, 156, 24);
     ctx.fillStyle = 'rgba(56, 28, 13, 0.95)';
     ctx.fill();
     ctx.strokeStyle = '#FFD56B';
@@ -1727,11 +2137,11 @@ function renderTilePlaqueCanvas(
     ctx.stroke();
 
     ctx.fillStyle = '#FFD56B';
-    ctx.font = `900 168px ${numericFont}`;
-    ctx.fillText('$500', w * 0.5, 254);
+    ctx.font = `900 152px ${numericFont}`;
+    ctx.fillText('$500', w * 0.5, 232);
 
-    // Clear unlock rule ribbon
-    drawRoundedRectPath(ctx, 56, 360, w - 112, 104, 18);
+    // Clear, large mobile-legible unlock rule ribbon
+    drawRoundedRectPath(ctx, 38, 336, w - 76, 132, 20);
     ctx.fillStyle = 'rgba(56, 28, 13, 0.96)';
     ctx.fill();
     ctx.strokeStyle = '#FFD56B';
@@ -1739,7 +2149,7 @@ function renderTilePlaqueCanvas(
     ctx.stroke();
 
     ctx.fillStyle = '#FFF9EC';
-    drawFittedBoldText(ctx, 'WIN ADJACENT OR 2× STREAK', w * 0.5, 414, w - 144, 54, 36, displayFont);
+    drawFittedBoldText(ctx, 'WIN ADJACENT OR 2× STREAK', w * 0.5, 404, w - 108, 72, 48, displayFont);
 
     drawAnodizedOuterBezelAndRivets(ctx, w, h, '#F4A91F', isKeyholderShielded);
     return;
@@ -1770,7 +2180,7 @@ function renderTilePlaqueCanvas(
     }
     ctx.restore();
 
-    ctx.fillStyle = '#0D2238';
+    ctx.fillStyle = '#5C301B';
     ctx.fillRect(20, 20, w - 40, 120);
     ctx.textAlign = 'center';
     ctx.fillStyle = '#FFD56B';
@@ -1791,7 +2201,7 @@ function renderTilePlaqueCanvas(
       numericFont,
     );
 
-    drawAnodizedOuterBezelAndRivets(ctx, w, h, '#0D2238', isKeyholderShielded);
+    drawAnodizedOuterBezelAndRivets(ctx, w, h, '#3E2012', isKeyholderShielded);
     return;
   }
 
@@ -1814,7 +2224,7 @@ function renderTilePlaqueCanvas(
       ctx.fillRect(28, sy + 24, w - 56, 6);
     }
 
-    ctx.fillStyle = '#0D2238';
+    ctx.fillStyle = '#5C301B';
     ctx.fillRect(20, 20, w - 40, 116);
     ctx.fillStyle = '#F4A91F';
     ctx.fillRect(20, 132, w - 40, 8);
@@ -1825,9 +2235,9 @@ function renderTilePlaqueCanvas(
 
     const blindHidden = tile.blindCategoryHidden !== false;
     if (blindHidden) {
-      // Sculpted 1966 Gold & Navy Mystery Question Medallion (`? · ★ · ?` — zero duplicate "BLIND CATEGORY" label!)
+      // Sculpted 1966 Gold & Walnut Mystery Question Medallion (`? · ★ · ?` — zero duplicate "BLIND CATEGORY" label!)
       drawRoundedRectPath(ctx, 184, 160, w - 368, 116, 58);
-      ctx.fillStyle = '#0D2238';
+      ctx.fillStyle = '#5C301B';
       ctx.fill();
       ctx.strokeStyle = '#F4A91F';
       ctx.lineWidth = 7;
@@ -1887,7 +2297,7 @@ function renderTilePlaqueCanvas(
     // 1966 Golden-Manila Prize Envelope + 12-Lobe Scalloped Crimson Wax Seal in lower half
     ctx.save();
     drawRoundedRectPath(ctx, 78, 294, 320, 174, 18);
-    ctx.fillStyle = 'rgba(18, 26, 43, 0.16)';
+    ctx.fillStyle = 'rgba(79, 41, 23, 0.18)';
     ctx.fill();
     drawRoundedRectPath(ctx, 70, 284, 320, 174, 18);
     const envGrad = ctx.createLinearGradient(70, 284, 70, 458);
@@ -1895,7 +2305,7 @@ function renderTilePlaqueCanvas(
     envGrad.addColorStop(1.0, '#F1C66D');
     ctx.fillStyle = envGrad;
     ctx.fill();
-    ctx.strokeStyle = '#121A2B';
+    ctx.strokeStyle = '#1E140E';
     ctx.lineWidth = 5.5;
     ctx.stroke();
 
@@ -1906,7 +2316,7 @@ function renderTilePlaqueCanvas(
     ctx.stroke();
 
     // Bottom pocket diagonal fold creases + top V-flap
-    ctx.strokeStyle = 'rgba(18, 26, 43, 0.32)';
+    ctx.strokeStyle = 'rgba(79, 41, 23, 0.34)';
     ctx.lineWidth = 3.5;
     ctx.beginPath();
     ctx.moveTo(78, 450);
@@ -1915,7 +2325,7 @@ function renderTilePlaqueCanvas(
     ctx.lineTo(272, 368);
     ctx.stroke();
 
-    ctx.strokeStyle = '#121A2B';
+    ctx.strokeStyle = '#1E140E';
     ctx.lineWidth = 5;
     ctx.beginPath();
     ctx.moveTo(76, 290);
@@ -2014,7 +2424,7 @@ function renderTilePlaqueCanvas(
     ctx.fillStyle = creamGrad;
     ctx.fillRect(0, 0, w, h);
 
-    ctx.fillStyle = '#0D2238';
+    ctx.fillStyle = '#5C301B';
     ctx.fillRect(20, 20, w - 40, 116);
     ctx.fillStyle = '#F4A91F';
     ctx.fillRect(20, 132, w - 40, 8);
@@ -2030,7 +2440,7 @@ function renderTilePlaqueCanvas(
     drawFittedBoldText(ctx, `$${shownChips}`, 476, 386, 312, 144, 92, numericFont);
 
     drawRoundedRectPath(ctx, w - 252, 332, 204, 108, 18);
-    ctx.fillStyle = '#0D2238';
+    ctx.fillStyle = '#5C301B';
     ctx.fill();
     ctx.strokeStyle = '#FFD56B';
     ctx.lineWidth = 5;
@@ -2092,16 +2502,41 @@ function renderTilePlaqueCanvas(
   }
 
   // -------------------------------------------------------------------------
-  // D6. STANDARD, UNLOCKED VAULT, MYSTERY CURTAIN, OPPONENT CHOICE & SHOWCASE
+  // D6. STANDARD, VIP BLUFF, UNLOCKED VAULT, MYSTERY CURTAIN, OPPONENT CHOICE & SHOWCASE
   // -------------------------------------------------------------------------
-  let headerBg = pal.primaryHex;
-  let headerInk = pal.headerInkHex;
-  let frameStroke = pal.primaryHex;
-  let badgeText = pal.label;
+  const vipSpec =
+    isVipBluff && tile.vipId
+      ? VIP_CELEB_CATALOG_V9.find((v) => v.targetId === tile.vipId)
+      : undefined;
 
-  if (isUnlockedVault) {
+  const seasonSpec = extras.seasonSpec;
+  const seasonNum = seasonSpec?.season ?? 1;
+  const isDefaultCreamStyle = trilonStyle.id === 'trilon_acrylite_cream' && Boolean(seasonSpec);
+  const defaultSeasonFrameStroke = isDefaultCreamStyle
+    ? seasonNum === 2
+      ? '#FF6B35'
+      : seasonNum === 3
+        ? '#D9A441'
+        : seasonNum === 4
+          ? '#1746A2'
+          : pal.primaryHex
+    : pal.primaryHex;
+
+  let headerBg = trilonStyle.headerBgOverride ?? pal.primaryHex;
+  let headerInk = trilonStyle.headerBgOverride ? '#FFFDF7' : pal.headerInkHex;
+  let frameStroke = trilonStyle.frameStrokeOverride ?? defaultSeasonFrameStroke;
+  let badgeText = pal.label;
+  let vipBadgeLabel = '';
+
+  if (isVipBluff) {
+    headerBg = '#E6397A';
+    headerInk = '#FFFDF7';
+    frameStroke = '#E6397A';
+    vipBadgeLabel = vipSpec ? vipSpec.name.toUpperCase() : 'VIP GUEST';
+    badgeText = '★ VIP BLUFF';
+  } else if (isUnlockedVault) {
     headerBg = '#F4A91F';
-    headerInk = '#0B1D30';
+    headerInk = '#1E140E';
     frameStroke = '#F4A91F';
     badgeText = '★ VAULT OPEN!';
   } else if (isMysteryCurtain) {
@@ -2126,31 +2561,141 @@ function renderTilePlaqueCanvas(
     headerInk = '#FFF9EC';
     frameStroke = '#F4A91F';
     badgeText = '★ TV SHOWCASE';
-  } else if (extras.isSpotlit) {
-    badgeText = '✦ SPOTLIGHT LIVE';
+  } else if (isSpotlightTile) {
+    headerBg = '#F2A922';
+    headerInk = '#1E140E';
+    frameStroke = '#F2A922';
+    badgeText = boardModeV9 === 'SHIFTING_SPOTLIGHT' ? '🔦 1.5×/2× SPOTLIGHT' : '✦ SPOTLIGHT LIVE';
+  } else if (boardModeV9 === 'LIVE_WIRE_FUSE') {
+    headerBg = '#15803D';
+    headerInk = '#FFFDF7';
+    frameStroke = '#15803D';
+    badgeText = '▶ PLAY · LIVE CIRCUIT';
+  } else if (boardModeV9 === 'PRESSURE_COOKER' && (extras.pressureCookerMult ?? 1) > 1) {
+    const pMult = extras.pressureCookerMult ?? 1;
+    headerBg = pMult >= 2 ? '#FF6B35' : '#D9820B';
+    headerInk = '#FFFDF7';
+    frameStroke = headerBg;
+    badgeText = `♨️ BOILER ×${pMult.toFixed(2)}`;
+  } else if (extras.dominoAdjacentHint && boardModeV9 === 'GOLDEN_DOMINO_CASCADE') {
+    badgeText = '🟨 DOMINO LINK';
   } else if (tile.isWheelhouse) {
     badgeText = '★ WEAK SPOT';
   } else if (tile.isRiggedSolenoid) {
     badgeText = 'HOT SPOT';
   }
 
-  // 1. NTSC-Safe Luminous Warm Broadcast Cream (`#FFF9EC` center -> `#F2E2C4` bevel edge, >= 13.7:1 contrast!)
+  // 1. NTSC-Safe Luminous Warm Broadcast Cream / Equipped Trilon Cosmetic Face!
   const windowGrad = ctx.createRadialGradient(w * 0.5, h * 0.56, 40, w * 0.5, h * 0.56, w * 0.66);
-  if (isUnlockedVault || tile.state === 'BLITZ_SURVIVOR' || extras.isSpotlit) {
+  if (isUnlockedVault || tile.state === 'BLITZ_SURVIVOR' || isSpotlightTile) {
     windowGrad.addColorStop(0.0, '#FFFBEB');
     windowGrad.addColorStop(0.65, '#FAF0D2');
     windowGrad.addColorStop(1.0, '#F5DFA4');
-  } else if (isMysteryCurtain) {
+  } else if (isMysteryCurtain || isVipBluff) {
     windowGrad.addColorStop(0.0, '#FFF9EC');
     windowGrad.addColorStop(0.7, '#F9EDE6');
     windowGrad.addColorStop(1.0, '#F2D8E2');
+  } else if (isDefaultCreamStyle) {
+    if (seasonNum === 2) {
+      windowGrad.addColorStop(0.0, '#FFFDF7');
+      windowGrad.addColorStop(0.68, '#FFF0E4');
+      windowGrad.addColorStop(1.0, '#FFE0CA');
+    } else if (seasonNum === 3) {
+      windowGrad.addColorStop(0.0, '#FFF9E8');
+      windowGrad.addColorStop(0.68, '#FAEDC4');
+      windowGrad.addColorStop(1.0, '#F2D890');
+    } else if (seasonNum === 4) {
+      windowGrad.addColorStop(0.0, '#FFFDF9');
+      windowGrad.addColorStop(0.68, '#EEF4FF');
+      windowGrad.addColorStop(1.0, '#DCE8FF');
+    } else {
+      windowGrad.addColorStop(0.0, '#FFF9EC');
+      windowGrad.addColorStop(0.68, '#F8EED8');
+      windowGrad.addColorStop(1.0, '#F2E2C4');
+    }
   } else {
-    windowGrad.addColorStop(0.0, '#FFF9EC');
-    windowGrad.addColorStop(0.68, '#F8EED8');
-    windowGrad.addColorStop(1.0, '#F2E2C4');
+    windowGrad.addColorStop(0.0, trilonStyle.faceCenterHex);
+    windowGrad.addColorStop(0.68, trilonStyle.faceMidHex);
+    windowGrad.addColorStop(1.0, trilonStyle.faceEdgeHex);
   }
   ctx.fillStyle = windowGrad;
   ctx.fillRect(0, 0, w, h);
+
+  // Seasonal Mid-Century Plaque Corner Motifs (strictly outside text/pill zones!)
+  if (isDefaultCreamStyle && !isMysteryCurtain && !isVipBluff) {
+    if (seasonNum === 1) {
+      ctx.strokeStyle = '#008B94';
+      ctx.lineWidth = 4;
+      for (const [cx, cy, dx, dy] of [
+        [42, 150, 26, 26],
+        [w - 42, 150, -26, 26],
+        [42, h - 42, 26, -26],
+        [w - 42, h - 42, -26, -26],
+      ] as const) {
+        ctx.beginPath();
+        ctx.moveTo(cx + dx, cy);
+        ctx.lineTo(cx, cy);
+        ctx.lineTo(cx, cy + dy);
+        ctx.stroke();
+      }
+    } else if (seasonNum === 2) {
+      drawFourPointStarburst(ctx, 54, 166, 16, 5, '#FF6B35');
+      drawFourPointStarburst(ctx, w - 54, 166, 16, 5, '#E6397A');
+      drawFourPointStarburst(ctx, 54, h - 54, 16, 5, '#E6397A');
+      drawFourPointStarburst(ctx, w - 54, h - 54, 16, 5, '#FF6B35');
+    } else if (seasonNum === 3) {
+      ctx.strokeStyle = '#D9A441';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(32, 32, w - 64, h - 64);
+      ctx.strokeStyle = '#15803D';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(38, 142, w - 76, h - 180);
+      for (const [dx, dy] of [
+        [54, 166],
+        [w - 54, 166],
+        [54, h - 54],
+        [w - 54, h - 54],
+      ] as const) {
+        ctx.fillStyle = '#15803D';
+        ctx.beginPath();
+        ctx.moveTo(dx, dy - 12);
+        ctx.lineTo(dx + 12, dy);
+        ctx.lineTo(dx, dy + 12);
+        ctx.lineTo(dx - 12, dy);
+        ctx.closePath();
+        ctx.fill();
+      }
+    } else if (seasonNum === 4) {
+      ctx.lineWidth = 6;
+      for (const [cx, cy, sx, sy] of [
+        [34, 146, 1, 1],
+        [w - 34, 146, -1, 1],
+        [34, h - 34, 1, -1],
+        [w - 34, h - 34, -1, -1],
+      ] as const) {
+        ctx.strokeStyle = '#1746A2';
+        ctx.beginPath();
+        ctx.moveTo(cx, cy + sy * 30);
+        ctx.lineTo(cx + sx * 30, cy);
+        ctx.stroke();
+        ctx.strokeStyle = '#F2A922';
+        ctx.beginPath();
+        ctx.moveTo(cx, cy + sy * 16);
+        ctx.lineTo(cx + sx * 16, cy);
+        ctx.stroke();
+      }
+    }
+  }
+
+  // Mod Cerise Checkerboard edge trim when `trilon_cerise_checker` is equipped
+  if (trilonStyle.isCheckerBorder) {
+    const chk = 26;
+    for (let x = 24; x < w - 24; x += chk * 2) {
+      ctx.fillStyle = 'rgba(230, 57, 122, 0.24)';
+      ctx.fillRect(x, h - 42, chk, 20);
+      ctx.fillRect(x + chk, 136, chk, 14);
+    }
+  }
 
   // Scalloped 1966 Crimson Velvet Valance & Side Drape Pleats on `MYSTERY_CURTAIN` (compact scallops — zero category overlap!)
   if (isMysteryCurtain) {
@@ -2205,8 +2750,30 @@ function renderTilePlaqueCanvas(
   ctx.fillStyle = headerBg;
   ctx.fillRect(20, 20, w - 40, 116);
 
-  ctx.fillStyle = isShowcaseBonus || isUnlockedVault ? '#F4A91F' : 'rgba(18, 26, 43, 0.24)';
-  ctx.fillRect(20, 132, w - 40, 8);
+  if (isDefaultCreamStyle && !isShowcaseBonus && !isUnlockedVault && seasonNum === 2) {
+    ctx.fillStyle = '#FF6B35';
+    ctx.fillRect(20, 132, w - 40, 4);
+    ctx.fillStyle = '#E6397A';
+    ctx.fillRect(20, 136, w - 40, 4);
+  } else if (isDefaultCreamStyle && !isShowcaseBonus && !isUnlockedVault && seasonNum === 3) {
+    ctx.fillStyle = '#D9A441';
+    ctx.fillRect(20, 132, w - 40, 6);
+    ctx.fillStyle = '#15803D';
+    ctx.fillRect(20, 138, w - 40, 3);
+  } else if (isDefaultCreamStyle && !isShowcaseBonus && !isUnlockedVault && seasonNum === 4) {
+    ctx.fillStyle = '#1746A2';
+    ctx.fillRect(20, 132, (w - 40) * 0.5, 8);
+    ctx.fillStyle = '#F2A922';
+    ctx.fillRect(20 + (w - 40) * 0.5, 132, (w - 40) * 0.5, 8);
+  } else {
+    ctx.fillStyle =
+      isShowcaseBonus || isUnlockedVault
+        ? '#F4A91F'
+        : trilonStyle.frameStrokeOverride
+          ? trilonStyle.frameStrokeOverride
+          : (seasonSpec?.tileAccentHex ?? 'rgba(79, 41, 23, 0.26)');
+    ctx.fillRect(20, 132, w - 40, 8);
+  }
 
   // Left: Category Vector Glyph inside crisp medallion
   drawCategoryBrassGlyph(ctx, tile.category, 78, 78, 36, headerInk);
@@ -2226,7 +2793,7 @@ function renderTilePlaqueCanvas(
     rightReserved = pillW + 56;
 
     drawRoundedRectPath(ctx, pillX, pillY, pillW, pillH, 16);
-    ctx.fillStyle = highContrastBadges ? '#0A1220' : '#0D2238';
+    ctx.fillStyle = highContrastBadges ? '#1E140E' : '#5C301B';
     ctx.fill();
     ctx.strokeStyle = '#FFD56B';
     ctx.lineWidth = 5;
@@ -2241,10 +2808,22 @@ function renderTilePlaqueCanvas(
   ctx.textAlign = 'left';
   ctx.fillStyle = headerInk;
   const headerMaxW = w - 140 - rightReserved;
-  drawFittedBoldText(ctx, badgeText, 132, 78, headerMaxW, 54, 34, displayFont);
+  drawFittedBoldText(
+    ctx,
+    badgeText,
+    132,
+    78,
+    headerMaxW,
+    isVipBluff ? 62 : 54,
+    isVipBluff ? 42 : 34,
+    displayFont,
+  );
 
   const showChampTargetPill = Boolean(tile.isRivalTarget && !isMysteryCurtain);
   const hasBottomStatusPill = showChampTargetPill || isKeyholderShielded;
+  const useVipBottomPill = isVipBluff && !hasBottomStatusPill;
+  const useVipMidPill = isVipBluff && hasBottomStatusPill;
+  const elevateStandardBody = hasBottomStatusPill || useVipBottomPill;
 
   // 4. HERO LEGIBILITY FIRST: BOLD 1966 GEOMETRIC CATEGORY TITLE (`#121A2B` >= 13.7:1 contrast!)
   ctx.textAlign = 'center';
@@ -2253,25 +2832,44 @@ function renderTilePlaqueCanvas(
     ctx,
     displayCategory,
     w * 0.5,
-    isMysteryCurtain ? 242 : hasBottomStatusPill ? 200 : 224,
+    useVipMidPill ? 182 : isMysteryCurtain ? 242 : elevateStandardBody ? 196 : 224,
     w - (isMysteryCurtain ? 156 : 96),
-    hasBottomStatusPill ? 100 : 112,
-    hasBottomStatusPill ? 56 : 62,
+    useVipMidPill ? 76 : elevateStandardBody ? 94 : 112,
+    useVipMidPill ? 46 : elevateStandardBody ? 54 : 62,
     displayFont,
   );
 
-  // Clean horizontal mid-century domain accent rule
-  const ruleY = hasBottomStatusPill ? 262 : 298;
-  ctx.strokeStyle = pal.primaryHex;
-  ctx.lineWidth = 6;
-  ctx.beginPath();
-  ctx.moveTo(84, ruleY);
-  ctx.lineTo(w - 84, ruleY);
-  ctx.stroke();
+  if (useVipMidPill) {
+    drawRoundedRectPath(ctx, 64, 224, w - 128, 66, 14);
+    ctx.fillStyle = '#FFFDF7';
+    ctx.fill();
+    ctx.strokeStyle = '#E6397A';
+    ctx.lineWidth = 5;
+    ctx.stroke();
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#9E103C';
+    drawFittedBoldText(ctx, `🎭 ${vipBadgeLabel}`, w * 0.5, 257, w - 168, 44, 34, displayFont);
+  } else {
+    // Clean horizontal mid-century domain accent rule
+    const ruleY = elevateStandardBody ? 256 : 298;
+    ctx.strokeStyle =
+      isDefaultCreamStyle && seasonNum === 4
+        ? '#1746A2'
+        : isDefaultCreamStyle && seasonNum === 3
+          ? '#15803D'
+          : isDefaultCreamStyle && seasonNum === 2
+            ? '#FF6B35'
+            : pal.primaryHex;
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.moveTo(84, ruleY);
+    ctx.lineTo(w - 84, ruleY);
+    ctx.stroke();
+  }
 
   // Subtle connoisseur gold starburst foil seal on unrevealed `SECRET_SQUARE`!
   if (tvTwist === 'SECRET_SQUARE' && !isSecretRevealed) {
-    drawStarburstFoilSeal(ctx, 88, hasBottomStatusPill ? 344 : 424, 36, 12);
+    drawStarburstFoilSeal(ctx, 88, elevateStandardBody ? 332 : 424, 36, 12);
   }
 
   // 5. MONUMENTAL DOLLAR SLAB (`#121A2B` Kodalith Ink >= 13.7:1 contrast!)
@@ -2292,58 +2890,72 @@ function renderTilePlaqueCanvas(
     ctx.textAlign = 'center';
     ctx.fillStyle = '#FFF9EC';
     drawFittedBoldText(ctx, 'WILD SPIN!', w - 246, 397, 322, 60, 40, displayFont);
-  } else if (hasBottomStatusPill) {
-    // Elevated centered dollar baseline (`y = 338`) gives >= 30px crisp cream breathing room above `CHAMP TARGET`!
+  } else if (useVipMidPill) {
     ctx.textAlign = 'center';
     ctx.fillStyle = '#121A2B';
-    drawFittedBoldText(ctx, dollarLabel, w * 0.5, 338, w - 104, 138, 92, numericFont);
+    drawFittedBoldText(ctx, dollarLabel, w * 0.5, 344, w - 104, 102, 74, numericFont);
+  } else if (elevateStandardBody) {
+    // Elevated centered dollar baseline gives generous cream breathing room above enlarged mobile sub-pills!
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#121A2B';
+    drawFittedBoldText(ctx, dollarLabel, w * 0.5, 322, w - 104, 122, 86, numericFont);
   } else {
     ctx.textAlign = 'center';
     ctx.fillStyle = '#121A2B';
     drawFittedBoldText(ctx, dollarLabel, w * 0.5, 398, w - 104, 184, 114, numericFont);
   }
 
-  // Bold Mobile-Readable Bottom Status Banner (`64px` tall, `36px` bold caps — crisp even on 390x660 5-row phones!)
+  // Bold Mobile-Readable Bottom Status Banner (`84–92px` tall, `34–44px` bold caps — crisp even on 390x660 5-row phones!)
   if (isKeyholderShielded && showChampTargetPill) {
-    drawRoundedRectPath(ctx, 96, h - 90, 396, 62, 14);
-    ctx.fillStyle = '#0D2238';
+    drawRoundedRectPath(ctx, 56, h - 106, 444, 80, 16);
+    ctx.fillStyle = '#5C301B';
     ctx.fill();
     ctx.strokeStyle = '#FFD56B';
-    ctx.lineWidth = 4.5;
+    ctx.lineWidth = 5;
     ctx.stroke();
     ctx.textAlign = 'center';
     ctx.fillStyle = '#FFD56B';
-    drawFittedBoldText(ctx, '★ SAFE SHIELD', 294, h - 58, 360, 34, 26, displayFont);
+    drawFittedBoldText(ctx, '★ SAFE SHIELD', 278, h - 65, 404, 44, 34, displayFont);
 
-    drawRoundedRectPath(ctx, w - 492, h - 90, 396, 62, 14);
+    drawRoundedRectPath(ctx, w - 500, h - 106, 444, 80, 16);
     ctx.fillStyle = '#C81E3A';
     ctx.fill();
     ctx.strokeStyle = '#FFD56B';
-    ctx.lineWidth = 4.5;
+    ctx.lineWidth = 5;
     ctx.stroke();
     ctx.textAlign = 'center';
     ctx.fillStyle = '#FFF9EC';
-    drawFittedBoldText(ctx, '★ CHAMP TARGET', w - 294, h - 58, 360, 34, 26, displayFont);
+    drawFittedBoldText(ctx, '★ CHAMP TARGET', w - 278, h - 65, 404, 44, 34, displayFont);
   } else if (isKeyholderShielded) {
-    drawRoundedRectPath(ctx, w * 0.5 - 260, h - 90, 520, 62, 14);
-    ctx.fillStyle = '#0D2238';
+    drawRoundedRectPath(ctx, 84, h - 108, w - 168, 82, 16);
+    ctx.fillStyle = '#5C301B';
     ctx.fill();
     ctx.strokeStyle = '#FFD56B';
-    ctx.lineWidth = 4.5;
+    ctx.lineWidth = 5;
     ctx.stroke();
     ctx.textAlign = 'center';
     ctx.fillStyle = '#FFD56B';
-    drawFittedBoldText(ctx, '★ SAFE SHIELD', w * 0.5, h - 58, 476, 36, 28, displayFont);
+    drawFittedBoldText(ctx, '★ SAFE SHIELD', w * 0.5, h - 66, w - 216, 48, 38, displayFont);
   } else if (showChampTargetPill) {
-    drawRoundedRectPath(ctx, w * 0.5 - 274, h - 90, 548, 62, 14);
+    drawRoundedRectPath(ctx, 84, h - 108, w - 168, 82, 16);
     ctx.fillStyle = '#C81E3A';
     ctx.fill();
     ctx.strokeStyle = '#FFD56B';
-    ctx.lineWidth = 4.5;
+    ctx.lineWidth = 5;
     ctx.stroke();
     ctx.textAlign = 'center';
     ctx.fillStyle = '#FFF9EC';
-    drawFittedBoldText(ctx, '★ CHAMP TARGET', w * 0.5, h - 58, 504, 36, 28, displayFont);
+    drawFittedBoldText(ctx, '★ CHAMP TARGET', w * 0.5, h - 66, w - 216, 48, 38, displayFont);
+  } else if (useVipBottomPill) {
+    drawRoundedRectPath(ctx, 42, h - 114, w - 84, 90, 18);
+    ctx.fillStyle = '#FFFDF7';
+    ctx.fill();
+    ctx.strokeStyle = '#E6397A';
+    ctx.lineWidth = 6;
+    ctx.stroke();
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#9E103C';
+    drawFittedBoldText(ctx, `🎭 ${vipBadgeLabel}`, w * 0.5, h - 68, w - 128, 54, 42, displayFont);
   }
 
   // Brushed Anodized Outer Frame + 4 Sculpted 24K Brass Jewel Rivets!
@@ -2375,7 +2987,6 @@ interface TileVisualRigV7 {
   readonly twistAccentRing: THREE.Mesh;
   readonly twistAccentMat: THREE.MeshStandardMaterial;
   readonly vaultLockGroup: THREE.Group;
-  readonly copperSparksGroup: THREE.Group;
   readonly pickVolumeMesh: THREE.Mesh;
   readonly tileD: number;
   currentLiftY: number;
@@ -2523,6 +3134,13 @@ export class InteractiveBoard3DControllerV7 {
 
   private activeRivalChoreo: RivalClaimChoreographyV7 | null = null;
   private elapsedSec = 0;
+  private activeSeason: SeasonIdV7 = 1;
+  private seasonAuthoritative = false;
+  private marqueeCircuitHexes: [number, number, number, number] = [0xfff5d0, 0xffd56b, 0xfff0b8, 0xf2a922];
+  private activeTrilonStyleId: CanonicalTrilonStyleIdV9 = 'trilon_acrylite_cream';
+  private activeVetoedCategories: CategoryIdV7[] = [];
+  private activeVibePackId: VibePackIdV9 | undefined;
+  private activeBoardModeV9: BoardPlayModeV9 = 'CLASSIC_TOTE';
   private boardOwnedDisposables: { geometries: Set<THREE.BufferGeometry>; materials: Set<THREE.Material>; textures: Set<THREE.Texture> } = {
     geometries: new Set(),
     materials: new Set(),
@@ -2801,6 +3419,7 @@ export class InteractiveBoard3DControllerV7 {
           x: pos.x,
           z: pos.z,
           tierY: pos.tierY,
+          shape: this.isPortraitMode ? 'CHAMFER_RECT' : slot.shape,
         };
       });
       this.buildChassisAndPedestal(spec);
@@ -2852,18 +3471,24 @@ export class InteractiveBoard3DControllerV7 {
     return { x, z, tierY: portraitTier };
   }
 
-  public loadBoard(opts: {
-    boardId: BoardIdV7;
-    twistId?: BoardTwistIdV7;
-    rivalId?: RivalIdV7;
-    rivalWeakCategories?: readonly CategoryIdV7[];
-    rivalStrongCategories?: readonly CategoryIdV7[];
-    categoriesOverride?: readonly CategoryIdV7[];
-    tableBedHex?: number;
-    trimVeneerHex?: string | number;
-    trimAccentHex?: string | number;
-    seedOffset?: number;
-  }): BoardTileNodeV7[] {
+  private resolveAllowedCategoriesV9(): readonly CategoryIdV7[] {
+    const vetoSet = new Set<CategoryIdV7>(this.activeVetoedCategories);
+    const basePool = this.activeVibePackId
+      ? VIBE_PACK_CATEGORIES_V9[this.activeVibePackId]
+      : ALL_CATEGORIES_V7;
+    const filtered = basePool.filter((c) => !vetoSet.has(c));
+    if (filtered.length >= 3) return filtered;
+    const allFiltered = ALL_CATEGORIES_V7.filter((c) => !vetoSet.has(c));
+    return allFiltered.length > 0 ? allFiltered : ALL_CATEGORIES_V7;
+  }
+
+  public loadBoard(
+    opts: Omit<BoardLoadSpec, 'trimVeneerHex' | 'trimAccentHex'> & {
+      trimVeneerHex?: string | number;
+      trimAccentHex?: string | number;
+      vibePackId?: VibePackIdV9;
+    },
+  ): BoardTileNodeV7[] {
     if (this.activeRivalChoreo) {
       const pendingChoreo = this.activeRivalChoreo;
       this.activeRivalChoreo = null;
@@ -2881,21 +3506,36 @@ export class InteractiveBoard3DControllerV7 {
     this.activeTwistId = opts.twistId ?? spec.defaultTwistId;
     this.rivalId = opts.rivalId ?? this.rivalId;
     this.seedOffset = opts.seedOffset ?? 0;
-    if (opts.tableBedHex !== undefined) this.customBedHex = opts.tableBedHex;
-    if (opts.trimVeneerHex !== undefined) {
-      this.customVeneerHex = parseHexNumber(opts.trimVeneerHex, spec.woodVeneerHex);
-    }
-    if (opts.trimAccentHex !== undefined) {
-      this.customBrassHex = parseHexNumber(opts.trimAccentHex, spec.brassAccentHex);
-    }
+    const hasExplicitSeason =
+      opts.season === 1 || opts.season === 2 || opts.season === 3 || opts.season === 4;
+    this.activeSeason = hasExplicitSeason ? opts.season! : (opts.season ?? 1);
+    this.seasonAuthoritative = hasExplicitSeason;
+    this.activeTrilonStyleId = normalizeTrilonStyleIdV9(opts.trilonStyleId);
+    this.activeVetoedCategories = opts.vetoedCategories ? [...opts.vetoedCategories] : [];
+    this.activeVibePackId = opts.vibePackId;
 
-    // 1. Seed 12–15 `BoardTileNodeV7` nodes with orientation-aware Tote-Board layout
+    this.customBedHex = opts.tableBedHex;
+    this.customVeneerHex =
+      opts.trimVeneerHex !== undefined
+        ? parseHexNumber(opts.trimVeneerHex, spec.woodVeneerHex)
+        : undefined;
+    this.customBrassHex =
+      opts.trimAccentHex !== undefined
+        ? parseHexNumber(opts.trimAccentHex, spec.brassAccentHex)
+        : undefined;
+
+    // 1. Seed 12–15 `BoardTileNodeV7` nodes with orientation-aware Tote-Board layout & strict Veto/Vibe filtering
     const boardSeed = ALL_BOARD_IDS_V7.indexOf(this.activeBoardId) * 3 + 1 + this.seedOffset;
     const totalSlots = spec.slots.length;
+    const vetoSet = new Set<CategoryIdV7>(this.activeVetoedCategories);
+    const allowedCats = this.resolveAllowedCategoriesV9();
+    const allowedSet = new Set<CategoryIdV7>(allowedCats);
     this.tiles = spec.slots.map((slot, idx) => {
+      const overrideCat = opts.categoriesOverride?.[idx];
       const cat =
-        opts.categoriesOverride?.[idx] ??
-        ALL_CATEGORIES_V7[Math.abs(idx * 3 + boardSeed) % ALL_CATEGORIES_V7.length];
+        overrideCat && !vetoSet.has(overrideCat) && (!this.activeVibePackId || allowedSet.has(overrideCat))
+          ? overrideCat
+          : allowedCats[Math.abs(idx * 3 + boardSeed) % allowedCats.length];
       const domain = CATEGORY_TO_DOMAIN_V7[cat];
       const pos = this.computeSlotCoordForOrientation(idx, totalSlots, slot);
       return {
@@ -2908,6 +3548,7 @@ export class InteractiveBoard3DControllerV7 {
         category: cat,
         domain,
         baseChips: slot.baseChips,
+        nominalBaseChips: slot.baseChips,
         boardMultBonus: 0,
         state: 'OPEN',
         tvTwist: 'NONE',
@@ -2920,7 +3561,7 @@ export class InteractiveBoard3DControllerV7 {
       };
     });
 
-    // 2. Wire `BoardTwistsEngineV7` onto the live tile array (seeds all 5 1966 TV Twists + sockets!)
+    // 2. Wire `BoardTwistsEngineV7` onto the live tile array (seeds TV Twists, R7 mode & VIP Bluffs!)
     this.twistsEngine.configureMatch(
       {
         boardId: this.activeBoardId,
@@ -2928,14 +3569,20 @@ export class InteractiveBoard3DControllerV7 {
         rivalId: this.rivalId,
         rivalWeakCategories: opts.rivalWeakCategories,
         rivalStrongCategories: opts.rivalStrongCategories,
+        season: this.activeSeason,
+        vetoedCategories: this.activeVetoedCategories,
+        vibePackId: this.activeVibePackId,
+        allowedCategories: allowedCats,
+        ...(opts.boardPlayMode !== undefined ? { boardModeV9: opts.boardPlayMode } : {}),
         isBlitzPhase: false,
         seedOffset: this.seedOffset,
       },
       this.tiles,
       true,
     );
+    this.activeBoardModeV9 = this.twistsEngine.getActiveBoardModeV9();
 
-    // 3. Build Grounded 1966 "In Living Color" Teak, Broadcast Navy & Spun-Aluminum Cabinet + Chasing Marquee Bulbs
+    // 3. Build Grounded 1966 "In Living Color" Seasonal Cabinet, Spun-Aluminum Trim & Chasing Marquee Bulbs
     this.buildChassisAndPedestal(spec);
 
     // 4. Build Board-Specific Kinetic 3D Contraption Hardware (or compact Portrait Crest Medallion!)
@@ -3025,31 +3672,174 @@ export class InteractiveBoard3DControllerV7 {
   // Aluminum Trim, Chasing `#11` Marquee Bulbs & Zero-Z-Fighting Mitered Rails
   // --------------------------------------------------------------------------
 
+  private resolveSeasonalMaterialPalette(spec: BoardSpecV7): {
+    readonly seasonSpec: SeasonVisualSpecV9;
+    readonly woodHex: number;
+    readonly brassHex: number;
+    readonly bedHex: number;
+    readonly consoleBakeliteHex: number;
+    readonly seasonAccentHex: number;
+    readonly seasonSpotHex: number;
+    readonly bulbCircuitHexes: readonly [number, number, number, number];
+  } {
+    const seasonSpec = SEASON_VISUAL_SPECS_V9[this.activeSeason] ?? SEASON_VISUAL_SPECS_V9[1];
+    let seasonWoodHex = seasonSpec.cabinetHexNum ?? spec.woodVeneerHex;
+    let seasonBrassHex = seasonSpec.bezelTrimHexNum ?? spec.brassAccentHex;
+    let seasonBedHex = 0x007b85;
+    let consoleBakeliteHex = 0x006b74;
+    let seasonAccentHex = parseHexNumber(seasonSpec.tileAccentHex, 0x008b94);
+    let seasonSpotHex = parseHexNumber(seasonSpec.spotlightHex, 0xf2a922);
+    let bulbCircuitHexes: readonly [number, number, number, number] = [
+      0xfff5d0, 0xffd56b, 0xfff0b8, 0xf2a922,
+    ];
+
+    if (this.activeSeason === 2) {
+      seasonWoodHex = 0xfaf2df;
+      seasonBrassHex = 0xd6dfe8;
+      seasonBedHex = 0xa81d52;
+      consoleBakeliteHex = 0xff6b35;
+      seasonAccentHex = 0xff6b35;
+      seasonSpotHex = 0xe6397a;
+      bulbCircuitHexes = [0xff6b35, 0xe6397a, 0xff6b35, 0xe6397a];
+    } else if (this.activeSeason === 3) {
+      seasonWoodHex = 0x4f2917;
+      seasonBrassHex = 0xf2a922;
+      seasonBedHex = 0x157238;
+      consoleBakeliteHex = 0x15803d;
+      seasonAccentHex = 0x15803d;
+      seasonSpotHex = 0xf2a922;
+      bulbCircuitHexes = [0xffd56b, 0x22c55e, 0xf2a922, 0x15803d];
+    } else if (this.activeSeason === 4) {
+      seasonWoodHex = 0xd6dfe8;
+      seasonBrassHex = 0x1746a2;
+      seasonBedHex = 0x1746a2;
+      consoleBakeliteHex = 0xf2a922;
+      seasonAccentHex = 0x1746a2;
+      seasonSpotHex = 0xf2a922;
+      bulbCircuitHexes = [0x3b82f6, 0xfffdf7, 0xf2a922, 0x00d8ec];
+    } else {
+      seasonWoodHex = 0x6e3b23;
+      seasonBrassHex = 0xd9a441;
+      seasonBedHex = 0x007b85;
+      consoleBakeliteHex = 0x006b74;
+    }
+
+    const isCanonicalSeasonShowcase = this.activeBoardId === 'BOARD_01_FUNK_CROSSFADER';
+    if (!isCanonicalSeasonShowcase) {
+      const tintHex = (baseHex: number, targetHex: number, alpha: number): number =>
+        new THREE.Color(baseHex).lerp(new THREE.Color(targetHex), alpha).getHex();
+      const woodHex = this.seasonAuthoritative
+        ? tintHex(spec.woodVeneerHex, seasonWoodHex, 0.24)
+        : (this.customVeneerHex ?? spec.woodVeneerHex);
+      const brassHex = this.seasonAuthoritative
+        ? seasonBrassHex
+        : (this.customBrassHex ?? seasonBrassHex);
+      const bedHex = this.seasonAuthoritative
+        ? tintHex(spec.bedHex, seasonBedHex, 0.24)
+        : (this.customBedHex ?? spec.bedHex);
+      const boardBakeliteHex = this.seasonAuthoritative
+        ? tintHex(spec.bakeliteHex, consoleBakeliteHex, 0.24)
+        : spec.bakeliteHex;
+
+      return {
+        seasonSpec,
+        woodHex,
+        brassHex,
+        bedHex,
+        consoleBakeliteHex: boardBakeliteHex,
+        seasonAccentHex,
+        seasonSpotHex,
+        bulbCircuitHexes,
+      };
+    }
+
+    const woodHex = this.seasonAuthoritative
+      ? seasonWoodHex
+      : (this.customVeneerHex ?? seasonWoodHex);
+    const brassHex = this.seasonAuthoritative
+      ? seasonBrassHex
+      : (this.customBrassHex ?? seasonBrassHex);
+    const bedHex = this.seasonAuthoritative
+      ? seasonBedHex
+      : (this.customBedHex ?? seasonBedHex);
+
+    return {
+      seasonSpec,
+      woodHex,
+      brassHex,
+      bedHex,
+      consoleBakeliteHex,
+      seasonAccentHex,
+      seasonSpotHex,
+      bulbCircuitHexes,
+    };
+  }
+
   private buildChassisAndPedestal(spec: BoardSpecV7): void {
     const bedW = this.isPortraitMode ? PORTRAIT_BED_WIDTH : TABLE_BED_WIDTH;
     const bedD = this.isPortraitMode
       ? this.getActivePortraitDepth(this.tiles.length || spec.slots.length)
       : TABLE_BED_DEPTH;
 
-    // Preserve vibrant 1966 American Teak/Walnut, Harvest Marquee Gold & Brushed Satin Aluminum!
-    const woodHex = spec.woodVeneerHex;
-    const brassHex = spec.brassAccentHex;
+    const palette = this.resolveSeasonalMaterialPalette(spec);
+    const {
+      woodHex,
+      brassHex,
+      bedHex: resolvedBedHex,
+      consoleBakeliteHex,
+      seasonAccentHex,
+      bulbCircuitHexes,
+    } = palette;
 
     const walnutTex = typeof document !== 'undefined' ? getAmericanWalnutVeneerTexture() : null;
     const brushedTex = typeof document !== 'undefined' ? getBrushedAnodizedTexture() : null;
-    const louverBedTex = typeof document !== 'undefined' ? getDarkLouverToteBedTexture() : null;
+    const louverBedTex = typeof document !== 'undefined' ? getNeutralLouverToteBedTexture() : null;
+
+    const isCanonicalSeasonShowcase = this.activeBoardId === 'BOARD_01_FUNK_CROSSFADER';
+    const isMetalFramedBoard =
+      this.activeBoardId === 'BOARD_05_LARSON_SPIN_RING' ||
+      this.activeBoardId === 'BOARD_09_PIRATE_UHF_DECK' ||
+      this.activeBoardId === 'BOARD_10_SOVEREIGN_ZIGGURAT';
+    const woodMap = isCanonicalSeasonShowcase
+      ? this.activeSeason === 2
+        ? null
+        : this.activeSeason === 4
+          ? brushedTex
+          : walnutTex
+      : isMetalFramedBoard && this.activeSeason === 4
+        ? brushedTex
+        : walnutTex;
+    const woodRoughness = isCanonicalSeasonShowcase
+      ? this.activeSeason === 2
+        ? 0.18
+        : this.activeSeason === 4
+          ? 0.22
+          : 0.3
+      : isMetalFramedBoard && this.activeSeason === 4
+        ? 0.24
+        : 0.3;
+    const woodMetalness = isCanonicalSeasonShowcase
+      ? this.activeSeason === 4
+        ? 0.72
+        : this.activeSeason === 2
+          ? 0.08
+          : 0.06
+      : isMetalFramedBoard && this.activeSeason === 4
+        ? 0.56
+        : 0.08;
+    const woodClearcoat = isCanonicalSeasonShowcase && this.activeSeason === 2 ? 0.85 : 0.72;
 
     const woodMat = this.trackMat(
       new THREE.MeshPhysicalMaterial({
         color: woodHex,
-        map: walnutTex,
-        roughness: 0.3,
-        metalness: 0.06,
-        clearcoat: 0.72,
-        clearcoatRoughness: 0.18,
+        map: woodMap,
+        roughness: woodRoughness,
+        metalness: woodMetalness,
+        clearcoat: woodClearcoat,
+        clearcoatRoughness: 0.16,
       }),
     );
-    woodMat.envMapIntensity = 0.72;
+    woodMat.envMapIntensity = 0.78;
 
     const brassMat = this.trackMat(
       new THREE.MeshPhysicalMaterial({
@@ -3077,7 +3867,7 @@ export class InteractiveBoard3DControllerV7 {
 
     const navyConsoleMat = this.trackMat(
       new THREE.MeshPhysicalMaterial({
-        color: spec.bakeliteHex,
+        color: consoleBakeliteHex,
         map: louverBedTex,
         roughness: 0.34,
         metalness: 0.18,
@@ -3087,7 +3877,7 @@ export class InteractiveBoard3DControllerV7 {
     );
     navyConsoleMat.envMapIntensity = 0.58;
 
-    // Rich 1966 Broadcast Navy Louvered Shadowbox Bed (zero dark-brown mud, crisp contrast under glowing tiles!)
+    // Rich 1966 Living Color Louvered Shadowbox Bed (sunlit Peacock/Cerise/Emerald/Cobalt contrast!)
     const bedMat = this.trackMat(
       new THREE.MeshStandardMaterial({
         color: 0xffffff,
@@ -3096,15 +3886,15 @@ export class InteractiveBoard3DControllerV7 {
         metalness: 0.14,
       }),
     );
-    bedMat.color.setHex(spec.bedHex).lerp(new THREE.Color(0xffffff), 0.35);
+    bedMat.color.setHex(resolvedBedHex).lerp(new THREE.Color(0xffffff), 0.22);
     bedMat.envMapIntensity = 0.36;
 
-    // Subtle Backlit Peacock-Teal Acrylite inner shadowbox cove liner (`#0098A6`)
+    // Seasonal Backlit Acrylite inner shadowbox cove liner
     const coveGlowMat = this.trackMat(
       new THREE.MeshStandardMaterial({
-        color: 0x1fc3d1,
-        emissive: 0x0098a6,
-        emissiveIntensity: 0.55,
+        color: seasonAccentHex,
+        emissive: seasonAccentHex,
+        emissiveIntensity: 0.58,
         roughness: 0.25,
         metalness: 0.1,
       }),
@@ -3269,16 +4059,16 @@ export class InteractiveBoard3DControllerV7 {
     backRail.castShadow = true;
     this.rakedChassisGroup.add(backRail);
 
-    // Downstage Front Spun-Aluminum & Harvest-Gold Trim Bar spans strictly BETWEEN side rails (`y = 0.004m`, low profile!)
+    // Downstage Front Trim Bar spans strictly BETWEEN side rails (`y = 0.004m`, low profile!)
     const frontRailDepth = this.isPortraitMode ? 0.088 : 0.098;
     const frontFlushTrim = new THREE.Mesh(
       this.trackGeom(createChamferedSlabGeometry(innerSpanW, 0.036, frontRailDepth, 0.014, 0.006)),
-      aluminumMat,
+      this.activeSeason === 1 || this.activeSeason === 3 ? brassMat : aluminumMat,
     );
     frontFlushTrim.position.set(0, 0.004, bedD * 0.5 - frontRailDepth * 0.5);
     this.rakedChassisGroup.add(frontFlushTrim);
 
-    // Proud Stepped Mid-Century Harvest-Gold Corner Escutcheon Caps seated +6mm PROUD above sideRail top!
+    // Proud Stepped Mid-Century Corner Escutcheon Caps + Bold Non-Overlapping 3D Seasonal Silhouettes!
     const capW = railW + 0.01;
     const capGeom = this.trackGeom(createChamferedSlabGeometry(capW, 0.018, 0.135, 0.018, 0.004));
     const cornerX = bedW * 0.5 - railW * 0.5;
@@ -3294,12 +4084,205 @@ export class InteractiveBoard3DControllerV7 {
       this.rakedChassisGroup.add(cap);
     }
 
+    const seasonTrimMat = this.trackMat(
+      new THREE.MeshStandardMaterial({
+        color: seasonAccentHex,
+        emissive: seasonAccentHex,
+        emissiveIntensity: 0.38,
+        roughness: 0.24,
+        metalness: 0.35,
+      }),
+    );
+
+    if (this.activeSeason === 1) {
+      // Studio 6A Flagship: Art-Moderne Stepped Walnut/Brass Corner Brackets & Peacock Teal Inlays
+      const artBracketGeom = this.trackGeom(
+        createChamferedSlabGeometry(capW + 0.032, 0.022, 0.15, 0.016, 0.005),
+      );
+      const lozengeGeom = this.trackGeom(
+        createChamferedSlabGeometry(0.056, 0.018, 0.082, 0.014, 0.004),
+      );
+      for (const [gx, gz] of [
+        [-cornerX, -cornerZ],
+        [cornerX, -cornerZ],
+        [-cornerX, cornerZ],
+        [cornerX, cornerZ],
+      ]) {
+        const bracket = new THREE.Mesh(artBracketGeom, brassMat);
+        bracket.position.set(gx, railH + 0.014, gz);
+        const lozenge = new THREE.Mesh(lozengeGeom, seasonTrimMat);
+        lozenge.position.set(gx, railH + 0.032, gz);
+        this.rakedChassisGroup.add(bracket, lozenge);
+      }
+      const inlayGeom = this.trackGeom(
+        createChamferedSlabGeometry(0.022, 0.034, bedD * 0.56, 0.006, 0.003),
+      );
+      const beadGeom = this.trackGeom(
+        createChamferedSlabGeometry(0.026, 0.008, bedD * 0.58, 0.004, 0.002),
+      );
+      for (const sx of [-bedW * 0.5 - 0.018, bedW * 0.5 + 0.018]) {
+        const inlay = new THREE.Mesh(inlayGeom, seasonTrimMat);
+        inlay.position.set(sx, 0.028, 0);
+        const topBead = new THREE.Mesh(beadGeom, brassMat);
+        topBead.position.set(sx, 0.049, 0);
+        const botBead = new THREE.Mesh(beadGeom, brassMat);
+        botBead.position.set(sx, 0.007, 0);
+        this.rakedChassisGroup.add(inlay, topBead, botBead);
+      }
+    } else if (this.activeSeason === 2) {
+      // Hollywood Blvd Starburst Palace: Sweeping Googie Outer Wing Fins & 3D Corner Starbursts
+      const ceriseStarMat = this.trackMat(
+        new THREE.MeshStandardMaterial({
+          color: 0xe6397a,
+          emissive: 0xe6397a,
+          emissiveIntensity: 0.45,
+          roughness: 0.22,
+          metalness: 0.28,
+        }),
+      );
+      const wingGeom = this.trackGeom(
+        createChamferedSlabGeometry(0.105, 0.056, bedD * 0.52, 0.032, 0.009),
+      );
+      const ridgeGeom = this.trackGeom(
+        createChamferedSlabGeometry(0.03, 0.024, bedD * 0.44, 0.012, 0.005),
+      );
+      for (const sx of [-bedW * 0.5 - 0.056, bedW * 0.5 + 0.056]) {
+        const wing = new THREE.Mesh(wingGeom, seasonTrimMat);
+        wing.position.set(sx, 0.018, 0);
+        const ridge = new THREE.Mesh(ridgeGeom, aluminumMat);
+        ridge.position.set(sx, 0.052, 0);
+        this.rakedChassisGroup.add(wing, ridge);
+      }
+
+      const starShape = new THREE.Shape();
+      const rays = 6;
+      for (let i = 0; i < rays * 2; i++) {
+        const a = (i / (rays * 2)) * Math.PI * 2;
+        const r = i % 2 === 0 ? 0.072 : 0.026;
+        const px = Math.cos(a) * r;
+        const py = Math.sin(a) * r;
+        if (i === 0) starShape.moveTo(px, py);
+        else starShape.lineTo(px, py);
+      }
+      starShape.closePath();
+      const starGeom = this.trackGeom(
+        new THREE.ExtrudeGeometry(starShape, {
+          depth: 0.016,
+          bevelEnabled: true,
+          bevelThickness: 0.003,
+          bevelSize: 0.003,
+          bevelSegments: 2,
+        }),
+      );
+      starGeom.rotateX(-Math.PI * 0.5);
+      const orbGeom = this.trackGeom(new THREE.SphereGeometry(0.022, 12, 10));
+      for (const [gx, gz] of [
+        [-cornerX, -cornerZ],
+        [cornerX, -cornerZ],
+        [-cornerX, cornerZ],
+        [cornerX, cornerZ],
+      ]) {
+        const star = new THREE.Mesh(starGeom, ceriseStarMat);
+        star.position.set(gx, railH + 0.02, gz);
+        const orb = new THREE.Mesh(orbGeom, aluminumMat);
+        orb.position.set(gx, railH + 0.04, gz);
+        this.rakedChassisGroup.add(star, orb);
+      }
+    } else if (this.activeSeason === 3) {
+      // Manhattan Prime-Time Gold Vault: Tiered 24K Gold Corner Turrets & Emerald Cabochons + Non-Colliding Flanks
+      const turretBaseGeom = this.trackGeom(new THREE.CylinderGeometry(0.072, 0.078, 0.042, 12));
+      const turretCollarGeom = this.trackGeom(new THREE.CylinderGeometry(0.056, 0.064, 0.016, 12));
+      const cabochonGeom = this.trackGeom(new THREE.SphereGeometry(0.036, 14, 10));
+      cabochonGeom.scale(1, 0.65, 1);
+      for (const [gx, gz] of [
+        [-cornerX, -cornerZ],
+        [cornerX, -cornerZ],
+        [-cornerX, cornerZ],
+        [cornerX, cornerZ],
+      ]) {
+        const base = new THREE.Mesh(turretBaseGeom, brassMat);
+        base.position.set(gx, railH + 0.022, gz);
+        const collar = new THREE.Mesh(turretCollarGeom, brassMat);
+        collar.position.set(gx, railH + 0.048, gz);
+        const gem = new THREE.Mesh(cabochonGeom, seasonTrimMat);
+        gem.position.set(gx, railH + 0.058, gz);
+        this.rakedChassisGroup.add(base, collar, gem);
+      }
+
+      const flankGoldGeom = this.trackGeom(
+        createChamferedSlabGeometry(0.034, 0.052, bedD * 0.62, 0.01, 0.004),
+      );
+      const flankEmeraldGeom = this.trackGeom(
+        createChamferedSlabGeometry(0.038, 0.02, bedD * 0.54, 0.006, 0.003),
+      );
+      for (const sx of [-bedW * 0.5 - 0.024, bedW * 0.5 + 0.024]) {
+        const gBar = new THREE.Mesh(flankGoldGeom, brassMat);
+        gBar.position.set(sx, 0.016, 0);
+        const eRib = new THREE.Mesh(flankEmeraldGeom, seasonTrimMat);
+        eRib.position.set(sx + (sx > 0 ? 0.003 : -0.003), 0.018, 0);
+        this.rakedChassisGroup.add(gBar, eRib);
+      }
+      const frontApronBar = new THREE.Mesh(
+        this.trackGeom(createChamferedSlabGeometry(bedW * 0.72, 0.028, 0.028, 0.008, 0.004)),
+        brassMat,
+      );
+      frontApronBar.position.set(0, 0.016, bedD * 0.5 + 0.018);
+      this.rakedChassisGroup.add(frontApronBar);
+    } else if (this.activeSeason === 4) {
+      // Burbank Super-Stage Kaleidoscope: Aerospace Corner Prism Wings & Cobalt/Gold Chevrons
+      const goldAccentMat = this.trackMat(
+        new THREE.MeshStandardMaterial({
+          color: 0xf2a922,
+          emissive: 0xf2a922,
+          emissiveIntensity: 0.42,
+          roughness: 0.22,
+          metalness: 0.68,
+        }),
+      );
+      const prismWingGeom = this.trackGeom(
+        createChamferedSlabGeometry(0.115, 0.036, 0.155, 0.024, 0.007),
+      );
+      const prismCrestGeom = this.trackGeom(
+        createChamferedSlabGeometry(0.06, 0.018, 0.088, 0.014, 0.004),
+      );
+      for (const [gx, gz] of [
+        [-(cornerX + 0.032), -(cornerZ + 0.01)],
+        [cornerX + 0.032, -(cornerZ + 0.01)],
+        [-(cornerX + 0.032), cornerZ + 0.01],
+        [cornerX + 0.032, cornerZ + 0.01],
+      ]) {
+        const wing = new THREE.Mesh(prismWingGeom, seasonTrimMat);
+        wing.position.set(gx, railH + 0.018, gz);
+        wing.rotation.y = Math.sign(gx) * Math.sign(gz) * 0.42;
+        const crest = new THREE.Mesh(prismCrestGeom, goldAccentMat);
+        crest.position.set(gx, railH + 0.044, gz);
+        crest.rotation.y = wing.rotation.y;
+        this.rakedChassisGroup.add(wing, crest);
+      }
+
+      const outerChevronGeom = this.trackGeom(
+        createChamferedSlabGeometry(0.084, 0.05, 0.25, 0.022, 0.008),
+      );
+      const bladeGeom = this.trackGeom(
+        createChamferedSlabGeometry(0.042, 0.02, 0.19, 0.012, 0.004),
+      );
+      for (const sx of [-bedW * 0.5 - 0.044, bedW * 0.5 + 0.044]) {
+        for (const sz of [-bedD * 0.22, bedD * 0.22]) {
+          const chev = new THREE.Mesh(outerChevronGeom, seasonTrimMat);
+          chev.position.set(sx, 0.034, sz);
+          const blade = new THREE.Mesh(bladeGeom, goldAccentMat);
+          blade.position.set(sx, 0.066, sz);
+          this.rakedChassisGroup.add(chev, blade);
+        }
+      }
+    }
+
     // Compact static pedestal & cabinet rails/channels/ferrules (`36` meshes -> `6` draw calls!)
     this.compactStaticBoardGroup(this.pedestalGroup);
     this.compactStaticBoardGroup(this.rakedChassisGroup, new Set([this.balanceBeamGroup]));
 
-    // D. Perimeter Chasing `#11` Warm `2700K` Incandescent Marquee Bulbs (4-Circuit Studio Chaser!)
-    this.buildPerimeterMarqueeBulbs(bedW, bedD, railW, railH, brassMat);
+    // D. Perimeter Chasing `#11` Warm Incandescent Marquee Bulbs (Season-tinted 4-Circuit Studio Chaser!)
+    this.buildPerimeterMarqueeBulbs(bedW, bedD, railW, railH, brassMat, bulbCircuitHexes);
   }
 
   private compactStaticBoardGroup(
@@ -3403,16 +4386,19 @@ export class InteractiveBoard3DControllerV7 {
     railW: number,
     railH: number,
     brassMat: THREE.Material,
+    circuitHexes: readonly [number, number, number, number] = [0xfff5d0, 0xffd56b, 0xfff0b8, 0xf2a922],
   ): void {
     this.marqueeCircuitMats = [];
     this.marqueeHaloMats = [];
+    this.marqueeCircuitHexes = [circuitHexes[0], circuitHexes[1], circuitHexes[2], circuitHexes[3]];
     const haloTex = typeof document !== 'undefined' ? getTungstenBulbHaloTexture() : null;
 
     for (let c = 0; c < 4; c++) {
+      const hex = this.marqueeCircuitHexes[c];
       const m = this.trackMat(
         new THREE.MeshStandardMaterial({
-          color: 0xfff4cf,
-          emissive: 0xffd56b,
+          color: hex,
+          emissive: hex,
           emissiveIntensity: c === 0 ? 1.8 : 0.42,
           roughness: 0.12,
           metalness: 0.04,
@@ -3423,7 +4409,7 @@ export class InteractiveBoard3DControllerV7 {
       const hm = this.trackMat(
         new THREE.MeshBasicMaterial({
           map: haloTex,
-          color: 0xffd56b,
+          color: hex,
           transparent: true,
           opacity: c === 0 ? 0.85 : 0.2,
           blending: THREE.AdditiveBlending,
@@ -3550,27 +4536,52 @@ export class InteractiveBoard3DControllerV7 {
 
   /**
    * Builds a compact animated 1966 sculptural centerpiece medallion perched neatly at
-   * the top center crown on Mobile Portrait so EVERY one of the 12 boards retains its
-   * unmistakable TV identity without expanding horizontal width past `2.56m`!
+   * the top center crown on Mobile Portrait (plus Portrait `hexBridgeLinks` on `BOARD_02`
+   * and Portrait `fulcrum` + `beamTruss` on `BOARD_12`) so EVERY one of the 12 boards
+   * retains its unmistakable TV identity AND tactile Portrait gimmick without expanding
+   * horizontal width past `2.56m`!
    */
   private buildPortraitBoardCrest(spec: BoardSpecV7): void {
-    const crownZ = -(this.getActivePortraitDepth(this.tiles.length || spec.slots.length) * 0.5 + 0.08);
+    const portraitDepth = this.getActivePortraitDepth(this.tiles.length || spec.slots.length);
+    const crownZ = -(portraitDepth * 0.5 + 0.08);
     const crestRoot = new THREE.Group();
     crestRoot.name = `PortraitCrest_${this.activeBoardId}`;
     crestRoot.position.set(0, 0.11, crownZ);
 
+    const palette = this.resolveSeasonalMaterialPalette(spec);
+    const brushedTex = typeof document !== 'undefined' ? getBrushedAnodizedTexture() : null;
+    const louverTex = typeof document !== 'undefined' ? getNeutralLouverToteBedTexture() : null;
     const brassMat = this.trackMat(
       new THREE.MeshPhysicalMaterial({
-        color: spec.brassAccentHex,
+        color: palette.brassHex,
+        map: brushedTex,
         roughness: 0.22,
         metalness: 0.92,
         clearcoat: 0.55,
       }),
     );
+    const aluminumMat = this.trackMat(
+      new THREE.MeshPhysicalMaterial({
+        color: 0xe4edf8,
+        map: brushedTex,
+        roughness: 0.22,
+        metalness: 0.86,
+        clearcoat: 0.48,
+      }),
+    );
+    const darkMetalMat = this.trackMat(
+      new THREE.MeshPhysicalMaterial({
+        color: palette.consoleBakeliteHex,
+        map: louverTex,
+        roughness: 0.28,
+        metalness: 0.42,
+        clearcoat: 0.62,
+      }),
+    );
     const peacockGlowMat = this.trackMat(
       new THREE.MeshStandardMaterial({
-        color: 0x33cad8,
-        emissive: 0x0098a6,
+        color: palette.seasonAccentHex,
+        emissive: palette.seasonAccentHex,
         emissiveIntensity: 0.95,
         roughness: 0.18,
         metalness: 0.35,
@@ -3578,71 +4589,322 @@ export class InteractiveBoard3DControllerV7 {
     );
     const goldGlowMat = this.trackMat(
       new THREE.MeshStandardMaterial({
-        color: 0xffd56b,
-        emissive: 0xf4a91f,
+        color: palette.seasonSpotHex,
+        emissive: palette.seasonSpotHex,
         emissiveIntensity: 0.85,
         roughness: 0.2,
         metalness: 0.45,
       }),
     );
+    const ceriseGlowMat = this.trackMat(
+      new THREE.MeshStandardMaterial({
+        color: 0xff6da3,
+        emissive: 0xe63b7a,
+        emissiveIntensity: 0.88,
+        roughness: 0.2,
+        metalness: 0.25,
+      }),
+    );
+    const tangerineGlowMat = this.trackMat(
+      new THREE.MeshStandardMaterial({
+        color: 0xff8a5c,
+        emissive: 0xeb5b28,
+        emissiveIntensity: 0.88,
+        roughness: 0.2,
+        metalness: 0.25,
+      }),
+    );
 
     const spinner = new THREE.Group();
-    // Outer brushed-brass broadcast ring
     const outerRing = new THREE.Mesh(
       this.trackGeom(new THREE.TorusGeometry(0.145, 0.014, 10, 28)),
       brassMat,
     );
     spinner.add(outerRing);
 
-    if (
-      this.activeBoardId === 'BOARD_08_GEODESIC_SUNDIAL' ||
-      this.activeBoardId === 'BOARD_10_SOVEREIGN_ZIGGURAT'
-    ) {
-      // Orbiting atomic / armillary crossed rings
-      const r2 = new THREE.Mesh(
-        this.trackGeom(new THREE.TorusGeometry(0.115, 0.01, 10, 24)),
-        peacockGlowMat,
-      );
-      r2.rotation.x = Math.PI / 3;
-      const r3 = new THREE.Mesh(
-        this.trackGeom(new THREE.TorusGeometry(0.115, 0.01, 10, 24)),
-        goldGlowMat,
-      );
-      r3.rotation.y = Math.PI / 3;
-      spinner.add(r2, r3);
-    } else if (this.activeBoardId === 'BOARD_07_MONTE_CARLO_SHOE') {
-      // Mini Monte Carlo 8-spoke brass roulette turret
-      const hub = new THREE.Mesh(
-        this.trackGeom(new THREE.CylinderGeometry(0.036, 0.044, 0.028, 16)),
-        goldGlowMat,
-      );
-      hub.rotation.x = Math.PI * 0.5;
-      spinner.add(hub);
-      const spokeG = this.trackGeom(createChamferedSlabGeometry(0.24, 0.012, 0.016, 0.003, 0.002));
-      for (let s = 0; s < 4; s++) {
-        const sp = new THREE.Mesh(spokeG, s % 2 === 0 ? brassMat : peacockGlowMat);
-        sp.rotation.z = (s / 4) * Math.PI;
-        spinner.add(sp);
+    switch (this.activeBoardId) {
+      case 'BOARD_01_FUNK_CROSSFADER': {
+        // Compact vinyl 33 RPM disc + gold crossfader cap
+        const vinylDisc = new THREE.Mesh(
+          this.trackGeom(new THREE.CylinderGeometry(0.12, 0.12, 0.016, 24)),
+          darkMetalMat,
+        );
+        vinylDisc.rotation.x = Math.PI * 0.5;
+        const label = new THREE.Mesh(
+          this.trackGeom(new THREE.CylinderGeometry(0.052, 0.052, 0.022, 18)),
+          ceriseGlowMat,
+        );
+        label.rotation.x = Math.PI * 0.5;
+        spinner.add(vinylDisc, label);
+        break;
       }
-    } else {
-      // 8-Ray 1966 Living Color NBC/CBS Atomic Starburst Crest
-      const rayGeom = this.trackGeom(new THREE.ConeGeometry(0.022, 0.14, 6));
-      for (let r = 0; r < 8; r++) {
-        const a = (r / 8) * Math.PI * 2;
-        const ray = new THREE.Mesh(rayGeom, r % 2 === 0 ? goldGlowMat : peacockGlowMat);
-        ray.position.set(Math.cos(a) * 0.072, Math.sin(a) * 0.072, 0);
-        ray.rotation.z = a - Math.PI * 0.5;
-        spinner.add(ray);
+
+      case 'BOARD_02_JUBILEE_HEX_BRIDGE': {
+        // 1966 Jubilee starburst + build glowing Portrait Hex-Bridge conduits beneath tiles!
+        const rayGeom = this.trackGeom(new THREE.ConeGeometry(0.02, 0.13, 6));
+        for (let r = 0; r < 8; r++) {
+          const a = (r / 8) * Math.PI * 2;
+          const ray = new THREE.Mesh(rayGeom, r % 2 === 0 ? goldGlowMat : peacockGlowMat);
+          ray.position.set(Math.cos(a) * 0.072, Math.sin(a) * 0.072, 0);
+          ray.rotation.z = a - Math.PI * 0.5;
+          spinner.add(ray);
+        }
+        for (let i = 0; i < this.tiles.length; i++) {
+          for (let j = i + 1; j < this.tiles.length; j++) {
+            const a = this.tiles[i];
+            const b = this.tiles[j];
+            const dist = Math.hypot(b.x - a.x, b.z - a.z);
+            if (dist <= 1.02) {
+              const condMat = this.trackMat(
+                new THREE.MeshStandardMaterial({
+                  color: 0x0098a6,
+                  emissive: 0x0098a6,
+                  emissiveIntensity: 0.34,
+                  roughness: 0.24,
+                  metalness: 0.72,
+                }),
+              );
+              const bar = new THREE.Mesh(
+                this.trackGeom(createChamferedSlabGeometry(dist * 0.88, 0.024, 0.056, 0.012, 0.005)),
+                condMat,
+              );
+              bar.position.set((a.x + b.x) * 0.5, 0.022, (a.z + b.z) * 0.5);
+              bar.rotation.y = -Math.atan2(b.z - a.z, b.x - a.x);
+              this.rakedChassisGroup.add(bar);
+              this.hexBridgeLinks.push({ indexA: i, indexB: j, mesh: bar, mat: condMat });
+
+              const pipeMat = this.trackMat(
+                new THREE.MeshStandardMaterial({
+                  color: 0x8ef3ff,
+                  emissive: 0x33cad8,
+                  emissiveIntensity: 0.5,
+                  roughness: 0.15,
+                }),
+              );
+              const lightPipe = new THREE.Mesh(
+                this.trackGeom(createChamferedSlabGeometry(dist * 0.76, 0.01, 0.018, 0.004, 0.002)),
+                pipeMat,
+              );
+              lightPipe.position.set((a.x + b.x) * 0.5, 0.044, (a.z + b.z) * 0.5);
+              lightPipe.rotation.y = bar.rotation.y;
+              this.rakedChassisGroup.add(lightPipe);
+              this.hexBridgePulseMats.push(pipeMat);
+            }
+          }
+        }
+        break;
+      }
+
+      case 'BOARD_03_VAUDEVILLE_GEAR_TRAIN': {
+        // 8-spoke Burbank Pop-Art Kaleidoscope Prize Wheel
+        const popMats = [peacockGlowMat, goldGlowMat, ceriseGlowMat, tangerineGlowMat];
+        const spokeG = this.trackGeom(createChamferedSlabGeometry(0.11, 0.014, 0.028, 0.004, 0.002));
+        for (let s = 0; s < 8; s++) {
+          const sa = (s / 8) * Math.PI * 2;
+          const sp = new THREE.Mesh(spokeG, popMats[s % 4]);
+          sp.position.set(Math.cos(sa) * 0.068, Math.sin(sa) * 0.068, 0);
+          sp.rotation.z = sa;
+          spinner.add(sp);
+        }
+        break;
+      }
+
+      case 'BOARD_04_MAHOGANY_SWITCHBOARD': {
+        // 4 Supervisory Fresnel Jewel Lamps mounted inside brass crown crossbar
+        const lampHexes = [0x1a5fd0, 0xf4a91f, 0x0098a6, 0xeb5b28];
+        const domeG = this.trackGeom(new THREE.CylinderGeometry(0.024, 0.028, 0.026, 12));
+        domeG.rotateX(Math.PI * 0.5);
+        for (let i = 0; i < 4; i++) {
+          const lMat = this.trackMat(
+            new THREE.MeshStandardMaterial({
+              color: lampHexes[i],
+              emissive: lampHexes[i],
+              emissiveIntensity: i === 0 ? 1.55 : 0.45,
+              roughness: 0.16,
+            }),
+          );
+          const dome = new THREE.Mesh(domeG, lMat);
+          dome.position.set(-0.084 + i * 0.056, 0, 0.012);
+          spinner.add(dome);
+          this.switchboardLamps.push(lMat);
+        }
+        break;
+      }
+
+      case 'BOARD_05_LARSON_SPIN_RING': {
+        // Chasing 8-lamp Apollo ring + brass paddle cap
+        const bulbG = this.trackGeom(new THREE.SphereGeometry(0.022, 10, 10));
+        for (let i = 0; i < 8; i++) {
+          const a = (i / 8) * Math.PI * 2;
+          const bMat = this.trackMat(
+            new THREE.MeshStandardMaterial({
+              color: 0xfff2c2,
+              emissive: 0xffd56b,
+              emissiveIntensity: i === 0 ? 1.8 : 0.3,
+              roughness: 0.14,
+            }),
+          );
+          const b = new THREE.Mesh(bulbG, bMat);
+          b.position.set(Math.cos(a) * 0.11, Math.sin(a) * 0.11, 0.01);
+          spinner.add(b);
+          this.larsonBulbMats.push(bMat);
+        }
+        break;
+      }
+
+      case 'BOARD_06_BOARDWALK_PINBALL': {
+        // Pop-bumper cap + twin tangerine/cerise ring
+        const bumperCap = new THREE.Mesh(
+          this.trackGeom(new THREE.CylinderGeometry(0.092, 0.108, 0.032, 20)),
+          tangerineGlowMat,
+        );
+        bumperCap.rotation.x = Math.PI * 0.5;
+        spinner.add(bumperCap);
+        break;
+      }
+
+      case 'BOARD_07_MONTE_CARLO_SHOE': {
+        // Mini Monte Carlo 8-spoke brass roulette turret
+        const hub = new THREE.Mesh(
+          this.trackGeom(new THREE.CylinderGeometry(0.036, 0.044, 0.028, 16)),
+          goldGlowMat,
+        );
+        hub.rotation.x = Math.PI * 0.5;
+        spinner.add(hub);
+        const spokeG = this.trackGeom(createChamferedSlabGeometry(0.24, 0.012, 0.016, 0.003, 0.002));
+        for (let s = 0; s < 4; s++) {
+          const sp = new THREE.Mesh(spokeG, s % 2 === 0 ? brassMat : peacockGlowMat);
+          sp.rotation.z = (s / 4) * Math.PI;
+          spinner.add(sp);
+        }
+        break;
+      }
+
+      case 'BOARD_08_GEODESIC_SUNDIAL':
+      case 'BOARD_10_SOVEREIGN_ZIGGURAT': {
+        // Orbiting atomic / armillary crossed rings
+        const r2 = new THREE.Mesh(
+          this.trackGeom(new THREE.TorusGeometry(0.115, 0.01, 10, 24)),
+          peacockGlowMat,
+        );
+        r2.rotation.x = Math.PI / 3;
+        const r3 = new THREE.Mesh(
+          this.trackGeom(new THREE.TorusGeometry(0.115, 0.01, 10, 24)),
+          goldGlowMat,
+        );
+        r3.rotation.y = Math.PI / 3;
+        spinner.add(r2, r3);
+        break;
+      }
+
+      case 'BOARD_09_PIRATE_UHF_DECK': {
+        // Knurled UHF carrier dial + pointer bar
+        const dial = new THREE.Mesh(
+          this.trackGeom(new THREE.CylinderGeometry(0.1, 0.11, 0.026, 20)),
+          darkMetalMat,
+        );
+        dial.rotation.x = Math.PI * 0.5;
+        const bar = new THREE.Mesh(
+          this.trackGeom(createChamferedSlabGeometry(0.024, 0.11, 0.02, 0.004, 0.002)),
+          goldGlowMat,
+        );
+        bar.position.set(0, 0.04, 0.016);
+        spinner.add(dial, bar);
+        break;
+      }
+
+      case 'BOARD_11_WHEW_GAUNTLET': {
+        // 5-Lamp Gold Gauntlet Recon Scanner Bar inside crown
+        const scanG = this.trackGeom(createChamferedSlabGeometry(0.036, 0.044, 0.02, 0.005, 0.002));
+        for (let s = 0; s < 5; s++) {
+          const sMat = this.trackMat(
+            new THREE.MeshStandardMaterial({
+              color: 0xffd56b,
+              emissive: 0xff6738,
+              emissiveIntensity: s === 0 ? 1.7 : 0.35,
+              roughness: 0.16,
+            }),
+          );
+          const lamp = new THREE.Mesh(scanG, sMat);
+          lamp.position.set(-0.096 + s * 0.048, 0, 0.014);
+          spinner.add(lamp);
+          this.gauntletScannerMats.push(sMat);
+        }
+        break;
+      }
+
+      case 'BOARD_12_PENDULUM_BALANCE': {
+        // Portrait Fulcrum Knife-Edge + Equilibrium Calibration Arc + Tilting Balance Beam Deck!
+        this.addBoardContactShadow(this.rakedChassisGroup, 0.22, 1.24, 0.0135, 0, 0);
+        const fulcrumShape = new THREE.Shape();
+        fulcrumShape.moveTo(-0.15, 0);
+        fulcrumShape.lineTo(0.15, 0);
+        fulcrumShape.lineTo(0, 0.105);
+        fulcrumShape.closePath();
+        const fulcrumGeom = this.trackGeom(
+          new THREE.ExtrudeGeometry(fulcrumShape, {
+            depth: 2.36,
+            bevelEnabled: true,
+            bevelThickness: 0.006,
+            bevelSize: 0.006,
+            bevelSegments: 2,
+          }),
+        );
+        fulcrumGeom.translate(0, 0, -1.18);
+        const fulcrum = new THREE.Mesh(fulcrumGeom, darkMetalMat);
+        fulcrum.position.set(0, 0.01, 0);
+        this.rakedChassisGroup.add(fulcrum);
+
+        const beamDeckMat = this.trackMat(
+          new THREE.MeshPhysicalMaterial({
+            color: 0x007b85,
+            roughness: 0.36,
+            metalness: 0.34,
+            clearcoat: 0.55,
+          }),
+        );
+        beamDeckMat.envMapIntensity = 0.5;
+        const beamTruss = new THREE.Mesh(
+          this.trackGeom(createChamferedSlabGeometry(2.22, 0.028, 2.38, 0.05, 0.007)),
+          beamDeckMat,
+        );
+        beamTruss.position.set(0, 0.115, 0);
+        this.balanceBeamGroup.add(beamTruss);
+
+        const eqArcMat = this.trackMat(
+          new THREE.MeshStandardMaterial({
+            color: 0x33cad8,
+            emissive: 0x0098a6,
+            emissiveIntensity: 0.85,
+            roughness: 0.18,
+          }),
+        );
+        const eqArc = new THREE.Mesh(
+          this.trackGeom(new THREE.TorusGeometry(0.12, 0.014, 10, 24, Math.PI)),
+          eqArcMat,
+        );
+        eqArc.position.set(0, -0.02, 0.012);
+        this.pendulumEquilibriumMat = eqArcMat;
+        spinner.add(eqArc);
+
+        const balanceArm = new THREE.Mesh(
+          this.trackGeom(createChamferedSlabGeometry(0.23, 0.018, 0.018, 0.004, 0.002)),
+          brassMat,
+        );
+        spinner.add(balanceArm);
+        break;
       }
     }
 
     const coreJewel = new THREE.Mesh(
-      this.trackGeom(new THREE.OctahedronGeometry(0.042, 0)),
+      this.trackGeom(new THREE.OctahedronGeometry(0.04, 0)),
       goldGlowMat,
     );
     spinner.add(coreJewel);
     crestRoot.add(spinner);
     this.portraitCrestSpinner = spinner;
+    // Tactile Portrait BOARD_GIMMICK hit volume cleanly centered between FlankSwitch & CornerTotem (zero tile/HUD overlap!)
+    this.registerGimmickHitVolume(crestRoot, 0.56, 0.34, 0.36, [0, 0.04, 0]);
     this.rakedChassisGroup.add(crestRoot);
   }
 
@@ -3773,13 +5035,14 @@ export class InteractiveBoard3DControllerV7 {
   }
 
   private buildBoardSpecificHardware(spec: BoardSpecV7): void {
+    const palette = this.resolveSeasonalMaterialPalette(spec);
     const brushedTex = typeof document !== 'undefined' ? getBrushedAnodizedTexture() : null;
-    const louverTex = typeof document !== 'undefined' ? getDarkLouverToteBedTexture() : null;
+    const louverTex = typeof document !== 'undefined' ? getNeutralLouverToteBedTexture() : null;
     const walnutTex = typeof document !== 'undefined' ? getAmericanWalnutVeneerTexture() : null;
 
     const brassMat = this.trackMat(
       new THREE.MeshPhysicalMaterial({
-        color: spec.brassAccentHex,
+        color: palette.brassHex,
         map: brushedTex,
         roughness: 0.2,
         metalness: 0.92,
@@ -3806,7 +5069,7 @@ export class InteractiveBoard3DControllerV7 {
     );
     const darkMetalMat = this.trackMat(
       new THREE.MeshPhysicalMaterial({
-        color: 0x243f66,
+        color: palette.consoleBakeliteHex,
         map: louverTex,
         roughness: 0.28,
         metalness: 0.42,
@@ -3815,10 +5078,10 @@ export class InteractiveBoard3DControllerV7 {
     );
     const walnutPropMat = this.trackMat(
       new THREE.MeshPhysicalMaterial({
-        color: 0xbf7a4c,
-        map: walnutTex,
+        color: this.activeSeason === 1 ? 0xbf7a4c : palette.woodHex,
+        map: this.activeSeason === 2 ? null : this.activeSeason === 4 ? brushedTex : walnutTex,
         roughness: 0.3,
-        metalness: 0.08,
+        metalness: this.activeSeason === 4 ? 0.68 : 0.08,
         clearcoat: 0.65,
       }),
     );
@@ -3880,7 +5143,7 @@ export class InteractiveBoard3DControllerV7 {
           vc.height = 256;
           const vctx = vc.getContext('2d');
           if (vctx) {
-            vctx.fillStyle = '#04060A';
+            vctx.fillStyle = '#1E140E';
             vctx.fillRect(0, 0, 256, 256);
             // Anisotropic bow-tie vinyl specular sheen wedges against deep pressed black LP!
             vctx.save();
@@ -4175,37 +5438,38 @@ export class InteractiveBoard3DControllerV7 {
           this.jubileeStarbursts.push(starGroup);
         }
 
-        // Clickable Glowing Bridge Polarity Capacitor on front apron
+        // Clickable Glowing Bridge Polarity Capacitor on front apron (clear of frontFlushTrim & marquee bulbs!)
+        this.addBoardContactShadow(this.rakedChassisGroup, 0.38, 0.11, 0.0135, 0, 1.08);
         const capSwitch = new THREE.Group();
-        capSwitch.position.set(0, 0.022, 1.14);
+        capSwitch.position.set(0, 0.022, 1.08);
         capSwitch.add(
           new THREE.Mesh(
-            this.trackGeom(createChamferedSlabGeometry(0.74, 0.036, 0.18, 0.03, 0.008)),
+            this.trackGeom(createChamferedSlabGeometry(0.72, 0.036, 0.14, 0.028, 0.007)),
             brassMat,
           ),
         );
         const capBar = new THREE.Mesh(
-          this.trackGeom(createChamferedSlabGeometry(0.58, 0.016, 0.06, 0.01, 0.004)),
+          this.trackGeom(createChamferedSlabGeometry(0.56, 0.016, 0.052, 0.01, 0.004)),
           peacockGlowMat,
         );
         capBar.position.y = 0.034;
         capSwitch.add(capBar);
-        this.registerGimmickHitVolume(capSwitch, 0.88, 0.22, 0.32, [0, 0.05, 0]);
+        this.registerGimmickHitVolume(capSwitch, 0.84, 0.22, 0.26, [0, 0.05, 0]);
         this.rakedChassisGroup.add(capSwitch);
         break;
       }
 
       case 'BOARD_03_VAUDEVILLE_GEAR_TRAIN': {
-        // 1966 Burbank Pop-Art Prize Deck: Three Spinning Living Color Kaleidoscope Prize Wheels + Flapper Clicker!
-        const wheelSpecs: readonly { x: number; z: number; r: number; ratio: number }[] = [
-          { x: -0.78, z: -0.02, r: 0.45, ratio: 1.0 },
-          { x: 0.06, z: -0.02, r: 0.4, ratio: -1.18 },
-          { x: 0.84, z: -0.02, r: 0.42, ratio: 1.11 },
+        // 1966 Burbank Pop-Art Prize Deck: Three Non-Overlapping Spinning Living Color Kaleidoscope Prize Wheels + Flapper Clicker!
+        const wheelSpecs: readonly { x: number; z: number; r: number; ratio: number; glassY: number }[] = [
+          { x: -0.84, z: -0.02, r: 0.39, ratio: 1.0, glassY: 0.05 },
+          { x: 0.0, z: -0.02, r: 0.35, ratio: -1.18, glassY: 0.052 },
+          { x: 0.84, z: -0.02, r: 0.37, ratio: 1.11, glassY: 0.051 },
         ];
         const popSliceMats = [peacockGlowMat, goldGlowMat, ceriseGlowMat, tangerineGlowMat];
-        const pegGeom = this.trackGeom(new THREE.CylinderGeometry(0.014, 0.014, 0.036, 10));
+        const pegGeom = this.trackGeom(new THREE.CylinderGeometry(0.013, 0.013, 0.034, 10));
         const wedgeBladeGeom = this.trackGeom(
-          createChamferedSlabGeometry(0.32, 0.018, 0.085, 0.012, 0.004),
+          createChamferedSlabGeometry(0.27, 0.018, 0.076, 0.012, 0.004),
         );
         for (const ws of wheelSpecs) {
           this.addBoardContactShadow(this.rakedChassisGroup, ws.r * 1.12, ws.r * 1.12, 0.0135, ws.x, ws.z);
@@ -4224,7 +5488,7 @@ export class InteractiveBoard3DControllerV7 {
             gGroup.add(spoke);
           }
           const rubyHub = new THREE.Mesh(
-            this.trackGeom(new THREE.CylinderGeometry(0.072, 0.08, 0.042, 18)),
+            this.trackGeom(new THREE.CylinderGeometry(0.066, 0.074, 0.04, 18)),
             goldGlowMat,
           );
           rubyHub.position.y = 0.02;
@@ -4236,7 +5500,7 @@ export class InteractiveBoard3DControllerV7 {
           const wheelRimGroup = new THREE.Group();
           wheelRimGroup.position.set(ws.x, 0.042, ws.z);
           const wheelTorus = new THREE.Mesh(
-            this.trackGeom(new THREE.TorusGeometry(ws.r * 1.04, 0.016, 10, 36)),
+            this.trackGeom(new THREE.TorusGeometry(ws.r * 1.04, 0.015, 10, 36)),
             aluminumMat,
           );
           wheelTorus.rotation.x = Math.PI * 0.5;
@@ -4244,17 +5508,17 @@ export class InteractiveBoard3DControllerV7 {
           for (let p = 0; p < 12; p++) {
             const pa = (p / 12) * Math.PI * 2;
             const peg = new THREE.Mesh(pegGeom, p % 2 === 0 ? goldGlowMat : ceriseGlowMat);
-            peg.position.set(Math.cos(pa) * (ws.r * 1.04), 0.016, Math.sin(pa) * (ws.r * 1.04));
+            peg.position.set(Math.cos(pa) * (ws.r * 1.04), 0.015, Math.sin(pa) * (ws.r * 1.04));
             wheelRimGroup.add(peg);
           }
           this.rakedChassisGroup.add(wheelRimGroup);
           this.vaudevilleWheelRings.push(wheelRimGroup);
 
           const glass = new THREE.Mesh(
-            this.trackGeom(new THREE.CylinderGeometry(ws.r * 1.01, ws.r * 1.01, 0.008, 32)),
+            this.trackGeom(new THREE.CylinderGeometry(ws.r * 1.0, ws.r * 1.0, 0.008, 32)),
             crystalGlassMat,
           );
-          glass.position.set(ws.x, 0.05, ws.z);
+          glass.position.set(ws.x, ws.glassY, ws.z);
           this.rakedChassisGroup.add(glass);
         }
 
@@ -4277,15 +5541,16 @@ export class InteractiveBoard3DControllerV7 {
         this.vaudevilleFlapperArm = flapperArm;
         this.rakedChassisGroup.add(flapperRoot);
 
+        this.addBoardContactShadow(this.rakedChassisGroup, 0.34, 0.11, 0.0135, 0, 1.08);
         const ratchetPad = new THREE.Group();
-        ratchetPad.position.set(0, 0.024, 1.14);
+        ratchetPad.position.set(0, 0.024, 1.08);
         ratchetPad.add(
           new THREE.Mesh(
-            this.trackGeom(createChamferedSlabGeometry(0.62, 0.042, 0.18, 0.03, 0.008)),
+            this.trackGeom(createChamferedSlabGeometry(0.6, 0.042, 0.14, 0.028, 0.007)),
             brassMat,
           ),
         );
-        this.registerGimmickHitVolume(ratchetPad, 0.78, 0.22, 0.32, [0, 0.05, 0]);
+        this.registerGimmickHitVolume(ratchetPad, 0.74, 0.22, 0.26, [0, 0.05, 0]);
         this.rakedChassisGroup.add(ratchetPad);
         break;
       }
@@ -4378,25 +5643,25 @@ export class InteractiveBoard3DControllerV7 {
           this.switchboardLamps.push(lMat);
         }
 
-        this.addBoardContactShadow(this.rakedChassisGroup, 0.36, 0.13, 0.0135, 0, 1.14);
+        this.addBoardContactShadow(this.rakedChassisGroup, 0.34, 0.11, 0.0135, 0, 1.08);
         const stepKey = new THREE.Group();
-        stepKey.position.set(0, 0.024, 1.14);
+        stepKey.position.set(0, 0.024, 1.08);
         const skWalnut = new THREE.Mesh(
-          this.trackGeom(createChamferedSlabGeometry(0.68, 0.022, 0.22, 0.03, 0.006)),
+          this.trackGeom(createChamferedSlabGeometry(0.66, 0.022, 0.16, 0.026, 0.006)),
           walnutPropMat,
         );
         skWalnut.position.y = -0.004;
         const skPlate = new THREE.Mesh(
-          this.trackGeom(createChamferedSlabGeometry(0.58, 0.038, 0.16, 0.022, 0.007)),
+          this.trackGeom(createChamferedSlabGeometry(0.56, 0.038, 0.12, 0.02, 0.006)),
           brassMat,
         );
         const skJewel = new THREE.Mesh(
-          this.trackGeom(createChamferedSlabGeometry(0.42, 0.014, 0.048, 0.008, 0.003)),
+          this.trackGeom(createChamferedSlabGeometry(0.4, 0.014, 0.042, 0.008, 0.003)),
           peacockGlowMat,
         );
         skJewel.position.y = 0.028;
         stepKey.add(skWalnut, skPlate, skJewel);
-        this.registerGimmickHitVolume(stepKey, 0.72, 0.2, 0.3, [0, 0.05, 0]);
+        this.registerGimmickHitVolume(stepKey, 0.7, 0.2, 0.24, [0, 0.05, 0]);
         this.rakedChassisGroup.add(stepKey);
         break;
       }
@@ -4623,9 +5888,36 @@ export class InteractiveBoard3DControllerV7 {
           this.pierChevronMats.push(cMat);
         }
 
-        // Spinning Atlantic City Steel-Pier Ferris Wheel Medallion in Open Mid-Upper-Left Bay (100% clear of all tiles & rail!)
+        // Spinning Atlantic City Steel-Pier Ferris Wheel Medallion (`y >= 0.20m`) with Grounded A-Frame Legs!
+        this.addBoardContactShadow(this.rakedChassisGroup, 0.16, 0.12, 0.029, -1.94, -0.37);
+        const ferrisStand = new THREE.Group();
+        ferrisStand.position.set(-1.94, 0.028, -0.37);
+        const ferrisBase = new THREE.Mesh(
+          this.trackGeom(createChamferedSlabGeometry(0.24, 0.018, 0.14, 0.02, 0.005)),
+          walnutPropMat,
+        );
+        ferrisStand.add(ferrisBase);
+        const legGeom = this.trackGeom(new THREE.CylinderGeometry(0.008, 0.011, 0.215, 10));
+        for (const lx of [-0.085, 0.085]) {
+          for (const lz of [-0.038, 0.038]) {
+            const leg = new THREE.Mesh(legGeom, brassMat);
+            leg.position.set(lx * 0.5, 0.102, lz * 0.5);
+            leg.rotation.z = lx > 0 ? 0.38 : -0.38;
+            leg.rotation.x = lz > 0 ? -0.18 : 0.18;
+            ferrisStand.add(leg);
+          }
+        }
+        const ferrisAxle = new THREE.Mesh(
+          this.trackGeom(new THREE.CylinderGeometry(0.014, 0.014, 0.072, 12)),
+          brassMat,
+        );
+        ferrisAxle.rotation.x = Math.PI * 0.5;
+        ferrisAxle.position.y = 0.192;
+        ferrisStand.add(ferrisAxle);
+        this.rakedChassisGroup.add(ferrisStand);
+
         const ferris = new THREE.Group();
-        ferris.position.set(-1.94, 0.11, -0.37);
+        ferris.position.set(-1.94, 0.22, -0.37);
         ferris.scale.setScalar(0.66);
         const fRim = new THREE.Mesh(
           this.trackGeom(new THREE.TorusGeometry(0.18, 0.012, 10, 28)),
@@ -4773,24 +6065,24 @@ export class InteractiveBoard3DControllerV7 {
 
         this.rakedChassisGroup.add(rouletteStation);
 
-        // 21-Point Horological Crescent Gauge at upstage center (`z = -1.10m`)
+        // 21-Point Horological Crescent Gauge at upstage center (`z = -1.17m`, arching +Z inside cabinet — zero backRail/tile clip!)
         const gaugeDial = new THREE.Group();
-        gaugeDial.position.set(0, 0.038, -1.1);
+        gaugeDial.position.set(0, 0.038, -1.17);
         const arcRing = new THREE.Mesh(
-          this.trackGeom(new THREE.TorusGeometry(0.28, 0.022, 10, 32, Math.PI)),
+          this.trackGeom(new THREE.TorusGeometry(0.16, 0.016, 10, 28, Math.PI)),
           brassMat,
         );
-        arcRing.rotation.x = -Math.PI * 0.5;
+        arcRing.rotation.x = Math.PI * 0.5;
         gaugeDial.add(arcRing);
 
         const needlePivot = new THREE.Group();
         const needle = new THREE.Mesh(
-          this.trackGeom(createChamferedSlabGeometry(0.026, 0.018, 0.24, 0.006, 0.003)),
+          this.trackGeom(createChamferedSlabGeometry(0.022, 0.016, 0.13, 0.005, 0.003)),
           tangerineGlowMat,
         );
-        needle.position.z = -0.11;
+        needle.position.z = 0.065;
         needlePivot.add(needle);
-        needlePivot.position.y = 0.025;
+        needlePivot.position.y = 0.022;
         gaugeDial.add(needlePivot);
         this.baccaratNeedleGroup = needlePivot;
         this.rakedChassisGroup.add(gaugeDial);
@@ -4886,35 +6178,35 @@ export class InteractiveBoard3DControllerV7 {
         hubGroup.add(armGroup);
         this.sundialArmGroup = armGroup;
 
-        this.addBoardContactShadow(this.rakedChassisGroup, 0.22, 0.22, 0.0135, 0, 1.14);
+        this.addBoardContactShadow(this.rakedChassisGroup, 0.13, 0.13, 0.0135, 0, 1.105);
         const dialKnob = new THREE.Group();
-        dialKnob.position.set(0, 0.024, 1.14);
+        dialKnob.position.set(0, 0.024, 1.105);
         const knobWalnutRing = new THREE.Mesh(
-          this.trackGeom(new THREE.CylinderGeometry(0.175, 0.19, 0.028, 28)),
+          this.trackGeom(new THREE.CylinderGeometry(0.098, 0.105, 0.026, 26)),
           walnutPropMat,
         );
         const knobBrassCap = new THREE.Mesh(
-          this.trackGeom(new THREE.CylinderGeometry(0.135, 0.15, 0.052, 28)),
+          this.trackGeom(new THREE.CylinderGeometry(0.075, 0.084, 0.048, 26)),
           brassMat,
         );
         knobBrassCap.position.y = 0.016;
         const compassCrossA = new THREE.Mesh(
-          this.trackGeom(createChamferedSlabGeometry(0.21, 0.012, 0.02, 0.004, 0.002)),
+          this.trackGeom(createChamferedSlabGeometry(0.125, 0.012, 0.016, 0.004, 0.002)),
           aluminumMat,
         );
-        compassCrossA.position.y = 0.045;
+        compassCrossA.position.y = 0.043;
         const compassCrossB = new THREE.Mesh(
-          this.trackGeom(createChamferedSlabGeometry(0.02, 0.012, 0.21, 0.004, 0.002)),
+          this.trackGeom(createChamferedSlabGeometry(0.016, 0.012, 0.125, 0.004, 0.002)),
           aluminumMat,
         );
-        compassCrossB.position.y = 0.045;
+        compassCrossB.position.y = 0.043;
         const compassJewel = new THREE.Mesh(
-          this.trackGeom(new THREE.OctahedronGeometry(0.034, 0)),
+          this.trackGeom(new THREE.OctahedronGeometry(0.028, 0)),
           peacockGlowMat,
         );
-        compassJewel.position.y = 0.058;
+        compassJewel.position.y = 0.056;
         dialKnob.add(knobWalnutRing, knobBrassCap, compassCrossA, compassCrossB, compassJewel);
-        this.registerGimmickHitVolume(dialKnob, 0.52, 0.22, 0.42, [0, 0.06, 0]);
+        this.registerGimmickHitVolume(dialKnob, 0.36, 0.22, 0.26, [0, 0.06, 0]);
         this.rakedChassisGroup.add(hubGroup, dialKnob);
         break;
       }
@@ -5063,7 +6355,7 @@ export class InteractiveBoard3DControllerV7 {
         // 3-stepped Sovereign Broadcast Navy & Louvered Walnut terraces + Glowing Step-Light Strips + Flanking Starburst Crowns + Spinning Astrolabe!
         const terraceTrimMat = this.trackMat(
           new THREE.MeshPhysicalMaterial({
-            color: 0x214478,
+            color: 0xd9a441,
             map: louverTex,
             roughness: 0.28,
             metalness: 0.36,
@@ -5179,7 +6471,7 @@ export class InteractiveBoard3DControllerV7 {
       case 'BOARD_11_WHEW_GAUNTLET': {
         // Gold Gauntlet Crown Bar + Animated 6-Lamp Scanning Spotlight Bar + Rival Solenoid Blockade Pins!
         this.addBoardContactShadow(this.rakedChassisGroup, 1.82, 0.14, 0.0135, 0, -1.12);
-        this.addBoardContactShadow(this.rakedChassisGroup, 0.38, 0.14, 0.0135, 0, 1.14);
+        this.addBoardContactShadow(this.rakedChassisGroup, 0.34, 0.11, 0.0135, 0, 1.08);
         const goldCrownMat = this.trackMat(
           new THREE.MeshPhysicalMaterial({
             color: 0xf6c244,
@@ -5234,14 +6526,14 @@ export class InteractiveBoard3DControllerV7 {
         }
 
         const reconPad = new THREE.Group();
-        reconPad.position.set(0, 0.024, 1.14);
+        reconPad.position.set(0, 0.024, 1.08);
         reconPad.add(
           new THREE.Mesh(
-            this.trackGeom(createChamferedSlabGeometry(0.58, 0.04, 0.16, 0.02, 0.008)),
+            this.trackGeom(createChamferedSlabGeometry(0.56, 0.04, 0.14, 0.02, 0.007)),
             goldCrownMat,
           ),
         );
-        this.registerGimmickHitVolume(reconPad, 0.72, 0.22, 0.3, [0, 0.05, 0]);
+        this.registerGimmickHitVolume(reconPad, 0.7, 0.22, 0.26, [0, 0.05, 0]);
         this.rakedChassisGroup.add(reconPad);
         break;
       }
@@ -5288,7 +6580,7 @@ export class InteractiveBoard3DControllerV7 {
         // Sleek 1966 Broadcast Peacock-Navy balance beam deck mounted inside `balanceBeamGroup`!
         const beamDeckMat = this.trackMat(
           new THREE.MeshPhysicalMaterial({
-            color: 0x144157,
+            color: 0x007b85,
             roughness: 0.36,
             metalness: 0.34,
             clearcoat: 0.55,
@@ -5355,13 +6647,14 @@ export class InteractiveBoard3DControllerV7 {
   // --------------------------------------------------------------------------
 
   private buildCanonicalSocketWidgets(spec: BoardSpecV7): void {
+    const palette = this.resolveSeasonalMaterialPalette(spec);
     const brushedTex = typeof document !== 'undefined' ? getBrushedAnodizedTexture() : null;
     const walnutTex = typeof document !== 'undefined' ? getAmericanWalnutVeneerTexture() : null;
-    const louverTex = typeof document !== 'undefined' ? getDarkLouverToteBedTexture() : null;
+    const louverTex = typeof document !== 'undefined' ? getNeutralLouverToteBedTexture() : null;
 
     const brassMat = this.trackMat(
       new THREE.MeshPhysicalMaterial({
-        color: spec.brassAccentHex,
+        color: palette.brassHex,
         map: brushedTex,
         roughness: 0.2,
         metalness: 0.92,
@@ -5370,16 +6663,16 @@ export class InteractiveBoard3DControllerV7 {
     );
     const walnutSocketMat = this.trackMat(
       new THREE.MeshPhysicalMaterial({
-        color: 0xbf7a4c,
-        map: walnutTex,
-        roughness: 0.3,
-        metalness: 0.08,
+        color: this.activeSeason === 1 ? 0xbf7a4c : palette.woodHex,
+        map: this.activeSeason === 2 ? null : this.activeSeason === 4 ? brushedTex : walnutTex,
+        roughness: this.activeSeason === 2 ? 0.18 : 0.3,
+        metalness: this.activeSeason === 4 ? 0.68 : 0.08,
         clearcoat: 0.65,
       }),
     );
     const bakeliteMat = this.trackMat(
       new THREE.MeshPhysicalMaterial({
-        color: 0x223c63,
+        color: palette.consoleBakeliteHex,
         map: louverTex,
         roughness: 0.28,
         metalness: 0.28,
@@ -5656,7 +6949,7 @@ export class InteractiveBoard3DControllerV7 {
     );
     const keyholeMat = this.trackMat(
       new THREE.MeshStandardMaterial({
-        color: 0x0d1b30,
+        color: 0x241309,
         roughness: 0.4,
         metalness: 0.2,
       }),
@@ -5700,8 +6993,8 @@ export class InteractiveBoard3DControllerV7 {
 
     // 0. Grounded Tile Plinth Contact AO Shadow Disc (exact deck surface height for Ziggurat & Balance Beam!)
     let deckTopY = 0.0135;
-    if (!this.isPortraitMode && this.activeBoardId === 'BOARD_12_PENDULUM_BALANCE') {
-      deckTopY = 0.141;
+    if (this.activeBoardId === 'BOARD_12_PENDULUM_BALANCE') {
+      deckTopY = this.isPortraitMode ? 0.145 : 0.141;
     } else if (!this.isPortraitMode && this.activeBoardId === 'BOARD_10_SOVEREIGN_ZIGGURAT') {
       deckTopY = tile.tierY > 0.3 ? 0.2245 : tile.tierY > 0.2 ? 0.1235 : 0.0135;
     }
@@ -5715,9 +7008,10 @@ export class InteractiveBoard3DControllerV7 {
         clearcoat: 0.4,
       }),
     );
+    const palette = this.resolveSeasonalMaterialPalette(spec);
     const brassPinMat = this.trackMat(
       new THREE.MeshPhysicalMaterial({
-        color: spec.brassAccentHex,
+        color: palette.brassHex,
         roughness: 0.22,
         metalness: 0.92,
         clearcoat: 0.5,
@@ -5777,12 +7071,12 @@ export class InteractiveBoard3DControllerV7 {
     const axlesMesh = new THREE.Mesh(this.trackGeom(mergeNonIndexed(axleParts)), satinAlumMat);
     rootGroup.add(axlesMesh);
 
-    // Stepped broadcast-navy socket collar for high-tier plinths (`tierY > 0.17m`)
+    // Stepped seasonal socket collar for high-tier plinths (`tierY > 0.17m`)
     if (tile.tierY > 0.17) {
       const riserH = tile.tierY - 0.08;
       const riserMat = this.trackMat(
         new THREE.MeshPhysicalMaterial({
-          color: spec.bakeliteHex,
+          color: palette.consoleBakeliteHex,
           roughness: 0.42,
           metalness: 0.28,
           clearcoat: 0.4,
@@ -5942,9 +7236,24 @@ export class InteractiveBoard3DControllerV7 {
     coreGeom.rotateX(-Math.PI * 0.5);
     coreGeom.translate(0, -0.03, 0);
 
+    const trilonStyle =
+      TRILON_STYLE_CONFIGS_V9[this.activeTrilonStyleId] ??
+      TRILON_STYLE_CONFIGS_V9.trilon_acrylite_cream;
+    const seasonSpec = SEASON_VISUAL_SPECS_V9[this.activeSeason] ?? SEASON_VISUAL_SPECS_V9[1];
+    const seasonalCoreHex =
+      trilonStyle.id === 'trilon_acrylite_cream'
+        ? this.activeSeason === 2
+          ? 0xffe8d6
+          : this.activeSeason === 3
+            ? 0xf8e2a6
+            : this.activeSeason === 4
+              ? 0xe2ecff
+              : 0xfff6e3
+        : trilonStyle.coreHexNum;
+
     const champagneMat = this.trackMat(
       new THREE.MeshPhysicalMaterial({
-        color: 0xfff6e3,
+        color: seasonalCoreHex,
         emissive: 0xffefd0,
         emissiveIntensity: 0.24,
         roughness: 0.28,
@@ -5977,6 +7286,14 @@ export class InteractiveBoard3DControllerV7 {
         isSpotlit: this.activeSpotlightIndices.includes(tile.index),
         isRovingSpotlightBoard: this.activeSpotlightIndices.length > 0,
         hasBrassKeyOnBoard: this.tiles.some((t) => t.tvTwist === 'BRASS_KEY'),
+        boardModeV9: this.activeBoardModeV9,
+        trilonStyle,
+        seasonSpec,
+        pressureCookerMult: this.twistsEngine.getPressureCookerMult(),
+        isHighVoltDoor:
+          this.activeBoardModeV9 === 'BLACKOUT_VAULT' &&
+          this.twistsEngine.getBlackoutHighVoltIndices().has(tile.index),
+        dominoAdjacentHint: this.isDominoAdjacentHintV9(tile),
       });
 
       plaqueTexture = this.trackTex(new THREE.CanvasTexture(plaqueCanvas));
@@ -6042,24 +7359,6 @@ export class InteractiveBoard3DControllerV7 {
     vaultLockGroup.visible = tile.tvTwist === 'LOCKED_VAULT' && Boolean(tile.isVaultLocked);
     trilonFlipGroup.add(vaultLockGroup);
 
-    // 4e. Copper Solenoid Spark Filaments (pulse beneath shivering `isRiggedSolenoid` tiles!)
-    const copperSparksGroup = new THREE.Group();
-    copperSparksGroup.position.y = -0.036;
-    const sparkMat = this.trackMat(
-      new THREE.MeshBasicMaterial({
-        color: 0xff9238,
-      }),
-    );
-    const sparkFilamentGeom = this.trackGeom(new THREE.OctahedronGeometry(0.022, 0));
-    for (let s = 0; s < 6; s++) {
-      const a = (s / 6) * Math.PI * 2;
-      const sp = new THREE.Mesh(sparkFilamentGeom, sparkMat);
-      sp.position.set(Math.cos(a) * (tileW * 0.48), 0, Math.sin(a) * (tileD * 0.48));
-      copperSparksGroup.add(sp);
-    }
-    copperSparksGroup.visible = tile.isRiggedSolenoid;
-    liftGroup.add(copperSparksGroup);
-
     // 5. Generous Mobile-Safe Raycast Hit-Volume (`1.06x` footprint, non-overlapping!)
     const pickMat = this.trackMat(
       new THREE.MeshBasicMaterial({
@@ -6102,7 +7401,6 @@ export class InteractiveBoard3DControllerV7 {
       twistAccentRing,
       twistAccentMat,
       vaultLockGroup,
-      copperSparksGroup,
       pickVolumeMesh,
       tileD,
       currentLiftY: 0,
@@ -6122,61 +7420,144 @@ export class InteractiveBoard3DControllerV7 {
   // Plaque & Socket State Synchronization
   // --------------------------------------------------------------------------
 
+  private isDominoAdjacentHintV9(tile: BoardTileNodeV7): boolean {
+    if (this.activeBoardModeV9 !== 'GOLDEN_DOMINO_CASCADE') return false;
+    if (tile.state !== 'OPEN' && tile.state !== 'BLITZ_SURVIVOR') return false;
+    const specSlots = BOARD_SPECS_V7[this.activeBoardId]?.slots;
+    const sA = specSlots?.[tile.index];
+    if (!sA) return false;
+    return this.tiles.some((other) => {
+      if (other.state !== 'CLAIMED_PLAYER') return false;
+      const sB = specSlots[other.index];
+      if (!sB) return false;
+      return areGoldenDominoAdjacentV9(sA, sB, this.activeBoardId);
+    });
+  }
+
   private refreshSingleTileVisual(rig: TileVisualRigV7): void {
     const tile = rig.node;
     const livingPal = LIVING_COLOR_DOMAIN_PALETTE_V7[tile.domain];
     const tvTwist: ClassicTvTileTwistV7 = tile.tvTwist ?? 'NONE';
     const isLockedVault = tvTwist === 'LOCKED_VAULT' && Boolean(tile.isVaultLocked);
     const isUnlockedVault = tvTwist === 'LOCKED_VAULT' && !tile.isVaultLocked;
-    const isTopologyLocked = Boolean(tile.isTopologyLocked);
+    const isLiveWireLocked = Boolean(tile.isLiveWireLocked);
+    const isTopologyLocked = Boolean(tile.isTopologyLocked) || isLiveWireLocked;
+    const isVipBluff = tile.tvTwistV9 === 'VIP_BLUFF';
+    const isSpotlightV9 = Boolean(tile.isSpotlightTile);
     const isKeyholderShielded = (tile.keyholderProtectedTurns ?? 0) > 0;
     const isSpotlit = this.activeSpotlightIndices.includes(tile.index);
     const isSecretRevealed =
       tvTwist === 'SECRET_SQUARE' && this.twistsEngine.isSecretSquareRevealed(tile.index);
     const isPlayable = tile.state === 'OPEN' || tile.state === 'BLITZ_SURVIVOR';
+    const isBlindCategory = tvTwist === 'BLIND_CATEGORY';
+    const isBlackoutShutter =
+      Boolean(tile.blindCategoryHidden) && Boolean(tile.mysteryCashHidden);
+    const isR7LouverShutter =
+      !isBlackoutShutter && !isBlindCategory && Boolean(tile.blindCategoryHidden);
+    const isShutteredMystery =
+      (isBlackoutShutter || isR7LouverShutter) && !isLockedVault && !isTopologyLocked;
+    const trilonStyle =
+      TRILON_STYLE_CONFIGS_V9[this.activeTrilonStyleId] ??
+      TRILON_STYLE_CONFIGS_V9.trilon_acrylite_cream;
+    const seasonSpec = SEASON_VISUAL_SPECS_V9[this.activeSeason] ?? SEASON_VISUAL_SPECS_V9[1];
 
-    // Color-code 3D backlit Acrylite casing cleanly by Living Color domain, Topology Shutter, Shield, or TV Twist!
-    let rimHex = livingPal.primaryHexNum;
+    // Sync inner prism core tint for default seasonal Acrylite Cream or equipped cosmetic
+    const coreMat = rig.champagneCoreMesh.material as THREE.MeshPhysicalMaterial | undefined;
+    if (coreMat && coreMat.color) {
+      const seasonalCoreHex =
+        trilonStyle.id === 'trilon_acrylite_cream'
+          ? this.activeSeason === 2
+            ? 0xffe8d6
+            : this.activeSeason === 3
+              ? 0xf8e2a6
+              : this.activeSeason === 4
+                ? 0xe2ecff
+                : 0xfff6e3
+          : trilonStyle.coreHexNum;
+      coreMat.color.setHex(seasonalCoreHex);
+    }
+
+    // Color-code 3D backlit Acrylite casing cleanly by Living Color domain, Topology/R7 Shutter, Shield, or TV Twist!
+    let rimHex = trilonStyle.rimHexNum ?? livingPal.primaryHexNum;
+    let isStandardOpenRim = trilonStyle.rimHexNum === null;
     if (tile.state === 'CLAIMED_PLAYER') {
       rimHex = 0x16a34a;
+      isStandardOpenRim = false;
     } else if (tile.state === 'CLAIMED_RIVAL') {
       rimHex = 0xd63838;
+      isStandardOpenRim = false;
     } else if (isTopologyLocked && !isLockedVault) {
-      rimHex = 0x2a4060;
+      rimHex = 0x8c5838;
+      isStandardOpenRim = false;
+    } else if (isBlackoutShutter && !isLockedVault) {
+      const isHighVolt =
+        this.activeBoardModeV9 === 'BLACKOUT_VAULT' &&
+        this.twistsEngine.getBlackoutHighVoltIndices().has(tile.index);
+      rimHex = isHighVolt ? 0xd9480f : 0x6e3b23;
+      isStandardOpenRim = false;
+    } else if (isR7LouverShutter && !isLockedVault) {
+      rimHex = 0x006b74;
+      isStandardOpenRim = false;
     } else if (
       isKeyholderShielded ||
       isLockedVault ||
       isUnlockedVault ||
       isSecretRevealed ||
+      isSpotlightV9 ||
       tvTwist === 'BLIND_CATEGORY' ||
       tvTwist === 'BRASS_KEY'
     ) {
       rimHex = 0xf4a91f;
-    } else if (tvTwist === 'MYSTERY_CURTAIN' || tvTwist === 'BIG_WHEEL_SPIN') {
+      isStandardOpenRim = false;
+    } else if (isVipBluff || tvTwist === 'MYSTERY_CURTAIN' || tvTwist === 'BIG_WHEEL_SPIN') {
       rimHex = 0xe63b7a;
+      isStandardOpenRim = false;
     } else if (tvTwist === 'OPPONENT_CHOICE') {
       rimHex = 0xc92a54;
+      isStandardOpenRim = false;
     } else if (tvTwist === 'PRESS_LUCK_SPIN' || tvTwist === 'INSTANT_BARGAIN') {
       rimHex = 0xff6738;
+      isStandardOpenRim = false;
     } else if (tvTwist === 'MYSTERY_CASH') {
       rimHex = 0x00897b;
+      isStandardOpenRim = false;
     }
 
-    rig.enamelMat.color.setHex(rimHex);
-    rig.enamelMat.emissive.setHex(rimHex);
+    if (isStandardOpenRim) {
+      const seasonTint = new THREE.Color(
+        parseHexNumber(seasonSpec.tileAccentHex, livingPal.primaryHexNum),
+      );
+      rig.enamelMat.color.setHex(rimHex).lerp(seasonTint, 0.22);
+      rig.enamelMat.emissive.copy(rig.enamelMat.color);
+    } else {
+      rig.enamelMat.color.setHex(rimHex);
+      rig.enamelMat.emissive.setHex(rimHex);
+    }
 
-    // Keep claimed Contestant Medallions luminous (`0xffffff`), softly dimming only topology-shuttered tiles!
-    rig.plaqueMat.color.setHex(isTopologyLocked && !isLockedVault ? 0xcad6e6 : 0xffffff);
+    // Keep claimed Contestant Medallions luminous (`0xffffff`), softly warming topology/live-wire shuttered tiles!
+    rig.plaqueMat.color.setHex(isTopologyLocked && !isLockedVault ? 0xe8dcc4 : 0xffffff);
 
-    // Strictly mutually exclusive perimeter collar priority (ZERO coplanar Z-fighting between rings!)
+    // Strictly mutually exclusive perimeter collar priority (ZERO coplanar Z-fighting & ZERO shutter spoilers!)
     const showBlitzCollar = tile.state === 'BLITZ_SURVIVOR';
     let showTwistCollar = false;
-    if (!showBlitzCollar && isPlayable && (!isTopologyLocked || isKeyholderShielded)) {
-      if (isKeyholderShielded || isUnlockedVault || isSecretRevealed || tvTwist === 'BRASS_KEY' || isSpotlit) {
+    if (
+      !showBlitzCollar &&
+      isPlayable &&
+      !isShutteredMystery &&
+      (!isTopologyLocked || isKeyholderShielded)
+    ) {
+      if (
+        isKeyholderShielded ||
+        isUnlockedVault ||
+        isSecretRevealed ||
+        tvTwist === 'BRASS_KEY' ||
+        isSpotlit ||
+        isSpotlightV9
+      ) {
         rig.twistAccentMat.color.setHex(0xfff099);
         rig.twistAccentMat.emissive.setHex(0xffb703);
         showTwistCollar = true;
-      } else if (tvTwist === 'MYSTERY_CURTAIN' || tvTwist === 'BIG_WHEEL_SPIN') {
+      } else if (isVipBluff || tvTwist === 'MYSTERY_CURTAIN' || tvTwist === 'BIG_WHEEL_SPIN') {
         rig.twistAccentMat.color.setHex(0xff6da3);
         rig.twistAccentMat.emissive.setHex(0xe63b7a);
         showTwistCollar = true;
@@ -6199,11 +7580,17 @@ export class InteractiveBoard3DControllerV7 {
       }
     }
     const showAmberCollar =
-      !showBlitzCollar && !showTwistCollar && tile.hasAmberTruce && isPlayable && !isTopologyLocked;
+      !showBlitzCollar &&
+      !showTwistCollar &&
+      !isShutteredMystery &&
+      tile.hasAmberTruce &&
+      isPlayable &&
+      !isTopologyLocked;
     const showUhfCollar =
       !showBlitzCollar &&
       !showTwistCollar &&
       !showAmberCollar &&
+      !isShutteredMystery &&
       tile.hasUhfHalo &&
       isPlayable &&
       !isTopologyLocked;
@@ -6212,7 +7599,6 @@ export class InteractiveBoard3DControllerV7 {
     rig.twistAccentRing.visible = showTwistCollar;
     rig.amberTruceRing.visible = showAmberCollar;
     rig.uhfHaloMesh.visible = showUhfCollar;
-    rig.copperSparksGroup.visible = false;
     rig.vaultLockGroup.visible = isLockedVault && isPlayable;
     if (!isPlayable) {
       rig.underGlowMat.opacity = 0;
@@ -6235,6 +7621,14 @@ export class InteractiveBoard3DControllerV7 {
         isSpotlit,
         isRovingSpotlightBoard: this.activeSpotlightIndices.length > 0,
         hasBrassKeyOnBoard: this.tiles.some((t) => t.tvTwist === 'BRASS_KEY'),
+        boardModeV9: this.activeBoardModeV9,
+        trilonStyle,
+        seasonSpec,
+        pressureCookerMult: this.twistsEngine.getPressureCookerMult(),
+        isHighVoltDoor:
+          this.activeBoardModeV9 === 'BLACKOUT_VAULT' &&
+          this.twistsEngine.getBlackoutHighVoltIndices().has(tile.index),
+        dominoAdjacentHint: this.isDominoAdjacentHintV9(tile),
       });
       rig.plaqueTexture.needsUpdate = true;
     }
@@ -6540,6 +7934,67 @@ export class InteractiveBoard3DControllerV7 {
   }
 
   /**
+   * Additive M3 R7+V7 active board mode getter (`LOUVER_SHUTTER`, `LIVE_WIRE_FUSE`, etc.).
+   */
+  public getActiveBoardModeV9(): BoardPlayModeV9 {
+    return this.twistsEngine.getActiveBoardModeV9();
+  }
+
+  /**
+   * Additive M3 R7+V7 crisp `<0.5s` marquee rule banner getter.
+   */
+  public getBoardModeRuleBannerV9(): BoardModeRuleBannerV9 {
+    return this.twistsEngine.getBoardModeRuleBannerV9();
+  }
+
+  public getPressureCookerMult(): number {
+    return this.twistsEngine.getPressureCookerMult();
+  }
+
+  public getActiveSeasonV9(): SeasonIdV7 {
+    return this.activeSeason;
+  }
+
+  public getActiveTrilonStyleIdV9(): CanonicalTrilonStyleIdV9 {
+    return this.activeTrilonStyleId;
+  }
+
+  /**
+   * Unified R7/v7 post-turn board mode state advancement for both Player & Rival turns.
+   */
+  public resolvePostTurnBoardModeV9(
+    claimedIdx: number,
+    actor: 'PLAYER' | 'RIVAL',
+    scored: boolean,
+  ): BoardModePostClaimResultV9 {
+    const res = this.twistsEngine.resolvePostTurnBoardModeV9(claimedIdx, this.tiles, actor, scored);
+    if (
+      (res.highlightedTileIndices && res.highlightedTileIndices.length > 0) ||
+      (res.unlockedTileIndices && res.unlockedTileIndices.length > 0)
+    ) {
+      if (res.bonusCash >= 200 || res.rivalStealCash > 0 || res.multAdd >= 0.5 || res.emergencyCircuitBreakerFired) {
+        this.triggerMarqueeCelebration(2.0);
+      }
+      const burstIndices = new Set<number>([
+        ...(res.highlightedTileIndices ?? []),
+        ...(res.unlockedTileIndices ?? []),
+      ]);
+      let order = 0;
+      for (const idx of burstIndices) {
+        const rig = this.tileRigs[idx];
+        if (rig) {
+          rig.vaultUnlockBurstSec = 2.0;
+          rig.liftVelocityY = Math.max(rig.liftVelocityY, 0.48);
+          this.triggerTrilonFlip(idx, order * 0.06, 0.4);
+          order += 1;
+        }
+      }
+    }
+    this.refreshAllTilePlaques();
+    return res;
+  }
+
+  /**
    * `EYE_GUESS_MEMORY` (*Eye Guess '66* — Boards 05, 09): Briefly flips ALL open tiles
    * open for `durationSec` (default `2.4s`) showing hidden `⭐ 2X`, `💰 +$300`, and `🎭 TRAP`
    * badges before snapping back shut!
@@ -6747,19 +8202,27 @@ export class InteractiveBoard3DControllerV7 {
     const spec = BOARD_SPECS_V7[this.activeBoardId];
     const boardSeed = ALL_BOARD_IDS_V7.indexOf(this.activeBoardId) * 3 + 1 + this.seedOffset;
     const waveOffset = waveNumber * 7;
+    const allowedCats = this.resolveAllowedCategoriesV9();
 
     for (let idx = 0; idx < this.tiles.length; idx++) {
       const tile = this.tiles[idx];
       const slot = spec.slots[idx];
       const nextCat =
-        ALL_CATEGORIES_V7[Math.abs(idx * 3 + boardSeed + waveOffset) % ALL_CATEGORIES_V7.length];
+        allowedCats[Math.abs(idx * 3 + boardSeed + waveOffset) % allowedCats.length] ??
+        ALL_CATEGORIES_V7[0];
       tile.category = nextCat;
       tile.domain = CATEGORY_TO_DOMAIN_V7[nextCat];
+      tile.nominalBaseChips = slot?.baseChips ?? 200;
       tile.baseChips = Math.min(450, (slot?.baseChips ?? 200) + (waveNumber >= 2 ? 50 : 0));
       tile.state = 'OPEN';
       tile.isRivalTarget = false;
       tile.tvTwist = 'NONE';
+      tile.tvTwistV9 = undefined;
+      tile.vipId = undefined;
       tile.isVaultLocked = false;
+      tile.isLiveWireLocked = false;
+      tile.isSpotlightTile = false;
+      tile.dominoGroupId = undefined;
 
       const rig = this.tileRigs[idx];
       if (rig) {
@@ -6770,6 +8233,12 @@ export class InteractiveBoard3DControllerV7 {
 
     this.twistsEngine.seedSocketMarkersOnTiles(this.tiles);
     this.twistsEngine.seedClassicTvTwistsOnTiles(this.tiles, waveNumber, this.seedOffset);
+    if (isR7BoardPlayModeV9(this.activeBoardModeV9)) {
+      applyBoardPlayModeV9(this.tiles, this.activeBoardModeV9, {
+        boardId: this.activeBoardId,
+        seed: boardSeed + waveOffset,
+      });
+    }
     this.triggerMarqueeCelebration(1.6);
     this.refreshAllTilePlaques();
   }
@@ -6797,6 +8266,7 @@ export class InteractiveBoard3DControllerV7 {
 
   public update(dtSec: number): void {
     const dt = Math.min(0.05, Math.max(0.0001, dtSec));
+    const choreoDt = Math.min(0.25, Math.max(0.0001, dtSec));
     this.elapsedSec += dt;
     const gState = this.twistsEngine.getGimmickState();
     const motionScale = this.reducedMotion ? 0.15 : 1.0;
@@ -6805,7 +8275,7 @@ export class InteractiveBoard3DControllerV7 {
     let rivalLiftTileIndex: number | null = null;
     if (this.activeRivalChoreo) {
       const choreo = this.activeRivalChoreo;
-      choreo.elapsedSec += dt;
+      choreo.elapsedSec += choreoDt;
       const p = Math.min(1, choreo.elapsedSec / choreo.durationSec);
       const target = this.tiles[choreo.tileIndex];
 
@@ -6833,12 +8303,26 @@ export class InteractiveBoard3DControllerV7 {
         choreo.committed = true;
         this.triggerTileDetentPress(choreo.tileIndex);
         if (choreo.didScore) {
-          this.twistsEngine.commitRivalTileClaim(choreo.tileIndex, this.tiles);
+          const rivalClaimRes = this.twistsEngine.commitRivalTileClaim(choreo.tileIndex, this.tiles);
           this.triggerTrilonFlip(choreo.tileIndex, 0, 0.42);
+          if (rivalClaimRes.highlightedTileIndices && rivalClaimRes.highlightedTileIndices.length > 0) {
+            if (rivalClaimRes.matchedPrize) {
+              this.triggerMarqueeCelebration(1.6);
+            }
+            for (const hIdx of rivalClaimRes.highlightedTileIndices) {
+              const hRig = this.tileRigs[hIdx];
+              if (hRig) {
+                hRig.vaultUnlockBurstSec = Math.max(hRig.vaultUnlockBurstSec, 1.4);
+              }
+            }
+          }
         } else if (target) {
           // Rival FUMBLE / MISS: Tile rebounds OPEN with +$50 Rebound Bonus so the player can steal it!
           target.isRivalTarget = false;
           target.baseChips = Math.min(500, target.baseChips + 50);
+          if (isR7BoardPlayModeV9(this.activeBoardModeV9)) {
+            this.twistsEngine.resolvePostTurnBoardModeV9(choreo.tileIndex, this.tiles, 'RIVAL', false);
+          }
         }
         this.refreshAllTilePlaques();
       }
@@ -6876,6 +8360,8 @@ export class InteractiveBoard3DControllerV7 {
         rivalLiftTileIndex === tile.index
       ) {
         goalY = 0.032; // +32mm proud hover lift onto visible brass pins!
+      } else if (tile.isSpotlightTile && tile.state === 'OPEN') {
+        goalY = 0.022; // Proud R7 Shifting Spotlight elevation!
       } else if (tile.state === 'CLAIMED_PLAYER' || tile.state === 'CLAIMED_RIVAL') {
         goalY = -0.008; // Latched slightly seated in detent
       }
@@ -6902,9 +8388,6 @@ export class InteractiveBoard3DControllerV7 {
       if (rig.vaultUnlockBurstSec > 0) {
         rig.vaultUnlockBurstSec = Math.max(0, rig.vaultUnlockBurstSec - dt);
       }
-
-      // Keep `isRiggedSolenoid` ("HOT SPOT") tiles rock-steady at rest (zero 24Hz sub-Nyquist frame flicker!)
-      rig.copperSparksGroup.visible = false;
 
       // Physical Motorized 3-Sided Trilon (`0 -> 2π`) Flip Animation with anti-clipping pop-arc!
       let flipLiftArc = 0;
@@ -7010,28 +8493,102 @@ export class InteractiveBoard3DControllerV7 {
       }
     }
 
-    // 2c. Animate Perimeter Chasing `#11` Warm `2700K` Incandescent Marquee Bulbs + Synced Halation Sprites!
+    // 2c. Animate Perimeter Chasing `#11` Incandescent Marquee Bulbs + Synced Halation Sprites (Per-Season Choreography!)
     if (this.marqueeCircuitMats.length === 4) {
+      const rateScale = this.reducedMotion ? 0.25 : 1.0;
+      const hotCrest = new THREE.Color(0xfffdf7);
+      const baseColor = new THREE.Color();
+
       if (this.marqueeCelebrationSec > 0) {
         this.marqueeCelebrationSec = Math.max(0, this.marqueeCelebrationSec - dt);
         const fastPhase = Math.floor(this.elapsedSec * 16) % 4;
         for (let c = 0; c < 4; c++) {
           const isHot = c === fastPhase || c === (fastPhase + 2) % 4;
+          const circuitHex = this.marqueeCircuitHexes[c] ?? 0xffd56b;
+          baseColor.setHex(circuitHex);
+          if (isHot) {
+            baseColor.lerp(hotCrest, 0.55);
+          }
           this.marqueeCircuitMats[c].emissiveIntensity = isHot ? 2.4 : 0.9;
-          this.marqueeCircuitMats[c].color.setHex(isHot ? 0xfff9e2 : 0xffd56b);
+          this.marqueeCircuitMats[c].color.copy(baseColor);
+          this.marqueeCircuitMats[c].emissive.setHex(circuitHex);
           if (this.marqueeHaloMats[c]) {
+            this.marqueeHaloMats[c].color.setHex(circuitHex);
             this.marqueeHaloMats[c].opacity = isHot ? 0.94 : 0.36;
           }
         }
+      } else if (this.activeSeason === 2) {
+        // Season 2: Bouncy Googie Atomic Tangerine vs Carnaby Cerise ping-pong + dual beat
+        const pingPong = 1.5 + 1.5 * Math.sin(this.elapsedSec * 3.8 * rateScale);
+        for (let c = 0; c < 4; c++) {
+          const dist = Math.abs(pingPong - c);
+          const pingGlow = Math.max(0, 1 - dist * 0.75);
+          const beatGlow = 0.5 + 0.5 * Math.sin(this.elapsedSec * 5.2 * rateScale + c * Math.PI);
+          const glow = Math.min(1, pingGlow * 0.65 + beatGlow * 0.45);
+          const circuitHex = this.marqueeCircuitHexes[c] ?? 0xff6b35;
+          baseColor.setHex(circuitHex);
+          if (glow > 0.55) {
+            baseColor.lerp(hotCrest, 0.45);
+          }
+          this.marqueeCircuitMats[c].emissiveIntensity = 0.42 + glow * 1.75;
+          this.marqueeCircuitMats[c].color.copy(baseColor);
+          this.marqueeCircuitMats[c].emissive.setHex(circuitHex);
+          if (this.marqueeHaloMats[c]) {
+            this.marqueeHaloMats[c].color.setHex(circuitHex);
+            this.marqueeHaloMats[c].opacity = 0.2 + glow * 0.72;
+          }
+        }
+      } else if (this.activeSeason === 3) {
+        // Season 3: Royal 24K Gold vs Jewel Emerald opposing pulse
+        const wave = Math.sin(this.elapsedSec * 3.4 * rateScale);
+        for (let c = 0; c < 4; c++) {
+          const glow = c % 2 === 0 ? 0.5 + 0.5 * wave : 0.5 - 0.5 * wave;
+          const circuitHex = this.marqueeCircuitHexes[c] ?? 0xf2a922;
+          baseColor.setHex(circuitHex);
+          if (glow > 0.62) {
+            baseColor.lerp(hotCrest, 0.35);
+          }
+          this.marqueeCircuitMats[c].emissiveIntensity = 0.38 + glow * 1.85;
+          this.marqueeCircuitMats[c].color.copy(baseColor);
+          this.marqueeCircuitMats[c].emissive.setHex(circuitHex);
+          if (this.marqueeHaloMats[c]) {
+            this.marqueeHaloMats[c].color.setHex(circuitHex);
+            this.marqueeHaloMats[c].opacity = 0.18 + glow * 0.74;
+          }
+        }
+      } else if (this.activeSeason === 4) {
+        // Season 4: Brisk 4-Color Kaleidoscope Quad Wave (Cobalt, Starlight White, Gold, Cyan)
+        const chasePos = (this.elapsedSec * 6.2 * rateScale) % 4;
+        for (let c = 0; c < 4; c++) {
+          let dist = Math.abs(chasePos - c);
+          if (dist > 2) dist = 4 - dist;
+          const glow = Math.max(0, 1 - dist * 0.68);
+          const circuitHex = this.marqueeCircuitHexes[c] ?? 0x3b82f6;
+          baseColor.setHex(circuitHex);
+          if (glow > 0.6) {
+            baseColor.lerp(hotCrest, 0.3);
+          }
+          this.marqueeCircuitMats[c].emissiveIntensity = 0.45 + glow * 1.75;
+          this.marqueeCircuitMats[c].color.copy(baseColor);
+          this.marqueeCircuitMats[c].emissive.setHex(circuitHex);
+          if (this.marqueeHaloMats[c]) {
+            this.marqueeHaloMats[c].color.setHex(circuitHex);
+            this.marqueeHaloMats[c].opacity = 0.22 + glow * 0.72;
+          }
+        }
       } else {
+        // Season 1: Classic Smooth 4-Circuit 2700K Tungsten Marquee Chase
         const chasePos = (this.elapsedSec * (this.reducedMotion ? 1.2 : 4.2)) % 4;
         for (let c = 0; c < 4; c++) {
           let dist = Math.abs(chasePos - c);
           if (dist > 2) dist = 4 - dist;
           const glow = Math.max(0, 1 - dist * 0.72);
-          this.marqueeCircuitMats[c].emissiveIntensity = 0.34 + glow * 1.65;
-          this.marqueeCircuitMats[c].color.setHex(glow > 0.55 ? 0xfff5d0 : 0xf6ca64);
+          const circuitHex = this.marqueeCircuitHexes[c] ?? 0xffd56b;
+          this.marqueeCircuitMats[c].emissiveIntensity = 0.36 + glow * 1.65;
+          this.marqueeCircuitMats[c].color.setHex(glow > 0.55 ? 0xfff5d0 : circuitHex);
+          this.marqueeCircuitMats[c].emissive.setHex(circuitHex);
           if (this.marqueeHaloMats[c]) {
+            this.marqueeHaloMats[c].color.setHex(circuitHex);
             this.marqueeHaloMats[c].opacity = 0.16 + glow * 0.74;
           }
         }
@@ -7160,18 +8717,28 @@ export class InteractiveBoard3DControllerV7 {
       this.crossfaderVuMats[s].emissiveIntensity = (0.25 + wave * 0.95) * bias;
     }
 
-    // Board 02: Glowing Honeycomb Light-Bridges + Twin Counter-Rotating Jubilee Starburst Spinners!
+    // Board 02: Glowing Honeycomb Light-Bridges + Polarity Bus Focus + Twin Counter-Rotating Jubilee Starburst Spinners!
     for (let i = 0; i < this.jubileeStarbursts.length; i++) {
       this.jubileeStarbursts[i].rotation.y += dt * (i === 0 ? 0.95 : -0.95) * motionScale;
     }
+    const polPhase = gState.bridgePolarityPhase ?? 0;
     for (let i = 0; i < this.hexBridgePulseMats.length; i++) {
       const link = this.hexBridgeLinks[i];
       const a = link ? this.tiles[link.indexA] : undefined;
       const b = link ? this.tiles[link.indexB] : undefined;
       const hot = a?.state === 'CLAIMED_PLAYER' || b?.state === 'CLAIMED_PLAYER';
-      const pulse = 0.5 + 0.5 * Math.sin(this.elapsedSec * (hot ? 6.2 : 2.6) - i * 0.55);
-      this.hexBridgePulseMats[i].emissiveIntensity = hot ? 0.8 + pulse * 1.1 : 0.25 + pulse * 0.45;
-      this.hexBridgePulseMats[i].emissive.setHex(hot ? 0xffc84a : 0x0098a6);
+      const midX = a && b ? (a.x + b.x) * 0.5 : 0;
+      const polarityEnergized =
+        (polPhase === 1 && midX < -0.32) ||
+        (polPhase === 2 && midX > 0.32) ||
+        (polPhase === 0 && Math.abs(midX) <= 0.48);
+      const pulse = 0.5 + 0.5 * Math.sin(this.elapsedSec * (hot ? 6.2 : polarityEnergized ? 4.4 : 2.6) - i * 0.55);
+      this.hexBridgePulseMats[i].emissiveIntensity = hot
+        ? 0.8 + pulse * 1.1
+        : polarityEnergized
+          ? 0.58 + pulse * 0.72
+          : 0.22 + pulse * 0.36;
+      this.hexBridgePulseMats[i].emissive.setHex(hot ? 0xffc84a : polarityEnergized ? 0x33cad8 : 0x0098a6);
     }
 
     // Board 03: Three meshing 20° brass escapement gears + Prize-Wheel Rims + Brass Flapper Clicker!
@@ -7191,14 +8758,18 @@ export class InteractiveBoard3DControllerV7 {
       this.vaudevilleFlapperArm.rotation.y = tickPulse * 0.28 * motionScale;
     }
 
-    // Board 04: Reciprocating brass crossbar selector rods, supervisory lamps & chasing relay strips
+    // Board 04: Reciprocating brass crossbar selector rods, stepped domain jewel lamps & chasing relay strips
+    const activeDomainIdx = (gState.switchboardDomainIndex ?? 0) % 4;
     for (let i = 0; i < this.switchboardRods.length; i++) {
-      const sway = Math.sin(this.elapsedSec * 1.8 + i * Math.PI + gState.turnCounter) * 0.09 * motionScale;
-      this.switchboardRods[i].position.x = sway;
+      const stepBias = (activeDomainIdx - 1.5) * 0.08;
+      const sway = Math.sin(this.elapsedSec * 1.8 + i * Math.PI + gState.turnCounter) * 0.07 * motionScale;
+      this.switchboardRods[i].position.x = sway + stepBias;
     }
     for (let i = 0; i < this.switchboardLamps.length; i++) {
-      this.switchboardLamps[i].emissiveIntensity =
-        0.5 + 0.5 * Math.abs(Math.sin(this.elapsedSec * 2.4 + i * 1.1));
+      const isStepped = i % 4 === activeDomainIdx;
+      this.switchboardLamps[i].emissiveIntensity = isStepped
+        ? 1.55 + 0.45 * Math.sin(this.elapsedSec * 4.2)
+        : 0.32 + 0.22 * Math.abs(Math.sin(this.elapsedSec * 2.4 + i * 1.1));
     }
     if (this.switchboardRelayMats.length > 0) {
       const lampsPerSide = Math.max(1, Math.floor(this.switchboardRelayMats.length / 2));
@@ -7262,7 +8833,7 @@ export class InteractiveBoard3DControllerV7 {
     }
     if (this.baccaratNeedleGroup) {
       const norm21 = Math.min(1, Math.max(0, gState.baccaratShoeTotal / 21));
-      const targetNeedleRot = (0.5 - norm21) * Math.PI * 0.86;
+      const targetNeedleRot = (norm21 - 0.5) * Math.PI * 0.86;
       this.baccaratNeedleGroup.rotation.y +=
         (targetNeedleRot - this.baccaratNeedleGroup.rotation.y) * Math.min(1, dt * 10);
     }
@@ -7320,18 +8891,28 @@ export class InteractiveBoard3DControllerV7 {
     for (let i = 0; i < this.zigguratCrownSpinners.length; i++) {
       this.zigguratCrownSpinners[i].rotation.y += dt * (i === 0 ? 1.1 : -1.1) * motionScale;
     }
+    const focusTier = gState.zigguratFocusTier ?? 0;
     for (let i = 0; i < this.zigguratStepGlowMats.length; i++) {
-      this.zigguratStepGlowMats[i].emissiveIntensity =
-        0.75 + 0.35 * Math.sin(this.elapsedSec * 2.8 + i * 1.4);
+      const isFocusedStrip = (focusTier === 0 && i === 1) || (focusTier === 1 && i === 0);
+      this.zigguratStepGlowMats[i].emissiveIntensity = isFocusedStrip
+        ? 1.45 + 0.45 * Math.sin(this.elapsedSec * 4.2)
+        : 0.55 + 0.25 * Math.sin(this.elapsedSec * 2.8 + i * 1.4);
     }
 
-    // Board 11: Whew! Gauntlet blockade pins + 6-Lamp Cylon/Showtime Scanning Spotlight Bar!
+    // Board 11: Whew! Gauntlet blockade pins + Recon Column Spotlight Bar!
+    const reconCol = (gState.gauntletReconColumn ?? 0) % 5;
     for (let i = 0; i < this.gauntletBlockadePins.length; i++) {
       const pin = this.gauntletBlockadePins[i];
-      pin.mat.emissiveIntensity = 0.48 + 0.52 * Math.abs(Math.sin(this.elapsedSec * 3.4 + i));
+      const nearRecon = i === reconCol || i + 1 === reconCol;
+      pin.mat.emissiveIntensity = nearRecon
+        ? 1.15 + 0.45 * Math.abs(Math.sin(this.elapsedSec * 4.5 + i))
+        : 0.42 + 0.38 * Math.abs(Math.sin(this.elapsedSec * 3.4 + i));
     }
     if (this.gauntletScannerMats.length > 0) {
-      const scanPos = (Math.sin(this.elapsedSec * 3.2) * 0.5 + 0.5) * (this.gauntletScannerMats.length - 1);
+      const reconPos = (reconCol / 4) * Math.max(1, this.gauntletScannerMats.length - 1);
+      const scanPos =
+        reconPos * 0.65 +
+        (Math.sin(this.elapsedSec * 3.2) * 0.5 + 0.5) * (this.gauntletScannerMats.length - 1) * 0.35;
       for (let s = 0; s < this.gauntletScannerMats.length; s++) {
         const proximity = Math.max(0, 1 - Math.abs(scanPos - s) * 0.85);
         this.gauntletScannerMats[s].emissiveIntensity = 0.25 + proximity * 1.65;

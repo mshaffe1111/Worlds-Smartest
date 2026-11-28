@@ -3,17 +3,17 @@
 // WORLD'S SMARTEST: FIFTY MILLION WATCHING (v8.0 — SWEEPS WEEK DELUXE)
 // `src/v7/ui/SmartStudioCoachV8.ts`
 //
-// First-5-Minutes Zero-Assumption UX, Plain-English 26-Guide Studio Coach,
+// First-5-Minutes Zero-Assumption UX, Plain-English 31-Guide Studio Coach,
 // Glowing Studio Cheats Console & 5-Speed Question Timer Selector:
 //   1. Persistent Non-Nagging Tutorial Ledger (`ws8_smart_coach_seen_v1` in
 //      `localStorage`) — strict 1st-occurrence-ONLY rule + mute toggle.
-//   2. Complete 26-Guide Plain-English Catalog (5 Classic Question Card Styles,
+//   2. Complete 31-Guide Plain-English Catalog (10 Classic Question Card Styles,
 //      13 Showcase Contraptions `TOY_02..TOY_14`, 8 TV Board Play Modes) +
 //      Tile Twist & Studio Cheat micro-tips — zero trivia jargon!
 //   3. Sunlit 1966 Studio Cue-Card Explainer Modal (`maybeOpenFirstTimeCoachV8`
 //      & `openStudioCoachOnDemandV8`) in Warm Broadcast Cream (#FAF2DF),
 //      Sunlit American Walnut (#6E3B23), Brushed Brass (#D9A441), Peacock Teal
-//      (#008B94) & Atomic Tangerine (#FF6B35) with 26 bespoke Mid-Century
+//      (#008B94) & Atomic Tangerine (#FF6B35) with 31 bespoke Mid-Century
 //      vector diagrams (zero SVG text overlaps, zero dark-navy boxes, zero OS emojis!).
 //   4. Reusable 5-Speed Question Timer Selector (`renderQuestionTimerSelectorV8`
 //      & `mountQuestionTimerSelectorV8`) for Quick Play, Settings & Couch 2P.
@@ -21,8 +21,11 @@
 
 import {
   QUESTION_TIMER_MODES_V8,
+  type BoardPlayModeR7V9,
   type BoardPlayModeV7,
+  type BoardPlayModeV9,
   type ClassicTvTileTwistV7,
+  type ClassicTvTileTwistV9,
   type QuestionCardStyleV7,
   type QuestionTimerModeV8,
   type ToyIdV7,
@@ -30,13 +33,14 @@ import {
 
 /** Canonical `contracts_v7` alias for TV board tile twists. */
 export type BoardTileTwistV7 = ClassicTvTileTwistV7;
+export type BoardTileTwistV9 = ClassicTvTileTwistV9;
 
 export const SMART_COACH_STORAGE_KEY_V8 = 'ws8_smart_coach_seen_v1';
 
 const SMART_COACH_STYLE_ID_V8 = 'ws8-smart-studio-coach-sunlit-styles';
 
 // ----------------------------------------------------------------------------
-// 1. Canonical 26-Guide Keys & Shared Data Structures
+// 1. Canonical 31-Guide Keys & Shared Data Structures
 // ----------------------------------------------------------------------------
 
 export type StudioQuestionStyleGuideKeyV8 =
@@ -44,7 +48,12 @@ export type StudioQuestionStyleGuideKeyV8 =
   | 'STYLE_SPOT_THE_MYTH'
   | 'STYLE_HEADLINE_BLANK'
   | 'STYLE_PICTURE_MONITOR'
-  | 'STYLE_BINARY_SPLIT';
+  | 'STYLE_BINARY_SPLIT'
+  | 'STYLE_HIGHER_OR_LOWER'
+  | 'STYLE_ODD_ONE_OUT'
+  | 'STYLE_FINISH_THE_LINE'
+  | 'STYLE_WHO_WHAT_AM_I'
+  | 'STYLE_BEFORE_OR_AFTER';
 
 export type StudioShowcaseToyGuideKeyV8 =
   | 'TOY_02_CONFIDENCE_PNEUMATIC'
@@ -69,7 +78,19 @@ export type StudioBoardModeGuideKeyV8 =
   | 'BOARD_EYE_GUESS_MEMORY'
   | 'BOARD_PRESS_YOUR_LUCK'
   | 'BOARD_BIG_WHEEL_SHOW'
-  | 'BOARD_CURTAIN_DEAL_SHOW';
+  | 'BOARD_CURTAIN_DEAL_SHOW'
+  | 'BOARD_LOUVER_SHUTTER'
+  | 'BOARD_BLIND_PURSE'
+  | 'BOARD_BLACKOUT_VAULT'
+  | 'BOARD_LIVE_WIRE_FUSE'
+  | 'BOARD_SHIFTING_SPOTLIGHT'
+  | 'BOARD_GOLDEN_DOMINO_CASCADE'
+  | 'BOARD_PRESSURE_COOKER'
+  | 'BOARD_HOLLYWOOD_MARQUEE_LINE'
+  | 'BOARD_BLITZ_60'
+  | 'TWIST_VIP_BLUFF';
+
+export type StudioBoardModeGuideKeyV9 = StudioBoardModeGuideKeyV8;
 
 export type StudioGuideKeyV8 =
   | StudioQuestionStyleGuideKeyV8
@@ -167,12 +188,40 @@ const BOARD_MODE_TO_GUIDE_KEY_V8: Record<BoardPlayModeV7, StudioBoardModeGuideKe
   MONTY_CURTAIN_DEAL: 'BOARD_CURTAIN_DEAL_SHOW',
 };
 
+export const BOARD_MODE_TO_GUIDE_KEY_R7_V9: Record<
+  BoardPlayModeR7V9,
+  StudioBoardModeGuideKeyV8
+> = {
+  LOUVER_SHUTTER: 'BOARD_LOUVER_SHUTTER',
+  BLIND_PURSE: 'BOARD_BLIND_PURSE',
+  BLACKOUT_VAULT: 'BOARD_BLACKOUT_VAULT',
+  LIVE_WIRE_FUSE: 'BOARD_LIVE_WIRE_FUSE',
+  SHIFTING_SPOTLIGHT: 'BOARD_SHIFTING_SPOTLIGHT',
+  GOLDEN_DOMINO_CASCADE: 'BOARD_GOLDEN_DOMINO_CASCADE',
+  PRESSURE_COOKER: 'BOARD_PRESSURE_COOKER',
+  HOLLYWOOD_MARQUEE_LINE: 'BOARD_HOLLYWOOD_MARQUEE_LINE',
+};
+
+export const BOARD_MODE_TO_GUIDE_KEY_V9: Record<
+  BoardPlayModeV9 | 'BLITZ_60',
+  StudioBoardModeGuideKeyV8
+> = {
+  ...BOARD_MODE_TO_GUIDE_KEY_V8,
+  ...BOARD_MODE_TO_GUIDE_KEY_R7_V9,
+  BLITZ_60: 'BOARD_BLITZ_60',
+};
+
 const CARD_STYLE_TO_GUIDE_KEY_V8: Record<QuestionCardStyleV7, StudioQuestionStyleGuideKeyV8> = {
   CLASSIC_CUE: 'STYLE_CLASSIC_CUE',
   SPOT_THE_MYTH: 'STYLE_SPOT_THE_MYTH',
   HEADLINE_BLANK: 'STYLE_HEADLINE_BLANK',
   PICTURE_MONITOR: 'STYLE_PICTURE_MONITOR',
   BINARY_SPLIT: 'STYLE_BINARY_SPLIT',
+  HIGHER_OR_LOWER: 'STYLE_HIGHER_OR_LOWER',
+  ODD_ONE_OUT: 'STYLE_ODD_ONE_OUT',
+  FINISH_THE_LINE: 'STYLE_FINISH_THE_LINE',
+  WHO_WHAT_AM_I: 'STYLE_WHO_WHAT_AM_I',
+  BEFORE_OR_AFTER: 'STYLE_BEFORE_OR_AFTER',
 };
 
 const EXTRA_GUIDE_KEY_ALIASES_V8: Readonly<Record<string, StudioGuideKeyV8>> = {
@@ -182,6 +231,11 @@ const EXTRA_GUIDE_KEY_ALIASES_V8: Readonly<Record<string, StudioGuideKeyV8>> = {
   HEADLINE_BLANK: 'STYLE_HEADLINE_BLANK',
   PICTURE_MONITOR: 'STYLE_PICTURE_MONITOR',
   BINARY_SPLIT: 'STYLE_BINARY_SPLIT',
+  HIGHER_OR_LOWER: 'STYLE_HIGHER_OR_LOWER',
+  ODD_ONE_OUT: 'STYLE_ODD_ONE_OUT',
+  FINISH_THE_LINE: 'STYLE_FINISH_THE_LINE',
+  WHO_WHAT_AM_I: 'STYLE_WHO_WHAT_AM_I',
+  BEFORE_OR_AFTER: 'STYLE_BEFORE_OR_AFTER',
   TOY_01_KNIFE_SWITCH: 'STYLE_CLASSIC_CUE',
   // Raw & prefixed BoardPlayModeV7 aliases
   CLASSIC_TOTE: 'BOARD_CLASSIC_TOTE',
@@ -196,6 +250,17 @@ const EXTRA_GUIDE_KEY_ALIASES_V8: Readonly<Record<string, StudioGuideKeyV8>> = {
   BOARD_BIG_WHEEL_SHOWCASE: 'BOARD_BIG_WHEEL_SHOW',
   MONTY_CURTAIN_DEAL: 'BOARD_CURTAIN_DEAL_SHOW',
   BOARD_MONTY_CURTAIN_DEAL: 'BOARD_CURTAIN_DEAL_SHOW',
+  // R7 Anti-Repetition Board Modes, 60s Blitz & VIP Bluff
+  LOUVER_SHUTTER: 'BOARD_LOUVER_SHUTTER',
+  BLIND_PURSE: 'BOARD_BLIND_PURSE',
+  BLACKOUT_VAULT: 'BOARD_BLACKOUT_VAULT',
+  LIVE_WIRE_FUSE: 'BOARD_LIVE_WIRE_FUSE',
+  SHIFTING_SPOTLIGHT: 'BOARD_SHIFTING_SPOTLIGHT',
+  GOLDEN_DOMINO_CASCADE: 'BOARD_GOLDEN_DOMINO_CASCADE',
+  PRESSURE_COOKER: 'BOARD_PRESSURE_COOKER',
+  HOLLYWOOD_MARQUEE_LINE: 'BOARD_HOLLYWOOD_MARQUEE_LINE',
+  BLITZ_60: 'BOARD_BLITZ_60',
+  VIP_BLUFF: 'TWIST_VIP_BLUFF',
 };
 
 let memoryLedgerFallbackV8: SmartCoachLedgerStateV8 = {
@@ -305,11 +370,11 @@ export function resetSeenStudioGuidesV8(): void {
 }
 
 // ----------------------------------------------------------------------------
-// 3. Complete Plain-English 26-Guide Studio Catalog (Zero Jargon!)
+// 3. Complete Plain-English 31-Guide Studio Catalog (Zero Jargon!)
 // ----------------------------------------------------------------------------
 
 export const STUDIO_GUIDE_CATALOG_V8: Readonly<Record<StudioGuideKeyV8, StudioGuideSpecV8>> = {
-  // --- A. 5 Classic Question Card Styles (`STYLE_*`) ---
+  // --- A. 10 Classic Question Card Styles (`STYLE_*`) ---
   STYLE_CLASSIC_CUE: {
     guideKey: 'STYLE_CLASSIC_CUE',
     category: 'QUESTION_STYLE',
@@ -383,6 +448,81 @@ export const STUDIO_GUIDE_CATALOG_V8: Readonly<Record<StudioGuideKeyV8, StudioGu
       'Tap either the Left paddle or the Right paddle for a straight 50/50 decision.',
     goodToKnow:
       'Even a pure hunch gives you a clean 50% shot — trust your gut and fire!',
+    crownTheme: 'TANGERINE',
+  },
+  STYLE_HIGHER_OR_LOWER: {
+    guideKey: 'STYLE_HIGHER_OR_LOWER',
+    category: 'QUESTION_STYLE',
+    kickerLabel: 'HEAD-TO-HEAD · HIGHER OR LOWER DUEL',
+    title: 'Higher or Lower Showdown',
+    badge: 'HIGHER OR LOWER',
+    plainInstruction: 'Two contenders face off — tap the one that ranks higher, bigger, or greater!',
+    whatsHappening:
+      'Two sunlit studio paddles square off in a direct Higher-or-Lower / Bigger-or-Smaller comparison.',
+    howToPlay:
+      'Compare Contender A and Contender B carefully, then tap the winning paddle!',
+    goodToKnow:
+      'Trust your everyday scale intuition — a clean 50/50 comparison locks in instantly!',
+    crownTheme: 'GOLD',
+  },
+  STYLE_ODD_ONE_OUT: {
+    guideKey: 'STYLE_ODD_ONE_OUT',
+    category: 'QUESTION_STYLE',
+    kickerLabel: '4-CARD SPOTLIGHT · 3 BELONG, 1 CRASHER',
+    title: 'Spot the Odd One Out',
+    badge: 'ODD ONE OUT',
+    plainInstruction: 'Three options share a real link — tap the 1 odd crasher that does not belong!',
+    whatsHappening:
+      'Three of the four backlit cards share a common bond, while one clever intruder crashes the set.',
+    howToPlay:
+      'Spot the shared thread linking three cards, then tap the 1 Odd One Out!',
+    goodToKnow:
+      '50/50 Cut and Ask Audience still work here if two choices look suspicious!',
+    crownTheme: 'PEACOCK',
+  },
+  STYLE_FINISH_THE_LINE: {
+    guideKey: 'STYLE_FINISH_THE_LINE',
+    category: 'QUESTION_STYLE',
+    kickerLabel: '1966 CUE-CARD · LYRIC, QUOTE & SLOGAN',
+    title: 'Finish the Famous Line',
+    badge: 'FINISH THE LINE',
+    plainInstruction: 'Read the iconic quote, lyric, or slogan — tap the exact words that complete it!',
+    whatsHappening:
+      'Grant Bellamy flashes a famous movie line, hit lyric, or classic slogan right up to the punchline.',
+    howToPlay:
+      'Hear the rhythm in your head and tap A, B, C, or D to finish the famous line!',
+    goodToKnow:
+      'Watch out for almost-right misquotes — Studio Cheats can clear traps if needed!',
+    crownTheme: 'GOLD',
+  },
+  STYLE_WHO_WHAT_AM_I: {
+    guideKey: 'STYLE_WHO_WHAT_AM_I',
+    category: 'QUESTION_STYLE',
+    kickerLabel: "WHAT'S MY LINE · MYSTERY RIDDLE",
+    title: 'Who or What Am I?',
+    badge: 'WHO / WHAT AM I?',
+    plainInstruction: 'Follow the first-person riddle clues and unmask the mystery person, place, or thing!',
+    whatsHappening:
+      'A mystery guest or everyday object speaks in three playful clues without giving away its name.',
+    howToPlay:
+      'Piece together the hints and tap A, B, C, or D to reveal who or what is speaking!',
+    goodToKnow:
+      'Each sentence narrows the spotlight — connect the final twist to lock in your pick!',
+    crownTheme: 'CERISE',
+  },
+  STYLE_BEFORE_OR_AFTER: {
+    guideKey: 'STYLE_BEFORE_OR_AFTER',
+    category: 'QUESTION_STYLE',
+    kickerLabel: 'TIME-MACHINE DUEL · BEFORE OR AFTER',
+    title: 'Before or After Duel',
+    badge: 'BEFORE OR AFTER',
+    plainInstruction: 'Two milestones go head-to-head — tap which happened earlier or later in history!',
+    whatsHappening:
+      'Two studio time-machine paddles pit two famous events, inventions, or eras directly against each other.',
+    howToPlay:
+      'Check whether Grant Bellamy asks for EARLIER or LATER, then tap Pick A or Pick B!',
+    goodToKnow:
+      'Anchor each pick to a decade you know — a smart hunch pays off big!',
     crownTheme: 'TANGERINE',
   },
 
@@ -717,6 +857,168 @@ export const STUDIO_GUIDE_CATALOG_V8: Readonly<Record<StudioGuideKeyV8, StudioGu
       'On Instant Bargain desks, glance at the Lead Gauge first so you never trade away a winning lead!',
     crownTheme: 'CERISE',
   },
+
+  // --- D. 8 R7 Anti-Repetition Board Modes, 60s Blitz & VIP Bluff ---
+  BOARD_LOUVER_SHUTTER: {
+    guideKey: 'BOARD_LOUVER_SHUTTER',
+    category: 'BOARD_MODE',
+    kickerLabel: 'TONIGHT’S TV BOARD FORMAT · MYSTERY TOPICS',
+    title: 'Louver Shutter · Mystery Topics',
+    badge: 'LOUVER SHUTTER',
+    plainInstruction:
+      'Dollar values glow bright while Venetian louvers hide topics — tap any dollar tile to snap louvers open!',
+    whatsHappening:
+      'Peacock and Cream Venetian louvers conceal tonight’s categories while the $200–$500 Acrylite payouts shine clearly below.',
+    howToPlay:
+      'Pick a dollar value you want to chase — one tap snaps the louvers open and launches the clue immediately!',
+    goodToKnow:
+      'Watch which categories your Rival uncovers on adjacent shutters so you can spot patterns across the rack!',
+    crownTheme: 'PEACOCK',
+  },
+  BOARD_BLIND_PURSE: {
+    guideKey: 'BOARD_BLIND_PURSE',
+    category: 'BOARD_MODE',
+    kickerLabel: 'TONIGHT’S TV BOARD FORMAT · MYSTERY DOLLARS',
+    title: 'Blind Purse · Mystery Dollars',
+    badge: 'BLIND PURSE',
+    plainInstruction:
+      'Categories stay open while Cerise wax-seal flaps hide shuffled $150–$750 envelopes — pick your best subject!',
+    whatsHappening:
+      'Every tile clearly displays its category, while shuffled $150–$750 prize envelopes hide behind Cerise wax seals.',
+    howToPlay:
+      'Tap your strongest category to pop open its wax-seal flap and play for the revealed envelope payout!',
+    goodToKnow:
+      'Glance at the remaining top envelope strip below the board to know when the $750 top prize is still in play!',
+    crownTheme: 'CERISE',
+  },
+  BOARD_BLACKOUT_VAULT: {
+    guideKey: 'BOARD_BLACKOUT_VAULT',
+    category: 'BOARD_MODE',
+    kickerLabel: 'TONIGHT’S TV BOARD FORMAT · TOTAL MYSTERY',
+    title: 'Blackout Vault · Total Mystery',
+    badge: 'BLACKOUT VAULT',
+    plainInstruction:
+      'Numbered Brass Safe Trilons #1–#12 hide both topic and cash — tap to flip 180° and spot ⚡ HIGH-VOLT doors!',
+    whatsHappening:
+      'Every square sits inside a numbered Brass & Walnut Safe Trilon (#1–#12) concealing both category and dollar value.',
+    howToPlay:
+      'Tap any numbered Safe Trilon to spin it 180° open, reveal its hidden category and payout, and answer live!',
+    goodToKnow:
+      'Three doors carry ⚡ HIGH-VOLT starburst seals — crack those for amplified prime-time prize money!',
+    crownTheme: 'GOLD',
+  },
+  BOARD_LIVE_WIRE_FUSE: {
+    guideKey: 'BOARD_LIVE_WIRE_FUSE',
+    category: 'BOARD_MODE',
+    kickerLabel: 'TONIGHT’S TV BOARD FORMAT · CHAIN UNLOCK',
+    title: 'Live-Wire Fuse · Chain Unlock',
+    badge: 'LIVE-WIRE FUSE',
+    plainInstruction:
+      'One starter tile glows live — win clues to spark orthogonal neighbors open along copper conduits!',
+    whatsHappening:
+      'All tiles start clamped except one glowing ▶ PLAY starter square wired to its neighbors by copper conduits.',
+    howToPlay:
+      'Win the lit tile to spark adjacent locked tiles open and chart your route across the board!',
+    goodToKnow:
+      'If every active frontier ever locks out, the ⚡ Emergency Circuit Breaker automatically pops open up to 2 tiles!',
+    crownTheme: 'TANGERINE',
+  },
+  BOARD_SHIFTING_SPOTLIGHT: {
+    guideKey: 'BOARD_SHIFTING_SPOTLIGHT',
+    category: 'BOARD_MODE',
+    kickerLabel: 'TONIGHT’S TV BOARD FORMAT · GLIDING MULTIPLIER',
+    title: 'Shifting Spotlight · 1.5×/2× Rail',
+    badge: 'SHIFTING SPOTLIGHT',
+    plainInstruction:
+      'A glowing Harvest Gold Spotlight (1.5× early, 2.0× on Turns 7–10) glides along brass rails every turn!',
+    whatsHappening:
+      'One live tile sits bathed in a Harvest Gold 1.5× Studio Spotlight (upgrading to 2.0× on Turns 7–10).',
+    howToPlay:
+      'Pick the spotlighted tile when the category fits you to multiply its cash payout — it glides to a new tile next turn!',
+    goodToKnow:
+      'Don’t force a weak topic if a safer tile sets up your streak — the spotlight shifts again after your Rival’s turn!',
+    crownTheme: 'GOLD',
+  },
+  BOARD_GOLDEN_DOMINO_CASCADE: {
+    guideKey: 'BOARD_GOLDEN_DOMINO_CASCADE',
+    category: 'BOARD_MODE',
+    kickerLabel: 'TONIGHT’S TV BOARD FORMAT · 3-LINK CASCADE',
+    title: 'Golden Domino · 3-Link Cascade',
+    badge: 'GOLDEN DOMINO',
+    plainInstruction:
+      'Claim touching orthogonal tiles to light Emerald bridges — linking 3 contiguous tiles triggers +$350!',
+    whatsHappening:
+      'Adjacent tiles you win ignite glowing Neon Emerald domino bridges linking your territory together.',
+    howToPlay:
+      'Build an unbroken chain of 3 orthogonally touching wins to detonate an instant +$350 Domino Cascade!',
+    goodToKnow:
+      'Diagonal corners do NOT bridge dominoes — aim directly up, down, left, or right from your claimed tiles!',
+    crownTheme: 'PEACOCK',
+  },
+  BOARD_PRESSURE_COOKER: {
+    guideKey: 'BOARD_PRESSURE_COOKER',
+    category: 'BOARD_MODE',
+    kickerLabel: 'TONIGHT’S TV BOARD FORMAT · SHARED GAUGE',
+    title: 'The Pressure Cooker · Rising Gauge',
+    badge: 'PRESSURE COOKER',
+    plainInstruction:
+      'Consecutive hits by EITHER player crank the Brass Gauge ×1.0 -> ×1.25 -> ×1.5 -> ×2.0; any miss blasts steam to ×1.0!',
+    whatsHappening:
+      'A shared Brass Pressure Gauge sits atop the board, climbing one notch on every consecutive hit by you OR your Rival.',
+    howToPlay:
+      'Ride hot studio momentum at ×1.5 or ×2.0 to cash in huge payouts before a miss vents steam back to ×1.0!',
+    goodToKnow:
+      'Your Rival’s correct answer boosts the shared gauge for your next pick too — strike high-dollar tiles when at ×2.0!',
+    crownTheme: 'TANGERINE',
+  },
+  BOARD_HOLLYWOOD_MARQUEE_LINE: {
+    guideKey: 'BOARD_HOLLYWOOD_MARQUEE_LINE',
+    category: 'BOARD_MODE',
+    kickerLabel: 'TONIGHT’S TV BOARD FORMAT · MARQUEE O/X',
+    title: 'Hollywood Marquee · 3-in-a-Row',
+    badge: 'HOLLYWOOD MARQUEE',
+    plainInstruction:
+      'Light O (You) vs X (Rival) marquee bulbs — any 3-in-a-row lights a chasing bar for +$300 Line Bonus!',
+    whatsHappening:
+      'Each claimed square lights an incandescent O (Player) or X (Rival) bulb on the Hollywood Marquee matrix.',
+    howToPlay:
+      'Connect 3 O bulbs in any row, column, or diagonal to fire the chasing marquee bar and bank a +$300 Line Bonus!',
+    goodToKnow:
+      'You can score multiple 3-bulb marquee lines in one show — block Rival X pairs while building intersecting O lines!',
+    crownTheme: 'CERISE',
+  },
+  BOARD_BLITZ_60: {
+    guideKey: 'BOARD_BLITZ_60',
+    category: 'BOARD_MODE',
+    kickerLabel: '60-SECOND BEAT-THE-CLOCK SPRINT',
+    title: '60-Second Blitz Sprint',
+    badge: '60s BLITZ',
+    plainInstruction:
+      'Rapid-fire solo clues! +3.0s per hit (75s cap), -4.0s on misses, and 3 free PASSES before -2.0s penalties!',
+    whatsHappening:
+      'Pure non-stop studio sprint with zero Rival wait: answer fast to add +3.0s to the 60s clock and climb streak multipliers.',
+    howToPlay:
+      'Tap answers briskly or hit the bottom PASS bar to skip a tough topic (your first 3 passes cost 0.0s)!',
+    goodToKnow:
+      'Reaching 15+ correct hits in one Blitz sprint awards +1 bonus Starburst Plinko Token for the Prize Showroom!',
+    crownTheme: 'TANGERINE',
+  },
+  TWIST_VIP_BLUFF: {
+    guideKey: 'TWIST_VIP_BLUFF',
+    category: 'SHOWCASE_TOY',
+    kickerLabel: '1966 CELEBRITY PANELIST · BLUFF SHOWDOWN',
+    title: 'VIP Celebrity Bluff Square',
+    badge: 'VIP BLUFF SQUARE',
+    plainInstruction:
+      'Check the VIP’s Topic Badge & verbal tell — tap TRUST ’EM (+1.0× / -0.5×) or CALL BLUFF! (+1.5× / -0.5×)!',
+    whatsHappening:
+      'One of 7 recurring 1966 VIP panelists pitches an answer — honest in their wheelhouse, or bluffing in a blind spot!',
+    howToPlay:
+      'Tap TRUST ’EM if they sound legit (+1.0× if true), or CALL BLUFF! if their quip smells fishy (+1.5× if bluffing)!',
+    goodToKnow:
+      'Watch for tells like fake Latin, rich ex-husbands, or mystical excuses — every VIP’s bluff habit is 100% learnable!',
+    crownTheme: 'CERISE',
+  },
 };
 
 export const ALL_STUDIO_GUIDE_KEYS_V8: readonly StudioGuideKeyV8[] = Object.keys(
@@ -750,9 +1052,9 @@ export function resolveQuestionGuideKeyV8(
 }
 
 export function resolveBoardModeGuideKeyV8(
-  boardMode: BoardPlayModeV7,
+  boardMode: BoardPlayModeV9 | 'BLITZ_60',
 ): StudioBoardModeGuideKeyV8 {
-  return BOARD_MODE_TO_GUIDE_KEY_V8[boardMode] ?? 'BOARD_CLASSIC_TOTE';
+  return BOARD_MODE_TO_GUIDE_KEY_V9[boardMode] ?? 'BOARD_CLASSIC_TOTE';
 }
 
 export function getQuestionPlainMicroTipV8(
@@ -767,7 +1069,9 @@ export function getQuestionPlainMicroTipV8(
   };
 }
 
-export function getBoardModePlainMicroTipV8(boardMode: BoardPlayModeV7): PlainMicroTipV8 {
+export function getBoardModePlainMicroTipV8(
+  boardMode: BoardPlayModeV9 | 'BLITZ_60',
+): PlainMicroTipV8 {
   const key = resolveBoardModeGuideKeyV8(boardMode);
   const spec = STUDIO_GUIDE_CATALOG_V8[key];
   return {
@@ -827,8 +1131,21 @@ const TILE_TWIST_MICRO_TIPS_V8: Readonly<Record<ClassicTvTileTwistV7, PlainMicro
   },
 };
 
-export function getTileTwistPlainMicroTipV8(twist: ClassicTvTileTwistV7): PlainMicroTipV8 {
-  return TILE_TWIST_MICRO_TIPS_V8[twist] ?? TILE_TWIST_MICRO_TIPS_V8.NONE;
+export const TILE_TWIST_MICRO_TIPS_V9: Readonly<
+  Record<ClassicTvTileTwistV9, PlainMicroTipV8>
+> = {
+  ...TILE_TWIST_MICRO_TIPS_V8,
+  VIP_BLUFF: {
+    badge: '1966 VIP BLUFF SQUARE',
+    plainInstruction:
+      'Inspect the VIP’s topic badge & tell — tap TRUST ’EM (+1.0×) or CALL BLUFF! (+1.5×)!',
+  },
+};
+
+export function getTileTwistPlainMicroTipV8(
+  twist: ClassicTvTileTwistV9,
+): PlainMicroTipV8 {
+  return TILE_TWIST_MICRO_TIPS_V9[twist] ?? TILE_TWIST_MICRO_TIPS_V9.NONE;
 }
 
 export const STUDIO_CHEAT_SPECS_V8: Readonly<Record<StudioCheatIdV8, StudioCheatSpecV8>> = {
@@ -930,7 +1247,7 @@ export function resolveQuestionTimerSecondsV8(
 }
 
 // ----------------------------------------------------------------------------
-// 5. Custom Mid-Century Vector Icons & 26 Bespoke Guide Diagrams (Zero SVG Text!)
+// 5. Custom Mid-Century Vector Icons & 31 Bespoke Guide Diagrams (Zero SVG Text!)
 // ----------------------------------------------------------------------------
 
 const SVG_PAUSE_TWIN_BARS_V8 = `<svg class="ws8-coach-pause-svg" viewBox="0 0 18 18" width="15" height="15" aria-hidden="true" focusable="false">
@@ -1048,6 +1365,81 @@ export function renderGuideDiagramSvgV8(guideKey: StudioGuideKeyV8): string {
         <rect x="174" y="18" width="122" height="56" rx="12" fill="#FF6B35" stroke="#B33A10" stroke-width="2.2"/>
         <rect x="194" y="38" width="82" height="8" rx="4" fill="#FFFDF7"/>
         <rect x="206" y="51" width="58" height="5" rx="2.5" fill="#FFE0CF"/>
+      </svg>`;
+
+    case 'STYLE_HIGHER_OR_LOWER':
+      return `<svg class="ws8-coach-diagram-svg" viewBox="0 0 320 92" role="img" aria-label="Two Higher or Lower comparison paddles with up and down gauges">
+        ${frameBg}
+        <rect x="24" y="18" width="118" height="56" rx="12" fill="#008B94" stroke="#0B5D63" stroke-width="2.2"/>
+        <polygon points="83,26 95,40 71,40" fill="#FFD166"/>
+        <rect x="46" y="48" width="74" height="8" rx="4" fill="#FFFDF7"/>
+        <circle cx="160" cy="46" r="14" fill="#FAF2DF" stroke="#6E3B23" stroke-width="2.2"/>
+        <polygon points="160,35 166,43 154,43" fill="#008B94"/>
+        <polygon points="160,57 154,49 166,49" fill="#D97706"/>
+        <rect x="178" y="18" width="118" height="56" rx="12" fill="#F2A922" stroke="#9A6208" stroke-width="2.2"/>
+        <polygon points="237,42 225,28 249,28" fill="#5C301B"/>
+        <rect x="200" y="48" width="74" height="8" rx="4" fill="#FFFDF7"/>
+      </svg>`;
+
+    case 'STYLE_ODD_ONE_OUT':
+      return `<svg class="ws8-coach-diagram-svg" viewBox="0 0 320 92" role="img" aria-label="Three matching pads and one highlighted Odd One Out crasher pad">
+        ${frameBg}
+        <rect x="22" y="16" width="122" height="26" rx="7" fill="#E3F6F7" stroke="#008B94" stroke-width="1.6"/>
+        <circle cx="37" cy="29" r="6" fill="#008B94"/>
+        <rect x="50" y="26" width="80" height="6" rx="3" fill="#0E5A61"/>
+        <rect x="176" y="16" width="122" height="26" rx="7" fill="#E3F6F7" stroke="#008B94" stroke-width="1.6"/>
+        <circle cx="191" cy="29" r="6" fill="#008B94"/>
+        <rect x="204" y="26" width="80" height="6" rx="3" fill="#0E5A61"/>
+        <rect x="22" y="50" width="122" height="26" rx="7" fill="#E3F6F7" stroke="#008B94" stroke-width="1.6"/>
+        <circle cx="37" cy="63" r="6" fill="#008B94"/>
+        <rect x="50" y="60" width="80" height="6" rx="3" fill="#0E5A61"/>
+        <rect x="176" y="48" width="122" height="30" rx="8" fill="#FFF3D6" stroke="#FF6B35" stroke-width="2.8"/>
+        <polygon points="192,54 194.8,59.8 201,60.7 196.5,65.1 197.6,71.3 192,68.3 186.4,71.3 187.5,65.1 183,60.7 189.2,59.8" fill="#FF6B35"/>
+        <rect x="208" y="60" width="74" height="6.5" rx="3.2" fill="#8C2F0A"/>
+      </svg>`;
+
+    case 'STYLE_FINISH_THE_LINE':
+      return `<svg class="ws8-coach-diagram-svg" viewBox="0 0 320 92" role="img" aria-label="1966 cue card strip completing a famous lyric or quote">
+        ${frameBg}
+        <rect x="22" y="13" width="276" height="34" rx="8" fill="#FFFDF7" stroke="#6E3B23" stroke-width="2.2"/>
+        <circle cx="40" cy="30" r="6" fill="#D9A441"/>
+        <rect x="54" y="22" width="128" height="6" rx="3" fill="#5C301B"/>
+        <rect x="190" y="20" width="92" height="20" rx="6" fill="#FFF3C4" stroke="#FF6B35" stroke-width="2" stroke-dasharray="4 2"/>
+        <rect x="54" y="33" width="96" height="5" rx="2.5" fill="#9C8468"/>
+        <rect x="34" y="56" width="72" height="22" rx="6" fill="#FFFDF7" stroke="#C9B286" stroke-width="1.5"/>
+        <rect x="122" y="55" width="78" height="24" rx="7" fill="#6E3B23" stroke="#D9A441" stroke-width="2"/>
+        <rect x="137" y="64" width="48" height="6" rx="3" fill="#FFD166"/>
+        <rect x="216" y="56" width="72" height="22" rx="6" fill="#FFFDF7" stroke="#C9B286" stroke-width="1.5"/>
+      </svg>`;
+
+    case 'STYLE_WHO_WHAT_AM_I':
+      return `<svg class="ws8-coach-diagram-svg" viewBox="0 0 320 92" role="img" aria-label="Mystery silhouette emblem beside four answer pads">
+        ${frameBg}
+        <rect x="24" y="15" width="112" height="62" rx="11" fill="#5C301B" stroke="#D9A441" stroke-width="2.2"/>
+        <circle cx="80" cy="46" r="22" fill="#FAF2DF" stroke="#008B94" stroke-width="2.4"/>
+        <path d="M74 39 C74 34 86 34 86 40 C86 45 80 45.5 80 51" fill="none" stroke="#5C301B" stroke-width="3.2" stroke-linecap="round"/>
+        <circle cx="80" cy="58" r="2.6" fill="#FF6B35"/>
+        <rect x="154" y="16" width="142" height="13" rx="5" fill="#FFFDF7" stroke="#C9B286" stroke-width="1.5"/>
+        <rect x="154" y="33" width="142" height="16" rx="6" fill="#E6F8EE" stroke="#15803D" stroke-width="2.2"/>
+        <circle cx="166" cy="41" r="4.5" fill="#15803D"/>
+        <rect x="176" y="38.5" width="98" height="5" rx="2.5" fill="#14532D"/>
+        <rect x="154" y="53" width="142" height="11" rx="5" fill="#FFFDF7" stroke="#C9B286" stroke-width="1.5"/>
+        <rect x="154" y="67" width="142" height="11" rx="5" fill="#FFFDF7" stroke="#C9B286" stroke-width="1.5"/>
+      </svg>`;
+
+    case 'STYLE_BEFORE_OR_AFTER':
+      return `<svg class="ws8-coach-diagram-svg" viewBox="0 0 320 92" role="img" aria-label="Two Before or After time-machine duel paddles with clock icon">
+        ${frameBg}
+        <rect x="24" y="18" width="118" height="56" rx="12" fill="#1746A2" stroke="#0F2F73" stroke-width="2.2"/>
+        <rect x="44" y="36" width="78" height="8" rx="4" fill="#FFFDF7"/>
+        <rect x="56" y="49" width="54" height="5" rx="2.5" fill="#B8D4FF"/>
+        <circle cx="160" cy="46" r="15" fill="#FAF2DF" stroke="#6E3B23" stroke-width="2.2"/>
+        <circle cx="160" cy="46" r="10" fill="none" stroke="#D9A441" stroke-width="2"/>
+        <line x1="160" y1="46" x2="160" y2="39" stroke="#5C301B" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="160" y1="46" x2="166" y2="49" stroke="#FF6B35" stroke-width="2.2" stroke-linecap="round"/>
+        <rect x="178" y="18" width="118" height="56" rx="12" fill="#C47A12" stroke="#854E04" stroke-width="2.2"/>
+        <rect x="198" y="36" width="78" height="8" rx="4" fill="#FFFDF7"/>
+        <rect x="210" y="49" width="54" height="5" rx="2.5" fill="#FFE6B8"/>
       </svg>`;
 
     case 'TOY_02_CONFIDENCE_PNEUMATIC':
@@ -1355,6 +1747,139 @@ export function renderGuideDiagramSvgV8(guideKey: StudioGuideKeyV8): string {
         <rect x="216" y="17" width="66" height="60" rx="6" fill="#B8253E" stroke="#D9A441" stroke-width="1.8"/>
         <line x1="238" y1="19" x2="238" y2="75" stroke="#8C182C" stroke-width="2"/>
         <line x1="260" y1="19" x2="260" y2="75" stroke="#8C182C" stroke-width="2"/>
+      </svg>`;
+
+    case 'BOARD_LOUVER_SHUTTER':
+      return `<svg class="ws8-coach-diagram-svg" viewBox="0 0 320 92" role="img" aria-label="Venetian louver shutters hiding categories above glowing dollar tiles">
+        ${frameBg}
+        <rect x="44" y="14" width="104" height="64" rx="8" fill="#FFFDF7" stroke="#008B94" stroke-width="2.2"/>
+        <rect x="52" y="21" width="88" height="8" rx="3" fill="#008B94"/>
+        <rect x="52" y="33" width="88" height="8" rx="3" fill="#008B94" opacity="0.82"/>
+        <rect x="52" y="45" width="88" height="8" rx="3" fill="#008B94" opacity="0.65"/>
+        <rect x="52" y="57" width="88" height="14" rx="4" fill="#F2A922"/>
+        <rect x="172" y="14" width="104" height="64" rx="8" fill="#FFFDF7" stroke="#D9A441" stroke-width="2.2"/>
+        <rect x="180" y="21" width="88" height="24" rx="5" fill="#E6F7F8" stroke="#008B94" stroke-width="1.6"/>
+        <rect x="192" y="29" width="64" height="8" rx="4" fill="#6E3B23"/>
+        <rect x="180" y="51" width="88" height="18" rx="5" fill="#F2A922"/>
+      </svg>`;
+
+    case 'BOARD_BLIND_PURSE':
+      return `<svg class="ws8-coach-diagram-svg" viewBox="0 0 320 92" role="img" aria-label="Visible topic headers paired with Cerise wax-sealed mystery cash envelopes">
+        ${frameBg}
+        <rect x="44" y="14" width="68" height="64" rx="8" fill="#FFFDF7" stroke="#008B94" stroke-width="2"/>
+        <rect x="52" y="21" width="52" height="12" rx="4" fill="#008B94"/>
+        <rect x="52" y="41" width="52" height="28" rx="6" fill="#FCE4EE" stroke="#E6397A" stroke-width="2"/>
+        <circle cx="78" cy="55" r="7" fill="#E6397A"/>
+        <rect x="126" y="14" width="68" height="64" rx="8" fill="#FFFDF7" stroke="#D9A441" stroke-width="2"/>
+        <rect x="134" y="21" width="52" height="12" rx="4" fill="#FF6B35"/>
+        <rect x="134" y="41" width="52" height="28" rx="6" fill="#FFF3C4" stroke="#F2A922" stroke-width="2"/>
+        <circle cx="160" cy="55" r="7" fill="#15803D"/>
+        <rect x="208" y="14" width="68" height="64" rx="8" fill="#FFFDF7" stroke="#008B94" stroke-width="2"/>
+        <rect x="216" y="21" width="52" height="12" rx="4" fill="#1746A2"/>
+        <rect x="216" y="41" width="52" height="28" rx="6" fill="#FCE4EE" stroke="#E6397A" stroke-width="2"/>
+        <circle cx="242" cy="55" r="7" fill="#E6397A"/>
+      </svg>`;
+
+    case 'BOARD_BLACKOUT_VAULT':
+      return `<svg class="ws8-coach-diagram-svg" viewBox="0 0 320 92" role="img" aria-label="Brass numbered safe trilons flipping open to reveal topic and cash">
+        ${frameBg}
+        <rect x="44" y="14" width="68" height="64" rx="9" fill="#6E3B23" stroke="#D9A441" stroke-width="2.4"/>
+        <circle cx="78" cy="46" r="14" fill="#D9A441" stroke="#FFFDF7" stroke-width="1.8"/>
+        <rect x="126" y="14" width="68" height="64" rx="9" fill="#FFF3C4" stroke="#FF6B35" stroke-width="2.6"/>
+        <polygon points="160,24 164,34 175,34 166,40 170,50 160,44 150,50 154,40 145,34 156,34" fill="#FF6B35"/>
+        <rect x="138" y="55" width="44" height="12" rx="4" fill="#6E3B23"/>
+        <rect x="208" y="14" width="68" height="64" rx="9" fill="#6E3B23" stroke="#D9A441" stroke-width="2.4"/>
+        <circle cx="242" cy="46" r="14" fill="#F2A922" stroke="#FFFDF7" stroke-width="1.8"/>
+      </svg>`;
+
+    case 'BOARD_LIVE_WIRE_FUSE':
+      return `<svg class="ws8-coach-diagram-svg" viewBox="0 0 320 92" role="img" aria-label="Copper conduits sparking orthogonal neighbor tiles unlocked from one starter square">
+        ${frameBg}
+        <line x1="88" y1="46" x2="232" y2="46" stroke="#D9A441" stroke-width="5" stroke-linecap="round"/>
+        <line x1="160" y1="22" x2="160" y2="70" stroke="#D9A441" stroke-width="5" stroke-linecap="round"/>
+        <rect x="52" y="28" width="54" height="36" rx="7" fill="#008B94" stroke="#FFD166" stroke-width="2.4"/>
+        <rect x="133" y="28" width="54" height="36" rx="7" fill="#FF6B35" stroke="#FFFDF7" stroke-width="2.4"/>
+        <polygon points="162,33 153,47 161,47 158,59 169,44 161,44" fill="#FFFDF7"/>
+        <rect x="214" y="28" width="54" height="36" rx="7" fill="#EDE0C4" stroke="#6E3B23" stroke-width="2"/>
+        <rect x="234" y="40" width="14" height="12" rx="3" fill="#6E3B23"/>
+      </svg>`;
+
+    case 'BOARD_SHIFTING_SPOTLIGHT':
+      return `<svg class="ws8-coach-diagram-svg" viewBox="0 0 320 92" role="img" aria-label="Golden spotlight beam gliding along brass rails over board tiles">
+        ${frameBg}
+        <line x1="36" y1="16" x2="284" y2="16" stroke="#D9A441" stroke-width="4" stroke-linecap="round"/>
+        <polygon points="160,18 118,76 202,76" fill="#FFD166" opacity="0.46"/>
+        <rect x="44" y="34" width="66" height="40" rx="7" fill="#008B94"/>
+        <rect x="127" y="34" width="66" height="40" rx="7" fill="#F2A922" stroke="#6E3B23" stroke-width="2.4"/>
+        <polygon points="160,41 163,49 172,49 165,54 167,62 160,57 153,62 155,54 148,49 157,49" fill="#FFFDF7"/>
+        <rect x="210" y="34" width="66" height="40" rx="7" fill="#008B94"/>
+      </svg>`;
+
+    case 'BOARD_GOLDEN_DOMINO_CASCADE':
+      return `<svg class="ws8-coach-diagram-svg" viewBox="0 0 320 92" role="img" aria-label="Three orthogonally linked emerald domino tiles triggering cascade bonus">
+        ${frameBg}
+        <rect x="56" y="26" width="52" height="40" rx="8" fill="#15803D" stroke="#FFD166" stroke-width="2.4"/>
+        <rect x="108" y="41" width="26" height="10" rx="4" fill="#22C55E"/>
+        <rect x="134" y="26" width="52" height="40" rx="8" fill="#15803D" stroke="#FFD166" stroke-width="2.4"/>
+        <rect x="186" y="41" width="26" height="10" rx="4" fill="#22C55E"/>
+        <rect x="212" y="26" width="52" height="40" rx="8" fill="#F2A922" stroke="#6E3B23" stroke-width="2.4"/>
+        <circle cx="82" cy="46" r="6" fill="#FFFDF7"/>
+        <circle cx="160" cy="46" r="6" fill="#FFFDF7"/>
+        <circle cx="238" cy="46" r="7" fill="#6E3B23"/>
+      </svg>`;
+
+    case 'BOARD_PRESSURE_COOKER':
+      return `<svg class="ws8-coach-diagram-svg" viewBox="0 0 320 92" role="img" aria-label="Shared brass pressure gauge climbing to double multiplier with steam valve">
+        ${frameBg}
+        <rect x="44" y="34" width="166" height="24" rx="12" fill="#EDE0C4" stroke="#6E3B23" stroke-width="2.2"/>
+        <rect x="48" y="38" width="124" height="16" rx="8" fill="#FF6B35"/>
+        <circle cx="246" cy="46" r="26" fill="#FFFDF7" stroke="#D9A441" stroke-width="3"/>
+        <path d="M228 50 A18 18 0 0 1 264 50" fill="none" stroke="#15803D" stroke-width="4" stroke-linecap="round"/>
+        <line x1="246" y1="48" x2="260" y2="34" stroke="#E6397A" stroke-width="3.2" stroke-linecap="round"/>
+        <circle cx="246" cy="48" r="4" fill="#6E3B23"/>
+      </svg>`;
+
+    case 'BOARD_HOLLYWOOD_MARQUEE_LINE':
+      return `<svg class="ws8-coach-diagram-svg" viewBox="0 0 320 92" role="img" aria-label="Hollywood Marquee three-in-a-row O bulbs illuminated across grid">
+        ${frameBg}
+        <rect x="80" y="14" width="46" height="20" rx="5" fill="#008B94" stroke="#FFD166" stroke-width="2"/>
+        <circle cx="103" cy="24" r="5" fill="none" stroke="#FFFDF7" stroke-width="2.2"/>
+        <rect x="137" y="14" width="46" height="20" rx="5" fill="#008B94" stroke="#FFD166" stroke-width="2"/>
+        <circle cx="160" cy="24" r="5" fill="none" stroke="#FFFDF7" stroke-width="2.2"/>
+        <rect x="194" y="14" width="46" height="20" rx="5" fill="#008B94" stroke="#FFD166" stroke-width="2"/>
+        <circle cx="217" cy="24" r="5" fill="none" stroke="#FFFDF7" stroke-width="2.2"/>
+        <rect x="80" y="39" width="46" height="18" rx="5" fill="#FFFDF7" stroke="#C9B286" stroke-width="1.5"/>
+        <rect x="137" y="39" width="46" height="18" rx="5" fill="#FF6B35"/>
+        <rect x="194" y="39" width="46" height="18" rx="5" fill="#FFFDF7" stroke="#C9B286" stroke-width="1.5"/>
+        <rect x="80" y="61" width="46" height="17" rx="5" fill="#FF6B35"/>
+        <rect x="137" y="61" width="46" height="17" rx="5" fill="#FFFDF7" stroke="#C9B286" stroke-width="1.5"/>
+        <rect x="194" y="61" width="46" height="17" rx="5" fill="#FFFDF7" stroke="#C9B286" stroke-width="1.5"/>
+        <line x1="88" y1="24" x2="232" y2="24" stroke="#FFD166" stroke-width="2.5" stroke-dasharray="4 4"/>
+      </svg>`;
+
+    case 'BOARD_BLITZ_60':
+      return `<svg class="ws8-coach-diagram-svg" viewBox="0 0 320 92" role="img" aria-label="60-second blitz stopwatch with rapid pass bar">
+        ${frameBg}
+        <circle cx="88" cy="46" r="28" fill="#FFFDF7" stroke="#FF6B35" stroke-width="3.2"/>
+        <rect x="81" y="11" width="14" height="6" rx="2" fill="#D9A441"/>
+        <line x1="88" y1="46" x2="88" y2="27" stroke="#6E3B23" stroke-width="3" stroke-linecap="round"/>
+        <line x1="88" y1="46" x2="104" y2="54" stroke="#FF6B35" stroke-width="3" stroke-linecap="round"/>
+        <rect x="136" y="20" width="142" height="22" rx="7" fill="#008B94"/>
+        <rect x="148" y="28" width="96" height="6" rx="3" fill="#FFFDF7"/>
+        <rect x="136" y="50" width="142" height="22" rx="7" fill="#F2A922" stroke="#6E3B23" stroke-width="1.8"/>
+        <polygon points="244,55 256,61 244,67" fill="#6E3B23"/>
+      </svg>`;
+
+    case 'TWIST_VIP_BLUFF':
+      return `<svg class="ws8-coach-diagram-svg" viewBox="0 0 320 92" role="img" aria-label="1966 VIP celebrity panelist with Trust Em and Call Bluff paddles">
+        ${frameBg}
+        <circle cx="78" cy="46" r="25" fill="#FFFDF7" stroke="#E6397A" stroke-width="3"/>
+        <circle cx="78" cy="40" r="9" fill="#6E3B23"/>
+        <path d="M62 60 C65 51 91 51 94 60" fill="#008B94"/>
+        <rect x="122" y="18" width="160" height="24" rx="8" fill="#FFFDF7" stroke="#D9A441" stroke-width="1.8"/>
+        <rect x="134" y="27" width="118" height="6" rx="3" fill="#6E3B23"/>
+        <rect x="122" y="49" width="76" height="24" rx="7" fill="#15803D"/>
+        <rect x="206" y="49" width="76" height="24" rx="7" fill="#E6397A"/>
       </svg>`;
   }
 }

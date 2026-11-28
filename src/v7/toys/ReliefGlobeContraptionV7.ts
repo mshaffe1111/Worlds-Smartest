@@ -301,7 +301,7 @@ export class ReliefGlobeContraptionV7 {
   private readonly options: ReliefGlobeOptionsV7;
 
   private readonly renderer: THREE.WebGLRenderer;
-  private readonly pmremTarget: THREE.WebGLRenderTarget;
+  private readonly pmremTarget: THREE.WebGLRenderTarget | null;
   private readonly scene: THREE.Scene;
   private readonly camera: THREE.PerspectiveCamera;
   private readonly globeRoot: THREE.Group;
@@ -477,9 +477,18 @@ export class ReliefGlobeContraptionV7 {
     this.stageEl.appendChild(this.renderer.domElement);
 
     // 3. Studio Warm-Tungsten & Peacock PMREM Environment Reflections
-    this.pmremTarget = buildWarmTungstenPMREM(this.renderer);
+    const initGlCtx = this.renderer.getContext();
+    let pmremTarget: THREE.WebGLRenderTarget | null = null;
+    if (initGlCtx && !initGlCtx.isContextLost()) {
+      try {
+        pmremTarget = buildWarmTungstenPMREM(this.renderer);
+      } catch {
+        pmremTarget = null;
+      }
+    }
+    this.pmremTarget = pmremTarget;
     this.scene = new THREE.Scene();
-    this.scene.environment = this.pmremTarget.texture;
+    this.scene.environment = this.pmremTarget ? this.pmremTarget.texture : null;
 
     const initW = Math.max(160, this.stageEl.clientWidth || 340);
     const initH = Math.max(160, this.stageEl.clientHeight || 220);
@@ -627,7 +636,7 @@ export class ReliefGlobeContraptionV7 {
     // 7. Stream / Bind Shared 4K Relief + 2K Bump + 2K Specular Textures
     const maxAniso = Math.min(8, this.renderer.capabilities.getMaxAnisotropy());
     this.textureListener = () => {
-      if (this.disposed) return;
+      if (this.disposed || this.renderer.getContext()?.isContextLost?.()) return;
       if (SHARED_EARTH_TEXTURES.albedo) {
         this.earthMaterial.map = SHARED_EARTH_TEXTURES.albedo;
         this.livingColorUniforms.uHasLivingColorMap.value = 1.0;
@@ -980,6 +989,7 @@ export class ReliefGlobeContraptionV7 {
    *  3. Luminous elevated great-circle geodesic arc from planted pin -> true landmark!
    */
   private finalizeLockAndReveal(): void {
+    if (this.disposed || this.renderer.getContext()?.isContextLost?.()) return;
     if (this.isLocked || !this.plantedCoord) return;
     this.isLocked = true;
     this.isConfirming = false;
@@ -1196,7 +1206,13 @@ export class ReliefGlobeContraptionV7 {
     dom.addEventListener('pointerup', this.onPointerUp);
     dom.addEventListener('pointercancel', this.onPointerUp);
     dom.addEventListener('wheel', this.onWheel, { passive: false });
+    dom.addEventListener('webglcontextlost', this.onContextLost);
   }
+
+  private readonly onContextLost = (ev: Event): void => {
+    ev.preventDefault();
+    this.dispose();
+  };
 
   private readonly onPointerDown = (e: PointerEvent): void => {
     if (this.isLocked || this.disposed) return;
@@ -1367,7 +1383,9 @@ export class ReliefGlobeContraptionV7 {
   }
 
   private handleResize(): void {
-    if (this.disposed) return;
+    if (this.disposed || !this.stageEl.isConnected) return;
+    const glCtx = this.renderer.getContext();
+    if (!glCtx || glCtx.isContextLost()) return;
     const w = Math.max(120, this.stageEl.clientWidth);
     const h = Math.max(120, this.stageEl.clientHeight);
     const aspect = w / h;
@@ -1386,8 +1404,13 @@ export class ReliefGlobeContraptionV7 {
 
   private readonly tick = (nowMs: number): void => {
     if (this.disposed) return;
-    // Auto-dispose if host stage was detached via innerHTML clear
-    if (this.elapsedSec > 0.1 && !this.stageEl.isConnected) {
+    // Auto-dispose immediately if host stage was detached via innerHTML clear
+    if (!this.stageEl.isConnected || !this.hostEl.isConnected) {
+      this.dispose();
+      return;
+    }
+    const glCtx = this.renderer.getContext();
+    if (!glCtx || glCtx.isContextLost()) {
       this.dispose();
       return;
     }
@@ -1477,13 +1500,32 @@ export class ReliefGlobeContraptionV7 {
       }
     }
 
-    this.renderer.render(this.scene, this.camera);
-    this.rafId = requestAnimationFrame(this.tick);
+    if (this.disposed || !this.stageEl.isConnected) return;
+    const postGlCtx = this.renderer.getContext();
+    if (!postGlCtx || postGlCtx.isContextLost()) {
+      this.dispose();
+      return;
+    }
+    try {
+      this.renderer.render(this.scene, this.camera);
+    } catch {
+      this.dispose();
+      return;
+    }
+    if (!this.disposed) {
+      this.rafId = requestAnimationFrame(this.tick);
+    }
   };
 
   public renderFrameNow(): void {
-    if (this.disposed) return;
-    this.renderer.render(this.scene, this.camera);
+    if (this.disposed || !this.stageEl.isConnected) return;
+    const glCtx = this.renderer.getContext();
+    if (!glCtx || glCtx.isContextLost()) return;
+    try {
+      this.renderer.render(this.scene, this.camera);
+    } catch {
+      this.dispose();
+    }
   }
 
   public dispose(): void {
@@ -1503,11 +1545,12 @@ export class ReliefGlobeContraptionV7 {
     dom.removeEventListener('pointerup', this.onPointerUp);
     dom.removeEventListener('pointercancel', this.onPointerUp);
     dom.removeEventListener('wheel', this.onWheel);
+    dom.removeEventListener('webglcontextlost', this.onContextLost);
 
     for (const geo of this.disposableGeometries) geo.dispose();
     for (const mat of this.disposableMaterials) mat.dispose();
     for (const tex of this.disposableTextures) tex.dispose();
-    this.pmremTarget.dispose();
+    this.pmremTarget?.dispose();
     this.renderer.dispose();
     try {
       this.renderer.forceContextLoss();

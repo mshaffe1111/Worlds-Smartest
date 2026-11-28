@@ -13,9 +13,13 @@
 import * as THREE from 'three';
 import type {
   CoupRegimeIdV7,
+  CrowdMoodV9,
+  ReactiveSignIdV9,
+  SeasonIdV7,
   StageWorldIdV7,
   StageWorldSpecV7,
 } from '../contracts_v7';
+import { getAtlasSpriteEntryV9, loadAtlasManifestV9 } from '../../v9/ShowroomAndCatalogsV9';
 import {
   type AntiMoireFloorKindV7,
   create24KGoldMaterial,
@@ -61,9 +65,9 @@ export const STAGE_WORLD_SPECS_V7: Record<StageWorldIdV7, StageWorldSpecV7> = {
     timeSig: '4/4',
     keyLightHex: 0xfff0d6,
     coveLightHex: 0x00bcd0,
-    cycBaseHex: 0x0d3650,
+    cycBaseHex: 0x00808c,
     floorBaseHex: 0x6f4325,
-    tableBedHex: 0x10283d,
+    tableBedHex: 0x006b75,
     trimVeneerHex: '#6E3B23',
     trimAccentHex: '#F4A91F',
   },
@@ -77,11 +81,11 @@ export const STAGE_WORLD_SPECS_V7: Record<StageWorldIdV7, StageWorldSpecV7> = {
     bpm: 122,
     timeSig: '4/4',
     keyLightHex: 0xfff3dc,
-    coveLightHex: 0xffb830,
-    cycBaseHex: 0x1a245e,
-    floorBaseHex: 0x12665e,
-    tableBedHex: 0x172448,
-    trimVeneerHex: '#2C2558',
+    coveLightHex: 0xff6b35,
+    cycBaseHex: 0xd97228,
+    floorBaseHex: 0x8a5232,
+    tableBedHex: 0x5c301b,
+    trimVeneerHex: '#6E3B23',
     trimAccentHex: '#FFD166',
   },
   STAGE_03_1926_VAUDEVILLE_PIT: {
@@ -95,9 +99,9 @@ export const STAGE_WORLD_SPECS_V7: Record<StageWorldIdV7, StageWorldSpecV7> = {
     timeSig: '4/4',
     keyLightHex: 0xfff2da,
     coveLightHex: 0xe63b7a,
-    cycBaseHex: 0x16244e,
+    cycBaseHex: 0xc83b6c,
     floorBaseHex: 0x6e4228,
-    tableBedHex: 0x0b1d30,
+    tableBedHex: 0x4e2815,
     trimVeneerHex: '#6E3B23',
     trimAccentHex: '#F4A91F',
   },
@@ -112,9 +116,9 @@ export const STAGE_WORLD_SPECS_V7: Record<StageWorldIdV7, StageWorldSpecV7> = {
     timeSig: '4/4',
     keyLightHex: 0xf7f4eb,
     coveLightHex: 0x0096a6,
-    cycBaseHex: 0x0b2c40,
+    cycBaseHex: 0x006b75,
     floorBaseHex: 0x6b4024,
-    tableBedHex: 0x0b1d30,
+    tableBedHex: 0x3e2012,
     trimVeneerHex: '#6E3B23',
     trimAccentHex: '#0096A6',
   },
@@ -129,9 +133,9 @@ export const STAGE_WORLD_SPECS_V7: Record<StageWorldIdV7, StageWorldSpecV7> = {
     timeSig: '4/4',
     keyLightHex: 0xf4f8ff,
     coveLightHex: 0x1e56c5,
-    cycBaseHex: 0x0b1d30,
-    floorBaseHex: 0x1e4472,
-    tableBedHex: 0x0b1d30,
+    cycBaseHex: 0x1e56c5,
+    floorBaseHex: 0x6e4228,
+    tableBedHex: 0x3e2012,
     trimVeneerHex: '#1E56C5',
     trimAccentHex: '#FF6738',
   },
@@ -146,9 +150,9 @@ export const STAGE_WORLD_SPECS_V7: Record<StageWorldIdV7, StageWorldSpecV7> = {
     timeSig: '4/4',
     keyLightHex: 0xffeece,
     coveLightHex: 0x00c2b8,
-    cycBaseHex: 0x0c405c,
+    cycBaseHex: 0x008b94,
     floorBaseHex: 0x744728,
-    tableBedHex: 0x102d42,
+    tableBedHex: 0x006b75,
     trimVeneerHex: '#6A3820',
     trimAccentHex: '#FFD166',
   },
@@ -162,11 +166,11 @@ export const STAGE_WORLD_SPECS_V7: Record<StageWorldIdV7, StageWorldSpecV7> = {
     bpm: 118,
     timeSig: '5/4',
     keyLightHex: 0xfff0d4,
-    coveLightHex: 0x00cf96,
-    cycBaseHex: 0x0d2e50,
-    floorBaseHex: 0x106458,
-    tableBedHex: 0x0f2c3a,
-    trimVeneerHex: '#144240',
+    coveLightHex: 0xf2a922,
+    cycBaseHex: 0x8a3224,
+    floorBaseHex: 0x15803d,
+    tableBedHex: 0x4f2917,
+    trimVeneerHex: '#4F2917',
     trimAccentHex: '#F4C144',
   },
   STAGE_08_WORLDS_FAIR_GEODESIC: {
@@ -179,11 +183,11 @@ export const STAGE_WORLD_SPECS_V7: Record<StageWorldIdV7, StageWorldSpecV7> = {
     bpm: 120,
     timeSig: '4/4',
     keyLightHex: 0xf4f9ff,
-    coveLightHex: 0x00c4f4,
-    cycBaseHex: 0x113d74,
-    floorBaseHex: 0x355c82,
-    tableBedHex: 0x132c4e,
-    trimVeneerHex: '#1B4272',
+    coveLightHex: 0x3b82e6,
+    cycBaseHex: 0x1e56c5,
+    floorBaseHex: 0x7a5c44,
+    tableBedHex: 0x1e56c5,
+    trimVeneerHex: '#1E56C5',
     trimAccentHex: '#52CCFF',
   },
   STAGE_09_CHANNEL_83_UHF_BARGE: {
@@ -197,10 +201,10 @@ export const STAGE_WORLD_SPECS_V7: Record<StageWorldIdV7, StageWorldSpecV7> = {
     timeSig: '4/4',
     keyLightHex: 0xfff0d8,
     coveLightHex: 0x00def0,
-    cycBaseHex: 0x0b344e,
-    floorBaseHex: 0x224864,
-    tableBedHex: 0x0f2b3e,
-    trimVeneerHex: '#183C54',
+    cycBaseHex: 0x008b94,
+    floorBaseHex: 0x6e3b23,
+    tableBedHex: 0x006b75,
+    trimVeneerHex: '#6E3B23',
     trimAccentHex: '#00E5FF',
   },
   STAGE_10_SOVEREIGN_SANCTUM: {
@@ -209,22 +213,22 @@ export const STAGE_WORLD_SPECS_V7: Record<StageWorldIdV7, StageWorldSpecV7> = {
     name: 'Network Executive Penthouse — 38th Floor 30 Rock',
     eraLabel: '1966 Midnight Finale',
     subtitle: 'Champagne Skyline Lancet Windows, 24K Escapement & Astrolabe Marble',
-    isSealedVault: true,
+    isSealedVault: false,
     bpm: 108,
     timeSig: '5/4',
     keyLightHex: 0xffecc4,
     coveLightHex: 0xf4a91f,
-    cycBaseHex: 0x122446,
-    floorBaseHex: 0x1c3456,
-    tableBedHex: 0x14223d,
-    trimVeneerHex: '#23304E',
+    cycBaseHex: 0x1e56c5,
+    floorBaseHex: 0x6e3b23,
+    tableBedHex: 0x4e2815,
+    trimVeneerHex: '#6E3B23',
     trimAccentHex: '#FFD166',
   },
 };
 
 const STAGE_FLOOR_MAP_V7: Record<StageWorldIdV7, AntiMoireFloorKindV7> = {
   STAGE_01_IBC_DAYTIME_FUNK: 'PARQUET',
-  STAGE_02_IBC_PRIMETIME_JUBILEE: 'TOURMALINE_BAIZE',
+  STAGE_02_IBC_PRIMETIME_JUBILEE: 'HERRINGBONE_OAK',
   STAGE_03_1926_VAUDEVILLE_PIT: 'HERRINGBONE_OAK',
   STAGE_04_1958_ISOLATION_VAULT: 'HERRINGBONE_OAK',
   STAGE_05_1984_LARSON_CRT_LAB: 'DIAMOND_PLATE_STEEL',
@@ -232,7 +236,7 @@ const STAGE_FLOOR_MAP_V7: Record<StageWorldIdV7, AntiMoireFloorKindV7> = {
   STAGE_07_1969_MONTE_CARLO_CASINO: 'TOURMALINE_BAIZE',
   STAGE_08_WORLDS_FAIR_GEODESIC: 'GRANITE',
   STAGE_09_CHANNEL_83_UHF_BARGE: 'DIAMOND_PLATE_STEEL',
-  STAGE_10_SOVEREIGN_SANCTUM: 'BELGIAN_ASTROLABE_MARBLE',
+  STAGE_10_SOVEREIGN_SANCTUM: 'GRANITE',
 };
 
 interface StagePaletteTriad {
@@ -250,9 +254,9 @@ interface StagePaletteTriad {
 const STAGE_LIVING_COLOR_PALETTES: Record<StageWorldIdV7, StagePaletteTriad> = {
   STAGE_01_IBC_DAYTIME_FUNK: {
     acrylite: [0x00b4c8, 0xf6b224, 0xe8427c],
-    cycZenith: '#0a223b',
-    cycMid: '#0e4c68',
-    cycHorizon: '#168a9c',
+    cycZenith: '#00717D',
+    cycMid: '#0096A6',
+    cycHorizon: '#FAF2DF',
     ringGlowHex: 0x00d8ec,
     warmPoolHex: 0xffd888,
     coolPoolHex: 0x20d8ee,
@@ -260,21 +264,21 @@ const STAGE_LIVING_COLOR_PALETTES: Record<StageWorldIdV7, StagePaletteTriad> = {
     signText: 'IBC STUDIO 6A · IN LIVING COLOR',
   },
   STAGE_02_IBC_PRIMETIME_JUBILEE: {
-    acrylite: [0xf6b224, 0xe83b7c, 0x00bcd4],
-    cycZenith: '#131646',
-    cycMid: '#2c2574',
-    cycHorizon: '#8a346e',
+    acrylite: [0xf6b224, 0xe83b7c, 0xff6b35],
+    cycZenith: '#C84E24',
+    cycMid: '#F2A922',
+    cycHorizon: '#FFF3D6',
     ringGlowHex: 0xffc845,
-    warmPoolHex: 0xffcb62,
-    coolPoolHex: 0xe84890,
+    warmPoolHex: 0xffe082,
+    coolPoolHex: 0xe6397a,
     spotTintHex: 0xffe0a0,
-    signText: 'IBC JUBILEE · IN LIVING COLOR',
+    signText: 'STARBURST PALACE · LIVING COLOR',
   },
   STAGE_03_1926_VAUDEVILLE_PIT: {
     acrylite: [0xe63b7a, 0xf4a91f, 0x0096a6],
-    cycZenith: '#0b1d30',
-    cycMid: '#242b6b',
-    cycHorizon: '#c8346c',
+    cycZenith: '#9B2454',
+    cycMid: '#E6397A',
+    cycHorizon: '#FAF2DF',
     ringGlowHex: 0xe63b7a,
     warmPoolHex: 0xf4a91f,
     coolPoolHex: 0x0096a6,
@@ -283,9 +287,9 @@ const STAGE_LIVING_COLOR_PALETTES: Record<StageWorldIdV7, StagePaletteTriad> = {
   },
   STAGE_04_1958_ISOLATION_VAULT: {
     acrylite: [0x0096a6, 0xf4a91f, 0x1e56c5],
-    cycZenith: '#0b1d30',
-    cycMid: '#0d4456',
-    cycHorizon: '#0096a6',
+    cycZenith: '#5C301B',
+    cycMid: '#007B85',
+    cycHorizon: '#FAF2DF',
     ringGlowHex: 0x00b8c8,
     warmPoolHex: 0xf4a91f,
     coolPoolHex: 0x00b4c8,
@@ -294,9 +298,9 @@ const STAGE_LIVING_COLOR_PALETTES: Record<StageWorldIdV7, StagePaletteTriad> = {
   },
   STAGE_05_1984_LARSON_CRT_LAB: {
     acrylite: [0x1e56c5, 0xff6738, 0x0096a6],
-    cycZenith: '#0b1d30',
-    cycMid: '#153a7c',
-    cycHorizon: '#1e56c5',
+    cycZenith: '#1E56C5',
+    cycMid: '#3B82E6',
+    cycHorizon: '#FAF2DF',
     ringGlowHex: 0x38c8ff,
     warmPoolHex: 0xff6738,
     coolPoolHex: 0x1e88e5,
@@ -305,9 +309,9 @@ const STAGE_LIVING_COLOR_PALETTES: Record<StageWorldIdV7, StagePaletteTriad> = {
   },
   STAGE_06_ATLANTIC_CITY_PIER: {
     acrylite: [0x00d2e6, 0xff7838, 0xffd147],
-    cycZenith: '#03152c',
-    cycMid: '#073660',
-    cycHorizon: '#0c6b94',
+    cycZenith: '#007B85',
+    cycMid: '#00A3AE',
+    cycHorizon: '#FAF2DF',
     ringGlowHex: 0x18dcf0,
     warmPoolHex: 0xffbe5c,
     coolPoolHex: 0x00dcf0,
@@ -315,21 +319,21 @@ const STAGE_LIVING_COLOR_PALETTES: Record<StageWorldIdV7, StagePaletteTriad> = {
     signText: 'STEEL PIER · IN LIVING COLOR',
   },
   STAGE_07_1969_MONTE_CARLO_CASINO: {
-    acrylite: [0x00c892, 0xf4c144, 0x1e68d4],
-    cycZenith: '#0a203e',
-    cycMid: '#10466c',
-    cycHorizon: '#128a7c',
-    ringGlowHex: 0x26e8b0,
-    warmPoolHex: 0xffde7c,
+    acrylite: [0x15803d, 0xf4c144, 0xd9a441],
+    cycZenith: '#6B1C20',
+    cycMid: '#B85424',
+    cycHorizon: '#FAF2DF',
+    ringGlowHex: 0xf2a922,
+    warmPoolHex: 0xffd56b,
     coolPoolHex: 0x18e0a8,
     spotTintHex: 0xfff0c6,
-    signText: 'MONTE CARLO · IN LIVING COLOR',
+    signText: 'GOLD VAULT · IN LIVING COLOR',
   },
   STAGE_08_WORLDS_FAIR_GEODESIC: {
     acrylite: [0x00bef4, 0xf6bc2e, 0xff6b35],
-    cycZenith: '#0d2654',
-    cycMid: '#185496',
-    cycHorizon: '#2098cc',
+    cycZenith: '#1E56C5',
+    cycMid: '#3B82E6',
+    cycHorizon: '#FAF2DF',
     ringGlowHex: 0x4cd8ff,
     warmPoolHex: 0xffcf6a,
     coolPoolHex: 0x38d0ff,
@@ -338,9 +342,9 @@ const STAGE_LIVING_COLOR_PALETTES: Record<StageWorldIdV7, StagePaletteTriad> = {
   },
   STAGE_09_CHANNEL_83_UHF_BARGE: {
     acrylite: [0x00d8ea, 0xff6738, 0xffd147],
-    cycZenith: '#082238',
-    cycMid: '#0e4e6e',
-    cycHorizon: '#148da4',
+    cycZenith: '#006B75',
+    cycMid: '#0096A6',
+    cycHorizon: '#FAF2DF',
     ringGlowHex: 0x00ebff,
     warmPoolHex: 0xff8d4c,
     coolPoolHex: 0x10e8ff,
@@ -348,15 +352,114 @@ const STAGE_LIVING_COLOR_PALETTES: Record<StageWorldIdV7, StagePaletteTriad> = {
     signText: 'CHANNEL 83 · PIRATE LIVING COLOR',
   },
   STAGE_10_SOVEREIGN_SANCTUM: {
-    acrylite: [0xf4a91f, 0x00b4c8, 0xe63b7a],
-    cycZenith: '#040a1c',
-    cycMid: '#0b1b42',
-    cycHorizon: '#162d63',
+    acrylite: [0xf4a91f, 0x1e56c5, 0xe63b7a],
+    cycZenith: '#1E56C5',
+    cycMid: '#3B82E6',
+    cycHorizon: '#FAF2DF',
     ringGlowHex: 0xffcf54,
     warmPoolHex: 0xffd166,
-    coolPoolHex: 0x2cb4dc,
+    coolPoolHex: 0x4cb8ff,
     spotTintHex: 0xffe6b0,
-    signText: 'IBC PENTHOUSE 38 · LIVING COLOR',
+    signText: 'KALEIDOSCOPE · IN LIVING COLOR',
+  },
+};
+
+export interface SeasonStageOverrideV9 {
+  readonly season: SeasonIdV7;
+  readonly cycZenith: string;
+  readonly cycMid: string;
+  readonly cycHorizon: string;
+  readonly cycBaseHex: number;
+  readonly floorBaseHex: number;
+  readonly coveLightHex: number;
+  readonly keyLightHex: number;
+  readonly warmPoolHex: number;
+  readonly coolPoolHex: number;
+  readonly ringGlowHex: number;
+  readonly tableBedHex: number;
+  readonly trimVeneerHex: string;
+  readonly trimAccentHex: string;
+  readonly pillarStyle: 'WALNUT' | 'CREAM_CHROME' | 'GOLD' | 'ALUMINUM_COBALT';
+  readonly floorKind: AntiMoireFloorKindV7;
+  readonly signText: string;
+}
+
+export const SEASON_STAGE_OVERRIDES_V9: Record<SeasonIdV7, SeasonStageOverrideV9> = {
+  1: {
+    season: 1,
+    cycZenith: '#00717D',
+    cycMid: '#0096A6',
+    cycHorizon: '#FAF2DF',
+    cycBaseHex: 0x00808c,
+    floorBaseHex: 0x6f4325,
+    coveLightHex: 0x00c8dc,
+    keyLightHex: 0xfff0d6,
+    warmPoolHex: 0xffd888,
+    coolPoolHex: 0x00bcd0,
+    ringGlowHex: 0x00d8ec,
+    tableBedHex: 0x006b75,
+    trimVeneerHex: '#6E3B23',
+    trimAccentHex: '#F4A91F',
+    pillarStyle: 'WALNUT',
+    floorKind: 'PARQUET',
+    signText: 'IBC STUDIO 6A · IN LIVING COLOR',
+  },
+  2: {
+    season: 2,
+    cycZenith: '#C84E24',
+    cycMid: '#F2A922',
+    cycHorizon: '#FFF3D6',
+    cycBaseHex: 0xd97228,
+    floorBaseHex: 0x8a5232,
+    coveLightHex: 0xff6b35,
+    keyLightHex: 0xfff3dc,
+    warmPoolHex: 0xffe082,
+    coolPoolHex: 0xe6397a,
+    ringGlowHex: 0xff8c3b,
+    tableBedHex: 0x6e3b23,
+    trimVeneerHex: '#FAF2DF',
+    trimAccentHex: '#FF6B35',
+    pillarStyle: 'CREAM_CHROME',
+    floorKind: 'HERRINGBONE_OAK',
+    signText: 'STARBURST PALACE · LIVING COLOR',
+  },
+  3: {
+    season: 3,
+    cycZenith: '#7A2024',
+    cycMid: '#B85424',
+    cycHorizon: '#FAF2DF',
+    cycBaseHex: 0x8a3224,
+    floorBaseHex: 0x15803d,
+    coveLightHex: 0xf2a922,
+    keyLightHex: 0xfff0d4,
+    warmPoolHex: 0xffd56b,
+    coolPoolHex: 0x15803d,
+    ringGlowHex: 0xf2a922,
+    tableBedHex: 0x4f2917,
+    trimVeneerHex: '#4F2917',
+    trimAccentHex: '#F2A922',
+    pillarStyle: 'GOLD',
+    floorKind: 'TOURMALINE_BAIZE',
+    signText: 'GOLD VAULT · IN LIVING COLOR',
+  },
+  4: {
+    season: 4,
+    cycZenith: '#1E56C5',
+    cycMid: '#3B82E6',
+    cycHorizon: '#FAF2DF',
+    cycBaseHex: 0x1e56c5,
+    floorBaseHex: 0x7a5c44,
+    coveLightHex: 0xf2a922,
+    keyLightHex: 0xf4f9ff,
+    warmPoolHex: 0xf2a922,
+    coolPoolHex: 0x4cb8ff,
+    ringGlowHex: 0x4cb8ff,
+    tableBedHex: 0x1e56c5,
+    trimVeneerHex: '#D6DFE8',
+    trimAccentHex: '#F2A922',
+    pillarStyle: 'ALUMINUM_COBALT',
+    floorKind: 'GRANITE',
+    signText: 'KALEIDOSCOPE · IN LIVING COLOR',
   },
 };
 
@@ -560,11 +663,19 @@ function compactStaticMeshesInGroup(
 
 export interface BuiltStageWorldV7 {
   readonly stageId: StageWorldIdV7;
+  readonly season: SeasonIdV7;
   readonly spec: StageWorldSpecV7;
   readonly root: THREE.Group;
+  readonly reactiveSigns?: Partial<Record<ReactiveSignIdV9 | 'MARQUEE_TITLE', THREE.Object3D>>;
   triggerFresnelTell(isRubySpite?: boolean): void;
   triggerRowCGlint(active: boolean): void;
   triggerApplauseSign?(durationSec?: number): void;
+  setReactiveSignState(signId: ReactiveSignIdV9, active: boolean, durationMs?: number): void;
+  getStudioSignStates(): Record<ReactiveSignIdV9, boolean>;
+  setCrowdMood(mood: CrowdMoodV9, durationMs?: number): void;
+  getCrowdMood(): CrowdMoodV9;
+  getSeasonId(): SeasonIdV7;
+  setReducedMotion?(reduced: boolean): void;
   getRowCColliderMesh(): THREE.Mesh;
   setVipJuryState(boonActive: boolean, baneActive: boolean): void;
   setCoupRegime(regime: CoupRegimeIdV7): void;
@@ -572,7 +683,7 @@ export interface BuiltStageWorldV7 {
   setApertureDimFactor(factor: number): void;
   setWingSpanX(halfSpanMeters: number, wingZ?: number): void;
   setMarqueeCrownY?(yMeters: number): void;
-  setPortraitFraming?(isPortrait: boolean, aspect?: number): void;
+  setPortraitFraming?(isPortrait: boolean, aspect?: number, viewportHeight?: number): void;
   update(dtSec: number, elapsedSec: number): void;
   dispose(): void;
 }
@@ -635,99 +746,84 @@ function createFloorShoe(
 function createCycloramaGradientTexture(
   stageId: StageWorldIdV7,
   palette: StagePaletteTriad,
+  seasonOverride?: SeasonStageOverrideV9,
 ): THREE.CanvasTexture {
   const canvas = document.createElement('canvas');
   canvas.width = 1024;
   canvas.height = 512;
   const ctx = canvas.getContext('2d');
   if (ctx) {
-    const isNightVista =
-      stageId === 'STAGE_06_ATLANTIC_CITY_PIER' ||
-      stageId === 'STAGE_10_SOVEREIGN_SANCTUM' ||
-      stageId === 'STAGE_07_1969_MONTE_CARLO_CASINO' ||
-      stageId === 'STAGE_08_WORLDS_FAIR_GEODESIC' ||
-      stageId === 'STAGE_09_CHANNEL_83_UHF_BARGE';
-
+    const zen = seasonOverride?.cycZenith ?? palette.cycZenith;
+    const mid = seasonOverride?.cycMid ?? palette.cycMid;
+    const hor = seasonOverride?.cycHorizon ?? palette.cycHorizon;
     const vGrad = ctx.createLinearGradient(0, 0, 0, 512);
-    vGrad.addColorStop(0.0, palette.cycZenith);
-    vGrad.addColorStop(0.42, palette.cycMid);
-    vGrad.addColorStop(0.82, palette.cycHorizon);
-    vGrad.addColorStop(1.0, isNightVista ? palette.cycMid : '#ffd88a');
+    vGrad.addColorStop(0.0, zen);
+    vGrad.addColorStop(0.45, mid);
+    vGrad.addColorStop(0.86, hor);
+    vGrad.addColorStop(1.0, '#FFE4A3');
     ctx.fillStyle = vGrad;
     ctx.fillRect(0, 0, 1024, 512);
 
-    // Stage-distinct theatrical backdrop vistas right in the camera-visible y = 260..512 horizon band!
-    if (stageId === 'STAGE_10_SOVEREIGN_SANCTUM') {
-      // Unmistakable 1966 Midnight Manhattan 38th-Floor Skyline Panorama (Empire State, Chrysler, Park Ave!)
-      const stars = 95;
-      ctx.fillStyle = 'rgba(255, 246, 210, 0.55)';
-      for (let s = 0; s < stars; s++) {
-        ctx.fillRect((s * 137) % 1024, (s * 61) % 250, 2, 2);
+    const season = seasonOverride?.season ?? 1;
+    // Season-specific sunlit architectural backdrop motifs visible in the camera horizon band!
+    if (season === 2) {
+      // Hollywood Blvd Starburst Palace: warm radiating Googie scallops + sunlit golden rays
+      ctx.strokeStyle = 'rgba(255, 246, 210, 0.36)';
+      ctx.lineWidth = 4;
+      for (let i = 0; i < 8; i++) {
+        const cx = 90 + i * 124;
+        ctx.beginPath();
+        ctx.arc(cx, 505, 88, Math.PI, Math.PI * 2);
+        ctx.stroke();
       }
-      const heights = [
-        195, 255, 215, 310, 240, 355, 275, 230, 335, 265, 205, 295,
-        365, 250, 315, 235, 285, 340, 225, 290, 245, 320, 210, 260,
-      ];
+    } else if (season === 3) {
+      // Manhattan Gold Vault: Art-Deco warm walnut-and-brass skyline silhouettes + golden windows
+      const heights = [180, 235, 200, 285, 220, 325, 250, 210, 305, 240, 195, 270, 330, 225, 290, 215];
       const bw = 1024 / heights.length;
       for (let i = 0; i < heights.length; i++) {
         const bh = heights[i];
-        const bx = i * bw + 2;
+        const bx = i * bw + 3;
         const by = 512 - bh;
-        ctx.fillStyle = i % 2 === 0 ? '#070E24' : '#0B1636';
-        ctx.fillRect(bx, by, bw - 3, bh);
-        // Art-Deco setback crown & Empire spire accents
-        if (bh >= 330) {
-          ctx.fillRect(bx + 6, by - 26, bw - 15, 26);
-          ctx.fillStyle = '#FFD56B';
-          ctx.fillRect(bx + bw * 0.5 - 2, by - 58, 4, 32);
+        ctx.fillStyle = i % 2 === 0 ? '#5C301B' : '#472312';
+        ctx.fillRect(bx, by, bw - 5, bh);
+        if (bh >= 300) {
+          ctx.fillStyle = '#F2A922';
+          ctx.fillRect(bx + bw * 0.5 - 2, by - 44, 4, 44);
         }
-        //Crisp glittering golden 1966 office window grid
         ctx.fillStyle = '#FFE082';
-        for (let wy = by + 10; wy < 502; wy += 12) {
-          for (let wx = bx + 5; wx < bx + bw - 8; wx += 8) {
+        for (let wy = by + 12; wy < 498; wy += 14) {
+          for (let wx = bx + 7; wx < bx + bw - 10; wx += 10) {
             if (((i * 11 + wy * 3 + wx) % 5) !== 0) {
-              ctx.fillRect(wx, wy, 4, 6);
+              ctx.fillRect(wx, wy, 5, 7);
             }
           }
         }
       }
-    } else if (stageId === 'STAGE_08_WORLDS_FAIR_GEODESIC') {
-      ctx.fillStyle = 'rgba(220, 248, 255, 0.52)';
-      for (let s = 0; s < 90; s++) {
-        ctx.fillRect((s * 113) % 1024, (s * 53) % 260, 2.5, 2.5);
-      }
-      ctx.strokeStyle = 'rgba(140, 232, 255, 0.42)';
-      ctx.lineWidth = 4;
-      for (const r of [160, 240, 330, 420]) {
+    } else if (season === 4) {
+      // Burbank Super-Stage Kaleidoscope: crisp sunlit mid-century diamond chevron bands
+      const cols = ['rgba(242,169,34,0.28)', 'rgba(250,242,223,0.24)', 'rgba(230,57,122,0.22)', 'rgba(0,139,148,0.26)'];
+      for (let d = 0; d < 16; d++) {
+        ctx.fillStyle = cols[d % 4];
+        const dx = 32 + d * 64;
+        const dy = 270 + (d % 2) * 62;
         ctx.beginPath();
-        ctx.arc(512, 490, r, Math.PI, Math.PI * 2);
-        ctx.stroke();
+        ctx.moveTo(dx, dy - 48);
+        ctx.lineTo(dx + 34, dy);
+        ctx.lineTo(dx, dy + 48);
+        ctx.lineTo(dx - 34, dy);
+        ctx.closePath();
+        ctx.fill();
       }
     } else if (stageId === 'STAGE_06_ATLANTIC_CITY_PIER') {
-      // Unmistakable 1965 Atlantic City Night Ocean Horizon + Illuminated Steel Pier Boardwalk & Surf!
-      // Deep Atlantic ocean water plane across y = 315..512
+      // Sunlit Riviera Ocean Horizon + Walnut Boardwalk Pier
       const seaGrad = ctx.createLinearGradient(0, 315, 0, 512);
-      seaGrad.addColorStop(0.0, '#043B5C');
-      seaGrad.addColorStop(0.45, '#065A82');
-      seaGrad.addColorStop(1.0, '#032942');
+      seaGrad.addColorStop(0.0, '#008B94');
+      seaGrad.addColorStop(0.45, '#00A3AE');
+      seaGrad.addColorStop(1.0, '#006B75');
       ctx.fillStyle = seaGrad;
       ctx.fillRect(0, 315, 1024, 197);
 
-      // Moonlit turquoise & gold ocean wave rollers
-      for (let wy = 326; wy < 506; wy += 11) {
-        ctx.strokeStyle = wy % 22 === 0 ? 'rgba(255, 230, 150, 0.52)' : 'rgba(64, 232, 248, 0.44)';
-        ctx.lineWidth = wy % 22 === 0 ? 3.5 : 2.5;
-        ctx.beginPath();
-        for (let wx = 0; wx <= 1024; wx += 24) {
-          const yOff = wy + Math.sin(wx * 0.03 + wy * 0.2) * 3.5;
-          if (wx === 0) ctx.moveTo(wx, yOff);
-          else ctx.lineTo(wx, yOff);
-        }
-        ctx.stroke();
-      }
-
-      // Silhouetted Atlantic City Boardwalk Pier trestle & warm carnival string bulbs along y = 300..332
-      ctx.fillStyle = '#05182B';
+      ctx.fillStyle = '#5C301B';
       ctx.fillRect(0, 304, 1024, 16);
       for (let px = 16; px < 1024; px += 36) {
         ctx.fillRect(px, 318, 6, 36);
@@ -739,7 +835,7 @@ function createCycloramaGradientTexture(
         ctx.fill();
       }
     } else if (stageId === 'STAGE_07_1969_MONTE_CARLO_CASINO') {
-      ctx.fillStyle = 'rgba(6, 18, 36, 0.58)';
+      ctx.fillStyle = 'rgba(78, 40, 21, 0.42)';
       ctx.beginPath();
       ctx.moveTo(0, 512);
       ctx.lineTo(0, 305);
@@ -754,58 +850,26 @@ function createCycloramaGradientTexture(
         const ky = 335 + ((k * 29) % 135);
         ctx.fillRect(kx, ky, 5, 4);
       }
-    } else if (stageId === 'STAGE_09_CHANNEL_83_UHF_BARGE') {
-      ctx.strokeStyle = 'rgba(48, 232, 255, 0.34)';
-      ctx.lineWidth = 3;
-      for (const r of [120, 210, 300]) {
+    } else if (stageId === 'STAGE_08_WORLDS_FAIR_GEODESIC') {
+      ctx.strokeStyle = 'rgba(250, 242, 223, 0.44)';
+      ctx.lineWidth = 4;
+      for (const r of [160, 240, 330, 420]) {
         ctx.beginPath();
-        ctx.arc(512, 380, r, 0, Math.PI * 2);
+        ctx.arc(512, 490, r, Math.PI, Math.PI * 2);
         ctx.stroke();
-      }
-      for (let sy = 345; sy < 506; sy += 15) {
-        ctx.strokeStyle = 'rgba(140, 244, 255, 0.38)';
-        ctx.beginPath();
-        for (let sx = 0; sx <= 1024; sx += 20) {
-          const y = sy + Math.sin(sx * 0.04 + sy) * 5.5;
-          if (sx === 0) ctx.moveTo(sx, y);
-          else ctx.lineTo(sx, y);
-        }
-        ctx.stroke();
-      }
-    } else if (stageId === 'STAGE_05_1984_LARSON_CRT_LAB') {
-      ctx.strokeStyle = 'rgba(110, 210, 255, 0.32)';
-      ctx.lineWidth = 3;
-      for (let a = 1; a <= 5; a++) {
-        ctx.beginPath();
-        ctx.ellipse(512, 360, a * 92, a * 42, 0, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-    } else if (stageId === 'STAGE_03_1926_VAUDEVILLE_PIT') {
-      const cols = ['rgba(230,59,122,0.26)', 'rgba(244,169,31,0.26)', 'rgba(0,180,200,0.26)'];
-      for (let d = 0; d < 16; d++) {
-        ctx.fillStyle = cols[d % 3];
-        const dx = 42 + d * 62;
-        const dy = 260 + (d % 2) * 68;
-        ctx.beginPath();
-        ctx.moveTo(dx, dy - 42);
-        ctx.lineTo(dx + 32, dy);
-        ctx.lineTo(dx, dy + 42);
-        ctx.lineTo(dx - 32, dy);
-        ctx.closePath();
-        ctx.fill();
       }
     }
 
     // Theatrical 1966 IBC light-fan rays blooming upward from stage center
     ctx.save();
     ctx.translate(512, 476);
-    const rayCount = stageId === 'STAGE_02_IBC_PRIMETIME_JUBILEE' ? 7 : 5;
+    const rayCount = season === 2 ? 7 : 5;
     for (let i = -rayCount; i <= rayCount; i++) {
       ctx.save();
       ctx.rotate(i * (0.86 / rayCount));
       const rayGrad = ctx.createLinearGradient(0, 0, 0, -470);
-      rayGrad.addColorStop(0.0, isNightVista ? 'rgba(120, 220, 255, 0.14)' : 'rgba(255, 240, 200, 0.24)');
-      rayGrad.addColorStop(0.45, 'rgba(255, 232, 185, 0.06)');
+      rayGrad.addColorStop(0.0, 'rgba(255, 244, 214, 0.28)');
+      rayGrad.addColorStop(0.45, 'rgba(255, 232, 185, 0.08)');
       rayGrad.addColorStop(1.0, 'rgba(255, 232, 185, 0.0)');
       ctx.fillStyle = rayGrad;
       ctx.beginPath();
@@ -819,14 +883,12 @@ function createCycloramaGradientTexture(
     }
     ctx.restore();
 
-    if (!isNightVista) {
-      const horizonGlow = ctx.createRadialGradient(512, 475, 32, 512, 475, 380);
-      horizonGlow.addColorStop(0.0, 'rgba(255, 234, 178, 0.32)');
-      horizonGlow.addColorStop(0.55, 'rgba(255, 215, 130, 0.1)');
-      horizonGlow.addColorStop(1.0, 'rgba(255, 215, 130, 0.0)');
-      ctx.fillStyle = horizonGlow;
-      ctx.fillRect(0, 140, 1024, 372);
-    }
+    const horizonGlow = ctx.createRadialGradient(512, 475, 32, 512, 475, 380);
+    horizonGlow.addColorStop(0.0, 'rgba(255, 234, 178, 0.34)');
+    horizonGlow.addColorStop(0.55, 'rgba(255, 215, 130, 0.12)');
+    horizonGlow.addColorStop(1.0, 'rgba(255, 215, 130, 0.0)');
+    ctx.fillStyle = horizonGlow;
+    ctx.fillRect(0, 140, 1024, 372);
   }
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
@@ -979,24 +1041,83 @@ function buildComplianceFresnelLamp(envMap: THREE.Texture) {
 }
 
 // ----------------------------------------------------------------------------
-// 4. Mid-Century Velvet Row-C Risers + Clickable Rolled-Program HDR Glint
+// 4. Mid-Century Velvet Row-C Risers + Gouache Studio Audience + HDR Glint
 // ----------------------------------------------------------------------------
 
-function buildRowCAcousticRisers(spec: StageWorldSpecV7, envMap: THREE.Texture) {
+interface CrowdAnimatedTierV9 {
+  readonly obj: THREE.Object3D;
+  baseY: number;
+  readonly baseRotX: number;
+  readonly phase: number;
+  readonly isFrontRow: boolean;
+}
+
+let cachedCrowdAtlasTextureV9: THREE.Texture | null = null;
+
+function createUvCroppedCrowdPlane(
+  width: number,
+  height: number,
+  u0: number,
+  u1: number,
+  v0: number,
+  v1: number,
+  mat: THREE.Material,
+  name: string,
+): THREE.Mesh {
+  const geom = new THREE.PlaneGeometry(width, height);
+  const uv = geom.getAttribute('uv') as THREE.BufferAttribute;
+  // PlaneGeometry vertex UVs order: (0,1), (1,1), (0,0), (1,0)
+  uv.setXY(0, u0, v1);
+  uv.setXY(1, u1, v1);
+  uv.setXY(2, u0, v0);
+  uv.setXY(3, u1, v0);
+  uv.needsUpdate = true;
+  const mesh = new THREE.Mesh(geom, mat);
+  mesh.name = name;
+  mesh.castShadow = false;
+  mesh.receiveShadow = false;
+  mesh.userData.planeHeight = height;
+  mesh.userData.planeWidth = width;
+  return mesh;
+}
+
+function setCrowdPlaneUvBounds(
+  mesh: THREE.Mesh,
+  u0: number,
+  u1: number,
+  v0: number,
+  v1: number,
+): void {
+  const uv = mesh.geometry.getAttribute('uv') as THREE.BufferAttribute | undefined;
+  if (!uv) return;
+  uv.setXY(0, u0, v1);
+  uv.setXY(1, u1, v1);
+  uv.setXY(2, u0, v0);
+  uv.setXY(3, u1, v0);
+  uv.needsUpdate = true;
+}
+
+function buildRowCAcousticRisers(
+  spec: StageWorldSpecV7,
+  envMap: THREE.Texture,
+  crowdMat: THREE.MeshStandardMaterial,
+  crowdTiers: CrowdAnimatedTierV9[],
+  flashSprites: THREE.Sprite[],
+) {
   const group = new THREE.Group();
   group.name = 'RowCAcousticRisers';
 
-  // Stage-distinct upholstery & gallery architectural finishes (zero cloned pink Studio 6A bleachers!)
+  // Stage-distinct upholstery & gallery architectural finishes (100% sunlit 1966 palette!)
   const upholsteryByStage: Record<StageWorldIdV7, number> = {
     STAGE_01_IBC_DAYTIME_FUNK: 0xa81f48, // Studio 6A Carnaby Rose Velvet
-    STAGE_02_IBC_PRIMETIME_JUBILEE: 0x5c2078, // Primetime Royal Plum Velvet
+    STAGE_02_IBC_PRIMETIME_JUBILEE: 0xe6397a, // Primetime Carnaby Cerise Velvet
     STAGE_03_1926_VAUDEVILLE_PIT: 0xd94e1f, // Burbank Mod Tangerine Vinyl
-    STAGE_04_1958_ISOLATION_VAULT: 0x0f5c6e, // Sealed Vault Teal Baffle
-    STAGE_05_1984_LARSON_CRT_LAB: 0x1a4b8c, // Apollo Telemetry Cobalt
-    STAGE_06_ATLANTIC_CITY_PIER: 0x008b99, // Atlantic City Seafoam Cabana
-    STAGE_07_1969_MONTE_CARLO_CASINO: 0x0d6b4c, // Riviera Casino Emerald Velvet
-    STAGE_08_WORLDS_FAIR_GEODESIC: 0x1864ab, // World's Fair Pavilion Cerulean
-    STAGE_09_CHANNEL_83_UHF_BARGE: 0x264653, // Pirate Ship Gunmetal Canvas
+    STAGE_04_1958_ISOLATION_VAULT: 0x008b94, // Isolation Booth Peacock Teal
+    STAGE_05_1984_LARSON_CRT_LAB: 0x1e56c5, // Apollo Telemetry Cobalt
+    STAGE_06_ATLANTIC_CITY_PIER: 0x008b94, // Atlantic City Seafoam Cabana
+    STAGE_07_1969_MONTE_CARLO_CASINO: 0x15803d, // Riviera Casino Emerald Velvet
+    STAGE_08_WORLDS_FAIR_GEODESIC: 0x1e56c5, // World's Fair Pavilion Cobalt
+    STAGE_09_CHANNEL_83_UHF_BARGE: 0x6e3b23, // Pirate Ship Walnut & Canvas
     STAGE_10_SOVEREIGN_SANCTUM: 0x6b1028, // Penthouse 38 Imperial Burgundy Velvet
   };
   const velvetMat = new THREE.MeshStandardMaterial({
@@ -1006,21 +1127,13 @@ function buildRowCAcousticRisers(spec: StageWorldSpecV7, envMap: THREE.Texture) 
     envMap,
     envMapIntensity: 0.65,
   });
-  const useDarkExecutiveBase =
-    spec.stageId === 'STAGE_10_SOVEREIGN_SANCTUM' ||
-    spec.stageId === 'STAGE_05_1984_LARSON_CRT_LAB' ||
-    spec.stageId === 'STAGE_08_WORLDS_FAIR_GEODESIC' ||
-    spec.stageId === 'STAGE_09_CHANNEL_83_UHF_BARGE';
-  const walnutMat = useDarkExecutiveBase
-    ? createObsidianMaterial(envMap)
-    : createWalnutMaterial(envMap);
+  const walnutMat = createWalnutMaterial(envMap);
   const brassMat = create24KGoldMaterial(envMap);
-  const aluminumMat = createAnodizedAluminumMaterial(envMap);
 
   const tiers = [
-    { z: -6.95, h: 0.52, d: 0.62 },
-    { z: -7.58, h: 0.98, d: 0.64 },
-    { z: -8.22, h: 1.44, d: 0.66 },
+    { z: -6.95, h: 0.48, d: 0.62 },
+    { z: -7.58, h: 0.90, d: 0.64 },
+    { z: -8.22, h: 1.32, d: 0.66 },
   ];
 
   const riserShadow = createContactShadowDisc({
@@ -1070,60 +1183,60 @@ function buildRowCAcousticRisers(spec: StageWorldSpecV7, envMap: THREE.Texture) 
     brassNosing.position.set(0, tier.h + 0.02, tier.z + tier.d * 0.48);
     group.add(brassNosing);
 
-    const noStudioGallery =
-      spec.isSealedVault ||
-      spec.stageId === 'STAGE_05_1984_LARSON_CRT_LAB' ||
-      spec.stageId === 'STAGE_09_CHANNEL_83_UHF_BARGE';
+    if (t === 0) {
+      const frontRailPanel = createChamferedBox({
+        width: 2.84,
+        height: 0.11,
+        depth: 0.04,
+        cornerRadius: 0.014,
+        material: walnutMat,
+      });
+      frontRailPanel.position.set(0, tier.h + 0.075, tier.z + tier.d * 0.48);
+      const frontRailBrassCap = createChamferedBox({
+        width: 2.86,
+        height: 0.024,
+        depth: 0.052,
+        cornerRadius: 0.01,
+        material: brassMat,
+      });
+      frontRailBrassCap.position.set(0, tier.h + 0.132, tier.z + tier.d * 0.48);
+      group.add(frontRailPanel, frontRailBrassCap);
+    }
 
     for (let s = 0; s < 4; s++) {
       const sx = -1.02 + s * 0.68;
-      if (noStudioGallery) {
-        const consolePod = createFilletedShaft({
-          radius: 0.16,
-          topRadius: 0.14,
-          height: 0.28,
-          anglageBevel: 0.008,
-          radialSegments: 32,
-          material: aluminumMat,
-        });
-        consolePod.position.set(sx, tier.h + 0.09, tier.z - 0.06);
-        group.add(consolePod);
-      } else {
-        const seatBack = createChamferedBox({
-          width: 0.52,
-          height: 0.36,
-          depth: 0.09,
-          cornerRadius: 0.11,
-          material: velvetMat,
-        });
-        seatBack.position.set(sx, tier.h + 0.25, tier.z - 0.16);
-        seatBack.rotation.x = -0.14;
-        group.add(seatBack);
-      }
+      const seatBack = createChamferedBox({
+        width: 0.52,
+        height: 0.36,
+        depth: 0.09,
+        cornerRadius: 0.11,
+        material: velvetMat,
+      });
+      seatBack.position.set(sx, tier.h + 0.25, tier.z - 0.16);
+      seatBack.rotation.x = -0.14;
+      group.add(seatBack);
     }
 
-    if (!noStudioGallery) {
-      // 5 Sculpted Walnut & Velvet Theatre Seat Armrests framing the 4 audience seats!
-      for (let a = 0; a < 5; a++) {
-        const ax = -1.36 + a * 0.68;
-        const armPost = createChamferedBox({
-          width: 0.055,
-          height: 0.18,
-          depth: 0.32,
-          cornerRadius: 0.018,
-          material: walnutMat,
-        });
-        armPost.position.set(ax, tier.h + 0.14, tier.z + 0.02);
-        const armPad = createChamferedBox({
-          width: 0.072,
-          height: 0.036,
-          depth: 0.34,
-          cornerRadius: 0.016,
-          material: velvetMat,
-        });
-        armPad.position.set(ax, tier.h + 0.24, tier.z + 0.02);
-        group.add(armPost, armPad);
-      }
+    // 5 Sculpted Walnut & Velvet Theatre Seat Armrests framing the 4 audience seats!
+    for (let a = 0; a < 5; a++) {
+      const ax = -1.36 + a * 0.68;
+      const armPost = createChamferedBox({
+        width: 0.055,
+        height: 0.18,
+        depth: 0.32,
+        cornerRadius: 0.018,
+        material: walnutMat,
+      });
+      armPost.position.set(ax, tier.h + 0.14, tier.z + 0.02);
+      const armPad = createChamferedBox({
+        width: 0.072,
+        height: 0.036,
+        depth: 0.34,
+        cornerRadius: 0.016,
+        material: velvetMat,
+      });
+      armPad.position.set(ax, tier.h + 0.24, tier.z + 0.02);
+      group.add(armPost, armPad);
     }
   }
 
@@ -1136,8 +1249,8 @@ function buildRowCAcousticRisers(spec: StageWorldSpecV7, envMap: THREE.Texture) 
   });
   for (const railSide of [-1.46, 1.46] as const) {
     for (const [pz, ph] of [
-      [-6.72, 0.92],
-      [-8.42, 1.84],
+      [-6.72, 0.88],
+      [-8.42, 1.72],
     ] as const) {
       const stanchion = createFilletedShaft({
         radius: 0.024,
@@ -1150,9 +1263,9 @@ function buildRowCAcousticRisers(spec: StageWorldSpecV7, envMap: THREE.Texture) 
       group.add(stanchion);
     }
     const railCurve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(railSide, 0.92, -6.72),
-      new THREE.Vector3(railSide, 1.38, -7.57),
-      new THREE.Vector3(railSide, 1.84, -8.42),
+      new THREE.Vector3(railSide, 0.88, -6.72),
+      new THREE.Vector3(railSide, 1.3, -7.57),
+      new THREE.Vector3(railSide, 1.72, -8.42),
     ]);
     const handrail = new THREE.Mesh(
       new THREE.TubeGeometry(railCurve, 14, 0.022, 12, false),
@@ -1164,13 +1277,14 @@ function buildRowCAcousticRisers(spec: StageWorldSpecV7, envMap: THREE.Texture) 
       material: stepLampMat,
       castShadow: false,
     });
-    stepLamp.position.set(railSide, 0.58, -6.68);
+    stepLamp.position.set(railSide, 0.54, -6.68);
     group.add(handrail, stepLamp);
   }
 
   const glintAnchor = new THREE.Group();
   glintAnchor.name = 'RowCRolledProgramAnchor';
-  glintAnchor.position.set(0.62, 1.62, -7.42);
+  // Perched cleanly atop the front-right brass aisle stanchion (outside crowd width x in [-1.30, +1.30])
+  glintAnchor.position.set(1.46, 0.94, -6.72);
   group.add(glintAnchor);
 
   const programMat = new THREE.MeshPhysicalMaterial({
@@ -1185,27 +1299,29 @@ function buildRowCAcousticRisers(spec: StageWorldSpecV7, envMap: THREE.Texture) 
   });
 
   const rolledProgram = createFilletedShaft({
-    radius: 0.075,
-    height: 0.52,
-    baseCollarFlare: 0.012,
-    neckCollarFlare: 0.012,
-    anglageBevel: 0.008,
-    radialSegments: 36,
+    radius: 0.042,
+    height: 0.28,
+    baseCollarFlare: 0.008,
+    neckCollarFlare: 0.008,
+    anglageBevel: 0.006,
+    radialSegments: 28,
     centered: true,
     material: programMat,
     name: 'RolledProgramScroll',
   });
-  rolledProgram.rotation.set(0.35, 0.22, Math.PI * 0.38);
+  rolledProgram.rotation.set(0.28, 0.18, Math.PI * 0.32);
+  rolledProgram.visible = false;
   glintAnchor.add(rolledProgram);
 
   const brassBand = createNotchedBezel({
     notchShape: 'SCALLOP',
-    outerRadius: 0.095,
-    innerRadius: 0.068,
-    thickness: 0.06,
+    outerRadius: 0.056,
+    innerRadius: 0.038,
+    thickness: 0.036,
     material: brassMat,
   });
   brassBand.rotation.copy(rolledProgram.rotation);
+  brassBand.visible = false;
   glintAnchor.add(brassBand);
 
   const glintFlareMat = new THREE.MeshStandardMaterial({
@@ -1222,29 +1338,29 @@ function buildRowCAcousticRisers(spec: StageWorldSpecV7, envMap: THREE.Texture) 
   const glintGroup = new THREE.Group();
   glintGroup.visible = false;
   const flareOrb = createTurnedOrb({
-    radius: 0.13,
+    radius: 0.09,
     material: glintFlareMat,
     castShadow: false,
     receiveShadow: false,
   });
   const rayH = createChamferedBox({
-    width: 0.68,
-    height: 0.036,
-    depth: 0.036,
+    width: 0.48,
+    height: 0.028,
+    depth: 0.028,
     material: glintFlareMat,
     castShadow: false,
     receiveShadow: false,
   });
   const rayV = createChamferedBox({
-    width: 0.036,
-    height: 0.68,
-    depth: 0.036,
+    width: 0.028,
+    height: 0.48,
+    depth: 0.028,
     material: glintFlareMat,
     castShadow: false,
     receiveShadow: false,
   });
   glintGroup.add(flareOrb, rayH, rayV);
-  glintGroup.position.set(0, 0.08, 0.12);
+  glintGroup.position.set(0, 0.04, 0.08);
   glintAnchor.add(glintGroup);
 
   const colliderMat = new THREE.MeshBasicMaterial({
@@ -1254,42 +1370,128 @@ function buildRowCAcousticRisers(spec: StageWorldSpecV7, envMap: THREE.Texture) 
     depthWrite: false,
   });
   const colliderMesh = createChamferedBox({
-    width: 2.5,
-    height: 2.2,
-    depth: 1.5,
+    width: 2.8,
+    height: 1.9,
+    depth: 1.7,
     material: colliderMat,
     castShadow: false,
     receiveShadow: false,
     name: 'RowCGlintCollider',
   });
-  colliderMesh.position.set(0.35, 1.55, -7.42);
+  colliderMesh.position.set(0.55, 1.18, -7.25);
   colliderMesh.userData.interactiveKind = 'ROW_C_GLINT';
   colliderMesh.userData.stageId = spec.stageId;
   group.add(colliderMesh);
 
   compactStaticMeshesInGroup(group, new Set([glintAnchor, colliderMesh]));
 
+  // Live 1960s Gouache Studio Audience Rows (UV-mapped from `atlas_crowd.webp`; hidden until texture resolves)
+  const rowCCrowdPlanes: THREE.Mesh[] = [];
+  const frontRowPlane = createUvCroppedCrowdPlane(
+    2.66,
+    0.748,
+    0.0,
+    1.0,
+    0.7273,
+    1.0,
+    crowdMat,
+    'RowC_CrowdFrontPlane',
+  );
+  frontRowPlane.position.set(0, 0.904, -6.95);
+  frontRowPlane.userData.crowdRowKey = 'crowd_row_1';
+  frontRowPlane.userData.mirrorU = false;
+  frontRowPlane.userData.bottomAnchorY = 0.53;
+  frontRowPlane.userData.maxPlaneWidth = 2.66;
+  frontRowPlane.visible = false;
+
+  const backRowPlane2 = createUvCroppedCrowdPlane(
+    2.46,
+    0.692,
+    0.0,
+    1.0,
+    0.4545,
+    0.7273,
+    crowdMat,
+    'RowC_CrowdMidPlane',
+  );
+  backRowPlane2.position.set(0, 1.276, -7.58);
+  backRowPlane2.userData.crowdRowKey = 'crowd_row_2';
+  backRowPlane2.userData.mirrorU = false;
+  backRowPlane2.userData.bottomAnchorY = 0.93;
+  backRowPlane2.userData.maxPlaneWidth = 2.46;
+  backRowPlane2.visible = false;
+
+  const backRowPlane3 = createUvCroppedCrowdPlane(
+    2.26,
+    0.637,
+    0.0,
+    1.0,
+    0.1818,
+    0.4545,
+    crowdMat,
+    'RowC_CrowdTopPlane',
+  );
+  backRowPlane3.position.set(0, 1.6685, -8.22);
+  backRowPlane3.userData.crowdRowKey = 'crowd_row_3';
+  backRowPlane3.userData.mirrorU = false;
+  backRowPlane3.userData.bottomAnchorY = 1.35;
+  backRowPlane3.userData.maxPlaneWidth = 2.26;
+  backRowPlane3.visible = false;
+
+  group.add(frontRowPlane, backRowPlane2, backRowPlane3);
+  rowCCrowdPlanes.push(frontRowPlane, backRowPlane2, backRowPlane3);
+  crowdTiers.push(
+    { obj: frontRowPlane, baseY: 0.904, baseRotX: 0, phase: 0.0, isFrontRow: true },
+    { obj: backRowPlane2, baseY: 1.276, baseRotX: 0, phase: 1.2, isFrontRow: false },
+    { obj: backRowPlane3, baseY: 1.6685, baseRotX: 0, phase: 2.4, isFrontRow: false },
+  );
+
+  // 2 Press Camera Flashbulb Sprites on Row-C Audience Risers
+  for (const [fx, fy, fz] of [
+    [-0.75, 1.38, -6.9],
+    [0.78, 1.74, -7.54],
+  ] as const) {
+    const flash = createTungstenBulbHaloSprite({
+      scale: 0.44,
+      opacity: 0.0,
+      colorHex: 0xffffff,
+      name: 'AudiencePressFlashbulb_RowC',
+    });
+    flash.position.set(fx, fy, fz);
+    flash.visible = false;
+    group.add(flash);
+    flashSprites.push(flash);
+  }
+
   return {
     group,
     programMat,
     glintFlareMat,
     glintGroup,
+    rolledProgram,
+    brassBand,
     colliderMesh,
+    crowdPlanes: rowCCrowdPlanes,
   };
 }
 
 // ----------------------------------------------------------------------------
-// 5. 6 Cantilevered Smoked-Glass VIP Jury Loges + Boon/Bane Crests (Upstage Right)
+// 5. 6 Cantilevered Smoked-Glass VIP Jury Loges + Gouache VIP Spectators
 // ----------------------------------------------------------------------------
 
-function buildVipJuryLoges(envMap: THREE.Texture) {
+function buildVipJuryLoges(
+  envMap: THREE.Texture,
+  crowdMat: THREE.MeshStandardMaterial,
+  crowdTiers: CrowdAnimatedTierV9[],
+  flashSprites: THREE.Sprite[],
+) {
   const group = new THREE.Group();
   group.name = 'VipJuryLoges';
 
   const brassMat = create24KGoldMaterial(envMap);
   const aluminumMat = createAnodizedAluminumMaterial(envMap);
   const slateMat = createObsidianMaterial(envMap);
-  const smokedGlassMat = createBorosilicateGlassMaterial(0x1f4a68, 0.44, envMap);
+  const smokedGlassMat = createBorosilicateGlassMaterial(0x008b94, 0.42, envMap);
   const bluedMat = createBluedSteelMaterial(0x1e56c5, envMap);
 
   const boonMat = new THREE.MeshStandardMaterial({
@@ -1309,15 +1511,17 @@ function buildVipJuryLoges(envMap: THREE.Texture) {
     envMap,
   });
 
+  const vipSpectatorPlanes: THREE.Mesh[] = [];
   const colXs = [-1.05, 0, 1.05];
-  for (const cx of colXs) {
+  for (let colIdx = 0; colIdx < colXs.length; colIdx++) {
+    const cx = colXs[colIdx];
     const shoe = createFloorShoe(0.42, 0.42, 0.08, brassMat, bluedMat);
     shoe.position.set(cx, 0, -7.85);
     group.add(shoe);
 
     const col = createFilletedShaft({
       radius: 0.09,
-      height: 1.98,
+      height: 2.18,
       baseCollarFlare: 0.03,
       neckCollarFlare: 0.03,
       anglageBevel: 0.01,
@@ -1328,8 +1532,8 @@ function buildVipJuryLoges(envMap: THREE.Texture) {
     group.add(col);
 
     for (let tierIdx = 0; tierIdx < 2; tierIdx++) {
-      const ly = 0.72 + tierIdx * 0.72;
-      const lz = -7.35 - tierIdx * 0.18;
+      const ly = 0.44 + tierIdx * 0.88;
+      const lz = -7.28 - tierIdx * 0.24;
 
       const deck = createChamferedBox({
         width: 0.88,
@@ -1353,13 +1557,13 @@ function buildVipJuryLoges(envMap: THREE.Texture) {
 
       const glassFront = createChamferedBox({
         width: 0.86,
-        height: 0.28,
+        height: 0.24,
         depth: 0.035,
         cornerRadius: 0.04,
         material: smokedGlassMat,
         castShadow: false,
       });
-      glassFront.position.set(cx, ly + 0.22, lz + 0.33);
+      glassFront.position.set(cx, ly + 0.2, lz + 0.33);
       group.add(glassFront);
 
       const topRail = createChamferedBox({
@@ -1369,53 +1573,183 @@ function buildVipJuryLoges(envMap: THREE.Texture) {
         cornerRadius: 0.016,
         material: brassMat,
       });
-      topRail.position.set(cx, ly + 0.37, lz + 0.33);
+      topRail.position.set(cx, ly + 0.33, lz + 0.33);
       group.add(topRail);
 
-      if (tierIdx === 1) {
-        const laurelArch = createChamferedArch({
-          innerRadius: 0.09,
-          outerRadius: 0.15,
-          depth: 0.04,
-          arcAngle: Math.PI * 1.35,
-          startAngle: -Math.PI * 0.175,
-          bevel: 0.008,
-          material: boonMat,
-          name: 'VipBoonLaurelCrown',
-        });
-        laurelArch.position.set(cx, ly + 0.16, lz + 0.37);
-        laurelArch.rotation.z = Math.PI;
-        group.add(laurelArch);
-      } else {
-        const gavelGroup = new THREE.Group();
-        gavelGroup.position.set(cx, ly + 0.16, lz + 0.37);
-        const handle = createFilletedShaft({
-          radius: 0.02,
-          height: 0.18,
-          anglageBevel: 0.004,
-          radialSegments: 24,
-          centered: true,
-          material: baneMat,
-        });
-        const mallet = createFilletedShaft({
-          radius: 0.042,
-          height: 0.14,
-          anglageBevel: 0.006,
-          radialSegments: 24,
-          centered: true,
-          material: baneMat,
-        });
-        mallet.rotation.z = Math.PI * 0.5;
-        mallet.position.y = -0.07;
-        gavelGroup.add(handle, mallet);
-        group.add(gavelGroup);
-      }
+      // Unique 2-person VIP pair slice (8:9 aspect) from `crowd_vip_pairs`
+      const vipSliceIdx = tierIdx * 3 + colIdx;
+      const uStart = vipSliceIdx / 6;
+      const uEnd = (vipSliceIdx + 1) / 6;
+      const vipPlaneH = 0.72;
+      const vipBottomY = ly + 0.14;
+      const vipBaseY = vipBottomY + vipPlaneH * 0.5;
+      const vipPlane = createUvCroppedCrowdPlane(
+        0.64,
+        vipPlaneH,
+        uStart,
+        uEnd,
+        0.0,
+        0.1818,
+        crowdMat,
+        `VipLogeCrowd_${colIdx}_${tierIdx}`,
+      );
+      vipPlane.position.set(cx, vipBaseY, lz + 0.14);
+      vipPlane.userData.crowdRowKey = 'crowd_vip_pairs';
+      vipPlane.userData.uSubRange = [uStart, uEnd];
+      vipPlane.userData.bottomAnchorY = vipBottomY;
+      vipPlane.userData.maxPlaneWidth = 0.78;
+      vipPlane.visible = false;
+      vipSpectatorPlanes.push(vipPlane);
     }
   }
 
   compactStaticMeshesInGroup(group);
 
-  return { group, boonMat, baneMat };
+  for (let i = 0; i < vipSpectatorPlanes.length; i++) {
+    const vp = vipSpectatorPlanes[i];
+    group.add(vp);
+    crowdTiers.push({
+      obj: vp,
+      baseY: vp.position.y,
+      baseRotX: 0,
+      phase: 0.6 + i * 0.45,
+      isFrontRow: false,
+    });
+  }
+
+  // 2 Press Camera Flashbulb Sprites on VIP Loge Balconies
+  for (const [fx, fy, fz] of [
+    [-0.52, 1.85, -7.24],
+    [0.64, 1.02, -7.02],
+  ] as const) {
+    const flash = createTungstenBulbHaloSprite({
+      scale: 0.42,
+      opacity: 0.0,
+      colorHex: 0xffffff,
+      name: 'AudiencePressFlashbulb_VIP',
+    });
+    flash.position.set(fx, fy, fz);
+    flash.visible = false;
+    group.add(flash);
+    flashSprites.push(flash);
+  }
+
+  return { group, boonMat, baneMat, crowdPlanes: vipSpectatorPlanes };
+}
+
+function buildUpperBackgroundBalconyCrowd(
+  envMap: THREE.Texture,
+  crowdMat: THREE.MeshStandardMaterial,
+  crowdTiers: CrowdAnimatedTierV9[],
+  flashSprites: THREE.Sprite[],
+) {
+  const group = new THREE.Group();
+  group.name = 'UpperBackgroundBalconyCrowd';
+  group.visible = false;
+
+  const walnutMat = createWalnutMaterial(envMap);
+  const brassMat = create24KGoldMaterial(envMap);
+  const crowdPlanes: THREE.Mesh[] = [];
+
+  const buildBalconyBox = (side: -1 | 1, name: string) => {
+    const box = new THREE.Group();
+    box.name = name;
+    box.position.set(side * 1.28, 0.7, -5.85);
+
+    const backing = createChamferedBox({
+      width: 0.72,
+      height: 0.74,
+      depth: 0.04,
+      cornerRadius: 0.025,
+      material: walnutMat,
+      castShadow: false,
+    });
+    backing.position.set(0, 0, -0.04);
+
+    const deck = createChamferedBox({
+      width: 0.74,
+      height: 0.06,
+      depth: 0.2,
+      cornerRadius: 0.02,
+      material: walnutMat,
+      castShadow: false,
+    });
+    deck.position.set(0, -0.35, 0.02);
+
+    const parapetSill = createChamferedBox({
+      width: 0.72,
+      height: 0.09,
+      depth: 0.032,
+      cornerRadius: 0.014,
+      material: walnutMat,
+      castShadow: false,
+    });
+    parapetSill.position.set(0, -0.32, 0.065);
+
+    const brassLip = createChamferedBox({
+      width: 0.74,
+      height: 0.022,
+      depth: 0.042,
+      cornerRadius: 0.01,
+      material: brassMat,
+      castShadow: false,
+    });
+    brassLip.position.set(0, -0.272, 0.068);
+
+    box.add(backing, deck, parapetSill, brassLip);
+    compactStaticMeshesInGroup(box);
+
+    const uStart = 0.0;
+    const uEnd = 2 / 8;
+    const balcPlaneH = 0.62;
+    const balcBottomY = -0.31;
+    const balcBaseY = balcBottomY + balcPlaneH * 0.5;
+    const plane = createUvCroppedCrowdPlane(
+      0.551,
+      balcPlaneH,
+      uStart,
+      uEnd,
+      0.7273,
+      1.0,
+      crowdMat,
+      side < 0 ? 'UpperBalcony_CrowdLeft' : 'UpperBalcony_CrowdRight',
+    );
+    plane.position.set(0, balcBaseY, 0.01);
+    plane.rotation.x = -0.06;
+    plane.userData.crowdRowKey = side < 0 ? 'crowd_row_1' : 'crowd_row_2';
+    plane.userData.uSubRange = [uStart, uEnd];
+    plane.userData.bottomAnchorY = balcBottomY;
+    plane.userData.maxPlaneWidth = 0.6;
+    plane.visible = false;
+    box.add(plane);
+    crowdPlanes.push(plane);
+    crowdTiers.push({
+      obj: plane,
+      baseY: balcBaseY,
+      baseRotX: -0.06,
+      phase: side < 0 ? 0.35 : 1.55,
+      isFrontRow: false,
+    });
+
+    const flash = createTungstenBulbHaloSprite({
+      scale: 0.32,
+      opacity: 0.0,
+      colorHex: 0xffffff,
+      name: side < 0 ? 'AudiencePressFlashbulb_BalconyL' : 'AudiencePressFlashbulb_BalconyR',
+    });
+    flash.position.set(0, 0.22, 0.08);
+    flash.visible = false;
+    box.add(flash);
+    flashSprites.push(flash);
+
+    return box;
+  };
+
+  const leftBox = buildBalconyBox(-1, 'UpperBalcony_Left');
+  const rightBox = buildBalconyBox(1, 'UpperBalcony_Right');
+  group.add(leftBox, rightBox);
+
+  return { group, leftBox, rightBox, crowdPlanes };
 }
 
 // ----------------------------------------------------------------------------
@@ -1521,7 +1855,7 @@ function buildBespokeStageArchitectureAndHero(
       // 30 ROCK STUDIO 6A: Unobstructed 7-Feather NBC Living Color Peacock Fan + Sunlit Walnut Wings w/ Twin Spinning Hex Finials!
       const peacockColors = [0x0096a6, 0x16a34a, 0xf4a91f, 0xff6738, 0xe63b7a, 0x1e56c5, 0x0096a6];
       const featherGroup = new THREE.Group();
-      featherGroup.position.set(0, 0.34, -5.48);
+      featherGroup.position.set(0, 0.34, -6.05);
 
       const fanPlinthAO = createContactShadowDisc({
         radius: 1.24,
@@ -1595,11 +1929,13 @@ function buildBespokeStageArchitectureAndHero(
       group.add(featherGroup);
 
       // Sunlit American Walnut Slatted Studio 6A Acoustic Wing Screens + Twin Spinning Acrylite Hex Finials!
+      // Tucked cleanly behind marquee pillars (`x = ±2.48, z = -6.05, scale = 0.56`) so RowC & VIP Jury Loges stay 100% unobstructed!
       const wingSpinners: THREE.Group[] = [];
       for (const side of [-1, 1] as const) {
         const wing = new THREE.Group();
-        wing.position.set(side * 3.55, 0, -4.35);
-        wing.rotation.y = -side * 0.34;
+        wing.position.set(side * 2.48, 0, -6.05);
+        wing.rotation.y = -side * 0.28;
+        wing.scale.setScalar(0.56);
         wing.add(createFloorShoe(2.4, 0.45, 0.09, goldMat, bluedMat));
 
         const cove = createCurvedParabolicCove({
@@ -1682,7 +2018,7 @@ function buildBespokeStageArchitectureAndHero(
     case 'STAGE_02_IBC_PRIMETIME_JUBILEE': {
       // CBS TELEVISION CITY JUBILEE: Giant Counter-Rotating 24K Starburst Rotunda + Stepped Cerise/Gold Chevrons!
       const rotunda = new THREE.Group();
-      rotunda.position.set(0, 0, -5.35);
+      rotunda.position.set(0, 0, -6.18);
 
       for (const sx of [-1.55, 1.55]) {
         const shoe = createFloorShoe(0.55, 0.55, 0.1, goldMat, bluedMat);
@@ -1745,8 +2081,9 @@ function buildBespokeStageArchitectureAndHero(
       // Stepped Hollywood-Squares / IBC Jubilee Wing Light Chevrons (totally distinct from Stage 1!)
       for (const side of [-1, 1] as const) {
         const wing = new THREE.Group();
-        wing.position.set(side * 3.55, 0, -4.4);
-        wing.rotation.y = -side * 0.34;
+        wing.position.set(side * 2.36, 0, -6.08);
+        wing.rotation.y = -side * 0.28;
+        wing.scale.setScalar(0.56);
         wing.add(createFloorShoe(2.4, 0.5, 0.1, goldMat, bluedMat));
 
         for (let step = 0; step < 3; step++) {
@@ -1802,7 +2139,7 @@ function buildBespokeStageArchitectureAndHero(
       dimmableAcryliteMats.push(...popMats);
 
       const center = new THREE.Group();
-      center.position.set(0, 0, -5.75);
+      center.position.set(0, 0, -6.75);
       center.add(createFloorShoe(4.1, 0.52, 0.1, goldMat, bluedMat));
 
       // Bold Sculpted Mondrian Pop-Art Cream Arch Surround (`z = -0.05`)
@@ -1871,8 +2208,9 @@ function buildBespokeStageArchitectureAndHero(
       const flowerHeads: THREE.Group[] = [];
       for (const side of [-1, 1] as const) {
         const wing = new THREE.Group();
-        wing.position.set(side * 3.6, 0, -4.35);
-        wing.rotation.y = -side * 0.34;
+        wing.position.set(side * 2.36, 0, -6.08);
+        wing.rotation.y = -side * 0.28;
+        wing.scale.setScalar(0.56);
         wing.add(createFloorShoe(2.1, 0.48, 0.1, goldMat, bluedMat));
 
         const positions: ReadonlyArray<[number, number, number, number]> = [
@@ -1937,7 +2275,7 @@ function buildBespokeStageArchitectureAndHero(
       });
 
       const center = new THREE.Group();
-      center.position.set(0, 0, -5.62);
+      center.position.set(0, 0, -6.62);
       center.add(
         createContactShadowDisc({
           radius: 1.18,
@@ -2074,8 +2412,9 @@ function buildBespokeStageArchitectureAndHero(
       // Sunlit Teak & Backlit Peacock Teal Mid-Century Acoustic Slat Wings
       for (const side of [-1, 1] as const) {
         const wing = new THREE.Group();
-        wing.position.set(side * 3.65, 0, -4.35);
-        wing.rotation.y = -side * 0.32;
+        wing.position.set(side * 2.36, 0, -6.08);
+        wing.rotation.y = -side * 0.28;
+        wing.scale.setScalar(0.56);
         wing.add(createFloorShoe(2.4, 0.46, 0.09, goldMat, bluedMat));
         const wingArch = createCurvedParabolicCove({
           spanWidth: 2.38,
@@ -2137,7 +2476,7 @@ function buildBespokeStageArchitectureAndHero(
       dimmableAcryliteMats.push(...rcaBarMats);
 
       const center = new THREE.Group();
-      center.position.set(0, 0, -5.85);
+      center.position.set(0, 0, -6.78);
       center.add(
         createContactShadowDisc({
           radiusX: 2.65,
@@ -2219,8 +2558,9 @@ function buildBespokeStageArchitectureAndHero(
       const vectorRings: THREE.Mesh[] = [];
       for (const side of [-1, 1] as const) {
         const wing = new THREE.Group();
-        wing.position.set(side * 3.7, 0, -4.3);
-        wing.rotation.y = -side * 0.36;
+        wing.position.set(side * 2.36, 0, -6.08);
+        wing.rotation.y = -side * 0.28;
+        wing.scale.setScalar(0.56);
         wing.add(createFloorShoe(2.42, 0.48, 0.09, goldMat, bluedMat));
         const arch = createCurvedParabolicCove({
           spanWidth: 2.35,
@@ -2274,7 +2614,7 @@ function buildBespokeStageArchitectureAndHero(
     case 'STAGE_06_ATLANTIC_CITY_PIER': {
       // 1965 ATLANTIC CITY STEEL PIER: Gilded Wurlitzer Organ Pipe Fan + Sunburst Boardwalk Carnival Arches!
       const center = new THREE.Group();
-      center.position.set(0, 0, -5.3);
+      center.position.set(0, 0, -6.5);
       center.add(
         createContactShadowDisc({
           radiusX: 2.38,
@@ -2358,7 +2698,7 @@ function buildBespokeStageArchitectureAndHero(
           material: wRow === 0 ? oceanWaveMat : acMats[2],
           castShadow: false,
         });
-        waveBar.position.set(0, 0.22 + wRow * 0.34, -2.4 - wRow * 0.5);
+        waveBar.position.set(0, 0.22 + wRow * 0.34, -1.35 - wRow * 0.5);
         center.add(waveBar);
       }
       for (let bp = -5; bp <= 5; bp++) {
@@ -2370,7 +2710,7 @@ function buildBespokeStageArchitectureAndHero(
           radialSegments: 16,
           material: bp % 2 === 0 ? walnutMat : goldMat,
         });
-        bollard.position.set(bp * 0.96, 0, -2.1);
+        bollard.position.set(bp * 0.96, 0, -1.05);
         center.add(bollard);
       }
       compactStaticMeshesInGroup(center, new Set(pipes));
@@ -2380,8 +2720,9 @@ function buildBespokeStageArchitectureAndHero(
       const ferrisStars: THREE.Group[] = [];
       for (const side of [-1, 1] as const) {
         const wing = new THREE.Group();
-        wing.position.set(side * 3.7, 0, -4.35);
-        wing.rotation.y = -side * 0.34;
+        wing.position.set(side * 2.36, 0, -6.08);
+        wing.rotation.y = -side * 0.28;
+        wing.scale.setScalar(0.56);
         wing.add(createFloorShoe(2.45, 0.48, 0.09, goldMat, bluedMat));
         const carnivalArch = createCurvedParabolicCove({
           spanWidth: 2.4,
@@ -2438,7 +2779,7 @@ function buildBespokeStageArchitectureAndHero(
       });
 
       const center = new THREE.Group();
-      center.position.set(0, 0, -6.05);
+      center.position.set(0, 0, -6.65);
       for (const ax of [-2.02, 2.02]) {
         const legAO = createContactShadowDisc({ radius: 0.62, opacity: 0.54, yOffset: 0.004 });
         legAO.position.x = ax;
@@ -2509,8 +2850,9 @@ function buildBespokeStageArchitectureAndHero(
       // Sweeping Ken Adam Cantilevered Ivory-Gold Wing Ribs + Riviera Emerald Alcoves
       for (const side of [-1, 1] as const) {
         const wing = new THREE.Group();
-        wing.position.set(side * 3.7, 0, -4.35);
-        wing.rotation.y = -side * 0.36;
+        wing.position.set(side * 2.36, 0, -6.08);
+        wing.rotation.y = -side * 0.28;
+        wing.scale.setScalar(0.56);
         wing.add(
           createContactShadowDisc({
             radiusX: 1.28,
@@ -2564,7 +2906,7 @@ function buildBespokeStageArchitectureAndHero(
       });
 
       const center = new THREE.Group();
-      center.position.set(0, 0, -6.28);
+      center.position.set(0, 0, -7.35);
       for (const ax of [-2.35, 2.35]) {
         const archAO = createContactShadowDisc({ radius: 0.68, opacity: 0.54, yOffset: 0.004 });
         archAO.position.set(ax, 0.004, -0.42);
@@ -2604,7 +2946,7 @@ function buildBespokeStageArchitectureAndHero(
 
       const dishPts: THREE.Vector2[] = [];
       for (let k = 0; k <= 16; k++) {
-        const r = (k / 16) * 1.44;
+        const r = (k / 16) * 1.32;
         dishPts.push(new THREE.Vector2(r, r * r * 0.26));
       }
       const dishGeom = new THREE.LatheGeometry(dishPts, 48);
@@ -2622,11 +2964,11 @@ function buildBespokeStageArchitectureAndHero(
       const dishPivot = new THREE.Group();
       dishPivot.position.y = 1.58;
       const dishMesh = new THREE.Mesh(dishGeom, dishMat);
-      const orbitA = new THREE.Mesh(new THREE.TorusGeometry(1.58, 0.032, 16, 48), acMats[0]);
-      const orbitB = new THREE.Mesh(new THREE.TorusGeometry(1.74, 0.026, 14, 48), acMats[1]);
-      orbitB.rotation.set(0.55, 0.4, 0);
-      const orbitC = new THREE.Mesh(new THREE.TorusGeometry(1.74, 0.026, 14, 48), acMats[2]);
-      orbitC.rotation.set(-0.55, -0.4, 0);
+      const orbitA = new THREE.Mesh(new THREE.TorusGeometry(1.44, 0.032, 16, 48), acMats[0]);
+      const orbitB = new THREE.Mesh(new THREE.TorusGeometry(1.56, 0.026, 14, 48), acMats[1]);
+      orbitB.rotation.set(0.42, 0.34, 0);
+      const orbitC = new THREE.Mesh(new THREE.TorusGeometry(1.56, 0.026, 14, 48), acMats[2]);
+      orbitC.rotation.set(-0.42, -0.34, 0);
 
       const feedHorn = createFilletedShaft({
         radius: 0.055,
@@ -2649,8 +2991,9 @@ function buildBespokeStageArchitectureAndHero(
       // Iconic 1965 Flushing Meadows Googie Boomerang Wing Pylons + Satellite Spheres
       for (const side of [-1, 1] as const) {
         const wing = new THREE.Group();
-        wing.position.set(side * 3.65, 0, -4.35);
-        wing.rotation.y = -side * 0.3;
+        wing.position.set(side * 2.36, 0, -6.08);
+        wing.rotation.y = -side * 0.28;
+        wing.scale.setScalar(0.56);
         wing.add(
           createContactShadowDisc({
             radiusX: 0.92,
@@ -2712,7 +3055,7 @@ function buildBespokeStageArchitectureAndHero(
     case 'STAGE_09_CHANNEL_83_UHF_BARGE': {
       // 1967 OFFSHORE PIRATE RADIO SHIP (M/V CASSANDRA): Curved Bridge Bulkhead, 5 Ocean Portholes, Glowing 50kW Klystrons & Lattice Radio Masts!
       const center = new THREE.Group();
-      center.position.set(0, 0, -5.52);
+      center.position.set(0, 0, -6.42);
       for (const hx of [-2.18, 2.18]) {
         const hullAO = createContactShadowDisc({ radius: 0.64, opacity: 0.56, yOffset: 0.004 });
         hullAO.position.set(hx, 0.004, -0.4);
@@ -2812,7 +3155,8 @@ function buildBespokeStageArchitectureAndHero(
       const beaconMats: THREE.MeshStandardMaterial[] = [];
       for (const side of [-1, 1] as const) {
         const wing = new THREE.Group();
-        wing.position.set(side * 3.6, 0, -4.35);
+        wing.position.set(side * 2.36, 0, -6.08);
+        wing.scale.setScalar(0.56);
         wing.add(createFloorShoe(0.85, 0.85, 0.12, goldMat, bluedMat));
         const mast = createFilletedShaft({
           radius: 0.12,
@@ -2889,7 +3233,7 @@ function buildBespokeStageArchitectureAndHero(
       });
 
       const center = new THREE.Group();
-      center.position.set(0, 0, -5.62);
+      center.position.set(0, 0, -6.18);
       center.add(
         createContactShadowDisc({
           radius: 1.18,
@@ -2979,7 +3323,7 @@ function buildBespokeStageArchitectureAndHero(
         metalness: 0.08,
         envMap,
       });
-      const skylineGlassMat = createAcrylitePanelMaterial(0x16386e, 0.55, envMap);
+      const skylineGlassMat = createAcrylitePanelMaterial(0x1e56c5, 0.62, envMap);
       dimmableAcryliteMats.push(skylineGlassMat);
       for (const wx of [-4.2, -2.65, 2.65, 4.2]) {
         const windowPane = createChamferedBox({
@@ -3028,8 +3372,9 @@ function buildBespokeStageArchitectureAndHero(
       // Towering Art-Deco Champagne-Gold & Midnight-Sapphire Manhattan Penthouse Window Bay Wings
       for (const side of [-1, 1] as const) {
         const wing = new THREE.Group();
-        wing.position.set(side * 3.7, 0, -4.35);
-        wing.rotation.y = -side * 0.34;
+        wing.position.set(side * 2.36, 0, -6.08);
+        wing.rotation.y = -side * 0.28;
+        wing.scale.setScalar(0.56);
         wing.add(
           createContactShadowDisc({
             radiusX: 1.42,
@@ -3089,23 +3434,569 @@ function buildBespokeStageArchitectureAndHero(
 }
 
 // ----------------------------------------------------------------------------
+// 6b. Distinct Per-Season 3D Soundstage Architecture (Seasons 1–4)
+// ----------------------------------------------------------------------------
+
+function buildSeasonSignatureSetV9(
+  stageId: StageWorldIdV7,
+  season: SeasonIdV7,
+  envMap: THREE.Texture,
+): BuiltBespokeStageSet {
+  // In Season 1, preserve every stage's bespoke hero set (`STAGE_01` already builds
+  // the 7-feather Studio 6A Peacock Fan + Walnut acoustic slat wings).
+  if (season === 1) {
+    return buildBespokeStageArchitectureAndHero(stageId, envMap);
+  }
+
+  const group = new THREE.Group();
+  group.name = `SeasonSignatureSetV9_S${season}`;
+
+  const goldMat = create24KGoldMaterial(envMap);
+  const aluminumMat = createAnodizedAluminumMaterial(envMap);
+  const walnutMat = createWalnutMaterial(envMap);
+  const creamMat = new THREE.MeshPhysicalMaterial({
+    color: 0xfaf2df,
+    roughness: 0.22,
+    metalness: 0.06,
+    clearcoat: 0.78,
+    clearcoatRoughness: 0.12,
+    envMap,
+    envMapIntensity: 1.15,
+  });
+  const dimmableAcryliteMats: THREE.MeshPhysicalMaterial[] = [];
+  const chasingBulbGroups: THREE.MeshStandardMaterial[][] = [];
+  const sharedHaloTex = typeof document !== 'undefined' ? getTungstenBulbHaloTexture() : null;
+
+  if (season === 2) {
+    // SEASON 2 — HOLLYWOOD BLVD STARBURST PALACE
+    // 1. Scalloped Googie Cream & Atomic Tangerine Proscenium Arch (strictly behind UpperBalcony z <= -5.98)
+    const tangerineMat = createGrandFeuEnamelMaterial(0xff6b35, envMap);
+    const ceriseAcMat = createAcrylitePanelMaterial(0xe6397a, 0.84, envMap);
+    const goldAcMat = createAcrylitePanelMaterial(0xf2a922, 0.88, envMap);
+    dimmableAcryliteMats.push(ceriseAcMat, goldAcMat);
+
+    const googieOuter = createCurvedParabolicCove({
+      spanWidth: 3.9,
+      archHeight: 3.05,
+      depth: 0.28,
+      thickness: 0.24,
+      material: creamMat,
+      name: 'Season2_GoogieCreamArch',
+    });
+    googieOuter.position.set(0, 0.05, -6.26);
+
+    const googieTrim = createCurvedParabolicCove({
+      spanWidth: 3.42,
+      archHeight: 2.74,
+      depth: 0.34,
+      thickness: 0.12,
+      material: tangerineMat,
+      name: 'Season2_GoogieTangerineTrim',
+    });
+    googieTrim.position.set(0, 0.05, -6.2);
+
+    // Scalloped sunlit inner Googie medallions along the arch perimeter
+    const archGroup = new THREE.Group();
+    archGroup.add(googieOuter, googieTrim);
+    for (let s = -3; s <= 3; s++) {
+      const frac = s / 3;
+      const sx = frac * 1.48;
+      const sy = 0.22 + 2.48 * (1 - frac * frac);
+      const scallop = createNotchedBezel({
+        notchShape: 'SCALLOP',
+        outerRadius: 0.19,
+        innerRadius: 0.08,
+        thickness: 0.09,
+        material: s % 2 === 0 ? goldAcMat : ceriseAcMat,
+      });
+      scallop.position.set(sx, sy, -6.18);
+      archGroup.add(scallop);
+    }
+    compactStaticMeshesInGroup(archGroup);
+    group.add(archGroup);
+
+    // 2. Three Suspended Rotating 24K Brass 3D Starbursts (strictly behind UpperBalcony at `z = -6.08`!)
+    const starBulbMat = new THREE.MeshStandardMaterial({
+      color: 0xfff8df,
+      emissive: 0xffd56b,
+      emissiveIntensity: 1.28,
+      roughness: 0.12,
+    });
+    const starbursts: THREE.Group[] = [];
+    for (const [sx, sy, rad] of [
+      [-1.25, 2.55, 0.38],
+      [0.0, 2.84, 0.48],
+      [1.25, 2.55, 0.38],
+    ] as const) {
+      const sb = createMidCenturyStarburst({
+        radius: rad,
+        rays: 12,
+        depth: 0.05,
+        primaryMat: goldMat,
+        accentMat: tangerineMat,
+        bulbMat: starBulbMat,
+        name: `Season2_SuspendedStarburst_${sx}`,
+      });
+      sb.position.set(sx, sy, -6.08);
+      group.add(sb);
+      starbursts.push(sb);
+    }
+
+    // 3. Twin Mid-Century Brass/Walnut Palm-Frond Planters (flanking Googie arch at `x = ±2.25, z = -6.32`, clear of UpperBalcony/RowC/VIP Loges!)
+    const emeraldFrondMat = new THREE.MeshPhysicalMaterial({
+      color: 0x15803d,
+      roughness: 0.34,
+      metalness: 0.08,
+      clearcoat: 0.48,
+      envMap,
+      side: THREE.DoubleSide,
+    });
+    const frondShape = new THREE.Shape();
+    frondShape.moveTo(0, 0);
+    frondShape.quadraticCurveTo(0.14, 0.38, 0.04, 0.88);
+    frondShape.quadraticCurveTo(-0.1, 0.42, 0, 0);
+    const frondGeom = new THREE.ExtrudeGeometry(frondShape, {
+      depth: 0.015,
+      bevelEnabled: true,
+      bevelThickness: 0.004,
+      bevelSize: 0.004,
+      bevelSegments: 1,
+    });
+    for (const side of [-1, 1] as const) {
+      const planter = new THREE.Group();
+      planter.name = `Season2_PalmPlanter_${side < 0 ? 'L' : 'R'}`;
+      planter.position.set(side * 2.25, 0, -6.32);
+      planter.scale.setScalar(0.7);
+      planter.add(createContactShadowDisc({ radius: 0.46, opacity: 0.5, yOffset: 0.004 }));
+      const pot = createFilletedShaft({
+        radius: 0.24,
+        topRadius: 0.32,
+        height: 0.48,
+        anglageBevel: 0.01,
+        radialSegments: 28,
+        material: creamMat,
+      });
+      pot.position.y = 0.08;
+      const brassStand = createFilletedShaft({
+        radius: 0.28,
+        height: 0.08,
+        radialSegments: 24,
+        material: goldMat,
+      });
+      const trunk = createFilletedShaft({
+        radius: 0.055,
+        topRadius: 0.04,
+        height: 1.05,
+        radialSegments: 18,
+        material: walnutMat,
+      });
+      trunk.position.y = 0.52;
+      planter.add(brassStand, pot, trunk);
+
+      for (let f = 0; f < 7; f++) {
+        const yaw = (f / 7) * Math.PI * 2;
+        const frond = new THREE.Mesh(frondGeom, emeraldFrondMat);
+        frond.position.set(0, 1.54, 0);
+        frond.rotation.set(0.55 + (f % 2) * 0.18, yaw, 0.15);
+        planter.add(frond);
+      }
+      compactStaticMeshesInGroup(planter);
+      group.add(planter);
+    }
+
+    // 4. Articulated Overhead Studio Boom Mic (left scenic wing above left camera, zero sign crossing!)
+    const boomPivot = new THREE.Group();
+    boomPivot.name = 'Season2_OverheadBoomMic';
+    boomPivot.position.set(-3.45, 2.75, -3.15);
+    const boomPole = createFilletedShaft({
+      radius: 0.022,
+      height: 1.25,
+      radialSegments: 16,
+      material: aluminumMat,
+    });
+    boomPole.rotation.z = -Math.PI * 0.46;
+    const micCapsule = createFilletedShaft({
+      radius: 0.048,
+      height: 0.18,
+      radialSegments: 20,
+      centered: true,
+      material: goldMat,
+    });
+    micCapsule.position.set(1.2, -0.04, 0);
+    micCapsule.rotation.x = 0.42;
+    boomPivot.add(boomPole, micCapsule);
+    group.add(boomPivot);
+
+    return {
+      group,
+      dimmableAcryliteMats,
+      chasingBulbGroups,
+      update: (dtSec, elapsedSec) => {
+        for (let i = 0; i < starbursts.length; i++) {
+          starbursts[i].rotation.z += dtSec * (i === 1 ? -0.24 : 0.32);
+        }
+        boomPivot.rotation.y = Math.sin(elapsedSec * 0.42) * 0.14;
+      },
+    };
+  }
+
+  if (season === 3) {
+    // SEASON 3 — MANHATTAN PRIME-TIME GOLD VAULT
+    // 1. Six Fluted Satin-Brass Columns (`±1.75, ±3.15, ±4.35, z = -4.85`)
+    const crimsonVelvetMat = new THREE.MeshStandardMaterial({
+      color: 0xa81b38,
+      roughness: 0.68,
+      metalness: 0.08,
+      envMap,
+    });
+    const emeraldAcMat = createAcrylitePanelMaterial(0x15803d, 0.82, envMap);
+    const goldAcMat = createAcrylitePanelMaterial(0xf2a922, 0.86, envMap);
+    dimmableAcryliteMats.push(emeraldAcMat, goldAcMat);
+
+    const staticCols = new THREE.Group();
+    for (const cx of [-2.58, -2.14, -1.72, 1.72, 2.14, 2.58]) {
+      const colShoe = createFloorShoe(0.46, 0.46, 0.1, goldMat, walnutMat);
+      colShoe.position.set(cx, 0, -6.14);
+      const colShaft = createFilletedShaft({
+        radius: 0.14,
+        topRadius: 0.125,
+        height: 2.95,
+        baseCollarFlare: 0.03,
+        neckCollarFlare: 0.03,
+        anglageBevel: 0.01,
+        radialSegments: 28,
+        material: goldMat,
+      });
+      colShaft.position.set(cx, 0.1, -6.14);
+      const colCap = createNotchedBezel({
+        notchShape: 'SCALLOP',
+        outerRadius: 0.22,
+        innerRadius: 0.12,
+        thickness: 0.09,
+        material: emeraldAcMat,
+      });
+      colCap.rotation.x = Math.PI * 0.5;
+      colCap.position.set(cx, 3.05, -6.14);
+      staticCols.add(colShoe, colShaft, colCap);
+    }
+
+    // 2. Crimson & Warm-Ivory Pleated Velvet Proscenium Drapes (`±1.96, z = -6.24`) + Top Valance
+    for (const side of [-1, 1] as const) {
+      for (let p = 0; p < 3; p++) {
+        const drape = createFilletedShaft({
+          radius: 0.16,
+          topRadius: 0.19,
+          height: 3.15,
+          radialSegments: 18,
+          material: p === 1 ? creamMat : crimsonVelvetMat,
+        });
+        drape.position.set(side * (1.96 + (p - 1) * 0.18), 0.04, -6.24 + p * 0.03);
+        staticCols.add(drape);
+      }
+    }
+    const valance = createCurvedParabolicCove({
+      spanWidth: 4.35,
+      archHeight: 0.85,
+      depth: 0.22,
+      thickness: 0.26,
+      material: crimsonVelvetMat,
+    });
+    valance.position.set(0, 2.55, -6.14);
+    staticCols.add(valance);
+    compactStaticMeshesInGroup(staticCols);
+    group.add(staticCols);
+
+    // 3. Rotating Brass & Emerald Prize Turntable Dais (`0, 0.12, -5.35`)
+    const turntableGroup = new THREE.Group();
+    turntableGroup.name = 'Season3_PrizeTurntableDais';
+    turntableGroup.position.set(0, 0.12, -5.35);
+    turntableGroup.add(createContactShadowDisc({ radius: 1.15, opacity: 0.56, yOffset: -0.11 }));
+    const daisBase = createFilletedShaft({
+      radius: 0.96,
+      topRadius: 0.86,
+      height: 0.36,
+      anglageBevel: 0.012,
+      radialSegments: 42,
+      material: emeraldAcMat,
+    });
+    const daisRim = createSmoothBeveledRing({
+      innerRadius: 0.72,
+      outerRadius: 0.92,
+      thickness: 0.06,
+      material: goldMat,
+    });
+    daisRim.position.y = 0.37;
+    // Miniature golden trophy showcase cup seated on the revolving dais
+    const cupPedestal = createFilletedShaft({
+      radius: 0.24,
+      topRadius: 0.18,
+      height: 0.28,
+      radialSegments: 28,
+      material: walnutMat,
+    });
+    cupPedestal.position.y = 0.38;
+    const cupStem = createFilletedShaft({
+      radius: 0.08,
+      topRadius: 0.14,
+      height: 0.42,
+      radialSegments: 24,
+      material: goldMat,
+    });
+    cupStem.position.y = 0.66;
+    const cupBowl = createTurnedOrb({
+      radius: 0.28,
+      heightScale: 0.95,
+      hemiOnly: true,
+      radialSegments: 28,
+      material: goldMat,
+    });
+    cupBowl.rotation.x = Math.PI;
+    cupBowl.position.y = 1.24;
+    const cupCrown = createTurnedOrb({
+      radius: 0.14,
+      radialSegments: 20,
+      material: goldAcMat,
+    });
+    cupCrown.position.y = 1.28;
+    turntableGroup.add(daisBase, daisRim, cupPedestal, cupStem, cupBowl, cupCrown);
+    group.add(turntableGroup);
+
+    // 4. Suspended Globe-Bulb Chandelier Ring (`0, 2.92, -5.75`, r=1.02m behind `marqueeCrownGroup`!)
+    const chandelier = new THREE.Group();
+    chandelier.name = 'Season3_GlobeChandelier';
+    chandelier.position.set(0, 2.92, -5.75);
+    const ringTorus = new THREE.Mesh(
+      new THREE.TorusGeometry(1.02, 0.045, 16, 48),
+      goldMat,
+    );
+    ringTorus.rotation.x = Math.PI * 0.5;
+    chandelier.add(ringTorus);
+
+    const chBulbMats: THREE.MeshStandardMaterial[] = [];
+    for (let i = 0; i < 14; i++) {
+      const ang = (i / 14) * Math.PI * 2;
+      const bx = Math.cos(ang) * 1.02;
+      const bz = Math.sin(ang) * 1.02;
+      const bm = new THREE.MeshStandardMaterial({
+        color: 0xfff8e2,
+        emissive: 0xffd56b,
+        emissiveIntensity: 1.25,
+        roughness: 0.12,
+      });
+      const globe = createTurnedOrb({
+        radius: 0.075,
+        radialSegments: 16,
+        material: bm,
+        castShadow: false,
+      });
+      globe.position.set(bx, -0.09, bz);
+      chandelier.add(globe);
+      if (sharedHaloTex) {
+        const halo = createTungstenBulbHaloSprite({ scale: 0.28, opacity: 0.56, colorHex: 0xffd56b });
+        halo.position.set(bx, -0.1, bz);
+        chandelier.add(halo);
+        (bm.userData as Record<string, unknown>).haloSprite = halo;
+      }
+      chBulbMats.push(bm);
+    }
+    chasingBulbGroups.push(chBulbMats);
+    group.add(chandelier);
+
+    return {
+      group,
+      dimmableAcryliteMats,
+      chasingBulbGroups,
+      update: (dtSec) => {
+        turntableGroup.rotation.y += dtSec * 0.48;
+        chandelier.rotation.y -= dtSec * 0.18;
+      },
+    };
+  }
+
+  // SEASON 4 — BURBANK SUPER-STAGE KALEIDOSCOPE
+  // 1. Nine Counter-Rotating Prismatic Diamond Chevrons (`x ∈ [-1.85, +1.85], z = -5.45`)
+  const cobaltAcMat = createAcrylitePanelMaterial(0x1e56c5, 0.86, envMap);
+  const goldAcMat = createAcrylitePanelMaterial(0xf2a922, 0.88, envMap);
+  const ceriseAcMat = createAcrylitePanelMaterial(0xe6397a, 0.86, envMap);
+  const peacockAcMat = createAcrylitePanelMaterial(0x008b94, 0.86, envMap);
+  dimmableAcryliteMats.push(cobaltAcMat, goldAcMat, ceriseAcMat, peacockAcMat);
+
+  const diamondMats = [cobaltAcMat, goldAcMat, ceriseAcMat, peacockAcMat];
+  const diamondShape = new THREE.Shape();
+  diamondShape.moveTo(0, 0.38);
+  diamondShape.lineTo(0.24, 0);
+  diamondShape.lineTo(0, -0.38);
+  diamondShape.lineTo(-0.24, 0);
+  diamondShape.closePath();
+  const diamondGeom = new THREE.ExtrudeGeometry(diamondShape, {
+    depth: 0.08,
+    bevelEnabled: true,
+    bevelThickness: 0.014,
+    bevelSize: 0.014,
+    bevelSegments: 2,
+  });
+  diamondGeom.translate(0, 0, -0.04);
+
+  const chevrons: THREE.Group[] = [];
+  for (let i = 0; i < 9; i++) {
+    const cx = -1.8 + i * 0.45;
+    const cy = 1.25 + (i % 2 === 0 ? 0.55 : 0.0);
+    const holder = new THREE.Group();
+    holder.position.set(cx, cy, -6.38);
+    const prism = new THREE.Mesh(diamondGeom, diamondMats[i % 4]);
+    const frameRing = createNotchedBezel({
+      notchShape: 'HEX',
+      outerRadius: 0.32,
+      innerRadius: 0.25,
+      thickness: 0.05,
+      material: aluminumMat,
+    });
+    holder.add(prism, frameRing);
+    group.add(holder);
+    chevrons.push(holder);
+  }
+
+  // 2. Saarinen White/Cream Tulip Pedestal Accents (`x = ±2.85, z = -3.35`)
+  const tulipGroup = new THREE.Group();
+  for (const side of [-1, 1] as const) {
+    const tulip = new THREE.Group();
+    tulip.position.set(side * 2.85, 0, -3.35);
+    tulip.add(createContactShadowDisc({ radius: 0.44, opacity: 0.5, yOffset: 0.004 }));
+    const base = createFilletedShaft({
+      radius: 0.28,
+      topRadius: 0.075,
+      height: 0.72,
+      baseCollarFlare: 0.04,
+      neckCollarFlare: 0.06,
+      anglageBevel: 0.012,
+      radialSegments: 32,
+      material: creamMat,
+    });
+    const tableDisc = createFilletedShaft({
+      radius: 0.44,
+      height: 0.055,
+      anglageBevel: 0.01,
+      radialSegments: 36,
+      material: creamMat,
+    });
+    tableDisc.position.y = 0.72;
+    const beaconOrb = createTurnedOrb({
+      radius: 0.16,
+      radialSegments: 24,
+      material: side < 0 ? cobaltAcMat : goldAcMat,
+    });
+    beaconOrb.position.y = 0.94;
+    tulip.add(base, tableDisc, beaconOrb);
+    tulipGroup.add(tulip);
+  }
+  compactStaticMeshesInGroup(tulipGroup);
+  group.add(tulipGroup);
+
+  // 3. Overhead Scoreboard Halo Ring (`r = 1.45m` tilted spun-stainless torus at `0, 2.92, -6.45`, strictly behind `marqueeCrownGroup`!)
+  const haloRingGroup = new THREE.Group();
+  haloRingGroup.name = 'Season4_OverheadScoreboardHalo';
+  haloRingGroup.position.set(0, 2.92, -6.45);
+  haloRingGroup.rotation.x = 0.22;
+  const stainlessRing = new THREE.Mesh(
+    new THREE.TorusGeometry(1.45, 0.062, 18, 64),
+    aluminumMat,
+  );
+  stainlessRing.rotation.x = Math.PI * 0.5;
+  haloRingGroup.add(stainlessRing);
+
+  const haloBulbMats: THREE.MeshStandardMaterial[] = [];
+  for (let b = 0; b < 16; b++) {
+    const ang = (b / 16) * Math.PI * 2;
+    const bx = Math.cos(ang) * 1.45;
+    const bz = Math.sin(ang) * 1.45;
+    const bm = new THREE.MeshStandardMaterial({
+      color: 0xfff8e2,
+      emissive: 0xffd56b,
+      emissiveIntensity: 1.2,
+      roughness: 0.12,
+    });
+    const bulb = createTurnedOrb({ radius: 0.052, radialSegments: 14, material: bm, castShadow: false });
+    bulb.position.set(bx, -0.05, bz);
+    haloRingGroup.add(bulb);
+    if (sharedHaloTex) {
+      const sp = createTungstenBulbHaloSprite({ scale: 0.24, opacity: 0.62, colorHex: 0xffd56b });
+      sp.position.set(bx, -0.06, bz);
+      haloRingGroup.add(sp);
+      (bm.userData as Record<string, unknown>).haloSprite = sp;
+    }
+    haloBulbMats.push(bm);
+  }
+  chasingBulbGroups.push(haloBulbMats);
+  group.add(haloRingGroup);
+
+  return {
+    group,
+    dimmableAcryliteMats,
+    chasingBulbGroups,
+    update: (dtSec) => {
+      for (let i = 0; i < chevrons.length; i++) {
+        chevrons[i].rotation.y += dtSec * (i % 2 === 0 ? 0.52 : -0.52);
+      }
+      haloRingGroup.rotation.y += dtSec * 0.22;
+    },
+  };
+}
+
+// ----------------------------------------------------------------------------
 // 7. Complete Ultra-HD 1966 Living Color Soundstage Builder (`buildStageWorldV7`)
 // ----------------------------------------------------------------------------
 
 export function buildStageWorldV7(
   rawStageId: StageWorldIdV7,
   envMap: THREE.Texture,
+  season: SeasonIdV7 = 1,
 ): BuiltStageWorldV7 {
   const stageId = resolveStageWorldIdV7(rawStageId);
-  const spec = STAGE_WORLD_SPECS_V7[stageId];
-  const palette = STAGE_LIVING_COLOR_PALETTES[stageId];
+  const activeSeason: SeasonIdV7 =
+    season === 2 || season === 3 || season === 4 ? season : 1;
+  const seasonOverride = SEASON_STAGE_OVERRIDES_V9[activeSeason];
+  const baseSpec = STAGE_WORLD_SPECS_V7[stageId];
+  const spec: StageWorldSpecV7 =
+    activeSeason === 1
+      ? baseSpec
+      : {
+          ...baseSpec,
+          keyLightHex: seasonOverride.keyLightHex,
+          coveLightHex: seasonOverride.coveLightHex,
+          cycBaseHex: seasonOverride.cycBaseHex,
+          floorBaseHex: seasonOverride.floorBaseHex,
+          tableBedHex: seasonOverride.tableBedHex,
+          trimVeneerHex: seasonOverride.trimVeneerHex,
+          trimAccentHex: seasonOverride.trimAccentHex,
+        };
+  const basePalette = STAGE_LIVING_COLOR_PALETTES[stageId];
+  const palette: StagePaletteTriad =
+    activeSeason === 1
+      ? basePalette
+      : {
+          ...basePalette,
+          cycZenith: seasonOverride.cycZenith,
+          cycMid: seasonOverride.cycMid,
+          cycHorizon: seasonOverride.cycHorizon,
+          ringGlowHex: seasonOverride.ringGlowHex,
+          warmPoolHex: seasonOverride.warmPoolHex,
+          coolPoolHex: seasonOverride.coolPoolHex,
+          signText: seasonOverride.signText,
+        };
   const root = new THREE.Group();
-  root.name = `StageWorldV7_${stageId}`;
+  root.name = `StageWorldV7_${stageId}_S${activeSeason}`;
 
   const goldMat = create24KGoldMaterial(envMap);
   const aluminumMat = createAnodizedAluminumMaterial(envMap);
   const bluedMat = createBluedSteelMaterial(0x1e56c5, envMap);
   const walnutMat = createWalnutMaterial(envMap);
+  const creamPillarMat = new THREE.MeshPhysicalMaterial({
+    color: 0xfaf2df,
+    roughness: 0.22,
+    metalness: 0.06,
+    clearcoat: 0.72,
+    envMap,
+  });
   const trussMat = new THREE.MeshPhysicalMaterial({
     color: 0x2a2e34,
     metalness: 0.78,
@@ -3118,7 +4009,8 @@ export function buildStageWorldV7(
   // --------------------------------------------------------------------------
   // 1) Glossy Clearcoated Broadcast Stage Floor (`y = 0.00m`) + Anti-Moiré
   // --------------------------------------------------------------------------
-  const floorKind = STAGE_FLOOR_MAP_V7[stageId];
+  const floorKind =
+    activeSeason === 1 ? STAGE_FLOOR_MAP_V7[stageId] : seasonOverride.floorKind;
   const floorMat = createAntiMoireFloorMaterial(floorKind, {
     repeatX: 7,
     repeatY: 7,
@@ -3138,7 +4030,7 @@ export function buildStageWorldV7(
   // --------------------------------------------------------------------------
   // 2) Radiant Gradient Curved Hard Cyclorama (`z = -14.8m`) + Grazing Floor Cove
   // --------------------------------------------------------------------------
-  const cycTex = createCycloramaGradientTexture(stageId, palette);
+  const cycTex = createCycloramaGradientTexture(stageId, palette, seasonOverride);
   const cycGeom = new THREE.CylinderGeometry(
     16.4,
     16.4,
@@ -3483,25 +4375,227 @@ export function buildStageWorldV7(
   rightWingTruss.add(fresnel.group);
 
   // --------------------------------------------------------------------------
-  // 5) Layer 2 Upstage Props (`z <= -6.2m`): Row-C Risers & VIP Jury Loges
+  // 5) Layer 2 Upstage Props (`z <= -6.2m`): Row-C Risers, VIP Jury Loges &
+  //    Mobile Portrait Gouache Audience Apron (`atlas_crowd.webp`)
   // --------------------------------------------------------------------------
-  const rowC = buildRowCAcousticRisers(spec, envMap);
-  rowC.group.position.set(-3.55, 0, 1.15);
+  const crowdTiers: CrowdAnimatedTierV9[] = [];
+  const crowdFlashSprites: THREE.Sprite[] = [];
+  const crowdMat = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    emissive: 0xffffff,
+    emissiveIntensity: 0.46,
+    alphaTest: 0.35,
+    transparent: false,
+    side: THREE.DoubleSide,
+    roughness: 0.85,
+  });
+
+  const rowC = buildRowCAcousticRisers(
+    spec,
+    envMap,
+    crowdMat,
+    crowdTiers,
+    crowdFlashSprites,
+  );
+  rowC.group.position.set(-4.85, 0, 0.65);
   root.add(rowC.group);
 
-  const vipJury = buildVipJuryLoges(envMap);
-  vipJury.group.position.set(3.65, 0, 1.15);
+  const vipJury = buildVipJuryLoges(
+    envMap,
+    crowdMat,
+    crowdTiers,
+    crowdFlashSprites,
+  );
+  vipJury.group.position.set(4.88, 0, 0.85);
   root.add(vipJury.group);
 
+  const upperBalconyCrowd = buildUpperBackgroundBalconyCrowd(
+    envMap,
+    crowdMat,
+    crowdTiers,
+    crowdFlashSprites,
+  );
+  root.add(upperBalconyCrowd.group);
+
+  const allCrowdPlanes: THREE.Mesh[] = [
+    ...rowC.crowdPlanes,
+    ...vipJury.crowdPlanes,
+    ...upperBalconyCrowd.crowdPlanes,
+  ];
+  let crowdTextureReady = Boolean(cachedCrowdAtlasTextureV9?.image);
+  let isDisposed = false;
+
+  interface CrowdRowSpriteSpec {
+    readonly bounds: readonly [number, number, number, number];
+    readonly sprite?: NonNullable<ReturnType<typeof getAtlasSpriteEntryV9>>['sprite'];
+  }
+
+  const crowdTierByObj = new Map<THREE.Object3D, CrowdAnimatedTierV9>();
+  for (let i = 0; i < crowdTiers.length; i++) {
+    crowdTierByObj.set(crowdTiers[i].obj, crowdTiers[i]);
+  }
+
+  const syncCrowdPlaneUvs = (spriteMap: Record<string, CrowdRowSpriteSpec>): void => {
+    for (let i = 0; i < allCrowdPlanes.length; i++) {
+      const m = allCrowdPlanes[i];
+      const key = (m.userData.crowdRowKey as string | undefined) ?? 'crowd_row_2';
+      const fallbackSpec =
+        key === 'crowd_row_1' || key === 'studio_crowd_front'
+          ? (spriteMap.studio_crowd_front ?? spriteMap.crowd_row_1)
+          : (spriteMap.studio_crowd_back ?? spriteMap.crowd_row_2);
+      const specEntry = spriteMap[key] ?? fallbackSpec;
+      const b = specEntry?.bounds ?? [0, 1, 0, 0.5];
+      const sprite = specEntry?.sprite;
+      const sub = m.userData.uSubRange as readonly [number, number] | undefined;
+      const uSpan = sub ? Math.max(0.01, sub[1] - sub[0]) : 1.0;
+      let u0 = b[0];
+      let u1 = b[1];
+      if (sub) {
+        const fullU = u1 - u0;
+        u0 = b[0] + sub[0] * fullU;
+        u1 = b[0] + sub[1] * fullU;
+      } else if (m.userData.mirrorU) {
+        const tmp = u0;
+        u0 = u1;
+        u1 = tmp;
+      }
+      const trueAspect = sprite
+        ? (sprite.w * uSpan) / Math.max(1, sprite.h)
+        : (1280 * uSpan) / 360;
+      const basePlaneH = (m.userData.planeHeight as number | undefined) ?? 0.72;
+      const maxW = m.userData.maxPlaneWidth as number | undefined;
+      const effectiveH =
+        maxW && maxW > 0
+          ? Math.min(basePlaneH, maxW / Math.max(0.05, trueAspect))
+          : basePlaneH;
+      const targetW = effectiveH * trueAspect;
+      const prevW = (m.userData.planeWidth as number | undefined) ?? targetW;
+      const prevH = (m.userData.planeHeight as number | undefined) ?? effectiveH;
+      if (Math.abs(prevW - targetW) > 1e-4 || Math.abs(prevH - effectiveH) > 1e-4) {
+        m.geometry.dispose();
+        m.geometry = new THREE.PlaneGeometry(targetW, effectiveH);
+        m.userData.planeWidth = targetW;
+        m.userData.planeHeight = effectiveH;
+      }
+      const bottomAnchorY = m.userData.bottomAnchorY as number | undefined;
+      if (bottomAnchorY !== undefined) {
+        const newBaseY = bottomAnchorY + effectiveH * 0.5;
+        m.position.y = newBaseY;
+        const tier = crowdTierByObj.get(m);
+        if (tier) {
+          tier.baseY = newBaseY;
+        }
+      }
+      setCrowdPlaneUvBounds(m, u0, u1, b[2], b[3]);
+      m.visible = crowdTextureReady;
+    }
+  };
+
+  if (typeof window !== 'undefined') {
+    void (async () => {
+      try {
+        const manifest = await loadAtlasManifestV9();
+        if (isDisposed) return;
+        const r1Entry = getAtlasSpriteEntryV9('crowd_row_1', manifest);
+        const r2Entry = getAtlasSpriteEntryV9('crowd_row_2', manifest);
+        const r3Entry = getAtlasSpriteEntryV9('crowd_row_3', manifest);
+        const vipEntry = getAtlasSpriteEntryV9('crowd_vip_pairs', manifest);
+        const frontEntry = getAtlasSpriteEntryV9('studio_crowd_front', manifest);
+        const backEntry = getAtlasSpriteEntryV9('studio_crowd_back', manifest);
+        const assetUrl =
+          r1Entry?.assetUrl ??
+          frontEntry?.assetUrl ??
+          backEntry?.assetUrl ??
+          `${((import.meta as unknown as { env?: { BASE_URL?: string } }).env?.BASE_URL || './').replace(/\/?$/, '/')}assets/v9/atlas_crowd.webp`;
+
+        const toUv = (
+          e: NonNullable<ReturnType<typeof getAtlasSpriteEntryV9>>['sprite'] | undefined,
+          fallback: readonly [number, number, number, number],
+        ): readonly [number, number, number, number] => {
+          if (!e) return fallback;
+          const u0 = e.x / e.sheetW;
+          const u1 = (e.x + e.w) / e.sheetW;
+          const v1 = 1 - e.y / e.sheetH;
+          const v0 = 1 - (e.y + e.h) / e.sheetH;
+          return [u0, u1, v0, v1];
+        };
+
+        const spriteMap: Record<string, CrowdRowSpriteSpec> = {
+          crowd_row_1: {
+            bounds: toUv(r1Entry?.sprite ?? frontEntry?.sprite, [0, 1, 0.7273, 1]),
+            sprite: r1Entry?.sprite ?? frontEntry?.sprite,
+          },
+          crowd_row_2: {
+            bounds: toUv(r2Entry?.sprite ?? backEntry?.sprite, [0, 1, 0.4545, 0.7273]),
+            sprite: r2Entry?.sprite ?? backEntry?.sprite,
+          },
+          crowd_row_3: {
+            bounds: toUv(r3Entry?.sprite ?? backEntry?.sprite, [0, 1, 0.1818, 0.4545]),
+            sprite: r3Entry?.sprite ?? backEntry?.sprite,
+          },
+          crowd_vip_pairs: {
+            bounds: toUv(vipEntry?.sprite ?? backEntry?.sprite, [0, 1278 / 1280, 0, 240 / 1320]),
+            sprite: vipEntry?.sprite ?? backEntry?.sprite,
+          },
+          studio_crowd_front: {
+            bounds: toUv(frontEntry?.sprite ?? r1Entry?.sprite, [0, 1, 0.7273, 1]),
+            sprite: frontEntry?.sprite ?? r1Entry?.sprite,
+          },
+          studio_crowd_back: {
+            bounds: toUv(backEntry?.sprite ?? r2Entry?.sprite, [0, 1, 0.4545, 0.7273]),
+            sprite: backEntry?.sprite ?? r2Entry?.sprite,
+          },
+        };
+
+        if (cachedCrowdAtlasTextureV9) {
+          crowdMat.map = cachedCrowdAtlasTextureV9;
+          crowdMat.emissiveMap = cachedCrowdAtlasTextureV9;
+          crowdMat.needsUpdate = true;
+          crowdTextureReady = Boolean(cachedCrowdAtlasTextureV9.image);
+          syncCrowdPlaneUvs(spriteMap);
+          return;
+        }
+
+        const loader = new THREE.TextureLoader();
+        loader.load(
+          assetUrl,
+          (tex) => {
+            if (isDisposed) {
+              tex.dispose();
+              return;
+            }
+            tex.colorSpace = THREE.SRGBColorSpace;
+            tex.anisotropy = 8;
+            tex.minFilter = THREE.LinearMipmapLinearFilter;
+            tex.magFilter = THREE.LinearFilter;
+            (tex.userData as Record<string, unknown>).__wsSharedAtlasTex = true;
+            cachedCrowdAtlasTextureV9 = tex;
+            crowdMat.map = tex;
+            crowdMat.emissiveMap = tex;
+            crowdMat.needsUpdate = true;
+            crowdTextureReady = true;
+            syncCrowdPlaneUvs(spriteMap);
+          },
+          undefined,
+          () => {
+            // Keep crowd planes hidden if offline/missing
+          },
+        );
+      } catch {
+        // Ignore headless loader errors
+      }
+    })();
+  }
+
   // --------------------------------------------------------------------------
-  // 6) Bespoke Stage-Specific 1966 Architecture & Unobstructed Hero Setpiece!
+  // 6) Distinct Per-Season 1966 Architecture & Unobstructed Hero Setpiece!
   // --------------------------------------------------------------------------
-  const bespokeSet = buildBespokeStageArchitectureAndHero(stageId, envMap);
+  const bespokeSet = buildSeasonSignatureSetV9(stageId, activeSeason, envMap);
   root.add(bespokeSet.group);
 
   // --------------------------------------------------------------------------
   // 7) Framing Marquee Pillars + Sliding "ON THE AIR · IN LIVING COLOR" Crown
-  //    + Animated Twin 1966 RCA TK-41 Color Pedestal Cameras (Live Tally Cuts!)
+  //    + 4 Bigger Reactive Studio Lightboxes + Animated Twin RCA TK-41C Cameras
   // --------------------------------------------------------------------------
   const framingGroup = new THREE.Group();
   framingGroup.name = 'LivingColorMarqueeAndCameras';
@@ -3511,14 +4605,30 @@ export function buildStageWorldV7(
 
   // Instanced 4-circuit `#11` Marquee Pillars (`12` draw calls total instead of `54`!)
   const pillarHaloTex = typeof document !== 'undefined' ? getTungstenBulbHaloTexture() : null;
+  const pillarStyle =
+    activeSeason === 1
+      ? stageId === 'STAGE_01_IBC_DAYTIME_FUNK' || stageId === 'STAGE_06_ATLANTIC_CITY_PIER'
+        ? 'WALNUT'
+        : 'ALUMINUM_COBALT'
+      : seasonOverride.pillarStyle;
   for (const side of [-1, 1] as const) {
     const pGroup = new THREE.Group();
     pGroup.name = side < 0 ? 'InnerMarqueePillarL' : 'InnerMarqueePillarR';
     const ph = 2.75;
     const pBodyMat =
-      stageId === 'STAGE_01_IBC_DAYTIME_FUNK' || stageId === 'STAGE_06_ATLANTIC_CITY_PIER'
+      pillarStyle === 'WALNUT'
         ? walnutMat
-        : aluminumMat;
+        : pillarStyle === 'CREAM_CHROME'
+          ? creamPillarMat
+          : pillarStyle === 'GOLD'
+            ? goldMat
+            : aluminumMat;
+    const pTrimMat =
+      pillarStyle === 'ALUMINUM_COBALT'
+        ? bluedMat
+        : pillarStyle === 'CREAM_CHROME'
+          ? aluminumMat
+          : goldMat;
     pGroup.add(createContactShadowDisc({ radius: 0.44, opacity: 0.56, yOffset: 0.004 }));
     pGroup.add(
       createFilletedShaft({
@@ -3529,7 +4639,7 @@ export function buildStageWorldV7(
         neckCollarFlare: 0.015,
         anglageBevel: 0.01,
         radialSegments: 28,
-        material: goldMat,
+        material: pTrimMat,
       }),
     );
     const pShaft = createFilletedShaft({
@@ -3547,7 +4657,7 @@ export function buildStageWorldV7(
       radius: 0.145,
       heightScale: 0.72,
       radialSegments: 24,
-      material: goldMat,
+      material: pTrimMat,
       castShadow: false,
     });
     pCrown.position.y = ph + 0.08;
@@ -3669,7 +4779,8 @@ export function buildStageWorldV7(
     bulbMat: crownStarburstBulbMat,
     name: 'CenterLivingColorStarburst',
   });
-  crownStarburst.position.set(0, 0.04, -0.15);
+  crownStarburst.scale.setScalar(0.44);
+  crownStarburst.position.set(0, 0.28, -0.14);
   compactStaticMeshesInGroup(crownStarburst);
   marqueeCrownGroup.add(crownStarburst);
 
@@ -3700,14 +4811,22 @@ export function buildStageWorldV7(
     sctx.lineWidth = 6;
     sctx.strokeRect(30, 30, 964, 196);
 
+    const maxWidth = signCanvas.width - 96;
+    let fontSize = 50;
+    while (fontSize > 22) {
+      sctx.font = `900 ${fontSize}px "Jost", "Futura", "Century Gothic", "Trebuchet MS", Arial, sans-serif`;
+      if (sctx.measureText(palette.signText).width <= maxWidth) {
+        break;
+      }
+      fontSize -= 2;
+    }
     sctx.fillStyle = '#FFF8E7';
-    sctx.font = '900 50px "Jost", "Futura", "Century Gothic", "Trebuchet MS", Arial, sans-serif';
     sctx.textAlign = 'center';
     sctx.textBaseline = 'middle';
-    sctx.shadowColor = 'rgba(11, 29, 48, 0.72)';
+    sctx.shadowColor = 'rgba(30, 20, 14, 0.72)';
     sctx.shadowBlur = 10;
     sctx.shadowOffsetY = 4;
-    sctx.fillText(palette.signText, 512, 120);
+    sctx.fillText(palette.signText, signCanvas.width * 0.5, 118, maxWidth);
   }
   const signTex = new THREE.CanvasTexture(signCanvas);
   signTex.colorSpace = THREE.SRGBColorSpace;
@@ -3730,6 +4849,8 @@ export function buildStageWorldV7(
     cornerRadius: 0.08,
     material: goldMat,
   });
+  signFrame.position.set(0, 0.28, 0);
+  signFrame.scale.set(0.9, 0.78, 1.0);
   const signFace = new THREE.Mesh(new THREE.PlaneGeometry(1.84, 0.34), signFaceMat);
   signFace.position.set(0, 0, 0.068);
   signFrame.add(signFace);
@@ -3784,107 +4905,236 @@ export function buildStageWorldV7(
   chasingBulbGroups.push(signBulbMats);
   marqueeCrownGroup.add(signFrame);
 
-  // Authentic Backlit 1966 3D `ON THE AIR` & Reactive Blinking `APPLAUSE` Studio Lightbox Signs!
-  const buildProsceniumLightbox = (kind: 'ON_THE_AIR' | 'APPLAUSE') => {
+  // Authentic Backlit 1966 3D Reactive Studio Lightbox Signs (`ON THE AIR`, `APPLAUSE`, `LAUGH`, `JACKPOT!`)
+  const SIGN_BOX_SPECS: Record<
+    ReactiveSignIdV9,
+    {
+      readonly width: number;
+      readonly height: number;
+      readonly depth: number;
+      readonly faceW: number;
+      readonly faceH: number;
+      readonly canvasW: number;
+      readonly label: string;
+      readonly name: string;
+      readonly bulbCount: number;
+    }
+  > = {
+    ON_THE_AIR: {
+      width: 1.44,
+      height: 0.46,
+      depth: 0.13,
+      faceW: 1.34,
+      faceH: 0.38,
+      canvasW: 512,
+      label: 'ON THE AIR',
+      name: 'StudioLightbox_OnTheAir',
+      bulbCount: 4,
+    },
+    APPLAUSE: {
+      width: 1.68,
+      height: 0.5,
+      depth: 0.13,
+      faceW: 1.56,
+      faceH: 0.42,
+      canvasW: 512,
+      label: 'APPLAUSE',
+      name: 'StudioLightbox_Applause',
+      bulbCount: 4,
+    },
+    LAUGH: {
+      width: 1.56,
+      height: 0.48,
+      depth: 0.13,
+      faceW: 1.44,
+      faceH: 0.4,
+      canvasW: 512,
+      label: 'LAUGH',
+      name: 'StudioLightbox_Laugh',
+      bulbCount: 4,
+    },
+    JACKPOT: {
+      width: 1.78,
+      height: 0.5,
+      depth: 0.14,
+      faceW: 1.66,
+      faceH: 0.42,
+      canvasW: 576,
+      label: 'JACKPOT!',
+      name: 'StudioLightbox_Jackpot',
+      bulbCount: 10,
+    },
+  };
+
+  type SignTexVariant =
+    | 'RESTING_SMOKED_AMBER'
+    | 'ON_AIR_RED'
+    | 'APPLAUSE_AMBER'
+    | 'APPLAUSE_CRIMSON'
+    | 'LAUGH_TANGERINE'
+    | 'LAUGH_GOLD'
+    | 'JACKPOT_GOLD'
+    | 'JACKPOT_CERISE';
+
+  const buildProsceniumLightbox = (kind: ReactiveSignIdV9) => {
+    const cfg = SIGN_BOX_SPECS[kind];
     const boxGroup = new THREE.Group();
-    boxGroup.name = kind === 'ON_THE_AIR' ? 'StudioLightbox_OnTheAir' : 'StudioLightbox_Applause';
+    boxGroup.name = cfg.name;
 
     const housing = createChamferedBox({
-      width: 0.88,
-      height: 0.36,
-      depth: 0.11,
-      cornerRadius: 0.055,
-      bevelThickness: 0.009,
-      bevelSize: 0.009,
+      width: cfg.width,
+      height: cfg.height,
+      depth: cfg.depth,
+      cornerRadius: 0.06,
+      bevelThickness: 0.01,
+      bevelSize: 0.01,
       bevelSegments: 3,
       material: aluminumMat,
       castShadow: false,
     });
     const brassBezel = createChamferedBox({
-      width: 0.84,
-      height: 0.32,
-      depth: 0.118,
-      cornerRadius: 0.048,
-      bevelThickness: 0.008,
-      bevelSize: 0.008,
+      width: cfg.width - 0.05,
+      height: cfg.height - 0.05,
+      depth: cfg.depth + 0.01,
+      cornerRadius: 0.05,
+      bevelThickness: 0.009,
+      bevelSize: 0.009,
       bevelSegments: 3,
       material: goldMat,
       castShadow: false,
     });
     const visorHood = createChamferedBox({
-      width: 0.9,
-      height: 0.026,
-      depth: 0.15,
+      width: cfg.width + 0.02,
+      height: 0.024,
+      depth: cfg.depth + 0.05,
       cornerRadius: 0.012,
-      bevelThickness: 0.006,
-      bevelSize: 0.006,
+      bevelThickness: 0.005,
+      bevelSize: 0.005,
       bevelSegments: 2,
       material: goldMat,
       castShadow: false,
     });
-    visorHood.position.set(0, 0.175, 0.024);
+    visorHood.position.set(0, cfg.height * 0.5 - 0.014, 0.028);
 
-    // Overhead studio pipe hanger strut
-    const hanger = createFilletedShaft({
-      radius: 0.016,
-      height: 0.42,
-      anglageBevel: 0.004,
-      radialSegments: 16,
-      material: aluminumMat,
-      castShadow: false,
-    });
-    hanger.position.set(0, 0.18, -0.02);
-    boxGroup.add(housing, brassBezel, visorHood, hanger);
+    boxGroup.add(housing, brassBezel, visorHood);
 
-    const makeFaceTex = (variant: 'ON_AIR' | 'APPLAUSE_AMBER' | 'APPLAUSE_CRIMSON') => {
+    // Flush rear lateral mounting cleats strictly inside housing width/height (zero protruding upper shaft!)
+    for (const side of [-1, 1] as const) {
+      const cleat = createChamferedBox({
+        width: 0.055,
+        height: Math.min(0.14, cfg.height * 0.36),
+        depth: 0.05,
+        cornerRadius: 0.01,
+        material: aluminumMat,
+        castShadow: false,
+      });
+      cleat.position.set(side * (cfg.width * 0.32), 0, -cfg.depth * 0.5 - 0.012);
+      boxGroup.add(cleat);
+    }
+
+    const makeFaceTex = (variant: SignTexVariant): THREE.CanvasTexture => {
       const c = document.createElement('canvas');
-      c.width = 512;
+      c.width = cfg.canvasW;
       c.height = 192;
       const ctx = c.getContext('2d');
       if (ctx) {
-        ctx.fillStyle = '#FFF6E3';
-        ctx.fillRect(0, 0, 512, 192);
+        ctx.fillStyle = '#2A160B';
+        ctx.fillRect(0, 0, cfg.canvasW, 192);
 
-        const g = ctx.createLinearGradient(0, 12, 0, 180);
-        if (variant === 'ON_AIR') {
-          g.addColorStop(0.0, '#E61E3A');
-          g.addColorStop(0.55, '#C4122C');
-          g.addColorStop(1.0, '#8C091C');
-        } else if (variant === 'APPLAUSE_AMBER') {
-          g.addColorStop(0.0, '#FFF1A8');
-          g.addColorStop(0.5, '#F6B221');
-          g.addColorStop(1.0, '#C97A08');
+        if (variant === 'RESTING_SMOKED_AMBER') {
+          const g = ctx.createLinearGradient(0, 12, 0, 180);
+          g.addColorStop(0.0, '#3B2112');
+          g.addColorStop(0.55, '#522E18');
+          g.addColorStop(1.0, '#2A160B');
+          ctx.fillStyle = g;
+          ctx.fillRect(12, 12, cfg.canvasW - 24, 168);
+
+          ctx.strokeStyle = '#7A4E28';
+          ctx.lineWidth = 5;
+          ctx.strokeRect(20, 20, cfg.canvasW - 40, 152);
+
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.shadowColor = 'rgba(20, 10, 4, 0.85)';
+          ctx.shadowBlur = 4;
+          ctx.shadowOffsetY = 2;
+          if (kind === 'ON_THE_AIR') {
+            ctx.beginPath();
+            ctx.arc(62, 96, 13, 0, Math.PI * 2);
+            ctx.fillStyle = '#9C3B2B';
+            ctx.fill();
+            ctx.fillStyle = '#C89B4F';
+            ctx.font = '900 58px "Jost", "Futura", "Arial Black", sans-serif';
+            ctx.fillText(cfg.label, cfg.canvasW * 0.55, 98);
+          } else {
+            ctx.fillStyle = '#C89B4F';
+            ctx.font =
+              kind === 'JACKPOT'
+                ? '900 76px "Caprasimo", "Jost", "Arial Black", sans-serif'
+                : '900 70px "Jost", "Futura", "Arial Black", sans-serif';
+            ctx.fillText(cfg.label, cfg.canvasW * 0.5, 98, cfg.canvasW - 56);
+          }
         } else {
-          g.addColorStop(0.0, '#FF4D79');
-          g.addColorStop(0.55, '#E11D52');
-          g.addColorStop(1.0, '#9E0B34');
-        }
-        ctx.fillStyle = g;
-        ctx.fillRect(12, 12, 488, 168);
+          const g = ctx.createLinearGradient(0, 12, 0, 180);
+          if (variant === 'ON_AIR_RED') {
+            g.addColorStop(0.0, '#E61E3A');
+            g.addColorStop(0.55, '#C4122C');
+            g.addColorStop(1.0, '#8C091C');
+          } else if (variant === 'APPLAUSE_AMBER' || variant === 'LAUGH_GOLD' || variant === 'JACKPOT_GOLD') {
+            g.addColorStop(0.0, '#FFF1A8');
+            g.addColorStop(0.5, '#F6B221');
+            g.addColorStop(1.0, '#C97A08');
+          } else if (variant === 'LAUGH_TANGERINE') {
+            g.addColorStop(0.0, '#FF9B54');
+            g.addColorStop(0.55, '#FF6B35');
+            g.addColorStop(1.0, '#B83308');
+          } else {
+            g.addColorStop(0.0, '#FF4D79');
+            g.addColorStop(0.55, '#E6397A');
+            g.addColorStop(1.0, '#9E0B34');
+          }
+          ctx.fillStyle = g;
+          ctx.fillRect(12, 12, cfg.canvasW - 24, 168);
 
-        ctx.strokeStyle = variant === 'APPLAUSE_AMBER' ? '#0D2238' : '#FFD56B';
-        ctx.lineWidth = 6;
-        ctx.strokeRect(20, 20, 472, 152);
+          const darkInk =
+            variant === 'APPLAUSE_AMBER' ||
+            variant === 'LAUGH_GOLD' ||
+            variant === 'JACKPOT_GOLD';
+          ctx.strokeStyle = darkInk ? '#3A2214' : '#FFD56B';
+          ctx.lineWidth = 6;
+          ctx.strokeRect(20, 20, cfg.canvasW - 40, 152);
 
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        if (variant === 'ON_AIR') {
-          // Glowing live broadcast tally lamp dot + bold ON THE AIR milk-glass caps
-          ctx.fillStyle = '#FFF9EC';
-          ctx.beginPath();
-          ctx.arc(62, 96, 15, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.font = '900 56px "Jost", "Futura", "Arial Black", sans-serif';
-          ctx.shadowColor = 'rgba(10, 18, 34, 0.55)';
-          ctx.shadowBlur = 6;
-          ctx.fillText('ON THE AIR', 280, 98);
-        } else {
-          ctx.fillStyle = variant === 'APPLAUSE_AMBER' ? '#0D2238' : '#FFF9EC';
-          ctx.font = '900 62px "Jost", "Futura", "Arial Black", sans-serif';
-          ctx.shadowColor =
-            variant === 'APPLAUSE_AMBER' ? 'rgba(255, 250, 224, 0.45)' : 'rgba(10, 18, 34, 0.55)';
-          ctx.shadowBlur = 6;
-          ctx.fillText('APPLAUSE', 256, 98);
+          if (variant === 'JACKPOT_GOLD' || variant === 'JACKPOT_CERISE') {
+            ctx.strokeStyle = variant === 'JACKPOT_GOLD' ? '#008B94' : '#FFD56B';
+            ctx.setLineDash([16, 12]);
+            ctx.lineWidth = 4;
+            ctx.strokeRect(30, 30, cfg.canvasW - 60, 132);
+            ctx.setLineDash([]);
+          }
+
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          if (variant === 'ON_AIR_RED') {
+            ctx.fillStyle = '#FFF9EC';
+            ctx.beginPath();
+            ctx.arc(64, 96, 15, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.font = '900 58px "Jost", "Futura", "Arial Black", sans-serif';
+            ctx.shadowColor = 'rgba(42, 20, 9, 0.55)';
+            ctx.shadowBlur = 6;
+            ctx.fillText('ON THE AIR', cfg.canvasW * 0.55, 98);
+          } else {
+            ctx.fillStyle = darkInk ? '#2A150B' : '#FFF9EC';
+            ctx.font =
+              kind === 'JACKPOT'
+                ? '900 76px "Caprasimo", "Jost", "Arial Black", sans-serif'
+                : '900 72px "Jost", "Futura", "Arial Black", sans-serif';
+            ctx.shadowColor = darkInk
+              ? 'rgba(255, 250, 224, 0.45)'
+              : 'rgba(42, 20, 9, 0.55)';
+            ctx.shadowBlur = 6;
+            ctx.fillText(cfg.label, cfg.canvasW * 0.5, 98, cfg.canvasW - 56);
+          }
         }
       }
       const t = new THREE.CanvasTexture(c);
@@ -3893,81 +5143,135 @@ export function buildStageWorldV7(
       return t;
     };
 
-    const primaryTex = makeFaceTex(kind === 'ON_THE_AIR' ? 'ON_AIR' : 'APPLAUSE_AMBER');
-    const altTex = kind === 'APPLAUSE' ? makeFaceTex('APPLAUSE_CRIMSON') : null;
+    const restingTex = makeFaceTex('RESTING_SMOKED_AMBER');
+    const primaryTex = makeFaceTex(
+      kind === 'ON_THE_AIR'
+        ? 'ON_AIR_RED'
+        : kind === 'APPLAUSE'
+          ? 'APPLAUSE_AMBER'
+          : kind === 'LAUGH'
+            ? 'LAUGH_TANGERINE'
+            : 'JACKPOT_GOLD',
+    );
+    const altTex =
+      kind === 'ON_THE_AIR'
+        ? null
+        : makeFaceTex(
+            kind === 'APPLAUSE'
+              ? 'APPLAUSE_CRIMSON'
+              : kind === 'LAUGH'
+                ? 'LAUGH_GOLD'
+                : 'JACKPOT_CERISE',
+          );
 
     const faceMat = new THREE.MeshBasicMaterial({
-      map: primaryTex,
-      color: kind === 'ON_THE_AIR' ? 0xffffff : 0xdccaa8,
+      map: kind === 'ON_THE_AIR' ? primaryTex : restingTex,
+      color: kind === 'ON_THE_AIR' ? 0xffffff : 0xc2b09c,
       toneMapped: false,
       polygonOffset: true,
       polygonOffsetFactor: -2,
       polygonOffsetUnits: -2,
     });
-    const faceMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.78, 0.27), faceMat);
-    faceMesh.position.set(0, 0, 0.064);
+    const faceMesh = new THREE.Mesh(new THREE.PlaneGeometry(cfg.faceW, cfg.faceH), faceMat);
+    faceMesh.position.set(0, 0, cfg.depth * 0.5 + 0.01);
     boxGroup.add(faceMesh);
+
+    const bulbCoords: Array<[number, number]> = [];
+    const hx = cfg.width * 0.5 - 0.08;
+    const hy = cfg.height * 0.5 - 0.065;
+    if (cfg.bulbCount === 10) {
+      for (let i = 0; i < 4; i++) {
+        const bx = -hx + (i / 3) * (hx * 2);
+        bulbCoords.push([bx, hy], [bx, -hy]);
+      }
+      bulbCoords.push([-hx, 0], [hx, 0]);
+    } else {
+      bulbCoords.push([-hx, hy], [hx, hy], [-hx, -hy], [hx, -hy]);
+    }
 
     const bulbHalos: THREE.Sprite[] = [];
     const bulbMats: THREE.MeshStandardMaterial[] = [];
-    for (const [bx, by] of [
-      [-0.36, 0.135],
-      [0.36, 0.135],
-      [-0.36, -0.135],
-      [0.36, -0.135],
-    ] as const) {
+    for (const [bx, by] of bulbCoords) {
       const bm = new THREE.MeshStandardMaterial({
         color: 0xfff8e2,
         emissive: kind === 'ON_THE_AIR' ? 0xff3b5c : 0xffd56b,
-        emissiveIntensity: 1.25,
+        emissiveIntensity: kind === 'ON_THE_AIR' ? 1.25 : 0.72,
         roughness: 0.12,
       });
       const bulb = createTurnedOrb({
-        radius: 0.02,
+        radius: 0.022,
         radialSegments: 14,
         material: bm,
         castShadow: false,
         receiveShadow: false,
       });
-      bulb.position.set(bx, by, 0.064);
+      bulb.position.set(bx, by, cfg.depth * 0.5 + 0.01);
       boxGroup.add(bulb);
       bulbMats.push(bm);
 
       const halo = createTungstenBulbHaloSprite({
-        scale: 0.15,
-        opacity: kind === 'ON_THE_AIR' ? 0.62 : 0.34,
+        scale: 0.12,
+        opacity: kind === 'ON_THE_AIR' ? 0.62 : 0.28,
         colorHex: kind === 'ON_THE_AIR' ? 0xff6b7a : 0xffd56b,
       });
-      halo.position.set(bx, by, 0.088);
+      halo.position.set(bx, by, cfg.depth * 0.5 + 0.034);
       boxGroup.add(halo);
       bulbHalos.push(halo);
     }
 
     const centerGlowHalo = createTungstenBulbHaloSprite({
-      scale: 0.68,
-      opacity: kind === 'ON_THE_AIR' ? 0.24 : 0.14,
+      scale: 0.85,
+      opacity: kind === 'ON_THE_AIR' ? 0.28 : 0.12,
       colorHex: kind === 'ON_THE_AIR' ? 0xff3b5c : 0xffd56b,
     });
-    centerGlowHalo.scale.set(0.95, 0.42, 1);
-    centerGlowHalo.position.set(0, 0, 0.09);
+    centerGlowHalo.scale.set(cfg.width * 0.92, cfg.height * 0.86, 1);
+    centerGlowHalo.position.set(0, 0, cfg.depth * 0.5 + 0.036);
     boxGroup.add(centerGlowHalo);
 
     return {
+      kind,
       group: boxGroup,
+      housing,
       faceMat,
+      restingTex,
       primaryTex,
       altTex,
       bulbMats,
       bulbHalos,
       centerGlowHalo,
+      basePos: new THREE.Vector3(),
+      baseScale: new THREE.Vector3(1, 1, 1),
+      baseZ: 0.02,
     };
   };
 
   const onTheAirLightbox = buildProsceniumLightbox('ON_THE_AIR');
   const applauseLightbox = buildProsceniumLightbox('APPLAUSE');
-  onTheAirLightbox.group.position.set(-1.54, 0.01, 0.02);
-  applauseLightbox.group.position.set(1.54, 0.01, 0.02);
-  marqueeCrownGroup.add(onTheAirLightbox.group, applauseLightbox.group);
+  const laughLightbox = buildProsceniumLightbox('LAUGH');
+  const jackpotLightbox = buildProsceniumLightbox('JACKPOT');
+
+  onTheAirLightbox.group.position.set(-1.76, 0.24, 0.02);
+  onTheAirLightbox.baseScale.set(0.76, 0.76, 1.0);
+  onTheAirLightbox.group.scale.copy(onTheAirLightbox.baseScale);
+
+  applauseLightbox.group.position.set(-1.76, -0.26, 0.02);
+  applauseLightbox.baseScale.set(0.68, 0.68, 1.0);
+  applauseLightbox.group.scale.copy(applauseLightbox.baseScale);
+
+  laughLightbox.group.position.set(1.76, 0.24, 0.02);
+  laughLightbox.baseScale.set(0.74, 0.74, 1.0);
+  laughLightbox.group.scale.copy(laughLightbox.baseScale);
+
+  jackpotLightbox.group.position.set(1.76, -0.26, 0.02);
+  jackpotLightbox.baseScale.set(0.66, 0.66, 1.0);
+  jackpotLightbox.group.scale.copy(jackpotLightbox.baseScale);
+
+  marqueeCrownGroup.add(
+    onTheAirLightbox.group,
+    applauseLightbox.group,
+    laughLightbox.group,
+    jackpotLightbox.group,
+  );
 
   framingGroup.add(marqueeCrownGroup);
 
@@ -3997,13 +5301,13 @@ export function buildStageWorldV7(
     envMapIntensity: 0.85,
   });
   const blackRubberCableMat = new THREE.MeshStandardMaterial({
-    color: 0x16181d,
+    color: 0x2b2420,
     roughness: 0.64,
     metalness: 0.12,
   });
   const lensGlassMultiCoatMat = new THREE.MeshPhysicalMaterial({
-    color: 0x182b3a,
-    emissive: 0x0d3b4c,
+    color: 0x005b64,
+    emissive: 0x008b94,
     emissiveIntensity: 0.35,
     roughness: 0.06,
     metalness: 0.15,
@@ -4047,8 +5351,8 @@ export function buildStageWorldV7(
   for (const side of [-1, 1] as const) {
     const tkCam = new THREE.Group();
     tkCam.name = side < 0 ? 'RCA_TK41C_Camera_1' : 'RCA_TK41C_Camera_2';
-    tkCam.position.set(side * 3.16, 0, -2.85);
-    const baseYaw = -side * 0.54;
+    tkCam.position.set(side * 3.22, 0, -1.35);
+    const baseYaw = -side * 0.72;
     tkCam.rotation.y = baseYaw;
 
     tkCam.add(
@@ -4634,12 +5938,26 @@ export function buildStageWorldV7(
 
   let fresnelTimerSec = -1;
   let fresnelPeakHdr = 3.0;
-  let applauseRemainingSec = 0;
-  let baseLightboxScaleX = 0.96;
-  let baseLightboxScaleY = 0.96;
-  let baseLightboxScaleZ = 0.96;
   let baseCycEmissive = 0.56;
   let baseCoveEmissive = 1.15;
+  let reducedMotionMode = false;
+
+  const signControllers: Record<
+    ReactiveSignIdV9,
+    {
+      lightbox: ReturnType<typeof buildProsceniumLightbox>;
+      active: boolean;
+      remainingSec: number; // Infinity for persistent
+    }
+  > = {
+    ON_THE_AIR: { lightbox: onTheAirLightbox, active: true, remainingSec: Infinity },
+    APPLAUSE: { lightbox: applauseLightbox, active: false, remainingSec: 0 },
+    LAUGH: { lightbox: laughLightbox, active: false, remainingSec: 0 },
+    JACKPOT: { lightbox: jackpotLightbox, active: false, remainingSec: 0 },
+  };
+
+  let activeCrowdMood: CrowdMoodV9 = 'IDLE';
+  let crowdMoodRemainingSec = 0;
 
   const applyDimmingToBackdrop = () => {
     cycMat.emissiveIntensity = baseCycEmissive * apertureDimFactor;
@@ -4659,8 +5977,16 @@ export function buildStageWorldV7(
 
   return {
     stageId,
+    season: activeSeason,
     spec,
     root,
+    reactiveSigns: {
+      ON_THE_AIR: onTheAirLightbox.housing,
+      APPLAUSE: applauseLightbox.housing,
+      LAUGH: laughLightbox.housing,
+      JACKPOT: jackpotLightbox.housing,
+      MARQUEE_TITLE: signFrame,
+    },
 
     triggerFresnelTell(isRubySpite = false): void {
       const tellHex = isRubySpite ? 0xff1744 : 0xffb84d;
@@ -4672,6 +5998,8 @@ export function buildStageWorldV7(
 
     triggerRowCGlint(active: boolean): void {
       rowCGlintActive = active;
+      rowC.rolledProgram.visible = active;
+      rowC.brassBand.visible = active;
       rowC.glintGroup.visible = active;
       if (!active) {
         rowC.programMat.emissiveIntensity = 0.14;
@@ -4685,7 +6013,64 @@ export function buildStageWorldV7(
     },
 
     triggerApplauseSign(durationSec = 2.4): void {
-      applauseRemainingSec = Math.max(applauseRemainingSec, Math.max(0.6, durationSec));
+      this.setReactiveSignState('APPLAUSE', true, Math.max(0.6, durationSec) * 1000);
+    },
+
+    setReactiveSignState(
+      signId: ReactiveSignIdV9,
+      active: boolean,
+      durationMs?: number,
+    ): void {
+      const entry = signControllers[signId];
+      if (!entry) return;
+      entry.active = active;
+      if (!active) {
+        entry.remainingSec = 0;
+        return;
+      }
+      if (durationMs === undefined) {
+        entry.remainingSec = signId === 'ON_THE_AIR' ? Infinity : 2.4;
+      } else if (durationMs <= 0) {
+        entry.remainingSec = Infinity;
+      } else {
+        entry.remainingSec = Math.max(0.4, durationMs / 1000);
+      }
+    },
+
+    getStudioSignStates(): Record<ReactiveSignIdV9, boolean> {
+      return {
+        ON_THE_AIR: signControllers.ON_THE_AIR.active,
+        APPLAUSE: signControllers.APPLAUSE.active,
+        LAUGH: signControllers.LAUGH.active,
+        JACKPOT: signControllers.JACKPOT.active,
+      };
+    },
+
+    setCrowdMood(mood: CrowdMoodV9, durationMs?: number): void {
+      activeCrowdMood = mood;
+      if (mood === 'IDLE') {
+        crowdMoodRemainingSec = 0;
+        return;
+      }
+      if (durationMs === undefined) {
+        crowdMoodRemainingSec = 2.6;
+      } else if (durationMs <= 0) {
+        crowdMoodRemainingSec = Infinity;
+      } else {
+        crowdMoodRemainingSec = Math.max(0.4, durationMs / 1000);
+      }
+    },
+
+    getCrowdMood(): CrowdMoodV9 {
+      return activeCrowdMood;
+    },
+
+    getSeasonId(): SeasonIdV7 {
+      return activeSeason;
+    },
+
+    setReducedMotion(reduced: boolean): void {
+      reducedMotionMode = Boolean(reduced);
     },
 
     getRowCColliderMesh(): THREE.Mesh {
@@ -4762,53 +6147,149 @@ export function buildStageWorldV7(
       }
     },
 
-    setPortraitFraming(isPortrait: boolean, aspect = isPortrait ? 0.52 : 1.6): void {
+    setPortraitFraming(
+      isPortrait: boolean,
+      aspect = isPortrait ? 0.52 : 1.6,
+      viewportHeight = isPortrait ? 844 : 900,
+    ): void {
+      upperBalconyCrowd.group.visible = isPortrait && viewportHeight >= 700;
+      marqueeCrownGroup.scale.setScalar(1.0);
+
       if (!isPortrait) {
-        // Landscape / Tablet Landscape / Desktop: Full 3-bay wide broadcast proscenium!
-        innerMarqueePillars[0].position.set(-2.36, 0, -4.52);
-        innerMarqueePillars[1].position.set(2.36, 0, -4.52);
-        marqueeCrownGroup.scale.setScalar(1.02);
-        signFrame.scale.set(1, 1, 1);
-        baseLightboxScaleX = 0.96;
-        baseLightboxScaleY = 0.96;
-        baseLightboxScaleZ = 0.96;
-        onTheAirLightbox.group.position.set(-1.52, 0.01, 0.02);
-        applauseLightbox.group.position.set(1.52, 0.01, 0.02);
-        onTheAirLightbox.group.scale.set(baseLightboxScaleX, baseLightboxScaleY, baseLightboxScaleZ);
-        applauseLightbox.group.scale.set(baseLightboxScaleX, baseLightboxScaleY, baseLightboxScaleZ);
-        marqueeStrutShoes[0].position.x = -0.857;
-        marqueeStrutShoes[1].position.x = 0.857;
+        if (aspect >= 1.45) {
+          // Desktop Landscape (`1440×900`): Open Center Vista + Symmetrical Flanking Lightboxes (zero pillar bulb overlap!)
+          innerMarqueePillars[0].position.set(-2.74, 0, -4.52);
+          innerMarqueePillars[1].position.set(2.74, 0, -4.52);
+          signFrame.scale.set(0.84, 0.78, 1.0);
+          signFrame.position.set(0, 0.28, 0.0);
+
+          onTheAirLightbox.group.position.set(-1.76, 0.24, 0.02);
+          onTheAirLightbox.baseScale.set(0.76, 0.76, 1.0);
+          onTheAirLightbox.baseZ = 0.02;
+
+          applauseLightbox.group.position.set(-1.76, -0.26, 0.02);
+          applauseLightbox.baseScale.set(0.68, 0.68, 1.0);
+          applauseLightbox.baseZ = 0.02;
+
+          laughLightbox.group.position.set(1.76, 0.24, 0.02);
+          laughLightbox.baseScale.set(0.74, 0.74, 1.0);
+          laughLightbox.baseZ = 0.02;
+
+          jackpotLightbox.group.position.set(1.76, -0.26, 0.02);
+          jackpotLightbox.baseScale.set(0.66, 0.66, 1.0);
+          jackpotLightbox.baseZ = 0.02;
+        } else {
+          // Tablet Landscape (`1024×768`): Open Center Vista + Symmetrical Flanking Lightboxes!
+          innerMarqueePillars[0].position.set(-2.66, 0, -4.52);
+          innerMarqueePillars[1].position.set(2.66, 0, -4.52);
+          signFrame.scale.set(0.8, 0.74, 1.0);
+          signFrame.position.set(0, 0.22, 0.0);
+
+          onTheAirLightbox.group.position.set(-1.68, 0.22, 0.02);
+          onTheAirLightbox.baseScale.set(0.72, 0.72, 1.0);
+          onTheAirLightbox.baseZ = 0.02;
+
+          applauseLightbox.group.position.set(-1.68, -0.25, 0.02);
+          applauseLightbox.baseScale.set(0.65, 0.65, 1.0);
+          applauseLightbox.baseZ = 0.02;
+
+          laughLightbox.group.position.set(1.68, 0.22, 0.02);
+          laughLightbox.baseScale.set(0.7, 0.7, 1.0);
+          laughLightbox.baseZ = 0.02;
+
+          jackpotLightbox.group.position.set(1.68, -0.25, 0.02);
+          jackpotLightbox.baseScale.set(0.63, 0.63, 1.0);
+          jackpotLightbox.baseZ = 0.02;
+        }
       } else if (aspect >= 0.7) {
-        // Tablet Portrait (`768x1024`, `820x1180`): All 3 proscenium lightboxes framed comfortably inside ±1.86m!
-        innerMarqueePillars[0].position.set(-1.92, 0, -4.64);
-        innerMarqueePillars[1].position.set(1.92, 0, -4.64);
-        marqueeCrownGroup.scale.setScalar(0.96);
-        signFrame.scale.set(0.82, 0.92, 0.95);
-        baseLightboxScaleX = 0.82;
-        baseLightboxScaleY = 0.88;
-        baseLightboxScaleZ = 0.92;
-        onTheAirLightbox.group.position.set(-1.24, 0.01, 0.03);
-        applauseLightbox.group.position.set(1.24, 0.01, 0.03);
-        onTheAirLightbox.group.scale.set(baseLightboxScaleX, baseLightboxScaleY, baseLightboxScaleZ);
-        applauseLightbox.group.scale.set(baseLightboxScaleX, baseLightboxScaleY, baseLightboxScaleZ);
-        marqueeStrutShoes[0].position.x = -0.78;
-        marqueeStrutShoes[1].position.x = 0.78;
+        // Tablet Portrait (`768×1024`, `820×1180`): Open Center Vista + Background Upper Balconies!
+        innerMarqueePillars[0].position.set(-2.18, 0, -4.64);
+        innerMarqueePillars[1].position.set(2.18, 0, -4.64);
+        signFrame.scale.set(0.72, 0.66, 1.0);
+        signFrame.position.set(0, 0.16, 0.02);
+
+        onTheAirLightbox.group.position.set(-1.42, 0.2, 0.03);
+        onTheAirLightbox.baseScale.set(0.66, 0.66, 1.0);
+        onTheAirLightbox.baseZ = 0.03;
+
+        applauseLightbox.group.position.set(-1.42, -0.23, 0.03);
+        applauseLightbox.baseScale.set(0.58, 0.58, 1.0);
+        applauseLightbox.baseZ = 0.03;
+
+        laughLightbox.group.position.set(1.42, 0.2, 0.03);
+        laughLightbox.baseScale.set(0.62, 0.62, 1.0);
+        laughLightbox.baseZ = 0.03;
+
+        jackpotLightbox.group.position.set(1.42, -0.23, 0.03);
+        jackpotLightbox.baseScale.set(0.54, 0.54, 1.0);
+        jackpotLightbox.baseZ = 0.03;
+
+        upperBalconyCrowd.leftBox.position.set(-1.24, 1.06, -5.85);
+        upperBalconyCrowd.leftBox.scale.setScalar(0.667);
+        upperBalconyCrowd.rightBox.position.set(1.24, 1.06, -5.85);
+        upperBalconyCrowd.rightBox.scale.setScalar(0.667);
+      } else if (viewportHeight >= 700) {
+        // Phone Portrait (`390×844`): Open Center Vista + Background Upper Balconies (`z = -5.85`)!
+        innerMarqueePillars[0].position.set(-1.88, 0, -4.66);
+        innerMarqueePillars[1].position.set(1.88, 0, -4.66);
+        signFrame.scale.set(0.68, 0.6, 1.0);
+        signFrame.position.set(0, 0.5, 0.03);
+
+        onTheAirLightbox.group.position.set(-1.2, 0.52, 0.03);
+        onTheAirLightbox.baseScale.set(0.56, 0.56, 1.0);
+        onTheAirLightbox.baseZ = 0.03;
+
+        applauseLightbox.group.position.set(-1.2, 0.12, 0.03);
+        applauseLightbox.baseScale.set(0.5, 0.5, 1.0);
+        applauseLightbox.baseZ = 0.03;
+
+        laughLightbox.group.position.set(1.2, 0.52, 0.03);
+        laughLightbox.baseScale.set(0.54, 0.54, 1.0);
+        laughLightbox.baseZ = 0.03;
+
+        jackpotLightbox.group.position.set(1.2, 0.12, 0.03);
+        jackpotLightbox.baseScale.set(0.48, 0.48, 1.0);
+        jackpotLightbox.baseZ = 0.03;
+
+        upperBalconyCrowd.leftBox.position.set(-1.28, 0.98, -5.85);
+        upperBalconyCrowd.leftBox.scale.setScalar(0.9);
+        upperBalconyCrowd.rightBox.position.set(1.28, 0.98, -5.85);
+        upperBalconyCrowd.rightBox.scale.setScalar(0.9);
       } else {
-        // Phone Portrait (`390x844`, `390x660`): Compact 3-bay proscenium (`ON THE AIR` | Stage Marquee | `APPLAUSE`) inside ±1.17m!
-        innerMarqueePillars[0].position.set(-1.66, 0, -4.66);
-        innerMarqueePillars[1].position.set(1.66, 0, -4.66);
-        marqueeCrownGroup.scale.setScalar(0.94);
-        signFrame.scale.set(0.58, 0.78, 0.88);
-        baseLightboxScaleX = 0.58;
-        baseLightboxScaleY = 0.74;
-        baseLightboxScaleZ = 0.86;
-        onTheAirLightbox.group.position.set(-0.885, 0.0, 0.03);
-        applauseLightbox.group.position.set(0.885, 0.0, 0.03);
-        onTheAirLightbox.group.scale.set(baseLightboxScaleX, baseLightboxScaleY, baseLightboxScaleZ);
-        applauseLightbox.group.scale.set(baseLightboxScaleX, baseLightboxScaleY, baseLightboxScaleZ);
-        marqueeStrutShoes[0].position.x = -0.52;
-        marqueeStrutShoes[1].position.x = 0.52;
+        // Compact Phone (`390×660`): Clean Single-Row Proscenium Ribbon (Balcony hidden for `h < 700`)!
+        innerMarqueePillars[0].position.set(-1.88, 0, -4.66);
+        innerMarqueePillars[1].position.set(1.88, 0, -4.66);
+        signFrame.scale.set(0.46, 0.54, 1.0);
+        signFrame.position.set(0, 0.02, 0.03);
+
+        onTheAirLightbox.group.position.set(-1.4, 0.02, 0.03);
+        onTheAirLightbox.baseScale.set(0.36, 0.48, 1.0);
+        onTheAirLightbox.baseZ = 0.03;
+
+        applauseLightbox.group.position.set(-0.8, 0.02, 0.03);
+        applauseLightbox.baseScale.set(0.34, 0.48, 1.0);
+        applauseLightbox.baseZ = 0.03;
+
+        laughLightbox.group.position.set(0.77, 0.02, 0.03);
+        laughLightbox.baseScale.set(0.35, 0.48, 1.0);
+        laughLightbox.baseZ = 0.03;
+
+        jackpotLightbox.group.position.set(1.37, 0.02, 0.03);
+        jackpotLightbox.baseScale.set(0.33, 0.4, 1.0);
+        jackpotLightbox.baseZ = 0.03;
       }
+
+      crownStarburst.position.set(0, signFrame.position.y, -0.14);
+      const strutX = 0.82 * signFrame.scale.x;
+      signSupportLegs[0].position.x = -strutX;
+      signSupportLegs[1].position.x = strutX;
+      marqueeStrutShoes[0].position.x = -strutX;
+      marqueeStrutShoes[1].position.x = strutX;
+
+      onTheAirLightbox.group.scale.copy(onTheAirLightbox.baseScale);
+      applauseLightbox.group.scale.copy(applauseLightbox.baseScale);
+      laughLightbox.group.scale.copy(laughLightbox.baseScale);
+      jackpotLightbox.group.scale.copy(jackpotLightbox.baseScale);
     },
 
     update(dtSec: number, elapsedSec: number): void {
@@ -4840,57 +6321,178 @@ export function buildStageWorldV7(
         }
       }
 
-      // Live 3D `ON THE AIR` steady broadcast ruby pulse & Reactive Blinking `APPLAUSE` Studio Lightbox!
-      const onAirPulse = 0.92 + 0.08 * Math.sin(elapsedSec * 3.2);
-      onTheAirLightbox.faceMat.color.setScalar(onAirPulse * Math.max(0.65, apertureDimFactor));
-      onTheAirLightbox.centerGlowHalo.material.opacity = 0.22 * onAirPulse * Math.max(0.55, apertureDimFactor);
-      for (let i = 0; i < onTheAirLightbox.bulbHalos.length; i++) {
-        const tw = 0.5 + 0.5 * Math.sin(elapsedSec * 5.0 + i * 1.4);
-        onTheAirLightbox.bulbHalos[i].material.opacity = (0.36 + tw * 0.44) * Math.max(0.55, apertureDimFactor);
-      }
-
-      if (applauseRemainingSec > 0) {
-        applauseRemainingSec = Math.max(0, applauseRemainingSec - dtSec);
-        // Blink warmly at ~5.6Hz alternating 2700K Neon Amber & Carnaby Crimson!
-        const blinkTick = Math.floor(elapsedSec * 11.2);
-        const isCrimsonBeat = (blinkTick & 1) === 1;
-        const flashWave = 0.68 + 0.32 * Math.abs(Math.sin(elapsedSec * Math.PI * 11.2));
-        if (applauseLightbox.altTex) {
-          const nextMap = isCrimsonBeat ? applauseLightbox.altTex : applauseLightbox.primaryTex;
-          if (applauseLightbox.faceMat.map !== nextMap) {
-            applauseLightbox.faceMat.map = nextMap;
-            applauseLightbox.faceMat.needsUpdate = true;
+      // 4 Reactive Studio Lightbox Sign Controllers (`ON THE AIR`, `APPLAUSE`, `LAUGH`, `JACKPOT!`)
+      for (const signId of ['ON_THE_AIR', 'APPLAUSE', 'LAUGH', 'JACKPOT'] as const) {
+        const ctrl = signControllers[signId];
+        const lb = ctrl.lightbox;
+        if (ctrl.active && Number.isFinite(ctrl.remainingSec)) {
+          ctrl.remainingSec = Math.max(0, ctrl.remainingSec - dtSec);
+          if (ctrl.remainingSec <= 0) {
+            ctrl.active = false;
           }
         }
-        applauseLightbox.faceMat.color.setScalar(0.85 + 0.15 * flashWave);
-        applauseLightbox.centerGlowHalo.material.color.setHex(isCrimsonBeat ? 0xff477e : 0xffd56b);
-        applauseLightbox.centerGlowHalo.material.opacity = 0.58 * flashWave;
-        const pop = 1 + 0.045 * flashWave;
-        applauseLightbox.group.scale.set(
-          baseLightboxScaleX * pop,
-          baseLightboxScaleY * pop,
-          baseLightboxScaleZ,
-        );
-        for (let i = 0; i < applauseLightbox.bulbHalos.length; i++) {
-          const on = ((i + blinkTick) & 1) === 0;
-          applauseLightbox.bulbHalos[i].material.color.setHex(isCrimsonBeat ? 0xff6b8b : 0xffd56b);
-          applauseLightbox.bulbHalos[i].material.opacity = on ? 0.92 : 0.35;
-          applauseLightbox.bulbMats[i].emissiveIntensity = on ? 2.4 : 0.7;
+
+        if (!ctrl.active) {
+          if (lb.faceMat.map !== lb.restingTex) {
+            lb.faceMat.map = lb.restingTex;
+            lb.faceMat.needsUpdate = true;
+          }
+          const restDim = 0.76 * Math.max(0.68, apertureDimFactor);
+          lb.faceMat.color.setScalar(restDim);
+          lb.centerGlowHalo.material.color.setHex(0xffd56b);
+          lb.centerGlowHalo.material.opacity = 0.03 * Math.max(0.6, apertureDimFactor);
+          lb.group.scale.copy(lb.baseScale);
+          lb.group.rotation.z = 0;
+          lb.group.position.z = lb.baseZ;
+          for (let i = 0; i < lb.bulbHalos.length; i++) {
+            lb.bulbHalos[i].material.color.setHex(0xffd56b);
+            lb.bulbHalos[i].material.opacity = 0.08 * Math.max(0.6, apertureDimFactor);
+            lb.bulbMats[i].emissiveIntensity = 0.22 * Math.max(0.6, apertureDimFactor);
+          }
+        } else if (signId === 'ON_THE_AIR') {
+          if (lb.faceMat.map !== lb.primaryTex) {
+            lb.faceMat.map = lb.primaryTex;
+            lb.faceMat.needsUpdate = true;
+          }
+          const onAirPulse = 0.92 + 0.08 * Math.sin(elapsedSec * 3.2);
+          lb.faceMat.color.setScalar(onAirPulse * Math.max(0.7, apertureDimFactor));
+          lb.centerGlowHalo.material.color.setHex(0xff3b5c);
+          lb.centerGlowHalo.material.opacity = 0.34 * onAirPulse * Math.max(0.6, apertureDimFactor);
+          lb.group.scale.copy(lb.baseScale);
+          lb.group.position.z = lb.baseZ;
+          for (let i = 0; i < lb.bulbHalos.length; i++) {
+            const tw = 0.5 + 0.5 * Math.sin(elapsedSec * 5.0 + i * 1.4);
+            lb.bulbHalos[i].material.color.setHex(0xff6b7a);
+            lb.bulbHalos[i].material.opacity = (0.4 + tw * 0.44) * Math.max(0.6, apertureDimFactor);
+            lb.bulbMats[i].emissiveIntensity = 1.35 * Math.max(0.65, apertureDimFactor);
+          }
+        } else {
+          const freqHz = signId === 'JACKPOT' ? 7.5 : signId === 'LAUGH' ? 4.8 : 5.6;
+          const blinkTick = Math.floor(elapsedSec * freqHz * 2);
+          const isAlt = (blinkTick & 1) === 1;
+          const wave = 0.68 + 0.32 * Math.abs(Math.sin(elapsedSec * Math.PI * freqHz * 2));
+          if (lb.altTex) {
+            const nextTex = isAlt ? lb.altTex : lb.primaryTex;
+            if (lb.faceMat.map !== nextTex) {
+              lb.faceMat.map = nextTex;
+              lb.faceMat.needsUpdate = true;
+            }
+          }
+          lb.faceMat.color.setScalar(0.88 + 0.12 * wave);
+          const haloHex =
+            signId === 'APPLAUSE'
+              ? isAlt
+                ? 0xff477e
+                : 0xffd56b
+              : signId === 'LAUGH'
+                ? isAlt
+                  ? 0xffd56b
+                  : 0xff6b35
+                : isAlt
+                  ? 0xe6397a
+                  : 0xf2a922;
+          lb.centerGlowHalo.material.color.setHex(haloHex);
+          lb.centerGlowHalo.material.opacity = (signId === 'JACKPOT' ? 0.82 : 0.6) * wave;
+
+          const popAmp = signId === 'JACKPOT' ? 0.06 : signId === 'LAUGH' ? 0.05 : 0.045;
+          const pop = reducedMotionMode ? 1.0 : 1.0 + popAmp * wave;
+          lb.group.scale.set(
+            lb.baseScale.x * pop,
+            lb.baseScale.y * pop,
+            lb.baseScale.z,
+          );
+          lb.group.position.z = signId === 'JACKPOT' ? lb.baseZ + 0.04 : lb.baseZ;
+          lb.group.rotation.z =
+            signId === 'LAUGH' && !reducedMotionMode
+              ? Math.sin(elapsedSec * 12.0) * 0.02
+              : 0;
+
+          for (let i = 0; i < lb.bulbHalos.length; i++) {
+            const chaseMatch =
+              signId === 'JACKPOT'
+                ? (i + blinkTick) % 3 === 0
+                : ((i + blinkTick) & 1) === 0;
+            lb.bulbHalos[i].material.color.setHex(haloHex);
+            lb.bulbHalos[i].material.opacity = chaseMatch ? 0.95 : 0.32;
+            lb.bulbMats[i].emissiveIntensity = chaseMatch
+              ? signId === 'JACKPOT'
+                ? 2.6
+                : 2.35
+              : 0.68;
+          }
         }
-      } else {
-        if (applauseLightbox.faceMat.map !== applauseLightbox.primaryTex) {
-          applauseLightbox.faceMat.map = applauseLightbox.primaryTex;
-          applauseLightbox.faceMat.needsUpdate = true;
+      }
+
+      // Live 1960s Gouache Studio Audience Choreography (`IDLE`, `APPLAUSE`, `LAUGH`, `GASP`, `OVATION`, `SYMPATHY`)
+      if (activeCrowdMood !== 'IDLE' && Number.isFinite(crowdMoodRemainingSec)) {
+        crowdMoodRemainingSec = Math.max(0, crowdMoodRemainingSec - dtSec);
+        if (crowdMoodRemainingSec <= 0) {
+          activeCrowdMood = 'IDLE';
         }
-        const standbyDim = 0.58 * Math.max(0.52, apertureDimFactor);
-        applauseLightbox.faceMat.color.setRGB(standbyDim, standbyDim * 0.94, standbyDim * 0.82);
-        applauseLightbox.centerGlowHalo.material.color.setHex(0xffd56b);
-        applauseLightbox.centerGlowHalo.material.opacity = 0.08 * Math.max(0.5, apertureDimFactor);
-        applauseLightbox.group.scale.set(baseLightboxScaleX, baseLightboxScaleY, baseLightboxScaleZ);
-        for (let i = 0; i < applauseLightbox.bulbHalos.length; i++) {
-          applauseLightbox.bulbHalos[i].material.color.setHex(0xffd56b);
-          applauseLightbox.bulbHalos[i].material.opacity = 0.28 * Math.max(0.5, apertureDimFactor);
-          applauseLightbox.bulbMats[i].emissiveIntensity = 0.85 * Math.max(0.5, apertureDimFactor);
+      }
+      if (crowdTextureReady) {
+        crowdMat.emissiveIntensity =
+          (activeCrowdMood === 'OVATION' ? 0.62 : activeCrowdMood === 'APPLAUSE' ? 0.54 : 0.46) *
+          Math.max(0.55, apertureDimFactor);
+        for (let i = 0; i < crowdTiers.length; i++) {
+          const ct = crowdTiers[i];
+          if (reducedMotionMode) {
+            ct.obj.position.y = ct.baseY;
+            ct.obj.rotation.x = ct.baseRotX;
+            ct.obj.rotation.z = 0;
+            ct.obj.scale.set(1, 1, 1);
+            continue;
+          }
+          let dy = 0;
+          let rx = 0;
+          let rz = 0;
+          let sy = 1;
+          const ph = ct.phase;
+          if (activeCrowdMood === 'IDLE') {
+            dy = 0.008 * Math.sin(elapsedSec * 2.1 + ph);
+            rz = 0.012 * Math.sin(elapsedSec * 1.4 + ph);
+          } else if (activeCrowdMood === 'APPLAUSE') {
+            dy = 0.055 * Math.abs(Math.sin(elapsedSec * 11.5 + ph));
+            sy = 1 + 0.03 * Math.sin(elapsedSec * 11.5 + ph);
+          } else if (activeCrowdMood === 'LAUGH') {
+            dy = 0.035 * Math.abs(Math.sin(elapsedSec * 9.5 + ph));
+            rz = 0.045 * Math.sin(elapsedSec * 9.5 + ph);
+            rx = -0.1 + 0.05 * Math.sin(elapsedSec * 14 + ph);
+          } else if (activeCrowdMood === 'GASP') {
+            dy = 0.02;
+            rx = 0.16;
+            rz = 0.006 * Math.sin(elapsedSec * 28 + ph);
+          } else if (activeCrowdMood === 'OVATION') {
+            dy = 0.13 + 0.075 * Math.abs(Math.sin(elapsedSec * 12.5 + ph));
+            sy = 1 + 0.04 * Math.sin(elapsedSec * 12.5 + ph);
+          } else if (activeCrowdMood === 'SYMPATHY') {
+            dy = -0.04;
+            rx = 0.08;
+            rz = 0.025 * Math.sin(elapsedSec * 3.5 + ph);
+          }
+          ct.obj.position.y = ct.baseY + (ct.isFrontRow ? dy * 0.72 : dy);
+          ct.obj.rotation.x = ct.baseRotX + rx;
+          ct.obj.rotation.z = rz;
+          ct.obj.scale.set(1, sy, 1);
+        }
+
+        // 6 Press Flashbulb Sprites alternating during OVATION
+        for (let f = 0; f < crowdFlashSprites.length; f++) {
+          const sp = crowdFlashSprites[f];
+          if (activeCrowdMood === 'OVATION') {
+            const cycle = (elapsedSec * 3.8 + f * 0.37) % 1.0;
+            if (cycle < 0.22) {
+              const decay = 1.0 - cycle / 0.22;
+              sp.visible = true;
+              sp.material.opacity = 0.92 * decay;
+              const sc = 0.34 + 0.22 * decay;
+              sp.scale.set(sc, sc, 1);
+            } else {
+              sp.visible = false;
+            }
+          } else {
+            sp.visible = false;
+          }
         }
       }
 
@@ -4966,10 +6568,23 @@ export function buildStageWorldV7(
     },
 
     dispose(): void {
+      isDisposed = true;
       camBadgeTex.dispose();
-      onTheAirLightbox.primaryTex.dispose();
-      applauseLightbox.primaryTex.dispose();
-      applauseLightbox.altTex?.dispose();
+      for (const lb of [
+        onTheAirLightbox,
+        applauseLightbox,
+        laughLightbox,
+        jackpotLightbox,
+      ]) {
+        lb.restingTex.dispose();
+        lb.primaryTex.dispose();
+        lb.altTex?.dispose();
+      }
+      // Temporarily detach shared cached atlas texture before tree disposal
+      if (crowdMat.map === cachedCrowdAtlasTextureV9) {
+        crowdMat.map = null;
+        crowdMat.emissiveMap = null;
+      }
       disposeObject3DTree(root);
     },
   };

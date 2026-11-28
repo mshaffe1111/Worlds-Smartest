@@ -9,9 +9,12 @@
 
 import {
   ALL_BOARD_PLAY_MODES_V7,
+  ALL_BOARD_PLAY_MODES_V9,
   CAREER_MEDAL_SPECS_V7,
+  type AntiWallMercyProfileV9,
   type BoardIdV7,
   type BoardPlayModeV7,
+  type BoardPlayModeV9,
   type BoardTwistIdV7,
   type BroadcastSettingsV7,
   type BrokerIdV7,
@@ -68,6 +71,7 @@ function lienGoalToBrokerV7(lienGoal: LienGoalIdV7): BrokerIdV7 {
 }
 
 const VALID_BOARD_PLAY_MODES_SET_V7 = new Set<string>(ALL_BOARD_PLAY_MODES_V7);
+const VALID_BOARD_PLAY_MODES_SET_V9 = new Set<string>(ALL_BOARD_PLAY_MODES_V9);
 const VALID_DIFFICULTY_MODES_SET_V7 = new Set<DifficultyModeV7>([
   'MATINEE_EASY',
   'PRIMETIME_NORMAL',
@@ -130,7 +134,7 @@ const FRIENDLY_STAGE_CALLSIGNS_V7: Record<StageWorldIdV7, string> = {
   STAGE_07_1969_MONTE_CARLO_CASINO: 'MONTE CARLO SALON',
   STAGE_08_WORLDS_FAIR_GEODESIC: 'QUEENS UNISPHERE PAVILION',
   STAGE_09_CHANNEL_83_UHF_BARGE: 'OFFSHORE CHANNEL 83 SHIP',
-  STAGE_10_SOVEREIGN_SANCTUM: '36TH-FLOOR PENTHOUSE',
+  STAGE_10_SOVEREIGN_SANCTUM: '38TH-FLOOR PENTHOUSE',
 };
 
 // ----------------------------------------------------------------------------
@@ -199,10 +203,10 @@ export const FINALE_ENDINGS_V7: Record<FinaleEndingIdV7, FinaleEndingSpecV7> = {
     trophyId: 'trophy_s4_32',
     title: 'The Quarter-Million Walkaway',
     subtitle: 'Ending IV — Paid in Full, Zero Strings Attached',
-    headlineBanner: 'UNDEFEATED STAND-IN CASHES CERTIFIED $250,000 CHECK AND WALKS FREE',
+    headlineBanner: 'UNDEFEATED STAND-IN CASHES CERTIFIED $222,000 CHECK AND WALKS FREE',
     epilogueParagraphs: [
       'All twelve gold spokes on your Network Buyout Wheel snapped open in unison, releasing your exclusivity contract live over the studio boom mics to a roaring standing ovation from Row A to the velvet balcony.',
-      'Backstage, Grant Bellamy offered a five-year hosting contract; Roz Korman offered double in Geneva bank drafts; Vera Karp offered a Senate press flash. You signed only the certified $250,000 cashier’s receipt, folded your lucky Episode 1 call-sheet into your coat pocket, and took the local elevator down to the lobby.',
+      'Backstage, Grant Bellamy offered a five-year hosting contract; Roz Korman offered double in Geneva bank drafts; Vera Karp offered a Senate press flash. You signed only the certified $222,000 cashier’s receipt, folded your lucky Episode 1 call-sheet into your coat pocket, and took the local elevator down to the lobby.',
       'Outside on Sixth Avenue, warm rain shimmered in the marquee lights and smelled like roasted chestnuts and late-edition newsprint instead of hot camera tubes. For the first time in ninety broadcasts, nobody in a control booth knew where you were walking next.',
     ],
     keyBroker: 'VERA_KARP',
@@ -317,7 +321,7 @@ const SEASON_3_TITLES_BY_REGIME: Record<
     'Torn Cashier’s Check on Steel Pier', // E65 -> STAGE_06 Steel Pier
     'Madison Avenue Panics During the Jubilee', // E66 -> STAGE_02 Jubilee
     'Process Server at the Casino Door', // E67 -> STAGE_07 Monte Carlo
-    'Apollo Master Key to the 36th Floor', // E68 -> STAGE_05 Apollo Control
+    'Apollo Master Key to the 38th Floor', // E68 -> STAGE_05 Apollo Control
   ],
   REGIME_B_BELLAMY_UHF: [
     'Hijacked Live onto UHF Channel 83!', // E46 -> STAGE_09 Channel 83 Ship
@@ -377,7 +381,7 @@ const SEASON_4_TITLES: readonly string[] = [
   'Monte Carlo Top-Seed Showdown', // E71 -> STAGE_07 Monte Carlo
   'Unisphere Champions Quarterfinal', // E72 -> STAGE_08 World's Fair
   'Home-Turf Rematch in Studio 6A', // E73 -> STAGE_01 Studio 6A
-  'First Glimpse of the 36th-Floor Penthouse', // E74 -> STAGE_10 Penthouse
+  'First Glimpse of the 38th-Floor Penthouse', // E74 -> STAGE_10 Penthouse
   'Television City Jubilee Quarterfinal', // E75 -> STAGE_02 Jubilee
   'Old Scores on Atlantic City’s Steel Pier', // E76 -> STAGE_06 Steel Pier
   'Monte Carlo High-Table Elimination', // E77 -> STAGE_07 Monte Carlo
@@ -393,7 +397,7 @@ const SEASON_4_TITLES: readonly string[] = [
   'Penthouse Round III: Coast-to-Coast Peacock', // E87 -> STAGE_10 Penthouse
   'Penthouse Round IV: Executive Skybox', // E88 -> STAGE_10 Penthouse
   'Penthouse Round V: Bellamy’s Final Test', // E89 -> STAGE_10 Penthouse
-  'Fifty Million Watching (The $250,000 Finale)', // E90 -> STAGE_10 Grand Finale!
+  'Fifty Million Watching (The $222,000 Finale)', // E90 -> STAGE_10 Grand Finale!
 ];
 
 const ALL_TWISTS_RING_V7: readonly BoardTwistIdV7[] = [
@@ -498,7 +502,10 @@ export function createInitialCampaignSaveStateV7(): CampaignSaveStateV7 {
     recentBoardCombos: [],
     careerMedalCounts: {},
     masteredBoardModes: [],
+    masteredBoardModesV9: [],
     masteredDifficulties: [],
+    pendingRematchEpisode: null,
+    consecutiveLossesByEpisode: {},
     settings: createDefaultBroadcastSettingsV7(),
   };
 }
@@ -544,6 +551,9 @@ export interface EpisodeOutcomeSummaryV7 {
   readonly unlockedEnding: FinaleEndingSpecV7 | null;
   readonly newlyUnlockedTrophies: readonly TrophySpecV7[];
   readonly nextEpisodeNumber: number;
+  readonly pendingRematchEpisode?: number | null;
+  readonly consecutiveLossesOnEpisode?: number;
+  readonly antiWallMercy?: AntiWallMercyProfileV9;
 }
 
 // ----------------------------------------------------------------------------
@@ -563,10 +573,25 @@ export class CampaignDirectorV7 {
     return this.state;
   }
 
-  public saveToStorage(): void {
-    if (typeof window === 'undefined' || !window.localStorage) return;
+  private getStorage(): Storage | null {
     try {
-      window.localStorage.setItem(this.storageKey, JSON.stringify(this.state));
+      if (typeof window !== 'undefined' && window.localStorage) {
+        return window.localStorage;
+      }
+      if (typeof localStorage !== 'undefined') {
+        return localStorage;
+      }
+    } catch {
+      // Ignore sandboxed storage access errors
+    }
+    return null;
+  }
+
+  public saveToStorage(): void {
+    const storage = this.getStorage();
+    if (!storage) return;
+    try {
+      storage.setItem(this.storageKey, JSON.stringify(this.state));
     } catch {
       // Ignore quota / private-browsing storage restrictions
     }
@@ -574,11 +599,12 @@ export class CampaignDirectorV7 {
 
   public loadFromStorage(): CampaignSaveStateV7 {
     const fallback = createInitialCampaignSaveStateV7();
-    if (typeof window === 'undefined' || !window.localStorage) {
+    const storage = this.getStorage();
+    if (!storage) {
       return fallback;
     }
     try {
-      const raw = window.localStorage.getItem(this.storageKey);
+      const raw = storage.getItem(this.storageKey);
       if (!raw) return fallback;
       const parsed = JSON.parse(raw) as Partial<CampaignSaveStatePersistedV7> | null;
       if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed) || parsed.version !== 'WS_V7_GOLD_1') {
@@ -679,6 +705,44 @@ export class CampaignDirectorV7 {
             ),
           ]
         : [];
+
+      const sanitizedMasteredModesV9: BoardPlayModeV9[] = Array.isArray(
+        parsed.masteredBoardModesV9,
+      )
+        ? [
+            ...new Set(
+              parsed.masteredBoardModesV9.filter(
+                (m): m is BoardPlayModeV9 =>
+                  typeof m === 'string' && VALID_BOARD_PLAY_MODES_SET_V9.has(m),
+              ),
+            ),
+          ]
+        : [...sanitizedMasteredModes];
+
+      const sanitizedConsecutiveLosses: Record<number, number> = {};
+      if (
+        parsed.consecutiveLossesByEpisode &&
+        typeof parsed.consecutiveLossesByEpisode === 'object' &&
+        !Array.isArray(parsed.consecutiveLossesByEpisode)
+      ) {
+        for (const [epKey, rawCount] of Object.entries(
+          parsed.consecutiveLossesByEpisode as Record<string, unknown>,
+        )) {
+          const epNum = Number(epKey);
+          if (!Number.isInteger(epNum) || epNum < 1 || epNum > 90) continue;
+          const cleanLossCount = sanitizeFiniteIntV7(rawCount, 0, 0, 99);
+          if (cleanLossCount > 0) {
+            sanitizedConsecutiveLosses[epNum] = cleanLossCount;
+          }
+        }
+      }
+
+      const sanitizedPendingRematchEpisode: number | null =
+        parsed.pendingRematchEpisode !== undefined &&
+        parsed.pendingRematchEpisode !== null &&
+        Number.isFinite(Number(parsed.pendingRematchEpisode))
+          ? sanitizeFiniteIntV7(parsed.pendingRematchEpisode, ep, 1, 90)
+          : null;
 
       const sanitizedMasteredDifficulties: DifficultyModeV7[] = Array.isArray(
         parsed.masteredDifficulties,
@@ -846,8 +910,11 @@ export class CampaignDirectorV7 {
           : [],
         careerMedalCounts: sanitizedMedals,
         masteredBoardModes: sanitizedMasteredModes,
+        masteredBoardModesV9: sanitizedMasteredModesV9,
         masteredDifficulties: sanitizedMasteredDifficulties,
         masteredModeDifficulties: sanitizedMasteredModeDifficulties,
+        pendingRematchEpisode: sanitizedPendingRematchEpisode,
+        consecutiveLossesByEpisode: sanitizedConsecutiveLosses,
         ...(sanitizedLastWaiverEpisode !== undefined
           ? { lastWaiverStampedEpisode: sanitizedLastWaiverEpisode }
           : {}),
@@ -869,6 +936,8 @@ export class CampaignDirectorV7 {
     const fresh: CampaignSaveStatePersistedV7 = {
       ...createInitialCampaignSaveStateV7(),
       masteredModeDifficulties: [],
+      pendingRematchEpisode: null,
+      consecutiveLossesByEpisode: {},
       lastWaiverStampedEpisode: undefined,
       lastWaiverStampedBroker: undefined,
     };
@@ -975,6 +1044,9 @@ export class CampaignDirectorV7 {
     regimeOverride?: CoupRegimeIdV7,
   ): EpisodeBlueprintV7 {
     const clamped = Math.max(1, Math.min(90, Math.floor(episodeNumber)));
+    if (this.state.pendingRematchEpisode !== clamped) {
+      this.state.pendingRematchEpisode = null;
+    }
     this.state.currentEpisode = clamped;
     this.state.season = episodeToSeasonV7(clamped);
     if (regimeOverride) {
@@ -1193,6 +1265,76 @@ export class CampaignDirectorV7 {
       immediateCleanBonus,
       immediateContrabandBonus,
       newlyUnlockedTrophies,
+    };
+  }
+
+  /** Returns consecutive losses recorded on an episode for R6 anti-wall mercy & UI badges. */
+  public getConsecutiveLossesForEpisode(
+    episodeNumber: number = this.state.currentEpisode,
+  ): number {
+    const ep = Math.max(1, Math.min(90, Math.floor(episodeNumber)));
+    return this.state.consecutiveLossesByEpisode?.[ep] ?? 0;
+  }
+
+  public hasPendingRematch(
+    episodeNumber: number = this.state.currentEpisode,
+  ): boolean {
+    const ep = Math.max(1, Math.min(90, Math.floor(episodeNumber)));
+    return this.state.pendingRematchEpisode === ep;
+  }
+
+  /**
+   * Subtle anti-wall mercy after 2+ consecutive losses on the same episode:
+   * -4% Rival accuracy per retry after loss #1 (capped at -12%), plus +10% Underdog Bonus.
+   */
+  public getAntiWallMercyForEpisode(
+    episodeNumber: number = this.state.currentEpisode,
+  ): AntiWallMercyProfileV9 {
+    const losses = this.getConsecutiveLossesForEpisode(episodeNumber);
+    if (losses >= 2) {
+      return {
+        active: true,
+        consecutiveLosses: losses,
+        rivalAccuracyPenalty: Number(
+          Math.min(0.12, (losses - 1) * 0.04).toFixed(4),
+        ),
+        underdogBonusRatio: 0.1,
+      };
+    }
+    return {
+      active: false,
+      consecutiveLosses: losses,
+      rivalAccuracyPenalty: 0,
+      underdogBonusRatio: 0,
+    };
+  }
+
+  /** Stages a Return Champion-vs-Champion loss rematch on the target/pending episode. */
+  public startReturnChampionRematch(episodeNumber?: number): {
+    readonly blueprint: EpisodeBlueprintV7;
+    readonly mercy: AntiWallMercyProfileV9;
+    readonly matchRetryNonce: number;
+  } {
+    const ep = Math.max(
+      1,
+      Math.min(
+        90,
+        Math.floor(
+          episodeNumber ??
+            this.state.pendingRematchEpisode ??
+            this.state.currentEpisode,
+        ),
+      ),
+    );
+    this.state.currentEpisode = ep;
+    this.state.season = episodeToSeasonV7(ep);
+    this.state.pendingRematchEpisode = ep;
+    this.saveToStorage();
+    return {
+      blueprint: this.buildEpisodeBlueprint(ep),
+      mercy: this.getAntiWallMercyForEpisode(ep),
+      matchRetryNonce:
+        this.getConsecutiveLossesForEpisode(ep) + this.state.episodesPlayed,
     };
   }
 
@@ -2018,11 +2160,32 @@ export class CampaignDirectorV7 {
       this.grantTrophyId('trophy_s4_36');
     }
 
-    // Advance campaign clock (0 Retry walls on honest loss unless on Ep 90 championship crest)
-    if (!input.blueprint.isFinale) {
-      this.state.currentEpisode = Math.min(90, input.blueprint.episodeNumber + 1);
-      this.state.season = episodeToSeasonV7(this.state.currentEpisode);
+    // R6 Return Champion-vs-Champion Loss Rematch:
+    // Hold currentEpisode on loss (replay until won) and track consecutive losses for anti-wall mercy;
+    // advance on win and clear rematch/loss counters. (cleanPurseCash stays 100% isolated from Showroom Cash!)
+    const ep = Math.max(1, Math.min(90, Math.floor(input.blueprint.episodeNumber)));
+    if (!this.state.consecutiveLossesByEpisode) {
+      this.state.consecutiveLossesByEpisode = {};
     }
+    if (wonMatch) {
+      this.state.pendingRematchEpisode = null;
+      delete this.state.consecutiveLossesByEpisode[ep];
+      if (!input.blueprint.isFinale) {
+        this.state.currentEpisode = Math.min(90, ep + 1);
+        this.state.season = episodeToSeasonV7(this.state.currentEpisode);
+      }
+    } else {
+      this.state.currentEpisode = ep;
+      this.state.season = episodeToSeasonV7(ep);
+      this.state.pendingRematchEpisode = ep;
+      this.state.consecutiveLossesByEpisode[ep] =
+        (this.state.consecutiveLossesByEpisode[ep] ?? 0) + 1;
+    }
+
+    const consecutiveLossesOnEpisode = this.getConsecutiveLossesForEpisode(ep);
+    const antiWallMercy = this.getAntiWallMercyForEpisode(
+      this.state.currentEpisode,
+    );
 
     const newlyUnlockedTrophies = this.evaluateTrophyUnlocks(TROPHY_CATALOG_V7, beforeTrophies);
     this.saveToStorage();
@@ -2039,6 +2202,9 @@ export class CampaignDirectorV7 {
       unlockedEnding,
       newlyUnlockedTrophies,
       nextEpisodeNumber: this.state.currentEpisode,
+      pendingRematchEpisode: this.state.pendingRematchEpisode ?? null,
+      consecutiveLossesOnEpisode,
+      antiWallMercy,
     };
   }
 
@@ -2225,7 +2391,7 @@ export class CampaignDirectorV7 {
     if (isFinale) {
       return {
         speaker: 'GRANT_BELLAMY',
-        line: 'Thirty-six floors above Sixth Ave for $250,000—let’s see whether you came to host this network or blow its doors off!',
+        line: 'Thirty-eight floors above Sixth Ave for $222,000—let’s see whether you came to host this network or blow its doors off!',
       };
     }
     if (isCoupPivot) {
@@ -2389,7 +2555,7 @@ export class CampaignDirectorV7 {
       TOBY_OKAFOR: [
         'If a square hums before you tap it, Control Booth A wired extra juice underneath—keep your eyes peeled!',
         'I spent all afternoon balancing Midtown transformers; let’s play ten square turns and make the split-flaps sing.',
-        'Watch the rebound cash when either of us misses—a +$50 open square turns a close match around fast!',
+        'Watch the rebound cash when either of us misses—a +$100 open square turns a close match around fast!',
       ],
       INEZ_CALLAHAN: [
         'Read the second half of every question closely—our writers love tucking a giveaway clue right beside the punchline!',
@@ -2588,7 +2754,7 @@ export class CampaignDirectorV7 {
     if (ep === 90) {
       return {
         broker: 'ROZ_KORMAN',
-        note: '36TH-FLOOR PENTHOUSE COURIER: “Fifty million watching and Bellamy’s palm is sweating! POCKET for +$180 Backstage Cash & a marked answer (check UV—I play for keeps!), or BURN ON AIR for +$125 Clean Purse.”',
+        note: '38TH-FLOOR PENTHOUSE COURIER: “Fifty million watching and Bellamy’s palm is sweating! POCKET for +$180 Backstage Cash & a marked answer (check UV—I play for keeps!), or BURN ON AIR for +$125 Clean Purse.”',
         isPoisoned: true,
       };
     }
@@ -2686,7 +2852,7 @@ export class CampaignDirectorV7 {
       if (broker === 'ROZ_KORMAN') {
         const s4Roz: readonly string[] = [
           'VELVET LOGE MESSENGER: “Side bets in the balcony just doubled! Pocket +$180 Backstage Cash & a marked answer (tap Check for Rigging—Penthouse bait bites!), or burn live for +$125 Clean Cash.”',
-          '36TH-FLOOR RUNNER: “Half the former champs upstairs think you’ll fold—take +$180 Backstage Cash & a penciled hint (verify under UV!), or burn it before the balcony for +$125 Clean Purse.”',
+          '38TH-FLOOR RUNNER: “Half the former champs upstairs think you’ll fold—take +$180 Backstage Cash & a penciled hint (verify under UV!), or burn it before the balcony for +$125 Clean Purse.”',
           'CHAMPIONS’ BOX ENVELOPE: “High-rollers love bold hands—slip +$180 Backstage Cash & a cue into your trunk (check for traps!), or incinerate it on air for +$125 Clean Cash.”',
         ];
         return { broker, note: s4Roz[ep % s4Roz.length], isPoisoned };
@@ -2912,14 +3078,14 @@ const BESPOKE_EPISODE_CLIFFHANGERS_V7: Readonly<
       'The velvet balcony above Television City is packed with every Champion you faced all year! Oxford don Arthur Pendleton opens the Tournament of Champions while allies cheer and rivals place side bets…',
   },
   74: {
-    stakesTag: 'FLOOR 36 PREVIEW · PENTHOUSE',
+    stakesTag: 'FLOOR 38 PREVIEW · PENTHOUSE',
     hookCopy:
-      'For the very first time, the brass express elevator climbs straight to the 36th-Floor Penthouse! Step beneath the Sovereign Ziggurat lights and prove to Grant Bellamy you belong above Sixth Avenue…',
+      'For the very first time, the brass express elevator climbs straight to the 38th-Floor Penthouse! Step beneath the Sovereign Ziggurat lights and prove to Grant Bellamy you belong above Sixth Avenue…',
   },
   85: {
     stakesTag: 'PENTHOUSE ROUND I · VELVET ROPE',
     hookCopy:
-      'Six broadcasts left to the $250,000 crown! Thirty-six floors above Manhattan, Oxford polymath Arthur Pendleton guards the Penthouse threshold with pure, unrigged scholarship and zero mercy…',
+      'Six broadcasts left to the $222,000 crown! Thirty-eight floors above Manhattan, Oxford polymath Arthur Pendleton guards the Penthouse threshold with pure, unrigged scholarship and zero mercy…',
   },
   86: {
     stakesTag: 'PENTHOUSE ROUND II · ENDGAME',
@@ -2929,7 +3095,7 @@ const BESPOKE_EPISODE_CLIFFHANGERS_V7: Readonly<
   87: {
     stakesTag: 'PENTHOUSE ROUND III · HOSTILE BID',
     hookCopy:
-      'Broad Street tape-reader Sterling Vance offered to buy the whole broadcast before airtime. Tomorrow night on Floor 36, raid the upper Ziggurat before he executes a hostile takeover of your purse…',
+      'Broad Street tape-reader Sterling Vance offered to buy the whole broadcast before airtime. Tomorrow night on Floor 38, raid the upper Ziggurat before he executes a hostile takeover of your purse…',
   },
   88: {
     stakesTag: 'PENTHOUSE ROUND IV · LAB PRECISION',
@@ -2939,12 +3105,12 @@ const BESPOKE_EPISODE_CLIFFHANGERS_V7: Readonly<
   89: {
     stakesTag: 'PENTHOUSE SEMIFINAL · VIENNA TEMPO',
     hookCopy:
-      'One victory away from the $250,000 Grand Finale! Fiery Vienna opera maestro Clara von Berg raises her baton under the Penthouse chandeliers—shatter her tempo and claim the final challenger slot…',
+      'One victory away from the $222,000 Grand Finale! Fiery Vienna opera maestro Clara von Berg raises her baton under the Penthouse chandeliers—shatter her tempo and claim the final challenger slot…',
   },
   90: {
-    stakesTag: 'GRAND FINALE · $250,000 CROWN!',
+    stakesTag: 'GRAND FINALE · $222,000 CROWN!',
     hookCopy:
-      'This is it—fifty million homes tuned to Floor 36 for $250,000 and the soul of the network! Undefeated eleven-week Sphinx Victor Lazar awaits at Podium Two; every choice you made decides the ending…',
+      'This is it—fifty million homes tuned to Floor 38 for $222,000 and the soul of the network! Undefeated eleven-week Sphinx Victor Lazar awaits at Podium Two; every choice you made decides the ending…',
   },
 };
 
@@ -3036,9 +3202,9 @@ export function getNextEpisodeCliffhangerTeaserV7(
   // Season 4 Tournament of Champions VIP Balcony Arcs (E70..E84)
   if (nextBp.season === 4) {
     const s4Hooks: readonly string[] = [
-      `The velvet balcony above ${stageCallsign} buzzes with Champions trading side bets on your run. Tomorrow night, ${rival.name} guards the road to Floor 36—hold steady for the Final Wager…`,
+      `The velvet balcony above ${stageCallsign} buzzes with Champions trading side bets on your run. Tomorrow night, ${rival.name} guards the road to Floor 38—hold steady for the Final Wager…`,
       `Grant Bellamy polished the Penthouse elevator keys backstage at ${stageCallsign}. Next in the Tournament of Champions, ${rival.name} targets the upper plaques while the VIP Jury votes…`,
-      `Every ally and rival from three seasons fills the balcony at ${stageCallsign}. Outduel ${rival.name} across three escalating acts to stay alive for the $250,000 Penthouse Finale…`,
+      `Every ally and rival from three seasons fills the balcony at ${stageCallsign}. Outduel ${rival.name} across three escalating acts to stay alive for the $222,000 Penthouse Finale…`,
     ];
     return {
       episodeCode: nextBp.code,

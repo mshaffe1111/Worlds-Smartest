@@ -23,25 +23,37 @@
 // ============================================================================
 
 import {
-  ALL_BOARD_PLAY_MODES_V7,
+  ALL_BOARD_PLAY_MODES_V9,
   ALL_RIVAL_IDS_V7,
-  BOARD_PLAY_MODE_TITLES_V7,
-  type BoardPlayModeV7,
+  BOARD_PLAY_MODE_TITLES_V9,
+  type BoardPlayModeV9,
+  type BroadcastBoothConfigV9,
   type CastIdV7,
+  type CategoryIdV7,
   type ClueRecordV7,
   type CouchPlayerConfigV8,
   type CouchSecretFinalWagerResultV8,
   type CouchShowdownLaunchSpecV8,
+  type CouchSkillDialV9,
   type PortraitEmotionV7,
   type StageWorldIdV7,
   type StudioVoiceCueIdV8,
+  type VibePackIdV9,
 } from '../contracts_v7';
 import {
   BROKER_IDS_V7,
   CAST_PROFILES_V7,
-  PORTRAIT_SPRITE_POSITIONS_V7,
-  buildCastMonogramSvgDataUriV7,
 } from '../campaign/CastAndRelicsCatalogV7';
+import { getFriendlyCategoryLabelV7 } from '../corpus/CorpusManagerV7';
+import { VIBE_PACK_CATALOG_V9 } from '../../v9/ShowroomAndCatalogsV9';
+import { buildPaintedPortraitCssLayersV8 } from './ReactionPipMonitorV8';
+
+export interface CouchShowdownLaunchSpecV9
+  extends Omit<CouchShowdownLaunchSpecV8, 'boardPlayMode'> {
+  readonly boardPlayMode: BoardPlayModeV9;
+  readonly skillDials?: readonly [CouchSkillDialV9, CouchSkillDialV9];
+  readonly boothConfig?: BroadcastBoothConfigV9;
+}
 
 // ----------------------------------------------------------------------------
 // 1. Canonical 1966 Studio Rosters, Nicknames & 27-Portrait Resolver
@@ -168,7 +180,7 @@ export const COUCH_1966_NICKNAMES_V8: readonly string[] = [
   'STARLET',
 ];
 
-const BOARD_MODE_HOOKS_V8: Record<BoardPlayModeV7 | 'SURPRISE_MIX', string> = {
+const BOARD_MODE_HOOKS_V8: Record<BoardPlayModeV9 | 'SURPRISE_MIX', string> = {
   SURPRISE_MIX: 'Cycles fresh 1966 TV Board Formats automatically every match',
   CLASSIC_TOTE: 'Climb $150–$400 rows, reveal the 2x Secret Square & crack the $500 Vault',
   TIC_TAC_LINE: 'Connect 3 claimed squares in any line for +$600 — block your rival!',
@@ -178,6 +190,14 @@ const BOARD_MODE_HOOKS_V8: Record<BoardPlayModeV7 | 'SURPRISE_MIX', string> = {
   MONTY_CURTAIN_DEAL: 'Triple Velvet Mystery Curtains (#1–#3) + Instant Bargains & steals',
   PRESS_YOUR_LUCK_GREMLIN: 'Slam STOP! for huge bucks, pass hot spins, or dodge the -40% Gremlin!',
   BIG_WHEEL_SHOWCASE: 'Flick the 20-wedge Wheel for $1,000 Jackpots, 2x Doubles & Lifelines',
+  LOUVER_SHUTTER: 'Venetian louvers shutter categories above glowing $200–$500 tiles — flip to reveal!',
+  BLIND_PURSE: 'Topics glow clearly while wax-sealed $150–$750 envelopes pop open on tap!',
+  BLACKOUT_VAULT: 'Brass safe Trilons #1–#12 hide topic & cash — dodge 3 High-Volt traps!',
+  LIVE_WIRE_FUSE: 'Start from 1 open tile — every correct answer sparks adjacent conduits live!',
+  SHIFTING_SPOTLIGHT: 'Harvest Gold follow-spot glides each turn for 1.5x/2x bonus payouts!',
+  GOLDEN_DOMINO_CASCADE: 'Link 3 contiguous claimed wins to trigger a +$350 Domino Cascade!',
+  PRESSURE_COOKER: 'Shared gauge climbs 1.0x -> 1.25x -> 1.5x -> 2.0x; any miss blasts reset!',
+  HOLLYWOOD_MARQUEE_LINE: 'Light O/X chasing marquee bulbs in any 3-tile line for +$300!',
 };
 
 const STAGE_PALETTE_SWATCHES_V8: Record<StageWorldIdV7, readonly [string, string]> = {
@@ -207,12 +227,10 @@ export function applyCouchCastPortraitV8(
   castId: CastIdV7,
   emotion: PortraitEmotionV7 = 'POISED',
 ): void {
-  const paintedUrl = resolveCouchPortraitAssetV8(castId);
-  const fallbackUri = buildCastMonogramSvgDataUriV7(castId, emotion);
-  const pos = PORTRAIT_SPRITE_POSITIONS_V7[emotion]?.bgPosition ?? '0% 0%';
-  el.style.backgroundImage = `url("${paintedUrl}"), url("${fallbackUri}")`;
-  el.style.backgroundSize = '200% 200%, cover';
-  el.style.backgroundPosition = `${pos}, center`;
+  const layers = buildPaintedPortraitCssLayersV8(castId, emotion);
+  el.style.backgroundImage = layers.backgroundImage;
+  el.style.backgroundSize = layers.backgroundSize;
+  el.style.backgroundPosition = layers.backgroundPosition;
 }
 
 /** Non-blocking warmup for the 2 active Podium portraits (+ Grant Bellamy host). */
@@ -228,8 +246,11 @@ export function preloadCouchPortraitsV8(castIds: readonly CastIdV7[]): void {
 
 /** Builds a rematch spec swapping Podium 1 & Podium 2 so the other player gets 1st pick! */
 export function swapCouchPodiumFirstPickV8(
-  spec: CouchShowdownLaunchSpecV8,
-): CouchShowdownLaunchSpecV8 {
+  spec: CouchShowdownLaunchSpecV8 | CouchShowdownLaunchSpecV9,
+): CouchShowdownLaunchSpecV9 {
+  const specV9 = spec as CouchShowdownLaunchSpecV9;
+  const swappedDials: readonly [CouchSkillDialV9, CouchSkillDialV9] | undefined =
+    specV9.skillDials ? [specV9.skillDials[1], specV9.skillDials[0]] : undefined;
   return {
     podium1: {
       podiumIndex: 0,
@@ -246,6 +267,9 @@ export function swapCouchPodiumFirstPickV8(
     totalTurns: spec.totalTurns,
     stageId: spec.stageId,
     boardPlayMode: spec.boardPlayMode,
+    questionTimerMode: spec.questionTimerMode,
+    skillDials: swappedDials,
+    boothConfig: specV9.boothConfig,
   };
 }
 
@@ -254,10 +278,10 @@ export function swapCouchPodiumFirstPickV8(
 // ----------------------------------------------------------------------------
 
 export interface CouchPartySetupOptionsV8 {
-  readonly initialSpec?: Partial<CouchShowdownLaunchSpecV8>;
+  readonly initialSpec?: Partial<CouchShowdownLaunchSpecV9>;
   readonly defaultTurns?: 6 | 10;
   readonly defaultStageId?: StageWorldIdV7 | 'SURPRISE_MIX';
-  readonly defaultBoardPlayMode?: BoardPlayModeV7 | 'SURPRISE_MIX';
+  readonly defaultBoardPlayMode?: BoardPlayModeV9 | 'SURPRISE_MIX';
   readonly allowIdenticalAvatars?: boolean;
   readonly reducedMotion?: boolean;
   readonly onTapSfx?: () => void;
@@ -324,7 +348,7 @@ export interface CouchBlindFinalShowdownResultV8
     CouchFinalShowdownEvaluationV8 {}
 
 export interface CouchBlindFinalShowdownOptionsV8 {
-  readonly spec: CouchShowdownLaunchSpecV8;
+  readonly spec: CouchShowdownLaunchSpecV8 | CouchShowdownLaunchSpecV9;
   readonly p1Cash: number;
   readonly p2Cash: number;
   readonly p1FinalWagerShield?: boolean;
@@ -346,7 +370,7 @@ export interface CouchBlindFinalShowdownOptionsV8 {
 export type CouchCeremonyActionV8 = 'REMATCH_SWAP_FIRST_PICK' | 'RETURN_TO_HUB';
 
 export interface CouchWinnerCheckCeremonyOptionsV8 {
-  readonly spec: CouchShowdownLaunchSpecV8;
+  readonly spec: CouchShowdownLaunchSpecV8 | CouchShowdownLaunchSpecV9;
   readonly evaluation: CouchFinalShowdownEvaluationV8;
   readonly p1CorrectClues?: number;
   readonly p2CorrectClues?: number;
@@ -358,7 +382,9 @@ export interface CouchWinnerCheckCeremonyOptionsV8 {
   readonly onTapSfx?: () => void;
   readonly onCelebrateSfx?: () => void;
   readonly onVoiceCue?: (cueId: StudioVoiceCueIdV8) => void;
-  readonly onRematchSwapFirstPick?: (swappedSpec: CouchShowdownLaunchSpecV8) => void;
+  readonly onRematchSwapFirstPick?: (
+    swappedSpec: CouchShowdownLaunchSpecV8 | CouchShowdownLaunchSpecV9,
+  ) => void;
   readonly onReturnToHub?: () => void;
 }
 
@@ -422,7 +448,7 @@ function buildCouchIconSvg(
   }
 }
 
-function buildCouchBoardMiniDiagramSvg(mode: BoardPlayModeV7 | 'SURPRISE_MIX'): string {
+function buildCouchBoardMiniDiagramSvg(mode: BoardPlayModeV9 | 'SURPRISE_MIX'): string {
   switch (mode) {
     case 'SURPRISE_MIX':
       return `<svg class="wsc8-mini-diagram-svg" viewBox="0 0 50 38" fill="none" aria-hidden="true"><rect x="1" y="1" width="48" height="36" rx="7" fill="#5C301B" stroke="#D9A441" stroke-width="1.8"/><polygon points="25,19 14,5 25,5" fill="#F2A922"/><polygon points="25,19 25,5 36,5" fill="#FF6B35"/><polygon points="25,19 36,5 43,19" fill="#E6397A"/><polygon points="25,19 43,19 36,33" fill="#1746A2"/><polygon points="25,19 36,33 14,33" fill="#008B94"/><polygon points="25,19 14,33 7,19" fill="#19A85A"/><polygon points="25,19 7,19 14,5" fill="#FFD166"/><circle cx="25" cy="19" r="7.2" fill="#FAF2DF" stroke="#6E3B23" stroke-width="1.5"/><path d="M25 13.8 L26.5 17.5 L30.2 19 L26.5 20.5 L25 24.2 L23.5 20.5 L19.8 19 L23.5 17.5 Z" fill="#E8531E"/></svg>`;
@@ -440,6 +466,22 @@ function buildCouchBoardMiniDiagramSvg(mode: BoardPlayModeV7 | 'SURPRISE_MIX'): 
       return `<svg class="wsc8-mini-diagram-svg" viewBox="0 0 50 38" fill="none" aria-hidden="true"><rect x="1" y="1" width="48" height="36" rx="7" fill="#8E1B46" stroke="#D9A441" stroke-width="1.8"/><path d="M5.5 32 V12.5 C5.5 8.5 15.5 8.5 15.5 12.5 V32 Z" fill="#E6397A"/><path d="M20 32 V11.5 C20 7.5 30 7.5 30 11.5 V32 Z" fill="#FFD166"/><path d="M34.5 32 V12.5 C34.5 8.5 44.5 8.5 44.5 12.5 V32 Z" fill="#008B94"/><rect x="4.5" y="31" width="41" height="3" rx="1.5" fill="#F2A922"/></svg>`;
     case 'PRESS_YOUR_LUCK_GREMLIN':
       return `<svg class="wsc8-mini-diagram-svg" viewBox="0 0 50 38" fill="none" aria-hidden="true"><rect x="1" y="1" width="48" height="36" rx="7" fill="#5C301B" stroke="#D9A441" stroke-width="1.8"/><rect x="5" y="5" width="9" height="6" rx="1.2" fill="#008B94"/><rect x="15.5" y="5" width="9" height="6" rx="1.2" fill="#FFD166"/><rect x="26" y="5" width="9" height="6" rx="1.2" fill="#E6397A"/><rect x="36.5" y="5" width="8.5" height="6" rx="1.2" fill="#1746A2"/><rect x="5" y="27" width="9" height="6" rx="1.2" fill="#FF6B35"/><rect x="15.5" y="27" width="9" height="6" rx="1.2" fill="#1746A2"/><rect x="26" y="27" width="9" height="6" rx="1.2" fill="#FFD166"/><rect x="36.5" y="27" width="8.5" height="6" rx="1.2" fill="#008B94"/><rect x="15.5" y="13" width="19" height="12" rx="2.5" fill="#FAF2DF"/><path d="M25.5 14.5 L22 19.5 H25.2 L24 23.5 L28.2 18.2 H25.2 Z" fill="#E8531E"/></svg>`;
+    case 'LOUVER_SHUTTER':
+      return `<svg class="wsc8-mini-diagram-svg" viewBox="0 0 50 38" fill="none" aria-hidden="true"><rect x="1" y="1" width="48" height="36" rx="7" fill="#008B94" stroke="#D9A441" stroke-width="1.8"/><rect x="6" y="6" width="38" height="4.5" rx="1.5" fill="#FFFDF7"/><rect x="6" y="12.5" width="38" height="4.5" rx="1.5" fill="#FAF2DF"/><rect x="6" y="19" width="38" height="4.5" rx="1.5" fill="#FFFDF7"/><rect x="9" y="25.5" width="32" height="7" rx="2" fill="#F2A922" stroke="#6E3B23" stroke-width="1.2"/></svg>`;
+    case 'BLIND_PURSE':
+      return `<svg class="wsc8-mini-diagram-svg" viewBox="0 0 50 38" fill="none" aria-hidden="true"><rect x="1" y="1" width="48" height="36" rx="7" fill="#6E3B23" stroke="#D9A441" stroke-width="1.8"/><rect x="7" y="6" width="36" height="8" rx="2.2" fill="#008B94"/><rect x="9" y="16.5" width="32" height="16" rx="3" fill="#FFFDF7" stroke="#E6397A" stroke-width="1.6"/><circle cx="25" cy="24.5" r="5" fill="#E6397A"/><circle cx="25" cy="24.5" r="2" fill="#FFD166"/></svg>`;
+    case 'BLACKOUT_VAULT':
+      return `<svg class="wsc8-mini-diagram-svg" viewBox="0 0 50 38" fill="none" aria-hidden="true"><rect x="1" y="1" width="48" height="36" rx="7" fill="#5C301B" stroke="#D9A441" stroke-width="1.8"/><rect x="6" y="6" width="16" height="26" rx="3" fill="#6E3B23" stroke="#FFD166" stroke-width="1.4"/><circle cx="14" cy="19" r="4.5" fill="#F2A922"/><rect x="28" y="6" width="16" height="26" rx="3" fill="#FFF3C4" stroke="#FF6B35" stroke-width="1.6"/><path d="M37 11 L33 19 H36.5 L35 27 L40 18 H36.5 Z" fill="#E8531E"/></svg>`;
+    case 'LIVE_WIRE_FUSE':
+      return `<svg class="wsc8-mini-diagram-svg" viewBox="0 0 50 38" fill="none" aria-hidden="true"><rect x="1" y="1" width="48" height="36" rx="7" fill="#1746A2" stroke="#D9A441" stroke-width="1.8"/><line x1="9" y1="19" x2="41" y2="19" stroke="#FFD166" stroke-width="3" stroke-linecap="round"/><line x1="25" y1="7" x2="25" y2="31" stroke="#FFD166" stroke-width="3" stroke-linecap="round"/><rect x="6" y="14" width="10" height="10" rx="2.5" fill="#008B94" stroke="#FFFDF7" stroke-width="1.2"/><rect x="20" y="14" width="10" height="10" rx="2.5" fill="#FF6B35" stroke="#FFFDF7" stroke-width="1.2"/><rect x="34" y="14" width="10" height="10" rx="2.5" fill="#FAF2DF"/></svg>`;
+    case 'SHIFTING_SPOTLIGHT':
+      return `<svg class="wsc8-mini-diagram-svg" viewBox="0 0 50 38" fill="none" aria-hidden="true"><rect x="1" y="1" width="48" height="36" rx="7" fill="#007A82" stroke="#D9A441" stroke-width="1.8"/><line x1="6" y1="7" x2="44" y2="7" stroke="#FFD166" stroke-width="2.4" stroke-linecap="round"/><polygon points="25,8 14,32 36,32" fill="#FFD166" fill-opacity="0.5"/><rect x="18" y="18" width="14" height="14" rx="3" fill="#F2A922" stroke="#FFFDF7" stroke-width="1.4"/></svg>`;
+    case 'GOLDEN_DOMINO_CASCADE':
+      return `<svg class="wsc8-mini-diagram-svg" viewBox="0 0 50 38" fill="none" aria-hidden="true"><rect x="1" y="1" width="48" height="36" rx="7" fill="#15803D" stroke="#D9A441" stroke-width="1.8"/><rect x="6" y="11" width="10" height="16" rx="2.5" fill="#FFFDF7"/><rect x="20" y="11" width="10" height="16" rx="2.5" fill="#FFD166"/><rect x="34" y="11" width="10" height="16" rx="2.5" fill="#FF6B35"/><circle cx="11" cy="19" r="2.2" fill="#15803D"/><circle cx="25" cy="19" r="2.2" fill="#6E3B23"/><circle cx="39" cy="19" r="2.2" fill="#FFFDF7"/></svg>`;
+    case 'PRESSURE_COOKER':
+      return `<svg class="wsc8-mini-diagram-svg" viewBox="0 0 50 38" fill="none" aria-hidden="true"><rect x="1" y="1" width="48" height="36" rx="7" fill="#C8461C" stroke="#D9A441" stroke-width="1.8"/><circle cx="25" cy="19" r="12" fill="#FFFDF7" stroke="#D9A441" stroke-width="2"/><path d="M16 21 A9 9 0 0 1 34 21" stroke="#008B94" stroke-width="3" stroke-linecap="round"/><line x1="25" y1="20" x2="32" y2="12" stroke="#E6397A" stroke-width="2.4" stroke-linecap="round"/><circle cx="25" cy="20" r="2.2" fill="#6E3B23"/></svg>`;
+    case 'HOLLYWOOD_MARQUEE_LINE':
+      return `<svg class="wsc8-mini-diagram-svg" viewBox="0 0 50 38" fill="none" aria-hidden="true"><rect x="1" y="1" width="48" height="36" rx="7" fill="#8E1B46" stroke="#D9A441" stroke-width="1.8"/><rect x="6" y="12" width="10.5" height="14" rx="2.5" fill="#008B94" stroke="#FFD166" stroke-width="1.4"/><circle cx="11.2" cy="19" r="3" stroke="#FFFDF7" stroke-width="1.6"/><rect x="19.8" y="12" width="10.5" height="14" rx="2.5" fill="#008B94" stroke="#FFD166" stroke-width="1.4"/><circle cx="25" cy="19" r="3" stroke="#FFFDF7" stroke-width="1.6"/><rect x="33.5" y="12" width="10.5" height="14" rx="2.5" fill="#008B94" stroke="#FFD166" stroke-width="1.4"/><circle cx="38.8" cy="19" r="3" stroke="#FFFDF7" stroke-width="1.6"/></svg>`;
     case 'BIG_WHEEL_SHOWCASE':
     default:
       return `<svg class="wsc8-mini-diagram-svg" viewBox="0 0 50 38" fill="none" aria-hidden="true"><rect x="1" y="1" width="48" height="36" rx="7" fill="#6E3B23" stroke="#D9A441" stroke-width="1.8"/><circle cx="25" cy="19.5" r="13.5" fill="#1746A2" stroke="#FFD166" stroke-width="2"/><path d="M25 19.5 L25 6 A13.5 13.5 0 0 1 36.5 12.5 Z" fill="#FFD166"/><path d="M25 19.5 L36.5 12.5 A13.5 13.5 0 0 1 36.5 26.5 Z" fill="#FF6B35"/><path d="M25 19.5 L36.5 26.5 A13.5 13.5 0 0 1 25 33 Z" fill="#E6397A"/><path d="M25 19.5 L25 33 A13.5 13.5 0 0 1 13.5 26.5 Z" fill="#008B94"/><path d="M25 19.5 L13.5 26.5 A13.5 13.5 0 0 1 13.5 12.5 Z" fill="#19A85A"/><circle cx="25" cy="19.5" r="3.8" fill="#FAF2DF"/></svg>`;
@@ -1902,6 +1944,278 @@ export function ensureCouchPartyDeluxeStylesV8(): void {
     .wsc8-backdrop[data-reduced-motion='true'] .wsc8-spotlight-beam {
       animation: none !important;
     }
+
+    /* R3 Per-Podium Skill Dials (Equal $200-$500 Prizes) */
+    .wsc8-skill-dial-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding-top: 6px;
+      border-top: 1.5px dashed #D8C299;
+      min-width: 0;
+    }
+
+    .wsc8-skill-dial-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .wsc8-equal-prize-pill {
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #E8F8EF;
+      border: 1.5px solid #15803D;
+      color: #0D5C2B;
+      font-family: 'Jost', sans-serif;
+      font-size: 11.5px;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .wsc8-skill-dial-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .wsc8-skill-btn {
+      appearance: none;
+      min-height: 48px;
+      padding: 6px 6px;
+      border-radius: 10px;
+      border: 2px solid #D5C29B;
+      background: #FFFDF7;
+      color: #231F20;
+      font-family: 'Jost', 'League Spartan', sans-serif;
+      cursor: pointer;
+      touch-action: manipulation;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1px;
+      transition: transform 0.1s ease, border-color 0.12s ease, background 0.12s ease;
+    }
+
+    .wsc8-skill-btn-label {
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+
+    .wsc8-skill-btn-sub {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #5C432D;
+      line-height: 1.1;
+    }
+
+    .wsc8-skill-btn[aria-checked='true'] {
+      background: linear-gradient(180deg, #FFE484 0%, #F2A922 100%);
+      border-color: var(--wsc8-podium-accent, #008B94);
+      color: #141B29;
+      box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.78), 0 2px 6px rgba(110, 59, 35, 0.22);
+    }
+
+    /* R3 Custom Broadcast Booth Panel (6 Vibe Packs + 3 Red Veto Stamps) */
+    .wsc8-booth-card {
+      border-radius: 15px;
+      padding: 11px 13px;
+      background: linear-gradient(180deg, #FFFDF7 0%, #F8EED8 100%);
+      border: 2px solid #D9A441;
+      box-shadow: 0 3px 0 rgba(110, 59, 35, 0.14);
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .wsc8-booth-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .wsc8-vibe-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    @media (max-width: 720px) {
+      .wsc8-vibe-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .wsc8-vibe-btn {
+      appearance: none;
+      min-height: 50px;
+      padding: 7px 9px;
+      border-radius: 11px;
+      border: 2px solid #D4BC8B;
+      border-left: 5px solid var(--vibe-accent, #008B94);
+      background: #FAF2DF;
+      color: #141B29;
+      text-align: left;
+      cursor: pointer;
+      touch-action: manipulation;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2px;
+      transition: transform 0.1s ease, border-color 0.12s ease, background 0.12s ease;
+    }
+
+    .wsc8-vibe-btn[aria-checked='true'] {
+      background: #FFFDF7;
+      border-color: #6E3B23;
+      border-left-color: var(--vibe-accent, #008B94);
+      box-shadow: 0 0 0 2px #F2A922, 0 3px 8px rgba(110, 59, 35, 0.18);
+    }
+
+    .wsc8-vibe-title {
+      font-family: 'Jost', sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      line-height: 1.15;
+    }
+
+    .wsc8-vibe-sub {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #5C432D;
+      line-height: 1.2;
+    }
+
+    .wsc8-veto-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .wsc8-veto-chip {
+      position: relative;
+      appearance: none;
+      min-height: 48px;
+      padding: 6px 12px;
+      border-radius: 10px;
+      border: 2px solid #C9B286;
+      background: #FFFDF7;
+      color: #141B29;
+      font-family: 'Jost', sans-serif;
+      font-size: 12.5px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      touch-action: manipulation;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      overflow: hidden;
+    }
+
+    .wsc8-veto-chip[aria-pressed='true'] {
+      background: #FFF0F3;
+      border-color: #C81E3A;
+      color: #8F1027;
+      box-shadow: inset 0 0 0 1px rgba(200, 30, 58, 0.35);
+    }
+
+    .wsc8-veto-stamp {
+      padding: 1px 6px;
+      border-radius: 5px;
+      border: 1.5px solid #C81E3A;
+      background: #E6397A;
+      color: #FFFDF7;
+      font-size: 10.5px;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      transform: rotate(-6deg);
+    }
+
+    .wsc8-veto-chip:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    /* R3 Hot Mic Privacy Handoff Card (Sunlit fallback styles alongside showroom_modes_v9.css) */
+    .ws9-hotmic-handoff .wsc8-hotmic-hero {
+      padding: 16px 18px 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+      background: linear-gradient(180deg, #FFFDF7 0%, #FAF2DF 100%);
+      color: #141B29;
+    }
+
+    .wsc8-hotmic-alert-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 14px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #FF6B35 0%, #E6397A 100%);
+      color: #FFFDF7;
+      font-family: 'Jost', sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      border: 1.5px solid #FFFDF7;
+      box-shadow: 0 3px 10px rgba(110, 59, 35, 0.24);
+    }
+
+    .wsc8-hotmic-headline {
+      margin: 0;
+      font-family: 'Caprasimo', 'Fraunces', Georgia, serif;
+      font-size: clamp(20px, 3vw, 27px);
+      line-height: 1.14;
+      color: #5C301B;
+    }
+
+    .wsc8-hotmic-stakes {
+      width: 100%;
+      padding: 10px 13px;
+      border-radius: 12px;
+      background: #FFF6E3;
+      border: 2px solid #D9A441;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.38;
+      color: #141B29;
+    }
+
+    .wsc8-hotmic-ready-btn {
+      width: 100%;
+      min-height: 54px;
+      padding: 12px 18px;
+      border-radius: 14px;
+      border: 2.5px solid #FFE2A8;
+      background: linear-gradient(180deg, #FF7B47 0%, #E8531E 100%);
+      color: #FFFDF7;
+      font-family: 'Jost', 'League Spartan', sans-serif;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      cursor: pointer;
+      touch-action: manipulation;
+      box-shadow: 0 5px 0 #942307, 0 10px 22px rgba(92, 48, 27, 0.28);
+    }
   `;
   document.head.appendChild(style);
 }
@@ -2032,7 +2346,7 @@ export function spellCertifiedCheckDollarsV8(amount: number): string {
  * exact `$` ties via fastest climax lock-in speed (or Co-Champions on dead heat).
  */
 export function evaluateCouchFinalShowdownV8(input: {
-  readonly spec: CouchShowdownLaunchSpecV8;
+  readonly spec: CouchShowdownLaunchSpecV8 | CouchShowdownLaunchSpecV9;
   readonly p1Cash: number;
   readonly p2Cash: number;
   readonly p1FinalWagerShield?: boolean;
@@ -2151,10 +2465,10 @@ const TOTAL_PORTRAIT_PAGES_V8 = Math.ceil(
 export function openCouchPartySetupSheetV8(
   container: HTMLElement,
   opts?: CouchPartySetupOptionsV8,
-): Promise<CouchShowdownLaunchSpecV8 | null> {
+): Promise<CouchShowdownLaunchSpecV9 | null> {
   ensureCouchPartyDeluxeStylesV8();
 
-  return new Promise<CouchShowdownLaunchSpecV8 | null>((resolve) => {
+  return new Promise<CouchShowdownLaunchSpecV9 | null>((resolve) => {
     let p1Name = opts?.initialSpec?.podium1?.name ?? 'ACE';
     let p2Name = opts?.initialSpec?.podium2?.name ?? 'SUNNY';
     let p1Avatar: CastIdV7 = opts?.initialSpec?.podium1?.avatarId ?? 'CARMEN_DELGADO';
@@ -2163,11 +2477,19 @@ export function openCouchPartySetupSheetV8(
       p2Avatar = p1Avatar === 'REX_CALLOWAY' ? 'CARMEN_DELGADO' : 'REX_CALLOWAY';
     }
 
+    let p1SkillDial: CouchSkillDialV9 = opts?.initialSpec?.skillDials?.[0] ?? 'MIXED';
+    let p2SkillDial: CouchSkillDialV9 = opts?.initialSpec?.skillDials?.[1] ?? 'MIXED';
+    let selectedVibePackId: VibePackIdV9 =
+      opts?.initialSpec?.boothConfig?.vibePackId ?? 'PRIMETIME_LIVING_COLOR';
+    const vetoedCategorySet = new Set<CategoryIdV7>(
+      (opts?.initialSpec?.boothConfig?.vetoedCategories ?? []).slice(0, 3),
+    );
+
     let allowTwinAvatars = Boolean(opts?.allowIdenticalAvatars);
     let totalTurns: 6 | 10 = opts?.initialSpec?.totalTurns ?? opts?.defaultTurns ?? 6;
     let selectedStage: StageWorldIdV7 | 'SURPRISE_MIX' =
       opts?.initialSpec?.stageId ?? opts?.defaultStageId ?? 'SURPRISE_MIX';
-    let selectedMode: BoardPlayModeV7 | 'SURPRISE_MIX' =
+    let selectedMode: BoardPlayModeV9 | 'SURPRISE_MIX' =
       opts?.initialSpec?.boardPlayMode ?? opts?.defaultBoardPlayMode ?? 'SURPRISE_MIX';
 
     let diceCursor = Math.floor(Math.random() * COUCH_1966_NICKNAMES_V8.length);
@@ -2183,7 +2505,7 @@ export function openCouchPartySetupSheetV8(
     backdrop.setAttribute('aria-modal', 'true');
     backdrop.setAttribute('aria-label', 'Studio 6A 2-Player Couch Showdown Setup');
 
-    const closeAndResolve = (spec: CouchShowdownLaunchSpecV8 | null): void => {
+    const closeAndResolve = (spec: CouchShowdownLaunchSpecV9 | null): void => {
       if (settled) return;
       settled = true;
       window.removeEventListener('keydown', handleKeyDown);
@@ -2467,7 +2789,69 @@ export function openCouchPartySetupSheetV8(
 
       renderPortraitPage();
       carouselRow.append(prevPageBtn, pageGrid, nextPageBtn);
-      inner.append(heroRow, carouselHead, carouselRow);
+
+      // R3 Per-Podium Skill Dial (EASY / MIXED / SHARK for equal $200-$500 prizes)
+      const skillDialWrap = document.createElement('div');
+      skillDialWrap.className = 'wsc8-skill-dial-wrap';
+
+      const skillHead = document.createElement('div');
+      skillHead.className = 'wsc8-skill-dial-head';
+
+      const skillLbl = document.createElement('span');
+      skillLbl.className = 'wsc8-section-label';
+      skillLbl.textContent = 'PODIUM SKILL DIAL';
+
+      const equalPrizePill = document.createElement('span');
+      equalPrizePill.className = 'wsc8-equal-prize-pill';
+      equalPrizePill.textContent = 'EQUAL $200–$500 PRIZES';
+
+      skillHead.append(skillLbl, equalPrizePill);
+
+      const skillRow = document.createElement('div');
+      skillRow.className = 'wsc8-skill-dial-row';
+      skillRow.setAttribute('role', 'radiogroup');
+      skillRow.setAttribute('aria-label', `Podium ${podiumIdx + 1} Clue Skill Dial`);
+
+      const skillSpecs: ReadonlyArray<{
+        readonly dial: CouchSkillDialV9;
+        readonly label: string;
+        readonly sub: string;
+      }> = [
+        { dial: 'EASY', label: 'EASY', sub: 'Tiers 1–2' },
+        { dial: 'MIXED', label: 'MIXED', sub: 'Tiers 1–4' },
+        { dial: 'SHARK', label: 'SHARK', sub: 'Tiers 3–5' },
+      ];
+
+      const skillBtns: HTMLButtonElement[] = [];
+      const getDial = (): CouchSkillDialV9 => (isP1 ? p1SkillDial : p2SkillDial);
+      const setDial = (next: CouchSkillDialV9): void => {
+        if (isP1) p1SkillDial = next;
+        else p2SkillDial = next;
+      };
+
+      skillSpecs.forEach((s) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'wsc8-skill-btn';
+        btn.dataset.skillDial = s.dial;
+        btn.dataset.podiumSkill = String(podiumIdx);
+        btn.setAttribute('role', 'radio');
+        btn.setAttribute('aria-checked', String(getDial() === s.dial));
+        btn.innerHTML = `<span class="wsc8-skill-btn-label">${s.label}</span><span class="wsc8-skill-btn-sub">${s.sub}</span>`;
+        btn.addEventListener('click', () => {
+          opts?.onTapSfx?.();
+          setDial(s.dial);
+          skillBtns.forEach((b) =>
+            b.setAttribute('aria-checked', String(b.dataset.skillDial === s.dial)),
+          );
+        });
+        skillBtns.push(btn);
+        skillRow.appendChild(btn);
+      });
+
+      skillDialWrap.append(skillHead, skillRow);
+
+      inner.append(heroRow, carouselHead, carouselRow, skillDialWrap);
       desk.append(crown, inner);
       return desk;
     };
@@ -2525,9 +2909,9 @@ export function openCouchPartySetupSheetV8(
     const rotaryPair = document.createElement('div');
     rotaryPair.className = 'wsc8-rotary-pair';
 
-    // Card A: TV Board Game Format (Surprise Studio Mix + 8 Classic Formats = 9)
+    // Card A: TV Board Game Format (Surprise Studio Mix + All 16 v9 Formats = 17)
     const modeEntries: ReadonlyArray<{
-      readonly id: BoardPlayModeV7 | 'SURPRISE_MIX';
+      readonly id: BoardPlayModeV9 | 'SURPRISE_MIX';
       readonly title: string;
       readonly subtitle: string;
     }> = [
@@ -2536,9 +2920,9 @@ export function openCouchPartySetupSheetV8(
         title: 'SURPRISE STUDIO MIX',
         subtitle: BOARD_MODE_HOOKS_V8.SURPRISE_MIX,
       },
-      ...ALL_BOARD_PLAY_MODES_V7.map((mode) => ({
+      ...ALL_BOARD_PLAY_MODES_V9.map((mode) => ({
         id: mode,
-        title: BOARD_PLAY_MODE_TITLES_V7[mode],
+        title: BOARD_PLAY_MODE_TITLES_V9[mode],
         subtitle: BOARD_MODE_HOOKS_V8[mode],
       })),
     ];
@@ -2570,7 +2954,7 @@ export function openCouchPartySetupSheetV8(
     modeDisplayBtn.className = 'wsc8-rotary-display';
     modeDisplayBtn.dataset.action = 'toggle-board-mode-drawer';
     modeDisplayBtn.setAttribute('aria-expanded', 'false');
-    modeDisplayBtn.title = 'Tap to view all 9 TV Board Game Formats at once';
+    modeDisplayBtn.title = `Tap to view all ${modeEntries.length} TV Board Game Formats at once`;
 
     const nextModeBtn = document.createElement('button');
     nextModeBtn.type = 'button';
@@ -2595,7 +2979,7 @@ export function openCouchPartySetupSheetV8(
     modeDrawer.className = 'wsc8-drawer-grid';
     modeDrawer.hidden = true;
     modeDrawer.setAttribute('role', 'radiogroup');
-    modeDrawer.setAttribute('aria-label', 'All 9 TV Board Game Formats');
+    modeDrawer.setAttribute('aria-label', `All ${modeEntries.length} TV Board Game Formats`);
 
     const modeOptBtns: HTMLButtonElement[] = [];
     const syncModeUi = (): void => {
@@ -2817,7 +3201,119 @@ export function openCouchPartySetupSheetV8(
     stageCard.append(stageHead, stageRow, stagePips, stageDrawer);
 
     rotaryPair.append(modeCard, stageCard);
-    body.append(podiumSplit, lengthSection, rotaryPair);
+
+    // R3 Custom Broadcast Booth Panel (6 Vibe Packs + up to 3 Red Category Veto Stamps)
+    const boothCard = document.createElement('div');
+    boothCard.className = 'wsc8-booth-card';
+    boothCard.dataset.role = 'couch-custom-broadcast-booth';
+
+    const boothHead = document.createElement('div');
+    boothHead.className = 'wsc8-booth-head';
+
+    const boothTitle = document.createElement('span');
+    boothTitle.className = 'wsc8-section-label';
+    boothTitle.textContent = 'CUSTOM BROADCAST BOOTH · VIBE PACK & RED VETO STAMPS';
+
+    const boothStatusPill = document.createElement('span');
+    boothStatusPill.className = 'wsc8-page-pill';
+    boothStatusPill.dataset.role = 'couch-booth-veto-count';
+
+    boothHead.append(boothTitle, boothStatusPill);
+
+    const vibeGrid = document.createElement('div');
+    vibeGrid.className = 'wsc8-vibe-grid';
+    vibeGrid.setAttribute('role', 'radiogroup');
+    vibeGrid.setAttribute('aria-label', 'Broadcast Booth Vibe Pack Selector');
+
+    const vetoHead = document.createElement('div');
+    vetoHead.className = 'wsc8-booth-head';
+    const vetoLbl = document.createElement('span');
+    vetoLbl.className = 'wsc8-section-label';
+    vetoLbl.textContent = 'STAMP UP TO 3 CATEGORY VETOES (MIN 3 ACTIVE REQUIRED)';
+    vetoHead.appendChild(vetoLbl);
+
+    const vetoGrid = document.createElement('div');
+    vetoGrid.className = 'wsc8-veto-grid';
+    vetoGrid.setAttribute('aria-label', 'Red Category Veto Stamps');
+
+    const vibeBtns: HTMLButtonElement[] = [];
+
+    const resolveActiveVibePack = () =>
+      VIBE_PACK_CATALOG_V9.find((p) => p.packId === selectedVibePackId) ??
+      VIBE_PACK_CATALOG_V9[0];
+
+    const syncVetoGrid = (): void => {
+      const pack = resolveActiveVibePack();
+      const packCatSet = new Set<CategoryIdV7>(pack.categories);
+      for (const existing of [...vetoedCategorySet]) {
+        if (!packCatSet.has(existing)) {
+          vetoedCategorySet.delete(existing);
+        }
+      }
+      // Enforce >= 3 remaining categories strictly
+      while (pack.categories.length - vetoedCategorySet.size < 3 && vetoedCategorySet.size > 0) {
+        const first = vetoedCategorySet.values().next().value as CategoryIdV7 | undefined;
+        if (!first) break;
+        vetoedCategorySet.delete(first);
+      }
+
+      const remaining = pack.categories.length - vetoedCategorySet.size;
+      boothStatusPill.textContent = `${vetoedCategorySet.size}/3 VETOED · ${remaining} ACTIVE`;
+      vetoGrid.innerHTML = '';
+
+      pack.categories.forEach((cat) => {
+        const isVetoed = vetoedCategorySet.has(cat);
+        const canAddVeto = vetoedCategorySet.size < 3 && remaining > 3;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'wsc8-veto-chip';
+        btn.dataset.categoryVeto = cat;
+        btn.setAttribute('aria-pressed', String(isVetoed));
+        btn.disabled = !isVetoed && !canAddVeto;
+        btn.innerHTML = isVetoed
+          ? `<span>${cat}</span><span class="wsc8-veto-stamp">VETOED</span>`
+          : `<span>${cat}</span>`;
+        btn.addEventListener('click', () => {
+          opts?.onTapSfx?.();
+          if (vetoedCategorySet.has(cat)) {
+            vetoedCategorySet.delete(cat);
+          } else if (
+            vetoedCategorySet.size < 3 &&
+            pack.categories.length - vetoedCategorySet.size > 3
+          ) {
+            vetoedCategorySet.add(cat);
+          }
+          syncVetoGrid();
+        });
+        vetoGrid.appendChild(btn);
+      });
+    };
+
+    VIBE_PACK_CATALOG_V9.forEach((pack) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'wsc8-vibe-btn';
+      btn.dataset.vibePackId = pack.packId;
+      btn.style.setProperty('--vibe-accent', pack.accentHex);
+      btn.setAttribute('role', 'radio');
+      btn.setAttribute('aria-checked', String(pack.packId === selectedVibePackId));
+      btn.innerHTML = `<span class="wsc8-vibe-title">${pack.title}</span><span class="wsc8-vibe-sub">${pack.tagline}</span>`;
+      btn.addEventListener('click', () => {
+        opts?.onTapSfx?.();
+        selectedVibePackId = pack.packId;
+        vibeBtns.forEach((b) =>
+          b.setAttribute('aria-checked', String(b.dataset.vibePackId === pack.packId)),
+        );
+        syncVetoGrid();
+      });
+      vibeBtns.push(btn);
+      vibeGrid.appendChild(btn);
+    });
+
+    syncVetoGrid();
+    boothCard.append(boothHead, vibeGrid, vetoHead, vetoGrid);
+
+    body.append(podiumSplit, lengthSection, rotaryPair, boothCard);
 
     // Pinned Bottom Launch Dock (Full-Width Atomic Tangerine 3D Paddle — Zero Duplicate Back Button!)
     const footer = document.createElement('footer');
@@ -2846,10 +3342,10 @@ export function openCouchPartySetupSheetV8(
             ]
           : selectedStage;
 
-      const resolvedMode: BoardPlayModeV7 =
+      const resolvedMode: BoardPlayModeV9 =
         selectedMode === 'SURPRISE_MIX'
-          ? ALL_BOARD_PLAY_MODES_V7[
-              Math.floor(Math.random() * ALL_BOARD_PLAY_MODES_V7.length)
+          ? ALL_BOARD_PLAY_MODES_V9[
+              Math.floor(Math.random() * ALL_BOARD_PLAY_MODES_V9.length)
             ]
           : selectedMode;
 
@@ -2874,6 +3370,11 @@ export function openCouchPartySetupSheetV8(
         totalTurns,
         stageId: resolvedStage,
         boardPlayMode: resolvedMode,
+        skillDials: [p1SkillDial, p2SkillDial],
+        boothConfig: {
+          vibePackId: selectedVibePackId,
+          vetoedCategories: [...vetoedCategorySet],
+        },
       });
     });
 
@@ -2890,7 +3391,9 @@ export function openCouchPartySetupSheetV8(
 // ----------------------------------------------------------------------------
 
 export class CouchPartyMatchDirectorV8 {
-  public readonly spec: CouchShowdownLaunchSpecV8;
+  public readonly spec: CouchShowdownLaunchSpecV9;
+  public readonly skillDials: [CouchSkillDialV9, CouchSkillDialV9];
+  public readonly boothConfig?: BroadcastBoothConfigV9;
   public activePodium: 0 | 1 = 0;
   public turnNumber: number = 1;
 
@@ -2907,9 +3410,108 @@ export class CouchPartyMatchDirectorV8 {
   public finalWagerShield: [boolean, boolean] = [false, false];
   public mysteryVaultBonus: [number, number] = [0, 0];
 
-  constructor(spec: CouchShowdownLaunchSpecV8) {
+  public hotMicAvailable: [boolean, boolean] = [true, true];
+  public hotMicArmed: boolean = false;
+  private hotMicSaboteur: 0 | 1 | null = null;
+
+  constructor(spec: CouchShowdownLaunchSpecV8 | CouchShowdownLaunchSpecV9) {
     this.spec = spec;
+    const specV9 = spec as CouchShowdownLaunchSpecV9;
+    this.skillDials = [
+      specV9.skillDials?.[0] ?? 'MIXED',
+      specV9.skillDials?.[1] ?? 'MIXED',
+    ];
+    this.boothConfig = specV9.boothConfig;
     preloadCouchPortraitsV8([spec.podium1.avatarId, spec.podium2.avatarId]);
+  }
+
+  public getSkillDial(idx: 0 | 1 = this.activePodium): CouchSkillDialV9 {
+    return this.skillDials[idx] ?? 'MIXED';
+  }
+
+  public getActiveSkillDial(): CouchSkillDialV9 {
+    return this.getSkillDial(this.activePodium);
+  }
+
+  public canArmHotMic(idx: 0 | 1 = this.activePodium): boolean {
+    return Boolean(this.hotMicAvailable[idx]) && !this.hotMicArmed;
+  }
+
+  public armHotMic(idx: 0 | 1 = this.activePodium): boolean {
+    if (!this.hotMicAvailable[idx]) return false;
+    this.hotMicArmed = true;
+    this.hotMicSaboteur = idx;
+    return true;
+  }
+
+  public disarmHotMic(): void {
+    this.hotMicArmed = false;
+    this.hotMicSaboteur = null;
+  }
+
+  public consumeHotMicForTurn(): {
+    readonly saboteur: 0 | 1;
+    readonly receiver: 0 | 1;
+    readonly receiverSkillDial: CouchSkillDialV9;
+  } {
+    const saboteur: 0 | 1 = this.hotMicSaboteur ?? this.activePodium;
+    const receiver: 0 | 1 = this.getOpponentIndex(saboteur);
+    this.hotMicAvailable[saboteur] = false;
+    this.hotMicArmed = false;
+    this.hotMicSaboteur = null;
+    return {
+      saboteur,
+      receiver,
+      receiverSkillDial: this.getSkillDial(receiver),
+    };
+  }
+
+  public resolveHotMicOutcome(
+    saboteur: 0 | 1,
+    receiver: 0 | 1,
+    tileValue: number,
+    receiverCorrect: boolean,
+  ): {
+    readonly receiverCorrect: boolean;
+    readonly saboteurDelta: number;
+    readonly receiverDelta: number;
+    readonly saboteurCash: number;
+    readonly receiverCash: number;
+  } {
+    const cleanVal = Math.max(
+      0,
+      Math.round(Number.isFinite(tileValue) ? tileValue : 0),
+    );
+    this.turnsTaken[saboteur] += 1;
+    if (receiverCorrect) {
+      const beforeSab = this.cash[saboteur];
+      const afterSab = this.addCash(saboteur, -250);
+      const receiverGain = cleanVal + 250;
+      const afterRec = this.addCash(receiver, receiverGain);
+      this.correctClues[receiver] += 1;
+      this.streaks[receiver] += 1;
+      if (this.streaks[receiver] > this.bestStreaks[receiver]) {
+        this.bestStreaks[receiver] = this.streaks[receiver];
+      }
+      return {
+        receiverCorrect: true,
+        saboteurDelta: afterSab - beforeSab,
+        receiverDelta: receiverGain,
+        saboteurCash: afterSab,
+        receiverCash: afterRec,
+      };
+    }
+
+    const payoff = 150;
+    const afterSab = this.addCash(saboteur, payoff);
+    this.streaks[receiver] = 0;
+    return {
+      receiverCorrect: false,
+      saboteurDelta: payoff,
+      receiverDelta: 0,
+      saboteurCash: afterSab,
+      receiverCash: this.cash[receiver],
+    };
   }
 
   public getPlayer(idx: 0 | 1 = this.activePodium): CouchPlayerConfigV8 {
@@ -3250,9 +3852,107 @@ export class CouchPartyMatchDirectorV8 {
     return evaluation;
   }
 
-  public buildSwappedRematchSpec(): CouchShowdownLaunchSpecV8 {
+  public buildSwappedRematchSpec(): CouchShowdownLaunchSpecV9 {
     return swapCouchPodiumFirstPickV8(this.spec);
   }
+}
+
+/**
+ * R3 `PASS THE HOT MIC! (Screw)` Full-Screen Sunlit Privacy Handoff Card.
+ * Resolves ONLY when the receiving player taps Ready so the 10.0s clock never starts early.
+ */
+export function playHotMicPrivacyHandoffCard(
+  root: HTMLElement,
+  opts: {
+    readonly saboteurName: string;
+    readonly receiverName: string;
+    readonly receiverIndex: 0 | 1;
+    readonly tileValue: number;
+    readonly categoryLabel: string;
+    readonly reducedMotion?: boolean;
+    readonly onTapSfx?: () => void;
+  },
+): Promise<void> {
+  ensureCouchPartyDeluxeStylesV8();
+  const safeReceiver = opts.receiverName.trim().toUpperCase() || `PLAYER ${opts.receiverIndex + 1}`;
+  const safeSaboteur = opts.saboteurName.trim().toUpperCase() || 'OPPONENT';
+  const cleanVal = Math.max(0, Math.round(Number.isFinite(opts.tileValue) ? opts.tileValue : 0));
+  const cleanCat = opts.categoryLabel.trim().toUpperCase() || 'MYSTERY TOPIC';
+
+  return new Promise<void>((resolve) => {
+    let settled = false;
+
+    const backdrop = document.createElement('div');
+    backdrop.className = 'ws9-modal-backdrop';
+    backdrop.dataset.modal = 'hot-mic-privacy-handoff-v9';
+    if (opts.reducedMotion) {
+      backdrop.dataset.reducedMotion = 'true';
+    }
+    backdrop.setAttribute('role', 'dialog');
+    backdrop.setAttribute('aria-modal', 'true');
+    backdrop.setAttribute(
+      'aria-label',
+      `Hot Mic Ambush — Pass phone to ${safeReceiver}`,
+    );
+
+    const card = document.createElement('section');
+    card.className = 'ws9-hotmic-handoff';
+
+    const marquee = document.createElement('div');
+    marquee.className = 'wsc8-marquee-bar';
+    marquee.setAttribute('aria-hidden', 'true');
+
+    const header = document.createElement('header');
+    header.className = 'wsc8-sheet-header';
+    header.dataset.tone = opts.receiverIndex === 1 ? 'tangerine' : 'velvet';
+    header.innerHTML = `
+      <div class="wsc8-header-copy" style="text-align:center;">
+        <div class="wsc8-kicker">${safeSaboteur} TOSSED THE HOT MIC · ${cleanCat} ($${cleanVal})</div>
+        <h2 class="wsc8-title">PASS THE HOT MIC!</h2>
+      </div>
+    `;
+
+    const hero = document.createElement('div');
+    hero.className = 'wsc8-hotmic-hero';
+
+    const alertBadge = document.createElement('span');
+    alertBadge.className = 'wsc8-hotmic-alert-badge';
+    alertBadge.textContent = `PODIUM ${opts.receiverIndex + 1} · 10.0s SPOTLIGHT CLOCK`;
+
+    const headline = document.createElement('h3');
+    headline.className = 'wsc8-hotmic-headline';
+    headline.textContent = `🔥 HOT MIC AMBUSH! PASS PHONE TO ${safeReceiver} — 10s FOR +$250!`;
+
+    const stakes = document.createElement('div');
+    stakes.className = 'wsc8-hotmic-stakes';
+    stakes.innerHTML =
+      `<div><strong>IF ${safeReceiver} NAILS IT (&le;10s):</strong> Wins $${cleanVal} tile <strong>+ loots +$250</strong> from ${safeSaboteur}!</div>` +
+      `<div style="margin-top:4px;"><strong>IF ${safeReceiver} MISSES / TIMES OUT:</strong> ${safeSaboteur} banks <strong>+$150 Hot Mic Payoff</strong>!</div>`;
+
+    const readyBtn = document.createElement('button');
+    readyBtn.type = 'button';
+    readyBtn.className = 'wsc8-hotmic-ready-btn';
+    readyBtn.dataset.action = 'hotmic-handoff-ready';
+    readyBtn.textContent = "🎙️ I'M HOLDING THE PHONE — SHOW CLUE";
+    readyBtn.addEventListener('click', () => {
+      if (settled) return;
+      settled = true;
+      opts.onTapSfx?.();
+      backdrop.remove();
+      resolve();
+    });
+
+    hero.append(alertBadge, headline, stakes, readyBtn);
+    card.append(marquee, header, hero);
+    backdrop.appendChild(card);
+    root.appendChild(backdrop);
+
+    queueMicrotask(() => {
+      if (!settled) {
+        readyBtn.focus({ preventScroll: true });
+      }
+    });
+  });
 }
 
 /** Standalone helper for the 1966 Crimson Velvet & Cream Hot-Gremlin Pass Challenge. */
@@ -3429,7 +4129,7 @@ export function runCouchBlindFinalShowdownV8(
       header.dataset.tone = 'velvet';
       header.innerHTML = `
         <div class="wsc8-header-copy" style="text-align:center;">
-          <div class="wsc8-kicker">ACT III SECRET STUDIO CURTAIN · ${clue.category.toUpperCase()}</div>
+          <div class="wsc8-kicker">ACT III SECRET STUDIO CURTAIN · ${getFriendlyCategoryLabelV7(clue.category as CategoryIdV7)}</div>
           <h2 class="wsc8-title">${cfg.headline}</h2>
         </div>
       `;
@@ -3453,7 +4153,7 @@ export function runCouchBlindFinalShowdownV8(
         catPlaque.className = 'wsc8-category-plaque';
         catPlaque.innerHTML = `
           <div class="wsc8-kicker">ACT III FINAL BROADCAST CATEGORY</div>
-          <div class="wsc8-category-name">${clue.category.toUpperCase()}</div>
+          <div class="wsc8-category-name">${getFriendlyCategoryLabelV7(clue.category as CategoryIdV7)}</div>
         `;
         body.appendChild(catPlaque);
       }
@@ -3514,7 +4214,7 @@ export function runCouchBlindFinalShowdownV8(
       }
       header.innerHTML = `
         <div class="wsc8-header-copy">
-          <div class="wsc8-kicker">PODIUM ${player.podiumIndex + 1} SECRET WAGER · CATEGORY: ${clue.category.toUpperCase()}</div>
+          <div class="wsc8-kicker">PODIUM ${player.podiumIndex + 1} SECRET WAGER · CATEGORY: ${getFriendlyCategoryLabelV7(clue.category as CategoryIdV7)}</div>
           <h2 class="wsc8-title">${player.name}'s Blind Final Wager</h2>
         </div>
       `;
@@ -3682,7 +4382,7 @@ export function runCouchBlindFinalShowdownV8(
       headerCopy.className = 'wsc8-header-copy';
       headerCopy.innerHTML = `
         <div class="wsc8-kicker">PODIUM ${player.podiumIndex + 1} · ${player.name} SECRET CLIMAX LOCK-IN</div>
-        <h2 class="wsc8-title">${clue.category.toUpperCase()}</h2>
+        <h2 class="wsc8-title">${getFriendlyCategoryLabelV7(clue.category as CategoryIdV7)}</h2>
       `;
 
       const clockReadout = document.createElement('div');
@@ -3832,7 +4532,7 @@ export function runCouchBlindFinalShowdownV8(
       headerCopy.className = 'wsc8-header-copy';
       const kickerEl = document.createElement('div');
       kickerEl.className = 'wsc8-kicker';
-      kickerEl.textContent = `GRANT BELLAMY'S PRIME-TIME ENVELOPE REVEAL · ${clue.category.toUpperCase()}`;
+      kickerEl.textContent = `GRANT BELLAMY'S PRIME-TIME ENVELOPE REVEAL · ${getFriendlyCategoryLabelV7(clue.category as CategoryIdV7)}`;
 
       const headlineEl = document.createElement('h2');
       headlineEl.className = 'wsc8-title';
@@ -4189,7 +4889,7 @@ export function showCouchWinnerCheckCeremonyV8(
         : `${evaluation.winnerName} CLAIMS THE STUDIO 6A PURSE!`;
     header.innerHTML = `
       <div class="wsc8-header-copy">
-        <div class="wsc8-kicker">STUDIO 6A CERTIFIED PAYOUT CEREMONY · ${BOARD_PLAY_MODE_TITLES_V7[spec.boardPlayMode]}</div>
+        <div class="wsc8-kicker">STUDIO 6A CERTIFIED PAYOUT CEREMONY · ${BOARD_PLAY_MODE_TITLES_V9[spec.boardPlayMode]}</div>
         <h2 class="wsc8-title">${crownTitle}</h2>
       </div>
     `;

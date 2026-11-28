@@ -17,6 +17,7 @@ import {
   CAREER_MEDAL_SPECS_V7,
   type AwardRarityTierV7,
   type BoardPlayModeV7,
+  type BoardTwistIdV7,
   type BroadcastActNumberV7,
   type BroadcastSettingsV7,
   type CampaignSaveStateV7,
@@ -24,6 +25,7 @@ import {
   type CastIdV7,
   type CategoryIdV7,
   type ClassicTvTileTwistV7,
+  type ClassicTvTileTwistV9,
   type ClueRecordV7,
   type ContestantWaiverV7,
   type CoupRegimeIdV7,
@@ -82,6 +84,7 @@ import {
   isAutoPlayShowIntroEnabledV8,
   setAutoPlayShowIntroEnabledV8,
 } from './ShowBroadcastIntroAndCreditsV8';
+import { BOARD_TWIST_SPECS_V7 } from '../boards/BoardTwistsEngineV7';
 
 // ----------------------------------------------------------------------------
 // 1. Orphan-Proof Copy & Friendly 1966 TV Category + Twist Flare Specs
@@ -181,7 +184,7 @@ const LIVING_COLOR_DOMAIN_RIBBONS_V7: Record<
   SCI_TECH: {
     bg: 'linear-gradient(90deg, #164db8 0%, #2468e0 100%)',
     ink: '#ffffff',
-    chipBg: 'rgba(7, 19, 33, 0.34)',
+    chipBg: 'rgba(92, 48, 27, 0.34)',
     chipInk: '#fff7e6',
   },
   POP_LIT: {
@@ -193,13 +196,13 @@ const LIVING_COLOR_DOMAIN_RIBBONS_V7: Record<
   NUM_GEO: {
     bg: 'linear-gradient(90deg, #007d8c 0%, #00a3b5 100%)',
     ink: '#ffffff',
-    chipBg: 'rgba(7, 19, 33, 0.3)',
+    chipBg: 'rgba(92, 48, 27, 0.3)',
     chipInk: '#fff7e6',
   },
   HIST_FACT: {
     bg: 'linear-gradient(90deg, #d9461a 0%, #f56838 100%)',
     ink: '#ffffff',
-    chipBg: 'rgba(7, 19, 33, 0.3)',
+    chipBg: 'rgba(92, 48, 27, 0.3)',
     chipInk: '#fff7e6',
   },
 };
@@ -213,7 +216,7 @@ interface TvTwistFlareSpecV7 {
   readonly chipInk: string;
 }
 
-const TV_TWIST_FLARE_SPECS_V7: Partial<Record<ClassicTvTileTwistV7, TvTwistFlareSpecV7>> = {
+const TV_TWIST_FLARE_SPECS_V7: Partial<Record<ClassicTvTileTwistV9, TvTwistFlareSpecV7>> = {
   SECRET_SQUARE: {
     badge: '⭐ 2×',
     flareBanner: '★ SECRET SQUARE · DOUBLE DOLLARS! ★',
@@ -227,7 +230,7 @@ const TV_TWIST_FLARE_SPECS_V7: Partial<Record<ClassicTvTileTwistV7, TvTwistFlare
     flareBanner: '🔓 GOLDEN VAULT · $500 JACKPOT CLUE!',
     headerBg: 'linear-gradient(95deg, #0b6e46 0%, #19a85a 52%, #0c784c 100%)',
     headerInk: '#ffffff',
-    chipBg: 'rgba(7, 19, 33, 0.34)',
+    chipBg: 'rgba(92, 48, 27, 0.34)',
     chipInk: '#fff7e6',
   },
   OPPONENT_CHOICE: {
@@ -235,7 +238,7 @@ const TV_TWIST_FLARE_SPECS_V7: Partial<Record<ClassicTvTileTwistV7, TvTwistFlare
     flareBanner: '🎭 OPPONENT’S CHOICE · BONUS MULT!',
     headerBg: 'linear-gradient(95deg, #ad1a56 0%, #e63b7a 52%, #b81d5c 100%)',
     headerInk: '#ffffff',
-    chipBg: 'rgba(7, 19, 33, 0.34)',
+    chipBg: 'rgba(92, 48, 27, 0.34)',
     chipInk: '#fff7e6',
   },
   MYSTERY_CURTAIN: {
@@ -243,7 +246,7 @@ const TV_TWIST_FLARE_SPECS_V7: Partial<Record<ClassicTvTileTwistV7, TvTwistFlare
     flareBanner: '❓ MYSTERY CURTAIN · PRIZE PLAY!',
     headerBg: 'linear-gradient(95deg, #008294 0%, #1e56c5 48%, #e63b7a 100%)',
     headerInk: '#ffffff',
-    chipBg: 'rgba(7, 19, 33, 0.36)',
+    chipBg: 'rgba(92, 48, 27, 0.36)',
     chipInk: '#fff7e6',
   },
   INSTANT_BARGAIN: {
@@ -251,7 +254,7 @@ const TV_TWIST_FLARE_SPECS_V7: Partial<Record<ClassicTvTileTwistV7, TvTwistFlare
     flareBanner: '🔔 INSTANT BARGAIN · BONUS CHANCE!',
     headerBg: 'linear-gradient(95deg, #cc4114 0%, #ff6738 52%, #d9461a 100%)',
     headerInk: '#ffffff',
-    chipBg: 'rgba(7, 19, 33, 0.32)',
+    chipBg: 'rgba(92, 48, 27, 0.32)',
     chipInk: '#fff7e6',
   },
   SHOWCASE_BONUS: {
@@ -259,7 +262,7 @@ const TV_TWIST_FLARE_SPECS_V7: Partial<Record<ClassicTvTileTwistV7, TvTwistFlare
     flareBanner: '★ 1966 STUDIO SHOWCASE BONUS ROUND!',
     headerBg: 'linear-gradient(95deg, #164db8 0%, #0096a6 55%, #f4a91f 100%)',
     headerInk: '#ffffff',
-    chipBg: 'rgba(7, 19, 33, 0.36)',
+    chipBg: 'rgba(92, 48, 27, 0.36)',
     chipInk: '#fff7e6',
   },
   BIG_WHEEL_SPIN: {
@@ -275,7 +278,7 @@ const TV_TWIST_FLARE_SPECS_V7: Partial<Record<ClassicTvTileTwistV7, TvTwistFlare
     flareBanner: '🔒 $600 BLIND CATEGORY UNSEALED!',
     headerBg: 'linear-gradient(95deg, #103b96 0%, #2468e0 52%, #0f3788 100%)',
     headerInk: '#ffffff',
-    chipBg: 'rgba(7, 19, 33, 0.36)',
+    chipBg: 'rgba(92, 48, 27, 0.36)',
     chipInk: '#fff7e6',
   },
   MYSTERY_CASH: {
@@ -283,7 +286,7 @@ const TV_TWIST_FLARE_SPECS_V7: Partial<Record<ClassicTvTileTwistV7, TvTwistFlare
     flareBanner: '💰 MYSTERY CASH ENVELOPE UNSEALED!',
     headerBg: 'linear-gradient(95deg, #007485 0%, #18a957 52%, #007d8c 100%)',
     headerInk: '#ffffff',
-    chipBg: 'rgba(7, 19, 33, 0.34)',
+    chipBg: 'rgba(92, 48, 27, 0.34)',
     chipInk: '#fff7e6',
   },
   BRASS_KEY: {
@@ -299,7 +302,15 @@ const TV_TWIST_FLARE_SPECS_V7: Partial<Record<ClassicTvTileTwistV7, TvTwistFlare
     flareBanner: '⚡ PRESS YOUR LUCK · WIN TO EARN SPINS!',
     headerBg: 'linear-gradient(95deg, #c93312 0%, #ff6738 50%, #e63b7a 100%)',
     headerInk: '#ffffff',
-    chipBg: 'rgba(7, 19, 33, 0.36)',
+    chipBg: 'rgba(92, 48, 27, 0.36)',
+    chipInk: '#fff7e6',
+  },
+  VIP_BLUFF: {
+    badge: '🎭 VIP',
+    flareBanner: '🎭 1966 CELEBRITY VIP SQUARE · TRUST OR CALL BLUFF!',
+    headerBg: 'linear-gradient(95deg, #c93b12 0%, #f2a922 52%, #e6397a 100%)',
+    headerInk: '#ffffff',
+    chipBg: 'rgba(92, 48, 27, 0.34)',
     chipInk: '#fff7e6',
   },
 };
@@ -359,6 +370,11 @@ export interface BroadcastChromeCallbacksV7 {
   readonly onOpenDailyTapeVault?: () => void;
   readonly onPlayEndCredits?: () => void;
   readonly onOpenWalnutShareCard?: () => void;
+  readonly onToggleTurbo?: () => void;
+  readonly onTriggerTkoWin?: () => void;
+  readonly onConcedeRematch?: () => void;
+  readonly onBlitzPass?: () => void;
+  readonly onArmHotMic?: () => void;
 }
 
 export interface TopBugSnapshotV7 {
@@ -375,6 +391,13 @@ export interface TopBugSnapshotV7 {
   readonly actNumber?: BroadcastActNumberV7;
   readonly isAct2Boosted?: boolean;
   readonly isFinalWager?: boolean;
+  readonly turboEnabled?: boolean;
+  readonly mercyBellState?: 'NONE' | 'TKO_WIN' | 'CONCEDE_REMATCH';
+  readonly hotMicShowButton?: boolean;
+  readonly hotMicAvailable?: boolean;
+  readonly hotMicArmed?: boolean;
+  readonly blitzMode?: boolean;
+  readonly podiumTrimId?: string;
   readonly boardModeBanner?: {
     readonly modeTitle: string;
     readonly ruleSummary: string;
@@ -389,7 +412,7 @@ export interface QuestionChassisOpenSpecV7 {
   readonly totalCountdownSeconds?: number;
   readonly isWheelhouse?: boolean;
   readonly hasAmberTruce?: boolean;
-  readonly tvTwist?: ClassicTvTileTwistV7;
+  readonly tvTwist?: ClassicTvTileTwistV9;
   readonly isShowcaseFormat?: boolean;
   readonly showcaseFormatName?: string;
   readonly fiftyFiftyAvailable?: boolean;
@@ -446,6 +469,29 @@ export interface CeremonyExtraSpecV7 {
   readonly allowBackstageCustomization?: boolean;
   readonly earnedCareerMedals?: readonly CareerMedalIdV7[];
   readonly isCoChampionTie?: boolean;
+  readonly consolationShowroomCash?: number;
+  readonly rematchButtonLabel?: string;
+  readonly onRematchClick?: () => void;
+}
+
+export interface WinnersCirclePromptOptionsV9 {
+  readonly matchWinningsSC: number;
+  readonly onTapSfx?: () => void;
+}
+
+export interface WinnersCircleSprintOptionsV9 {
+  readonly clues: readonly ClueRecordV7[];
+  readonly totalClockSec?: number;
+  readonly onTapSfx?: () => void;
+  readonly onAnswerSfx?: (correct: boolean) => void;
+  readonly onPassSfx?: () => void;
+  readonly onCompleteSfx?: (swept: boolean) => void;
+}
+
+export interface WinnersCircleSprintResultV9 {
+  readonly bonusCashEarned: number;
+  readonly hits: number;
+  readonly sweptAllSix: boolean;
 }
 
 export interface PostAnswerTheaterSpecV7 {
@@ -455,6 +501,7 @@ export interface PostAnswerTheaterSpecV7 {
   readonly totalTurnNetCash?: number;
   readonly extraBonusLabel?: string;
   readonly dwellMs?: number;
+  readonly turboMode?: boolean;
   readonly discoveryCallout?: string;
   readonly hostQuip?: string;
   readonly hostMood?: EmceeMoodV7;
@@ -620,20 +667,32 @@ export class BroadcastChromeUIV7 {
   private readonly censorPaddleBtn: HTMLButtonElement;
   private readonly zoomReadoutBtn: HTMLButtonElement;
   private readonly fullscreenBugBtn: HTMLButtonElement;
+  private readonly turboBugBtn: HTMLButtonElement;
+  private readonly turboLabelEl: HTMLSpanElement;
+  private readonly mobileMenuBtnEl: HTMLButtonElement;
+  private readonly mobileHudDrawerEl: HTMLDivElement;
+  private readonly mobileDrawerPropsBtnEl: HTMLButtonElement;
+  private readonly mobileDrawerFullscreenBtnEl: HTMLButtonElement;
+  private readonly hudActionStripEl: HTMLDivElement;
+  private readonly mercyBellBtn: HTMLButtonElement;
+  private readonly hotMicHudBtn: HTMLButtonElement;
 
   private readonly questionStageEl: HTMLDivElement;
   private readonly questionChassisEl: HTMLDivElement;
   private readonly twistFlareStripEl: HTMLDivElement;
+  private readonly blitzHudBannerEl: HTMLDivElement;
   private readonly clueHeaderRowEl: HTMLDivElement;
   private readonly domainPillEl: HTMLSpanElement;
   private readonly clueStakesChipEl: HTMLSpanElement;
   private readonly clueTipBtnEl: HTMLButtonElement;
   private readonly clueTimerPillEl: HTMLSpanElement;
+  private readonly blitzTimeDeltaEl: HTMLSpanElement;
   private readonly clueTimerBarFillEl: HTMLDivElement;
   private readonly hostDeskStripEl: HTMLDivElement;
   private readonly hostDeskAvatarEl: HTMLDivElement;
   private readonly hostDeskQuipEl: HTMLSpanElement;
   private readonly plainMicroTipEl: HTMLDivElement;
+  private readonly clueStemKickerEl: HTMLDivElement;
   private readonly clueStemEl: HTMLParagraphElement;
   private readonly clueStakesMetaEl: HTMLDivElement;
   private readonly lifelineBarEl: HTMLDivElement;
@@ -641,6 +700,7 @@ export class BroadcastChromeUIV7 {
   private readonly audiencePollBtnEl: HTMLButtonElement;
   private readonly freeSwapBtnEl: HTMLButtonElement;
   private readonly toyBayEl: HTMLDivElement;
+  private readonly blitzPassBarEl: HTMLButtonElement;
 
   private readonly modalStageEl: HTMLDivElement;
   private readonly utilityModalStageEl: HTMLDivElement;
@@ -665,6 +725,9 @@ export class BroadcastChromeUIV7 {
   private readonly activeFlowTimeouts = new Set<number>();
   private readonly activeFlowRafs = new Set<number>();
   private activeToastTimeout: number | null = null;
+  private blitzDeltaTimeout: number | null = null;
+  private blitzModeActive = false;
+  private currentMercyBellState: 'NONE' | 'TKO_WIN' | 'CONCEDE_REMATCH' = 'NONE';
   private activeBoardModeFadeTimeout: number | null = null;
   private activeModalCleanup: (() => void) | null = null;
   private activeUtilityModalCleanup: (() => void) | null = null;
@@ -682,6 +745,8 @@ export class BroadcastChromeUIV7 {
     readonly compactTitle?: string;
     readonly compactRuleSummary?: string;
   } | null = null;
+  private activeBoardTwistId: BoardTwistIdV7 | null = null;
+  private mobileHudMenuOpen = false;
   private boardModeRibbonAutoHidden = false;
 
   private readonly playerRoller: SolariRollerState = {
@@ -890,80 +955,216 @@ export class BroadcastChromeUIV7 {
       return btn;
     };
 
-    const rulesBtn = makeRibbonBtn(
-      '?',
-      'RULES',
-      'rules',
-      'How to Play — Board Rules, TV Twists & Scoring',
-      false,
-      true,
-    );
-    rulesBtn.addEventListener('click', () => {
+    const openRulesSheet = (): void => {
+      this.setMobileHudMenuOpen(false);
       if (this.callbacks.onOpenHowToPlay) {
         this.callbacks.onOpenHowToPlay();
       } else {
         this.openHowToPlayModal();
       }
-    });
+    };
+    const openPropsSheet = (): void => {
+      this.setMobileHudMenuOpen(false);
+      this.openPropTrunkModal(this.liveMatchScoreForShop !== null);
+    };
+    const openSoundSheet = (): void => {
+      this.setMobileHudMenuOpen(false);
+      this.openSettingsModal();
+    };
+    const triggerReturnHub = (): void => {
+      this.setMobileHudMenuOpen(false);
+      if (this.callbacks.onReturnToTitleHub) {
+        this.callbacks.onReturnToTitleHub();
+      } else {
+        this.showTitleHub();
+      }
+    };
+    const triggerFullscreen = (): void => {
+      this.setMobileHudMenuOpen(false);
+      if (this.callbacks.onToggleFullscreen) {
+        this.callbacks.onToggleFullscreen();
+      } else {
+        void this.handleFullscreenToggle();
+      }
+    };
+
+    const rulesBtn = makeRibbonBtn(
+      '?',
+      'RULES',
+      'rules',
+      'How to Play — Board Rules, TV Twists & Scoring',
+      true,
+      true,
+    );
+    rulesBtn.addEventListener('click', openRulesSheet);
 
     const propsBtn = makeRibbonBtn(
       '★',
       'PROPS',
       'props',
       'Studio Prop Trunk — Equip Passive Score Boosters',
-      false,
+      true,
     );
     this.propsBtnEl = propsBtn;
-    propsBtn.addEventListener('click', () => {
-      this.openPropTrunkModal(this.liveMatchScoreForShop !== null);
-    });
+    propsBtn.addEventListener('click', openPropsSheet);
 
     const soundBtn = makeRibbonBtn(
       '♪',
       'SOUND',
       'sound',
       'Sound Mixer, Accessibility & Studio Menu',
-      false,
+      true,
     );
-    soundBtn.addEventListener('click', () => {
-      this.openSettingsModal();
-    });
+    soundBtn.addEventListener('click', openSoundSheet);
 
     const hubBtn = makeRibbonBtn(
       '⌂',
       'HUB',
       'hub',
       'Return to 1966 Title Hub',
-      false,
+      true,
     );
-    hubBtn.addEventListener('click', () => {
-      if (this.callbacks.onReturnToTitleHub) {
-        this.callbacks.onReturnToTitleHub();
-      } else {
-        this.showTitleHub();
-      }
-    });
+    hubBtn.addEventListener('click', triggerReturnHub);
 
     this.fullscreenBugBtn = makeRibbonBtn(
       '⛶',
       'FULL',
       'fullscreen',
       'Toggle Full Screen (F)',
-      false,
+      true,
     );
     this.fullscreenBugBtn.dataset.compactHide = 'true';
-    this.fullscreenBugBtn.addEventListener('click', () => {
-      if (this.callbacks.onToggleFullscreen) {
-        this.callbacks.onToggleFullscreen();
-      } else {
-        void this.handleFullscreenToggle();
-      }
+    this.fullscreenBugBtn.addEventListener('click', triggerFullscreen);
+
+    this.mobileMenuBtnEl = makeRibbonBtn(
+      '☰',
+      'MENU',
+      'hud-menu',
+      'Broadcast Rules, Props, Sound & Studio Menu',
+      false,
+      true,
+    );
+    this.mobileMenuBtnEl.classList.add('ws7-hud-menu-btn');
+    this.mobileMenuBtnEl.setAttribute('aria-haspopup', 'menu');
+    this.mobileMenuBtnEl.setAttribute('aria-expanded', 'false');
+    this.mobileMenuBtnEl.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      this.setMobileHudMenuOpen(!this.mobileHudMenuOpen);
     });
+
+    this.turboBugBtn = document.createElement('button');
+    this.turboBugBtn.type = 'button';
+    this.turboBugBtn.className = 'ws9-turbo-pill';
+    this.turboBugBtn.dataset.action = 'turbo';
+    this.turboBugBtn.dataset.active = 'false';
+    this.turboBugBtn.setAttribute('aria-label', 'Toggle 0.4s Turbo Rival Turn Speed');
+    this.turboBugBtn.setAttribute('aria-pressed', 'false');
+    this.turboBugBtn.title = 'Toggle 0.4s Turbo Rival Turn Speed';
+    const turboIcoEl = document.createElement('span');
+    turboIcoEl.className = 'ws9-turbo-ico';
+    turboIcoEl.setAttribute('aria-hidden', 'true');
+    turboIcoEl.textContent = '⚡';
+    this.turboLabelEl = document.createElement('span');
+    this.turboLabelEl.className = 'ws9-turbo-label';
+    this.turboLabelEl.textContent = ' TURBO';
+    this.turboBugBtn.append(turboIcoEl, this.turboLabelEl);
+    this.turboBugBtn.addEventListener('click', () => {
+      this.callbacks.onToggleTurbo?.();
+    });
+
+    bugActions.append(
+      this.turboBugBtn,
+      rulesBtn,
+      propsBtn,
+      soundBtn,
+      this.fullscreenBugBtn,
+      hubBtn,
+      this.mobileMenuBtnEl,
+    );
+    topBug.append(solariPair, this.vuMeterWrapEl, bugActions);
+
+    this.mobileHudDrawerEl = document.createElement('div');
+    this.mobileHudDrawerEl.className = 'ws7-mobile-hud-drawer ws7-hidden';
+    this.mobileHudDrawerEl.setAttribute('role', 'menu');
+    this.mobileHudDrawerEl.setAttribute('aria-label', 'Studio Menu');
+
+    const makeDrawerItem = (
+      icon: string,
+      label: string,
+      actionKey: string,
+      onClick: () => void,
+      accent?: 'gold',
+    ): HTMLButtonElement => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'ws7-mobile-drawer-btn';
+      btn.setAttribute('role', 'menuitem');
+      btn.dataset.action = actionKey;
+      if (accent) btn.dataset.accent = accent;
+      btn.innerHTML = `<span aria-hidden="true">${icon}</span><span>${label}</span>`;
+      btn.addEventListener('click', onClick);
+      return btn;
+    };
+
+    const drawerRulesBtn = makeDrawerItem('?', 'HOW TO PLAY & TWIST RULES', 'rules', openRulesSheet, 'gold');
+    this.mobileDrawerPropsBtnEl = makeDrawerItem('★', 'STUDIO PROP SHOP', 'props', openPropsSheet);
+    const drawerSoundBtn = makeDrawerItem('♪', 'SOUND & ACCESSIBILITY', 'sound', openSoundSheet);
+    this.mobileDrawerFullscreenBtnEl = makeDrawerItem('⛶', 'FULL SCREEN', 'fullscreen', triggerFullscreen);
+    const drawerHubBtn = makeDrawerItem('⌂', 'RETURN TO HUB', 'hub', triggerReturnHub);
+    this.mobileHudDrawerEl.append(
+      drawerRulesBtn,
+      this.mobileDrawerPropsBtnEl,
+      drawerSoundBtn,
+      this.mobileDrawerFullscreenBtnEl,
+      drawerHubBtn,
+    );
     this.syncFullscreenButtonState();
 
-    bugActions.append(rulesBtn, propsBtn, soundBtn, this.fullscreenBugBtn, hubBtn);
-    topBug.append(solariPair, this.vuMeterWrapEl, bugActions);
-    this.topBugWrapEl.append(topBug, this.playerDeltaPopEl, this.rivalDeltaPopEl);
+    const closeDrawerOnOutside = (ev: PointerEvent): void => {
+      if (!this.mobileHudMenuOpen) return;
+      const target = ev.target as Node | null;
+      if (target && !this.topBugWrapEl.contains(target)) {
+        this.setMobileHudMenuOpen(false);
+      }
+    };
+    document.addEventListener('pointerdown', closeDrawerOnOutside);
+    this.detachChromeListeners.push(() => {
+      document.removeEventListener('pointerdown', closeDrawerOnOutside);
+    });
+
+    this.hudActionStripEl = document.createElement('div');
+    this.hudActionStripEl.className = 'ws9-hud-action-strip ws7-hidden';
+
+    this.mercyBellBtn = document.createElement('button');
+    this.mercyBellBtn.type = 'button';
+    this.mercyBellBtn.className = 'ws9-mercy-bell-pill ws7-hidden';
+    this.mercyBellBtn.dataset.mode = 'NONE';
+    this.mercyBellBtn.addEventListener('click', () => {
+      if (this.currentMercyBellState === 'TKO_WIN') {
+        this.callbacks.onTriggerTkoWin?.();
+      } else if (this.currentMercyBellState === 'CONCEDE_REMATCH') {
+        this.callbacks.onConcedeRematch?.();
+      }
+    });
+
+    this.hotMicHudBtn = document.createElement('button');
+    this.hotMicHudBtn.type = 'button';
+    this.hotMicHudBtn.className = 'ws9-hotmic-hud-btn ws7-hidden';
+    this.hotMicHudBtn.dataset.armed = 'false';
+    this.hotMicHudBtn.textContent = '🔥 PASS THE HOT MIC!';
+    this.hotMicHudBtn.addEventListener('click', () => {
+      if (this.hotMicHudBtn.disabled) return;
+      this.callbacks.onArmHotMic?.();
+    });
+
+    this.hudActionStripEl.append(this.mercyBellBtn, this.hotMicHudBtn);
+    this.topBugWrapEl.append(
+      topBug,
+      this.hudActionStripEl,
+      this.mobileHudDrawerEl,
+      this.playerDeltaPopEl,
+      this.rivalDeltaPopEl,
+    );
 
     // ------------------------------------------------------------------------
     // 2. Live-Event Controls (Zero Board Overlap on Mobile & Tablet!)
@@ -1060,6 +1261,9 @@ export class BroadcastChromeUIV7 {
     this.twistFlareStripEl.className = 'ws7-twist-flare-strip ws7-hidden';
     this.twistFlareStripEl.dataset.twist = 'NONE';
 
+    this.blitzHudBannerEl = document.createElement('div');
+    this.blitzHudBannerEl.className = 'ws9-blitz-hud ws7-hidden';
+
     this.clueHeaderRowEl = document.createElement('div');
     this.clueHeaderRowEl.className = 'ws7-clue-header-row';
     this.clueHeaderRowEl.dataset.flare = 'false';
@@ -1086,7 +1290,16 @@ export class BroadcastChromeUIV7 {
     this.clueTimerPillEl.className = 'ws7-clue-timer-pill';
     this.clueTimerPillEl.textContent = '30s';
 
-    headerRight.append(this.clueStakesChipEl, this.clueTipBtnEl, this.clueTimerPillEl);
+    this.blitzTimeDeltaEl = document.createElement('span');
+    this.blitzTimeDeltaEl.className = 'ws9-blitz-delta-burst ws7-hidden';
+    this.blitzTimeDeltaEl.dataset.kind = 'gain';
+
+    headerRight.append(
+      this.clueStakesChipEl,
+      this.clueTipBtnEl,
+      this.clueTimerPillEl,
+      this.blitzTimeDeltaEl,
+    );
     this.clueHeaderRowEl.append(this.domainPillEl, headerRight);
 
     const timerTrack = document.createElement('div');
@@ -1123,13 +1336,21 @@ export class BroadcastChromeUIV7 {
     this.plainMicroTipEl = document.createElement('div');
     this.plainMicroTipEl.className = 'ws7-plain-micro-tip ws7-hidden';
 
+    this.clueStemKickerEl = document.createElement('div');
+    this.clueStemKickerEl.className = 'ws7-stem-kicker-pill ws7-hidden';
+
     this.clueStemEl = document.createElement('p');
     this.clueStemEl.className = 'ws7-balanced-copy';
 
     this.clueStakesMetaEl = document.createElement('div');
     this.clueStakesMetaEl.className = 'ws7-clue-meta-line';
 
-    clueBody.append(this.plainMicroTipEl, this.clueStemEl, this.clueStakesMetaEl);
+    clueBody.append(
+      this.plainMicroTipEl,
+      this.clueStemKickerEl,
+      this.clueStemEl,
+      this.clueStakesMetaEl,
+    );
 
     // Unmissable 3-Paddle Illuminated "STUDIO CHEATS" Console (✂️ 50/50 Cut · 📊 Ask Audience · 🔄 Free Swap)
     this.lifelineBarEl = document.createElement('div');
@@ -1175,6 +1396,7 @@ export class BroadcastChromeUIV7 {
     this.lifelineBarEl.append(cheatsHead, paddlesGrid);
     vellumPane.append(
       this.twistFlareStripEl,
+      this.blitzHudBannerEl,
       this.clueHeaderRowEl,
       timerTrack,
       this.hostDeskStripEl,
@@ -1185,6 +1407,16 @@ export class BroadcastChromeUIV7 {
     this.toyBayEl = document.createElement('div');
     this.toyBayEl.className = 'ws7-toy-bay';
     this.toyBayEl.id = 'ws7-toy-mount';
+
+    this.blitzPassBarEl = document.createElement('button');
+    this.blitzPassBarEl.type = 'button';
+    this.blitzPassBarEl.className = 'ws9-blitz-pass-bar ws7-hidden';
+    this.blitzPassBarEl.dataset.action = 'blitz-pass';
+    this.blitzPassBarEl.textContent = '⏭ PASS — NEXT CLUE';
+    this.blitzPassBarEl.addEventListener('click', () => {
+      if (this.blitzPassBarEl.disabled) return;
+      this.callbacks.onBlitzPass?.();
+    });
 
     // Capture-phase anti-bleed gate: prevents trailing `click`/`pointerup` from a 3D board tile tap
     // from ever auto-answering a newly mounted question before a fresh pointerdown inside `toyBayEl`!
@@ -1229,7 +1461,7 @@ export class BroadcastChromeUIV7 {
       });
     }
 
-    this.questionChassisEl.append(vellumPane, this.toyBayEl);
+    this.questionChassisEl.append(vellumPane, this.toyBayEl, this.blitzPassBarEl);
     this.questionStageEl.appendChild(this.questionChassisEl);
 
     // ------------------------------------------------------------------------
@@ -1304,13 +1536,30 @@ export class BroadcastChromeUIV7 {
     this.rootEl.remove();
   }
 
+  private setMobileHudMenuOpen(open: boolean): void {
+    this.mobileHudMenuOpen = open;
+    this.mobileHudDrawerEl.classList.toggle('ws7-hidden', !open);
+    this.mobileMenuBtnEl.setAttribute('aria-expanded', open ? 'true' : 'false');
+    this.mobileMenuBtnEl.dataset.active = open ? 'true' : 'false';
+  }
+
   public syncFullscreenButtonState(): void {
     const active = isDocumentFullscreenV7();
-    this.fullscreenBugBtn.dataset.active = active ? 'true' : 'false';
-    this.fullscreenBugBtn.innerHTML = active
-      ? `<span class="ws7-thumb-icon" aria-hidden="true">🗗</span><span>EXIT</span>`
-      : `<span class="ws7-thumb-icon" aria-hidden="true">⛶</span><span>FULL</span>`;
-    this.fullscreenBugBtn.title = active ? 'Exit Full Screen (Esc / F)' : 'Enter Full Screen (F)';
+    const bugBtn = this.fullscreenBugBtn as HTMLButtonElement | undefined;
+    if (bugBtn?.dataset) {
+      bugBtn.dataset.active = active ? 'true' : 'false';
+      bugBtn.innerHTML = active
+        ? `<span class="ws7-thumb-icon" aria-hidden="true">🗗</span><span>EXIT</span>`
+        : `<span class="ws7-thumb-icon" aria-hidden="true">⛶</span><span>FULL</span>`;
+      bugBtn.title = active ? 'Exit Full Screen (Esc / F)' : 'Enter Full Screen (F)';
+    }
+    const drawerFsBtn = this.mobileDrawerFullscreenBtnEl as HTMLButtonElement | undefined;
+    if (drawerFsBtn?.dataset) {
+      drawerFsBtn.dataset.active = active ? 'true' : 'false';
+      drawerFsBtn.innerHTML = active
+        ? `<span aria-hidden="true">🗗</span><span>EXIT FULL SCREEN</span>`
+        : `<span aria-hidden="true">⛶</span><span>FULL SCREEN</span>`;
+    }
   }
 
   public async handleFullscreenToggle(): Promise<void> {
@@ -1477,9 +1726,13 @@ export class BroadcastChromeUIV7 {
     this.isQuickPlayMatch = Boolean(opts.isQuickPlay);
     this.isDailyBroadcastMatch = Boolean(opts.isDailyBroadcast);
     this.propsBtnEl.classList.toggle('ws7-hidden', !opts.showPropsButton);
+    this.mobileDrawerPropsBtnEl.classList.toggle('ws7-hidden', !opts.showPropsButton);
     this.cheatAndMicUnlocked = opts.showCheatAndMicControls;
     this.arrestSwitchBtn.classList.toggle('ws7-hidden', !opts.showCheatAndMicControls);
-    this.censorPaddleBtn.classList.toggle('ws7-hidden', !opts.showCheatAndMicControls);
+    this.censorPaddleBtn.classList.toggle(
+      'ws7-hidden',
+      this.blitzModeActive || !opts.showCheatAndMicControls,
+    );
   }
 
   public showTopBroadcastBug(
@@ -1494,6 +1747,7 @@ export class BroadcastChromeUIV7 {
     this.modalStageEl.dataset.topBugOpen = visible ? 'true' : 'false';
     this.utilityModalStageEl.dataset.topBugOpen = visible ? 'true' : 'false';
     if (!visible) {
+      this.setMobileHudMenuOpen(false);
       this.liveToastEl.classList.add('ws7-hidden');
       this.rivalChyronEl.classList.add('ws7-hidden');
       this.hasSyncedTopScoresOnce = false;
@@ -1593,7 +1847,7 @@ export class BroadcastChromeUIV7 {
         <div class="ws7-curtain-bulb-rail" aria-hidden="true">${bulbsHtml}</div>
         <div class="ws7-curtain-header-row">
           <svg class="ws7-curtain-starburst-svg" viewBox="0 0 56 56" width="42" height="42" aria-hidden="true">
-            <circle cx="28" cy="28" r="26" fill="#071321" stroke="#f4a91f" stroke-width="1.8"/>
+            <circle cx="28" cy="28" r="26" fill="#5C301B" stroke="#f4a91f" stroke-width="1.8"/>
             <polygon points="28,3 31,20 44,8 35,23 52,22 36,28 52,34 35,33 44,48 31,36 28,53 25,36 12,48 21,33 4,34 20,28 4,22 21,23 12,8 25,20" fill="#ffd56b"/>
             <polygon points="28,9 30,22 41,15 33,25 47,28 33,31 41,41 30,34 28,47 26,34 15,41 23,31 9,28 23,25 15,15 26,22" fill="#ff6738" opacity="0.92"/>
             <circle cx="28" cy="28" r="7.5" fill="#0096a6" stroke="#fff7e6" stroke-width="1.6"/>
@@ -1687,6 +1941,10 @@ export class BroadcastChromeUIV7 {
     });
   }
 
+  public setActiveBoardTwist(twistId: BoardTwistIdV7 | null): void {
+    this.activeBoardTwistId = twistId;
+  }
+
   public setBoardModeBanner(
     banner: {
       readonly modeTitle: string;
@@ -1723,13 +1981,6 @@ export class BroadcastChromeUIV7 {
       ruleCompactEl.className = 'ws7-mode-copy-compact';
       ruleCompactEl.textContent = shortRule;
       this.boardModeRuleEl.append(ruleFullEl, ruleCompactEl);
-
-      // Auto-fade bottom mode ribbon after 4.5s so the 3D stage & board stay 100% unobstructed!
-      this.activeBoardModeFadeTimeout = window.setTimeout(() => {
-        this.boardModeRibbonAutoHidden = true;
-        this.activeBoardModeFadeTimeout = null;
-        this.syncBoardModeRibbonVisibility();
-      }, 4500);
     } else {
       this.boardModeTagEl.textContent = '';
       this.boardModeRuleEl.textContent = '';
@@ -1781,7 +2032,15 @@ export class BroadcastChromeUIV7 {
     const canAnimate = this.hasSyncedTopScoresOnce;
     this.hasSyncedTopScoresOnce = true;
 
+    const isBlitz = Boolean(snap.blitzMode || this.blitzModeActive);
+    this.topBugWrapEl.dataset.blitz = isBlitz ? 'true' : 'false';
+    this.rivalBoxEl.hidden = isBlitz;
+    this.rivalBoxEl.classList.toggle('ws7-hidden', isBlitz);
+    this.turboBugBtn.classList.toggle('ws7-hidden', isBlitz);
+    this.censorPaddleBtn.classList.toggle('ws7-hidden', isBlitz);
+
     this.liveMatchScoreForShop = Math.max(0, Math.floor(snap.playerCash));
+    this.applyPodiumTrimToPlayerBox(snap.podiumTrimId);
     this.animateSolariScore(
       this.playerRoller,
       this.playerDrumEl,
@@ -1790,18 +2049,24 @@ export class BroadcastChromeUIV7 {
       snap.playerCash,
       canAnimate,
     );
-    this.animateSolariScore(
-      this.rivalRoller,
-      this.rivalDrumEl,
-      this.rivalBoxEl,
-      this.rivalDeltaPopEl,
-      snap.rivalCash,
-      canAnimate,
-    );
+    if (!isBlitz) {
+      this.animateSolariScore(
+        this.rivalRoller,
+        this.rivalDrumEl,
+        this.rivalBoxEl,
+        this.rivalDeltaPopEl,
+        snap.rivalCash,
+        canAnimate,
+      );
+    }
 
     const totalTurns = snap.totalTurns ?? 10;
     const clampedTurn = Math.max(1, Math.min(totalTurns, snap.turnNumber));
-    if (snap.isDailyBroadcast) {
+    if (isBlitz) {
+      this.turnPillEl.dataset.act = 'blitz';
+      this.turnKickerEl.textContent = '⚡ BLITZ';
+      this.turnNumEl.textContent = '60s SOLO';
+    } else if (snap.isDailyBroadcast) {
       this.turnPillEl.dataset.act = 'daily';
       this.turnKickerEl.innerHTML = snap.dailyEpisodeNumber
         ? `<span class="ws7-turn-full">DAILY #${snap.dailyEpisodeNumber}</span><span class="ws7-turn-short">DAILY</span>`
@@ -1836,39 +2101,114 @@ export class BroadcastChromeUIV7 {
     this.streakChipEl.textContent = `🔥${streakVal}`;
 
     const sabotageLikely =
-      clampedTurn >= 7 && snap.playerCash - snap.rivalCash >= 250;
+      !isBlitz && clampedTurn >= 7 && snap.playerCash - snap.rivalCash >= 250;
     if (this.censorPaddleBtn.dataset.locked !== 'true') {
       this.censorPaddleBtn.dataset.sabotageActive = sabotageLikely ? 'true' : 'false';
     }
 
-    const rivalProfile = CAST_PROFILES_V7[snap.rivalId] ?? CAST_PROFILES_V7.CARMEN_DELGADO;
-    const fullUpper = rivalProfile.name.toUpperCase();
-    const nameParts = rivalProfile.name.trim().split(/\s+/);
-    const rawFirst = (nameParts[0] ?? rivalProfile.name).toUpperCase();
-    const rawLast = (nameParts[nameParts.length - 1] ?? rawFirst).toUpperCase();
-    const firstUpper = rawFirst.length <= 7 ? rawFirst : rawLast.length <= 7 ? rawLast : rawFirst.slice(0, 7);
-    if (this.rivalNameFullEl.textContent !== fullUpper) {
-      this.rivalNameFullEl.textContent = fullUpper;
-    }
-    if (this.rivalNameShortEl.textContent !== firstUpper) {
-      this.rivalNameShortEl.textContent = firstUpper;
-    }
+    if (!isBlitz) {
+      const rivalProfile = CAST_PROFILES_V7[snap.rivalId] ?? CAST_PROFILES_V7.CARMEN_DELGADO;
+      const fullUpper = rivalProfile.name.toUpperCase();
+      const nameParts = rivalProfile.name.trim().split(/\s+/);
+      const rawFirst = (nameParts[0] ?? rivalProfile.name).toUpperCase();
+      const rawLast = (nameParts[nameParts.length - 1] ?? rawFirst).toUpperCase();
+      const firstUpper = rawFirst.length <= 7 ? rawFirst : rawLast.length <= 7 ? rawLast : rawFirst.slice(0, 7);
+      if (this.rivalNameFullEl.textContent !== fullUpper) {
+        this.rivalNameFullEl.textContent = fullUpper;
+      }
+      if (this.rivalNameShortEl.textContent !== firstUpper) {
+        this.rivalNameShortEl.textContent = firstUpper;
+      }
 
-    const emotion = snap.rivalEmotion ?? 'POISED';
-    if (this.currentRivalId !== snap.rivalId) {
-      this.currentRivalId = snap.rivalId;
-      this.bindPortraitAsset(this.rivalMedallionEl, snap.rivalId, emotion);
-      this.setRivalEmotion(emotion);
-    } else {
-      this.setRivalEmotion(emotion);
+      const emotion = snap.rivalEmotion ?? 'POISED';
+      if (this.currentRivalId !== snap.rivalId) {
+        this.currentRivalId = snap.rivalId;
+        this.bindPortraitAsset(this.rivalMedallionEl, snap.rivalId, emotion);
+        this.setRivalEmotion(emotion);
+      } else {
+        this.setRivalEmotion(emotion);
+      }
     }
 
     if (typeof snap.boothTellLive === 'boolean') {
-      this.setBoothTellActive(snap.boothTellLive);
+      this.setBoothTellActive(isBlitz ? false : snap.boothTellLive);
     }
 
     if (snap.boardModeBanner !== undefined) {
-      this.setBoardModeBanner(snap.boardModeBanner);
+      this.setBoardModeBanner(isBlitz ? null : snap.boardModeBanner);
+    }
+
+    if (typeof snap.turboEnabled === 'boolean') {
+      this.turboBugBtn.dataset.active = snap.turboEnabled ? 'true' : 'false';
+      this.turboBugBtn.setAttribute('aria-pressed', snap.turboEnabled ? 'true' : 'false');
+      this.turboLabelEl.textContent = snap.turboEnabled ? ' TURBO ON' : ' TURBO';
+      this.turboBugBtn.title = snap.turboEnabled
+        ? 'Turbo Rival Turn Speed: ON (0.4s) — Tap to toggle'
+        : 'Toggle 0.4s Turbo Rival Turn Speed';
+    }
+
+    const mercyState = isBlitz ? 'NONE' : (snap.mercyBellState ?? 'NONE');
+    this.currentMercyBellState = mercyState;
+    if (mercyState === 'TKO_WIN') {
+      this.mercyBellBtn.dataset.mode = 'TKO_WIN';
+      this.mercyBellBtn.textContent = '🔔 RING TKO BELL (+$300)';
+      this.mercyBellBtn.classList.remove('ws7-hidden');
+    } else if (mercyState === 'CONCEDE_REMATCH') {
+      this.mercyBellBtn.dataset.mode = 'CONCEDE_REMATCH';
+      this.mercyBellBtn.textContent = '🏳️ CONCEDE & REMATCH';
+      this.mercyBellBtn.classList.remove('ws7-hidden');
+    } else {
+      this.mercyBellBtn.dataset.mode = 'NONE';
+      this.mercyBellBtn.classList.add('ws7-hidden');
+    }
+
+    const showHotMic = !isBlitz && Boolean(snap.hotMicShowButton);
+    this.hotMicHudBtn.classList.toggle('ws7-hidden', !showHotMic);
+    if (showHotMic) {
+      const available = snap.hotMicAvailable !== false;
+      const armed = Boolean(snap.hotMicArmed);
+      this.hotMicHudBtn.dataset.armed = String(armed);
+      this.hotMicHudBtn.disabled = !available && !armed;
+      this.hotMicHudBtn.textContent = armed
+        ? '🔥 HOT MIC ARMED! (TAP TILE)'
+        : available
+          ? '🔥 PASS THE HOT MIC!'
+          : '🔥 HOT MIC USED';
+    }
+
+    const showStrip = !isBlitz && (mercyState !== 'NONE' || showHotMic);
+    this.hudActionStripEl.classList.toggle('ws7-hidden', !showStrip);
+  }
+
+  private applyPodiumTrimToPlayerBox(trimId?: string): void {
+    const resolved = trimId && trimId.trim() ? trimId.trim() : 'trim_walnut_classic';
+    this.playerBoxEl.dataset.podiumTrim = resolved;
+    switch (resolved) {
+      case 'trim_peacock_chrome':
+      case 'podium_peacock_chrome':
+        this.playerBoxEl.style.borderColor = '#008B94';
+        this.playerBoxEl.style.boxShadow =
+          'inset 0 0 0 2px #E6F8FA, 0 2px 10px rgba(0, 139, 148, 0.34)';
+        break;
+      case 'trim_champagne_brass':
+      case 'podium_champagne_brass':
+        this.playerBoxEl.style.borderColor = '#D9A441';
+        this.playerBoxEl.style.boxShadow =
+          'inset 0 0 0 2px #FFF6D6, 0 2px 10px rgba(217, 164, 65, 0.38)';
+        break;
+      case 'trim_carnaby_tangerine':
+      case 'podium_carnaby_tangerine':
+        this.playerBoxEl.style.borderColor = '#FF6B35';
+        this.playerBoxEl.style.boxShadow =
+          'inset 0 0 0 2px #FFE4D6, 0 2px 10px rgba(255, 107, 53, 0.38)';
+        break;
+      case 'trim_walnut_classic':
+      case 'podium_walnut_classic':
+      default:
+        this.playerBoxEl.style.borderColor = '#6E3B23';
+        this.playerBoxEl.style.boxShadow =
+          'inset 0 0 0 1.5px #EBD4AE, 0 2px 8px rgba(110, 59, 35, 0.25)';
+        break;
     }
   }
 
@@ -2737,7 +3077,7 @@ export class BroadcastChromeUIV7 {
   }
 
   public openQuestionChassis(spec: QuestionChassisOpenSpecV7): HTMLDivElement {
-    const activeTwist: ClassicTvTileTwistV7 =
+    const activeTwist: ClassicTvTileTwistV9 =
       spec.tvTwist && spec.tvTwist !== 'NONE'
         ? spec.tvTwist
         : spec.isShowcaseFormat
@@ -2750,6 +3090,7 @@ export class BroadcastChromeUIV7 {
 
     // Apply Dramatic 1966 Living Color Twist Flare to Monitor & Header!
     this.questionChassisEl.dataset.twist = spec.isFinalWager ? 'SECRET_SQUARE' : activeTwist;
+    this.questionChassisEl.dataset.blitz = this.blitzModeActive ? 'true' : 'false';
     this.clueHeaderRowEl.dataset.flare =
       flareSpec || spec.isMatchPointTurn || spec.isFinalWager ? 'true' : 'false';
 
@@ -2757,7 +3098,7 @@ export class BroadcastChromeUIV7 {
       this.clueHeaderRowEl.style.background =
         'linear-gradient(95deg, #10357a 0%, #1e56c5 48%, #b86800 100%)';
       this.clueHeaderRowEl.style.color = '#ffffff';
-      this.clueStakesChipEl.style.background = 'rgba(7, 19, 33, 0.42)';
+      this.clueStakesChipEl.style.background = 'rgba(92, 48, 27, 0.42)';
       this.clueStakesChipEl.style.color = '#ffd56b';
 
       this.twistFlareStripEl.dataset.twist = 'SECRET_SQUARE';
@@ -2770,7 +3111,7 @@ export class BroadcastChromeUIV7 {
       this.clueHeaderRowEl.style.background =
         'linear-gradient(95deg, #a81812 0%, #e03e36 52%, #b86800 100%)';
       this.clueHeaderRowEl.style.color = '#ffffff';
-      this.clueStakesChipEl.style.background = 'rgba(7, 19, 33, 0.36)';
+      this.clueStakesChipEl.style.background = 'rgba(92, 48, 27, 0.36)';
       this.clueStakesChipEl.style.color = '#ffd56b';
 
       this.twistFlareStripEl.dataset.twist = 'MATCH_POINT';
@@ -2791,7 +3132,7 @@ export class BroadcastChromeUIV7 {
           ? `★ STUDIO SHOWCASE · ${cleanShowcaseName}`
           : flareSpec.flareBanner;
       this.twistFlareStripEl.classList.remove('ws7-hidden');
-    } else if (spec.isAct3Showdown) {
+    } else if (spec.isAct3Showdown && !this.blitzModeActive) {
       this.clueHeaderRowEl.style.background = domainRibbon.bg;
       this.clueHeaderRowEl.style.color = domainRibbon.ink;
       this.clueStakesChipEl.style.background = domainRibbon.chipBg;
@@ -2812,10 +3153,7 @@ export class BroadcastChromeUIV7 {
     }
 
     const friendlyCat = getFriendlyTvCategoryLabelV7(spec.clue.category);
-    const headerCatLabel =
-      friendlyCat.toUpperCase() === spec.clue.category || friendlyCat.includes(spec.clue.category)
-        ? friendlyCat
-        : `${spec.clue.category} · ${friendlyCat}`;
+    const headerCatLabel = friendlyCat;
     this.domainPillEl.innerHTML = '';
     const catWrapEl = document.createElement('span');
     catWrapEl.className = 'ws7-cat-label-wrap';
@@ -2827,24 +3165,31 @@ export class BroadcastChromeUIV7 {
 
     // Keep header stakes chip razor-compact & 1:1 exact with Post-Answer totalMult (e.g. 1.35x -> 1.35x, 1.50x -> 1.5x!)
     const chipParts: string[] = [];
-    if (spec.liveMultPreview > 1.02) {
-      const m = Math.round(spec.liveMultPreview * 100) / 100;
-      const fmtMult = Math.abs(Math.round(m * 10) - m * 10) < 0.005 ? m.toFixed(1) : m.toFixed(2);
-      chipParts.push(`${fmtMult}×`);
-    } else if (flareSpec) {
-      chipParts.push(flareSpec.badge);
+    if (!this.blitzModeActive) {
+      if (spec.liveMultPreview > 1.02) {
+        const m = Math.round(spec.liveMultPreview * 100) / 100;
+        const fmtMult = Math.abs(Math.round(m * 10) - m * 10) < 0.005 ? m.toFixed(1) : m.toFixed(2);
+        chipParts.push(`${fmtMult}×`);
+      } else if (flareSpec) {
+        chipParts.push(flareSpec.badge);
+      }
     }
     this.clueStakesChipEl.textContent = chipParts.join(' ');
+    this.clueStakesChipEl.classList.toggle('ws7-hidden', this.blitzModeActive || chipParts.length === 0);
 
     // Live Host Grant Bellamy 1-Line Studio Desk Setup
     const defaultHostIntro = spec.isFinalWager
       ? `Final Wager on the line—$${spec.baseChips.toLocaleString()} riding on ${friendlyCat}!`
       : `${friendlyCat} for $${spec.baseChips}—thirty seconds on the Studio 6A clock!`;
-    this.updateQuestionHostLine(
-      spec.hostIntroLine || defaultHostIntro,
-      spec.hostMood ?? (spec.isFinalWager || spec.isMatchPointTurn ? 'INTENSE' : 'POISED'),
-      false,
-    );
+    const hideHostStripForBlitz = this.blitzModeActive && !spec.hostIntroLine;
+    this.hostDeskStripEl.classList.toggle('ws7-hidden', hideHostStripForBlitz);
+    if (!hideHostStripForBlitz) {
+      this.updateQuestionHostLine(
+        spec.hostIntroLine || defaultHostIntro,
+        spec.hostMood ?? (spec.isFinalWager || spec.isMatchPointTurn ? 'INTENSE' : 'POISED'),
+        false,
+      );
+    }
 
     // Plain-English Zero-Assumption Micro-Instruction + Optional `? TIP` Button
     this.activeOpenQuestionCoachHandler = spec.onOpenQuestionCoach ?? null;
@@ -2853,7 +3198,8 @@ export class BroadcastChromeUIV7 {
       this.plainMicroTipEl.innerHTML = '';
       const bEl = document.createElement('span');
       bEl.className = 'ws7-plain-micro-badge';
-      bEl.textContent = `${spec.plainMicroTip.badge}:`;
+      const badgeRaw = spec.plainMicroTip.badge.trim();
+      bEl.textContent = /[?!:]$/.test(badgeRaw) ? badgeRaw : `${badgeRaw}:`;
       const copyEl = document.createElement('span');
       copyEl.textContent = spec.plainMicroTip.plainInstruction;
       this.plainMicroTipEl.append(bEl, copyEl);
@@ -2863,26 +3209,44 @@ export class BroadcastChromeUIV7 {
       this.plainMicroTipEl.classList.add('ws7-hidden');
     }
 
-    // Big, Arm's-Length Readable Clue Stem
-    const formattedStem = formatOrphanProofCopyV7(spec.clue.stem);
+    // Big, Arm's-Length Readable Clue Stem (extract duplicated mechanical prefix into kicker pill!)
+    const rawStem = spec.clue.stem.trim();
+    this.clueStemEl.dataset.rawStem = rawStem;
+    const prefixRe =
+      /^(Before or After|Odd One Out|Who or What Am I|Higher or Lower|Spot the Myth|Finish the Line)(?:\s*[!?:—-]+|\s+(?=[A-Z“"']))\s*/i;
+    const prefixMatch = prefixRe.exec(rawStem);
+    const extractedRemainder = prefixMatch ? rawStem.slice(prefixMatch[0].length).trim() : '';
+    let stemForDisplay = rawStem;
+    if (prefixMatch && extractedRemainder.length >= 16) {
+      this.clueStemKickerEl.textContent = prefixMatch[1].toUpperCase();
+      this.clueStemKickerEl.classList.remove('ws7-hidden');
+      stemForDisplay = extractedRemainder.replace(/^[a-z]/, (c) => c.toUpperCase());
+    } else {
+      this.clueStemKickerEl.textContent = '';
+      this.clueStemKickerEl.classList.add('ws7-hidden');
+    }
+    const formattedStem = formatOrphanProofCopyV7(stemForDisplay);
     this.clueStemEl.textContent = formattedStem;
     this.clueStemEl.dataset.long = formattedStem.length > 155 ? 'true' : 'false';
 
     const bonusTags: string[] = [];
-    if (spec.isWheelhouse) bonusTags.push('★ CHAMPION WEAK SPOT (+0.5× BONUS)');
-    if (spec.hasAmberTruce) bonusTags.push('✦ STUDIO TRUCE BONUS (+0.35×)');
+    if (!this.blitzModeActive) {
+      if (spec.isWheelhouse) bonusTags.push('★ CHAMPION WEAK SPOT (+0.5× BONUS)');
+      if (spec.hasAmberTruce) bonusTags.push('✦ STUDIO TRUCE BONUS (+0.35×)');
+    }
     const baseTags = bonusTags.join('  ·  ');
     this.clueStakesMetaEl.dataset.baseTags = baseTags;
     this.clueStakesMetaEl.textContent = baseTags;
+    this.clueStakesMetaEl.classList.toggle('ws7-hidden', this.blitzModeActive || baseTags.length === 0);
 
-    this.activeUseFiftyFiftyHandler = spec.onUseFiftyFifty ?? null;
-    this.activeUseAudiencePollHandler = spec.onUseAudiencePoll ?? null;
-    this.activeUseFreeSwapHandler = spec.onUseFreeSwap ?? null;
-    const hasFifty = Boolean(spec.onUseFiftyFifty);
-    const hasPoll = Boolean(spec.onUseAudiencePoll);
-    const hasSwap = Boolean(spec.onUseFreeSwap);
+    this.activeUseFiftyFiftyHandler = this.blitzModeActive ? null : (spec.onUseFiftyFifty ?? null);
+    this.activeUseAudiencePollHandler = this.blitzModeActive ? null : (spec.onUseAudiencePoll ?? null);
+    this.activeUseFreeSwapHandler = this.blitzModeActive ? null : (spec.onUseFreeSwap ?? null);
+    const hasFifty = Boolean(this.activeUseFiftyFiftyHandler);
+    const hasPoll = Boolean(this.activeUseAudiencePollHandler);
+    const hasSwap = Boolean(this.activeUseFreeSwapHandler);
     const visibleCols = (hasFifty ? 1 : 0) + (hasPoll ? 1 : 0) + (hasSwap ? 1 : 0);
-    const showLifelines = visibleCols > 0;
+    const showLifelines = !this.blitzModeActive && visibleCols > 0;
     this.lifelineBarEl.classList.toggle('ws7-hidden', !showLifelines);
     this.lifelineBarEl.dataset.cols = String(Math.max(1, visibleCols));
     this.fiftyFiftyBtnEl.classList.toggle('ws7-hidden', !hasFifty);
@@ -2947,12 +3311,381 @@ export class BroadcastChromeUIV7 {
   }
 
   // --------------------------------------------------------------------------
+  // R2: 60-Second Blitz HUD, Time Delta Burst & 45s Winner's Circle Modal
+  // --------------------------------------------------------------------------
+
+  public setBlitzHudMode(opts: {
+    readonly active: boolean;
+    readonly passesRemaining?: number;
+    readonly passCooldownSec?: number;
+    readonly nextPassCostSec?: number;
+    readonly hits?: number;
+    readonly streakMult?: number;
+  }): void {
+    this.blitzModeActive = Boolean(opts.active);
+    this.topBugWrapEl.dataset.blitz = this.blitzModeActive ? 'true' : 'false';
+    this.questionChassisEl.dataset.blitz = this.blitzModeActive ? 'true' : 'false';
+    this.blitzHudBannerEl.classList.toggle('ws7-hidden', !this.blitzModeActive);
+    this.blitzPassBarEl.classList.toggle('ws7-hidden', !this.blitzModeActive);
+    this.rivalBoxEl.hidden = this.blitzModeActive;
+    this.rivalBoxEl.classList.toggle('ws7-hidden', this.blitzModeActive);
+    this.turboBugBtn.classList.toggle('ws7-hidden', this.blitzModeActive);
+    this.censorPaddleBtn.classList.toggle('ws7-hidden', this.blitzModeActive);
+
+    if (!this.blitzModeActive) {
+      this.blitzTimeDeltaEl.classList.add('ws7-hidden');
+      this.hostDeskStripEl.classList.remove('ws7-hidden');
+      this.clueStakesChipEl.classList.remove('ws7-hidden');
+      this.clueStakesMetaEl.classList.remove('ws7-hidden');
+      this.syncBoardModeRibbonVisibility();
+      return;
+    }
+
+    this.clueStakesChipEl.classList.add('ws7-hidden');
+    this.clueStakesMetaEl.classList.add('ws7-hidden');
+    this.lifelineBarEl.classList.add('ws7-hidden');
+    this.mercyBellBtn.classList.add('ws7-hidden');
+    this.hotMicHudBtn.classList.add('ws7-hidden');
+    this.hudActionStripEl.classList.add('ws7-hidden');
+    this.syncBoardModeRibbonVisibility();
+
+    const passesLeft = Math.max(0, Math.floor(opts.passesRemaining ?? 0));
+    const cooldown = Math.max(0, opts.passCooldownSec ?? 0);
+    const nextCost = opts.nextPassCostSec ?? (passesLeft > 0 ? 0 : -2.0);
+    const hits = Math.max(0, Math.floor(opts.hits ?? 0));
+    const mult = opts.streakMult ?? 1.0;
+
+    this.blitzHudBannerEl.innerHTML = `
+      <div class="ws9-blitz-stats-row">
+        <span>⚡ 60-SECOND BLITZ</span>
+        <span>HITS: ${hits} · ${mult.toFixed(2).replace(/\.00$/, '.0')}×</span>
+        <span>${passesLeft > 0 ? `${passesLeft} FREE PASSES` : 'PASS: -2.0s'}</span>
+      </div>
+    `;
+
+    this.blitzPassBarEl.disabled = cooldown > 0.05;
+    if (cooldown > 0.05) {
+      this.blitzPassBarEl.textContent = `⏭ PASS READY IN ${cooldown.toFixed(1)}s`;
+    } else if (passesLeft > 0) {
+      this.blitzPassBarEl.textContent = `⏭ PASS — NEXT CLUE (${passesLeft} FREE)`;
+    } else {
+      this.blitzPassBarEl.textContent = `⏭ PASS — NEXT CLUE (${nextCost.toFixed(1)}s)`;
+    }
+  }
+
+  public showBlitzTimeDelta(deltaSec: number): void {
+    if (this.blitzDeltaTimeout !== null) {
+      window.clearTimeout(this.blitzDeltaTimeout);
+      this.blitzDeltaTimeout = null;
+    }
+    const isGain = deltaSec >= 0;
+    this.blitzTimeDeltaEl.dataset.kind = isGain ? 'gain' : 'loss';
+    this.blitzTimeDeltaEl.textContent = `${isGain ? '+' : ''}${deltaSec.toFixed(1)}s`;
+    this.blitzTimeDeltaEl.classList.remove('ws7-hidden');
+    this.blitzDeltaTimeout = window.setTimeout(() => {
+      this.blitzTimeDeltaEl.classList.add('ws7-hidden');
+      this.blitzDeltaTimeout = null;
+    }, 680);
+  }
+
+  public openWinnersCirclePromptV9(
+    opts: WinnersCirclePromptOptionsV9,
+  ): Promise<'PLAY' | 'BANK'> {
+    return new Promise((resolve) => {
+      const backdrop = document.createElement('div');
+      backdrop.className = 'ws9-modal-backdrop';
+
+      const card = document.createElement('section');
+      card.className = 'ws9-winners-circle-card';
+      card.setAttribute('role', 'dialog');
+      card.setAttribute('aria-modal', 'true');
+      card.setAttribute('aria-label', "45-Second Winner's Circle Bonus Sprint");
+
+      const header = document.createElement('header');
+      header.className = 'ws9-shell-header';
+      header.innerHTML = `
+        <div>
+          <div class="ws9-shell-kicker">VICTORY BONUS INVITATION · RISK-FREE SPRINT</div>
+          <h2 class="ws9-shell-title">45s WINNER’S CIRCLE</h2>
+        </div>
+      `;
+
+      const body = document.createElement('div');
+      body.className = 'ws9-shell-body';
+      body.innerHTML = `
+        <div class="ws9-pill-badge" style="align-self:flex-start;background:#dcfce7;border-color:#15803d;color:#14532d;">
+          🛡️ YOUR MATCH WINNINGS ($${Math.max(0, Math.floor(opts.matchWinningsSC)).toLocaleString()} SC) ARE 100% SAFE!
+        </div>
+        <p style="margin:0;font-size:16px;font-weight:700;line-height:1.4;">
+          Step into the 45-second Winner’s Circle spotlight! Answer 6 escalating clues ($100 → $100 → $150 → $150 → $200 → $300) for up to <strong>+$1,500 Showroom Cash</strong> and a <strong>Free Curtain Ticket</strong> on a 6/6 Sweep!
+        </p>
+        <div class="ws9-pill-badge">⚡ 45.0s CLOCK · WRONG: -5.0s · PASS: -3.0s · ZERO RISK TO BANKED CASH</div>
+      `;
+
+      const footer = document.createElement('footer');
+      footer.className = 'ws9-shell-footer';
+
+      let settled = false;
+      const finish = (choice: 'PLAY' | 'BANK'): void => {
+        if (settled) return;
+        settled = true;
+        backdrop.remove();
+        resolve(choice);
+      };
+
+      const bankBtn = document.createElement('button');
+      bankBtn.type = 'button';
+      bankBtn.className = 'ws9-btn ws9-btn-cream';
+      bankBtn.textContent = 'BANK & CONTINUE';
+      bankBtn.addEventListener('click', () => {
+        opts.onTapSfx?.();
+        finish('BANK');
+      });
+
+      const playBtn = document.createElement('button');
+      playBtn.type = 'button';
+      playBtn.className = 'ws9-btn ws9-btn-tangerine';
+      playBtn.dataset.action = 'play-winners-circle';
+      playBtn.textContent = '⚡ PLAY 45s WINNER’S CIRCLE (+$1,500 UP FOR GRABS)';
+      playBtn.addEventListener('click', () => {
+        opts.onTapSfx?.();
+        finish('PLAY');
+      });
+
+      footer.append(bankBtn, playBtn);
+      card.append(header, body, footer);
+      backdrop.appendChild(card);
+      this.host.appendChild(backdrop);
+    });
+  }
+
+  public openWinnersCircleSprintV9(
+    opts: WinnersCircleSprintOptionsV9,
+  ): Promise<WinnersCircleSprintResultV9> {
+    const ladderValues = [100, 100, 150, 150, 200, 300] as const;
+    const clues = opts.clues.slice(0, 6);
+    const maxSec = opts.totalClockSec ?? 45.0;
+
+    return new Promise((resolve) => {
+      if (clues.length === 0) {
+        resolve({ bonusCashEarned: 0, hits: 0, sweptAllSix: false });
+        return;
+      }
+
+      let clockRemaining = maxSec;
+      let idx = 0;
+      let hits = 0;
+      let bonusCashEarned = 0;
+      let locked = false;
+      let settled = false;
+      const stepStates: Array<'pending' | 'current' | 'won' | 'miss'> = clues.map((_, i) =>
+        i === 0 ? 'current' : 'pending',
+      );
+
+      const backdrop = document.createElement('div');
+      backdrop.className = 'ws9-modal-backdrop';
+
+      const card = document.createElement('section');
+      card.className = 'ws9-winners-circle-card';
+      card.setAttribute('role', 'dialog');
+      card.setAttribute('aria-modal', 'true');
+      card.setAttribute('aria-label', "45s Winner's Circle Sprint");
+
+      const header = document.createElement('header');
+      header.className = 'ws9-shell-header';
+      const titleBox = document.createElement('div');
+      titleBox.innerHTML = `
+        <div class="ws9-shell-kicker">45s WINNER’S CIRCLE · 6-CLUE BONUS SPRINT</div>
+        <h2 class="ws9-shell-title">SHOWROOM BONUS SPRINT</h2>
+      `;
+      const clockBadge = document.createElement('span');
+      clockBadge.className = 'ws9-pill-badge';
+      clockBadge.style.fontSize = '16px';
+      clockBadge.textContent = `${clockRemaining.toFixed(1)}s`;
+      header.append(titleBox, clockBadge);
+
+      const body = document.createElement('div');
+      body.className = 'ws9-shell-body';
+
+      const stepsRow = document.createElement('div');
+      stepsRow.className = 'ws9-winners-circle-steps';
+
+      const clueCard = document.createElement('div');
+      clueCard.style.display = 'flex';
+      clueCard.style.flexDirection = 'column';
+      clueCard.style.gap = '10px';
+
+      body.append(stepsRow, clueCard);
+      card.append(header, body);
+      backdrop.appendChild(card);
+      this.host.appendChild(backdrop);
+
+      let lastTickMs = typeof performance !== 'undefined' ? performance.now() : Date.now();
+      let timerId: number | null = null;
+      let dwellId: number | null = null;
+
+      const renderSteps = (): void => {
+        stepsRow.innerHTML = '';
+        clues.forEach((_, i) => {
+          const st = document.createElement('div');
+          st.className = 'ws9-wc-step';
+          st.dataset.state = stepStates[i] ?? 'pending';
+          st.textContent = `$${ladderValues[i] ?? 150}`;
+          stepsRow.appendChild(st);
+        });
+      };
+
+      const finishSprint = (): void => {
+        if (settled) return;
+        settled = true;
+        if (timerId !== null) window.clearInterval(timerId);
+        if (dwellId !== null) window.clearTimeout(dwellId);
+
+        const sweptAllSix = hits === 6 && clues.length === 6;
+        const totalAward = bonusCashEarned + (sweptAllSix ? 500 : 0);
+        opts.onCompleteSfx?.(sweptAllSix);
+
+        stepsRow.innerHTML = '';
+        renderSteps();
+        clueCard.innerHTML = `
+          <div style="padding:14px;border-radius:14px;border:2px solid var(--ws9-brass);background:var(--ws9-cream-bright);text-align:center;">
+            <div class="ws9-pill-badge" style="margin-bottom:8px;">
+              ${sweptAllSix ? '👑 6/6 SWEEP JACKPOT! +$500 &amp; FREE CURTAIN TICKET!' : `★ WINNER’S CIRCLE COMPLETE · ${hits}/${clues.length} HITS`}
+            </div>
+            <div style="font-family:var(--ws66-font-show,'Caprasimo',serif);font-size:32px;color:var(--ws9-emerald);">
+              +$${totalAward.toLocaleString()} SHOWROOM CASH
+            </div>
+            <p style="margin:6px 0 0;font-weight:700;font-size:14px;">Credited straight to your 1966 Prize Showroom bankroll!</p>
+          </div>
+        `;
+        const doneBtn = document.createElement('button');
+        doneBtn.type = 'button';
+        doneBtn.className = 'ws9-btn ws9-btn-peacock';
+        doneBtn.style.width = '100%';
+        doneBtn.textContent = 'BANK BONUS & CONTINUE ▸';
+        doneBtn.addEventListener('click', () => {
+          opts.onTapSfx?.();
+          backdrop.remove();
+          resolve({
+            bonusCashEarned,
+            hits,
+            sweptAllSix,
+          });
+        });
+        clueCard.appendChild(doneBtn);
+      };
+
+      const advanceClue = (): void => {
+        idx += 1;
+        if (idx >= clues.length || clockRemaining <= 0) {
+          finishSprint();
+          return;
+        }
+        stepStates[idx] = 'current';
+        locked = false;
+        renderCurrentClue();
+      };
+
+      const renderCurrentClue = (): void => {
+        renderSteps();
+        const clue = clues[idx];
+        const value = ladderValues[idx] ?? 150;
+        clueCard.innerHTML = '';
+
+        const meta = document.createElement('div');
+        meta.style.display = 'flex';
+        meta.style.justifyContent = 'space-between';
+        meta.style.alignItems = 'center';
+        meta.innerHTML = `
+          <span class="ws9-pill-badge">${getFriendlyTvCategoryLabelV7(clue.category)}</span>
+          <span class="ws9-pill-badge" style="background:var(--ws9-gold);color:var(--ws9-ink);">CLUE ${idx + 1}/6 · +$${value}</span>
+        `;
+
+        const stemEl = document.createElement('p');
+        stemEl.style.margin = '0';
+        stemEl.style.fontSize = 'clamp(17px, 4.2vw, 21px)';
+        stemEl.style.fontWeight = '800';
+        stemEl.style.lineHeight = '1.35';
+        stemEl.textContent = formatOrphanProofCopyV7(clue.stem);
+
+        const optGrid = document.createElement('div');
+        optGrid.style.display = 'grid';
+        optGrid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(220px, 1fr))';
+        optGrid.style.gap = '8px';
+
+        const letters = ['A', 'B', 'C', 'D'] as const;
+        clue.choices.forEach((choice, cIdx) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'ws9-btn ws9-btn-cream';
+          btn.style.justifyContent = 'flex-start';
+          btn.style.textAlign = 'left';
+          btn.style.textTransform = 'none';
+          btn.textContent = `${letters[cIdx] ?? cIdx + 1}. ${choice}`;
+          btn.addEventListener('click', () => {
+            if (locked || settled) return;
+            locked = true;
+            const correct = cIdx === clue.answerIdx;
+            opts.onAnswerSfx?.(correct);
+            if (correct) {
+              hits += 1;
+              bonusCashEarned += value;
+              stepStates[idx] = 'won';
+              btn.className = 'ws9-btn ws9-btn-emerald';
+            } else {
+              clockRemaining = Math.max(0, clockRemaining - 5.0);
+              clockBadge.textContent = `${clockRemaining.toFixed(1)}s`;
+              stepStates[idx] = 'miss';
+              btn.className = 'ws9-btn ws9-btn-cerise';
+            }
+            dwellId = window.setTimeout(advanceClue, 180);
+          });
+          optGrid.appendChild(btn);
+        });
+
+        const passBtn = document.createElement('button');
+        passBtn.type = 'button';
+        passBtn.className = 'ws9-blitz-pass-bar';
+        passBtn.textContent = '⏭ PASS (-3.0s) — NEXT CLUE';
+        passBtn.addEventListener('click', () => {
+          if (locked || settled) return;
+          locked = true;
+          opts.onPassSfx?.();
+          clockRemaining = Math.max(0, clockRemaining - 3.0);
+          clockBadge.textContent = `${clockRemaining.toFixed(1)}s`;
+          stepStates[idx] = 'miss';
+          dwellId = window.setTimeout(advanceClue, 150);
+        });
+
+        clueCard.append(meta, stemEl, optGrid, passBtn);
+      };
+
+      timerId = window.setInterval(() => {
+        if (settled) return;
+        const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
+        const dt = Math.min(0.25, (now - lastTickMs) / 1000);
+        lastTickMs = now;
+        if (!locked) {
+          clockRemaining = Math.max(0, clockRemaining - dt);
+          clockBadge.textContent = `${clockRemaining.toFixed(1)}s`;
+          if (clockRemaining <= 0) {
+            finishSprint();
+          }
+        }
+      }, 100);
+
+      renderCurrentClue();
+    });
+  }
+
+  // --------------------------------------------------------------------------
   // Screen 5: 2.20s High-Contrast Post-Answer Solari Showcase (Tap-to-Skip >=500ms)
   // --------------------------------------------------------------------------
 
   public playPostAnswerTheater(spec: PostAnswerTheaterSpecV7): Promise<void> {
     this.closeQuestionChassis();
-    const dwellMs = Math.max(1850, spec.dwellMs ?? 2200);
+    const minDwell = spec.turboMode ? 550 : 1850;
+    const dwellMs = Math.max(minDwell, spec.dwellMs ?? (spec.turboMode ? 650 : 2200));
 
     return new Promise((resolve) => {
       let resolved = false;
@@ -3109,27 +3842,25 @@ export class BroadcastChromeUIV7 {
         }
       });
 
-      this.scheduleFlowTimeout(() => {
+      const target = finalOdometerTarget;
+      const start = performance.now();
+      const rollDuration = 200;
+      const stepRoll = (now: number): void => {
         if (resolved) return;
-        const target = finalOdometerTarget;
-        const start = performance.now();
-        const rollDuration = 400;
-        const stepRoll = (now: number): void => {
-          if (resolved) return;
-          const p = Math.min(1, (now - start) / rollDuration);
-          const cur = Math.round(target * p) || 0;
-          cashCell.textContent =
-            cur > 0
-              ? `+$${cur.toLocaleString()}`
-              : cur === 0
-                ? '$0'
-                : `-$${Math.abs(cur).toLocaleString()}`;
-          if (p < 1) {
-            this.scheduleFlowRaf(stepRoll);
-          }
-        };
-        this.scheduleFlowRaf(stepRoll);
-      }, 120);
+        const p = Math.max(0, Math.min(1, (now - start) / rollDuration));
+        const eased = 1 - Math.pow(1 - p, 3);
+        const cur = p >= 1 ? target : Math.round(target * eased) || 0;
+        cashCell.textContent =
+          cur > 0
+            ? `+$${cur.toLocaleString()}`
+            : cur === 0
+              ? '$0'
+              : `-$${Math.abs(cur).toLocaleString()}`;
+        if (p < 1) {
+          this.scheduleFlowRaf(stepRoll);
+        }
+      };
+      this.scheduleFlowRaf(stepRoll);
 
       autoTimeout = this.scheduleFlowTimeout(finishTheater, dwellMs);
     });
@@ -3777,8 +4508,8 @@ export class BroadcastChromeUIV7 {
           ? 'ws7-sheet-header ws7-ceremony-header-win'
           : 'ws7-sheet-header';
         header.style.background = summary.wonMatch
-          ? 'linear-gradient(135deg, #007d8c 0%, #0b2d47 100%)'
-          : 'linear-gradient(135deg, #b83b18 0%, #0b1d30 100%)';
+          ? 'linear-gradient(135deg, #008B94 0%, #005860 100%)'
+          : 'linear-gradient(135deg, #b83b18 0%, #5c301b 100%)';
 
         const headerRow = document.createElement('div');
         headerRow.className = 'ws7-sheet-header-row';
@@ -3868,7 +4599,7 @@ export class BroadcastChromeUIV7 {
           <div class="ws7-check-main-col">
             <div class="ws7-check-bank-row">
               <svg class="ws7-check-rosette-svg" viewBox="0 0 44 44" width="38" height="38" aria-hidden="true">
-                <circle cx="22" cy="22" r="20" fill="#0b2238" stroke="#9c6a12" stroke-width="1.8"/>
+                <circle cx="22" cy="22" r="20" fill="#5C301B" stroke="#9c6a12" stroke-width="1.8"/>
                 <circle cx="22" cy="22" r="16" fill="none" stroke="#f4a91f" stroke-width="1" stroke-dasharray="2.4 1.8"/>
                 <path d="M22 29 C18 19 10 18 7 23 C5 26 9 30 14 29 Z" fill="#f4a91f"/>
                 <path d="M22 29 C17 15 10 10 10 14 C9 19 14 25 20 29 Z" fill="#ff6738"/>
@@ -4029,6 +4760,18 @@ export class BroadcastChromeUIV7 {
           body.appendChild(empathyCard);
         }
 
+        if (
+          !summary.wonMatch &&
+          ceremonyExtra?.consolationShowroomCash !== undefined &&
+          ceremonyExtra.consolationShowroomCash > 0
+        ) {
+          const scConsolationCard = document.createElement('div');
+          scConsolationCard.className = 'ws7-vellum-card';
+          scConsolationCard.dataset.accent = 'gold';
+          scConsolationCard.innerHTML = `<strong style="font-size:14.5px;color:#5C301B;">🎁 50% CONSOLATION SHOWROOM CASH (+$${ceremonyExtra.consolationShowroomCash.toLocaleString()} SC):</strong> <span style="font-size:14.5px;font-weight:700;">Spendable right now in the 1966 Prize Showroom — completely separate from your Campaign Purse!</span>`;
+          body.appendChild(scConsolationCard);
+        }
+
         const newWeak = ceremonyExtra?.newlyScoutedWeak ?? [];
         const newStrong = ceremonyExtra?.newlyScoutedStrong ?? [];
         if (newWeak.length > 0 || newStrong.length > 0 || ceremonyExtra?.scoutedPlaystyleLabel) {
@@ -4116,11 +4859,17 @@ export class BroadcastChromeUIV7 {
         const isCampaignMode = Boolean(ceremonyExtra?.allowBackstageCustomization);
         footer.dataset.mode = isCampaignMode ? 'campaign' : 'quickplay';
 
+        const hasLossRematchCta =
+          !summary.wonMatch &&
+          Boolean(ceremonyExtra?.onRematchClick || ceremonyExtra?.rematchButtonLabel);
+
         const saveExitBtn = document.createElement('button');
         saveExitBtn.type = 'button';
         saveExitBtn.className = 'ws7-ceremony-save-exit-btn';
         saveExitBtn.title = 'Save all progress, medals & cash and return to the Start Screen';
-        saveExitBtn.innerHTML = `${SVG_REEL_VAULT_1966}<span>SAVE &amp; EXIT</span>`;
+        saveExitBtn.innerHTML = hasLossRematchCta
+          ? '<span>🏠 TITLE HUB</span>'
+          : `${SVG_REEL_VAULT_1966}<span>SAVE &amp; EXIT</span>`;
         saveExitBtn.addEventListener('click', () => {
           finishCeremony('SAVE_AND_EXIT');
         });
@@ -4213,7 +4962,21 @@ export class BroadcastChromeUIV7 {
           }
         });
 
-        footer.appendChild(nextBtn);
+        if (hasLossRematchCta) {
+          const rematchBtn = document.createElement('button');
+          rematchBtn.type = 'button';
+          rematchBtn.className = 'ws7-primary-btn ws9-rematch-cta';
+          rematchBtn.dataset.action = 'rematch';
+          rematchBtn.textContent =
+            ceremonyExtra?.rematchButtonLabel ?? '🔥 PLAY RETURN CHAMPION REMATCH';
+          rematchBtn.addEventListener('click', () => {
+            ceremonyExtra?.onRematchClick?.();
+            finishCeremony('PLAY_AGAIN');
+          });
+          footer.appendChild(rematchBtn);
+        } else {
+          footer.appendChild(nextBtn);
+        }
         panel.append(header, body, footer);
         this.mountModalContent(panel, () => finishCeremony('SAVE_AND_EXIT'));
       };
@@ -4390,7 +5153,7 @@ export class BroadcastChromeUIV7 {
         `<polygon points="${x1.toFixed(1)},${y1.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)} ${x3.toFixed(1)},${y3.toFixed(1)} ${x4.toFixed(1)},${y4.toFixed(1)}" fill="${fill}" stroke="${stroke}" stroke-width="1.3"/>`,
       );
     }
-    return `<svg class="ws7-lien-svg" viewBox="0 0 136 136" aria-label="12-Segment Network Buyout Wheel"><circle cx="68" cy="68" r="64" fill="#0b1d30" stroke="#0096a6" stroke-width="2.5"/>${spokes.join('')}<circle cx="68" cy="68" r="21" fill="#102a43" stroke="#f4a91f" stroke-width="2.2"/><text x="68" y="73" text-anchor="middle" fill="#fff7e6" font-family="Jost, sans-serif" font-size="14" font-weight="900">${paidCount}/12</text></svg>`;
+    return `<svg class="ws7-lien-svg" viewBox="0 0 136 136" aria-label="12-Segment Network Buyout Wheel"><circle cx="68" cy="68" r="64" fill="#5c301b" stroke="#d9a441" stroke-width="2.5"/>${spokes.join('')}<circle cx="68" cy="68" r="21" fill="#3e2012" stroke="#f4a91f" stroke-width="2.2"/><text x="68" y="73" text-anchor="middle" fill="#fff7e6" font-family="Jost, sans-serif" font-size="14" font-weight="900">${paidCount}/12</text></svg>`;
   }
 
   // --------------------------------------------------------------------------
@@ -4468,9 +5231,23 @@ export class BroadcastChromeUIV7 {
       modeCallout.dataset.accent = 'gold';
       modeCallout.innerHTML = `
         <div class="ws7-subtitle-kicker">TONIGHT’S BOARD MODE · ${this.activeBoardModeBanner.modeTitle}</div>
-        <div style="font-size:15px;font-weight:700;color:#121a2b;margin-top:3px;">${this.activeBoardModeBanner.ruleSummary}</div>
+        <div style="font-size:15px;font-weight:700;color:#121a2b;margin-top:3px;line-height:1.35;">${this.activeBoardModeBanner.ruleSummary}</div>
       `;
       body.appendChild(modeCallout);
+    }
+
+    const activeTwistSpec = this.activeBoardTwistId
+      ? BOARD_TWIST_SPECS_V7[this.activeBoardTwistId]
+      : undefined;
+    if (activeTwistSpec) {
+      const twistCallout = document.createElement('div');
+      twistCallout.className = 'ws7-vellum-card';
+      twistCallout.dataset.accent = 'teal';
+      twistCallout.innerHTML = `
+        <div class="ws7-subtitle-kicker">${activeTwistSpec.iconGlyph} ACTIVE STAGE TWIST · ${activeTwistSpec.name}</div>
+        <div style="font-size:15px;font-weight:700;color:#121a2b;margin-top:3px;line-height:1.35;">${activeTwistSpec.shortRule}</div>
+      `;
+      body.appendChild(twistCallout);
     }
 
     const isExhibitionRules = this.isQuickPlayMatch || this.isDailyBroadcastMatch;
@@ -5043,6 +5820,7 @@ export class BroadcastChromeUIV7 {
   }
 
   public openSettingsModal(onClose?: () => void): void {
+    let resetSaveArmed = false;
     const dismiss = (): void => {
       this.hideUtilityModalStage();
       onClose?.();
@@ -5270,6 +6048,90 @@ export class BroadcastChromeUIV7 {
       }
       diffBand.append(diffKicker, diffRow);
       body.appendChild(diffBand);
+
+      const saveBand = document.createElement('div');
+      saveBand.className = 'ws7-sheet-band';
+      const saveKicker = document.createElement('div');
+      saveKicker.className = 'ws7-subtitle-kicker';
+      saveKicker.style.marginBottom = '8px';
+      saveKicker.style.textAlign = 'center';
+      saveKicker.textContent = resetSaveArmed
+        ? 'PERMANENT ACTION · CLEARS CAMPAIGN, DAILY, TROPHIES & SHOWROOM'
+        : 'STUDIO ARCHIVE STORAGE · 2-STEP RESET';
+      const saveRow = document.createElement('div');
+      saveRow.className = 'ws7-btn-row';
+      if (!resetSaveArmed) {
+        const resetSaveBtn = document.createElement('button');
+        resetSaveBtn.type = 'button';
+        resetSaveBtn.className = 'ws7-secondary-btn';
+        resetSaveBtn.dataset.action = 'reset-save';
+        resetSaveBtn.textContent = 'RESET SAVE';
+        resetSaveBtn.addEventListener('click', () => {
+          resetSaveArmed = true;
+          render();
+        });
+        saveRow.appendChild(resetSaveBtn);
+      } else {
+        const confirmResetBtn = document.createElement('button');
+        confirmResetBtn.type = 'button';
+        confirmResetBtn.className = 'ws7-primary-btn';
+        confirmResetBtn.dataset.action = 'confirm-reset-save';
+        confirmResetBtn.style.background = '#B8253E';
+        confirmResetBtn.style.borderColor = '#8C182C';
+        confirmResetBtn.style.color = '#FFFDF7';
+        confirmResetBtn.textContent = 'ARE YOU SURE? CONFIRM RESET';
+        confirmResetBtn.addEventListener('click', () => {
+          resetSaveArmed = false;
+          try {
+            if (typeof window !== 'undefined' && window.localStorage) {
+              const keysToClear = [
+                'ws_v7_campaign_save_1',
+                'ws_v7_showrunner_meta_1',
+                'ws_v7_daily_broadcast_save_1',
+                'ws8_career_stats_ledger_v1',
+                'ws_v9_showroom_save_1',
+                'ws_v9_sweeps_save_1',
+                'ws_v7_cold_open_seen_1',
+                'ws8_smart_coach_seen_v1',
+                'ws8_voice_recency_ring_v1',
+              ];
+              for (const k of keysToClear) {
+                window.localStorage.removeItem(k);
+              }
+            }
+          } catch {
+            // Ignore storage restrictions
+          }
+          resetSeenStudioGuidesV8();
+          const freshState = this.campaign.resetCampaign(false);
+          this.applySettingsAttributes(freshState.settings);
+          this.callbacks.onSettingsChanged?.(freshState.settings);
+          this.hideUtilityModalStage();
+          if (this.liveMatchScoreForShop !== null && this.callbacks.onReturnToTitleHub) {
+            this.callbacks.onReturnToTitleHub();
+          } else {
+            onClose?.();
+          }
+          this.showLiveToast(
+            'SAVE DATA CLEARED — FRESH STUDIO 6A BROADCAST READY!',
+            'emerald',
+            2600,
+          );
+        });
+
+        const cancelResetBtn = document.createElement('button');
+        cancelResetBtn.type = 'button';
+        cancelResetBtn.className = 'ws7-secondary-btn';
+        cancelResetBtn.dataset.action = 'cancel-reset-save';
+        cancelResetBtn.textContent = 'CANCEL';
+        cancelResetBtn.addEventListener('click', () => {
+          resetSaveArmed = false;
+          render();
+        });
+        saveRow.append(confirmResetBtn, cancelResetBtn);
+      }
+      saveBand.append(saveKicker, saveRow);
+      body.appendChild(saveBand);
 
       const footer = document.createElement('div');
       footer.className = 'ws7-sheet-footer';

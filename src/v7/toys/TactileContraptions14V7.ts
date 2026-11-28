@@ -28,7 +28,7 @@
 // ============================================================================
 
 import {
-  SHUTTER_REEL_MULTIPLIER_LADDER_V8,
+  isTwoPaddleCardStyleV7,
   type BalanceScalePayloadV7,
   type CategoryIdV7,
   type ChronologyPayloadV7,
@@ -42,7 +42,6 @@ import {
   type NumericDialPayloadV7,
   type PatchbayPayloadV7,
   type QuestionCardStyleV7,
-  type ShutterReelPayloadV7,
   type ToyIdV7,
   type ToyResolutionV7,
 } from '../contracts_v7';
@@ -85,8 +84,10 @@ export interface TactileContraptionContextV7 {
   readonly equippedRelicIds?: readonly string[];
   /** Explicit 1966 TV Visual Card Style override (defaults to clue.cardStyle ?? deterministic qid fallback). */
   readonly cardStyle?: QuestionCardStyleV7;
-  /** Match-point / high-stakes suspense mode: 600ms pulsing heartbeat amber lock-in + 'LOCKED IN...' badge! */
+  /** Match-point / high-stakes suspense mode: 950ms dramatic hush + 'LOCKED IN...' badge! */
   readonly isClutchMoment?: boolean;
+  /** Turbo AI/pacing toggle: keeps lock-in snappy (`160ms + 240ms`) even on clutch tiles. */
+  readonly turboMode?: boolean;
   /** Accessibility reduced-motion toggle. */
   readonly reducedMotion?: boolean;
   /** Accessibility high-contrast badge border boost. */
@@ -127,6 +128,19 @@ export interface ToyContraptionMetaV7 {
 }
 
 export const ALL_QUESTION_CARD_STYLES_V7: readonly QuestionCardStyleV7[] = [
+  'CLASSIC_CUE',
+  'HEADLINE_BLANK',
+  'PICTURE_MONITOR',
+  'SPOT_THE_MYTH',
+  'BINARY_SPLIT',
+  'HIGHER_OR_LOWER',
+  'ODD_ONE_OUT',
+  'FINISH_THE_LINE',
+  'WHO_WHAT_AM_I',
+  'BEFORE_OR_AFTER',
+] as const;
+
+const LEGACY_UNTAGGED_CARD_STYLES_V7: readonly QuestionCardStyleV7[] = [
   'CLASSIC_CUE',
   'HEADLINE_BLANK',
   'PICTURE_MONITOR',
@@ -285,7 +299,7 @@ export function resolveQuestionCardStyleV7(
   }
 
   const bucket = Math.abs(clue.qid * 7 + clue.category.length * 3 + clue.answerIdx) % 5;
-  const candidate = ALL_QUESTION_CARD_STYLES_V7[bucket] ?? 'CLASSIC_CUE';
+  const candidate = LEGACY_UNTAGGED_CARD_STYLES_V7[bucket] ?? 'CLASSIC_CUE';
   // Avoid fallback 2-paddle cut if the stem explicitly counts "four" options
   if (candidate === 'BINARY_SPLIT' && /\b(four|4)\b/i.test(clue.stem)) {
     return 'PICTURE_MONITOR';
@@ -612,7 +626,7 @@ function ensureTactileContraptionsStylesV7(): void {
 
     /* High-contrast >=10:1 Question Header Cash & Stakes Pills across Amber/Teal/Cobalt/Vermilion ribbons */
     .ws7-clue-vellum-pane:has(~ .ws7-toy-bay > .ws7-toy-root) .ws7-cat-cash-pill {
-      background: rgba(8, 21, 36, 0.92) !important;
+      background: rgba(79, 41, 23, 0.94) !important;
       color: #FFF6DC !important;
       padding: 2px 9px;
       border-radius: 6px;
@@ -620,13 +634,32 @@ function ensureTactileContraptionsStylesV7(): void {
       white-space: nowrap;
     }
     .ws7-clue-vellum-pane:has(~ .ws7-toy-bay > .ws7-toy-root) .ws7-clue-stakes-chip {
-      background: rgba(8, 21, 36, 0.9) !important;
+      background: rgba(79, 41, 23, 0.92) !important;
       color: #FFD56B !important;
       box-shadow: inset 0 0 0 1.5px rgba(255, 213, 107, 0.68);
     }
     .ws7-blank-nowrap {
       white-space: nowrap;
       display: inline-block;
+    }
+    .ws7-time-emphasis {
+      display: inline-block;
+      padding: 0 5px;
+      margin: 0 1px;
+      border-radius: 5px;
+      font-weight: 900;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+    .ws7-time-emphasis--early {
+      background: rgba(23, 70, 162, 0.13);
+      color: #133A8A;
+      border: 1px solid rgba(23, 70, 162, 0.35);
+    }
+    .ws7-time-emphasis--late {
+      background: rgba(217, 119, 6, 0.18);
+      color: #9A4804;
+      border: 1px solid rgba(180, 83, 9, 0.38);
     }
 
     /* Safe-centering law: centers when content fits, NEVER clips top above scrollTop=0 on extreme 185-char stems! */
@@ -711,7 +744,7 @@ function ensureTactileContraptionsStylesV7(): void {
         inset 0 2px 0 #FFFFFF,
         inset 0 -1.5px 0 rgba(186, 158, 108, 0.6),
         0 3.5px 0 #BFA576,
-        0 7px 15px rgba(6, 18, 34, 0.28);
+        0 7px 15px rgba(30, 20, 14, 0.28);
     }
 
     .ws7-choice-copy {
@@ -754,9 +787,9 @@ function ensureTactileContraptionsStylesV7(): void {
       box-shadow: inset 0 0 0 2px #B51722;
     }
     .ws7-stamp-void[data-myth-elim="true"] {
-      background: #E8EFF7;
-      color: #2B3E54;
-      box-shadow: inset 0 0 0 2px #4A6480;
+      background: #FAF2DF;
+      color: #4F2917;
+      box-shadow: inset 0 0 0 2px #8C5838;
     }
     .ws7-stamp-fifty {
       display: inline-flex;
@@ -764,7 +797,7 @@ function ensureTactileContraptionsStylesV7(): void {
       gap: 3px;
       padding: 1px 7px;
       border-radius: 5px;
-      background: #1B2838;
+      background: #4F2917;
       color: #FFD166;
       font-family: var(--ws7-toy-caps);
       font-size: 14.5px;
@@ -834,7 +867,7 @@ function ensureTactileContraptionsStylesV7(): void {
       width: 100%;
       padding: 2px 6px;
       border-radius: 7px;
-      background: #0D2238;
+      background: #3E2012;
       box-shadow: inset 0 0 0 1.5px rgba(0, 194, 214, 0.55);
     }
     .ws7-poll-badge[data-leader="true"] {
@@ -888,8 +921,8 @@ function ensureTactileContraptionsStylesV7(): void {
       gap: 6px;
       padding: 5px 10px;
       border-radius: 9px;
-      background: linear-gradient(90deg, #0C2A45 0%, #143D60 50%, #0C2A45 100%);
-      box-shadow: inset 0 0 0 1.8px #00C2D6, 0 4px 12px rgba(4, 12, 24, 0.35);
+      background: linear-gradient(90deg, #005A63 0%, #007B85 50%, #005A63 100%);
+      box-shadow: inset 0 0 0 1.8px #00C2D6, 0 4px 12px rgba(30, 20, 14, 0.35);
       color: #FFF6E3;
       font-family: var(--ws7-toy-caps);
       font-size: 14.5px;
@@ -900,7 +933,7 @@ function ensureTactileContraptionsStylesV7(): void {
       animation: ws7RevealPop 0.22s ease-out both;
     }
     .ws7-lifeline-ribbon[data-kind="poll"] {
-      box-shadow: inset 0 0 0 1.8px #FFD166, 0 4px 12px rgba(4, 12, 24, 0.35);
+      box-shadow: inset 0 0 0 1.8px #FFD166, 0 4px 12px rgba(30, 20, 14, 0.35);
     }
 
     /* ========================================================================
@@ -1070,7 +1103,7 @@ function ensureTactileContraptionsStylesV7(): void {
         inset 5.5px 0 0 var(--pad-accent),
         0 4.5px 0 #BDA273,
         0 6px 0 #7E6842,
-        0 10px 20px rgba(4, 12, 24, 0.36);
+        0 10px 20px rgba(30, 20, 14, 0.36);
       color: #141B29;
       cursor: pointer;
       text-align: left;
@@ -1113,7 +1146,7 @@ function ensureTactileContraptionsStylesV7(): void {
         inset 0 2px 0 #FFFFFF,
         inset 6px 0 0 var(--pad-accent-top),
         0 5px 0 #D8A948,
-        0 10px 24px rgba(5, 16, 32, 0.36);
+        0 10px 24px rgba(30, 20, 14, 0.36);
       outline: none;
     }
     .ws7-studio-pad:active:not(:disabled),
@@ -1223,13 +1256,13 @@ function ensureTactileContraptionsStylesV7(): void {
       padding: 5px 20px;
       border-radius: 9px;
       background:
-        radial-gradient(circle at 7px 50%, #0D2238 2.4px, transparent 2.8px),
-        radial-gradient(circle at calc(100% - 7px) 50%, #0D2238 2.4px, transparent 2.8px),
+        radial-gradient(circle at 7px 50%, #3E2012 2.4px, transparent 2.8px),
+        radial-gradient(circle at calc(100% - 7px) 50%, #3E2012 2.4px, transparent 2.8px),
         linear-gradient(180deg, #FCF6E3 0%, #EFE2C0 100%);
       color: #141B29;
       border-top: 3px double #141B29;
       border-bottom: 3px double #141B29;
-      box-shadow: inset 0 1px 0 #FFFFFF, 0 4px 12px rgba(4, 12, 24, 0.35);
+      box-shadow: inset 0 1px 0 #FFFFFF, 0 4px 12px rgba(30, 20, 14, 0.35);
       flex: 0 0 auto;
     }
     .ws7-wire-stamp {
@@ -1256,7 +1289,7 @@ function ensureTactileContraptionsStylesV7(): void {
       font-family: var(--ws7-toy-caps);
       font-size: 14.5px;
       font-weight: 800;
-      color: #2B3648;
+      color: #4F2917;
       letter-spacing: 0.04em;
       text-transform: uppercase;
       white-space: nowrap;
@@ -1269,22 +1302,22 @@ function ensureTactileContraptionsStylesV7(): void {
         inset 0 0 0 1.5px rgba(20, 27, 41, 0.24),
         inset 0 4px 0 #141B29,
         0 4px 0 #9E8A63,
-        0 7px 15px rgba(4, 12, 24, 0.32);
+        0 7px 15px rgba(30, 20, 14, 0.32);
     }
     .ws7-style-headline_blank .ws7-pad-medallion {
       border-radius: 6px;
-      background: linear-gradient(180deg, #283347 0%, #141B29 100%);
+      background: linear-gradient(180deg, #4F2917 0%, #241309 100%);
       color: #FBF4E0;
       box-shadow:
         inset 0 0 0 1.5px #FFD166,
-        0 3px 0 #090D16;
+        0 3px 0 #1E140E;
     }
     .ws7-style-headline_blank .ws7-studio-pad:hover:not(:disabled) {
       box-shadow:
         inset 0 0 0 2px #B51722,
         inset 0 4px 0 #B51722,
         0 5px 0 #9E8A63,
-        0 10px 22px rgba(4, 12, 24, 0.38);
+        0 10px 22px rgba(30, 20, 14, 0.38);
     }
 
     /* --- CARD STYLE 3: PICTURE_MONITOR (1966 American Walnut & Chrome RCA CRT) --- */
@@ -1313,21 +1346,26 @@ function ensureTactileContraptionsStylesV7(): void {
         inset 0 2px 0 rgba(255, 224, 178, 0.5),
         inset 0 0 0 2px #D6B485,
         0 4px 0 #321608,
-        0 8px 18px rgba(4, 12, 24, 0.44);
+        0 8px 18px rgba(30, 20, 14, 0.44);
       flex: 0 0 auto;
     }
     .ws7-picture-screen {
-      flex: 0 0 116px;
-      width: 116px;
-      height: 67px;
+      flex: 0 0 132px;
+      width: 132px;
+      height: 83px;
       border-radius: 11px;
       padding: 2.5px;
       background: linear-gradient(155deg, #FFF3B0 0%, #F2A922 48%, #8F5A12 100%);
       box-shadow:
-        inset 0 2px 5px rgba(4, 12, 24, 0.65),
+        inset 0 2px 5px rgba(30, 20, 14, 0.65),
         0 0 10px rgba(242, 169, 34, 0.32),
         0 1px 0 rgba(255, 246, 227, 0.55);
       overflow: hidden;
+    }
+    @container ws7toy (max-width: 420px) {
+      .ws7-picture-dials {
+        display: none;
+      }
     }
     .ws7-picture-color-dots {
       display: inline-flex;
@@ -1389,7 +1427,7 @@ function ensureTactileContraptionsStylesV7(): void {
       background:
         conic-gradient(from 45deg, #E2ECF5 0deg, #8DA0B5 90deg, #FFFDF7 180deg, #6A7D92 270deg, #E2ECF5 360deg);
       box-shadow:
-        inset 0 0 0 2.5px #1E2C3E,
+        inset 0 0 0 2.5px #4F2917,
         0 2px 4px rgba(0, 0, 0, 0.5);
       position: relative;
     }
@@ -1409,7 +1447,7 @@ function ensureTactileContraptionsStylesV7(): void {
         inset 0 2px 0 #FFFFFF,
         inset 5px 0 0 #00B2C4,
         0 4px 0 #9BB3C9,
-        0 7px 16px rgba(5, 16, 32, 0.32);
+        0 7px 16px rgba(30, 20, 14, 0.32);
     }
 
     /* --- CARD STYLE 4: SPOT_THE_MYTH (Cerise/Vermilion Klaxon Alert Frame) --- */
@@ -1433,7 +1471,7 @@ function ensureTactileContraptionsStylesV7(): void {
         linear-gradient(90deg, #B4124A 0%, #E6397A 50%, #D92626 100%);
       color: #FFFFFF;
       border: 2px solid #FFD166;
-      box-shadow: 0 0 18px rgba(230, 57, 122, 0.55), 0 4px 12px rgba(4, 12, 24, 0.35);
+      box-shadow: 0 0 18px rgba(230, 57, 122, 0.55), 0 4px 12px rgba(30, 20, 14, 0.35);
       font-family: var(--ws7-toy-caps);
       font-size: 15px;
       font-weight: 900;
@@ -1470,7 +1508,7 @@ function ensureTactileContraptionsStylesV7(): void {
         0 7px 16px rgba(42, 6, 20, 0.34);
     }
 
-    /* --- CARD STYLE 5: BINARY_SPLIT (Giant 2-Paddle 50/50 TV Showdown) --- */
+    /* --- CARD STYLE 5: BINARY_SPLIT / HIGHER_OR_LOWER / BEFORE_OR_AFTER (2-Paddle Duels) --- */
     .ws7-binary-banner {
       display: flex;
       align-items: center;
@@ -1478,9 +1516,9 @@ function ensureTactileContraptionsStylesV7(): void {
       gap: 8px;
       padding: 5px 12px;
       border-radius: 10px;
-      background: linear-gradient(90deg, #007E8C 0%, #0D2238 50%, #D9461A 100%);
+      background: linear-gradient(90deg, #007E8C 0%, #5C301B 50%, #D9461A 100%);
       color: #FFFDF7;
-      box-shadow: inset 0 0 0 1.8px #FFD166, 0 4px 12px rgba(4, 12, 24, 0.36);
+      box-shadow: inset 0 0 0 1.8px #FFD166, 0 4px 12px rgba(42, 22, 10, 0.32);
       font-family: var(--ws7-toy-caps);
       font-size: 14.5px;
       font-weight: 900;
@@ -1488,6 +1526,89 @@ function ensureTactileContraptionsStylesV7(): void {
       text-transform: uppercase;
       text-align: center;
       flex: 0 0 auto;
+    }
+    .ws7-style-higher_or_lower .ws7-binary-banner {
+      background: linear-gradient(90deg, #007E8C 0%, #6E3B23 50%, #D97706 100%);
+    }
+    .ws7-style-before_or_after .ws7-binary-banner {
+      background: linear-gradient(90deg, #1746A2 0%, #5C301B 50%, #C47A12 100%);
+    }
+    .ws7-style-higher_or_lower .ws7-binary-paddle[data-side="left"] .ws7-binary-cap {
+      background: linear-gradient(180deg, #00A8B5 0%, #00747C 100%);
+    }
+    .ws7-style-higher_or_lower .ws7-binary-paddle[data-side="right"] .ws7-binary-cap {
+      background: linear-gradient(180deg, #F59E0B 0%, #C76F00 100%);
+    }
+    .ws7-style-before_or_after .ws7-binary-paddle[data-side="left"] .ws7-binary-cap {
+      background: linear-gradient(180deg, #2B5EC4 0%, #1746A2 100%);
+    }
+    .ws7-style-before_or_after .ws7-binary-paddle[data-side="right"] .ws7-binary-cap {
+      background: linear-gradient(180deg, #D98A1A 0%, #A95C06 100%);
+    }
+
+    /* --- CARD STYLES 7, 8, 9: ODD_ONE_OUT / FINISH_THE_LINE / WHO_WHAT_AM_I --- */
+    .ws7-cue-style-banner {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-family: var(--ws7-toy-caps);
+      font-size: 14.5px;
+      font-weight: 900;
+      letter-spacing: 0.045em;
+      text-transform: uppercase;
+      text-align: center;
+      line-height: 1.18;
+      flex: 0 0 auto;
+    }
+    .ws7-cue-style-banner--odd {
+      background: linear-gradient(90deg, #00747C 0%, #008B94 55%, #D9651B 100%);
+      color: #FFFDF7;
+      border: 2px solid #FFD166;
+      box-shadow: 0 4px 12px rgba(42, 22, 10, 0.28);
+    }
+    .ws7-style-odd_one_out .ws7-classic-pads-grid {
+      padding: 6px;
+      border-radius: 15px;
+      background: linear-gradient(135deg, rgba(0, 139, 148, 0.14) 0%, rgba(255, 107, 53, 0.14) 100%);
+      box-shadow: inset 0 0 0 2px rgba(217, 164, 65, 0.65);
+    }
+    .ws7-cue-style-banner--line {
+      background:
+        repeating-linear-gradient(
+          90deg,
+          rgba(217, 164, 65, 0.1) 0px,
+          rgba(217, 164, 65, 0.1) 12px,
+          transparent 12px,
+          transparent 24px
+        ),
+        linear-gradient(180deg, #FAF2DF 0%, #EFE0BE 100%);
+      color: #3E2012;
+      border: 2px solid #6E3B23;
+      box-shadow: inset 0 1px 0 #FFFDF7, 0 4px 10px rgba(42, 22, 10, 0.24);
+    }
+    .ws7-style-finish_the_line .ws7-studio-pad {
+      box-shadow:
+        inset 0 2px 0 #FFFDF7,
+        inset 6px 0 0 #D9A441,
+        0 4px 0 #9E7C44,
+        0 7px 15px rgba(42, 22, 10, 0.26);
+    }
+    .ws7-cue-style-banner--riddle {
+      background: linear-gradient(90deg, #5C301B 0%, #6E3B23 50%, #00747C 100%);
+      color: #FAF2DF;
+      border: 2px solid #D9A441;
+      box-shadow: 0 4px 12px rgba(42, 22, 10, 0.3);
+    }
+    .ws7-style-who_what_am_i .ws7-studio-pad {
+      box-shadow:
+        inset 0 2px 0 #FFFDF7,
+        inset 6px 0 0 #008B94,
+        0 4px 0 #8F7648,
+        0 7px 15px rgba(42, 22, 10, 0.28);
     }
     .ws7-binary-arena {
       display: grid;
@@ -1526,19 +1647,20 @@ function ensureTactileContraptionsStylesV7(): void {
       box-shadow:
         inset 0 2px 0 #FFFFFF,
         0 5px 0 #BFA576,
-        0 10px 22px rgba(4, 12, 24, 0.36);
+        0 10px 22px rgba(30, 20, 14, 0.36);
     }
     .ws7-binary-cap {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-      padding: 6px 11px;
+      justify-content: center;
+      gap: 5px;
+      padding: 6px 9px;
       font-family: var(--ws7-toy-caps);
-      font-size: 14.5px;
+      font-size: clamp(12.5px, 3.4vw, 14.5px);
       font-weight: 900;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.03em;
       text-transform: uppercase;
+      white-space: nowrap;
       color: #FFFDF7;
     }
     .ws7-binary-paddle[data-side="left"] .ws7-binary-cap {
@@ -1611,7 +1733,7 @@ function ensureTactileContraptionsStylesV7(): void {
       @container ws7toy (min-width: 600px) {
         .ws7-picture-shell {
           display: grid;
-          grid-template-columns: 198px minmax(0, 1fr);
+          grid-template-columns: minmax(216px, 240px) minmax(0, 1fr);
           gap: 12px;
           align-items: stretch;
         }
@@ -1624,8 +1746,10 @@ function ensureTactileContraptionsStylesV7(): void {
         }
         .ws7-picture-screen {
           flex: 0 0 auto;
-          width: 160px;
-          height: 100px;
+          width: 100%;
+          max-width: 216px;
+          height: auto;
+          aspect-ratio: 160 / 100;
         }
         .ws7-picture-meta {
           align-items: center;
@@ -1646,9 +1770,9 @@ function ensureTactileContraptionsStylesV7(): void {
         padding: 5px 9px;
       }
       .ws7-picture-screen {
-        flex: 0 0 88px;
-        width: 88px;
-        height: 55px;
+        flex: 0 0 124px;
+        width: 124px;
+        height: 78px;
       }
     }
 
@@ -1682,7 +1806,7 @@ function ensureTactileContraptionsStylesV7(): void {
       box-shadow:
         inset 0 2px 0 #FFFFFF,
         0 3px 0 #C5AE84,
-        0 6px 14px rgba(8, 22, 42, 0.24);
+        0 6px 14px rgba(30, 20, 14, 0.24);
       transition: transform 0.1s ease, box-shadow 0.12s ease, opacity 0.14s ease;
     }
     @container ws7toy (max-width: 400px) {
@@ -1796,7 +1920,7 @@ function ensureTactileContraptionsStylesV7(): void {
       box-shadow:
         inset 0 2px 0 #FFFFFF,
         0 3px 0 #C2AA7E,
-        0 5px 12px rgba(5, 16, 32, 0.28);
+        0 5px 12px rgba(30, 20, 14, 0.28);
       color: #141B29;
       font-family: var(--ws7-toy-num);
       font-size: clamp(20px, 2.6vw, 25px);
@@ -1882,12 +2006,18 @@ function ensureTactileContraptionsStylesV7(): void {
       gap: 6px;
       transition: transform 0.1s ease, filter 0.1s ease;
     }
-    .ws7-studio-lock-btn:hover {
+    .ws7-studio-lock-btn:hover:not(:disabled) {
       filter: brightness(1.07);
     }
-    .ws7-studio-lock-btn:active {
+    .ws7-studio-lock-btn:active:not(:disabled) {
       transform: translateY(3px);
       box-shadow: inset 0 2px 0 rgba(255,255,255,0.45), 0 1px 0 #A8340E;
+    }
+    .ws7-studio-lock-btn:disabled {
+      opacity: 0.54;
+      cursor: not-allowed;
+      filter: saturate(0.55);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.32), 0 2px 0 #7C2D12;
     }
 
     /* ========================================================================
@@ -1958,6 +2088,11 @@ function ensureTactileContraptionsStylesV7(): void {
       transform: translateY(-2px);
       filter: brightness(1.05);
     }
+    .ws7-brass-weight:disabled:not(.is-on-pan):not(.is-reveal-correct):not(.is-reveal-wrong):not(.is-fifty-cut) {
+      opacity: 0.48;
+      cursor: not-allowed;
+      filter: saturate(0.62);
+    }
     .ws7-brass-weight.is-on-pan {
       transform: translateY(-4px);
       background: linear-gradient(180deg, #FFFDF5 0%, #FFE484 65%, #F4A91F 100%);
@@ -1997,7 +2132,7 @@ function ensureTactileContraptionsStylesV7(): void {
       box-shadow:
         inset 0 2px 0 rgba(255, 224, 178, 0.42),
         inset 0 0 0 2px #D6B485,
-        0 6px 18px rgba(4, 12, 24, 0.44);
+        0 6px 18px rgba(30, 20, 14, 0.44);
       overflow: hidden;
     }
 
@@ -2069,9 +2204,9 @@ function ensureTactileContraptionsStylesV7(): void {
       padding: 8px 8px;
       border: none;
       border-radius: 14px;
-      background: linear-gradient(180deg, #1B4D66 0%, #113448 100%);
-      color: #E2F3FA;
-      box-shadow: 0 4px 0 #071926;
+      background: linear-gradient(180deg, #6E3B23 0%, #4F2917 100%);
+      color: #FFF6E3;
+      box-shadow: 0 4px 0 #241309;
       cursor: not-allowed;
       text-align: center;
       font-family: var(--ws7-toy-caps);
@@ -2123,7 +2258,7 @@ function ensureTactileContraptionsStylesV7(): void {
         0 3px 0 #C4AC82,
         0 6px 0 #EFE1C6,
         0 8px 0 #AD956B,
-        0 12px 18px rgba(4, 12, 24, 0.34) !important;
+        0 12px 18px rgba(30, 20, 14, 0.34) !important;
     }
     .ws7-sorter-deck.is-sort-hit {
       box-shadow: 0 0 0 3px #22C55E, 0 0 22px rgba(34, 197, 94, 0.72) !important;
@@ -2208,7 +2343,7 @@ function ensureTactileContraptionsStylesV7(): void {
       margin-top: 2px;
       padding: 1px 6px;
       border-radius: 5px;
-      background: #0D2238;
+      background: #5C301B;
       color: #FFD166;
       font-family: var(--ws7-toy-caps);
       font-size: 14.5px;
@@ -2286,8 +2421,8 @@ function ensureTactileContraptionsStylesV7(): void {
         radial-gradient(circle at calc(100% - 8px) 8px, #FFD166 1.8px, #7A4426 2.6px, transparent 3px),
         radial-gradient(circle at 8px calc(100% - 8px), #FFD166 1.8px, #7A4426 2.6px, transparent 3px),
         radial-gradient(circle at calc(100% - 8px) calc(100% - 8px), #FFD166 1.8px, #7A4426 2.6px, transparent 3px),
-        linear-gradient(180deg, rgba(110, 59, 35, 0.38) 0%, rgba(13, 34, 56, 0.58) 100%);
-      box-shadow: inset 0 0 0 1.8px rgba(244, 169, 31, 0.45), 0 5px 14px rgba(4, 12, 24, 0.34);
+        linear-gradient(180deg, rgba(110, 59, 35, 0.42) 0%, rgba(44, 24, 16, 0.68) 100%);
+      box-shadow: inset 0 0 0 1.8px rgba(244, 169, 31, 0.45), 0 5px 14px rgba(30, 20, 14, 0.34);
       align-items: stretch;
     }
     .ws7-patch-col {
@@ -2369,7 +2504,7 @@ function ensureTactileContraptionsStylesV7(): void {
       padding: 8px 10px;
       min-height: 54px;
       border-radius: 12px;
-      background: linear-gradient(180deg, rgba(8, 21, 36, 0.72) 0%, rgba(16, 43, 68, 0.55) 100%);
+      background: linear-gradient(180deg, rgba(79, 41, 23, 0.88) 0%, rgba(110, 59, 35, 0.78) 100%);
       border-bottom: 3px solid #F4A91F;
       box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.45);
     }
@@ -2436,7 +2571,7 @@ function ensureTactileContraptionsStylesV7(): void {
         inset 0 2px 0 #FFFFFF,
         inset 5px 0 0 #F4A91F,
         0 3px 0 #C5AE84,
-        0 6px 14px rgba(8, 22, 42, 0.24);
+        0 6px 14px rgba(30, 20, 14, 0.24);
       color: #141B29;
       cursor: pointer;
       display: flex;
@@ -2456,6 +2591,30 @@ function ensureTactileContraptionsStylesV7(): void {
     }
     .ws7-vowel-drum:active:not(:disabled) {
       transform: translateY(2px);
+    }
+    .ws7-vowel-drum .ws7-choice-copy {
+      display: inline;
+      text-align: center;
+      line-height: 1.5;
+    }
+    .ws7-vowel-tile {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 24px;
+      height: 28px;
+      padding: 0 5px;
+      margin: 1px 1.5px;
+      border-radius: 5px;
+      background: linear-gradient(180deg, #FFFDF7 0%, #FFE896 100%);
+      border: 1.5px solid #C89228;
+      box-shadow: 0 2px 0 #8A5A16, inset 0 1px 0 #FFFFFF;
+      font-family: var(--ws7-toy-num);
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      color: #141B29;
+      vertical-align: middle;
     }
 
     /* ========================================================================
@@ -2507,7 +2666,7 @@ function ensureTactileContraptionsStylesV7(): void {
       height: 10px;
       border-radius: 50%;
       background: radial-gradient(circle at 32% 30%, #FFFFFF 0%, #FF6738 48%, #9E1F0C 100%);
-      box-shadow: 0 0 0 1.5px #FFD166, 0 2px 3px rgba(10, 18, 32, 0.55);
+      box-shadow: 0 0 0 1.5px #FFD166, 0 2px 3px rgba(30, 20, 14, 0.55);
     }
 
     /* ========================================================================
@@ -2558,7 +2717,7 @@ function ensureTactileContraptionsStylesV7(): void {
       box-shadow:
         inset 0 2px 0 rgba(255, 224, 178, 0.45),
         inset 0 0 0 2px #D6B485,
-        0 6px 18px rgba(8, 22, 42, 0.45);
+        0 6px 18px rgba(30, 20, 14, 0.45);
     }
     .ws7-cyanotype-wrap::after {
       content: '';
@@ -2679,7 +2838,7 @@ function ensureTactileContraptionsStylesV7(): void {
     .ws7-shutter-window.is-closed[data-shutter-tone="2"] {
       background: linear-gradient(180deg, #3B79F2 0%, #1746A2 100%);
       color: #FFFDF7;
-      box-shadow: inset 0 2px 0 rgba(255,255,255,0.45), 0 3px 0 #0F2E6E;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.45), 0 3px 0 #123884;
     }
     .ws7-shutter-window.is-closed[data-shutter-tone="3"] {
       background: linear-gradient(180deg, #F45B96 0%, #C92663 100%);
@@ -2709,7 +2868,7 @@ function ensureTactileContraptionsStylesV7(): void {
     }
     .ws7-crack-lever:disabled {
       opacity: 0.72;
-      background: linear-gradient(180deg, #1746A2 0%, #0E295E 100%);
+      background: linear-gradient(180deg, #008B94 0%, #005A63 100%);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
       cursor: default;
     }
@@ -2743,7 +2902,7 @@ function ensureTactileContraptionsStylesV7(): void {
       box-shadow: inset 0 0 0 1.5px #FFD166;
     }
     .ws7-shutter-ladder-badge[data-tier="1.0"] {
-      background: rgba(13, 34, 56, 0.92);
+      background: rgba(44, 24, 16, 0.92);
       color: #FFF6E3;
       box-shadow: inset 0 0 0 1.5px rgba(255, 209, 102, 0.55);
     }
@@ -2786,9 +2945,16 @@ function ensureTactileContraptionsStylesV7(): void {
         gap: 8px;
       }
       .ws7-picture-screen {
-        flex: 0 0 82px;
-        width: 82px;
-        height: 52px;
+        flex: 0 0 112px;
+        width: 112px;
+        height: 70px;
+      }
+      .ws7-scale-svg-wrap {
+        height: 92px;
+      }
+      .ws7-brass-weight {
+        min-height: 48px;
+        padding: 8px 5px 5px;
       }
       .ws7-chrono-layout {
         gap: 5px;
@@ -2827,6 +2993,21 @@ function ensureTactileContraptionsStylesV7(): void {
       }
     }
 
+    @media (max-width: 480px) {
+      .ws7-binary-banner,
+      .ws7-cue-style-banner {
+        gap: 6px;
+        padding: 5px 8px;
+        font-size: 13px;
+        letter-spacing: 0.02em;
+        line-height: 1.18;
+      }
+      .ws7-binary-banner > span,
+      .ws7-cue-style-banner > span {
+        min-width: 0;
+      }
+    }
+
     /* ========================================================================
        Compact Mobile Landscape (844x390 / <=500px height):
        ZERO scrollbars inside <=326px right column, EVERY button >=48px, >=14.5px!
@@ -2854,9 +3035,12 @@ function ensureTactileContraptionsStylesV7(): void {
         gap: 8px;
       }
       .ws7-picture-screen {
-        flex: 0 0 68px;
-        width: 68px;
-        height: 44px;
+        flex: 0 0 104px;
+        width: 104px;
+        height: 65px;
+      }
+      .ws7-picture-dials {
+        display: none;
       }
       .ws7-choice-copy {
         font-size: 14.5px;
@@ -2925,11 +3109,11 @@ function ensureTactileContraptionsStylesV7(): void {
         gap: 5px;
       }
       .ws7-scale-svg-wrap {
-        height: 90px;
+        height: 78px;
       }
       .ws7-brass-weight {
         min-height: 48px;
-        padding: 4px;
+        padding: 6px 4px 4px;
       }
       .ws7-fuse-wires-col {
         gap: 5px;
@@ -3090,35 +3274,71 @@ function formatNumericRangeWithUnitV7(
   return `${minVal}${sep}${maxVal} ${unit}`;
 }
 
-function enhanceMountedQuestionChassisV7(container: HTMLElement): void {
+function enhanceMountedQuestionChassisV7(
+  container: HTMLElement,
+  cardStyle?: QuestionCardStyleV7,
+): void {
   const chassis = container.closest('.ws7-question-chassis');
   if (!chassis) return;
 
+  const resolvedStyle =
+    cardStyle ??
+    ((container.querySelector('.ws7-toy-root') as HTMLElement | null)?.dataset.cardStyle as
+      | QuestionCardStyleV7
+      | undefined);
+
   // 1. Keep `[ _____ ]` fill-in-the-blank tokens non-breaking so `]` never orphans on mobile!
+  //    And on BEFORE_OR_AFTER cards, visually highlight FIRST/EARLIER/BEFORE vs LATER/AFTER/LAST
+  //    so mobile players never misread the temporal direction.
   const stemEl = chassis.querySelector('.ws7-balanced-copy') as HTMLElement | null;
-  if (stemEl && !stemEl.querySelector('.ws7-blank-nowrap')) {
+  if (stemEl) {
     const rawText = stemEl.textContent ?? '';
-    const blankRe = /(\[\s*_+\s*\])/g;
-    if (blankRe.test(rawText)) {
-      blankRe.lastIndex = 0;
-      const frag = document.createDocumentFragment();
-      let cursor = 0;
-      let match: RegExpExecArray | null;
-      while ((match = blankRe.exec(rawText)) !== null) {
-        if (match.index > cursor) {
-          frag.appendChild(document.createTextNode(rawText.slice(cursor, match.index)));
+    const hasBlanks = /(\[\s*_+\s*\])/.test(rawText);
+    const isBeforeAfter = resolvedStyle === 'BEFORE_OR_AFTER';
+    if (
+      (hasBlanks && !stemEl.querySelector('.ws7-blank-nowrap')) ||
+      (isBeforeAfter && !stemEl.querySelector('.ws7-time-emphasis'))
+    ) {
+      const tokenRe = isBeforeAfter
+        ? /(\[\s*_+\s*\]|\b(?:FIRST|EARLIER|BEFORE|LATER|AFTER|LAST)\b)/g
+        : /(\[\s*_+\s*\])/g;
+      const hasCapsTemporal =
+        isBeforeAfter && /\b(?:FIRST|EARLIER|BEFORE|LATER|AFTER|LAST)\b/.test(rawText);
+      const effectiveRe =
+        isBeforeAfter && !hasCapsTemporal
+          ? /(\[\s*_+\s*\]|\b(?:first|earlier|before|later|after|last)\b(?!\s+or\s+(?:after|before)\??))/gi
+          : tokenRe;
+
+      if (effectiveRe.test(rawText)) {
+        effectiveRe.lastIndex = 0;
+        const frag = document.createDocumentFragment();
+        let cursor = 0;
+        let match: RegExpExecArray | null;
+        while ((match = effectiveRe.exec(rawText)) !== null) {
+          if (match.index > cursor) {
+            frag.appendChild(document.createTextNode(rawText.slice(cursor, match.index)));
+          }
+          const tok = match[1];
+          if (/^\[\s*_+\s*\]$/.test(tok)) {
+            const span = document.createElement('span');
+            span.className = 'ws7-blank-nowrap';
+            span.textContent = tok.replace(/\s+/g, '\u00A0');
+            frag.appendChild(span);
+          } else {
+            const span = document.createElement('span');
+            const isEarly = /^(FIRST|EARLIER|BEFORE)$/i.test(tok);
+            span.className = `ws7-time-emphasis ${isEarly ? 'ws7-time-emphasis--early' : 'ws7-time-emphasis--late'}`;
+            span.textContent = tok;
+            frag.appendChild(span);
+          }
+          cursor = match.index + match[0].length;
         }
-        const span = document.createElement('span');
-        span.className = 'ws7-blank-nowrap';
-        span.textContent = match[1].replace(/\s+/g, '\u00A0');
-        frag.appendChild(span);
-        cursor = match.index + match[0].length;
+        if (cursor < rawText.length) {
+          frag.appendChild(document.createTextNode(rawText.slice(cursor)));
+        }
+        stemEl.textContent = '';
+        stemEl.appendChild(frag);
       }
-      if (cursor < rawText.length) {
-        frag.appendChild(document.createTextNode(rawText.slice(cursor)));
-      }
-      stemEl.textContent = '';
-      stemEl.appendChild(frag);
     }
   }
 
@@ -3459,18 +3679,6 @@ function resolveCyanotypePayload(clue: ClueRecordV7): CyanotypePlatePayloadV7 {
   };
 }
 
-function resolveShuttersPayload(clue: ClueRecordV7): ShutterReelPayloadV7 {
-  if (clue.shutters) return clue.shutters;
-  return {
-    shutters: [
-      `Show Desk: ${clue.domain.replace('_', ' & ')}`,
-      `Topic: ${clue.category}`,
-      `Tier ${clue.difficulty} Studio Hint`,
-      clue.stem,
-    ],
-  };
-}
-
 // ============================================================================
 // MAIN ENTRYPOINT: `mountTactileContraptionV7`
 // ============================================================================
@@ -3498,6 +3706,7 @@ export function mountTactileContraptionV7(
   root.dataset.cardStyle = resolvedCardStyle;
   root.dataset.reducedMotion = context.reducedMotion ? 'true' : 'false';
   container.appendChild(root);
+  enhanceMountedQuestionChassisV7(container, resolvedCardStyle);
 
   let resolved = false;
   let locking = false;
@@ -3603,8 +3812,9 @@ export function mountTactileContraptionV7(
     context.onLockInStart?.(isClutch);
     context.onTactileSfx?.(opts.sfx);
 
-    const beat1Ms = isClutch ? 600 : 160;
-    const beat2Ms = isClutch ? 300 : 290;
+    const dramaticClutch = isClutch && !context.turboMode && !context.reducedMotion;
+    const beat1Ms = dramaticClutch ? 950 : isClutch ? 160 : 160;
+    const beat2Ms = dramaticClutch ? 280 : isClutch ? 240 : 290;
 
     scheduleReveal(
       () => {
@@ -3682,9 +3892,10 @@ export function mountTactileContraptionV7(
 
   switch (toyId) {
     // ------------------------------------------------------------------------
-    // 1. TOY_01_KNIFE_SWITCH — 5 DISTINCT 1966 VISUAL TV CARD STYLES!
+    // 1. TOY_01_KNIFE_SWITCH — 10 DISTINCT 1966 VISUAL TV CARD STYLES!
     //    `CLASSIC_CUE` | `HEADLINE_BLANK` | `PICTURE_MONITOR` |
-    //    `SPOT_THE_MYTH` | `BINARY_SPLIT`
+    //    `SPOT_THE_MYTH` | `BINARY_SPLIT` | `HIGHER_OR_LOWER` |
+    //    `ODD_ONE_OUT` | `FINISH_THE_LINE` | `WHO_WHAT_AM_I` | `BEFORE_OR_AFTER`
     // ------------------------------------------------------------------------
     case 'TOY_01_KNIFE_SWITCH': {
       const cutIndices = new Set<number>();
@@ -3692,14 +3903,26 @@ export function mountTactileContraptionV7(
       const tailByChoiceIdx = new Map<number, HTMLSpanElement>();
       const pollSlotByChoiceIdx = new Map<number, HTMLDivElement>();
       const visibleChoiceIndices: number[] = [];
+      const twoPaddleMode = isTwoPaddleCardStyleV7(resolvedCardStyle);
 
       let optionsHostEl: HTMLElement;
 
-      if (resolvedCardStyle === 'BINARY_SPLIT') {
+      if (twoPaddleMode) {
         const banner = document.createElement('div');
         banner.className = 'ws7-binary-banner';
-        const boltSvg = `<svg width="15" height="15" viewBox="0 0 18 18" style="flex:0 0 auto;" aria-hidden="true"><polygon points="10.5,1 3,10.5 8.8,10.5 7.5,17 15,7.5 9.2,7.5" fill="#FFD166" stroke="#141B29" stroke-width="1"/></svg>`;
-        banner.innerHTML = `${boltSvg}<span style="white-space:nowrap;">50/50 SHOWDOWN · PICK ONE!</span>${renderDomainCrestMicroSvgV7(clue.domain)}`;
+        const isHighLow = resolvedCardStyle === 'HIGHER_OR_LOWER';
+        const isBeforeAfter = resolvedCardStyle === 'BEFORE_OR_AFTER';
+        const bannerIconSvg = isHighLow
+          ? `<svg width="16" height="16" viewBox="0 0 18 18" style="flex:0 0 auto;" aria-hidden="true"><polygon points="9,2 14,7.5 4,7.5" fill="#FFD166"/><polygon points="9,16 4,10.5 14,10.5" fill="#FF9E66"/></svg>`
+          : isBeforeAfter
+            ? `<svg width="16" height="16" viewBox="0 0 18 18" style="flex:0 0 auto;" aria-hidden="true"><circle cx="9" cy="9" r="7" fill="none" stroke="#FFD166" stroke-width="1.8"/><line x1="9" y1="9" x2="9" y2="5" stroke="#FFFDF7" stroke-width="1.8" stroke-linecap="round"/><line x1="9" y1="9" x2="12.5" y2="10.5" stroke="#FFD166" stroke-width="1.8" stroke-linecap="round"/></svg>`
+            : `<svg width="15" height="15" viewBox="0 0 18 18" style="flex:0 0 auto;" aria-hidden="true"><polygon points="10.5,1 3,10.5 8.8,10.5 7.5,17 15,7.5 9.2,7.5" fill="#FFD166" stroke="#1E140E" stroke-width="1"/></svg>`;
+        const bannerText = isHighLow
+          ? 'UP OR DOWN · HIGHER OR LOWER!'
+          : isBeforeAfter
+            ? 'TIME-MACHINE DUEL · BEFORE OR AFTER?'
+            : '50/50 SHOWDOWN · PICK ONE!';
+        banner.innerHTML = `${bannerIconSvg}<span>${bannerText}</span>${renderDomainCrestMicroSvgV7(clue.domain)}`;
         root.appendChild(banner);
 
         const arena = document.createElement('div');
@@ -3717,6 +3940,10 @@ export function mountTactileContraptionV7(
           : [foilIdx, clue.answerIdx];
 
         const sides: readonly ('left' | 'right')[] = ['left', 'right'];
+        const leftLabel = isHighLow ? 'SIDE A' : isBeforeAfter ? 'PICK A' : 'CHOICE A';
+        const rightLabel = isHighLow ? 'SIDE B' : isBeforeAfter ? 'PICK B' : 'CHOICE B';
+        const centerToken = isHighLow ? 'OR' : 'VS';
+
         pairIndices.forEach((choiceIdx, pos) => {
           visibleChoiceIndices.push(choiceIdx);
           const side = sides[pos];
@@ -3725,8 +3952,8 @@ export function mountTactileContraptionV7(
           const rightTriSvg = '<svg width="9" height="10" viewBox="0 0 10 12" fill="currentColor" style="flex:0 0 auto;" aria-hidden="true"><polygon points="1,1 9,6 1,11"/></svg>';
           const sideTagHtml =
             side === 'left'
-              ? `<span style="display:inline-flex;align-items:center;gap:5px;">${leftTriSvg}<span>CHOICE A</span></span>`
-              : `<span style="display:inline-flex;align-items:center;gap:5px;"><span>CHOICE B</span>${rightTriSvg}</span>`;
+              ? `<span style="display:inline-flex;align-items:center;gap:5px;">${leftTriSvg}<span>${leftLabel}</span></span>`
+              : `<span style="display:inline-flex;align-items:center;gap:5px;"><span>${rightLabel}</span>${rightTriSvg}</span>`;
 
           const pad = document.createElement('button');
           pad.type = 'button';
@@ -3788,7 +4015,7 @@ export function mountTactileContraptionV7(
             const vsBadge = document.createElement('div');
             vsBadge.className = 'ws7-binary-vs';
             vsBadge.setAttribute('aria-hidden', 'true');
-            vsBadge.textContent = 'VS';
+            vsBadge.textContent = centerToken;
             arena.appendChild(vsBadge);
           }
         });
@@ -3826,6 +4053,24 @@ export function mountTactileContraptionV7(
             <span class="ws7-klaxon-dot" aria-hidden="true"></span>
           `;
           root.appendChild(klaxon);
+        } else if (resolvedCardStyle === 'ODD_ONE_OUT') {
+          const oddBanner = document.createElement('div');
+          oddBanner.className = 'ws7-cue-style-banner ws7-cue-style-banner--odd';
+          const oddSvg = `<svg width="18" height="18" viewBox="0 0 20 20" style="flex:0 0 auto;" aria-hidden="true"><circle cx="5" cy="7" r="2.6" fill="#FFFDF7"/><circle cx="11" cy="7" r="2.6" fill="#FFFDF7"/><circle cx="5" cy="13" r="2.6" fill="#FFFDF7"/><polygon points="13.5,10 14.7,12.5 17.5,12.9 15.5,14.8 16,17.5 13.5,16.2 11,17.5 11.5,14.8 9.5,12.9 12.3,12.5" fill="#FFD166" stroke="#3E2012" stroke-width="0.9"/></svg>`;
+          oddBanner.innerHTML = `${oddSvg}<span>3 BELONG · 1 CRASHER — ODD ONE OUT!</span>${renderDomainCrestMicroSvgV7(clue.domain)}`;
+          root.appendChild(oddBanner);
+        } else if (resolvedCardStyle === 'FINISH_THE_LINE') {
+          const lineBanner = document.createElement('div');
+          lineBanner.className = 'ws7-cue-style-banner ws7-cue-style-banner--line';
+          const quoteSvg = `<svg width="18" height="18" viewBox="0 0 20 20" style="flex:0 0 auto;" aria-hidden="true"><rect x="2" y="3" width="16" height="14" rx="3" fill="#6E3B23" stroke="#D9A441" stroke-width="1.4"/><circle cx="7.5" cy="11.5" r="2" fill="#FFD166"/><line x1="9.5" y1="11.5" x2="9.5" y2="6.5" stroke="#FFD166" stroke-width="1.6" stroke-linecap="round"/><line x1="9.5" y1="6.5" x2="13.5" y2="7.5" stroke="#FFD166" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+          lineBanner.innerHTML = `${quoteSvg}<span>CUE-CARD SPOTLIGHT · FINISH THE LINE!</span>${renderDomainCrestMicroSvgV7(clue.domain)}`;
+          root.appendChild(lineBanner);
+        } else if (resolvedCardStyle === 'WHO_WHAT_AM_I') {
+          const riddleBanner = document.createElement('div');
+          riddleBanner.className = 'ws7-cue-style-banner ws7-cue-style-banner--riddle';
+          const maskSvg = `<svg width="18" height="18" viewBox="0 0 20 20" style="flex:0 0 auto;" aria-hidden="true"><circle cx="10" cy="10" r="8" fill="#FAF2DF" stroke="#D9A441" stroke-width="1.6"/><path d="M7.6 7.5 C7.6 6 12.4 6 12.4 8 C12.4 9.6 10 9.8 10 11.6" fill="none" stroke="#5C301B" stroke-width="2" stroke-linecap="round"/><circle cx="10" cy="14.2" r="1.2" fill="#FF6B35"/></svg>`;
+          riddleBanner.innerHTML = `${maskSvg}<span>MYSTERY GUEST · WHO OR WHAT AM I?</span>${renderDomainCrestMicroSvgV7(clue.domain)}`;
+          root.appendChild(riddleBanner);
         } else if (resolvedCardStyle === 'PICTURE_MONITOR') {
           const shell = document.createElement('div');
           shell.className = 'ws7-picture-shell';
@@ -3917,10 +4162,9 @@ export function mountTactileContraptionV7(
 
       applyFiftyFiftyImpl = () => {
         if (resolved || locking || disposed) return [];
-        const toCut =
-          resolvedCardStyle === 'BINARY_SPLIT'
-            ? visibleChoiceIndices.filter((i) => i !== clue.answerIdx).slice(0, 1)
-            : pickTwoWrongChoiceIndices(clue.answerIdx, clue, cutIndices);
+        const toCut = twoPaddleMode
+          ? visibleChoiceIndices.filter((i) => i !== clue.answerIdx).slice(0, 1)
+          : pickTwoWrongChoiceIndices(clue.answerIdx, clue, cutIndices);
 
         for (const idx of toCut) {
           cutIndices.add(idx);
@@ -3981,7 +4225,7 @@ export function mountTactileContraptionV7(
       gaugeWrap.setAttribute('aria-hidden', 'true');
       gaugeWrap.innerHTML = `
         <svg width="42" height="22" viewBox="0 0 42 22">
-          <path d="M5,19 A16,16 0 0,1 37,19" fill="#0B1F33" stroke="#FFD166" stroke-width="2"/>
+          <path d="M5,19 A16,16 0 0,1 37,19" fill="#4F2917" stroke="#FFD166" stroke-width="2"/>
           <path d="M7,19 A14,14 0 0,1 21,5" fill="none" stroke="#00C2D6" stroke-width="3.2" stroke-linecap="round"/>
           <path d="M21,5 A14,14 0 0,1 35,19" fill="none" stroke="#FF6738" stroke-width="3.2" stroke-linecap="round"/>
           <line class="ws7-pneumatic-gauge-needle" x1="21" y1="19" x2="21" y2="7" stroke="#FFFDF7" stroke-width="2.2" stroke-linecap="round"/>
@@ -4167,7 +4411,7 @@ export function mountTactileContraptionV7(
         const bx = 100 + Math.cos(rad) * 89;
         const by = 100 + Math.sin(rad) * 89;
         bulbsSvg.push(
-          `<circle class="ws7-dial-bulb" data-bulb-idx="${b}" cx="${bx.toFixed(1)}" cy="${by.toFixed(1)}" r="3.3" fill="#234863" stroke="#091929" stroke-width="1"/>`,
+          `<circle class="ws7-dial-bulb" data-bulb-idx="${b}" cx="${bx.toFixed(1)}" cy="${by.toFixed(1)}" r="3.3" fill="#6E3B23" stroke="#241309" stroke-width="1"/>`,
         );
       }
 
@@ -4184,7 +4428,7 @@ export function mountTactileContraptionV7(
             </filter>
           </defs>
           <!-- Living Color Bezel Halo + #11 Marquee Bulbs -->
-          <circle cx="100" cy="100" r="95" fill="#0D2238" stroke="#00B2C4" stroke-width="2.5"/>
+          <circle cx="100" cy="100" r="95" fill="#3E2012" stroke="#D9A441" stroke-width="2.5"/>
           <circle class="ws7-dial-lock-arc" cx="100" cy="100" r="92" fill="none" stroke="#16A34A" stroke-width="6" stroke-linecap="round"
             stroke-dasharray="${circumference.toFixed(1)}" stroke-dashoffset="${circumference.toFixed(1)}" transform="rotate(-90 100 100)"/>
           <g class="ws7-dial-bulbs">${bulbsSvg.join('')}</g>
@@ -4199,7 +4443,7 @@ export function mountTactileContraptionV7(
             <!-- Sculpted Needle Arm & Hub -->
             <polygon points="100,26 95,94 105,94" fill="#FF6738"/>
             <circle cx="100" cy="40" r="9.5" fill="#FFFDF7" stroke="#FF6738" stroke-width="2.5"/>
-            <circle cx="100" cy="100" r="22" fill="#0D2238" stroke="#FFD166" stroke-width="3"/>
+            <circle cx="100" cy="100" r="22" fill="#3E2012" stroke="#FFD166" stroke-width="3"/>
             <circle cx="100" cy="100" r="8" fill="#00C2D6"/>
           </g>
           <!-- Curved Acrylic Crystal Specular Reflection -->
@@ -4217,7 +4461,7 @@ export function mountTactileContraptionV7(
             <g class="ws7-dial-exact-marker" filter="url(#ws7GoldMarkerGlow)">
               <line x1="100" y1="100" x2="${exactMarkerX.toFixed(1)}" y2="${exactMarkerY.toFixed(1)}" stroke="#FFD166" stroke-width="3.6" stroke-linecap="round"/>
               <circle cx="${exactMarkerX.toFixed(1)}" cy="${exactMarkerY.toFixed(1)}" r="8.2" fill="#FFD166" stroke="#FFFFFF" stroke-width="2.2"/>
-              <circle cx="${exactMarkerX.toFixed(1)}" cy="${exactMarkerY.toFixed(1)}" r="3.2" fill="#0D2238"/>
+              <circle cx="${exactMarkerX.toFixed(1)}" cy="${exactMarkerY.toFixed(1)}" r="3.2" fill="#1E140E"/>
             </g>
           </g>
         </svg>
@@ -4263,7 +4507,7 @@ export function mountTactileContraptionV7(
         const litCount = Math.round(norm * (bulbCount - 1));
         bulbEls.forEach((bEl, idx) => {
           const lit = idx <= litCount;
-          bEl.setAttribute('fill', lit ? '#FFD166' : '#234863');
+          bEl.setAttribute('fill', lit ? '#FFD166' : '#6E3B23');
           bEl.setAttribute('r', lit ? '3.8' : '3.1');
         });
       };
@@ -4505,8 +4749,8 @@ export function mountTactileContraptionV7(
       appendShowcasePromptBanner(
         root,
         isCuratedBalanceClue
-          ? `Tap the 2 Studio Weights whose values sum to ${bal.targetSum}${unitStr}!`
-          : `Pair the True Answer (60 G) + Counterweight (40 G) to balance 100 G!`,
+          ? `Tap 2 Weights summing to ${bal.targetSum}${unitStr}, then tap LOCK IN!`
+          : `Pair True Answer (60 G) + Counterweight (40 G) for 100 G, then LOCK IN!`,
       );
 
       const selected: number[] = [];
@@ -4533,7 +4777,7 @@ export function mountTactileContraptionV7(
             <rect x="64" y="35" width="292" height="6.5" rx="3.2" fill="#FFD166" stroke="#FFFDF7" stroke-width="1.2"/>
             <line x1="72" y1="36.8" x2="348" y2="36.8" stroke="#FFFFFF" stroke-opacity="0.6" stroke-width="1.2"/>
             <polygon class="ws7-scale-needle" points="210,11 206,36 214,36" fill="#FF6738"/>
-            <circle cx="210" cy="38" r="5.5" fill="#0D2238" stroke="#FFFDF7" stroke-width="1.6"/>
+            <circle cx="210" cy="38" r="5.5" fill="#3E2012" stroke="#FFFDF7" stroke-width="1.6"/>
             <circle class="ws7-scale-eq-halo" cx="210" cy="38" r="13" fill="none" stroke="#22C55E" stroke-width="3" stroke-opacity="0"/>
             <g class="ws7-left-pan-plumb" transform="rotate(12 84 38)">
               <line x1="84" y1="38" x2="62" y2="80" stroke="#FFF6E3" stroke-width="1.8"/>
@@ -4604,10 +4848,71 @@ export function mountTactileContraptionV7(
         if (beamRaf) cancelAnimationFrame(beamRaf);
       });
 
-      const weighedIndices = new Set<number>();
       const formatWeightBadge = (val: number, revealed: boolean): string => {
         const suffix = bal.unit ? ` ${escHtml(bal.unit)}` : '';
         return revealed ? `${val}${suffix}` : `?${suffix}`;
+      };
+
+      const lockBtn = document.createElement('button');
+      lockBtn.type = 'button';
+      lockBtn.className = 'ws7-studio-lock-btn';
+      lockBtn.dataset.action = 'balance-lock';
+      lockBtn.disabled = true;
+      lockBtn.textContent = 'PICK 2 WEIGHTS';
+
+      const commitBalanceLock = (): void => {
+        if (resolved || locking || disposed || selected.length !== 2 || !isInputArmed()) {
+          return;
+        }
+        locking = true;
+        lockBtn.disabled = true;
+        const sum = selected.reduce((acc, idx) => acc + bal.weights[idx].value, 0);
+        const isExact =
+          Math.abs(sum - bal.targetSum) < 0.01 ||
+          (selected.includes(bal.validPair[0]) && selected.includes(bal.validPair[1]));
+        const chosenLabels = `${bal.weights[selected[0]].label} + ${bal.weights[selected[1]].label} (${sum}${bal.unit ? ` ${bal.unit}` : ''})`;
+        const trueLabels = `${bal.weights[bal.validPair[0]].label} + ${bal.weights[bal.validPair[1]].label} (${bal.targetSum}${bal.unit ? ` ${bal.unit}` : ''})`;
+        context.onLockInStart?.(isClutch);
+
+        // Highlight the true pair in Radiant Emerald (✓) & any wrong picks in Broadcast Vermilion (✗)!
+        const validPairSet = new Set<number>(bal.validPair);
+        weightBtns.forEach((btn, idx) => {
+          btn.disabled = true;
+          const badgeEl = btn.querySelector('.ws7-weight-val-badge');
+          if (badgeEl) {
+            badgeEl.innerHTML = formatWeightBadge(bal.weights[idx].value, true);
+          }
+          if (isExact && selected.includes(idx)) {
+            btn.classList.add('is-reveal-correct');
+          } else if (!isExact && validPairSet.has(idx)) {
+            btn.classList.add('is-reveal-correct');
+          } else if (!isExact && selected.includes(idx)) {
+            btn.classList.add('is-reveal-wrong');
+          }
+        });
+        if (isExact) {
+          panSumEl.textContent = `✓ ${sum}`;
+          lockBtn.textContent = `✓ BALANCED (${sum}${unitStr})`;
+        } else {
+          lockBtn.textContent = `✗ ${sum}${unitStr} (GOAL ${bal.targetSum}${unitStr})`;
+        }
+        context.onRevealFlash?.(isExact);
+
+        scheduleReveal(
+          () => {
+            emitOnce({
+              isCorrect: isExact,
+              accuracyRatio: isExact ? 1.0 : 0.0,
+              chipMultiplier: isExact ? 1.0 : 0.0,
+              chosenSummary: chosenLabels,
+              trueAnswerDisplay: trueLabels,
+              triggeredKlaxon: !isExact && Boolean(clue.isKlaxonMyth),
+              fellForPoisonedFix: false,
+            });
+          },
+          420,
+          220,
+        );
       };
 
       const updateScale = (): void => {
@@ -4625,61 +4930,33 @@ export function mountTactileContraptionV7(
 
         weightBtns.forEach((btn, idx) => {
           const isSelected = selected.includes(idx);
-          if (isSelected) weighedIndices.add(idx);
           btn.classList.toggle('is-on-pan', isSelected);
+          // CRITICAL E2E GUARDRAIL: Disable all unselected non-pan weights when 2 weights are on the pan
+          // while keeping the 2 `.is-on-pan` weights clickable to remove/swap!
+          btn.disabled =
+            locking ||
+            resolved ||
+            cutWeights.has(idx) ||
+            (selected.length >= 2 && !isSelected);
           const badgeEl = btn.querySelector('.ws7-weight-val-badge');
           if (badgeEl) {
-            badgeEl.innerHTML = formatWeightBadge(bal.weights[idx].value, weighedIndices.has(idx));
+            badgeEl.innerHTML = formatWeightBadge(bal.weights[idx].value, true);
           }
         });
 
-        if (selected.length === 2 && !locking) {
-          locking = true;
-          const isExact =
-            Math.abs(sum - bal.targetSum) < 0.01 ||
-            (selected.includes(bal.validPair[0]) && selected.includes(bal.validPair[1]));
-          const chosenLabels = `${bal.weights[selected[0]].label} + ${bal.weights[selected[1]].label} (${sum}${bal.unit ? ` ${bal.unit}` : ''})`;
-          const trueLabels = `${bal.weights[bal.validPair[0]].label} + ${bal.weights[bal.validPair[1]].label} (${bal.targetSum}${bal.unit ? ` ${bal.unit}` : ''})`;
-          context.onLockInStart?.(isClutch);
-
-          // Highlight the true pair in Radiant Emerald (✓) & any wrong picks in Broadcast Vermilion (✗)!
-          const validPairSet = new Set<number>(bal.validPair);
-          weightBtns.forEach((btn, idx) => {
-            btn.disabled = true;
-            const badgeEl = btn.querySelector('.ws7-weight-val-badge');
-            if (badgeEl) {
-              badgeEl.innerHTML = formatWeightBadge(bal.weights[idx].value, true);
-            }
-            if (isExact && selected.includes(idx)) {
-              btn.classList.add('is-reveal-correct');
-            } else if (!isExact && validPairSet.has(idx)) {
-              btn.classList.add('is-reveal-correct');
-            } else if (!isExact && selected.includes(idx)) {
-              btn.classList.add('is-reveal-wrong');
-            }
-          });
-          if (isExact) {
-            panSumEl.textContent = `✓ ${sum}`;
-          }
-          context.onRevealFlash?.(isExact);
-
-          scheduleReveal(
-            () => {
-              emitOnce({
-                isCorrect: isExact,
-                accuracyRatio: isExact ? 1.0 : 0.0,
-                chipMultiplier: isExact ? 1.0 : 0.0,
-                chosenSummary: chosenLabels,
-                trueAnswerDisplay: trueLabels,
-                triggeredKlaxon: !isExact && Boolean(clue.isKlaxonMyth),
-                fellForPoisonedFix: false,
-              });
-            },
-            420,
-            220,
-          );
+        if (selected.length === 2) {
+          lockBtn.disabled = locking || resolved;
+          lockBtn.textContent = `LOCK IN! (${sum}${unitStr})`;
+        } else {
+          lockBtn.disabled = true;
+          const remaining = 2 - selected.length;
+          lockBtn.textContent = remaining === 1 ? 'PICK 1 MORE WEIGHT' : 'PICK 2 WEIGHTS';
         }
       };
+
+      lockBtn.addEventListener('click', () => {
+        commitBalanceLock();
+      });
 
       bal.weights.forEach((w, idx) => {
         const btn = document.createElement('button');
@@ -4687,15 +4964,23 @@ export function mountTactileContraptionV7(
         btn.className = 'ws7-brass-weight';
         btn.dataset.weightIdx = String(idx);
         btn.innerHTML = `
-          <span class="ws7-weight-val-badge" style="font-family:var(--ws7-toy-caps);font-size:15px;font-weight:900;line-height:1.12;">${formatWeightBadge(w.value, false)}</span>
+          <span class="ws7-weight-val-badge" style="font-family:var(--ws7-toy-caps);font-size:15px;font-weight:900;line-height:1.12;">${formatWeightBadge(w.value, true)}</span>
           <span style="font-size:14.5px;font-weight:700;line-height:1.15;margin-top:2px;overflow-wrap:break-word;">${escHtml(w.label)}</span>
         `;
         btn.addEventListener('click', () => {
-          if (resolved || locking || disposed || cutWeights.has(idx) || selected.length >= 2 || !isInputArmed()) {
+          const pos = selected.indexOf(idx);
+          const isAlreadyOnPan = pos >= 0;
+          if (
+            resolved ||
+            locking ||
+            disposed ||
+            cutWeights.has(idx) ||
+            (!isAlreadyOnPan && selected.length >= 2) ||
+            !isInputArmed()
+          ) {
             return;
           }
-          const pos = selected.indexOf(idx);
-          if (pos >= 0) {
+          if (isAlreadyOnPan) {
             selected.splice(pos, 1);
           } else {
             selected.push(idx);
@@ -4707,7 +4992,7 @@ export function mountTactileContraptionV7(
         rack.appendChild(btn);
       });
 
-      wrapper.append(stage, rack);
+      wrapper.append(stage, rack, lockBtn);
       root.appendChild(wrapper);
 
       applyFiftyFiftyImpl = () => {
@@ -5103,12 +5388,12 @@ export function mountTactileContraptionV7(
         leftBtn.innerHTML = `
           <span style="color:#FFE89E;font-size:14.5px;">&larr; CHUTE A</span>
           <span style="font-size:15px;">${escHtml(sorter.chuteALabel)}</span>
-          ${pollActive ? `<span style="background:#0D2238;color:#FFD166;padding:2px 7px;border-radius:6px;font-size:14.5px;">${pollA}%</span>` : ''}
+          ${pollActive ? `<span style="background:#5C301B;color:#FFD166;padding:2px 7px;border-radius:6px;font-size:14.5px;">${pollA}%</span>` : ''}
         `;
         rightBtn.innerHTML = `
           <span style="color:#FFE89E;font-size:14.5px;">CHUTE B &rarr;</span>
           <span style="font-size:15px;">${escHtml(sorter.chuteBLabel)}</span>
-          ${pollActive ? `<span style="background:#0D2238;color:#FFD166;padding:2px 7px;border-radius:6px;font-size:14.5px;">${pollB}%</span>` : ''}
+          ${pollActive ? `<span style="background:#5C301B;color:#FFD166;padding:2px 7px;border-radius:6px;font-size:14.5px;">${pollB}%</span>` : ''}
         `;
       };
 
@@ -5249,11 +5534,30 @@ export function mountTactileContraptionV7(
         .map((ev, origIdx) => ({ ...ev, origIdx }))
         .sort((a, b) => a.year - b.year);
 
-      const displayPlaques = [...trueOrder];
-      const shift = (Math.abs(clue.qid) % (count - 1)) + 1;
-      const rotated = displayPlaques.slice(shift).concat(displayPlaques.slice(0, shift));
+      // Deterministic seeded Fisher-Yates shuffle (never starts pre-solved)
+      const rotated = [...trueOrder];
+      let rngState = (Math.abs(clue.qid) * 2654435761 + 1013904223) >>> 0;
+      const nextRand = (): number => {
+        rngState = (Math.imul(1664525, rngState) + 1013904223) >>> 0;
+        return rngState / 4294967296;
+      };
+      for (let i = rotated.length - 1; i > 0; i--) {
+        const j = Math.floor(nextRand() * (i + 1));
+        const tmp = rotated[i];
+        rotated[i] = rotated[j];
+        rotated[j] = tmp;
+      }
+      if (rotated.every((ev, idx) => ev === trueOrder[idx]) && rotated.length >= 2) {
+        const swapIdx = (Math.abs(clue.qid) % (rotated.length - 1)) + 1;
+        const tmp = rotated[0];
+        rotated[0] = rotated[swapIdx];
+        rotated[swapIdx] = tmp;
+      }
 
-      const placedRotatedIndices: number[] = [];
+      const placedRotatedIndices: Array<number | undefined> = Array.from(
+        { length: count },
+        () => undefined,
+      );
       const ordinals = ['1ST →', '2ND →', '3RD →', '4TH'];
 
       const layout = document.createElement('div');
@@ -5294,9 +5598,11 @@ export function mountTactileContraptionV7(
           btn.classList.toggle('is-placed', placedRotatedIndices.includes(rIdx));
         });
 
-        if (placedRotatedIndices.length === count && !locking) {
+        const allFilled = placedRotatedIndices.every((v): v is number => v !== undefined);
+        if (allFilled && !locking) {
           locking = true;
-          const ranks = placedRotatedIndices.map((rIdx) => trueOrder.indexOf(rotated[rIdx]));
+          const finalIndices = placedRotatedIndices.map((v) => v as number);
+          const ranks = finalIndices.map((rIdx) => trueOrder.indexOf(rotated[rIdx]));
           let inversions = 0;
           for (let i = 0; i < ranks.length; i++) {
             for (let j = i + 1; j < ranks.length; j++) {
@@ -5305,14 +5611,14 @@ export function mountTactileContraptionV7(
           }
           const accuracyRatio = inversions === 0 ? 1.0 : inversions === 1 ? 0.5 : 0.0;
           const chipMultiplier = inversions === 0 ? 1.0 : inversions === 1 ? 0.5 : 0.0;
-          const summary = placedRotatedIndices.map((rIdx) => rotated[rIdx].label).join(' -> ');
+          const summary = finalIndices.map((rIdx) => rotated[rIdx].label).join(' -> ');
           const truthSummary = trueOrder
             .map((e) => `${e.label} (${e.displayYear})`)
             .join(' -> ');
 
           // Flip open brass Year plaques & Emerald (✓) / Vermilion (✗) slot tally!
           sleeperEls.forEach((slotEl, slotIdx) => {
-            const rIdx = placedRotatedIndices[slotIdx];
+            const rIdx = finalIndices[slotIdx];
             const item = rotated[rIdx];
             const isSlotRight = ranks[slotIdx] === slotIdx;
             slotEl.classList.add(isSlotRight ? 'is-reveal-correct' : 'is-reveal-wrong');
@@ -5346,11 +5652,18 @@ export function mountTactileContraptionV7(
         slotBtn.type = 'button';
         slotBtn.className = 'ws7-sleeper-slot';
         slotBtn.addEventListener('click', () => {
-          if (resolved || locking || disposed || placedRotatedIndices.length >= count || !isInputArmed()) {
+          if (
+            resolved ||
+            locking ||
+            disposed ||
+            placedRotatedIndices.every((v) => v !== undefined) ||
+            !isInputArmed()
+          ) {
             return;
           }
           if (placedRotatedIndices[s] !== undefined) {
-            placedRotatedIndices.splice(s, 1);
+            placedRotatedIndices[s] = undefined;
+            context.onTactileSfx?.('TICK');
             refreshRail();
           }
         });
@@ -5368,8 +5681,10 @@ export function mountTactileContraptionV7(
           if (resolved || locking || disposed || placedRotatedIndices.includes(rIdx) || !isInputArmed()) {
             return;
           }
-          lastSnappedSlotIdx = placedRotatedIndices.length;
-          placedRotatedIndices.push(rIdx);
+          const nextSlot = placedRotatedIndices.indexOf(undefined);
+          if (nextSlot < 0) return;
+          lastSnappedSlotIdx = nextSlot;
+          placedRotatedIndices[nextSlot] = rIdx;
           context.onTactileSfx?.('THROW_SNAP');
           refreshRail();
         });
@@ -5459,7 +5774,7 @@ export function mountTactileContraptionV7(
             lampEl.style.background = cordColors[pluggedCaller];
             lampEl.style.boxShadow = `0 0 10px ${cordColors[pluggedCaller]}`;
           } else {
-            lampEl.style.background = '#0D2238';
+            lampEl.style.background = '#3E2012';
             lampEl.style.boxShadow = 'inset 0 0 0 3px #F4A91F';
           }
         });
@@ -5574,7 +5889,7 @@ export function mountTactileContraptionV7(
         btn.dataset.callerIdx = String(cIdx);
         btn.innerHTML = `
           <span class="ws7-choice-copy" style="font-size:14.5px;">${escHtml(callerLabel)}</span>
-          <span style="width:16px;height:16px;border-radius:50%;background:${cordColors[cIdx]};box-shadow:inset 0 0 0 2px #0D2238;flex:0 0 16px;"></span>
+          <span style="width:16px;height:16px;border-radius:50%;background:${cordColors[cIdx]};box-shadow:inset 0 0 0 2px #1E140E;flex:0 0 16px;"></span>
         `;
         btn.addEventListener('pointerdown', () => {
           if (resolved || locking || disposed || !isInputArmed()) return;
@@ -5623,7 +5938,7 @@ export function mountTactileContraptionV7(
         btn.className = 'ws7-jack-socket ws7-cream-plaque';
         btn.dataset.jackIdx = String(jIdx);
         btn.innerHTML = `
-          <span class="ws7-jack-lamp" style="width:16px;height:16px;border-radius:50%;background:#0D2238;box-shadow:inset 0 0 0 3px #F4A91F;flex:0 0 16px;transition:background 0.14s ease,box-shadow 0.14s ease;"></span>
+          <span class="ws7-jack-lamp" style="width:16px;height:16px;border-radius:50%;background:#3E2012;box-shadow:inset 0 0 0 3px #F4A91F;flex:0 0 16px;transition:background 0.14s ease,box-shadow 0.14s ease;"></span>
           <div style="flex:1 1 auto;min-width:0;">
             <div class="ws7-choice-copy" style="font-size:14.5px;">${escHtml(jackLabel)}</div>
             ${renderDiegeticChoiceOverlaysHtml(clue, jIdx, context)}
@@ -5738,8 +6053,8 @@ export function mountTactileContraptionV7(
             </filter>
           </defs>
           <!-- Charley Harper Layered Mid-Century Alpine Peaks & Living Color Ridge -->
-          <polygon points="8,98 118,38 228,98" fill="#133D5E" opacity="0.72"/>
-          <polygon points="154,98 258,28 360,98" fill="#184C6E" opacity="0.68"/>
+          <polygon points="8,98 118,38 228,98" fill="#005A63" opacity="0.72"/>
+          <polygon points="154,98 258,28 360,98" fill="#006B74" opacity="0.68"/>
           <polygon points="24,98 320,24 320,98" fill="#0096A6" stroke="#FFF6E3" stroke-width="2.5"/>
           <polygon points="238,44 320,24 320,56 268,58" fill="#FFF6E3" fill-opacity="0.92"/>
           <polygon points="274,35 320,24 320,40 294,42" fill="#E0F4FF" fill-opacity="0.7"/>
@@ -5755,13 +6070,13 @@ export function mountTactileContraptionV7(
             <g class="ws7-cliff-exact-marker" filter="url(#ws7CliffGoldGlow)">
               <line x1="${pExact.x.toFixed(1)}" y1="${pExact.y.toFixed(1)}" x2="${pExact.x.toFixed(1)}" y2="${Math.max(10, pExact.y - 26).toFixed(1)}" stroke="#FFD166" stroke-width="3.2" stroke-linecap="round"/>
               <circle cx="${pExact.x.toFixed(1)}" cy="${pExact.y.toFixed(1)}" r="6.5" fill="#FFD166" stroke="#FFFFFF" stroke-width="2"/>
-              <rect x="${(exactLabelX - 49).toFixed(1)}" y="${Math.max(2, pExact.y - 46).toFixed(1)}" width="98" height="22" rx="6" fill="#0D2238" stroke="#FFD166" stroke-width="1.8"/>
+              <rect x="${(exactLabelX - 49).toFixed(1)}" y="${Math.max(2, pExact.y - 46).toFixed(1)}" width="98" height="22" rx="6" fill="#5C301B" stroke="#FFD166" stroke-width="1.8"/>
               <text x="${exactLabelX.toFixed(1)}" y="${(Math.max(2, pExact.y - 46) + 16).toFixed(1)}" text-anchor="middle" fill="#FFD166" font-family="Jost, sans-serif" font-size="14.5" font-weight="900">★ ${escHtml(String(num.target))}</text>
             </g>
           </g>
           <!-- Studio Mountain Climber Token -->
           <g class="ws7-mountaineer" transform="translate(24,84)">
-            <circle cx="0" cy="-15" r="6.5" fill="#FFFDF7" stroke="#0D2238" stroke-width="1.6"/>
+            <circle cx="0" cy="-15" r="6.5" fill="#FFFDF7" stroke="#1E140E" stroke-width="1.6"/>
             <path d="M-8,0 L0,-10 L8,0 Z" fill="#FF6738" stroke="#FFFDF7" stroke-width="1.4"/>
             <line x1="7" y1="-14" x2="12" y2="2" stroke="#FFD166" stroke-width="2.2"/>
           </g>
@@ -6069,6 +6384,14 @@ export function mountTactileContraptionV7(
       const drumPollSlots: HTMLDivElement[] = [];
 
       vow.vowelChoices.forEach((cluster, idx) => {
+        const letters = cluster
+          .split('-')
+          .map((s) => s.trim())
+          .filter(Boolean);
+        const tilesHtml =
+          letters.length > 0
+            ? letters.map((ch) => `<span class="ws7-vowel-tile">${escHtml(ch)}</span>`).join(' ')
+            : escHtml(cluster);
         const drum = document.createElement('button');
         drum.type = 'button';
         drum.className = 'ws7-vowel-drum';
@@ -6076,7 +6399,7 @@ export function mountTactileContraptionV7(
         drum.dataset.choiceIdx = String(idx);
         drum.innerHTML = `
           <div style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;">
-            <span class="ws7-choice-copy" style="font-family:var(--ws7-toy-num);font-size:16px;font-weight:800;">${escHtml(cluster)}</span>
+            <span class="ws7-choice-copy" style="display:inline;text-align:center;line-height:1.5;font-family:var(--ws7-toy-num);font-size:16px;font-weight:800;">${tilesHtml}</span>
             <span class="ws7-pad-tail"></span>
           </div>
           ${renderDiegeticChoiceOverlaysHtml(vowelClueOverlay, idx, vowelContext)}
@@ -6182,7 +6505,7 @@ export function mountTactileContraptionV7(
       );
       const lassoCountChip = document.createElement('span');
       lassoCountChip.style.cssText =
-        'padding:1px 8px;border-radius:999px;background:#0D2238;color:#FFD166;box-shadow:inset 0 0 0 1.5px #FFD166;font-size:14.5px;font-weight:900;';
+        'padding:1px 8px;border-radius:999px;background:#5C301B;color:#FFD166;box-shadow:inset 0 0 0 1.5px #FFD166;font-size:14.5px;font-weight:900;';
       lassoCountChip.textContent = '0 / 3';
       lassoBanner.appendChild(lassoCountChip);
 
@@ -6366,20 +6689,15 @@ export function mountTactileContraptionV7(
     // ------------------------------------------------------------------------
     case 'TOY_13_CYANOTYPE_LOUPE': {
       const cyano = resolveCyanotypePayload(clue);
-      const isSpatialStem = /\b(upper|lower|top|bottom)[ -](left|right|mid)/i.test(
-        clue.stem,
-      );
 
       appendShowcasePromptBanner(
         root,
-        isSpatialStem
-          ? 'Tap the matching glowing Zone right on the TV Monitor!'
-          : 'Tap Zone A–D on the TV Monitor or tap its Answer Pad!',
+        'Tap Zone A–D on the TV Monitor or tap its Answer Pad!',
       );
 
       const outerLayout = document.createElement('div');
       outerLayout.className = 'ws7-cyano-outer';
-      outerLayout.dataset.hasLegend = isSpatialStem ? 'false' : 'true';
+      outerLayout.dataset.hasLegend = 'true';
       root.appendChild(outerLayout);
 
       const wrap = document.createElement('div');
@@ -6413,18 +6731,12 @@ export function mountTactileContraptionV7(
           ? cyano.targetZoneIdx
           : null;
       const pruneZoneIdx = context.pruneActive
-        ? isSpatialStem
-          ? (cyano.targetZoneIdx + 3) % 8
-          : choiceToZone[clue.waiverPruneIdx]
+        ? choiceToZone[clue.waiverPruneIdx]
         : null;
-      const poisonedZoneIdx = isSpatialStem
-        ? (cyano.targetZoneIdx + 5) % 8
-        : choiceToZone[clue.poisonedFixIdx];
+      const poisonedZoneIdx = choiceToZone[clue.poisonedFixIdx];
       const canaryZoneIdx =
         typeof context.canaryTickIdx === 'number'
-          ? isSpatialStem
-            ? context.canaryTickIdx % 8
-            : (choiceToZone[context.canaryTickIdx] ?? cyano.targetZoneIdx)
+          ? (choiceToZone[context.canaryTickIdx] ?? cyano.targetZoneIdx)
           : null;
 
       const selectZoneByIndex = (zIdx: number): void => {
@@ -6437,22 +6749,20 @@ export function mountTactileContraptionV7(
         const isCorrect = zIdx === cyano.targetZoneIdx;
         const cIdx = zoneToChoice.get(zIdx);
         const pickedLabel =
-          !isSpatialStem && cIdx !== undefined
+          cIdx !== undefined
             ? clue.choices[cIdx]
             : isCorrect
               ? cyano.targetZoneName
               : `Zone #${zIdx + 1}`;
         // Highlight chosen & true legend button in Emerald (✓) / Vermilion (✗)!
-        if (!isSpatialStem) {
-          legendBtns.forEach((btn, idx) => {
-            btn.disabled = true;
-            if (idx === clue.answerIdx) {
-              btn.classList.add('is-reveal-correct');
-            } else if (!isCorrect && idx === cIdx) {
-              btn.classList.add('is-reveal-wrong');
-            }
-          });
-        }
+        legendBtns.forEach((btn, idx) => {
+          btn.disabled = true;
+          if (idx === clue.answerIdx) {
+            btn.classList.add('is-reveal-correct');
+          } else if (!isCorrect && idx === cIdx) {
+            btn.classList.add('is-reveal-wrong');
+          }
+        });
         context.onRevealFlash?.(isCorrect);
         scheduleReveal(
           () => {
@@ -6490,34 +6800,32 @@ export function mountTactileContraptionV7(
             g.style.pointerEvents = 'none';
             return;
           }
-          if (!isSpatialStem) {
-            const cIdx = zoneToChoice.get(zIdx);
-            if (cIdx !== undefined) {
-              const x0 = Number(g.dataset.x0 ?? 24);
-              const y0 = Number(g.dataset.y0 ?? 30);
-              const pill = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-              pill.setAttribute('x', String(x0 + 6));
-              pill.setAttribute('y', String(y0 + 6));
-              pill.setAttribute('width', '26');
-              pill.setAttribute('height', '23');
-              pill.setAttribute('rx', '6');
-              pill.setAttribute('fill', '#FFD166');
-              g.appendChild(pill);
+          const cIdx = zoneToChoice.get(zIdx);
+          if (cIdx !== undefined) {
+            const x0 = Number(g.dataset.x0 ?? 24);
+            const y0 = Number(g.dataset.y0 ?? 30);
+            const pill = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            pill.setAttribute('x', String(x0 + 6));
+            pill.setAttribute('y', String(y0 + 6));
+            pill.setAttribute('width', '26');
+            pill.setAttribute('height', '23');
+            pill.setAttribute('rx', '6');
+            pill.setAttribute('fill', '#FFD166');
+            g.appendChild(pill);
 
-              const badge = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-              badge.setAttribute('x', String(x0 + 19));
-              badge.setAttribute('y', String(y0 + 23));
-              badge.setAttribute('text-anchor', 'middle');
-              badge.setAttribute('fill', '#141B29');
-              badge.setAttribute('font-family', 'Jost, sans-serif');
-              badge.setAttribute('font-size', '16');
-              badge.setAttribute('font-weight', '900');
-              badge.textContent = STUDIO_LETTERS_V7[cIdx];
-              g.appendChild(badge);
-            } else {
-              g.style.opacity = '0.26';
-              g.style.pointerEvents = 'none';
-            }
+            const badge = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            badge.setAttribute('x', String(x0 + 19));
+            badge.setAttribute('y', String(y0 + 23));
+            badge.setAttribute('text-anchor', 'middle');
+            badge.setAttribute('fill', '#141B29');
+            badge.setAttribute('font-family', 'Jost, sans-serif');
+            badge.setAttribute('font-size', '16');
+            badge.setAttribute('font-weight', '900');
+            badge.textContent = STUDIO_LETTERS_V7[cIdx];
+            g.appendChild(badge);
+          } else {
+            g.style.opacity = '0.26';
+            g.style.pointerEvents = 'none';
           }
 
           if (flashIdx !== null) {
@@ -6553,281 +6861,58 @@ export function mountTactileContraptionV7(
 
       mountBlueprint(null);
 
-      if (!isSpatialStem) {
-        const legendGrid = document.createElement('div');
-        legendGrid.className = 'ws7-cyano-legend-grid';
-        clue.choices.forEach((label, cIdx) => {
-          const zIdx = choiceToZone[cIdx];
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'ws7-cyano-legend-btn ws7-cream-plaque';
-          btn.dataset.choiceIdx = String(cIdx);
-          btn.innerHTML = `
-            <span class="ws7-choice-copy" style="font-size:14.5px;"><strong style="color:#008B9A;font-family:var(--ws7-toy-caps);">${STUDIO_LETTERS_V7[cIdx]}.</strong> ${escHtml(label)}</span>
-            ${renderDiegeticChoiceOverlaysHtml(clue, cIdx, context)}
-            <div class="ws7-poll-slot"></div>
-          `;
-          btn.addEventListener('click', () => selectZoneByIndex(zIdx));
-          legendBtns.push(btn);
-          legendPollSlots.push(btn.querySelector('.ws7-poll-slot') as HTMLDivElement);
-          legendGrid.appendChild(btn);
-        });
-        outerLayout.appendChild(legendGrid);
-      }
-
-      applyFiftyFiftyImpl = () => {
-        if (resolved || locking || disposed) return [];
-        if (!isSpatialStem) {
-          const toCut = pickTwoWrongChoiceIndices(clue.answerIdx, clue, cutChoices);
-          for (const cIdx of toCut) {
-            cutChoices.add(cIdx);
-            cutZones.add(choiceToZone[cIdx]);
-            const btn = legendBtns[cIdx];
-            if (btn) {
-              btn.classList.add('is-fifty-cut');
-              btn.disabled = true;
-              appendFiftyStampToMeta(btn);
-              legendPollSlots[cIdx].classList.remove('is-visible');
-              legendPollSlots[cIdx].innerHTML = '';
-            }
-          }
-          mountBlueprint(null);
-          context.onTactileSfx?.('SHUTTER_CLACK');
-          return toCut;
-        }
-        const wrongZones = [0, 1, 2, 3, 4, 5, 6, 7]
-          .filter((z) => z !== cyano.targetZoneIdx && !cutZones.has(z))
-          .slice(0, 4);
-        wrongZones.forEach((z) => cutZones.add(z));
-        mountBlueprint(null);
-        upsertLifelineRibbon(
-          'fifty',
-          `<span class="ws7-stamp-fifty">50/50 CUT</span><span>4 DECOY MONITOR ZONES POWERED DOWN!</span>`,
-        );
-        context.onTactileSfx?.('SHUTTER_CLACK');
-        return wrongZones;
-      };
-
-      showAudiencePollImpl = (percentages) => {
-        if (resolved || locking || disposed) return;
-        if (!isSpatialStem) {
-          const live = [0, 1, 2, 3].filter((i) => !cutChoices.has(i));
-          const normalized = normalizeLivePollPercentages(percentages, live);
-          let maxPct = -1;
-          normalized.forEach((v) => {
-            if (v > maxPct) maxPct = v;
-          });
-          [0, 1, 2, 3].forEach((idx) => {
-            const slot = legendPollSlots[idx];
-            if (cutChoices.has(idx)) {
-              slot.classList.remove('is-visible');
-              slot.innerHTML = '';
-              return;
-            }
-            const pct = normalized.get(idx) ?? 0;
-            slot.innerHTML = renderPollBarBadgeHtml(pct, pct === maxPct && maxPct > 0);
-            slot.classList.add('is-visible');
-          });
-        } else {
-          const rowName = cyano.targetZoneIdx < 4 ? 'UPPER ROW' : 'LOWER ROW';
-          upsertLifelineRibbon(
-            'poll',
-            `<span style="display:inline-flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:center;">${renderPollIconMicroSvgV7()} STUDIO POLL: 74% POINT TO <strong style="color:#FFD166;">${rowName} · ZONE #${cyano.targetZoneIdx + 1}</strong></span>`,
-          );
-        }
-        context.onTactileSfx?.('DETENT');
-      };
-
-      break;
-    }
-
-    // ------------------------------------------------------------------------
-    // 14. TOY_14_FOUR_SHUTTER_REEL: 1966 *Only Connect / Laugh-In* 4-Shutter Wall
-    // ------------------------------------------------------------------------
-    case 'TOY_14_FOUR_SHUTTER_REEL': {
-      const shutterBanner = appendShowcasePromptBanner(root, '');
-
-      const reel = resolveShuttersPayload(clue);
-      const multSchedule = SHUTTER_REEL_MULTIPLIER_LADDER_V8;
-      const freeSecondShutter = context.dayJob === 'MONOLOGUE_WRITER';
-      let openCount = freeSecondShutter ? 2 : 1;
-      let lastOpenedIdx = -1;
-
-      const resolveLadderIndexForCount = (count: number): 0 | 1 | 2 | 3 => {
-        if (count >= 4) return 3;
-        if (freeSecondShutter && count <= 2) return 0;
-        return Math.max(0, Math.min(3, count - 1)) as 0 | 1 | 2 | 3;
-      };
-
-      const getCurrentMult = (): number => multSchedule[resolveLadderIndexForCount(openCount)];
-
-      const layout = document.createElement('div');
-      layout.className = 'ws7-shutter-layout';
-
-      const topRow = document.createElement('div');
-      topRow.className = 'ws7-shutter-top';
-
-      const shuttersGrid = document.createElement('div');
-      shuttersGrid.className = 'ws7-shutters-grid';
-
-      const crackBtn = document.createElement('button');
-      crackBtn.type = 'button';
-      crackBtn.className = 'ws7-crack-lever';
-
-      const renderShutters = (): void => {
-        const curMult = getCurrentMult();
-        const tierKey = curMult.toFixed(1);
-        const headerBadgeCopy =
-          curMult >= 2.0
-            ? '🔥 EARLY-SOLVE BONUS: 2.0× PAYOUT!'
-            : curMult >= 1.6
-              ? '⚡ EARLY-SOLVE: 1.6× PAYOUT'
-              : curMult >= 1.3
-                ? '★ EARLY-SOLVE: 1.3× PAYOUT'
-                : '1.0× STANDARD';
-        const writerTag =
-          freeSecondShutter && openCount === 2 ? ' · WRITER PERK' : '';
-        shutterBanner.innerHTML = `<span class="ws7-shutter-ladder-badge" data-tier="${tierKey}">${headerBadgeCopy}${writerTag}</span>`;
-
-        shuttersGrid.innerHTML = reel.shutters
-          .map((clueLine, sIdx) => {
-            const isOpen = sIdx < openCount;
-            if (isOpen) {
-              const animCls =
-                sIdx === lastOpenedIdx && !context.reducedMotion ? ' is-newly-opened' : '';
-              return `<div class="ws7-shutter-window ws7-cream-plaque${animCls}"><span>${escHtml(clueLine)}</span></div>`;
-            }
-            return `<div class="ws7-shutter-window is-closed" data-shutter-tone="${sIdx % 4}"><span>SHUTTER ${sIdx + 1}</span></div>`;
-          })
-          .join('');
-
-        if (openCount >= 4) {
-          crackBtn.disabled = true;
-          crackBtn.innerHTML = `<span>ALL OPEN</span><span style="font-size:14.5px;color:#FFD166;">1.0× STANDARD</span>`;
-        } else {
-          const nextMult = multSchedule[resolveLadderIndexForCount(openCount + 1)];
-          const btnTopBadge =
-            curMult >= 2.0 ? '🔥 2.0× PAYOUT!' : `${curMult.toFixed(1)}× PAYOUT`;
-          crackBtn.disabled = false;
-          crackBtn.innerHTML = `
-            <span style="font-size:14.5px;color:#FFE89E;">${btnTopBadge}</span>
-            <span>OPEN #${openCount + 1}</span>
-            <span style="font-size:14.5px;opacity:0.92;">(${nextMult.toFixed(1)}×)</span>
-          `;
-        }
-      };
-      renderShutters();
-
-      crackBtn.addEventListener('click', () => {
-        if (resolved || locking || disposed || openCount >= 4 || !isInputArmed()) return;
-        lastOpenedIdx = openCount;
-        openCount += 1;
-        context.onTactileSfx?.('SHUTTER_CLACK');
-        renderShutters();
-      });
-
-      const keysGrid = document.createElement('div');
-      keysGrid.className = 'ws7-shutter-keys';
-
-      const cutKeys = new Set<number>();
-      const keyBtns: HTMLButtonElement[] = [];
-      const keyTails: HTMLSpanElement[] = [];
-      const keyPollSlots: HTMLDivElement[] = [];
-
-      clue.choices.forEach((choiceText, idx) => {
-        const keyBtn = document.createElement('button');
-        keyBtn.type = 'button';
-        keyBtn.className = 'ws7-shutter-key-btn ws7-cream-plaque';
-        keyBtn.dataset.choiceIdx = String(idx);
-        keyBtn.innerHTML = `
-          <span style="font-family:var(--ws7-toy-caps);font-size:15.5px;font-weight:900;color:#008B9A;flex:0 0 auto;">${STUDIO_LETTERS_V7[idx]}.</span>
-          <div class="ws7-pad-body" style="flex:1 1 auto;min-width:0;">
-            <div class="ws7-choice-copy">${escHtml(choiceText)}</div>
-            ${renderDiegeticChoiceOverlaysHtml(clue, idx, context)}
-            <div class="ws7-poll-slot"></div>
-          </div>
-          <span class="ws7-pad-tail"></span>
+      // Always render the 4 A–D Answer Pads even when the clue stem mentions spatial coordinates
+      const legendGrid = document.createElement('div');
+      legendGrid.className = 'ws7-cyano-legend-grid';
+      clue.choices.forEach((label, cIdx) => {
+        const zIdx = choiceToZone[cIdx];
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'ws7-cyano-legend-btn ws7-cream-plaque';
+        btn.dataset.choiceIdx = String(cIdx);
+        btn.innerHTML = `
+          <span class="ws7-choice-copy" style="font-size:14.5px;"><strong style="color:#008B9A;font-family:var(--ws7-toy-caps);">${STUDIO_LETTERS_V7[cIdx]}.</strong> ${escHtml(label)}</span>
+          ${renderDiegeticChoiceOverlaysHtml(clue, cIdx, context)}
+          <div class="ws7-poll-slot"></div>
         `;
-
-        const tailEl = keyBtn.querySelector('.ws7-pad-tail') as HTMLSpanElement;
-        const pollSlot = keyBtn.querySelector('.ws7-poll-slot') as HTMLDivElement;
-        keyBtns.push(keyBtn);
-        keyTails.push(tailEl);
-        keyPollSlots.push(pollSlot);
-
-        keyBtn.addEventListener('click', () => {
-          if (resolved || locking || disposed || cutKeys.has(idx) || !isInputArmed()) return;
-          const activeLadderMult = getCurrentMult();
-          const baseRes = buildChoiceResolution(
-            clue,
-            idx,
-            activeLadderMult,
-            `[${activeLadderMult.toFixed(1)}×]`,
-          );
-          const solveDetail = baseRes.isCorrect
-            ? activeLadderMult >= 2.0
-              ? openCount === 1
-                ? '2.0× SHUTTER-1 GENIUS SOLVE!'
-                : '2.0× WRITER PERK GENIUS SOLVE!'
-              : activeLadderMult >= 1.6
-                ? '1.6× SHUTTER-2 EARLY SOLVE!'
-                : activeLadderMult >= 1.3
-                  ? '1.3× SHUTTER-3 EARLY SOLVE!'
-                  : '1.0× STANDARD 4-SHUTTER SOLVE'
-            : `${activeLadderMult.toFixed(1)}× SHUTTER-${openCount} MISS`;
-          const res: ShutterToyResolutionV8 = {
-            ...baseRes,
-            chipMultiplier: activeLadderMult,
-            shutterSolvedAtCount: openCount,
-            detail: solveDetail,
-          };
-          runTwoBeatChoiceReveal({
-            containerEl: keysGrid,
-            chosenEl: keyBtn,
-            correctEl: keyBtns[clue.answerIdx] ?? null,
-            chosenTailSlot: tailEl,
-            correctTailSlot: keyTails[clue.answerIdx] ?? null,
-            isCorrect: res.isCorrect,
-            sfx: 'THROW_SNAP',
-            resolution: res,
-          });
-        });
-        keysGrid.appendChild(keyBtn);
+        btn.addEventListener('click', () => selectZoneByIndex(zIdx));
+        legendBtns.push(btn);
+        legendPollSlots.push(btn.querySelector('.ws7-poll-slot') as HTMLDivElement);
+        legendGrid.appendChild(btn);
       });
-
-      topRow.append(shuttersGrid, crackBtn);
-      layout.append(topRow, keysGrid);
-      root.appendChild(layout);
+      outerLayout.appendChild(legendGrid);
 
       applyFiftyFiftyImpl = () => {
         if (resolved || locking || disposed) return [];
-        const toCut = pickTwoWrongChoiceIndices(clue.answerIdx, clue, cutKeys);
-        for (const idx of toCut) {
-          cutKeys.add(idx);
-          const btn = keyBtns[idx];
+        const toCut = pickTwoWrongChoiceIndices(clue.answerIdx, clue, cutChoices);
+        for (const cIdx of toCut) {
+          cutChoices.add(cIdx);
+          cutZones.add(choiceToZone[cIdx]);
+          const btn = legendBtns[cIdx];
           if (btn) {
             btn.classList.add('is-fifty-cut');
             btn.disabled = true;
             appendFiftyStampToMeta(btn);
-            keyPollSlots[idx].classList.remove('is-visible');
-            keyPollSlots[idx].innerHTML = '';
+            legendPollSlots[cIdx].classList.remove('is-visible');
+            legendPollSlots[cIdx].innerHTML = '';
           }
         }
+        mountBlueprint(null);
         context.onTactileSfx?.('SHUTTER_CLACK');
         return toCut;
       };
 
       showAudiencePollImpl = (percentages) => {
         if (resolved || locking || disposed) return;
-        const live = [0, 1, 2, 3].filter((i) => !cutKeys.has(i));
+        const live = [0, 1, 2, 3].filter((i) => !cutChoices.has(i));
         const normalized = normalizeLivePollPercentages(percentages, live);
         let maxPct = -1;
         normalized.forEach((v) => {
           if (v > maxPct) maxPct = v;
         });
         [0, 1, 2, 3].forEach((idx) => {
-          const slot = keyPollSlots[idx];
-          if (cutKeys.has(idx)) {
+          const slot = legendPollSlots[idx];
+          if (cutChoices.has(idx)) {
             slot.classList.remove('is-visible');
             slot.innerHTML = '';
             return;

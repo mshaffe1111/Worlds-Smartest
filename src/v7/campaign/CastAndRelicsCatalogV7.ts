@@ -675,14 +675,14 @@ export const CAST_PROFILES_V7: Record<CastIdV7, CastProfileV7> = {
     weakCategories: ['ATLAS', 'HEADLINES', 'PRICING', 'FALLACIES'],
     strongCategories: ['SCREEN', 'DYNASTIES', 'LITERATURE', 'JUKEBOX'],
     signatureTellText:
-      'Glances coolly at his gold wristwatch and drops his baritone half an octave right before tightening the clock—charming until you threaten his 36th-Floor Penthouse.',
+      'Glances coolly at his gold wristwatch and drops his baritone half an octave right before tightening the clock—charming until you threaten his 38th-Floor Penthouse.',
     cheatChannel: 'SOLENOID_SPARK',
     baseAccuracy: 0.82,
     playstyle: 'CLUTCH_SHARK',
     temperament: 'SHOWBOAT',
     seasonTier: 4,
     eraFashionTag: '1966 Midnight Shawl-Collar Tuxedo · Silver Temples & Brass Studio Mic',
-    bio: 'Television’s smoothest master of ceremonies charms fifty million homes at eight sharp while keeping one manicured hand on the 36th-Floor Penthouse keys.',
+    bio: 'Television’s smoothest master of ceremonies charms fifty million homes at eight sharp while keeping one manicured hand on the 38th-Floor Penthouse keys.',
   },
   ROZ_KORMAN: {
     id: 'ROZ_KORMAN',
@@ -1173,7 +1173,7 @@ export const CHAMPION_VOICE_KITS_V7: Record<RivalIdV7, ChampionVoiceKitV7> = {
   },
   VICTOR_LAZAR: {
     voiceArchetype: 'Enigmatic 11-Week Undefeated Studio 6A Sphinx',
-    greenRoomDossier: 'Arrived in a tailored midnight Nehru jacket three minutes before air, spoke to nobody, and gazed calmly at the 36th-Floor Penthouse trophy case.',
+    greenRoomDossier: 'Arrived in a tailored midnight Nehru jacket three minutes before air, spoke to nobody, and gazed calmly at the 38th-Floor Penthouse trophy case.',
     dossierHintStrong: 'Terrifying clarity across theoretical physics, paradoxes, and precision lexicon.',
     dossierHintWeak: 'Even the Sphinx occasionally drifts on kitchen recipes, hit records, and tabloid press.',
     smirkLines: [
@@ -1303,7 +1303,7 @@ export const CAST_TV_GUIDE_BIOS_V7: Record<CastIdV7, string> = {
   VICTOR_LAZAR:
     'TV GUIDE CLOSE-UP: Eleven undefeated Fridays turned Studio 6A’s Nehru-jacketed Sphinx into a prime-time legend—even he occasionally fumbles a jukebox tune or recipe.',
   GRANT_BELLAMY:
-    'TV GUIDE CLOSE-UP: Television’s smoothest emcee charms fifty million homes at eight o’clock while guarding the 36th-Floor Penthouse keys.',
+    'TV GUIDE CLOSE-UP: Television’s smoothest emcee charms fifty million homes at eight o’clock while guarding the 38th-Floor Penthouse keys.',
   ROZ_KORMAN:
     'TV GUIDE CLOSE-UP: Madison Avenue’s sharpest fixer protects sponsor ratings with canary-yellow halftime tips—always check her ink for traps.',
   VERA_KARP:
@@ -1401,7 +1401,7 @@ export function buildCastMonogramSvgDataUriV7(
         ? `<circle cx="48" cy="48" r="32" fill="${profile.accentHex}" fill-opacity="0.34" stroke="${emotionRingHex}" stroke-width="2.6"/>`
         : `<rect x="16" y="16" width="64" height="64" rx="12" fill="${profile.accentHex}" fill-opacity="0.34" stroke="${emotionRingHex}" stroke-width="2.6"/>`;
 
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96"><rect width="96" height="96" rx="48" fill="#0B1D30"/><circle cx="48" cy="48" r="44" fill="none" stroke="${emotionRingHex}" stroke-width="3"/>${shapeMarkup}<text x="48" y="57" text-anchor="middle" font-family="Jost,sans-serif" font-weight="800" font-size="28" fill="#F7EEDB" letter-spacing="1">${initials}</text></svg>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96"><rect width="96" height="96" rx="48" fill="#5C301B"/><circle cx="48" cy="48" r="44" fill="none" stroke="${emotionRingHex}" stroke-width="3"/>${shapeMarkup}<text x="48" y="57" text-anchor="middle" font-family="Jost,sans-serif" font-weight="800" font-size="28" fill="#FAF2DF" letter-spacing="1">${initials}</text></svg>`;
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
 
@@ -1636,7 +1636,7 @@ export const RELIC_CATALOG_V7: readonly RelicSpecV7[] = [
     slotKind: 'MULT_DRIVER',
     costCash: 540,
     description:
-      'Turned-brass catwalk counterweight from the 36th-Floor Penthouse: unlocks +0.45× multiplier on tough top-row prime-time stumpers!',
+      'Turned-brass catwalk counterweight from the 38th-Floor Penthouse: unlocks +0.45× multiplier on tough top-row prime-time stumpers!',
     triggerSummary:
       '+0.45× multiplier on tough top-row stumpers—tailored for high-stakes championship broadcasts!',
     defaultFoil: 'TAX_STAMPED',

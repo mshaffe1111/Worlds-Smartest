@@ -50,10 +50,10 @@ function ensureReactionPipSunlitStylesV8(): void {
     styleEl.id = REACTION_PIP_STYLE_ID_V8;
     document.head.appendChild(styleEl);
   }
-  if (styleEl.dataset.version === 'v8.1-sunlit-cam2-tvguide') {
+  if (styleEl.dataset.version === 'v9.1-sunlit-cam2-tvguide') {
     return;
   }
-  styleEl.dataset.version = 'v8.1-sunlit-cam2-tvguide';
+  styleEl.dataset.version = 'v9.1-sunlit-cam2-tvguide';
   styleEl.textContent = `
     .wsv8-pip-stage,
     .wsv8-pip-stage *,
@@ -68,9 +68,10 @@ function ensureReactionPipSunlitStylesV8(): void {
        ======================================================================== */
     .wsv8-pip-stage {
       position: fixed;
-      top: calc(var(--ws7-safe-top, env(safe-area-inset-top, 0px)) + 62px);
-      right: calc(var(--ws7-safe-right, env(safe-area-inset-right, 0px)) + 12px);
-      width: min(404px, calc(100vw - 24px));
+      top: auto;
+      bottom: var(--wsv8-pip-bottom, calc(var(--ws7-safe-bottom, env(safe-area-inset-bottom, 0px)) + 14px));
+      right: calc(var(--ws7-safe-right, env(safe-area-inset-right, 0px)) + 14px);
+      width: min(352px, calc(100vw - 24px));
       z-index: 55;
       pointer-events: none;
       user-select: none;
@@ -86,7 +87,9 @@ function ensureReactionPipSunlitStylesV8(): void {
     body:has(.ws7-eye-stage:not(.ws7-hidden)) .wsv8-pip-stage,
     body:has(.ws7-utility-stage:not(.ws7-hidden)) .wsv8-pip-stage,
     body:has(.wsv8-bd-overlay) .wsv8-pip-stage,
-    body:has(.wsv8-gc-overlay) .wsv8-pip-stage {
+    body:has(.wsv8-gc-overlay) .wsv8-pip-stage,
+    body:has(.ws9-modal-backdrop) .wsv8-pip-stage,
+    body:has(.wsc8-backdrop) .wsv8-pip-stage {
       display: none !important;
     }
 
@@ -105,7 +108,7 @@ function ensureReactionPipSunlitStylesV8(): void {
       display: flex;
       align-items: center;
       gap: 9px;
-      transform-origin: top right;
+      transform-origin: bottom right;
       animation: wsv8PipSnapIn 0.22s cubic-bezier(0.2, 0.88, 0.28, 1.04) both;
     }
 
@@ -458,11 +461,27 @@ function ensureReactionPipSunlitStylesV8(): void {
     /* ========================================================================
        Responsive Mobile & Landscape PiP Rules (Exact 96x96px RCA Monitor!)
        ======================================================================== */
+    @media (max-width: 1419px) {
+      body:has(.ws7-rival-chyron:not(.ws7-hidden)) .wsv8-pip-stage,
+      body:has(.ws7-board-mode-ribbon) .wsv8-pip-stage {
+        bottom: var(--wsv8-pip-bottom, calc(var(--ws7-safe-bottom, env(safe-area-inset-bottom, 0px)) + 82px));
+      }
+    }
+
     @media (max-width: 680px) {
       .wsv8-pip-stage {
-        top: calc(var(--ws7-safe-top, env(safe-area-inset-top, 0px)) + 56px);
+        top: auto;
+        bottom: var(--wsv8-pip-bottom, calc(var(--ws7-safe-bottom, env(safe-area-inset-bottom, 0px)) + 48px));
         right: calc(var(--ws7-safe-right, env(safe-area-inset-right, 0px)) + 8px);
         width: min(340px, calc(100vw - 16px));
+      }
+
+      body:has(.ws7-live-toast-pill:not(.ws7-hidden)) .wsv8-pip-stage {
+        bottom: var(--wsv8-pip-bottom, calc(var(--ws7-safe-bottom, env(safe-area-inset-bottom, 0px)) + 84px));
+      }
+
+      body:has(.ws7-rival-chyron:not(.ws7-hidden)) .wsv8-pip-stage {
+        bottom: var(--wsv8-pip-bottom, calc(var(--ws7-safe-bottom, env(safe-area-inset-bottom, 0px)) + 186px));
       }
 
       .wsv8-pip-chassis {
@@ -517,9 +536,18 @@ function ensureReactionPipSunlitStylesV8(): void {
 
     @media (max-width: 440px) {
       .wsv8-pip-stage {
-        top: calc(var(--ws7-safe-top, env(safe-area-inset-top, 0px)) + 54px);
+        top: auto;
+        bottom: var(--wsv8-pip-bottom, calc(var(--ws7-safe-bottom, env(safe-area-inset-bottom, 0px)) + 48px));
         right: calc(var(--ws7-safe-right, env(safe-area-inset-right, 0px)) + 6px);
         width: min(326px, calc(100vw - 12px));
+      }
+
+      body:has(.ws7-live-toast-pill:not(.ws7-hidden)) .wsv8-pip-stage {
+        bottom: var(--wsv8-pip-bottom, calc(var(--ws7-safe-bottom, env(safe-area-inset-bottom, 0px)) + 84px));
+      }
+
+      body:has(.ws7-rival-chyron:not(.ws7-hidden)) .wsv8-pip-stage {
+        bottom: var(--wsv8-pip-bottom, calc(var(--ws7-safe-bottom, env(safe-area-inset-bottom, 0px)) + 186px));
       }
 
       .wsv8-pip-badge-pill {
@@ -529,9 +557,15 @@ function ensureReactionPipSunlitStylesV8(): void {
 
     @media (max-height: 500px) {
       .wsv8-pip-stage {
-        top: calc(var(--ws7-safe-top, env(safe-area-inset-top, 0px)) + 52px);
+        top: auto;
+        bottom: calc(var(--ws7-safe-bottom, env(safe-area-inset-bottom, 0px)) + 12px);
         right: calc(var(--ws7-safe-right, env(safe-area-inset-right, 0px)) + 10px);
         width: min(336px, calc(100vw - 20px));
+      }
+
+      body:has(.ws7-rival-chyron:not(.ws7-hidden)) .wsv8-pip-stage,
+      body:has(.ws7-live-toast-pill:not(.ws7-hidden)) .wsv8-pip-stage {
+        bottom: calc(var(--ws7-safe-bottom, env(safe-area-inset-bottom, 0px)) + 74px);
       }
 
       body:has(.ws7-question-stage:not(.ws7-hidden)) .wsv8-pip-stage {
@@ -1277,6 +1311,8 @@ export class ReactionPipMonitorV8 {
   private readonly defaultDurationMs: number;
   private readonly onDismiss?: () => void;
   private hideTimerId: ReturnType<typeof setTimeout> | null = null;
+  private clearanceRafId: number | null = null;
+  private blockerObserver: MutationObserver | null = null;
   private disposed = false;
 
   private readonly handleStageClick = (): void => {
@@ -1434,7 +1470,9 @@ export class ReactionPipMonitorV8 {
    * Displays a live 1966 RCA Studio "CAM 2" Picture-in-Picture reaction cut-in
    * cropped to the exact `200% 200%` gouache emotion quadrant.
    */
-  public showReaction(spec: ReactionPipSpecV8): void {
+  public showReaction(
+    spec: ReactionPipSpecV8 & { readonly rivalId?: RivalIdV7 },
+  ): void {
     if (this.disposed) return;
     ensureReactionPipSunlitStylesV8();
 
@@ -1444,13 +1482,29 @@ export class ReactionPipMonitorV8 {
       this.hostContainer.appendChild(this.stageEl);
     }
 
-    const profile = CAST_PROFILES_V7[spec.castId] ?? CAST_PROFILES_V7.CARMEN_DELGADO;
+    // Ensure Rival quotes/misses/taunts always resolve to the Rival's portrait rather than host/default fallback!
+    let resolvedCastId: CastIdV7 = spec.rivalId ?? spec.castId;
+    if (
+      !spec.rivalId &&
+      resolvedCastId === 'GRANT_BELLAMY' &&
+      spec.displayName?.trim()
+    ) {
+      const needle = spec.displayName.trim().toLowerCase();
+      const matched = (Object.keys(CAST_PROFILES_V7) as CastIdV7[]).find(
+        (id) =>
+          CAST_PROFILES_V7[id].role !== 'BOOTH_BROKER' &&
+          CAST_PROFILES_V7[id].name.trim().toLowerCase() === needle,
+      );
+      if (matched) resolvedCastId = matched;
+    }
+
+    const profile = CAST_PROFILES_V7[resolvedCastId] ?? CAST_PROFILES_V7.CARMEN_DELGADO;
     const emotion: PortraitEmotionV7 = PORTRAIT_SPRITE_POSITIONS_V7[spec.emotion]
       ? spec.emotion
       : 'POISED';
 
-    preloadMatchPortraitsV8([spec.castId]);
-    const layers = buildPaintedPortraitCssLayersV8(spec.castId, emotion);
+    preloadMatchPortraitsV8([resolvedCastId]);
+    const layers = buildPaintedPortraitCssLayersV8(resolvedCastId, emotion);
 
     const rawName = (spec.displayName?.trim() || profile.name).replace(/\.{3,}|\u2026/g, '').trim();
     const badgeText = (spec.badgeLabel?.trim() || layers.badgeLabel)
@@ -1474,7 +1528,7 @@ export class ReactionPipMonitorV8 {
     this.crtScreenEl.style.backgroundSize = layers.backgroundSize;
     this.crtScreenEl.style.backgroundPosition = layers.backgroundPosition;
     this.crtScreenEl.dataset.emotion = emotion;
-    this.crtScreenEl.dataset.castId = spec.castId;
+    this.crtScreenEl.dataset.castId = resolvedCastId;
 
     const hostReduced =
       this.reducedMotion ||
@@ -1495,6 +1549,18 @@ export class ReactionPipMonitorV8 {
     this.stageEl.dataset.open = 'true';
     this.stageEl.setAttribute('aria-hidden', 'false');
 
+    this.updateMobileClearance();
+    this.attachBlockerObserver();
+    if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
+      if (this.clearanceRafId !== null) {
+        window.cancelAnimationFrame(this.clearanceRafId);
+      }
+      this.clearanceRafId = window.requestAnimationFrame(() => {
+        this.clearanceRafId = null;
+        this.updateMobileClearance();
+      });
+    }
+
     const durationMs = Math.max(
       1200,
       Math.min(12000, Math.round(spec.durationMs ?? this.defaultDurationMs)),
@@ -1506,6 +1572,7 @@ export class ReactionPipMonitorV8 {
 
   public hide(): void {
     this.clearHideTimer();
+    this.clearMobileClearanceTracking();
     this.stageEl.dataset.open = 'false';
     this.stageEl.classList.add('wsv8-pip-hidden');
     this.stageEl.setAttribute('aria-hidden', 'true');
@@ -1515,6 +1582,7 @@ export class ReactionPipMonitorV8 {
     if (this.disposed) return;
     this.disposed = true;
     this.clearHideTimer();
+    this.clearMobileClearanceTracking();
     this.stageEl.removeEventListener('click', this.handleStageClick);
     this.stageEl.remove();
   }
@@ -1524,6 +1592,75 @@ export class ReactionPipMonitorV8 {
       clearTimeout(this.hideTimerId);
       this.hideTimerId = null;
     }
+  }
+
+  private clearMobileClearanceTracking(): void {
+    if (this.clearanceRafId !== null && typeof window !== 'undefined') {
+      window.cancelAnimationFrame(this.clearanceRafId);
+      this.clearanceRafId = null;
+    }
+    if (this.blockerObserver) {
+      this.blockerObserver.disconnect();
+      this.blockerObserver = null;
+    }
+    this.stageEl.style.removeProperty('--wsv8-pip-bottom');
+  }
+
+  private attachBlockerObserver(): void {
+    if (typeof document === 'undefined' || typeof MutationObserver === 'undefined') return;
+    if (this.blockerObserver) {
+      this.blockerObserver.disconnect();
+      this.blockerObserver = null;
+    }
+    const targets = document.querySelectorAll<HTMLElement>('.ws7-rival-chyron, .ws7-live-toast-pill');
+    if (targets.length === 0) return;
+    const observer = new MutationObserver(() => {
+      if (!this.disposed && this.stageEl.dataset.open === 'true') {
+        this.updateMobileClearance();
+      }
+    });
+    targets.forEach((el) => {
+      observer.observe(el, {
+        attributes: true,
+        attributeFilter: ['class', 'style'],
+        childList: true,
+        subtree: true,
+        characterData: true,
+      });
+    });
+    this.blockerObserver = observer;
+  }
+
+  private updateMobileClearance(): void {
+    if (this.disposed || typeof window === 'undefined' || typeof document === 'undefined') {
+      return;
+    }
+    if (window.innerWidth > 680 || window.innerHeight <= 500) {
+      this.stageEl.style.removeProperty('--wsv8-pip-bottom');
+      return;
+    }
+    const blockers = document.querySelectorAll<HTMLElement>(
+      '.ws7-rival-chyron:not(.ws7-hidden), .ws7-live-toast-pill:not(.ws7-hidden)',
+    );
+    let minTop = window.innerHeight;
+    let hasVisibleBlocker = false;
+    blockers.forEach((el) => {
+      const rect = el.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0 && rect.top < window.innerHeight) {
+        hasVisibleBlocker = true;
+        if (rect.top < minTop) {
+          minTop = rect.top;
+        }
+      }
+    });
+    if (!hasVisibleBlocker) {
+      this.stageEl.style.removeProperty('--wsv8-pip-bottom');
+      return;
+    }
+    const neededBottom = Math.ceil(window.innerHeight - minTop + 14);
+    const maxSafeBottom = Math.max(120, Math.floor(window.innerHeight * 0.42));
+    const clampedBottom = Math.min(maxSafeBottom, Math.max(84, neededBottom));
+    this.stageEl.style.setProperty('--wsv8-pip-bottom', `${clampedBottom}px`);
   }
 }
 

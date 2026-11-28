@@ -11,12 +11,12 @@
 // ============================================================================
 
 import {
-  ALL_BOARD_PLAY_MODES_V7,
+  ALL_BOARD_PLAY_MODES_V9,
   ALL_CATEGORIES_V7,
-  BOARD_PLAY_MODE_TITLES_V7,
+  BOARD_PLAY_MODE_TITLES_V9,
   CATEGORY_TO_DOMAIN_V7,
   type BoardModeStatCounterV8,
-  type BoardPlayModeV7,
+  type BoardPlayModeV9,
   type CampaignSaveStateV7,
   type CareerStatsLedgerV8,
   type CategoryIdV7,
@@ -231,7 +231,7 @@ export interface FormatAndLifelineBreakdownV8 {
 }
 
 export interface BoardModeBreakdownItemV8 {
-  readonly mode: BoardPlayModeV7;
+  readonly mode: BoardPlayModeV9;
   readonly shortTitle: string;
   readonly fullTitle: string;
   readonly hexColor: string;
@@ -300,6 +300,31 @@ const CLASSIC_CARD_STYLE_META_V8: Record<
     title: '50/50 Dual Paddle',
     subtitle: 'Head-to-Head Showdown Split',
     hexColor: '#009E73',
+  },
+  HIGHER_OR_LOWER: {
+    title: 'Higher or Lower Duel',
+    subtitle: 'Two-Contender Comparison Split',
+    hexColor: '#D97706',
+  },
+  ODD_ONE_OUT: {
+    title: 'Odd One Out Grid',
+    subtitle: '3 Belong · 1 Crasher Spotlight',
+    hexColor: '#008B94',
+  },
+  FINISH_THE_LINE: {
+    title: 'Finish the Line',
+    subtitle: 'Famous Lyric, Quote & Slogan Cue',
+    hexColor: '#6E3B23',
+  },
+  WHO_WHAT_AM_I: {
+    title: 'Who / What Am I?',
+    subtitle: '1966 Mystery Silhouette Riddle',
+    hexColor: '#E6397A',
+  },
+  BEFORE_OR_AFTER: {
+    title: 'Before or After Duel',
+    subtitle: 'Chronological Time-Machine Split',
+    hexColor: '#1746A2',
   },
 };
 
@@ -380,7 +405,7 @@ const SHOWCASE_TOY_META_V8: Record<
 };
 
 const BOARD_MODE_SHORT_LABELS_V8: Record<
-  BoardPlayModeV7,
+  BoardPlayModeV9,
   { readonly shortTitle: string; readonly hexColor: string }
 > = {
   CLASSIC_TOTE: { shortTitle: 'Classic Tote', hexColor: '#008B94' },
@@ -391,9 +416,17 @@ const BOARD_MODE_SHORT_LABELS_V8: Record<
   PRESS_YOUR_LUCK_GREMLIN: { shortTitle: 'Gremlin Board', hexColor: '#E6397A' },
   BIG_WHEEL_SHOWCASE: { shortTitle: 'Big Wheel', hexColor: '#FF6B35' },
   MONTY_CURTAIN_DEAL: { shortTitle: 'Curtain Deal', hexColor: '#008B94' },
+  LOUVER_SHUTTER: { shortTitle: 'Louver Shutter', hexColor: '#008B94' },
+  BLIND_PURSE: { shortTitle: 'Blind Purse', hexColor: '#E6397A' },
+  BLACKOUT_VAULT: { shortTitle: 'Blackout Vault', hexColor: '#6E3B23' },
+  LIVE_WIRE_FUSE: { shortTitle: 'Live-Wire Fuse', hexColor: '#FF6B35' },
+  SHIFTING_SPOTLIGHT: { shortTitle: 'Spotlight Rail', hexColor: '#F2A922' },
+  GOLDEN_DOMINO_CASCADE: { shortTitle: 'Golden Domino', hexColor: '#15803D' },
+  PRESSURE_COOKER: { shortTitle: 'Pressure Cooker', hexColor: '#E6397A' },
+  HOLLYWOOD_MARQUEE_LINE: { shortTitle: 'Marquee Line', hexColor: '#D9A441' },
 };
 
-const CANONICAL_BOARD_MODES_ORDER_V8: readonly BoardPlayModeV7[] = [
+const CANONICAL_BOARD_MODES_ORDER_V8: readonly BoardPlayModeV9[] = [
   'CLASSIC_TOTE',
   'TIC_TAC_LINE',
   'COAST_HEX_BRIDGE',
@@ -402,6 +435,14 @@ const CANONICAL_BOARD_MODES_ORDER_V8: readonly BoardPlayModeV7[] = [
   'PRESS_YOUR_LUCK_GREMLIN',
   'BIG_WHEEL_SHOWCASE',
   'MONTY_CURTAIN_DEAL',
+  'LOUVER_SHUTTER',
+  'BLIND_PURSE',
+  'BLACKOUT_VAULT',
+  'LIVE_WIRE_FUSE',
+  'SHIFTING_SPOTLIGHT',
+  'GOLDEN_DOMINO_CASCADE',
+  'PRESSURE_COOKER',
+  'HOLLYWOOD_MARQUEE_LINE',
 ];
 
 // ----------------------------------------------------------------------------
@@ -409,7 +450,7 @@ const CANONICAL_BOARD_MODES_ORDER_V8: readonly BoardPlayModeV7[] = [
 // ----------------------------------------------------------------------------
 
 const VALID_CATEGORIES_SET_V8 = new Set<string>(ALL_CATEGORIES_V7);
-const VALID_BOARD_MODES_SET_V8 = new Set<string>(ALL_BOARD_PLAY_MODES_V7);
+const VALID_BOARD_MODES_SET_V8 = new Set<string>(ALL_BOARD_PLAY_MODES_V9);
 const VALID_CARD_STYLES_SET_V8 = new Set<string>(CLASSIC_CARD_STYLES_V7);
 const VALID_TOYS_SET_V8 = new Set<string>(Object.keys(SHOWCASE_TOY_META_V8));
 const VALID_MATCH_TYPES_SET_V8 = new Set<string>([
@@ -417,6 +458,8 @@ const VALID_MATCH_TYPES_SET_V8 = new Set<string>([
   'DAILY',
   'QUICK_PLAY',
   'COUCH_2P',
+  'BLITZ_60',
+  'SWEEPS_WEEK',
 ]);
 
 let memoryStorageFallbackRawV8: string | null = null;
@@ -585,7 +628,7 @@ function sanitizeMatchHistoryPointV8(raw: unknown): MatchHistoryPointV8 | null {
   const boardPlayModeRaw =
     typeof rec.boardPlayMode === 'string' &&
     VALID_BOARD_MODES_SET_V8.has(rec.boardPlayMode)
-      ? (rec.boardPlayMode as BoardPlayModeV7)
+      ? (rec.boardPlayMode as BoardPlayModeV9)
       : 'CLASSIC_TOTE';
   const cluesAnswered = sanitizeNonNegIntV8(rec.cluesAnswered, 0, 200);
   const cluesCorrect = Math.min(
@@ -726,7 +769,7 @@ export function sanitizeCareerStatsLedgerV8(raw: unknown): CareerStatsLedgerV8 {
     }
   }
 
-  const byBoardMode: Partial<Record<BoardPlayModeV7, BoardModeStatCounterV8>> =
+  const byBoardMode: Partial<Record<BoardPlayModeV9, BoardModeStatCounterV8>> =
     {};
   if (rec.byBoardMode && typeof rec.byBoardMode === 'object') {
     for (const [key, val] of Object.entries(
@@ -735,7 +778,7 @@ export function sanitizeCareerStatsLedgerV8(raw: unknown): CareerStatsLedgerV8 {
       if (VALID_BOARD_MODES_SET_V8.has(key)) {
         const sanitized = sanitizeBoardModeCounterV8(val);
         if (sanitized.played > 0 || sanitized.bestCash > 0) {
-          byBoardMode[key as BoardPlayModeV7] = sanitized;
+          byBoardMode[key as BoardPlayModeV9] = sanitized;
         }
       }
     }
@@ -917,20 +960,52 @@ export function loadCareerStatsLedgerV8(
         ledger.bestAnswerStreakEver = Math.max(ledger.bestAnswerStreakEver, 5);
       }
 
-      if (Array.isArray(legacyCampaign?.masteredBoardModes)) {
-        for (const mode of legacyCampaign.masteredBoardModes) {
-          if (VALID_BOARD_MODES_SET_V8.has(mode) && !ledger.byBoardMode[mode]) {
-            ledger.byBoardMode[mode] = {
-              played: 1,
-              won: 1,
-              bestCash: Math.max(800, estimatedBestSingle),
-              totalCash: Math.max(800, estimatedBestSingle),
-            };
-          }
+      const seededModes = [
+        ...(Array.isArray(legacyCampaign?.masteredBoardModes)
+          ? legacyCampaign.masteredBoardModes
+          : []),
+        ...(Array.isArray(legacyCampaign?.masteredBoardModesV9)
+          ? legacyCampaign.masteredBoardModesV9
+          : []),
+      ];
+      for (const mode of seededModes) {
+        if (VALID_BOARD_MODES_SET_V8.has(mode) && !ledger.byBoardMode[mode]) {
+          ledger.byBoardMode[mode] = {
+            played: 1,
+            won: 1,
+            bestCash: Math.max(800, estimatedBestSingle),
+            totalCash: Math.max(800, estimatedBestSingle),
+          };
         }
       }
 
       ledger.seededFromLegacySave = true;
+      return saveCareerStatsLedgerV8(ledger);
+    }
+  }
+
+  if (legacyCampaign) {
+    const legacyModes = [
+      ...(Array.isArray(legacyCampaign.masteredBoardModes)
+        ? legacyCampaign.masteredBoardModes
+        : []),
+      ...(Array.isArray(legacyCampaign.masteredBoardModesV9)
+        ? legacyCampaign.masteredBoardModesV9
+        : []),
+    ];
+    let backfilled = false;
+    for (const mode of legacyModes) {
+      if (VALID_BOARD_MODES_SET_V8.has(mode) && !ledger.byBoardMode[mode]) {
+        ledger.byBoardMode[mode] = {
+          played: 1,
+          won: 1,
+          bestCash: 800,
+          totalCash: 800,
+        };
+        backfilled = true;
+      }
+    }
+    if (backfilled) {
       return saveCareerStatsLedgerV8(ledger);
     }
   }
@@ -1547,7 +1622,7 @@ export function computeBoardModesBreakdownV8(
     return {
       mode,
       shortTitle: meta.shortTitle,
-      fullTitle: BOARD_PLAY_MODE_TITLES_V7[mode] ?? meta.shortTitle,
+      fullTitle: BOARD_PLAY_MODE_TITLES_V9[mode] ?? meta.shortTitle,
       hexColor: meta.hexColor,
       played,
       won,
