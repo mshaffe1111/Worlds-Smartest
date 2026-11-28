@@ -1,9 +1,9 @@
 {
   "schema": "WS_V7_PACKS_MANIFEST_1",
-  "updatedAtIso": "2026-11-25T19:36:59.351Z",
+  "updatedAtIso": "2026-11-27T06:34:38.274Z",
   "bootPack": "boot_pack.json",
-  "totalCorpusCount": 11053,
-  "nextQid": 11053,
+  "totalCorpusCount": 17521,
+  "nextQid": 17521,
   "shards": [
     {
       "file": "season_1.json",
@@ -95,6 +95,126 @@
       "qidRange": [
         10253,
         11052
+      ]
+    },
+    {
+      "file": "pack_sprint_w1_sci_tech_a.json",
+      "kind": "expansion",
+      "packId": "sprint_w1_sci_tech_a",
+      "title": "Sprint W1: Life, Lab, Space & Tech",
+      "priority": 5,
+      "count": 640,
+      "qidRange": [
+        11053,
+        11692
+      ]
+    },
+    {
+      "file": "pack_sprint_w1_sci_lit.json",
+      "kind": "expansion",
+      "packId": "sprint_w1_sci_lit",
+      "title": "Sprint W1: Engines, Books, Words & Art",
+      "priority": 5,
+      "count": 640,
+      "qidRange": [
+        11693,
+        12332
+      ]
+    },
+    {
+      "file": "pack_sprint_w1_pop_money.json",
+      "kind": "expansion",
+      "packId": "sprint_w1_pop_money",
+      "title": "Sprint W1: Screen, Jukebox, Money & Pricing",
+      "priority": 5,
+      "count": 640,
+      "qidRange": [
+        12333,
+        12972
+      ]
+    },
+    {
+      "file": "pack_sprint_w1_num_geo.json",
+      "kind": "expansion",
+      "packId": "sprint_w1_num_geo",
+      "title": "Sprint W1: Odds, Atlas, Sports & Dynasties",
+      "priority": 5,
+      "count": 640,
+      "qidRange": [
+        12973,
+        13612
+      ]
+    },
+    {
+      "file": "pack_sprint_w1_hist_food.json",
+      "kind": "expansion",
+      "packId": "sprint_w1_hist_food",
+      "title": "Sprint W1: Headlines, Myths, Fallacies & Food",
+      "priority": 5,
+      "count": 640,
+      "qidRange": [
+        13613,
+        14252
+      ]
+    },
+    {
+      "file": "pack_sprint_w2_sci_tech_a.json",
+      "kind": "expansion",
+      "packId": "sprint_w2_sci_tech_a",
+      "title": "Sprint W2: Life, Lab, Space & Tech",
+      "priority": 6,
+      "count": 660,
+      "qidRange": [
+        14253,
+        14912
+      ]
+    },
+    {
+      "file": "pack_sprint_w2_sci_lit.json",
+      "kind": "expansion",
+      "packId": "sprint_w2_sci_lit",
+      "title": "Sprint W2: Engines, Books, Words & Art",
+      "priority": 6,
+      "count": 656,
+      "qidRange": [
+        14913,
+        15568
+      ]
+    },
+    {
+      "file": "pack_sprint_w2_pop_money.json",
+      "kind": "expansion",
+      "packId": "sprint_w2_pop_money",
+      "title": "Sprint W2: Screen, Jukebox, Money & Pricing",
+      "priority": 6,
+      "count": 656,
+      "qidRange": [
+        15569,
+        16224
+      ]
+    },
+    {
+      "file": "pack_sprint_w2_num_geo.json",
+      "kind": "expansion",
+      "packId": "sprint_w2_num_geo",
+      "title": "Sprint W2: Odds, Atlas, Sports & Dynasties",
+      "priority": 6,
+      "count": 656,
+      "qidRange": [
+        16225,
+        16880
+      ]
+    },
+    {
+      "file": "pack_sprint_w2_hist_food.json",
+      "kind": "expansion",
+      "packId": "sprint_w2_hist_food",
+      "title": "Sprint W2: Headlines, Myths, Fallacies & Food",
+      "priority": 6,
+      "count": 640,
+      "qidRange": [
+        16881,
+        17520
       ]
     }
   ]
